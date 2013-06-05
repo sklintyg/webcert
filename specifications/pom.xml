@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>se.inera.webcert</groupId>
+    <artifactId>webcert-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>webcert-specifications</artifactId>
+  <packaging>jar</packaging>
+  <name>Inera Webcert FitNesse specifications</name>
+
+  <properties>
+    <groovy.version>2.0.6</groovy.version>
+    <selenium.version>2.33.0</selenium.version>
+    <geb.env>firefox</geb.env>
+    <fitnesse.port>9124</fitnesse.port>
+    <fitnesse.working>${project.basedir}/src/test/fitnesse</fitnesse.working>
+    <fitnesse.root>FitNesseRoot</fitnesse.root>
+    <!-- This example has no unit tests, just integration tests -->
+    <skipTests>true</skipTests>
+    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
+    <certificate.baseUrl>http://localhost:8080/inera-certificate/</certificate.baseUrl>
+    <certificate.web.baseUrl>http://localhost:8088/web/</certificate.web.baseUrl>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>se.inera.certificate</groupId>
+      <artifactId>specifications</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.fitnesse</groupId>
+      <artifactId>fitnesse</artifactId>
+      <version>20121220</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b5</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>${groovy.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.gebish</groupId>
+      <artifactId>geb-core</artifactId>
+      <version>0.9.0-RC-1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-firefox-driver</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-support</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-chrome-driver</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-safari-driver</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-remote-driver</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-htmlunit-driver</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerId>groovy-eclipse-compiler</compilerId>
+          <verbose>true</verbose>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-eclipse-compiler</artifactId>
+            <version>2.7.0-01</version>
+          </dependency>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-eclipse-batch</artifactId>
+            <version>2.0.6-01</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>uk.co.javahelp.fitnesse</groupId>
+        <artifactId>fitnesse-launcher-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <configuration>
+          <!-- These next 3 are the default values anyway. -->
+          <port>${fitnesse.port}</port>
+          <workingDir>${fitnesse.working}</workingDir>
+          <root>${fitnesse.root}</root>
+          <createSymLink>false</createSymLink>
+          <suite>CitizenWeb</suite>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.2</version>
+          </dependency>
+          <dependency>
+            <groupId>org.beanshell</groupId>
+            <artifactId>bsh</artifactId>
+            <version>2.0b5</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings
+          only. It has no influence on the Maven build itself. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <versionRange>[2.0,)</versionRange>
+                    <goals>
+                      <goal>compile</goal>
+                      <goal>testCompile</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <configurator>
+                      <id>org.eclipse.m2e.jdt.javaConfigurator</id>
+                    </configurator>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.2.1</version>
+          <configuration>
+            <classpathScope>test</classpathScope>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>chrome</id>
+        <properties>
+          <geb.env>chrome</geb.env>
+        </properties>
+    </profile>
+    <profile>
+      <id>safari</id>
+        <properties>
+          <geb.env>safari</geb.env>
+        </properties>
+    </profile>
+    <profile>
+      <id>headless</id>
+        <properties>
+          <geb.env>headless</geb.env>
+        </properties>
+    </profile>
+    <profile>
+      <id>test-server</id>
+        <properties>
+          <certificate.baseUrl>http://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
+          <certificate.web.baseUrl>https://test.minaintyg.se/web/</certificate.web.baseUrl>
+        </properties>
+    </profile>
+    <profile>
+      <id>wiki</id>
+      <!--
+        This profile is for use when writing tests using the FitNesse wiki.
+        Simply run 'mvn verify -P wiki' and use a browser to visit http://localhost:9123/JavaExample
+      -->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>uk.co.javahelp.fitnesse</groupId>
+            <artifactId>fitnesse-launcher-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>set-up</goal>
+                  <goal>wiki</goal>
+                  <goal>tear-down</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>auto</id>
+      <!--
+        This profile will boot FitNesse to automatically run the configured test suite. Simply run 'mvn verify -P auto'
+      -->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>uk.co.javahelp.fitnesse</groupId>
+            <artifactId>fitnesse-launcher-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>set-up</goal>
+                  <goal>run-tests</goal>
+                  <goal>tear-down</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>selenium-server</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>exec-maven-plugin</artifactId>
+              <configuration>
+                <mainClass>org.openqa.grid.selenium.GridLauncher</mainClass>
+                <arguments>
+                  <argument>-timeout</argument>
+                  <argument>600</argument>
+                </arguments>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

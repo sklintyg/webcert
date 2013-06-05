@@ -1,0 +1,17 @@
+Inera Certificate Web
+Copyright (C) 2012 Inera AB (http://www.inera.se)
+
+This application includes the following software:
+
+Springsource, Spring Framework 3.1
+Licensed under Apache Software License 2.0
+http://www.springsource.org/
+
+Simple Logging Facade for Java, slf4j 1.6
+Licensed under MIT license
+http://www.slf4j.org/
+
+ITextPDF, ITextPDF 5.3
+Licensed under AGPL 3.0
+http://www.itextpdf.com/
+
