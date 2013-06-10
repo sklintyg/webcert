@@ -24,6 +24,7 @@
     <logback.version>1.0.0</logback.version>
     <inera.certificate.schemas.version>1.0-SNAPSHOT</inera.certificate.schemas.version>
     <inera.certificate.moduleapi.version>1.0-SNAPSHOT</inera.certificate.moduleapi.version>
+    <inera.certificate.proxy.version>1.0-SNAPSHOT</inera.certificate.proxy.version>
     <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
     <aspectj.version>1.7.1</aspectj.version>
   </properties>
@@ -139,6 +140,11 @@
         <groupId>se.inera.certificate</groupId>
         <artifactId>module-api</artifactId>
         <version>${inera.certificate.moduleapi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.certificate.proxy</groupId>
+        <artifactId>reverse-proxy</artifactId>
+        <version>${inera.certificate.proxy.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>

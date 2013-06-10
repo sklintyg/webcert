@@ -25,7 +25,7 @@
 
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:/webcert-config.xml, classpath:/webcert-cxf-config.xml, /WEB-INF/web-security.xml</param-value>
+    <param-value>classpath:/webcert-config.xml, classpath:/webcert-cxf-config.xml, /WEB-INF/web-security.xml, /WEB-INF/web-proxy.xml</param-value>
   </context-param>
 
   <!-- Start spring context -->
@@ -59,7 +59,14 @@
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-
+  <filter>
+    <filter-name>proxyFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>proxyFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   <error-page>
     <error-code>403</error-code>
     <location>/error.jsp?reason=denied</location>
