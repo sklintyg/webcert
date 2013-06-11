@@ -1,0 +1,269 @@
+/**
+ * Copyright (C) 2012 Inera AB (http://www.inera.se)
+ *
+ * This file is part of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
+ *
+ * Inera Certificate Web is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Inera Certificate Web is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.eventbox {
+	background-color: #f4f4f4;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    border-radius:5px;
+	padding: 20px;
+}
+
+.eventbox p {
+	font-weight:bold; padding: 10px 0 0 0; margin: 0
+}
+
+.eventbox ul {
+	list-style-type: none;
+	margin: 0;
+	padding-bottom: 5px;
+}
+
+.eventbox li {
+	color: #666666;
+}
+
+.eventbox h2 {
+	font-size: 13px;
+	font-weight: normal;
+}
+
+.eventbox a {
+	font-size: 12px;
+}
+
+.cert-icon {
+    position: absolute;
+    top: 12px;
+    left: 15px;
+}
+
+.cert-titlebar {
+	color: #fff;
+	background-color: #00687D;
+	-webkit-border-radius:8px 8px 0 0;
+	-moz-border-radius:8px 8px 0 0;
+	border-radius:8px 8px 0 0;		
+	background-image:-moz-linear-gradient(top, #008391, #00687D);
+	background-image:-ms-linear-gradient(top, #008391, #00687D);
+	background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#008391), to(#00687D));
+	background-image:-webkit-linear-gradient(top, #008391, #00687D);
+	background-image:-o-linear-gradient(top, #008391, #00687D);
+	background-image:linear-gradient(top, #008391, #00687D);
+	background-repeat:repeat-x;
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#008391', endColorstr='#00687D', GradientType=0);
+}
+
+.cert-titlebar h2 {
+	color: #fff;
+	padding: 10px 0 5px 40px;
+}
+
+.cert-titlebar span.cert-titlebar-type {
+	font-size: 10px;
+	color: #b3d6da;
+}
+
+.issue {
+    padding: 12px 0 10px 0;
+}
+
+.cert-titlebar-value { font-weight: bold; }
+
+.archive {
+	border-left: 1px solid #fff;
+	display: block;
+}
+
+.archive a {
+	display: block;
+	padding: 10px 0px 0 14px;  display: block;  
+	height: 32px;
+	-webkit-border-radius: 0px 8px 0px 0px;
+	-moz-border-radius: 0px 8px 0px 0px;
+	border-radius: 0px 8px 0px 0px;
+    background-image:-moz-linear-gradient(top, #008391, #00687D);
+   	background-image:-ms-linear-gradient(top, #008391, #00687D);
+   	background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#008391), to(#00687D));
+   	background-image:-webkit-linear-gradient(top, #008391, #00687D);
+   	background-image:-o-linear-gradient(top, #008391, #00687D);
+   	background-image:linear-gradient(top, #008391, #00687D);
+   	background-repeat:repeat-x;
+   	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#008391', endColorstr='#00687D', GradientType=0);
+}
+
+.archive a:hover {
+    background: none;
+	background-color: #28b4c4;
+	padding: 10px 0px 0 14px;
+    display: block;
+	height: 32px;
+}
+
+section.certificate div.cert {
+	position: relative;
+}
+
+section.certificate div.cert div.cert-header {
+	padding: 10px 0px 0px 0px;
+	background-color: #ededed;
+	font-weight: bold;
+	color: #323232;
+	-webkit-border-radius: 0px 0px 8px 8px;
+	-moz-border-radius: 0px 0px 8px 8px;
+	border-radius: 0px 0px 8px 8px;	
+}
+
+.cert-header .tag {
+	text-align: left;
+	display: block;
+	font-weight: normal;
+	font-size: 12px;
+	color: #656565;
+}
+
+.cert-header .row-fluid {
+	border-top: 1px solid #dddddd;
+	padding: 10px 0;
+}
+
+.cert-header .row-fluid:first-child {
+	border: 0;
+}
+
+.cert-header .row-fluid:last-child {
+	padding-bottom: 10px;
+}
+
+.cert-header .header-row:first-child {
+	padding: 0 0 0 40px;
+}
+
+section.certificate div.cert div.cert-body {
+/*	border-width: 1px 1px 0 1px;
+	border-style: solid;
+	border-color: #e9eae8;*/
+}
+
+section.certificate div.cert div.cert-body div.body-row {
+	margin: 0 0 20px 0;
+	background-color: #ededed;
+	border: 1px solid #d8d8d8;
+	-webkit-border-radius: 8px 8px 8px 8px;
+	-moz-border-radius: 8px 8px 8px 8px;
+	border-radius: 8px 8px 8px 8px;	
+}
+
+.cert-body .body-row .title {
+	color: #333333;
+	font-weight: bold;
+	display: block;
+	padding: 10px 40px;
+	background-color: #d8d8d8;
+	-webkit-border-radius: 8px 8px 0px 0px;
+	-moz-border-radius: 8px 8px 0px 0px;
+	border-radius: 8px 8px 0px 0px;	
+}
+
+.cert-body .body-row .unfilled {
+	color: #888;
+}
+
+.cert-body .body-row .text {
+	display: block;
+	padding: 20px 40px;
+}
+
+section.certificate div.cert div.cert-footer {
+	padding: 20px;
+	border-width: 0 1px 1px 1px;
+	border-style: solid;
+	border-color: #e9eae8;
+	background-color: #e9eae8;
+	-webkit-border-radius: 0 0 8px 8px;
+	-moz-border-radius: 0 0 8px 8px;
+	border-radius: 0 0 8px 8px;	
+}
+
+/*
+section.certificate.small div.cert div.cert-body {
+	display: none;
+}
+
+section.certificate .btn {
+	float: right;	
+	background: rgb(101,101,101); /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+/*	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIxJSIgc3RvcC1jb2xvcj0iIzY1NjU2NSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzZjNmM2YiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(101,101,101,1) 1%, rgba(63,63,63,1) 100%); /* FF3.6+ */
+/*	background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,rgba(101,101,101,1)), color-stop(100%,rgba(63,63,63,1))); /* Chrome,Safari4+ */
+/*	background: -webkit-linear-gradient(top,  rgba(101,101,101,1) 1%,rgba(63,63,63,1) 100%); /* Chrome10+,Safari5.1+ */
+/*	background: -o-linear-gradient(top,  rgba(101,101,101,1) 1%,rgba(63,63,63,1) 100%); /* Opera 11.10+ */
+/*	background: -ms-linear-gradient(top,  rgba(101,101,101,1) 1%,rgba(63,63,63,1) 100%); /* IE10+ */
+/*	background: linear-gradient(to bottom,  rgba(101,101,101,1) 1%,rgba(63,63,63,1) 100%); /* W3C */
+/*	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#656565', endColorstr='#3f3f3f',GradientType=0 ); /* IE6-8 */
+/*	text-shadow: none;
+	color: #fff;
+	padding: 20px 40px;
+	-webkit-border-radius: 8px 8px 8px 8px;
+	-moz-border-radius: 8px 8px 8px 8px;
+	border-radius: 8px 8px 8px 8px;
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	width: 4%;
+}
+
+section.certificate .btn.show,
+section.certificate.small .btn.hide {
+	display: none;
+}
+
+section.certificate.small .btn.show,
+section.certificate .btn.hide {
+	display: inline;
+}
+*/
+
+section.modifiable-certificate {
+	padding: 10px;
+	border-width: 1px 1px 1px 1px;
+	border-style: solid;
+	border-color: #e9eae8;
+	background-color: #e9eae8;
+	-webkit-border-radius: 8px 8px 8px 8px;
+	-moz-border-radius: 8px 8px 8px 8px;
+	border-radius: 8px 8px 8px 8px;	
+}
+
+section.modifiable-certificate h4 {
+	color: #000;
+	margin-top: 20px;
+}
+
+section.modifiable-certificate div.content-box {
+	padding: 5px;
+	border-width: 0 1px 1px 1px;
+	border-style: solid;
+	border-color: #e9eae8;
+	background-color: #fff;
+	-webkit-border-radius: 8px 8px 8px 8px;
+	-moz-border-radius: 8px 8px 8px 8px;
+	border-radius: 8px 8px 8px 8px;	
+}
