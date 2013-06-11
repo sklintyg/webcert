@@ -28,7 +28,7 @@
   <dependencies>
     <dependency>
       <groupId>se.inera.certificate</groupId>
-      <artifactId>specifications</artifactId>
+      <artifactId>certificate-specifications</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
 
