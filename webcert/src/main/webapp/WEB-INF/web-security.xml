@@ -39,7 +39,7 @@
     	<security:authentication-manager>
     	  <security:authentication-provider>
     		<security:user-service>
-    			<security:user name="191212121212" password="a" authorities="ROLE_USER" />
+    			<security:user name="webcert" password="a" authorities="ROLE_USER" />
     		</security:user-service>
     	  </security:authentication-provider>
     	</security:authentication-manager>

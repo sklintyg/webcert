@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-  <title>Login Page</title>
+  <title>Webcert inloggningssida</title>
   <link rel="stylesheet" href="<c:url value="/css/bootstrap.css"/>">
   <style>
     .errorblock {
