@@ -15,17 +15,7 @@
 
   <import resource="classpath:META-INF/cxf/cxf.xml" />
 
-  <jaxws:client id="getConsentClient" serviceClass="se.inera.ifv.insuranceprocess.healthreporting.getconsent.v1.rivtabp20.GetConsentResponderInterface" address="${consent.get.url}" />
-
-  <jaxws:client id="setConsentClient" serviceClass="se.inera.ifv.insuranceprocess.healthreporting.setconsent.v1.rivtabp20.SetConsentResponderInterface" address="${consent.set.url}" />
-
-  <jaxws:client id="listCertificatesClient" serviceClass="se.inera.ifv.insuranceprocess.healthreporting.listcertificates.v1.rivtabp20.ListCertificatesResponderInterface" address="${certificates.list.url}" />
-
-  <jaxws:client id="setCertificateStatusClient" serviceClass="se.inera.ifv.insuranceprocess.healthreporting.setcertificatestatus.v1.rivtabp20.SetCertificateStatusResponderInterface"
-    address="${certificates.setstatus.url}" />
-
-  <jaxrs:client  id="IneraCertificateRestApi" serviceClass="se.inera.certificate.integration.IneraCertificateRestApi" address="${certificates.rest.endpoint.url}">
-  </jaxrs:client>
+  
 
   <cxf:bus>
     <cxf:features>

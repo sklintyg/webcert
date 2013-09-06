@@ -29,19 +29,6 @@
   <beans>
     <security:http security="none" pattern="/"/>
 
-    <security:http auto-config="true">
-    		<security:intercept-url pattern="/web/*" access="ROLE_USER" />
-    		<security:form-login login-page="/login.jsp" default-target-url="/welcome.jsp"
-    			authentication-failure-url="/loginfailed.jsp" />
-    		<security:logout logout-url="/logout" />
-    	</security:http>
 
-    	<security:authentication-manager>
-    	  <security:authentication-provider>
-    		<security:user-service>
-    			<security:user name="webcert" password="a" authorities="ROLE_USER" />
-    		</security:user-service>
-    	  </security:authentication-provider>
-    	</security:authentication-manager>
   </beans>
 </beans>
