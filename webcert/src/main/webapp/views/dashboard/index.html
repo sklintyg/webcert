@@ -1,12 +1,84 @@
-
 <div class="row-fluid">
-  <div>
-    <p>
-      <span message key="dashboard.title"></span>
-    </p>
-    
-  </div>
-
-
-
+	<div class="span6 webcert-col webcert-col-primary"> <!-- Left side -->
+		<div class="webcert-col-shadow"></div>
+		<h1>Intygslista</h1>
+		<div class="row-fluid">
+			<div class="span3">
+				<div class="btn-group">
+				  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+					Enhet A
+					<span class="caret"></span>
+				  </a>
+				  <ul class="dropdown-menu">
+					<!-- dropdown menu links -->
+				  </ul>
+				</div>					
+			</div>
+			<div class="span3">
+				<div class="btn-group">
+				  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+					Mottagning B
+					<span class="caret"></span>
+				  </a>
+				  <ul class="dropdown-menu">
+					<!-- dropdown menu links -->
+				  </ul>
+				</div>					
+			</div>
+		</div>
+		
+		<div class="certlist">
+			<div class="row-fluid">
+				<div class="span12">
+					<h2>Osignerade intyg</h2>
+					<a href="#">
+						<span class="certblock">
+							<h3>Läkarintyg FK7263</h3>
+							<span>2013-05-04</span>
+							<span class="pull-right">Patient: 19720506-4523</span>
+						</span>
+					</a>
+					<button class="btn btn-block" type="button">Visa alla intyg</button>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<h2>Intyg med obesvarad fråga</h2>
+					<span class="certblock">
+						<h3>Läkarintyg FK7263</h3>
+						<span>2013-05-04</span>
+						<span class="pull-right">Patient: 19720506-4523</span>
+					</span>
+					<button class="btn btn-block" type="button">Visa alla intyg</button>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span12">
+					<h2>Intyg färdiga att massignera</h2>
+					<span class="certblock">
+						<h3>Läkarintyg FK7263</h3>
+						<span>2013-05-04</span>
+						<span class="pull-right">Patient: 19720506-4523</span>
+					</span>
+					<button class="btn btn-block" type="button">Visa alla intyg</button>
+				</div>
+			</div>
+		</div>
+	</div> <!-- Left side end -->
+	<div class="span6"> <!-- Right side -->
+		<div class="row-fluid">
+			<div class="span12 webcert-col">
+				<h2 class="col-head">Välj patient</h2>
+				<div class="control-group">
+					<label class="control-label">Skriv in personnummer på patient</label>
+					<div class="controls input-append">
+						<input type="text" placeholder="Ex. ååååmmdd-nnnn"/><button class="btn">Välj</button></p>
+					</div>
+				</div>
+				<div class="control-group">
+					<button class="btn btn-success">Skriv intyg för vald patient</button>
+				</div>
+			</div>
+		</div>
+	</div> <!-- Right side end -->
 </div>

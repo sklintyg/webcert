@@ -12,15 +12,33 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
         scope : {
           userName: "@"
         },
-        template :
-              '<span class="wc-header">' 
-            + ' <a href="/web/start"><img alt="alt text" id="logo" src="/img/webcert_logo.png" /></a>'
-            + ' <div id="status">'
-            + '     <div class="status-row" ng-show="userName.length">'
-            + '         <span message key="nav.label.loggedinas"></span><br><span class="logged-in">{{userName}}</span>'
-            + '     </div>'
-            + ' </div>'
-            + '</span>'
-        
+        template:
+        	'<div>'
+        	+'<div class="row-fluid">'
+        		+'<div class="span3">'
+        			+'<div class="logoline"><a href="/web/start"><img alt="Till startsidan" src="/img/webcert_logo.png"/></a></div>'
+        		+'</div>'
+        		+'<div class="span3">'
+        			+'2013-05-06'
+        		+'</div>'
+        		+'<div class="span3">'
+        			+'<div class="span2"><img src="/img/avatar.png"/></div>'
+        			+'<div class="span10" ng-show="userName.length">'
+        				+'<strong>Läkare</strong> - <span class="logged-in">{{userName}}</span><br>'
+        				+'<span class="location">ABC Landstinget Västmanland</span>'
+        			+'</div>'
+        		+'</div>'
+	        	+'<div class="span3">'
+		    			+'<div class="dropdown">'
+		    				+'<a class="dropdown-toggle settings" data-toggle="dropdown" href="#"></a>'
+		    				+'<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">'
+		    					+'<li><a tabindex="-1" href="#">Action</a></li>'
+		    					+'<li class="divider"></li>'
+		    					+'<li><a tabindex="-1" href="#">Separated link</a></li>'
+		    				+'</ul>'
+		    			+'</div>'				
+	    			+'</div>'
+    			+'</div>'
+    		+'</div>'  
     }
 } ]);

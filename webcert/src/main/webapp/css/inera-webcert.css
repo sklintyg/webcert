@@ -18,9 +18,146 @@
  */
 @CHARSET "UTF-8";
 
-body {
+html,body,container {
+	height: 100%;
     font-size: 14px;
-    background-color: #c8c8c8;
+	font-family: helvetica, arial, sans-serif;
     text-align: left;
-    background-color: #eee;
+}
+
+h1 {
+	font-size: 24px;
+	color: #008391;
+}
+
+h2.col-head{
+	font-size: 20px;
+	color: #008391;
+}
+
+h2 {
+	font-size: 16px;
+}
+
+h3 {
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.certblock {
+	display: block;
+	color: #fff;
+	background: rgb(0,104,125); /* Old browsers */
+	/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzY1NjU2NSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzZjNmM2YiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, rgba(0,131,145,1) 0%, rgba(0,104,125,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,104,125,1)), color-stop(100%,rgba(0,131,145,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, rgba(0,104,125,1) 0%,rgba(0,131,145,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, rgba(0,104,125,1) 0%,rgba(0,131,145,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, rgba(0,104,125,1) 0%,rgba(0,131,145,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom, rgba(0,104,125,1) 0%,rgba(0,131,145,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00687d', endColorstr='#008391',GradientType=0 ); /* IE6-8 */	
+	-webkit-border-radius:3px 3px 3px 3px;
+	-moz-border-radius:3px 3px 3px 3px;
+	border-radius:3px 3px 3px 3px;
+	padding: 0px 20px 10px 20px;
+	margin-bottom: 10px;
+}
+
+.certlist a:hover {	
+	text-decoration:none !important;
+}
+
+.certblock:hover {
+	background:none;
+	background-color: #28b4c4;
+}
+
+#wcHeader {
+	background-color: #212633;
+	padding: 20px 30px;
+	color: #fff;
+}
+
+.container {	background-color: #f2f2f2; overflow:hidden;}
+
+.webcert-col {
+	padding: 20px;
+	height: 100%;
+	min-height: 100%;
+	position: relative;
+}
+
+.webcert-col-shadow { 
+	background-image: url(../img/col-shadow.png); 
+	background-repeat: no-repeat;
+	width: 6px;
+	height: 832px;
+	right: -6px;
+	position:absolute;
+}
+
+.webcert-col-primary { background-color: #fff; }
+
+span.location { color: #28b4c4; font-weight: bold; }
+
+div.logoline { border-right: 1px solid #595c66;}
+
+.settings {
+	/*padding: 28px 0 0 28px;*/
+	display: block;
+	width: 40px;
+	height: 34px;	
+	background-image: url(../img/settings_ikon.png); 
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+
+.settings:hover {
+	background-image: url(../img/settings_hoover.png); 
+}
+
+/* bootstrap override */
+
+.control-label {
+	font-weight: bold;
+}
+
+.btn {
+}
+
+.btn-success {
+/*	border: none;*/
+	padding: 10px 35px;
+	font-weight: bold;
+	background: none;
+	background-color: #42a341;
+	cursor: pointer;
+}
+
+.btn-success:hover {
+	background-color: #52ab51;
+}
+
+.btn-link {
+	color: #008391;
+}
+
+.btn-link:hover {
+	color: #31b2be;
+}
+
+.btn-link-link {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.btn-inverse {
+	background: none;
+	background-color: #3f3f3f;
+}
+
+.btn-inverse:hover {
+	background-color: #656565;
 }

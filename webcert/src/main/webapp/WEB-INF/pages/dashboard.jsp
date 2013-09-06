@@ -23,22 +23,21 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
-
 <!DOCTYPE html>
 <html lang="sv" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="wcDashBoardApp">
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="ROBOTS" content="nofollow, noindex" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="ROBOTS" content="nofollow, noindex" />
 
-<title ng-bind="$root.page_title"><spring:message code="application.name" /></title>
+  <title ng-bind="$root.page_title"><spring:message code="application.name" /></title>
 
-<link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
+  <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
-<link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
-<link rel="stylesheet" href="<c:url value="/css/inera.css"/>">
-<link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
-</script>
+  <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
+  <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap-responsive.css"/>">
+  <link rel="stylesheet" href="<c:url value="/css/inera.css"/>">
+  <link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
 </head>
 
 <body ng-app="wcDashBoardApp">
@@ -46,33 +45,20 @@
   <%-- Web-cert top navigation bar --%>
   <div id="wcHeader" wc-header userName="Olle"></div>
 
-
   <div class="container">
-
-    <div id="content-container">
-      <div class="content">
-
-
-        <div class="row-fluid">
-          <div id="content-body" class="span12">
-            <%-- No script to show at least something when javascript is off --%>
-            <noscript>
-              <h1>
-                <span><spring:message code="error.noscript.title" /></span>
-              </h1>
-              <div class="alert alert-error">
-                <spring:message code="error.noscript.text" />
-              </div>
-            </noscript>
-            <%-- ng-view that holds dynamic content managed by angular app --%>
-            <div id="view" ng-view></div>
-          </div>
-        </div>
+    <%-- No script to show at least something when javascript is off --%>
+    <noscript>
+      <h1>
+        <span><spring:message code="error.noscript.title" /></span>
+      </h1>
+      <div class="alert alert-error">
+        <spring:message code="error.noscript.text" />
       </div>
-    </div>
+    </noscript>
+    
+    <%-- ng-view that holds dynamic content managed by angular app --%>
+    <div id="view" ng-view></div>
   </div>
-
-
 
   <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/angular.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/i18n/angular-locale_sv-se.js"/>"></script>
@@ -88,8 +74,6 @@
   <script type="text/javascript" src="<c:url value="/js/common/wc-message-module.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/common/wc-common-directives.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/common/wc-common-message-resources.js"/>"></script>
-
-
 
 </body>
 </html>
