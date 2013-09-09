@@ -20,9 +20,9 @@
 
 html,body,container {
 	height: 100%;
-    font-size: 14px;
+  font-size: 14px;
 	font-family: helvetica, arial, sans-serif;
-    text-align: left;
+  text-align: left;
 }
 
 h1 {
