@@ -27,16 +27,15 @@
 
   <properties>
     <system.mode>dev</system.mode>
-    <project.version>1.0-SNAPSHOT</project.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.version>3.2.2.RELEASE</spring.version>
     <spring.security.version>3.1.3.RELEASE</spring.security.version>
     <cxf.version>2.7.4</cxf.version>
     <slf4j.version>1.6.4</slf4j.version>
     <logback.version>1.0.0</logback.version>
-    <inera.certificate.schemas.version>1.0-SNAPSHOT</inera.certificate.schemas.version>
-    <inera.certificate.moduleapi.version>1.0-SNAPSHOT</inera.certificate.moduleapi.version>
-    <inera.certificate.proxy.version>1.0-SNAPSHOT</inera.certificate.proxy.version>
+    <inera.certificate.schemas.version>1.1-SNAPSHOT</inera.certificate.schemas.version>
+    <inera.certificate.moduleapi.version>1.1-SNAPSHOT</inera.certificate.moduleapi.version>
+    <inera.certificate.proxy.version>1.1-SNAPSHOT</inera.certificate.proxy.version>
     <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
     <aspectj.version>1.7.1</aspectj.version>
   </properties>
