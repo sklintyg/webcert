@@ -25,7 +25,7 @@
 
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:/webcert-config.xml, classpath:/webcert-cxf-config.xml, /WEB-INF/web-security.xml, /WEB-INF/web-proxy.xml</param-value>
+    <param-value>classpath:/webcert-config.xml, /WEB-INF/web-proxy.xml</param-value>
   </context-param>
 
   <!-- Start spring context -->

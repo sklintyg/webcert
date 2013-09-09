@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<md:EntityDescriptor xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+                     xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute"
+                     xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                     entityID="https://idp.acctest.sakerhetstjanst.inera.se:8443/idp/saml">
+  <md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo>
+        <ds:X509Data>
+          <ds:X509Certificate>
+            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
+          </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:ContactPerson contactType="technical">
+      <md:Company>CGI</md:Company>
+      <md:GivenName>Anders</md:GivenName>
+      <md:SurName>Andersson</md:SurName>
+      <md:EmailAddress>anders.andersson@example.com</md:EmailAddress>
+      <md:TelephoneNumber>0701234567</md:TelephoneNumber>
+    </md:ContactPerson>
+    <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+                                  Location="https://idp.acctest.sakerhetstjanst.inera.se:8443/idp/saml/artifact/SOAP"
+                                  index="1" isDefault="false"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                            Location="https://idp.acctest.sakerhetstjanst.inera.se:8443/idp/saml/slo/HTTP-POST"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                            Location="https://idp.acctest.sakerhetstjanst.inera.se:8443/idp/saml/slo/HTTP-Redirect"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                            Location="https://idp.acctest.sakerhetstjanst.inera.se:8443/idp/saml/sso/HTTP-Redirect"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:authnMethod"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="authnMethod"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:x509IssuerName"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="x509IssuerName"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:levelOfAssurance"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="levelOfAssurance"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:title" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                    FriendlyName="title"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:titleCode"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="titleCode"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:personalPrescriptionCode"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+                    FriendlyName="personalPrescriptionCode"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:employeeHsaId"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="employeeHsaId"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:givenName"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="givenName"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:middleAndSurname"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="middleAndSurname"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:commissionRight"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="commissionRight"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:commissionPurpose"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="commissionPurpose"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:systemRole"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="systemRole"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:assignmentHsaId"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="assignmentHsaId"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:assignmentName"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="assignmentName"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:careUnitHsaId"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="careUnitHsaId"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:careUnitName"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="careUnitName"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:careProviderHsaId"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="careProviderHsaId"/>
+    <saml:Attribute Name="urn:sambi:names:attribute:careProviderName"
+                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="careProviderName"/>
+  </md:IDPSSODescriptor>
+</md:EntityDescriptor>
