@@ -1,16 +1,19 @@
 /**
- * Common directives used in both MI as well as in modules. Since this js will be used/loaded from 
- * different contextpaths, all templates are inlined. PLEASE keep source formatting in this 
- * file as-is, otherwise the inline templates will be hard to follow. 
+ * Common directives used in both WC main application as well as in a certificate's module app pages. 
+ * Since this js will be used/loaded from different contextpaths, all templates are inlined. PLEASE keep source 
+ * formatting in this file as-is, otherwise the inline templates will be hard to follow. 
  */
 angular.module('wc.common.directives', []);
-
 angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', function($rootScope) {
     return {
         restrict : "A",
         replace : true,
         scope : {
           userName: "@"
+        },
+        controller: function($scope, $element, $attrs) {
+            //Expose "now" as a model property for the template to render as todays date
+            $scope.today = new Date();
         },
         template:
         	'<div>'
@@ -19,7 +22,7 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
         			+'<div class="headerbox-logo"><a href="/web/start"><img alt="Till startsidan" src="/img/webcert_logo.png"/></a></div>'
         		+'</div>'
         		+'<div class="span4 headerbox-date">'
-        			+'2013-05-06'
+        			+'{{today | date:"shortDate"}}'
         		+'</div>'
         		+'<div class="span3 headerbox-user">'
         			+'<div class="span2"><img src="/img/avatar.png"/></div>'
