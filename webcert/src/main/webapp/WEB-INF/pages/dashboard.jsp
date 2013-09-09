@@ -43,7 +43,7 @@
 <body ng-app="wcDashBoardApp">
 
   <%-- Web-cert top navigation bar --%>
-  <div id="wcHeader" wc-header userName="Olle"></div>
+  <div id="wcHeader" wc-header user-name="Olle"></div>
 
   <div class="container">
     <%-- No script to show at least something when javascript is off --%>
