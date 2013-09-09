@@ -2,29 +2,29 @@
 	<div class="span6 webcert-col webcert-col-primary"> <!-- Left side -->
 		<div class="webcert-col-shadow"></div>
 		<h1>Intygslista</h1>
-		<div class="row-fluid">
-			<div class="span3">
-				<div class="btn-group">
-				  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-					Enhet A
-					<span class="caret"></span>
-				  </a>
-				  <ul class="dropdown-menu">
-					<!-- dropdown menu links -->
-				  </ul>
-				</div>					
-			</div>
-			<div class="span3">
-				<div class="btn-group">
-				  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-					Mottagning B
-					<span class="caret"></span>
-				  </a>
-				  <ul class="dropdown-menu">
-					<!-- dropdown menu links -->
-				  </ul>
-				</div>					
-			</div>
+    <div class="control-group">
+			<div class="btn-group">
+			  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+				Välj enhet
+				<span class="caret"></span>
+			  </a>
+			  <ul class="dropdown-menu">
+			    <!-- dropdown menu links -->
+			    <li><a href="#">Karolinska sjukhuset i stockholm med mera</a></li>
+			  </ul>
+			</div>					
+		</div>
+	  <div class="control-group">
+			<div class="btn-group">
+			  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+				Välj mottagning
+				<span class="caret"></span>
+			  </a>
+			  <ul class="dropdown-menu">
+				<!-- dropdown menu links -->
+	          <li><a href="#">Mottagningen för öron, näsa, hals och diverse problem</a></li>
+			  </ul>
+			</div>					
 		</div>
 		
 		<div class="certlist">
@@ -35,37 +35,43 @@
 						<span class="certblock">
 							<h3>Läkarintyg FK7263</h3>
 							<span>2013-05-04</span>
-							<span class="pull-right">Patient: 19720506-4523</span>
+							<span class="pull-right">Patient: <strong>19720506-4523</strong></span>
 						</span>
 					</a>
 					<button class="btn btn-block" type="button">Visa alla intyg</button>
 				</div>
 			</div>
+    </div>
+    
+    <div class="certlist">
 			<div class="row-fluid">
 				<div class="span12">
 					<h2>Intyg med obesvarad fråga</h2>
 					<span class="certblock">
 						<h3>Läkarintyg FK7263</h3>
 						<span>2013-05-04</span>
-						<span class="pull-right">Patient: 19720506-4523</span>
+						<span class="pull-right">Patient: <strong>19720506-4523</strong></span>
 					</span>
 					<button class="btn btn-block" type="button">Visa alla intyg</button>
 				</div>
 			</div>
+    </div>
+    
+    <div class="certlist">
 			<div class="row-fluid">
 				<div class="span12">
 					<h2>Intyg färdiga att massignera</h2>
-					<span class="certblock">
-						<h3>Läkarintyg FK7263</h3>
-						<span>2013-05-04</span>
-						<span class="pull-right">Patient: 19720506-4523</span>
+					<span class="certblock certblock-check clearfix">
+            <input type="checkbox" class="pull-left" />
+						<h3 class="pull-left">Läkarintyg FK7263</h3>
+						<span class="pull-right">Patient: <strong>19720506-4523</strong></span>
 					</span>
-					<button class="btn btn-block" type="button">Visa alla intyg</button>
+          <button class="btn btn-success">Signera valda intyg</button>
 				</div>
 			</div>
 		</div>
 	</div> <!-- Left side end -->
-	<div class="span6"> <!-- Right side -->
+	<div class="span6"><!-- Right side -->
 		<div class="row-fluid">
 			<div class="span12 webcert-col">
 				<h2 class="col-head">Välj patient</h2>

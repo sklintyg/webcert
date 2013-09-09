@@ -37,11 +37,38 @@ h2.col-head{
 
 h2 {
 	font-size: 16px;
+	line-height: 20px;
+	padding-top: 20px;
 }
 
 h3 {
 	font-size: 16px;
 	font-weight: bold;
+	line-height: 20px;
+}
+
+div.headerbox-logo { padding-top: 3px; border-right: 1px solid #595c66;}
+div.headerbox-date { font-weight: bold; line-height: 34px; }
+div.headerbox-user { font-size: 13px; line-height: 16px;}
+
+span.location { font-size: 12px; color: #28b4c4; font-weight: bold; }
+
+.settings {
+  /*padding: 28px 0 0 28px;*/
+  display: block;
+  width: 40px;
+  height: 34px; 
+  background-image: url(../img/settings_ikon.png); 
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
+
+.settings:hover {
+  background-image: url(../img/settings_hoover.png); 
+}
+
+.certlist {
+	padding-bottom: 20px;
 }
 
 .certblock {
@@ -60,9 +87,24 @@ h3 {
 	-webkit-border-radius:3px 3px 3px 3px;
 	-moz-border-radius:3px 3px 3px 3px;
 	border-radius:3px 3px 3px 3px;
-	padding: 0px 20px 10px 20px;
+	padding: 10px 20px 10px 20px;
 	margin-bottom: 10px;
 }
+
+.certblock h3 {
+	margin: 0;
+}
+
+.certblock-check {
+  padding: 10px 20px 10px 20px;
+}
+
+.certblock-check h3 {
+	font-weight: normal;
+  margin: 0;
+  padding-left: 10px;
+}
+
 
 .certlist a:hover {	
 	text-decoration:none !important;
@@ -82,7 +124,7 @@ h3 {
 .container {	background-color: #f2f2f2; overflow:hidden;}
 
 .webcert-col {
-	padding: 20px;
+	padding: 20px 20px 0 0;
 	height: 100%;
 	min-height: 100%;
 	position: relative;
@@ -98,24 +140,6 @@ h3 {
 }
 
 .webcert-col-primary { background-color: #fff; }
-
-span.location { color: #28b4c4; font-weight: bold; }
-
-div.logoline { border-right: 1px solid #595c66;}
-
-.settings {
-	/*padding: 28px 0 0 28px;*/
-	display: block;
-	width: 40px;
-	height: 34px;	
-	background-image: url(../img/settings_ikon.png); 
-	background-repeat: no-repeat;
-	background-position: 50% 50%;
-}
-
-.settings:hover {
-	background-image: url(../img/settings_hoover.png); 
-}
 
 /* bootstrap override */
 
@@ -158,6 +182,20 @@ div.logoline { border-right: 1px solid #595c66;}
 	background-color: #3f3f3f;
 }
 
+.btn-block {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 .btn-inverse:hover {
 	background-color: #656565;
+}
+
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-submenu:hover > a, .dropdown-submenu:focus > a {
+  background: none;
+  background-color: #28b4c4;
+}
+
+.dropdown-menu-center {
+	left: -23%;
 }
