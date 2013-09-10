@@ -61,14 +61,14 @@
 
   <!-- Central storage of cryptographic keys -->
   <bean id="keyManager" class="org.springframework.security.saml.key.JKSKeyManager">
-    <constructor-arg value="classpath:security/samlKeystore.jks"/>
-    <constructor-arg type="java.lang.String" value="nalle123"/>
+    <constructor-arg value="${saml.keystore.file}"/>
+    <constructor-arg type="java.lang.String" value="${saml.keystore.password}"/>
     <constructor-arg>
       <map>
-        <entry key="apollo" value="nalle123"/>
+        <entry key="${saml.keystore.alias}" value="${saml.keystore.password}"/>
       </map>
     </constructor-arg>
-    <constructor-arg type="java.lang.String" value="apollo"/>
+    <constructor-arg type="java.lang.String" value="${saml.keystore.alias}"/>
   </bean>
 
   <!-- Entry point to initialize authentication, default values taken from properties file -->
@@ -76,6 +76,11 @@
     <property name="defaultProfileOptions">
       <bean class="org.springframework.security.saml.websso.WebSSOProfileOptions">
         <property name="includeScoping" value="false"/>
+        <property name="authnContexts">
+          <list>
+            <value>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</value>
+          </list>
+        </property>
       </bean>
     </property>
   </bean>
@@ -87,6 +92,7 @@
         <property name="entityId" value="${saml.entityId}"/>
         <property name="signMetadata" value="false"/>
         <property name="includeDiscovery" value="false"/>
+        <property name="bindingsSSO" value="POST"/>
       </bean>
     </constructor-arg>
   </bean>
@@ -108,7 +114,6 @@
           </constructor-arg>
           <constructor-arg ref="httpClient"/>
           <constructor-arg value="${saml.idp.metadata.url}"/>
-
           <property name="parserPool" ref="parserPool"/>
         </bean>
       </list>
@@ -171,9 +176,6 @@
       <list>
         <ref bean="redirectBinding"/>
         <ref bean="postBinding"/>
-        <ref bean="artifactBinding"/>
-        <ref bean="soapBinding"/>
-        <ref bean="paosBinding"/>
       </list>
     </constructor-arg>
   </bean>
@@ -203,31 +205,6 @@
   </bean>
 
   <bean id="redirectBinding" class="org.springframework.security.saml.processor.HTTPRedirectDeflateBinding">
-    <constructor-arg ref="parserPool"/>
-  </bean>
-
-  <bean id="artifactBinding" class="org.springframework.security.saml.processor.HTTPArtifactBinding">
-    <constructor-arg ref="parserPool"/>
-    <constructor-arg ref="velocityEngine"/>
-    <constructor-arg>
-      <bean class="org.springframework.security.saml.websso.ArtifactResolutionProfileImpl">
-        <constructor-arg>
-          <bean class="org.apache.commons.httpclient.HttpClient"/>
-        </constructor-arg>
-        <property name="processor">
-          <bean id="soapProcessor" class="org.springframework.security.saml.processor.SAMLProcessorImpl">
-            <constructor-arg ref="soapBinding"/>
-          </bean>
-        </property>
-      </bean>
-    </constructor-arg>
-  </bean>
-
-  <bean id="soapBinding" class="org.springframework.security.saml.processor.HTTPSOAP11Binding">
-    <constructor-arg ref="parserPool"/>
-  </bean>
-
-  <bean id="paosBinding" class="org.springframework.security.saml.processor.HTTPPAOS11Binding">
     <constructor-arg ref="parserPool"/>
   </bean>
 
