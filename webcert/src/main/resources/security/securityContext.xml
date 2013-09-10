@@ -30,7 +30,6 @@
       <security:filter-chain pattern="/saml/SSO/**" filters="samlWebSSOProcessingFilter"/>
       <security:filter-chain pattern="/saml/SSOHoK/**" filters="samlWebSSOHoKProcessingFilter"/>
       <security:filter-chain pattern="/saml/SingleLogout/**" filters="samlLogoutProcessingFilter"/>
-      <security:filter-chain pattern="/saml/discovery/**" filters="samlIDPDiscovery"/>
     </security:filter-chain-map>
   </bean>
 
@@ -81,17 +80,13 @@
     </property>
   </bean>
 
-  <!-- IDP Discovery Service -->
-  <bean id="samlIDPDiscovery" class="org.springframework.security.saml.SAMLDiscovery">
-    <property name="idpSelectionPath" value="/WEB-INF/security/idpSelection.jsp"/>
-  </bean>
-
   <!-- Filter automatically generates default SP metadata -->
   <bean id="metadataGeneratorFilter" class="org.springframework.security.saml.metadata.MetadataGeneratorFilter">
     <constructor-arg>
       <bean class="org.springframework.security.saml.metadata.MetadataGenerator">
         <property name="entityId" value="${saml.entityId}"/>
         <property name="signMetadata" value="false"/>
+        <property name="includeDiscovery" value="false"/>
       </bean>
     </constructor-arg>
   </bean>
