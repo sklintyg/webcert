@@ -17,6 +17,7 @@
 
   <!-- Secured pages -->
   <security:http entry-point-ref="samlEntryPoint">
+    <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
     <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
     <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
   </security:http>
@@ -99,33 +100,20 @@
   <bean id="metadataDisplayFilter" class="org.springframework.security.saml.metadata.MetadataDisplayFilter"/>
 
   <!-- IDP Metadata configuration - paths to metadata of IDPs in circle of trust is here -->
-  <!-- Do no forget to call iniitalize method on providers -->
+  <!-- Do no forget to call initalize method on providers -->
   <bean id="metadata" class="org.springframework.security.saml.metadata.CachingMetadataManager">
     <constructor-arg>
       <list>
-        <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
-          <constructor-arg>
-            <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
-              <constructor-arg>
-                <value type="java.io.File">classpath:security/idp.xml</value>
-              </constructor-arg>
-              <property name="parserPool" ref="parserPool"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg>
-            <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
-            </bean>
-          </constructor-arg>
-        </bean>
         <bean class="org.opensaml.saml2.metadata.provider.HTTPMetadataProvider">
           <!-- URL containing the metadata -->
           <constructor-arg>
-            <value type="java.lang.String">http://idp.ssocircle.com/idp-meta.xml</value>
+            <bean class="java.util.Timer">
+              <constructor-arg value="true"/>
+            </bean>
           </constructor-arg>
-          <!-- Timeout for metadata loading in ms -->
-          <constructor-arg>
-            <value type="int">5000</value>
-          </constructor-arg>
+          <constructor-arg ref="httpClient"/>
+          <constructor-arg value="${saml.idp.metadata.url}"/>
+
           <property name="parserPool" ref="parserPool"/>
         </bean>
       </list>
@@ -135,6 +123,9 @@
     <!-- OPTIONAL property: can tell the system which IDP should be used for authenticating user by default. -->
     <!-- <property name="defaultIDP" value="http://localhost:8080/opensso"/> -->
   </bean>
+
+  <bean id="httpClientFactory" class="se.inera.auth.HttpClientFactory"/>
+  <bean id="httpClient" factory-bean="httpClientFactory" factory-method="createInstance"/>
 
   <!-- SAML Authentication Provider responsible for validating of received SAML messages -->
   <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">
