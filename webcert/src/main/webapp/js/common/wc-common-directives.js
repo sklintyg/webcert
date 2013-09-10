@@ -44,3 +44,29 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
     		+'</div>'  
     }
 } ]);
+
+
+angular.module('wc.common.directives').directive("wcSpinner", ['$rootScope', function($rootScope) {
+    return {
+        restrict : "A",
+        transclude : true,
+        replace : true,
+        scope : {
+          label: "@",
+          showSpinner: "=",
+          showContent: "="
+        },
+        template :
+            '<div>'
+           +'  <div ng-show="showSpinner" style="text-align: center; padding: 20px;">'
+           +'    <img aria-labelledby="loading-message" src="/img/ajax-loader.gif" style="text-align: center;" />'
+           +'    <p id="loading-message" style="text-align: center; color: #64ABC0; margin-top: 20px;">'
+           +'      <strong><span message key="{{ label }}"></span></strong>'
+           +'    </p>'
+           +'  </div>'
+           +'  <div ng-show="showContent">'
+           +'    <div ng-transclude></div>'
+           +'  </div>'
+           +'</div>'
+    }
+} ]);

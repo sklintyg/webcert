@@ -71,6 +71,7 @@
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/messages.js"/>"></script>
 
   <%-- Dependencies to common components --%>
+  <script type="text/javascript" src="<c:url value="/js/common/wc-utils.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/common/wc-message-module.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/common/wc-common-directives.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/common/wc-common-message-resources.js"/>"></script>
