@@ -1,0 +1,185 @@
+<div class="row-fluid">
+  <div class="span6 webcert-col webcert-col-primary">
+    <!-- Left side -->
+    <div class="webcert-col-shadow"></div>
+    <h1>Intygslista</h1>
+    <div class="control-group">
+      <div class="btn-group">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"> Välj enhet <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <!-- dropdown menu links -->
+          <li><a href="#">Karolinska sjukhuset i stockholm med mera</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="btn-group">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"> Välj mottagning <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <!-- dropdown menu links -->
+          <li><a href="#">Mottagningen för öron, näsa, hals och diverse problem</a></li>
+        </ul>
+      </div>
+    </div>
+
+
+    <div class="certlist">
+      <div class="row-fluid">
+        <div class="span11">
+
+
+          <!-- ListUnsignedCertCtrl ----------------------------------------------------------->
+          <div id="unsigned-cert-list" ng-controller="ListUnsignedCertCtrl">
+            <h2>
+              <span message key="label.unsignedcerts"></span>
+            </h2>
+            <!-- No results message -->
+            <div id="noResults" ng-show="widgetState.doneLoading && wipCertList.length<1 && !widgetState.hasError" class="alert alert-info">
+              <span message key="info.nounsignedcertsfound"></span>
+            </div>
+
+            <!-- error message -->
+            <div id="noResults" ng-show="widgetState.hasError" class="alert alert-error">
+              <span message key="error.unsignedcerts.couldnotbeloaded"></span>
+            </div>
+
+            <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading && wipCertList.length>0">
+              <div ng-repeat="cert in wipCertList | limitTo:widgetState.pageSize">
+                <a href="#"> <span class="certblock certblock-clickable">
+                    <h3>
+                      <span message key="certificatetypes.{{cert.typ | lowercase}}.typename"></span>
+                    </h3> <span>{{cert.lastsaved | date:'shortDate'}}</span> <span class="pull-right"><span message key="label.patient"></span> <strong>{{cert.patientid}}</strong></span>
+                </span>
+                </a>
+              </div>
+              <button id="btn-unsigned-showall" class="btn btn-block" type="button" ng-click="widgetState.pageSize = widgetState.showMax" ng-show="wipCertList.length > widgetState.pageSize">
+                <span message key="label.showallcerts"></span>
+              </button>
+              <button id="btn-unsigned-showless" class="btn btn-block" type="button" ng-click="widgetState.pageSize = widgetState.showMin" ng-show="widgetState.pageSize == widgetState.showMax">
+                <span message key="label.showfewercerts"></span>
+              </button>
+            </div>
+          </div>
+          <!-- End of template html for ListUnsignedCertCtrl ----------------------------------------------------------->
+
+
+          <!-- UnansweredCertCtrl ----------------------------------------------------------->
+          <div id="unanswered-cert-list" ng-controller="UnansweredCertCtrl">
+            <h2>
+              <span message key="label.unansweredcerts"></span>
+            </h2>
+            <!-- No results message -->
+            <div id="noResults" ng-show="widgetState.doneLoading && qaCertList.length<1 && !widgetState.hasError" class="alert alert-info">
+              <span message key="info.nounansweredcertsfound"></span>
+            </div>
+
+            <!-- error message -->
+            <div id="noResults" ng-show="widgetState.hasError" class="alert alert-error">
+              <span message key="error.unansweredcerts.couldnotbeloaded"></span>
+            </div>
+
+            <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading && qaCertList.length>0">
+              <div ng-repeat="qacert in qaCertList | limitTo:widgetState.pageSize">
+                <a href="#"> <span class="certblock certblock-clickable"> <span class="certblock-subject pull-right">{{qacert.subject}}</span>
+                    <h3>
+                      <span message key="certificatetypes.{{qacert.typ | lowercase}}.typename"></span>
+                    </h3> <span>{{qacert.receiveddate | date:'shortDate'}}</span> <span class="pull-right"><span message key="label.patient"></span> <strong>{{qacert.patientid}}</strong></span>
+                </span>
+                </a>
+              </div>
+              <button id="btn-unsigned-showall" class="btn btn-block" type="button" ng-click="widgetState.pageSize = widgetState.showMax" ng-show="qaCertList.length > widgetState.pageSize">
+                <span message key="label.showallcerts"></span>
+              </button>
+              <button id="btn-unsigned-showless" class="btn btn-block" type="button" ng-click="widgetState.pageSize = widgetState.showMin" ng-show="widgetState.pageSize == widgetState.showMax">
+                <span message key="label.showfewercerts"></span>
+              </button>
+            </div>
+          </div>
+          <!-- End of template html for UnansweredCertCtrl ----------------------------------------------------------->
+
+
+          <!-- ReadyToSignCertCtrl ----------------------------------------------------------->
+          <div id="unanswered-cert-list" ng-controller="ReadyToSignCertCtrl">
+            <h2>
+              <span message key="label.readytosigncerts"></span>
+            </h2>
+            <!-- No results message -->
+            <div id="noResults" ng-show="widgetState.doneLoading && signCertList.length<1 && !widgetState.hasError" class="alert alert-info">
+              <span message key="info.noreadytosigncertsfound"></span>
+            </div>
+
+            <!-- error message -->
+            <div id="noResults" ng-show="widgetState.hasError" class="alert alert-error">
+              <span message key="error.readytosigncerts.couldnotbeloaded"></span>
+            </div>
+
+            <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading && signCertList.length>0">
+              <div ng-repeat="readyCert in signCertList">
+              <label for="selected-for-mass-sign-{{readyCert.id}}">
+                <span class="certblock certblock-clickable certblock-check clearfix"> 
+                <input id="selected-for-mass-sign-{{readyCert.id}}" name="selected-for-mass-sign" type="checkbox" class="pull-left" />
+                  <h3 class="pull-left">
+                    <span message key="certificatetypes.{{readyCert.typ | lowercase}}.typename"></span>
+                  </h3> <span class="pull-right"><span message key="label.patient"></span> <strong>{{readyCert.patientid}}</strong></span>
+                </span>
+                </label>
+              </div>
+              <button class="btn btn-success" ng-disabled="signCertList.size < 0"><span message key="label.signselectedcerts"></span></button>
+            </div>
+          </div>
+          <!-- End of template html for ReadyToSignCertCtrl ----------------------------------------------------------->
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Left side end -->
+
+
+
+  <div class="span6">
+    <!-- Right side -->
+    <div class="row-fluid">
+      <div class="span12 webcert-col">
+        <h2 class="col-head">Välj patient</h2>
+        <div class="control-group">
+          <label class="control-label">Skriv in personnummer på patient</label>
+          <div class="controls input-append">
+            <input type="text" placeholder="Ex. ååååmmdd-nnnn" />
+            <button class="btn">Välj</button>
+            </p>
+          </div>
+        </div>
+        <div class="control-group">
+          <button class="btn btn-success">Skriv intyg för vald patient</button>
+        </div>
+        <div class="webcert-col-section">
+          <h2 class="col-head">Patientens äldre intyg</h2>
+
+          <div class="control-group">
+            <label class="control-label">Visa intyg för</label>
+            <div class="controls">
+              <label class="checkbox"> <input type="checkbox" value=""> Hela vårdgivaren
+              </label> <label class="checkbox"> <input type="checkbox" value=""> Vårdenheter och mottagare jag har medarbetaruppdrag på
+              </label>
+            </div>
+          </div>
+          <div class="control-group">
+            <div class="controls">
+              <span class="span9 certblock certblock-clickable">
+                <h3>Läkarintyg FK7263</h3> <span>2013-05-04</span>
+              </span> <span class="span3 certblock-copy"><button class="btn btn-info span12">Kopiera</button></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- Right side end -->
+</div>

@@ -1,0 +1,21 @@
+[{
+    "typ": "fk7263",
+    "id": "1aaaaaaaaaaa12",
+    "receiveddate": "2013-03-17T00:00:00.000",
+    "subject" : "Fråga om återkoppling",
+    "patientid": "19131211-1812"
+},
+{
+    "typ": "fk7263",
+    "id": "2bbbbbb2",
+    "receiveddate": "2011-09-11T00:00:00.000",
+    "subject" : "Fråga om komplettering",
+    "patientid": "19700505-2110"
+},
+{
+    "typ": "fk7263",
+    "id": "3cccccc2",
+    "receiveddate": "2010-12-06T00:00:00.000",
+    "subject" : "Övrigt",
+    "patientid": "19121212-8212"
+}]

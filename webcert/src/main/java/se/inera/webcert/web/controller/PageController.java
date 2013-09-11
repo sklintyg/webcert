@@ -35,8 +35,7 @@ public class PageController {
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView displayStart() {
         LOG.debug("displayStart");
-        System.out.println("***************");
-        return new ModelAndView("start");
+        return new ModelAndView("dashboard");
     }
 
 }

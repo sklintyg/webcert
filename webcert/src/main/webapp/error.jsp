@@ -32,27 +32,10 @@
 
 <title><spring:message code="application.name" /></title>
 
-<link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
-
-<link rel="stylesheet" href="<c:url value="/css/bootstrap.css"/>">
-<link rel="stylesheet" href="<c:url value="/css/inera.css"/>">
-<link rel="stylesheet" href="<c:url value="/css/inera-certificate.css"/>">
 </head>
 
 
 <body>
-  <div class="container">
-    <div id="page-header-container">
-      <div id="page-header">
-        <div id="page-header-left"></div>
-        <div id="page-header-right"></div>
-        <img id="logo" src="<c:url value="/img/logo_mina_intyg.png" />" />
-      </div>
-    </div>
-    <div id="content-container">
-      <div class="content">
-        <div class="row-fluid">
-          <div id="content-body" class="span12">
 
 
 
@@ -93,12 +76,8 @@
                 </div>
               </c:otherwise>
             </c:choose>
-          </div>
-        </div>
-      </div>
 
-    </div>
-  </div>
+ 
   <!-- 
   Error:
    <c:out value="${pageContext.errorData.throwable.message}" />, 
