@@ -9,7 +9,9 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
         restrict : "A",
         replace : true,
         scope : {
-          userName: "@"
+          userName: "@",
+          caregiverName: "@",
+          isDoctor: "@"
         },
         controller: function($scope, $element, $attrs) {
             //Expose "now" as a model property for the template to render as todays date
@@ -27,8 +29,12 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
         		+'<div class="span5 headerbox-user">'
         			+'<div class="span2"><img src="/img/avatar.png"/></div>'
         			+'<div class="span10" ng-show="userName.length">'
-        				+'<strong>Läkare</strong> - <span class="logged-in">{{userName}}</span><br>'
-        				+'<span class="location">ABC Landstinget Västmanland</span>'
+                        +'<span ng-switch="isDoctor">'
+                        +'<strong ng-switch-when="true">Läkare</strong>'
+                        +'<strong ng-switch-default>Admin</strong>'
+                        +'</span>'
+        				+' - <span class="logged-in">{{userName}}</span><br>'
+        				+'<span class="location">{{caregiverName}}</span>'
         			+'</div>'
         		+'</div>'
 	        	+'<div class="span1">'
