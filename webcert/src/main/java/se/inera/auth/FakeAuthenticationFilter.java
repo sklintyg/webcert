@@ -6,6 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -17,6 +20,11 @@ import se.inera.webcert.security.WebCertUser;
  */
 public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
+    private static final Logger LOG = LoggerFactory.getLogger(FakeAuthenticationFilter.class);
+
+    @Value("${spring.profiles.active}")
+    private String profiles;
+
     protected FakeAuthenticationFilter() {
         super("/fake");
     }
@@ -24,24 +32,27 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-        String json = request.getParameter("userjson");
 
-        if (json != null) {
-
-            try {
-                WebCertUser webCertUser = new ObjectMapper().readValue(json, WebCertUser.class);
-
-                TestingAuthenticationToken token = new TestingAuthenticationToken(webCertUser, null);
-                return getAuthenticationManager().authenticate(token);
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
+        if (!"dev".equals(profiles) && !"test".equals(profiles)) {
+            return null;
         }
 
-        return null; // T
+        String json = request.getParameter("userjson");
+        if (json == null) {
+            return null;
+        }
+
+        try {
+            WebCertUser webCertUser = new ObjectMapper().readValue(json, WebCertUser.class);
+            TestingAuthenticationToken token = new TestingAuthenticationToken(webCertUser, null);
+
+            LOG.info("Fake authentication with user " + webCertUser);
+            return getAuthenticationManager().authenticate(token);
+
+        } catch (IOException e) {
+            String message = "Failed to parse JSON: " + json;
+            LOG.error(message, e);
+            throw new RuntimeException(message, e);
+        }
     }
 }
