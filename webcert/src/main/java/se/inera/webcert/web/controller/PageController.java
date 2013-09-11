@@ -18,12 +18,15 @@
  */
 package se.inera.webcert.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import se.inera.webcert.web.service.HsaService;
 
 
 @Controller
@@ -32,10 +35,19 @@ public class PageController {
 
     private static final Logger LOG = LoggerFactory.getLogger(PageController.class);
 
+    @Autowired
+    private HsaService hsaService;
+
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView displayStart() {
         LOG.debug("displayStart");
-        return new ModelAndView("dashboard");
+        String vardenheter = null;
+        try {
+            vardenheter = hsaService.getVardenheterMedMedarbetaruppdrag("").stringify();
+        } catch (JsonProcessingException e) {
+            vardenheter= "";
+        }
+        return new ModelAndView("dashboard", "vardenheter", vardenheter);
     }
 
 }

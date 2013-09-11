@@ -38,6 +38,16 @@
   <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap-responsive.css"/>">
   <link rel="stylesheet" href="<c:url value="/css/inera.css"/>">
   <link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
+
+  <script type="text/javascript">
+    /**
+     Global JS config/constants for this app, to be used by scripts
+     **/
+    var MODULE_CONFIG = {
+      VARDENHETER : <c:out value="${vardenheter}" escapeXml="yes"/>
+    }
+  </script>
+
 </head>
 
 <body ng-app="wcDashBoardApp">

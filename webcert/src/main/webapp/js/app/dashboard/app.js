@@ -18,7 +18,7 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
 angular.module('wcDashBoardApp').run([ '$rootScope', 'messageService', function($rootScope, messageService) {
     $rootScope.lang = 'sv';
     $rootScope.DEFAULT_LANG = 'sv';
+    $rootScope.MODULE_CONFIG = MODULE_CONFIG;
     messageService.addResources(webcertResources);
     messageService.addResources(commonMessageResources);
-
 } ]);

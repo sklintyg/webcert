@@ -28,9 +28,7 @@
           ignore-resource-not-found="true" ignore-unresolvable="true"/>
 
   <beans>
-    <!--
-    <context:component-scan base-package="se.inera.webcert.security, se.inera.webcert.web.service"/>
-        -->
+    <context:component-scan base-package="se.inera.webcert.web.service"/>
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
       <property name="basenames">

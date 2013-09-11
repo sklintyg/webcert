@@ -13,6 +13,15 @@ public class Vardenhet {
 
     private List<Mottagning> mottagningar = new ArrayList<>();
 
+    public Vardenhet() {
+
+    }
+
+    public Vardenhet(String id, String namn) {
+        this.id = id;
+        this.namn = namn;
+    }
+
     public String getNamn() {
         return namn;
     }

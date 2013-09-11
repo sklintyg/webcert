@@ -8,6 +8,15 @@ public class Mottagning {
     private String namn;
     private String id;
 
+    public Mottagning() {
+
+    }
+
+    public Mottagning(String id, String namn) {
+        this.id = id;
+        this.namn = namn;
+    }
+
     public String getNamn() {
         return namn;
     }

@@ -10,7 +10,6 @@ angular.module('wcDashBoardApp').controller('WebCertCtrl', [ '$scope', '$locatio
  *  ListUnsignedCertCtrl - Controller for logic related to displaying the list of unsigned certificates 
  * 
  */
-
 angular.module('wcDashBoardApp').controller('ListUnsignedCertCtrl', [ '$scope', 'dashBoardService', '$timeout', function ListUnsignedCertCtrl($scope, dashBoardService, $timeout) {
 
     // init state
@@ -23,6 +22,13 @@ angular.module('wcDashBoardApp').controller('ListUnsignedCertCtrl', [ '$scope', 
     }
 
     $scope.wipCertList = [];
+
+    $scope.$on("vardenhet", function(event, vardenhet) {
+        // Make new call with careUnit
+    });
+    $scope.$on("mottagning", function(event, mottagning) {
+        // Make new call with clinic
+    });
 
     // Load list
     var requestConfig = {
