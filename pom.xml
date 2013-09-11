@@ -324,5 +324,9 @@
       <id>callista-snapshot</id>
       <url>https://repository-callistasoftware.forge.cloudbees.com/snapshot/</url>
     </repository>
+    <repository>
+      <id>thirdparty</id>
+      <url>https://repository-callistasoftware.forge.cloudbees.com/3rdparty</url>
+    </repository>
   </repositories>
 </project>
