@@ -18,15 +18,20 @@
  */
 package se.inera.webcert.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import se.inera.webcert.security.WebCertUser;
 import se.inera.webcert.web.service.HsaService;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Controller
@@ -43,7 +48,9 @@ public class PageController {
         LOG.debug("displayStart");
         String vardenheter = null;
         try {
-            vardenheter = hsaService.getVardenheterMedMedarbetaruppdrag("").stringify();
+            //vardenheter = hsaService.getVardenheterMedMedarbetaruppdrag("").stringify();
+            WebCertUser user = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            vardenheter = new ObjectMapper().writeValueAsString(user.getVardgivare());
         } catch (JsonProcessingException e) {
             vardenheter= "";
         }
