@@ -1,7 +1,7 @@
 'use strict';
 
 /* Controllers */
-angular.module('wcDashBoardApp').controller('WebCertCtrl', [ '$scope', '$location', '$window', function WebCertCtrl($scope, $location, $window) {
+angular.module('wcDashBoardApp').controller('WebCertCtrl', [ '$scope', '$window', function WebCertCtrl($scope, $window) {
     // Main controller
 } ]);
 
@@ -10,8 +10,8 @@ angular.module('wcDashBoardApp').controller('WebCertCtrl', [ '$scope', '$locatio
  *  ListUnsignedCertCtrl - Controller for logic related to displaying the list of unsigned certificates 
  * 
  */
-angular.module('wcDashBoardApp').controller('ListUnsignedCertCtrl', [ '$scope', 'dashBoardService', '$timeout', function ListUnsignedCertCtrl($scope, dashBoardService, $timeout) {
-
+angular.module('wcDashBoardApp').controller('ListUnsignedCertCtrl', [ '$scope', 'dashBoardService', '$log', '$timeout', function ListUnsignedCertCtrl($scope, dashBoardService, $log, $timeout) {
+    $log.debug("ListUnsignedCertCtrl init()");
     // init state
     $scope.widgetState = {
         showMin : 2,
@@ -54,8 +54,8 @@ angular.module('wcDashBoardApp').controller('ListUnsignedCertCtrl', [ '$scope', 
  *  for a certificate on the dashboard.
  * 
  */
-angular.module('wcDashBoardApp').controller('UnansweredCertCtrl', [ '$scope', 'dashBoardService', '$timeout', function UnansweredCertCtrl($scope, dashBoardService, $timeout) {
-
+angular.module('wcDashBoardApp').controller('UnansweredCertCtrl', [ '$scope', 'dashBoardService', '$log', '$timeout', function UnansweredCertCtrl($scope, dashBoardService, $log, $timeout) {
+    $log.debug("UnansweredCertCtrl init()");
     // init state
     $scope.widgetState = {
         showMin : 2,
@@ -82,7 +82,7 @@ angular.module('wcDashBoardApp').controller('UnansweredCertCtrl', [ '$scope', 'd
                 $scope.widgetState.hasError = true;
             }
         });
-    }, 2500);
+    }, 500);
 } ]);
 
 /*
@@ -90,8 +90,8 @@ angular.module('wcDashBoardApp').controller('UnansweredCertCtrl', [ '$scope', 'd
  *  
  * 
  */
-angular.module('wcDashBoardApp').controller('ReadyToSignCertCtrl', [ '$scope', 'dashBoardService', '$timeout', function ReadyToSignCertCtrl($scope, dashBoardService, $timeout) {
-
+angular.module('wcDashBoardApp').controller('ReadyToSignCertCtrl', [ '$scope', 'dashBoardService', '$log', '$timeout', function ReadyToSignCertCtrl($scope, dashBoardService, $log, $timeout) {
+    $log.debug("ReadyToSignCertCtrl init()");
     // init state
     $scope.widgetState = {
         showMin : 2,
@@ -118,5 +118,5 @@ angular.module('wcDashBoardApp').controller('ReadyToSignCertCtrl', [ '$scope', '
                 $scope.widgetState.hasError = true;
             }
         });
-    }, 1500);
+    }, 500);
 } ]);

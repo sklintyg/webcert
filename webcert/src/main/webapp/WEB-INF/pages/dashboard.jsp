@@ -30,7 +30,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="ROBOTS" content="nofollow, noindex" />
 
-  <title ng-bind="$root.page_title"><spring:message code="application.name" /></title>
+  <title><spring:message code="application.name" /></title>
 
   <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
@@ -50,7 +50,7 @@
 
 </head>
 
-<body ng-app="wcDashBoardApp">
+<body>
 
   <%-- Web-cert top navigation bar --%>
   <div id="wcHeader" wc-header is-doctor="<sec:authentication property="principal.lakare"/>" user-name="<sec:authentication property="principal.namn"/>" caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>"></div>

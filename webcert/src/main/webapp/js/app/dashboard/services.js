@@ -13,6 +13,7 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
      */
 
     function _getCertificates(requestConfig, callback) {
+        $log.debug("_getCertificates type:" + requestConfig.type);
         //var restPath = '/api/certificates/' + dataType;
         var restPath = '/jsonmocks/' + requestConfig.type;
         $http.get(restPath).success(function(data) {
