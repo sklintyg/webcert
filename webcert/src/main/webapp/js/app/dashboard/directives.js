@@ -32,7 +32,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
             }
 
             $scope.updateMottagningsval = function () {
-                $rootScope.$broadcast("mottagning", mottagning);
+                $rootScope.$broadcast("mottagning", $scope.valdMottagning);
             }
 
             // Local function getting the first care unit's hsa id in the data struct.
