@@ -57,8 +57,13 @@
   is-doctor="<sec:authentication property="principal.lakare"/>" 
   user-name="<sec:authentication property="principal.namn"/>"
   caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>" 
-  toggle-href="/web/dashboard" 
-  toggle-href-title="Läkaröversikt">
+   menu-defs="[
+  {
+     link :'/web/dashboard', 
+     label:'Läkaröversikt',
+     requires_doctor: true
+   }
+  ]">
   </div>
 
   <div class="container">

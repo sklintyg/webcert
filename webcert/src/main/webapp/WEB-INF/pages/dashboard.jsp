@@ -57,8 +57,13 @@
   is-doctor="<sec:authentication property="principal.lakare"/>" 
   user-name="<sec:authentication property="principal.namn"/>"
   caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>" 
-  toggle-href="/web/adminview" 
-  toggle-href-title="Adminöversikt">
+  menu-defs="[
+  {
+     link :'/web/adminview', 
+     label:'Administration',
+     requires_doctor: false
+   }
+  ]">
   </div>
   <div class="container">
     <%-- No script to show at least something when javascript is off --%>
