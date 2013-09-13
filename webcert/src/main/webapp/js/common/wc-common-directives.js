@@ -11,7 +11,10 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
         scope : {
           userName: "@",
           caregiverName: "@",
-          isDoctor: "@"
+          isDoctor: "@",
+          toggleHref: "@",
+          toggleHrefTitle: "@"
+              
         },
         controller: function($scope, $element, $attrs) {
             //Expose "now" as a model property for the template to render as todays date
@@ -42,6 +45,9 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
 		    				+'<a class="dropdown-toggle settings" data-toggle="dropdown" href="#"></a>'
 		    				+'<ul class="dropdown-menu dropdown-menu-center" role="menu" aria-labelledby="dLabel">'
 		    					+'<li><a tabindex="-1" href="#">Hjälp</a></li>'
+		    					+'<li ng-switch="isDoctor">'
+		                        +'<a ng-switch-when="true" ng-href="{{toggleHref}}">{{toggleHrefTitle}}</a>'
+		                        +'</li>'
 		    					+'<li><a tabindex="-1" href="#">Logga ut</a></li>'
 		    				+'</ul>'
 		    			+'</div>'				
