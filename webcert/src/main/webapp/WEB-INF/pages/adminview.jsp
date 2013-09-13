@@ -26,34 +26,35 @@
 <!DOCTYPE html>
 <html lang="sv" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="wcAdminApp">
 <head>
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="ROBOTS" content="nofollow, noindex" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="ROBOTS" content="nofollow, noindex" />
 
-  <title><spring:message code="application.name" /> - admin</title>
+<title><spring:message code="application.name" /> - admin</title>
 
-  <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
+<link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
-  <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
-  <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap-responsive.css"/>">
-  <link rel="stylesheet" href="<c:url value="/css/inera.css"/>">
-  <link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
+<link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
+<link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap-responsive.css"/>">
+<link rel="stylesheet" href="<c:url value="/css/inera.css"/>">
+<link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
 
-  <script type="text/javascript">
+<script type="text/javascript">
     /**
      Global JS config/constants for this app, to be used by scripts
      **/
     var MODULE_CONFIG = {
-      VARDENHETER : <sec:authentication property="principal.VardGivareJson" htmlEscape="false"/>
+        USERCONTEXT : <sec:authentication property="principal.asJson" htmlEscape="false"/>
     }
-  </script>
+</script>
 
 </head>
 
 <body>
 
   <%-- Web-cert top navigation bar --%>
-  <div id="wcHeader" wc-header is-doctor="<sec:authentication property="principal.lakare"/>" user-name="<sec:authentication property="principal.namn"/>" caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>"></div>
+  <div id="wcHeader" wc-header is-doctor="<sec:authentication property="principal.lakare"/>" user-name="<sec:authentication property="principal.namn"/>"
+    caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>"></div>
 
   <div class="container">
     <%-- No script to show at least something when javascript is off --%>
@@ -65,7 +66,7 @@
         <spring:message code="error.noscript.text" />
       </div>
     </noscript>
-    
+
     <%-- ng-view that holds dynamic content managed by angular app --%>
     <div id="view" ng-view></div>
   </div>

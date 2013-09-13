@@ -39,9 +39,9 @@ public class WebCertUser {
     }
     
     @JsonIgnore
-    public String getVardGivareJson() {
+    public String getAsJson() {
         try {
-            return new ObjectMapper().writeValueAsString(this.vardgivare);
+            return new ObjectMapper().writeValueAsString(this);
         } catch (JsonProcessingException e) {
            throw new RuntimeException(e);
         }

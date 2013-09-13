@@ -17,7 +17,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
         '    </div>\n',
         controller: function ($scope) {
             // init
-            $scope.vardenheter = $rootScope.MODULE_CONFIG.VARDENHETER.vardenheter;
+            $scope.vardenheter = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare.vardenheter;
 
             $scope.valdVardenhet = selectFirstVardenhet($scope.vardenheter);
             $rootScope.$broadcast("vardenhet", $scope.valdVardenhet);

@@ -44,7 +44,7 @@
      Global JS config/constants for this app, to be used by scripts
      **/
     var MODULE_CONFIG = {
-      VARDENHETER : <sec:authentication property="principal.VardGivareJson" htmlEscape="false"/>
+      USERCONTEXT : <sec:authentication property="principal.asJson" htmlEscape="false"/>
     }
   </script>
 
