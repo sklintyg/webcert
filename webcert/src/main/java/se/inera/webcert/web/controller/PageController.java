@@ -42,21 +42,33 @@ public class PageController {
     public ModelAndView displayStart() {
         WebCertUser user = webCertUserService.getWebCertUser();
         LOG.debug("displayStart for user " + user.getNamn());
-        return new ModelAndView(getStartPage(user));
+        return new ModelAndView(getStartView(user));
     }
 
+    
     /**
      * Select Starting point view depending on user properties
      * 
      * @param user
      * @return
      */
-    private String getStartPage(WebCertUser user) {
+    private String getStartView(WebCertUser user) {
         if (user.isLakare()) {
-            return "dashboard";
+            return "redirect:/web/dashboard";
         } else {
-            return "adminview";
+            return "redirect:/web/adminview";
         }
     }
+    
+    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
+    public ModelAndView displayDashBoard() {
+        return new ModelAndView("dashboard");
+    }
+    
+    @RequestMapping(value = "/adminview", method = RequestMethod.GET)
+    public ModelAndView displayAdminView() {
+        return new ModelAndView("adminview");
+    }
+
 
 }
