@@ -29,9 +29,19 @@ import org.springframework.web.servlet.ModelAndView;
 import se.inera.webcert.security.WebCertUser;
 import se.inera.webcert.web.service.WebCertUserService;
 
+/**
+ * @author marced
+ * 
+ */
 @Controller
 @RequestMapping(value = "")
 public class PageController {
+
+    public static final String ADMIN_VIEW = "adminview";
+    public static final String ADMIN_VIEW_REDIRECT = "redirect:/web/" + ADMIN_VIEW;
+
+    public static final String DASHBOARD_VIEW = "dashboard";
+    public static final String DASHBOARD_VIEW_REDIRECT = "redirect:/web/" + DASHBOARD_VIEW;
 
     private static final Logger LOG = LoggerFactory.getLogger(PageController.class);
 
@@ -42,33 +52,31 @@ public class PageController {
     public ModelAndView displayStart() {
         WebCertUser user = webCertUserService.getWebCertUser();
         LOG.debug("displayStart for user " + user.getNamn());
-        return new ModelAndView(getStartView(user));
+        return new ModelAndView(resolveStartView(user));
     }
 
-    
     /**
      * Select Starting point view depending on user properties
      * 
      * @param user
      * @return
      */
-    private String getStartView(WebCertUser user) {
+    protected String resolveStartView(WebCertUser user) {
         if (user.isLakare()) {
-            return "redirect:/web/dashboard";
+            return DASHBOARD_VIEW_REDIRECT;
         } else {
-            return "redirect:/web/adminview";
+            return ADMIN_VIEW_REDIRECT;
         }
     }
-    
+
     @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     public ModelAndView displayDashBoard() {
-        return new ModelAndView("dashboard");
-    }
-    
-    @RequestMapping(value = "/adminview", method = RequestMethod.GET)
-    public ModelAndView displayAdminView() {
-        return new ModelAndView("adminview");
+        return new ModelAndView(DASHBOARD_VIEW);
     }
 
+    @RequestMapping(value = "/adminview", method = RequestMethod.GET)
+    public ModelAndView displayAdminView() {
+        return new ModelAndView(ADMIN_VIEW);
+    }
 
 }
