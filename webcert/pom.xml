@@ -31,10 +31,6 @@
   <dependencies>
     <dependency>
       <groupId>se.inera.certificate</groupId>
-      <artifactId>schemas</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>se.inera.certificate</groupId>
       <artifactId>module-api</artifactId>
     </dependency>
     <dependency>
