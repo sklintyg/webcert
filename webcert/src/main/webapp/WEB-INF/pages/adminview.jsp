@@ -24,13 +24,13 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
 <!DOCTYPE html>
-<html lang="sv" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="wcDashBoardApp">
+<html lang="sv" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="wcAdminApp">
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="ROBOTS" content="nofollow, noindex" />
 
-  <title><spring:message code="application.name" /></title>
+  <title><spring:message code="application.name" /> - admin</title>
 
   <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
@@ -75,11 +75,11 @@
   <script type="text/javascript" src='<c:url value="/js/vendor/ui-bootstrap/0.5.0/ui-bootstrap-tpls-0.5.0.js"/>'></script>
 
   <%-- Application files --%>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/app.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/controllers.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/services.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/messages.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/app/adminview/app.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/app/adminview/controllers.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/app/adminview/directives.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/app/adminview/services.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/app/adminview/messages.js"/>"></script>
 
   <%-- Dependencies to common components --%>
   <script type="text/javascript" src="<c:url value="/js/common/wc-utils.js"/>"></script>

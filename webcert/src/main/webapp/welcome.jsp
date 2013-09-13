@@ -133,7 +133,7 @@ function changeJson(index) {
 
               <div class="form-group"> 
               <select onChange="changeJson(this.selectedIndex)">
-                <option value="0" selected>Eva Holgersson (Läkare)</option>
+                <option value="0">Eva Holgersson (Läkare)</option>
                 <option value="1">Adam Admin (Administratör)</option>
                 <option value="2">Adamo Admin (Administratör flera enheter)</option>
                 

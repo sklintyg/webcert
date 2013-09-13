@@ -1,5 +1,9 @@
 package se.inera.webcert.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * @author andreaskaltenbach
  */
@@ -32,5 +36,15 @@ public class WebCertUser {
 
     public void setVardgivare(Vardgivare vardgivare) {
         this.vardgivare = vardgivare;
+    }
+    
+    @JsonIgnore
+    public String getVardGivareJson() {
+        try {
+            return new ObjectMapper().writeValueAsString(this.vardgivare);
+        } catch (JsonProcessingException e) {
+           throw new RuntimeException(e);
+        }
+        
     }
 }

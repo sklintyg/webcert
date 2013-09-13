@@ -21,18 +21,13 @@ package se.inera.webcert.web.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import se.inera.webcert.security.WebCertUser;
-import se.inera.webcert.web.service.HsaService;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import se.inera.webcert.web.service.WebCertUserService;
 
 @Controller
 @RequestMapping(value = "")
@@ -41,20 +36,27 @@ public class PageController {
     private static final Logger LOG = LoggerFactory.getLogger(PageController.class);
 
     @Autowired
-    private HsaService hsaService;
+    private WebCertUserService webCertUserService;
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView displayStart() {
-        LOG.debug("displayStart");
-        String vardenheter = null;
-        try {
-            //vardenheter = hsaService.getVardenheterMedMedarbetaruppdrag("").stringify();
-            WebCertUser user = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            vardenheter = new ObjectMapper().writeValueAsString(user.getVardgivare());
-        } catch (JsonProcessingException e) {
-            vardenheter= "";
+        WebCertUser user = webCertUserService.getWebCertUser();
+        LOG.debug("displayStart for user " + user.getNamn());
+        return new ModelAndView(getStartPage(user));
+    }
+
+    /**
+     * Select Starting point view depending on user properties
+     * 
+     * @param user
+     * @return
+     */
+    private String getStartPage(WebCertUser user) {
+        if (user.isLakare()) {
+            return "dashboard";
+        } else {
+            return "adminview";
         }
-        return new ModelAndView("dashboard", "vardenheter", vardenheter);
     }
 
 }
