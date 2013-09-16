@@ -1,147 +1,132 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>webcert-parent</artifactId>
-        <groupId>se.inera.webcert</groupId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>webcert-parent</artifactId>
+    <groupId>se.inera.webcert</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>hsa-integration</artifactId>
+  <artifactId>hsa-integration</artifactId>
 
-    <properties>
-        <schema.path>src/main/resources/schemas</schema.path>
-    </properties>
+  <properties>
+    <schema.path>src/main/resources/schemas</schema.path>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4</version>
-        </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4</version>
+    </dependency>
         <!-- cxf -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http</artifactId>
+    </dependency>
         <!--       -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+    </dependency>
 
 
 
         <!-- Test dep -->
-        <!--
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
 
-        <dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.jvnet.jaxb2_commons</groupId>
+      <artifactId>jaxb2-basics</artifactId>
+      <version>0.6.4</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-codegen-plugin</artifactId>
+        <version>${cxf.version}</version>
+        <executions>
+          <execution>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sourceRoot>${basedir}/target/generated/src/main/java</sourceRoot>
+              <wsdlOptions>
+
+                <wsdlOption>
+                  <extraargs>
+                    <extraarg>-xjc-XhashCode</extraarg>
+                    <extraarg>-xjc-Xequals</extraarg>
+                    <extraarg>-xjc-XtoString</extraarg>
+                    <extraarg>-xjc-Xinheritance</extraarg>
+                    <extraarg>-p</extraarg>
+                    Note: be careful when changing this - must be in sync for all
+                    schemas generations in this namespace!
+                    <extraarg>
+                      urn:riv:hsa:HsaWs:3=se.inera.ifv.hsaws.v3
+                    </extraarg>
+                    <extraarg>-p</extraarg>
+                    <extraarg>
+                      urn:riv:hsa:HsaWsResponder:3=se.inera.ifv.hsawsresponder.v3
+                    </extraarg>
+                    <extraarg>-p</extraarg>
+                    <extraarg>
+                      http://www.w3.org/2005/08/addressing=org.w3.wsaddressing10
+                    </extraarg>
+                    <extraarg>-validate</extraarg>
+                    <extraarg>-verbose</extraarg>
+                  </extraargs>
+                  <wsdl>${schema.path}/wsdl/HsaWsInteraction_3.16.wsdl</wsdl>
+                </wsdlOption>
+
+              </wsdlOptions>
+            </configuration>
+            <goals>
+              <goal>wsdl2java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
             <artifactId>jaxb2-basics</artifactId>
             <version>0.6.4</version>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-codegen-plugin</artifactId>
-                <version>${cxf.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-sources</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <sourceRoot>${basedir}/target/generated/src/main/java</sourceRoot>
-                            <wsdlOptions>
-
-                                <wsdlOption>
-                                    <extraargs>
-                                        <extraarg>-xjc-XhashCode</extraarg>
-                                        <extraarg>-xjc-Xequals</extraarg>
-                                        <extraarg>-xjc-XtoString</extraarg>
-                                        <extraarg>-xjc-Xinheritance</extraarg>
-                                        <extraarg>-p</extraarg>
-                                        Note: be careful when changing this - must be in sync for all
-                                        schemas generations in this namespace!
-                                        <extraarg>
-                                            urn:riv:hsa:HsaWs:3=se.inera.ifv.hsaws.v3
-                                        </extraarg>
-                                        <extraarg>-p</extraarg>
-                                        <extraarg>
-                                            urn:riv:hsa:HsaWsResponder:3=se.inera.ifv.hsawsresponder.v3
-                                        </extraarg>
-                                        <extraarg>-p</extraarg>
-                                        <extraarg>
-                                            http://www.w3.org/2005/08/addressing=org.w3.wsaddressing10
-                                        </extraarg>
-                                        <extraarg>-validate</extraarg>
-                                        <extraarg>-verbose</extraarg>
-                                    </extraargs>
-                                    <wsdl>${schema.path}/wsdl/HsaWsInteraction_3.16.wsdl</wsdl>
-                                </wsdlOption>
-
-                            </wsdlOptions>
-                        </configuration>
-                        <goals>
-                            <goal>wsdl2java</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jvnet.jaxb2_commons</groupId>
-                        <artifactId>jaxb2-basics</artifactId>
-                        <version>0.6.4</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-        </plugins>
-    </build>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
 </project>
