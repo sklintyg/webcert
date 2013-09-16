@@ -23,6 +23,7 @@
   <modules>
     <module>webcert</module>
     <module>specifications</module>
+      <module>hsa-integration</module>
   </modules>
 
   <properties>
@@ -126,6 +127,22 @@
   </reporting>
   <dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${cxf.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>velocity</groupId>
+                    <artifactId>velocity</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
       <dependency>
         <groupId>se.inera.certificate</groupId>
         <artifactId>module-api</artifactId>
@@ -285,6 +302,28 @@
         <version>4.10</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>1.9.0</version>
+      </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>3.0.3.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>3.0.3.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>3.0.3.RELEASE</version>
+        </dependency>
     </dependencies>
   </dependencyManagement>
   <repositories>

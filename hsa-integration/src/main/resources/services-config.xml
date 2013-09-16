@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Inera Medcert - Sjukintygsapplikation
+
+Copyright (C) 2010-2011 Inera AB (http://www.inera.se)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses />.
+-->
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:sec="http://cxf.apache.org/configuration/security" 
+	xmlns:http="http://cxf.apache.org/transports/http/configuration"
+	xmlns:jaxws="http://java.sun.com/xml/ns/jaxws" 
+	xmlns:cxf="http://cxf.apache.org/core"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/cache
+        http://www.springframework.org/schema/cache/spring-cache.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://cxf.apache.org/core                           
+		http://cxf.apache.org/schemas/core.xsd
+	    http://cxf.apache.org/configuration/security         
+	    http://cxf.apache.org/schemas/configuration/security.xsd
+        http://cxf.apache.org/transports/http/configuration  
+        http://cxf.apache.org/schemas/configuration/http-conf.xsd">
+
+    <cache:annotation-driven/>
+
+    <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+        <property name="caches">
+            <set>
+                <bean
+                        class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
+                        p:name="hsacache"/>
+                <!--
+                TODO Add other cache instances in here
+                 -->
+            </set>
+        </property>
+    </bean>
+
+	<cxf:bus>
+		<cxf:features>
+			<cxf:logging />
+		</cxf:features>
+	</cxf:bus>
+
+
+
+	<http:conduit name="{urn:riv:hsa:HsaWs:3}HsaWsResponderPort.http-conduit">
+        <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive" />
+        <http:tlsClientParameters disableCNCheck="true">
+            <sec:keyManagers keyPassword="${hsa.ws.key.manager.password}">
+				<sec:keyStore
+                        file="${hsa.ws.certificate.file}"
+                        password="${hsa.ws.certificate.password}"
+                        type="${hsa.ws.certificate.type}" />
+	      	</sec:keyManagers>
+	      	<sec:trustManagers>
+	        	<sec:keyStore 
+	        		file="${hsa.ws.truststore.file}"
+					password="${hsa.ws.truststore.password}"
+					type="${hsa.ws.truststore.type}" />
+	      	</sec:trustManagers>
+			
+			<sec:cipherSuitesFilter>
+				<!--
+					these filters ensure that a ciphersuite with export-suitable or
+					null encryption is used, but exclude anonymous Diffie-Hellman key
+					change as this is vulnerable to man-in-the-middle attacks
+				-->
+
+                <sec:include>.*_EXPORT_.*</sec:include>
+                <sec:include>.*_EXPORT1024_.*</sec:include>
+                <sec:include>.*_WITH_AES_256_.*</sec:include>
+                <sec:include>.*_WITH_AES_128_.*</sec:include>
+                <sec:include>.*_WITH_3DES_.*</sec:include>
+                <sec:include>.*_WITH_DES_.*</sec:include>
+                <sec:include>.*_WITH_NULL_.*</sec:include>
+                <sec:exclude>.*_DH_anon_.*</sec:exclude>
+			</sec:cipherSuitesFilter>
+		</http:tlsClientParameters>
+	</http:conduit>
+
+
+
+	<bean id="wsCalls"
+		class="se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls">
+			<property name="hsaLogicalAddress" value="${hsa.ws.service.logicaladdress}"/>
+			<property name="hsaUrl" value="${hsa.ws.services.url}"/>
+	</bean>
+
+</beans>
