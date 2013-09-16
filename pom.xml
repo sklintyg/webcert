@@ -21,6 +21,7 @@
   </distributionManagement>
 
   <modules>
+    <module>schemas</module>
     <module>webcert</module>
     <module>specifications</module>
   </modules>
@@ -36,8 +37,14 @@
     <inera.certificate.schemas.version>1.1-SNAPSHOT</inera.certificate.schemas.version>
     <inera.certificate.moduleapi.version>1.1-SNAPSHOT</inera.certificate.moduleapi.version>
     <inera.certificate.proxy.version>1.1-SNAPSHOT</inera.certificate.proxy.version>
+    <inera.certificate.version.integrationutil>1.1-SNAPSHOT</inera.certificate.version.integrationutil>
     <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
     <aspectj.version>1.7.1</aspectj.version>
+    <hibernate.version>4.2.0.Final</hibernate.version>
+    <hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
+    <joda.version>2.2</joda.version>
+    <xmlunit.version>1.4</xmlunit.version>
+    <jaxb.commons.version>0.6.4</jaxb.commons.version>
   </properties>
 
   <build>
@@ -280,9 +287,54 @@
       </dependency>
 
       <dependency>
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <version>${hibernate.jpa.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${hibernate.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>se.inera.certificate</groupId>
+        <artifactId>integration-util</artifactId>
+        <version>${inera.certificate.version.integrationutil}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jvnet.jaxb2_commons</groupId>
+        <artifactId>jaxb2-basics-runtime</artifactId>
+        <version>${jaxb.commons.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>${joda.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.10</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>xmlunit</groupId>
+        <artifactId>xmlunit</artifactId>
+        <version>${xmlunit.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

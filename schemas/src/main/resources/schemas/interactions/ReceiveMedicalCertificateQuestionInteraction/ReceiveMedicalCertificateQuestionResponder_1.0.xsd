@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements. See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership. The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the
+ specific language governing permissions and limitations
+ under the License.
+ -->
+<xs:schema  
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:qa="urn:riv:insuranceprocess:healthreporting:medcertqa:1" 
+	xmlns:core="urn:riv:insuranceprocess:healthreporting:2" 
+	xmlns:tns="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" 
+	targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	version="1.0">
+	
+	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:medcertqa:1" schemaLocation="../../core_components/MedicalCertificateQuestionsAnswers_1.0.xsd"/>
+	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:2" schemaLocation="../../core_components/Insuranceprocess_healthreporting_2.0.xsd"/>
+	
+	<xs:element name="ReceiveMedicalCertificateQuestion"           type="tns:ReceiveMedicalCertificateQuestionType"/>
+	<xs:element name="ReceiveMedicalCertificateQuestionResponse"   type="tns:ReceiveMedicalCertificateQuestionResponseType"/>
+	<xs:element name="Question"			   						   type="tns:QuestionFromFkType"/>
+	
+	<xs:complexType name="ReceiveMedicalCertificateQuestionType">
+		<xs:sequence>
+			<xs:element ref="tns:Question" />
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ReceiveMedicalCertificateQuestionResponseType">
+		<xs:sequence>
+			<xs:element name="result" type="core:ResultOfCall" minOccurs="0" maxOccurs="1" />
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="QuestionFromFkType">
+		<xs:sequence>
+			<xs:element name="fkReferens-id" type="xs:string"/>
+			<xs:element name="amne" type="qa:Amnetyp"/>
+			<xs:element name="fraga" type="qa:innehallType" />
+			<xs:element name="avsantTidpunkt" type="xs:dateTime"/>
+			<xs:element name="fkKontaktInfo" type="qa:fkKontaktType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="adressVard" type="qa:vardAdresseringsType"/>
+			<xs:element name="fkMeddelanderubrik" type="xs:string" minOccurs="0" />
+			<xs:element name="fkKomplettering" type="qa:kompletteringType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="fkSistaDatumForSvar" type="xs:date" minOccurs="0"/>
+			<xs:element name="lakarutlatande" type="qa:lakarutlatandeEnkelType"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	
+	
+</xs:schema>

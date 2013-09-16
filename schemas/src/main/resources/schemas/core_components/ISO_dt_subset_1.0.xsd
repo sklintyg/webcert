@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:sch="http://www.ascc.net/xml/schematron"  
+	xmlns="urn:iso:21090:dt:1" 
+	targetNamespace="urn:iso:21090:dt:1" 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified" 
+	version="1.0" >
+	
+	<xsd:annotation>
+		<xsd:documentation>
+				Subset of original iso_dt.xsd file.
+		</xsd:documentation>
+	</xsd:annotation>
+	
+	<xsd:simpleType name="Uid">
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="IdentifierScope">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="BUSN"/>
+			<xsd:enumeration value="OBJ"/>
+			<xsd:enumeration value="VER"/>
+			<xsd:enumeration value="VW"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="IdentifierReliability">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ISS"/>
+			<xsd:enumeration value="VER"/>
+			<xsd:enumeration value="UNV"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="NullFlavor">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="NI"/>
+			<xsd:enumeration value="INV"/>
+			<xsd:enumeration value="OTH"/>
+			<xsd:enumeration value="NINF"/>
+			<xsd:enumeration value="PINF"/>
+			<xsd:enumeration value="UNC"/>
+			<xsd:enumeration value="DER"/>
+			<xsd:enumeration value="UNK"/>
+			<xsd:enumeration value="ASKU"/>
+			<xsd:enumeration value="NAV"/>
+			<xsd:enumeration value="QS"/>
+			<xsd:enumeration value="NASK"/>
+			<xsd:enumeration value="TRC"/>
+			<xsd:enumeration value="MSK"/>
+			<xsd:enumeration value="NA"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="UpdateMode">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="A"/>
+			<xsd:enumeration value="AU"/>
+			<xsd:enumeration value="U"/>
+			<xsd:enumeration value="R"/>
+			<xsd:enumeration value="I"/>
+			<xsd:enumeration value="D"/>
+			<xsd:enumeration value="K"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="HXIT" abstract="true">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<sch:pattern name="extension requires root">
+					<sch:rule abstract="true" id="HXIT-0">
+						<sch:assert test="not(@controlActExtension) or @controlActRoot"/>
+					</sch:rule>
+				</sch:pattern>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:attribute name="validTimeLow" type="xsd:string" use="optional"/>
+		<xsd:attribute name="validTimeHigh" type="xsd:string" use="optional"/>
+		<xsd:attribute name="controlActRoot" type="Uid" use="optional"/>
+		<xsd:attribute name="controlActExtension" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ANY">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<sch:pattern name="no ANY unless null">
+					<sch:rule abstract="true" id="ANY-0">
+						<sch:assert test="todo"/>
+					</sch:rule>
+				</sch:pattern>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="HXIT">
+				<xsd:attribute name="nullFlavor" type="NullFlavor" use="optional"/>
+				<xsd:attribute name="flavorId" type="xsd:string" use="optional"/>
+				<xsd:attribute name="updateMode" type="UpdateMode" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="II">
+		<xsd:complexContent>
+			<xsd:extension base="ANY">
+				<xsd:attribute name="root" type="Uid" use="optional"/>
+				<xsd:attribute name="extension" type="xsd:string" use="optional"/>
+				<xsd:attribute name="identifierName" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="CD">
+		<xsd:complexContent>
+			<xsd:extension base="ANY">
+				<xsd:attribute name="code" type="xsd:string" use="optional"/>
+				<xsd:attribute name="codeSystem" type="Uid" use="optional"/>
+				<xsd:attribute name="codeSystemName" type="xsd:string" use="optional"/>
+				<xsd:attribute name="codeSystemVersion" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+</xsd:schema>
