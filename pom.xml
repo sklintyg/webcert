@@ -127,34 +127,6 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.callistasoftware.netcare.commons</groupId>
-        <artifactId>mvk-integration</artifactId>
-        <version>${mvkintegration.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>se.inera.certificate</groupId>
-        <artifactId>schemas</artifactId>
-        <version>${inera.certificate.schemas.version}</version>
-      </dependency>
-      <dependency>
         <groupId>se.inera.certificate</groupId>
         <artifactId>module-api</artifactId>
         <version>${inera.certificate.moduleapi.version}</version>

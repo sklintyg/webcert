@@ -53,8 +53,18 @@
 <body>
 
   <%-- Web-cert top navigation bar --%>
-  <div id="wcHeader" wc-header is-doctor="<sec:authentication property="principal.lakare"/>" user-name="<sec:authentication property="principal.namn"/>"
-    caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>"></div>
+  <div id="wcHeader" wc-header 
+  is-doctor="<sec:authentication property="principal.lakare"/>" 
+  user-name="<sec:authentication property="principal.namn"/>"
+  caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>" 
+   menu-defs="[
+  {
+     link :'/web/dashboard', 
+     label:'Läkaröversikt',
+     requires_doctor: true
+   }
+  ]">
+  </div>
 
   <div class="container">
     <%-- No script to show at least something when javascript is off --%>

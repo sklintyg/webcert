@@ -11,11 +11,15 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
         scope : {
           userName: "@",
           caregiverName: "@",
-          isDoctor: "@"
+          isDoctor: "@",
+          menuDefs: "@"
+              
         },
         controller: function($scope, $element, $attrs) {
             //Expose "now" as a model property for the template to render as todays date
             $scope.today = new Date();
+            $scope.menuItems = eval($scope.menuDefs);
+            
         },
         template:
         	'<div>'
@@ -42,6 +46,9 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
 		    				+'<a class="dropdown-toggle settings" data-toggle="dropdown" href="#"></a>'
 		    				+'<ul class="dropdown-menu dropdown-menu-center" role="menu" aria-labelledby="dLabel">'
 		    					+'<li><a tabindex="-1" href="#">Hjälp</a></li>'
+		    					+'<li ng-repeat="menu in menuItems"">'
+		                        +'<a ng-href="{{menu.link}}" ng-show="(menu.requires_doctor && isDoctor) || !menu.requires_doctor">{{menu.label}}</a>'
+		                        +'</li>'
 		    					+'<li><a tabindex="-1" href="#">Logga ut</a></li>'
 		    				+'</ul>'
 		    			+'</div>'				
