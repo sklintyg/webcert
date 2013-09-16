@@ -1,8 +1,8 @@
-<div class="row-fluid">
+<div class="row-fluid webcert-multicol">
   <div class="span6 webcert-col webcert-col-primary">
     <!-- Left side -->
     <div class="webcert-col-shadow"></div>
-      <h1>Intygslista</h1>
+    <h1>Intygslista</h1>
 
     <div wc-care-unit-clinic-selector></div>
 
@@ -29,7 +29,7 @@
             <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading && wipCertList.length>0">
               <div>
                 <div ng-repeat="cert in wipCertList | limitTo:widgetState.pageSize">
-                  <a href="#"> <span class="certblock certblock-clickable">
+                  <a href="#/view"> <span class="certblock certblock-clickable">
                       <h3>
                         <span message key="certificatetypes.{{cert.typ | lowercase}}.typename"></span>
                       </h3> <span>{{cert.lastsaved | date:'shortDate'}}</span> <span class="pull-right"><span message key="label.patient"></span> <strong>{{cert.patientid}}</strong></span>
@@ -145,11 +145,10 @@
           <div class="controls input-append">
             <input type="text" placeholder="Ex. ååååmmdd-nnnn" />
             <button class="btn">Välj</button>
-            </p>
           </div>
         </div>
         <div class="control-group">
-          <button class="btn btn-success">Skriv intyg för vald patient</button>
+          <button class="btn btn-success" ng-click="createCert()">Skriv intyg för vald patient</button>
         </div>
         <div class="webcert-col-section">
           <h2 class="col-head">Patientens äldre intyg</h2>
@@ -165,7 +164,7 @@
           <div class="control-group">
             <div class="controls">
               <span class="span9 certblock certblock-clickable">
-                <h3>Läkarintyg FK7263</h3> <span>2013-05-04</span>
+                <h3>Läkarintyg FK 7263</h3> <span>2013-05-04</span>
               </span> <span class="span3 certblock-copy"><button class="btn btn-info span12">Kopiera</button></span>
             </div>
           </div>

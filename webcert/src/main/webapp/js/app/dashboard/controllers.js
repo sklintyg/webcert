@@ -1,10 +1,34 @@
 'use strict';
 
 /* Controllers */
-angular.module('wcDashBoardApp').controller('WebCertCtrl', [ '$scope', '$window', function WebCertCtrl($scope, $window) {
+angular.module('wcDashBoardApp').controller('WebCertCtrl', [ '$scope', '$window','$location', function WebCertCtrl($scope, $window, $location) {
     // Main controller
+	
+	$scope.createCert = function() {
+		$location.path("/create");
+	}
+	
+	$scope.viewCert = function() {
+		$location.path("/view");
+	}
 } ]);
 
+
+/*
+ *  CreateCertCtrl - Controller for logic related to creating a new certificate 
+ * 
+ */
+angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$window', function CreateCertCtrl($scope, $window) {
+
+} ]);
+
+/*
+ *  ViewCertCtrl - Controller for logic related to viewing a certificate 
+ * 
+ */
+angular.module('wcDashBoardApp').controller('ViewCertCtrl', [ '$scope', '$window', function CreateCertCtrl($scope, $window) {
+
+} ]);
 
 /*
  *  ListUnsignedCertCtrl - Controller for logic related to displaying the list of unsigned certificates 

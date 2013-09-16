@@ -5,6 +5,7 @@ var commonMessageResources = {
 
 	    "common.ok":"OK",
 	    "common.cancel":"Avbryt",
+	    "common.goback":"Tillbaka",
 	    //wc-common-directives-resources
 	    "nav.label.loggedinas" : "Inloggad som:"
     },
