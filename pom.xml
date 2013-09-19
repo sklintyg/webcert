@@ -23,6 +23,7 @@
     <module>webcert</module>
     <module>specifications</module>
     <module>hsa-integration</module>
+    <module>persistence</module>
   </modules>
 
   <properties>
@@ -38,6 +39,7 @@
     <inera.certificate.proxy.version>1.1-SNAPSHOT</inera.certificate.proxy.version>
     <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
     <aspectj.version>1.7.1</aspectj.version>
+    <joda.version>2.2</joda.version>
   </properties>
 
   <build>
@@ -126,6 +128,11 @@
   </reporting>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>${joda.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
