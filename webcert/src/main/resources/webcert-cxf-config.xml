@@ -18,6 +18,12 @@
 
   <import resource="classpath:META-INF/cxf/cxf.xml"/>
 
+  <bean id="objectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
+
+  <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+    <property name="mapper" ref="objectMapper"/>
+  </bean>
+
   <cxf:bus>
     <cxf:features>
       <cxf:logging/>
@@ -35,12 +41,13 @@
   </jaxws:endpoint>
 
   <jaxws:endpoint address="/receive-answer/v1.0"
-                    implementor="se.inera.webcert.integration.ReceiveAnswerResponderImpl">
-      <jaxws:outFaultInterceptors>
-        <bean class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-          <constructor-arg value="transform/receive-answer.xslt"/>
-        </bean>
-      </jaxws:outFaultInterceptors>
-    </jaxws:endpoint>
+                  implementor="se.inera.webcert.integration.ReceiveAnswerResponderImpl">
+    <jaxws:outFaultInterceptors>
+      <bean class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
+        <constructor-arg value="transform/receive-answer.xslt"/>
+      </bean>
+    </jaxws:outFaultInterceptors>
+  </jaxws:endpoint>
 
+  <import resource="classpath:fk-stub-context.xml"/>
 </beans>

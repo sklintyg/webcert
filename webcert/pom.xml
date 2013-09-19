@@ -32,7 +32,10 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>schemas</artifactId>
-      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>fk-stub</artifactId>
     </dependency>
     <dependency>
       <groupId>se.inera.certificate</groupId>
