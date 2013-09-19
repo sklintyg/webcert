@@ -16,6 +16,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
   <context:annotation-config/>
+  <context:component-scan base-package="se.inera.webcert"/>
 
   <import resource="webcert-cxf-config.xml"/>
   <import resource="security/securityContext.xml"/>

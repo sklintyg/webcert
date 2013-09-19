@@ -2,11 +2,13 @@ package se.inera.webcert.persistence;
 
 import java.util.List;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 public class FragaSvar {
     private String frageStallare;
     private String internReferens;
+    private String externReferens;
     private Amne amne;
     private String frageText;
     private LocalDateTime frageSigneringsDatum;
@@ -16,11 +18,11 @@ public class FragaSvar {
     private LocalDateTime svarSkickadDatum;
     private List<String> externaKontakter;
     private String meddelandeRubrik;
-    private LocalDateTime sistaDatumForSvar;
+    private LocalDate sistaDatumForSvar;
 
     // Composites
     private IntygsReferens intygsReferens;
-    private Komplettering komplettering;
+    private List<Komplettering> kompletteringar;
     private Vardperson vardperson;
     
     public String getFrageStallare() {
@@ -35,6 +37,15 @@ public class FragaSvar {
     public void setInternReferens(String internReferens) {
         this.internReferens = internReferens;
     }
+
+    public String getExternReferens() {
+        return externReferens;
+    }
+
+    public void setExternReferens(String externReferens) {
+        this.externReferens = externReferens;
+    }
+
     public Amne getAmne() {
         return amne;
     }
@@ -89,10 +100,10 @@ public class FragaSvar {
     public void setMeddelandeRubrik(String meddelandeRubrik) {
         this.meddelandeRubrik = meddelandeRubrik;
     }
-    public LocalDateTime getSistaDatumForSvar() {
+    public LocalDate getSistaDatumForSvar() {
         return sistaDatumForSvar;
     }
-    public void setSistaDatumForSvar(LocalDateTime sistaDatumForSvar) {
+    public void setSistaDatumForSvar(LocalDate sistaDatumForSvar) {
         this.sistaDatumForSvar = sistaDatumForSvar;
     }
     public IntygsReferens getIntygsReferens() {
@@ -101,12 +112,15 @@ public class FragaSvar {
     public void setIntygsReferens(IntygsReferens intygsReferens) {
         this.intygsReferens = intygsReferens;
     }
-    public Komplettering getKomplettering() {
-        return komplettering;
+
+    public List<Komplettering> getKompletteringar() {
+        return kompletteringar;
     }
-    public void setKomplettering(Komplettering komplettering) {
-        this.komplettering = komplettering;
+
+    public void setKompletteringar(List<Komplettering> kompletteringar) {
+        this.kompletteringar = kompletteringar;
     }
+
     public Vardperson getVardperson() {
         return vardperson;
     }

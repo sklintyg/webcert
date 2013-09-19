@@ -7,9 +7,6 @@
 
        profile="dev,test,qa">
 
-  <context:annotation-config/>
-  <context:component-scan base-package="se.inera.webcert.fkstub"/>
-
   <jaxws:endpoint address="/send-question-stub" implementor="se.inera.webcert.fkstub.SendQuestionStub"/>
   <jaxws:endpoint address="/send-answer-stub" implementor="se.inera.webcert.fkstub.SendAnswerStub"/>
 
