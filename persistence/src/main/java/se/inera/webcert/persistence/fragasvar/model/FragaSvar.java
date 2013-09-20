@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence;
+package se.inera.webcert.persistence.fragasvar.model;
 
 import java.util.List;
 

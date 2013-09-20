@@ -7,7 +7,7 @@ import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.webcert.converter.FragaSvarConverter;
-import se.inera.webcert.persistence.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.receivemedicalcertificateanswer.v1.rivtabp20.ReceiveMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;

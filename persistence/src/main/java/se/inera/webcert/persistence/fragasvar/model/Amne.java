@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence;
+package se.inera.webcert.persistence.fragasvar.model;
 
 public enum Amne {
     KOMPLETTERING_AV_LAKARINTYG,

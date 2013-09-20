@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+
 import se.inera.webcert.medcertqa.v1.FkKontaktType;
 import se.inera.webcert.medcertqa.v1.KompletteringType;
 import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
-import se.inera.webcert.persistence.Amne;
-import se.inera.webcert.persistence.FragaSvar;
-import se.inera.webcert.persistence.IntygsReferens;
-import se.inera.webcert.persistence.Komplettering;
-import se.inera.webcert.persistence.Vardperson;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 
@@ -57,9 +58,9 @@ public class FragaSvarConverter {
             vardperson.setArbetsplatsKod(source.getHosPersonal().getEnhet().getArbetsplatskod().getExtension());
         }
 
-        vardperson.setEnhetsNamn(source.getHosPersonal().getEnhet().getEnhetsnamn());
+        vardperson.setEnhetsnamn(source.getHosPersonal().getEnhet().getEnhetsnamn());
         vardperson.setPostadress(source.getHosPersonal().getEnhet().getPostadress());
-        vardperson.setPostNummer(source.getHosPersonal().getEnhet().getPostnummer());
+        vardperson.setPostnummer(source.getHosPersonal().getEnhet().getPostnummer());
         vardperson.setPostort(source.getHosPersonal().getEnhet().getPostort());
         vardperson.setTelefonnummer(source.getHosPersonal().getEnhet().getTelefonnummer());
         vardperson.setEpost(source.getHosPersonal().getEnhet().getEpost());
