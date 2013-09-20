@@ -1,13 +1,31 @@
 package se.inera.webcert.persistence;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
+import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
+@Embeddable
 public class IntygsReferens {
+    
+    @Column(name = "INTYGS_ID")
     private String intygsId;
+    
+    @Column(name = "INTYGS_TYP")
     private String intygsTyp;
+    
+    @Column(name = "PATIENT_NAMN")
     private String patientNamn;
+    
+    @Column(name = "PATIENT_PERSON_NUMMER")
     private String patientPersonNummer;
+    
+    @Column(name = "SIGNERINGS_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    private LocalDateTime signeringsDatum;
 
+    
     public String getIntygsId() {
         return intygsId;
     }
@@ -47,7 +65,5 @@ public class IntygsReferens {
     public void setSigneringsDatum(LocalDateTime signeringsDatum) {
         this.signeringsDatum = signeringsDatum;
     }
-
-    private LocalDateTime signeringsDatum;
 
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.inera.webcert</groupId>
   <artifactId>webcert-parent</artifactId>
@@ -46,6 +45,8 @@
     <hibernate.version>4.2.0.Final</hibernate.version>
     <hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
     <joda.version>2.2</joda.version>
+    <spring.data.version>1.4.1.RELEASE</spring.data.version>
+    <hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
     <xmlunit.version>1.4</xmlunit.version>
     <jaxb.commons.version>0.6.4</jaxb.commons.version>
   </properties>
@@ -136,6 +137,22 @@
   </reporting>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${hibernate.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <version>${hibernate.jpa.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-jpa</artifactId>
+        <version>${spring.data.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>${project.groupId}</groupId>
