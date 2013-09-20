@@ -58,14 +58,34 @@
   user-name="<sec:authentication property="principal.namn"/>"
   caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>" 
   menu-defs="[
-  {
-     link :'/web/adminview', 
-     label:'Administration',
+   {
+     link :'/web/dashboard', 
+     label:'Skriv intyg',
      requires_doctor: false
-   }
+   },
+   {
+     link :'/web/dashboard', 
+     label:'Utkast',
+     requires_doctor: true
+   },
+   {
+     link :'/web/unsigned', 
+     label:'Enhetens osignerade intyg',
+     requires_doctor: false
+   },
+   {
+     link :'/web/adminview',
+     label:'Frågor och svar',
+     requires_doctor: false
+   },
+   {
+     link :'/web/about',
+     label:'Om webcert',
+     requires_doctor: false
+   },
   ]">
   </div>
-  <div class="container">
+  <!-- <div class="container"> -->
     <%-- No script to show at least something when javascript is off --%>
     <noscript>
       <h1>
@@ -78,7 +98,7 @@
     
     <%-- ng-view that holds dynamic content managed by angular app --%>
     <div id="view" ng-view></div>
-  </div>
+  <!-- </div> -->
 
   <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/angular.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/i18n/angular-locale_sv-se.js"/>"></script>
