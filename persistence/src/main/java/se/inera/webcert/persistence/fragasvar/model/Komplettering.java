@@ -1,11 +1,19 @@
-package se.inera.webcert.persistence;
+package se.inera.webcert.persistence.fragasvar.model;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 /**
  * @author marced
  * 
  */
+@Embeddable
 public class Komplettering {
+    
+    @Column(name = "FALT")
     private String falt;
+    
+    @Column(name = "TEXT")
     private String text;
 
     public String getFalt() {

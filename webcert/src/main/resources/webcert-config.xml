@@ -34,6 +34,7 @@
     <property name="basenames">
       <list>
         <value>ui</value>
+        <value>version</value>
       </list>
     </property>
   </bean>

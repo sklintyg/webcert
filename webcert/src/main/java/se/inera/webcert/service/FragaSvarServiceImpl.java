@@ -1,7 +1,8 @@
 package se.inera.webcert.service;
 
 import org.springframework.stereotype.Service;
-import se.inera.webcert.persistence.FragaSvar;
+
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
  * @author andreaskaltenbach

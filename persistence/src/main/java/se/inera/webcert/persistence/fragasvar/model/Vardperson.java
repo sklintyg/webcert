@@ -1,19 +1,48 @@
-package se.inera.webcert.persistence;
+package se.inera.webcert.persistence.fragasvar.model;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class Vardperson {
+    @Column(name = "HSAID")
     private String hsaId;
+    
+    @Column(name = "NAMN")
     private String namn;
+    
+    @Column(name = "FORSKRIVAR_KOD")
     private String forskrivarKod;
+    
+    @Column(name = "ENHETS_ID")
     private String enhetsId;
+    
+    @Column(name = "ARBETSPLATS_KOD")
     private String arbetsplatsKod;
-    private String enhetsNamn;
+    
+    @Column(name = "ENHETSNAMN")
+    private String enhetsnamn;
+    
+    @Column(name = "POSTADRESS")
     private String postadress;
-    private String postNummer;
+    
+    @Column(name = "POSTNUMMER")
+    private String postnummer;
+    
+    @Column(name = "POSTORT")
     private String postort;
+    
+    @Column(name = "TELEFONNUMMER")
     private String telefonnummer;
+    
+    @Column(name = "EPOST")
     private String epost;
+    
+    @Column(name = "VARDGIVAR_ID")
     private String vardgivarId;
-    private String vardgivarNamn;
+    
+    @Column(name = "VARDGIVARNAMN")
+    private String vardgivarnamn;
 
     public String getHsaId() {
         return hsaId;
@@ -55,12 +84,12 @@ public class Vardperson {
         this.arbetsplatsKod = arbetsplatsKod;
     }
 
-    public String getEnhetsNamn() {
-        return enhetsNamn;
+    public String getEnhetsnamn() {
+        return enhetsnamn;
     }
 
-    public void setEnhetsNamn(String enhetsNamn) {
-        this.enhetsNamn = enhetsNamn;
+    public void setEnhetsnamn(String enhetsnamn) {
+        this.enhetsnamn = enhetsnamn;
     }
 
     public String getPostadress() {
@@ -71,12 +100,12 @@ public class Vardperson {
         this.postadress = postadress;
     }
 
-    public String getPostNummer() {
-        return postNummer;
+    public String getPostnummer() {
+        return postnummer;
     }
 
-    public void setPostNummer(String postNummer) {
-        this.postNummer = postNummer;
+    public void setPostnummer(String postnummer) {
+        this.postnummer = postnummer;
     }
 
     public String getPostort() {
@@ -111,12 +140,13 @@ public class Vardperson {
         this.vardgivarId = vardgivarId;
     }
 
-    public String getVardgivarNamn() {
-        return vardgivarNamn;
+    public String getVardgivarnamn() {
+        return vardgivarnamn;
     }
 
-    public void setVardgivarNamn(String vardgivarNamn) {
-        this.vardgivarNamn = vardgivarNamn;
+    public void setVardgivarnamn(String vardgivarnamn) {
+        this.vardgivarnamn = vardgivarnamn;
     }
+
 
 }
