@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.webcert.persistence.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 
 /**

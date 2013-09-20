@@ -1,6 +1,6 @@
 {
-    "frageStallare" : "FK",
     "externReferens" : "123",
+    "frageStallare" : "FK",
     "amne" : "KOMPLETTERING_AV_LAKARINTYG",
     "frageText" : "Tomten kan inte vara sjukskriven den 24e december!",
     "frageSigneringsDatum" : "2012-12-22T21:00:00.000",
@@ -25,9 +25,9 @@
         "forskrivarKod" : "1234567",
         "enhetsId" : "VardenhetY",
         "arbetsplatsKod" : "123456789011",
-        "enhetsNamn" : "Kir mott",
+        "enhetsnamn" : "Kir mott",
         "postadress" : "Lasarettsvägen 13",
-        "postNummer" : "85150",
+        "postnummer" : "85150",
         "postort" : "Sundsvall",
         "telefonnummer" : "060-1818000",
         "vardgivarId" : "Landstinget Norrland"
