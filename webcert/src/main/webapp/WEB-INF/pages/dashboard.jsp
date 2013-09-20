@@ -74,8 +74,8 @@
      requires_doctor: false
    },
    {
-     link :'/web/adminview',
-     label:'Frågor och svar',
+     link :'/web/dashboard#/unanswered',
+     label:'Enhetens obesvarade frågor',
      requires_doctor: false
    },
    {

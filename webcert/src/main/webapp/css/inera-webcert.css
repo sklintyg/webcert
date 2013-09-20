@@ -123,6 +123,44 @@ span.location { font-size: 12px; font-weight: bold; }
 	padding-top: 8px;
 }
 
+.certblock-field {
+	/*float: left;*/
+	width: 16%;
+	display: inline-block;
+}
+
+.certblock-field-small {
+	width: 10%;
+}
+
+.certblock-field-large {
+  width: 28%;
+}
+
+
+.certblock-head {
+	display: block;
+  padding: 10px 20px 10px 20px;
+}
+
+.certblock-head .certblock-field {
+	font-weight: bold;
+}
+
+.cert-mark-forwarded {
+	float: left;
+	padding: 10px 0 0 10px;
+}
+
+.cert-mark-forwarded input[type=checkbox] {
+	margin: 0;
+	padding: 0;
+}
+
+.cert-mark-forwarded label {
+	font-style: italic;
+}
+
 .header {
 	background-color: #212633;
 	padding: 20px 0px;
@@ -199,11 +237,12 @@ a.backlink {
 }
 
 .btn {
+	line-height: 18px;
 }
 
 .btn-success {
 /*	border: none;*/
-	padding: 10px 35px;
+	padding: 10px 20px;
 	font-weight: bold;
 	background: none;
 	background-color: #42a341;
@@ -284,7 +323,13 @@ a.backlink {
 
 .navbar-inner {
     padding: 0;
-    /*float: left;*/
+    padding-left: 30px;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    border: 0;
+    border-top: 2px solid #d4d4d4;
+    border-bottom: 2px solid #d4d4d4;
 }
 
 .navbar .divider-vertical {
@@ -305,7 +350,7 @@ a.backlink {
 }
 
 .navbar .nav>li>a {
-    padding: 10px 45px 10px;
+    padding: 10px 25px 10px;
 }
 
 .nav-stacked > .active > a, .nav-stacked > .active > a:hover, .nav-stacked > .active > a:focus {

@@ -68,7 +68,7 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
 		    									+'</li>'
 		            				+'</ul>'
 		            			+'</div><!-- /.nav-collapse -->'
-	        					+'</div>'
+		            		+'</div>'
 				    		  +'</div><!-- /navbar-inner -->'
 				    	  +'</div>'
 	          	+'</div>'	
