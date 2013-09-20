@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:SendMedicalCertificateQuestionResponse xmlns:p="urn:riv:insuranceprocess:healthreporting:2" xmlns:p1="urn:iso:21090:dt:1" xmlns:tns="urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestionResponder:1" xmlns:tns1="urn:riv:insuranceprocess:healthreporting:qa:1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestionResponder:1 SendMedicalCertificateQuestionResponder_1.0.xsd ">
+  <tns:result>
+    <p:resultCode>OK</p:resultCode>
+    <p:infoText>p:infoText</p:infoText>
+    <p:errorId>VALIDATION_ERROR</p:errorId>
+    <p:errorText>p:errorText</p:errorText>
+  </tns:result>
+</tns:SendMedicalCertificateQuestionResponse>

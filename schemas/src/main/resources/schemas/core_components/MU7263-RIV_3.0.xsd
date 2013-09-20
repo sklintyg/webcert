@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Viktor Jernelöv (Mawell Svenska AB) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:core="urn:riv:insuranceprocess:healthreporting:2"
+	xmlns:iso="urn:iso:21090:dt:1"
+	xmlns="urn:riv:insuranceprocess:healthreporting:mu7263:3" 
+	targetNamespace="urn:riv:insuranceprocess:healthreporting:mu7263:3" 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified"
+	version="3.0">
+
+	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:2" schemaLocation="Insuranceprocess_healthreporting_2.0.xsd"/>
+	<xs:import namespace="urn:iso:21090:dt:1" schemaLocation="ISO_dt_subset_1.0.xsd"/>
+	
+	<xs:element name="lakarutlatande" type="lakarutlatandeType">
+		<xs:annotation>
+			<xs:documentation>Root-elementet för informationsinnehållet i MU7263. Klassen motsvarar i dagsläget själva blanketten</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:simpleType name="Referenstyp">
+		<xs:annotation>
+			<xs:documentation>Representerar de olika typer av referenser från vilken HoS-personalen fått information om patienten i det aktuella ärendet</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Journaluppgifter"/>
+			<xs:enumeration value="Annat"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Vardkontakttyp">
+		<xs:annotation>
+			<xs:documentation>Representerar de olika typer av vårdkontakter som är giltiga</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Min_undersokning_av_patienten"/>
+			<xs:enumeration value="Min_telefonkontakt_med_patienten"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Prognosangivelse">
+		<xs:annotation>
+			<xs:documentation>Representerar de angivelser för prognoser som är giltiga</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Aterstallas_helt"/>
+			<xs:enumeration value="Aterstallas_delvis"/>
+			<xs:enumeration value="Inte_aterstallas"/>
+			<xs:enumeration value="Det_gar_inte_att_bedomma"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Nedsattningsgrad">
+		<xs:annotation>
+			<xs:documentation>Representerar de grader på nedsättning som är giltiga</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Helt_nedsatt"/>
+			<xs:enumeration value="Nedsatt_med_3/4"/>
+			<xs:enumeration value="Nedsatt_med_1/2"/>
+			<xs:enumeration value="Nedsatt_med_1/4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Referenserna till blanketten kan komma att behöva uppdateras då en ny version av denna kommer ut-->
+	<xs:simpleType name="Aktivitetskod">
+		<xs:annotation>
+			<xs:documentation>Representerar de olika typer av aktivitetskoder som förekommer</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Arbetslivsinriktad_rehabilitering_ar_aktuell">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 1, fält 7</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Arbetslivsinriktad_rehabilitering_ar_ej_aktuell">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 2, fält 7</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Gar_ej_att_bedomma_om_arbetslivsinriktad_rehabilitering_ar_aktuell">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 3, fält 7</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Forandrat_ressatt_till_arbetsplatsen_ar_aktuellt">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 1, fält 11</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Forandrat_ressatt_till_arbetsplatsen_ar_ej_aktuellt">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 2, fält 11</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Planerad_eller_pagaende_behandling_eller_atgard_inom_sjukvarden">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 1, fält 6b</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Planerad_eller_pagaende_annan_atgard">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 2, fält 6b</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Kontakt_med_Forsakringskassan_ar_aktuell">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 1, fält 12</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Patienten_behover_fa_kontakt_med_foretagshalsovarden">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 2, fält 6a</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Avstangning_enligt_SmL_pga_smitta">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 1, fält 1</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Ovrigt">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 3, fält 6a</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Patienten_behover_fa_kontakt_med_Arbetsformedlingen">
+				<xs:annotation>
+					<xs:documentation>Mappas mot kryss 1, fält 6a</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TypAvSysselsattning">
+		<xs:annotation>
+			<xs:documentation>Representerar de typer av sysselsättning som är giltiga</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Nuvarande_arbete"/>
+			<xs:enumeration value="Arbetsloshet"/>
+			<xs:enumeration value="Foraldraledighet"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TypAvFunktionstillstand">
+		<xs:annotation>
+			<xs:documentation>Representerar de typer av funktionstillstånd som är giltiga</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Aktivitet"/>
+			<xs:enumeration value="Kroppsfunktion"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="lakarutlatandeType">
+		<xs:annotation>
+			<xs:documentation>Klassen är utgångspunkt för schemat och representerar blanketten i helhet</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="lakarutlatande-id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Attributet efterfrågas inte i blanketten utan är något som genereras av källsystemet och hämtas därifrån</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="typAvUtlatande" type="xs:string" fixed="Läkarintyg enligt 3 kap, 8 § lagen (1962:381) om allmän försäkring"/>
+			<xs:element name="kommentar" type="xs:string" minOccurs="0"/>
+			<xs:element name="signeringsdatum" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>Datum och eventuellt klockslag när signering skedde.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="skickatDatum" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>Datum och klockslag när läkarintyget skickades av systemet.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="patient" type="core:patientType"/>
+			<xs:element name="skapadAvHosPersonal" type="core:hosPersonalType"/>
+			<xs:element name="vardkontakt" type="vardkontaktType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="referens" type="referensType" minOccurs="0" maxOccurs="2"/>
+			<xs:element name="aktivitet" type="aktivitetType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="bedomtTillstand" type="bedomtTillstandType" minOccurs="0"/>
+			<xs:element name="medicinsktTillstand" type="medicinsktTillstandType" minOccurs="0"/>
+			<xs:element name="funktionstillstand" type="funktionstillstandType" minOccurs="0" maxOccurs="2"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="vardkontaktType">
+		<xs:annotation>
+			<xs:documentation>Klassen innehåller all information om den vårdkontakt vid vilken underlaget till blanketten inhämtades</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="vardkontakttyp" type="Vardkontakttyp">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 4 del 2 på blanketten (de två översta kryssalternativen)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="vardkontaktstid" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 4 del 2 på blanketten (de två översta alternativen under "Datum")</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="referensType">
+		<xs:annotation>
+			<xs:documentation>Klassen innehåller all information om de referenser som läkarutlåtandet baseras på</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="referenstyp" type="Referenstyp">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 4 del 2 på blanketten (de två nedersta kryssalternativen)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="datum" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 4 del 2 på blanketten (de två nedersta alternativen under "Datum")</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="aktivitetType">
+		<xs:annotation>
+			<xs:documentation>Klassen håller information om de aktiviteter/åtgärder som hanteras i blanketten. En instansiering av klassen akvititetType ska ske per kryss i de rutor som angetts i beskrivningen av Aktivitetskod ovan.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="aktivitetskod" type="Aktivitetskod">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 6, 7, 11 och 12</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="beskrivning" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 6 i de fall aktivitetskod motsvarar någon av de kryss som har möjlighet att definieras tydligare (de med en linje efter sig).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="bedomtTillstandType">
+		<xs:annotation>
+			<xs:documentation>Klassen innehåller information om patientens generella bedömda tillstånd</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="beskrivning" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 3</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="medicinsktTillstandType">
+		<xs:annotation>
+			<xs:documentation>Klassen innehåller information om patientens medicinska tillstånd.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="beskrivning" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 2</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="tillstandskod" type="iso:CD" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 2 del 2 (ICD-10-koden)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="funktionstillstandType">
+		<xs:annotation>
+			<xs:documentation>Klassen innehåller information om patientens funktionstillstånd</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="beskrivning" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 4 och 5. Informationen som återhämtas i fält 4 läggs i beskrivning med typAvFunktionstillstand satt till kroppsfunktion. Informationen som återhämtas i fält 5 läggs i beskrivning i en ny instans av klassen med typAvFunktionstillstand satt till Aktivitet.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="typAvFunktionstillstand" type="TypAvFunktionstillstand">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 4 när det är kroppsfunktion och 5 när det är aktivitet</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="arbetsformaga" type="arbetsformagaType" minOccurs="0"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="arbetsformagaType">
+		<xs:annotation>
+			<xs:documentation>Klassen innehåller information om patientens bedömda arbetsförmåga</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="motivering" type="xs:string" minOccurs="0"/>
+			<xs:element name="prognosangivelse" type="Prognosangivelse"/>
+			<xs:element name="arbetsuppgift" type="arbetsuppgiftType" minOccurs="0"/>
+			<xs:element name="arbetsformagaNedsattning" type="arbetsformagaNedsattningType" maxOccurs="4"/>
+			<xs:element name="sysselsattning" type="sysselsattningType" minOccurs="0" maxOccurs="3"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="arbetsuppgiftType">
+		<xs:annotation>
+			<xs:documentation>Klassen innehåller information om patientens typer av arbetsuppgifter</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="typAvArbetsuppgift" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 8, de två översta strecken till höger</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="arbetsformagaNedsattningType">
+		<xs:annotation>
+			<xs:documentation>Klassen innehåller information om nedsättningen av patientens arbetsförmåga</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="varaktighetFrom" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 8, de fyra nedersta strecken till höger</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="varaktighetTom" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 8, de fyra nedersta strecken till höger</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="nedsattningsgrad" type="Nedsattningsgrad">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 8, de fyra nedersta kryssrutorna</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="sysselsattningType">
+		<xs:annotation>
+			<xs:documentation>Klassen innehåller information om patientens sysselsättning</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="typAvSysselsattning" type="TypAvSysselsattning">
+				<xs:annotation>
+					<xs:documentation>Mappas mot fält 8, de tre översta kryssrutorna</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

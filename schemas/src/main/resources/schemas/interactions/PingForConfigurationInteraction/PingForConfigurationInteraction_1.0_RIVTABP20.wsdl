@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+ Licensed to Sveriges Kommuner och Landsting under one
+ or more contributor license agreements. See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership. Sveriges Kommuner och Landsting licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License. You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied. See the License for the
+ specific language governing permissions and limitations
+ under the License.
+ -->		
+<wsdl:definitions name='PingForConfigurationInteraction' xmlns:wsdl='http://schemas.xmlsoap.org/wsdl/' xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:wsa='http://www.w3.org/2005/08/addressing' xmlns:tjsr='urn:riv:itintegration:monitoring:PingForConfigurationResponder:1' xmlns:tjsi='urn:riv:itintegration:monitoring:PingForConfigurationInitiator:1' xmlns:tns='urn:riv:itintegration:monitoring:PingForConfiguration:1:rivtabp20' targetNamespace='urn:riv:itintegration:monitoring:PingForConfiguration:1:rivtabp20'>
+  <xs:annotation>
+    <xs:documentation>
+			 Tjänsteinteraktionens namn: PingForConfigurationInteraction
+			 Beskrivning: 
+			   A service interaction for monitoring and querying the configuration of service endpoints. 
+			   The idea is that each module that exposes RIV TA web services should also expose a service according to this contract.
+			   It should report the configuration (version etc) of the module/system/component. The fact that this is a well-known 
+			   service without side effects and no or insignificant resource consumption, it is also use-ful for monitoring the health
+			   of the module. If this service fails, it is likely that also the other services exposed by the same module will fail.
+			 Revisioner: 
+			 Tjänstedomän: itintegration:monitoring
+			 Tjänsteinteraktionstyp: Fråga-Svar
+			 WS-profil: RIVTABP20
+			 Förvaltas av: Center för E-hälsa i Samverkan
+			 </xs:documentation>
+  </xs:annotation>
+  <wsdl:types>
+    <xs:schema targetNamespace='urn:riv:itintegration:monitoring:PingForConfiguration:1:rivtabp20'>
+      <xs:import schemaLocation='PingForConfigurationResponder_1.0.xsd' namespace='urn:riv:itintegration:monitoring:PingForConfigurationResponder:1' />
+      <xs:import schemaLocation='../../core_components/ws-addressing-1.0.xsd' namespace='http://www.w3.org/2005/08/addressing' />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name='PingForConfigurationRequest'>
+    <wsdl:part name='LogicalAddress' element='wsa:To'>
+      <xs:annotation>
+        <xs:documentation>The org nr of AB Inera (SE165565594230-1000)</xs:documentation>
+      </xs:annotation>
+    </wsdl:part>
+    <wsdl:part name='parameters' element='tjsr:PingForConfiguration' />
+  </wsdl:message>
+  <wsdl:message name='PingForConfigurationResponse'>
+    <wsdl:part name='parameters' element='tjsr:PingForConfigurationResponse' />
+  </wsdl:message>
+  <wsdl:portType name='PingForConfigurationResponderInterface'>
+    <wsdl:operation name='PingForConfiguration'>
+      <wsdl:input message='tns:PingForConfigurationRequest' />
+      <wsdl:output message='tns:PingForConfigurationResponse' />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name='PingForConfigurationResponderBinding' type='tns:PingForConfigurationResponderInterface'>
+    <soap:binding style='document' transport='http://schemas.xmlsoap.org/soap/http' />
+    <wsdl:operation name='PingForConfiguration'>
+      <soap:operation soapAction='urn:riv:itintegration:monitoring:PingForConfigurationResponder:1:PingForConfiguration' style='document' />
+      <wsdl:input>
+        <soap:header use='literal' message='tns:PingForConfigurationRequest' part='LogicalAddress' />
+        <soap:body use='literal' parts='parameters' />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use='literal' />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name='PingForConfigurationResponderService'>
+    <wsdl:port name='PingForConfigurationResponderPort' binding='tns:PingForConfigurationResponderBinding'>
+      <soap:address location='http://tempuri.org' />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

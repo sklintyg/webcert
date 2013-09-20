@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:core="urn:riv:insuranceprocess:healthreporting:2"
+	xmlns:tns="urn:riv:insuranceprocess:healthreporting:medcertqa:1" 
+	targetNamespace="urn:riv:insuranceprocess:healthreporting:medcertqa:1" 	
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified"
+	version="1.0">
+	
+	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:2" schemaLocation="Insuranceprocess_healthreporting_2.0.xsd"/>
+	
+	<xs:simpleType name="Amnetyp">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Komplettering_av_lakarintyg"/>
+			<xs:enumeration value="Makulering_av_lakarintyg"/>
+			<xs:enumeration value="Avstamningsmote"/>
+			<xs:enumeration value="Kontakt"/>
+			<xs:enumeration value="Arbetstidsforlaggning"/>
+			<xs:enumeration value="Paminnelse"/>
+			<xs:enumeration value="Ovrigt"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+<!-- 
+	<xs:complexType name="meddelandeType">
+		<xs:sequence>
+			<xs:element name="vardReferens-id" type="xs:string" minOccurs="0"/>
+			<xs:element name="fkReferens-id" type="xs:string" minOccurs="0"/>
+			<xs:element name="amne" type="tns:Amnetyp"/>
+			<xs:element name="fraga" type="tns:innehallType" minOccurs="0" />
+			<xs:element name="svar" type="tns:innehallType" minOccurs="0" />
+			<xs:element name="avsantTidpunkt" type="xs:dateTime"/>
+ 			<xs:element name="fkAdressFK" type="tns:fkAdresseringsType" minOccurs="0"/>
+			<xs:element name="adressVard" type="tns:vardAdresseringsType"/>
+			<xs:element name="fkMeddelanderubrik" type="xs:string" minOccurs="0" />
+			<xs:element name="fkKomplettering" type="tns:kompletteringType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="fkSistaDatumForSvar" type="xs:date" minOccurs="0"/>
+			<xs:element name="lakarutlatande" type="tns:lakarutlatandeEnkelType"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+ -->
+
+	<xs:complexType name="fkKontaktType">
+		<xs:sequence>
+			<xs:element name="kontakt" type="xs:string"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="vardAdresseringsType">
+		<xs:sequence>
+			<xs:element name="hosPersonal" type="core:hosPersonalType"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="lakarutlatandeEnkelType">
+		<xs:sequence>
+			<xs:element name="lakarutlatande-id" type="xs:string"/>
+			<xs:element name="signeringsTidpunkt" type="xs:dateTime"/>
+			<xs:element name="patient" type="core:patientType"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="kompletteringType">
+		<xs:sequence>
+			<xs:element name="falt" type="xs:string"/>
+			<xs:element name="text" type="xs:string"/> <!--  Skall denna vara minOccurs=0 -->
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="innehallType">
+		<xs:sequence>
+			<xs:element name="meddelandeText" type="xs:string"/>
+			<xs:element name="signeringsTidpunkt" type="xs:dateTime"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	
+</xs:schema>

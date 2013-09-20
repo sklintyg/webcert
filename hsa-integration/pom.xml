@@ -8,6 +8,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>hsa-integration</artifactId>
+    <name>Inera Webcert HSA-Integration module</name>
+    <packaging>jar</packaging>
 
   <properties>
     <schema.path>src/main/resources/schemas</schema.path>
@@ -33,10 +35,6 @@
       <artifactId>cxf-rt-transports-http</artifactId>
     </dependency>
         <!--       -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>

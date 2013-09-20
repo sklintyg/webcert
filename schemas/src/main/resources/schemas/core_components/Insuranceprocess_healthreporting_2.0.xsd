@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements. See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership. The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License. You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied. See the License for the
+	specific language governing permissions and limitations
+	under the License.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns="urn:riv:insuranceprocess:healthreporting:2"
+	xmlns:iso="urn:iso:21090:dt:1"
+	targetNamespace="urn:riv:insuranceprocess:healthreporting:2" 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified" 
+	version="2.0" >
+
+	<xs:import namespace="urn:iso:21090:dt:1" schemaLocation="ISO_dt_subset_1.0.xsd"/> 
+	
+	<xs:annotation>
+		<xs:documentation>
+			Beskrivning: Gemensamma element för insuranceprocess_healthreporting
+			Revisioner: 
+			2010-05-20: Release version 1.0 mats.ekhammar@callistaenterprise.se.
+			2010-11-17: Version 2.0 Upprensning och förenkling av mats ekhammar
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="hosPersonalType">
+		<xs:sequence>
+			<xs:element name="personal-id" type="iso:II">
+				<xs:annotation>
+					<xs:documentation>HSA-id, o.i.d för HSA-id är 1.2.752.129.2.1.4.1</xs:documentation>
+				</xs:annotation>			
+			</xs:element>
+			<xs:element name="fullstandigtNamn" type="xs:string"/>
+			<xs:element name="forskrivarkod" type="xs:string" minOccurs="0"/>
+			<xs:element name="enhet" type="enhetType"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="enhetType">
+		<xs:sequence>
+			<xs:element name="enhets-id" type="iso:II">
+				<xs:annotation>
+					<xs:documentation>HSA-id, o.i.d för HSA-id är 1.2.752.129.2.1.4.1</xs:documentation>
+				</xs:annotation>							
+			</xs:element>
+			<xs:element name="arbetsplatskod" type="iso:II" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>o.i.d för arbetsplatskod är 1.2.752.29.4.71</xs:documentation>
+				</xs:annotation>											
+			</xs:element>
+			<xs:element name="enhetsnamn" type="xs:string"/>
+			<xs:element name="postadress" type="xs:string" minOccurs="0"/>
+			<xs:element name="postnummer" type="xs:string" minOccurs="0"/>
+			<xs:element name="postort" type="xs:string" minOccurs="0"/>
+			<xs:element name="telefonnummer" type="xs:string" minOccurs="0"/>
+			<xs:element name="epost" type="xs:string" minOccurs="0"/>
+			<xs:element name="vardgivare" type="vardgivareType" minOccurs="0" />
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="vardgivareType">
+		<xs:sequence>
+			<xs:element name="vardgivare-id" type="iso:II">
+				<xs:annotation>
+					<xs:documentation>HSA-id, o.i.d för HSA-id är 1.2.752.129.2.1.4.1</xs:documentation>
+				</xs:annotation>							
+			</xs:element>
+			<xs:element name="vardgivarnamn" type="xs:string"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>	
+	
+	<xs:complexType name="patientType">
+		<xs:sequence>
+			<xs:element name="person-id" type="iso:II">
+				<xs:annotation>
+					<xs:documentation>Personnummer eller samordningsnummer.
+						o.i.d för personnummer är 1.2.752.129.2.1.3.1.
+						o.i.d för samordningsnummer är 1.2.752.129.2.1.3.3</xs:documentation>
+				</xs:annotation>							
+			</xs:element>
+			<xs:element name="fullstandigtNamn" type="xs:string"/>
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>			
+		</xs:sequence>
+	</xs:complexType>
+			
+	<xs:complexType name="ResultOfCall">
+		<xs:annotation>
+			<xs:documentation>
+				Holds information about the success of the call. If INFO is set the field infoText should contain more information.
+				If ERROR is set the fields errorId and errorText will contain information about the error.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="resultCode" type="ResultCodeEnum" minOccurs="1" />
+			<xs:element name="infoText" type="xs:string" minOccurs="0" />
+			<xs:element name="errorId" type="ErrorIdEnum" minOccurs="0" />
+			<xs:element name="errorText" type="xs:string" minOccurs="0" />
+			<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:simpleType name="ResultCodeEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OK" />
+			<xs:enumeration value="ERROR" />
+			<xs:enumeration value="INFO" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="ErrorIdEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="VALIDATION_ERROR" />
+			<xs:enumeration value="TRANSFORMATION_ERROR" />
+			<xs:enumeration value="APPLICATION_ERROR" />
+			<xs:enumeration value="TECHNICAL_ERROR" />
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>
