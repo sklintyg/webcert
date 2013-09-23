@@ -23,6 +23,7 @@
   <modules>
     <module>schemas</module>
     <module>fk-stub</module>
+    <module>mail-stub</module>
     <module>webcert</module>
     <module>specifications</module>
     <module>hsa-integration</module>
@@ -164,6 +165,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fk-stub</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mail-stub</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

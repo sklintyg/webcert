@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
@@ -37,24 +38,31 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     public void sendMailForIncomingQuestion(FragaSvar fragaSvar) throws MessagingException {
 
         // fetch email address for unit
-        String email = getNotificationRecipient(fragaSvar.getVardperson().getEnhetsId());
+        GetHsaUnitResponseType unit = getNotificationRecipient(fragaSvar.getVardperson().getEnhetsId());
 
-        if (email != null) {
-            sendNotificationToUnit(email);
+        if (unit.getEmail() != null) {
+            sendNotificationToUnit(unit);
         } else {
             // in case no mail is available for unit, we'll inform the admin
-            sendAdminMailAboutMissingEmailAddress(fragaSvar.getVardperson().getEnhetsId());
+            sendAdminMailAboutMissingEmailAddress(unit);
         }
     }
 
-    private void sendNotificationToUnit(String email) throws MessagingException {
+    private void sendNotificationToUnit(GetHsaUnitResponseType unit) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(unit.getEmail()));
         message.setSubject("Inkommen fråga från Försäkringskassan finns att hämta i WebCert.");
+        StringBuffer body = new StringBuffer();
+        body.append("Vårdenhetens namn är " + unit.getName() + " och id är " + unit.getHsaIdentity());
+        message.setText(body.toString());
+
+        // TODO - decide whether or not to attach link to care unit (see MedCert for more info)
+        // addCareunitLinkInMessage(message, careunitId, certificateId);
+
         mailSender.send(message);
     }
 
-    private String getNotificationRecipient(String hsaId) {
+    private GetHsaUnitResponseType getNotificationRecipient(String hsaId) {
 
         // get email for given unit
         GetHsaUnitResponseType responseType = getHsaUnit(hsaId);
@@ -66,11 +74,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                 return getNotificationRecipient(response.getCareUnitHsaIdentity());
             }
         }
-        return responseType.getEmail();
+        return responseType;
     }
 
-    private void sendAdminMailAboutMissingEmailAddress(String hsaId) throws MessagingException {
-        GetHsaUnitResponseType unit = getHsaUnit(hsaId);
+    private void sendAdminMailAboutMissingEmailAddress(GetHsaUnitResponseType unit) throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(adminMailAddress));
@@ -79,7 +86,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         body.append("En fråga eller ett svar är mottaget av WebCert.");
         body.append("Detta för en enhet som ej har en mailadress satt eller så är enheten ej kopplad till en överliggande vårdenhet.");
         body.append("Vårdenhetens id är ");
-        body.append(unit.getHsaIdentity()+ " och namn är ");
+        body.append(unit.getHsaIdentity() + " och namn är ");
         body.append(unit.getName() + ". ");
         message.setText(body.toString());
         LOGGER.info(body.toString());

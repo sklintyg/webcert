@@ -42,6 +42,10 @@
       <artifactId>fk-stub</artifactId>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mail-stub</artifactId>
+    </dependency>
+    <dependency>
       <groupId>se.inera.certificate</groupId>
       <artifactId>module-api</artifactId>
     </dependency>
