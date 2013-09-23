@@ -8,7 +8,18 @@ import org.joda.time.LocalDateTime;
 
 @Embeddable
 public class IntygsReferens {
-    
+
+    public IntygsReferens() {
+    }
+    public IntygsReferens(String intygsId, String intygsTyp, String patientNamn, String patientPersonNummer,
+            LocalDateTime signeringsDatum) {
+        this.intygsId = intygsId;
+        this.intygsTyp = intygsTyp;
+        this.patientNamn = patientNamn;
+        this.patientPersonNummer = patientPersonNummer;
+        this.signeringsDatum = signeringsDatum;
+    }
+
     @Column(name = "INTYGS_ID")
     private String intygsId;
     
