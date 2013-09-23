@@ -26,16 +26,17 @@ public class FragaSvar {
     /**
      * The (system-wide) unique id for this entity
      */
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private String internReferens;
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long internReferens;
 
     @Column(name = "EXTERN_REFERENS")
     private String externReferens;
-    
+
     @Column(name = "FRAGE_STALLARE")
     private String frageStallare;
-   
+
     @Column(name = "AMNE")
     @Enumerated(EnumType.STRING)
     private Amne amne;
@@ -69,7 +70,7 @@ public class FragaSvar {
 
     @Column(name = "MEDDELANDE_RUBRIK")
     private String meddelandeRubrik;
-    
+
     @Column(name = "SISTA_DATUM_FOR_SVAR")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate sistaDatumForSvar;
@@ -93,11 +94,11 @@ public class FragaSvar {
         this.frageStallare = frageStallare;
     }
 
-    public String getInternReferens() {
+    public Long getInternReferens() {
         return internReferens;
     }
 
-    public void setInternReferens(String internReferens) {
+    public void setInternReferens(Long internReferens) {
         this.internReferens = internReferens;
     }
 
