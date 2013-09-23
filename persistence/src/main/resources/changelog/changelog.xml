@@ -44,7 +44,7 @@
       <column name="SIGNERINGS_DATUM" type="datetime">
         <constraints nullable="true" />
       </column>
-      <column name="MEDDELANDE_RUBRIK" type="datetime">
+      <column name="MEDDELANDE_RUBRIK" type="varchar(255)">
         <constraints nullable="true" />
       </column>
       <column name="SISTA_DATUM_FOR_SVAR" type="date">
@@ -115,9 +115,6 @@
       <column name="TEXT" type="varchar(255)">
         <constraints nullable="false" />
       </column>
-      <column name="TIMESTAMP" type="datetime">
-        <constraints nullable="false" />
-      </column>
     </createTable>
     <addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="KOMPLETTERING" constraintName="KOMPLETTERING_FRAGASVAR_FK" referencedColumnNames="internReferens"
       referencedTableName="FRAGASVAR" />
@@ -128,9 +125,6 @@
         <constraints nullable="false" />
       </column>
       <column name="KONTAKT" type="varchar(255)">
-        <constraints nullable="false" />
-      </column>
-      <column name="TIMESTAMP" type="datetime">
         <constraints nullable="false" />
       </column>
     </createTable>

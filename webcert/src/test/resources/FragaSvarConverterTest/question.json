@@ -16,7 +16,8 @@
     },
     "kompletteringar" : [
         {
-            "falt" : "Fält 8b"
+            "falt" : "Fält 8b",
+            "text" : "Vänligen ändra 'längst till och med (år, månad, dag)' till den 23e december."
         }
     ],
     "vardperson" : {

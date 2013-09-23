@@ -91,6 +91,6 @@
   </dependencies>
 
   <build>
-    <finalName>inera-webcert-persistence</finalName>
+
   </build>
 </project>
