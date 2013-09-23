@@ -56,6 +56,8 @@
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
 
+  <jaxws:endpoint address="/ping-for-configuration/v1.0" implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl"/>
+
   <import resource="classpath:fk-stub-context.xml"/>
 
 

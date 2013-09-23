@@ -2,9 +2,9 @@
   <div class="span6 webcert-col webcert-col-primary">
     <!-- Left side -->
     <div class="webcert-col-shadow"></div>
-    <h1>Intygslista</h1>
+    <h1><span message key="dashboard.title"></span></h1>
 
-    <div wc-care-unit-clinic-selector></div>
+    <!-- <div wc-care-unit-clinic-selector></div> -->
 
     <div class="certlist">
       <div class="row-fluid">
@@ -50,17 +50,17 @@
           <!-- End of template html for ListUnsignedCertCtrl ----------------------------------------------------------->
 
 
-          <!-- UnansweredCertCtrl ----------------------------------------------------------->
+          <!-- UnansweredCertCtrl -----------------------------------------------------------
           <div id="unanswered-cert-list" ng-controller="UnansweredCertCtrl">
             <h2>
               <span message key="label.unansweredcerts"></span>
             </h2>
-            <!-- No results message -->
+            <!-- No results message --
             <div id="unanswered-cert-list-noResults" ng-show="widgetState.doneLoading && qaCertList.length<1 && !widgetState.hasError" class="alert alert-info">
               <span message key="info.nounansweredcertsfound"></span>
             </div>
 
-            <!-- error message -->
+            <!-- error message --
             <div id="unanswered-cert-list-error" ng-show="widgetState.hasError" class="alert alert-error">
               <span message key="error.unansweredcerts.couldnotbeloaded"></span>
             </div>
@@ -107,14 +107,20 @@
 
             <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading && signCertList.length>0">
               <div>
-                <div ng-repeat="readyCert in signCertList">
-                  <label for="selected-for-mass-sign-{{readyCert.id}}"> <span class="certblock certblock-clickable certblock-check clearfix"> <input
-                      id="selected-for-mass-sign-{{readyCert.id}}" name="selected-for-mass-sign" type="checkbox" class="pull-left" />
-                      <h3 class="pull-left">
-                        <span message key="certificatetypes.{{readyCert.typ | lowercase}}.typename"></span>
-                      </h3> <span class="pull-right"><span message key="label.patient"></span> <strong>{{readyCert.patientid}}</strong></span>
-                  </span>
-                  </label>
+                <div class="row-fluid" ng-repeat="readyCert in signCertList">
+                  <div class="span1">
+                    <input id="selected-for-mass-sign-{{readyCert.id}}" name="selected-for-mass-sign" type="checkbox" />
+                  </div>
+                  <div class="span11">
+	                  <label for="selected-for-mass-sign-{{readyCert.id}}"> 
+	                    <span class="certblock certblock-clickable certblock-check clearfix">
+		                    <h3 class="pull-left">
+		                      <span message key="certificatetypes.{{readyCert.typ | lowercase}}.typename"></span>
+		                    </h3> 
+		                    <span class="pull-right"><span message key="label.patient"></span> <strong>{{readyCert.patientid}}</strong></span>
+	                    </span>
+	                  </label>
+                  </div>
                 </div>
                 <button class="btn btn-success" ng-disabled="signCertList.size < 0">
                   <span message key="label.signselectedcerts"></span>

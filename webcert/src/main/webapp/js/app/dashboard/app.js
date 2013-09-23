@@ -9,6 +9,8 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
     }).when('/create', {
     	templateUrl : '/views/dashboard/create-cert.html',
     	controller : 'CreateCertCtrl',
+    }).when('/unanswered', {
+    	templateUrl : '/views/dashboard/unanswered.html',
     }).when('/view', {
     	templateUrl : '/views/dashboard/view.html',
     	controller : 'ViewCertCtrl',
