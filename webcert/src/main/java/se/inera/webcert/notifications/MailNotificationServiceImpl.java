@@ -8,8 +8,10 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
@@ -20,7 +22,10 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 @Service
 public class MailNotificationServiceImpl implements MailNotificationService {
 
-    private static final Logger log = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
+
+    @Value("${mail.admin}")
+    private String adminMailAddress;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -32,17 +37,69 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     public void sendMailForIncomingQuestion(FragaSvar fragaSvar) throws MessagingException {
 
         // fetch email address for unit
-        String email = getEmailAddress(fragaSvar.getVardperson().getEnhetsId());
+        String email = getNotificationRecipient(fragaSvar.getVardperson().getEnhetsId());
 
+        if (email != null) {
+            sendNotificationToUnit(email);
+        } else {
+            // in case no mail is available for unit, we'll inform the admin
+            sendAdminMailAboutMissingEmailAddress(fragaSvar.getVardperson().getEnhetsId());
+        }
+    }
+
+    private void sendNotificationToUnit(String email) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
         message.setSubject("Inkommen fråga från Försäkringskassan finns att hämta i WebCert.");
+        mailSender.send(message);
+    }
+
+    private String getNotificationRecipient(String hsaId) {
+
+        // get email for given unit
+        GetHsaUnitResponseType responseType = getHsaUnit(hsaId);
+
+        if (responseType.getEmail() == null) {
+            // if unit does not have a mail configured, we try to lookup the unit's parent recursively
+            GetCareUnitResponseType response = hsaClient.callGetCareunit(hsaId);
+            if (response != null) {
+                return getNotificationRecipient(response.getCareUnitHsaIdentity());
+            }
+        }
+        return responseType.getEmail();
+    }
+
+    private void sendAdminMailAboutMissingEmailAddress(String hsaId) throws MessagingException {
+        GetHsaUnitResponseType unit = getHsaUnit(hsaId);
+
+        MimeMessage message = mailSender.createMimeMessage();
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(adminMailAddress));
+        message.setSubject("Fråga/svar WebCert: Enhet utan mailadress eller koppling");
+        StringBuffer body = new StringBuffer();
+        body.append("En fråga eller ett svar är mottaget av WebCert.");
+        body.append("Detta för en enhet som ej har en mailadress satt eller så är enheten ej kopplad till en överliggande vårdenhet.");
+        body.append("Vårdenhetens id är ");
+        body.append(unit.getHsaIdentity()+ " och namn är ");
+        body.append(unit.getName() + ". ");
+        message.setText(body.toString());
+        LOGGER.info(body.toString());
+
+        // TODO - decide whether or not to attach link to care unit (see MedCert for more info)
+        // addCareunitLinkInMessage(message, careunitId, certificateId);
 
         mailSender.send(message);
 
     }
 
-    private String getEmailAddress(String hsaId) {
+    private GetHsaUnitResponseType getHsaUnit(String hsaId) {
+        GetHsaUnitResponseType response = hsaClient.callGetHsaunit(hsaId);
+        if (response == null) {
+            throw new IllegalArgumentException("HSA Id " + hsaId + " does not exist in HSA catalogue.");
+        }
+        return response;
+    }
+
+    private String getEmailForUnit(String hsaId) {
         GetHsaUnitResponseType response = hsaClient.callGetHsaunit(hsaId);
         if (response == null) {
             throw new IllegalArgumentException("HSA Id " + hsaId + " does not exist in HSA catalogue.");

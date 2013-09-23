@@ -26,7 +26,7 @@
             <hr:fullstandigtNamn>En Läkare</hr:fullstandigtNamn>
             <hr:forskrivarkod>1234567</hr:forskrivarkod>
             <hr:enhet>
-              <hr:enhets-id root="1.2.752.129.2.1.4.1" extension="VardenhetY"/>
+              <hr:enhets-id root="1.2.752.129.2.1.4.1" extension="IFV1239877878-103F"/>
               <hr:arbetsplatskod root="1.2.752.29.4.71" extension="123456789011"/>
               <hr:enhetsnamn>Kir mott</hr:enhetsnamn>
               <hr:postadress>Lasarettsvägen 13</hr:postadress>
