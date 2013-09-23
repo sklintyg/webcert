@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
-import se.inera.webcert.notifications.MailNotificationService;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
@@ -32,7 +31,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // persist the question
         fragaSvarRepository.save(fragaSvar);
 
-
         // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
@@ -44,8 +42,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Override
     public void processIncomingAnswer(FragaSvar fragaSvar) {
 
+        // TODO - validation: does answer fit to question?
+
         // update the FragaSvar
 
+        // send mail to enhet to inform about new question
+        try {
+            mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
+        } catch (MessagingException e) {
+            Throwables.propagate(e);
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications;
+package se.inera.webcert.service;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -25,6 +25,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
 
+    private static final String INCOMING_QUESTION_SUBJECT = "Inkommen fråga från Försäkringskassan finns att hämta i WebCert.";
+    private static final String INCOMING_ANSWER_SUBJECT = "Inkommet svar finns att hämta i WebCert.";
+
     @Value("${mail.admin}")
     private String adminMailAddress;
 
@@ -41,24 +44,41 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         GetHsaUnitResponseType unit = getNotificationRecipient(fragaSvar.getVardperson().getEnhetsId());
 
         if (unit.getEmail() != null) {
-            sendNotificationToUnit(unit);
+            sendNotificationToUnit(unit, INCOMING_QUESTION_SUBJECT);
         } else {
             // in case no mail is available for unit, we'll inform the admin
             sendAdminMailAboutMissingEmailAddress(unit);
         }
     }
 
-    private void sendNotificationToUnit(GetHsaUnitResponseType unit) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(unit.getEmail()));
-        message.setSubject("Inkommen fråga från Försäkringskassan finns att hämta i WebCert.");
+    @Override
+    public void sendMailForIncomingAnswer(FragaSvar fragaSvar) throws MessagingException {
+        // fetch email address for unit
+        GetHsaUnitResponseType unit = getNotificationRecipient(fragaSvar.getVardperson().getEnhetsId());
+
+        if (unit.getEmail() != null) {
+            sendNotificationToUnit(unit, INCOMING_ANSWER_SUBJECT);
+        } else {
+            // in case no mail is available for unit, we'll inform the admin
+            sendAdminMailAboutMissingEmailAddress(unit);
+        }
+    }
+
+    private String mailBody(GetHsaUnitResponseType unit) {
         StringBuffer body = new StringBuffer();
         body.append("Vårdenhetens namn är " + unit.getName() + " och id är " + unit.getHsaIdentity());
-        message.setText(body.toString());
 
         // TODO - decide whether or not to attach link to care unit (see MedCert for more info)
         // addCareunitLinkInMessage(message, careunitId, certificateId);
 
+        return body.toString();
+    }
+
+    private void sendNotificationToUnit(GetHsaUnitResponseType unit, String subject) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(unit.getEmail()));
+        message.setSubject(subject);
+        message.setText(mailBody(unit));
         mailSender.send(message);
     }
 
