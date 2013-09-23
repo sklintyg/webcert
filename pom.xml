@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>se.inera.webcert</groupId>
   <artifactId>webcert-parent</artifactId>
@@ -49,6 +50,7 @@
     <hibernate.jpa.version>1.0.1.Final</hibernate.jpa.version>
     <xmlunit.version>1.4</xmlunit.version>
     <jaxb.commons.version>0.6.4</jaxb.commons.version>
+    <guava.version>14.0.1</guava.version>
   </properties>
 
   <build>
@@ -169,7 +171,17 @@
         <artifactId>persistence</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>hsa-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
@@ -320,6 +332,11 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
         <version>${spring.version}</version>
       </dependency>
       <dependency>

@@ -19,24 +19,32 @@
  */
 package se.inera.ifv.webcert.spi.authorization.impl;
 
+import javax.xml.ws.BindingProvider;
 import java.net.URL;
 
-import javax.xml.ws.BindingProvider;
-
+import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3.wsaddressing10.AttributedURIType;
-
+import se.inera.ifv.hsaws.v3.HsaWsFault;
 import se.inera.ifv.hsaws.v3.HsaWsResponderInterface;
 import se.inera.ifv.hsaws.v3.HsaWsResponderService;
-import se.inera.ifv.hsawsresponder.v3.*;
+import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
+import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
+import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonResponseType;
+import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonType;
+import se.inera.ifv.hsawsresponder.v3.HsawsSimpleLookupResponseType;
+import se.inera.ifv.hsawsresponder.v3.HsawsSimpleLookupType;
+import se.inera.ifv.hsawsresponder.v3.LookupHsaObjectType;
+import se.inera.ifv.hsawsresponder.v3.PingResponseType;
+import se.inera.ifv.hsawsresponder.v3.PingType;
 
 public class HSAWebServiceCalls implements InitializingBean {
     
     private static final Logger log = LoggerFactory.getLogger(HSAWebServiceCalls.class);
     
-    private AttributedURIType logicalAddressHeader = new AttributedURIType();;
+    private AttributedURIType logicalAddressHeader = new AttributedURIType();
     
     private AttributedURIType messageId = new AttributedURIType();
 
@@ -125,18 +133,16 @@ public class HSAWebServiceCalls implements InitializingBean {
     /**
      * Method to retrieve the caregiver for a hsa unit
      * @param hsaId
-     * @throws Exception 
      */
-    public GetHsaUnitResponseType callGetHsaunit(String hsaId) throws Exception {
+    public GetHsaUnitResponseType callGetHsaunit(String hsaId) {
         LookupHsaObjectType parameters = new LookupHsaObjectType();
         parameters.setHsaIdentity(hsaId);
 
         try {
-            GetHsaUnitResponseType response = serverInterface.getHsaUnit(logicalAddressHeader, messageId, parameters);
-            return response;
-        } catch (Exception ex) {
-            log.error("Exception={}", ex.getMessage(), ex);
-            throw new Exception(ex);
+            return serverInterface.getHsaUnit(logicalAddressHeader, messageId, parameters);
+        } catch (HsaWsFault hsaWsFault) {
+            Throwables.propagate(hsaWsFault);
+            return null;
         }
     }
     

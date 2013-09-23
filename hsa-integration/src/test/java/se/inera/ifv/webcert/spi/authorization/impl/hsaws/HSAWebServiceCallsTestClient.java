@@ -32,7 +32,7 @@ import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 public class HSAWebServiceCallsTestClient {
 
     public static void main(String[] args) {
-        ApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "HSAWebServiceCallsTest-applicationContext.xml", "services-config.xml"});
+        ApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] { "HSAWebServiceCallsTest-applicationContext.xml", "hsa-services-config.xml"});
         HSAWebServiceCalls client = (HSAWebServiceCalls)ctx.getBean("wsCalls");
         try {
             client.callPing();

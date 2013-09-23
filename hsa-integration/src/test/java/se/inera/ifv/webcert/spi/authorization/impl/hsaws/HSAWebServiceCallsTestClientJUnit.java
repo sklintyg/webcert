@@ -20,13 +20,10 @@
 package se.inera.ifv.webcert.spi.authorization.impl.hsaws;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 
 
@@ -42,14 +39,16 @@ public class HSAWebServiceCallsTestClientJUnit {
 
     @Before
     public void init(){
-        ctx = new ClassPathXmlApplicationContext(new String[] { "HSAWebServiceCallsTest-applicationContext.xml", "services-config.xml"});
+        ctx = new ClassPathXmlApplicationContext(new String[] { "HSAWebServiceCallsTest-applicationContext.xml", "hsa-services-config.xml"});
         client = (HSAWebServiceCalls)ctx.getBean("wsCalls");
     }
 
     @Test
-    @Ignore
     public void testHSAPing() throws Exception{
         client.callPing();
+
+        GetHsaUnitResponseType response = client.callGetHsaunit("IFV1239877878-103F");
+        System.out.println(response);
     }
 
 }
