@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd  http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
+
+       profile="dev,test,qa">
+
+  <aop:aspectj-autoproxy/>
+
+  <bean id="mailAdvice" class="se.inera.webcert.mailstub.JavaMailSenderAroundAdvice"/>
+
+  <jaxrs:server address="/mail-stub">
+    <jaxrs:serviceBeans>
+      <ref bean="mailStubRestApi"/>
+    </jaxrs:serviceBeans>
+    <jaxrs:providers>
+      <ref bean="jacksonJsonProvider"/>
+    </jaxrs:providers>
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json"/>
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+
+  <bean id="mailStubRestApi" class="se.inera.webcert.mailstub.MailStubRestApi"/>
+
+</beans>

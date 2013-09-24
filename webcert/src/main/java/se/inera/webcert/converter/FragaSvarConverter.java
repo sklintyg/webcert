@@ -75,7 +75,7 @@ public class FragaSvarConverter {
         for (KompletteringType kompletteringType : source) {
             Komplettering komplettering = new Komplettering();
             komplettering.setFalt(kompletteringType.getFalt());
-            komplettering.setText(komplettering.getText());
+            komplettering.setText(kompletteringType.getText());
             kompletteringar.add(komplettering);
         }
         return kompletteringar;

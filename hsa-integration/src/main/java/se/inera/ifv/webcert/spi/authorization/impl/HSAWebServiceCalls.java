@@ -19,25 +19,33 @@
  */
 package se.inera.ifv.webcert.spi.authorization.impl;
 
+import javax.xml.ws.BindingProvider;
 import java.net.URL;
 
-import javax.xml.ws.BindingProvider;
-
+import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.w3.wsaddressing10.AttributedURIType;
-
+import se.inera.ifv.hsaws.v3.HsaWsFault;
 import se.inera.ifv.hsaws.v3.HsaWsResponderInterface;
 import se.inera.ifv.hsaws.v3.HsaWsResponderService;
-import se.inera.ifv.hsawsresponder.v3.*;
+import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
+import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
+import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonResponseType;
+import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonType;
+import se.inera.ifv.hsawsresponder.v3.HsawsSimpleLookupResponseType;
+import se.inera.ifv.hsawsresponder.v3.HsawsSimpleLookupType;
+import se.inera.ifv.hsawsresponder.v3.LookupHsaObjectType;
+import se.inera.ifv.hsawsresponder.v3.PingResponseType;
+import se.inera.ifv.hsawsresponder.v3.PingType;
 
 public class HSAWebServiceCalls implements InitializingBean {
-    
+
     private static final Logger log = LoggerFactory.getLogger(HSAWebServiceCalls.class);
-    
-    private AttributedURIType logicalAddressHeader = new AttributedURIType();;
-    
+
+    private AttributedURIType logicalAddressHeader = new AttributedURIType();
+
     private AttributedURIType messageId = new AttributedURIType();
 
     private HsaWsResponderInterface serverInterface;
@@ -46,33 +54,37 @@ public class HSAWebServiceCalls implements InitializingBean {
 
     private String hsaLogicalAddress = "SE165565594230-1000";
 
-
     /**
-     * @param hsaUrl the hsaUrl to set
+     * @param hsaUrl
+     *            the hsaUrl to set
      */
     public void setHsaUrl(String hsaUrl) {
         this.hsaUrl = hsaUrl;
     }
 
     /**
-     * @param hsaLogicalAddress the hsaLogicalAddress to set
+     * @param hsaLogicalAddress
+     *            the hsaLogicalAddress to set
      */
     public void setHsaLogicalAddress(String hsaLogicalAddress) {
         this.hsaLogicalAddress = hsaLogicalAddress;
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet() throws Exception {
         logicalAddressHeader.setValue(hsaLogicalAddress);
-        
+
         serverInterface = getServerInterface(hsaUrl);
     }
-    
+
     /**
      * Help method to test access to HSA
-     * @throws Exception 
+     * 
+     * @throws Exception
      */
     public void callPing() throws Exception {
 
@@ -89,9 +101,10 @@ public class HSAWebServiceCalls implements InitializingBean {
 
     /**
      * Method used to get miuRights for a HoS Person
+     * 
      * @param parameters
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     public GetMiuForPersonResponseType callMiuRights(GetMiuForPersonType parameters) throws Exception {
         try {
@@ -106,10 +119,11 @@ public class HSAWebServiceCalls implements InitializingBean {
 
     /**
      * Method to retrieve data for a hsa unit
+     * 
      * @param hsaId
-     * @throws Exception 
+     * @throws Exception
      */
-    public GetCareUnitResponseType callGetCareunit(String hsaId) throws Exception {
+    public GetCareUnitResponseType callGetCareunit(String hsaId) {
         LookupHsaObjectType parameters = new LookupHsaObjectType();
         parameters.setHsaIdentity(hsaId);
 
@@ -117,34 +131,34 @@ public class HSAWebServiceCalls implements InitializingBean {
             GetCareUnitResponseType response = serverInterface.getCareUnit(logicalAddressHeader, messageId, parameters);
             return response;
         } catch (Exception ex) {
-            log.error("Exception={}", ex.getMessage(), ex);
-            throw new Exception(ex);
+            Throwables.propagate(ex);
+            return null;
         }
     }
 
     /**
      * Method to retrieve the caregiver for a hsa unit
+     * 
      * @param hsaId
-     * @throws Exception 
      */
-    public GetHsaUnitResponseType callGetHsaunit(String hsaId) throws Exception {
+    public GetHsaUnitResponseType callGetHsaunit(String hsaId) {
         LookupHsaObjectType parameters = new LookupHsaObjectType();
         parameters.setHsaIdentity(hsaId);
 
         try {
-            GetHsaUnitResponseType response = serverInterface.getHsaUnit(logicalAddressHeader, messageId, parameters);
-            return response;
-        } catch (Exception ex) {
-            log.error("Exception={}", ex.getMessage(), ex);
-            throw new Exception(ex);
+            return serverInterface.getHsaUnit(logicalAddressHeader, messageId, parameters);
+        } catch (HsaWsFault hsaWsFault) {
+            Throwables.propagate(hsaWsFault);
+            return null;
         }
     }
-    
+
     /**
      * Method to retrieve attributes for a HoS Person
+     * 
      * @param parameters
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     public HsawsSimpleLookupResponseType callHsawsSimpleLookup(HsawsSimpleLookupType parameters) throws Exception {
         try {
@@ -154,18 +168,17 @@ public class HSAWebServiceCalls implements InitializingBean {
         } catch (Exception ex) {
             log.error("Exception={}", ex.getMessage(), ex);
             throw new Exception(ex);
-       }
+        }
     }
 
-   
     private HsaWsResponderInterface getServerInterface(String wsUrl) {
         try {
             // Get URL to wsdl file
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             URL wsdlUrl = loader.getResource("schemas/wsdl/HsaWsInteraction_3.16.wsdl");
 
-            // Create web service client stub		
-            HsaWsResponderService hwrs = new HsaWsResponderService(wsdlUrl); 
+            // Create web service client stub
+            HsaWsResponderService hwrs = new HsaWsResponderService(wsdlUrl);
             HsaWsResponderInterface hwri = hwrs.getHsaWsResponderPort();
 
             // Set web service server url

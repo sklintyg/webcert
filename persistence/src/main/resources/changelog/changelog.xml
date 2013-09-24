@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <changeSet id="1" author="me">
+  <!--  initial creation of tables -->
+
+
+    <createTable tableName="FRAGASVAR">
+      <column name="internReferens" type="varchar(255)">
+        <constraints unique="true" nullable="false"/>
+      </column>
+      <column name="AMNE" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="EXTERN_REFERENS" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="FRAGE_SIGNERINGS_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="FRAGE_SKICKAD_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="FRAGE_STALLARE" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="FRAGE_TEXT" type="text">
+        <constraints nullable="true" />
+      </column>
+
+      <column name="INTYGS_ID" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="INTYGS_TYP" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="PATIENT_NAMN" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="PATIENT_PERSON_NUMMER" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="SIGNERINGS_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="MEDDELANDE_RUBRIK" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="SISTA_DATUM_FOR_SVAR" type="date">
+        <constraints nullable="true" />
+      </column>
+
+      <column name="SVAR_SIGNERINGS_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="SVAR_SKICKAD_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="SVARS_TEXT" type="text">
+        <constraints nullable="true" />
+      </column>
+
+      <column name="ARBETSPLATS_KOD" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="ENHETS_ID" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="ENHETSNAMN" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="EPOST" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="FORSKRIVAR_KOD" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="HSAID" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="NAMN" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="POSTADRESS" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="POSTNUMMER" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="POSTORT" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="TELEFONNUMMER" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="VARDGIVAR_ID" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="VARDGIVARNAMN" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+    </createTable>
+    <!-- Add auto incremented id column to table -->
+    <addAutoIncrement columnDataType="int" columnName="internReferens" incrementBy="1" startWith="1" tableName="FRAGASVAR" />
+
+
+    <createTable tableName="KOMPLETTERING">
+      <column name="FRAGASVAR_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="FALT" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="TEXT" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="KOMPLETTERING" constraintName="KOMPLETTERING_FRAGASVAR_FK" referencedColumnNames="internReferens"
+      referencedTableName="FRAGASVAR" />
+
+
+    <createTable tableName="EXTERNA_KONTAKTER">
+      <column name="FRAGASVAR_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="KONTAKT" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="EXTERNA_KONTAKTER" constraintName="EXTERNA_KONTAKTER_FRAGASVAR_FK" referencedColumnNames="internReferens"
+      referencedTableName="FRAGASVAR" />
+
+  </changeSet>
+</databaseChangeLog>

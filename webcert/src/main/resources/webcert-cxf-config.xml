@@ -8,15 +8,22 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:cxf="http://cxf.apache.org/core"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xmlns:sec="http://cxf.apache.org/configuration/security"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
-        http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
+        http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+        http://cxf.apache.org/transports/http/configuration
+                http://cxf.apache.org/schemas/configuration/http-conf.xsd http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
   <import resource="classpath:META-INF/cxf/cxf.xml"/>
+  <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+  <import resource="classpath:META-INF/cxf/cxf-extension-http.xml"/>
 
   <bean id="objectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
 
@@ -51,5 +58,10 @@
 
   <jaxws:endpoint address="/ping-for-configuration/v1.0" implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl"/>
 
-  <import resource="classpath:fk-stub-context.xml"/>
+    <import resource="classpath:fk-stub-context.xml"/>
+    <import resource="classpath:jaxrs-context.xml"/>
+
+
+
+
 </beans>

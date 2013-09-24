@@ -18,8 +18,12 @@
   <context:annotation-config/>
   <context:component-scan base-package="se.inera.webcert"/>
 
+  <import resource="classpath:repository-context.xml"/>
   <import resource="webcert-cxf-config.xml"/>
   <import resource="security/securityContext.xml"/>
+  <import resource="classpath:/hsa-services-config.xml"/>
+  <import resource="classpath:/mail-stub-context.xml" />
+  <import resource="classpath:/repository-context.xml"/>
 
   <context:property-placeholder location="file:${user.home}/.${spring.profiles.active}.minaintyg.se/config.properties"
                                 ignore-resource-not-found="true" ignore-unresolvable="true"/>
@@ -38,6 +42,22 @@
       </list>
     </property>
   </bean>
+
+  <!-- Mail configuration -->
+  	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  		<property name="host" value="${mail.host}" />
+  		<property name="protocol" value="${mail.protocol}" />
+  		<property name="username" value="${mail.username}" />
+  		<property name="password" value="${mail.password}" />
+  		<property name="defaultEncoding" value="${mail.defaultEncoding}" />
+  		<property name="javaMailProperties">
+  			<props>
+  				<prop key="mail.smtps.auth">true</prop>
+  				<prop key="mail.smtps.starttls.enable">true</prop>
+  				<prop key="mail.smtps.debug">true</prop>
+  			</props>
+  		</property>
+  	</bean>
 
 
 </beans>

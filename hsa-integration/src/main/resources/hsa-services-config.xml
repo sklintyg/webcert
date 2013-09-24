@@ -21,24 +21,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
 
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:sec="http://cxf.apache.org/configuration/security" 
+	xmlns:sec="http://cxf.apache.org/configuration/security"
 	xmlns:http="http://cxf.apache.org/transports/http/configuration"
-	xmlns:jaxws="http://java.sun.com/xml/ns/jaxws" 
 	xmlns:cxf="http://cxf.apache.org/core"
     xmlns:cache="http://www.springframework.org/schema/cache"
-    xmlns:aop="http://www.springframework.org/schema/aop"
     xmlns:p="http://www.springframework.org/schema/p"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://www.springframework.org/schema/cache
         http://www.springframework.org/schema/cache/spring-cache.xsd
-        http://www.springframework.org/schema/aop
-        http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
-        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context-3.0.xsd
-		http://cxf.apache.org/core                           
+  	http://cxf.apache.org/core
 		http://cxf.apache.org/schemas/core.xsd
 	    http://cxf.apache.org/configuration/security         
 	    http://cxf.apache.org/schemas/configuration/security.xsd
@@ -60,14 +53,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
         </property>
     </bean>
 
-	<cxf:bus>
-		<cxf:features>
-			<cxf:logging />
-		</cxf:features>
-	</cxf:bus>
-
-
-
 	<http:conduit name="{urn:riv:hsa:HsaWs:3}HsaWsResponderPort.http-conduit">
         <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive" />
         <http:tlsClientParameters disableCNCheck="true">
@@ -78,12 +63,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
                         type="${hsa.ws.certificate.type}" />
 	      	</sec:keyManagers>
 	      	<sec:trustManagers>
-	        	<sec:keyStore 
+	        	<sec:keyStore
 	        		file="${hsa.ws.truststore.file}"
 					password="${hsa.ws.truststore.password}"
 					type="${hsa.ws.truststore.type}" />
 	      	</sec:trustManagers>
-			
+
 			<sec:cipherSuitesFilter>
 				<!--
 					these filters ensure that a ciphersuite with export-suitable or

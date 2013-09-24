@@ -18,15 +18,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc" 
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:sec="http://cxf.apache.org/configuration/security" 
-	xmlns:http="http://cxf.apache.org/transports/http/configuration"
-	xmlns:jaxws="http://java.sun.com/xml/ns/jaxws" 
-	xmlns:cxf="http://cxf.apache.org/core"
-	xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:sec="http://cxf.apache.org/configuration/security"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+       xmlns:cxf="http://cxf.apache.org/core"
+       xsi:schemaLocation="
         http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/context 
@@ -42,24 +42,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         http://cxf.apache.org/transports/http/configuration  
         http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
-    <import resource="classpath:META-INF/cxf/cxf.xml" />
-    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
-    <import resource="classpath:META-INF/cxf/cxf-extension-http.xml" />
+  <import resource="classpath:META-INF/cxf/cxf.xml"/>
+  <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+  <import resource="classpath:META-INF/cxf/cxf-extension-http.xml"/>
 
-	<bean name="props" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-        	<list>
-                <!--
-        		<value>file:${webcert.home}/services.properties</value>
-        		-->
-        		 <value>file:webcert/src/main/resources/services.properties</value>
+  <cxf:bus>
+    <cxf:features>
+      <cxf:logging/>
+    </cxf:features>
+  </cxf:bus>
 
-        	</list>
-        </property>
-    </bean>
-	       <!--
-	<bean id="organisationInfoService" class="se.inera.ifv.webcert.spi.organisation.impl.GetOrganisationInfoServiceImplHSA"/>
-	
-	<bean id="authorizationService" class="se.inera.ifv.webcert.spi.authorization.impl.GetAuthorizationServiceImplHSA"/>
-	       -->
+
+  <bean name="props" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <!--
+    <value>file:${webcert.home}/services.properties</value>
+    -->
+        <value>file:webcert/src/main/resources/services.properties</value>
+
+      </list>
+    </property>
+  </bean>
+  <!--
+<bean id="organisationInfoService" class="se.inera.ifv.webcert.spi.organisation.impl.GetOrganisationInfoServiceImplHSA"/>
+
+<bean id="authorizationService" class="se.inera.ifv.webcert.spi.authorization.impl.GetAuthorizationServiceImplHSA"/>
+  -->
 </beans>
