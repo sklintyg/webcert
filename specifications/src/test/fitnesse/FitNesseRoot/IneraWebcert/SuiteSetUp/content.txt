@@ -1,0 +1,18 @@
+!****> Global Setup... 
+|Import|
+|se.inera.webcert.spec|
+|se.inera.webcert.spec.util|
+
+!|Config|
+|property|value|
+|webcert.baseUrl|${webcert.baseUrl}|
+|service.listCertificatesUrl|${services.listCertificatesUrl}|
+|service.getCertificateUrl|${services.getCertificateUrl}|
+|service.setCertificateStatusUrl|${services.setCertificateStatusUrl}|
+|service.revokeCertificateUrl|${services.revokeCertificateUrl}|
+|service.setConsentUrl|${services.setConsentUrl}|
+|service.registerMedicalCertificateUrl|${services.registerMedicalCertificateUrl}|
+|service.sendCertificateUrl|${services.sendCertificateUrl}|
+|service.sendMedicalCertificateQuestionUrl|${services.sendMedicalCertificateQuestionUrl}|
+|service.sendMedicalCertificateAnswerUrl|${services.sendMedicalCertificateAnswerUrl}|
+*****! 
