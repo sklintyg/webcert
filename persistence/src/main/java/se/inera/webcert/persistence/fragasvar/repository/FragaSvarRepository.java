@@ -7,4 +7,6 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 public interface FragaSvarRepository extends CrudRepository<FragaSvar, Long>{
 
 
+
+
 }

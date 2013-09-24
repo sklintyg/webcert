@@ -27,7 +27,8 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$wind
  * 
  */
 angular.module('wcDashBoardApp').controller('ViewCertCtrl', [ '$scope', '$window', function CreateCertCtrl($scope, $window) {
-
+	$scope.cert = {}
+	$scope.cert.filledAlways = true;
 } ]);
 
 /*
