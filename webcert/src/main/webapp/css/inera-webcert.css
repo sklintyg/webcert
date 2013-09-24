@@ -18,11 +18,28 @@
  */
 @CHARSET "UTF-8";
 
-html,body,container {
-	height: 100%;
+html,body,container-fluid {
   font-size: 14px;
 	font-family: helvetica, arial, sans-serif;
   text-align: left;
+}
+
+.container-fluid {
+	overflow:hidden; 
+	padding: 0;
+	height: 100%;
+  min-height: 832px;
+}
+
+a {
+	color: #28b4c4;
+}
+
+a.backlink {
+  display:inline-block;
+  line-height:18px;
+  padding-left:15px;
+  background:transparent url(/img/back-link-icon.gif) center left no-repeat;
 }
 
 h1 {
@@ -167,17 +184,24 @@ span.location { font-size: 12px; font-weight: bold; }
 	color: #fff;
 }
 
-.container {	overflow:hidden;}
-
 .webcert-multicol {
   background-color: #f2f2f2;
+  height: 100%;
+  min-height: 832px;
 }
 
 .webcert-col {
 	padding: 20px 20px 0 0;
 	height: 100%;
-	min-height: 100%;
 	position: relative;
+  min-height: 832px;
+}
+
+.webcert-col-primary {
+	background-color: #fff;
+	padding-left: 30px;
+	height: 100%;
+	min-height: 832px !important;
 }
 
 .webcert-col-single {
@@ -193,41 +217,51 @@ span.location { font-size: 12px; font-weight: bold; }
 	position:absolute;
 }
 
-.webcert-col-primary { background-color: #fff; padding-left: 30px; }
-
 .webcert-col-section {
   border-top: 1px solid #CCC;
   margin-top: 20px;
 }
 
-.box-center {
-	
-	/* Internet Explorer 10 */
-	display:-ms-flexbox;
-	-ms-flex-pack:center;
-	-ms-flex-align:center;
-	
-	/* Firefox */
-	display:-moz-box;
-	-moz-box-pack:center;
-	-moz-box-align:center;
-	
-	/* Safari, Opera, and Chrome */
-	display:-webkit-box;
-	-webkit-box-pack:center;
-	-webkit-box-align:center;
-	
-	/* W3C */
-	display:box;
-	box-pack:center;
-	box-align:center;	
+.qa-block {
+  margin: 0 0 20px 0;
+  background-color: #fff;
+  border: 1px solid #d8d8d8;
+  -webkit-border-radius: 8px 8px 8px 8px;
+  -moz-border-radius: 8px 8px 8px 8px;
+  border-radius: 8px 8px 8px 8px; 
 }
 
-a.backlink {
-  display:inline-block;
-  line-height:18px;
-  padding-left:15px;
-  background:transparent url(/img/back-link-icon.gif) center left no-repeat;
+.qa-block-head {
+  margin: 0;
+  color: #fff;
+  font-size: 13px;
+  display: block;
+  padding: 10px 20px;
+  background-color: #777;
+  -webkit-border-radius: 8px 8px 0px 0px;
+  -moz-border-radius: 8px 8px 0px 0px;
+  border-radius: 8px 8px 0px 0px;
+}
+
+.qa-block-head h3 {
+	font-size: 13px;
+	margin: 0;
+	font-weight: normal;
+}
+
+.qa-block-body {
+  display: block;
+  padding: 20px 20px;
+}
+
+.qa-sender {
+  float: left;
+	font-weight: bold;
+}
+
+.qa-date {
+	float: right;
+  font-weight: bold;
 }
 
 /* bootstrap override */
@@ -235,6 +269,8 @@ a.backlink {
 .control-label {
 	font-weight: bold;
 }
+
+.buttonbar .btn { margin: 5px 5px 0 0; }
 
 .btn {
 	line-height: 18px;
@@ -297,8 +333,6 @@ a.backlink {
   padding: 10px 35px;
 }
 
-.btn-space { margin-right: 5px; }
-
 .btn-block {
   padding-top: 10px;
   padding-bottom: 10px;
@@ -342,6 +376,7 @@ a.backlink {
 
 .navbar .nav {
     margin: 0 0px 0 0;
+    min-width: 800px;
 }
 
 .navbar .nav>li {

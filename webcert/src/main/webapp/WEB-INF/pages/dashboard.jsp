@@ -36,8 +36,8 @@
 
   <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
   <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap-responsive.css"/>">
-  <link rel="stylesheet" href="<c:url value="/css/inera.css"/>">
   <link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
+  <link rel="stylesheet" href="<c:url value="/css/inera-certificate.css"/>">
 
   <script type="text/javascript">
     /**
@@ -85,7 +85,7 @@
    },
   ]">
   </div>
-  <!-- <div class="container"> -->
+  <div class="container-fluid">
     <%-- No script to show at least something when javascript is off --%>
     <noscript>
       <h1>
@@ -98,7 +98,7 @@
     
     <%-- ng-view that holds dynamic content managed by angular app --%>
     <div id="view" ng-view></div>
-  <!-- </div> -->
+  </div>
 
   <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/angular.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/i18n/angular-locale_sv-se.js"/>"></script>

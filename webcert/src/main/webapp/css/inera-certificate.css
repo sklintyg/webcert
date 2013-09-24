@@ -1,0 +1,89 @@
+/**
+ * Copyright (C) 2012 Inera AB (http://www.inera.se)
+ *
+ * This file is part of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
+ *
+ * Inera Certificate Web is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Inera Certificate Web is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.cert-body {
+    padding-top: 20px;
+}
+
+.cert-body div.body-row {
+	margin: 0 0 20px 0;
+	background-color: #ededed;
+	border: 1px solid #d8d8d8;
+	-webkit-border-radius: 8px 8px 8px 8px;
+	-moz-border-radius: 8px 8px 8px 8px;
+	border-radius: 8px 8px 8px 8px;	
+}
+
+.cert-body .body-row .title {
+	margin: 0;
+	color: #008391;
+	font-size: 16px;
+	font-weight: bold;
+	display: block;
+	padding: 10px 20px;
+	background-color: #ededed;
+	-webkit-border-radius: 8px 8px 0px 0px;
+	-moz-border-radius: 8px 8px 0px 0px;
+	border-radius: 8px 8px 0px 0px;
+	border-bottom: 1px solid #d8d8d8;	
+}
+
+.cert-body .body-row .text {
+	display: block;
+	padding: 20px 40px;
+}
+
+.cert-body .body-row .unfilled {
+  color: #888;
+    -webkit-border-radius: 8px 8px 8px 8px;
+    -moz-border-radius: 8px 8px 8px 8px;
+    border-radius: 8px 8px 8px 8px;
+}
+
+.body-row h4.cert-field-number {
+	float: right;
+	padding: 0px 20px;
+	color: #008391;
+	font-size: 15px;
+}
+
+.body-row .cert-field-blank {
+  color: #008391;
+}
+
+div.infobox {
+    background-color: #008391;
+    -webkit-border-radius: 8px 8px 8px 8px;
+    -moz-border-radius: 8px 8px 8px 8px;
+    border-radius: 8px 8px 8px 8px;
+    color: #fff;
+    padding: 20px;
+}
+
+div.infobox h3 {
+    font-size: 16px;
+    padding: 0;
+    color: #fff;
+}
+
+div.infobox h4 {
+    padding: 10px 0 5px 0;
+    color: #fff;
+    font-size: 14px;
+}
