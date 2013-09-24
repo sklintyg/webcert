@@ -29,11 +29,17 @@
             <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading && wipCertList.length>0">
               <div>
                 <div ng-repeat="cert in wipCertList | limitTo:widgetState.pageSize">
-                  <a href="#/view"> <span class="certblock certblock-clickable">
+                  <a href="#/view">
+                    <span class="certblock certblock-clickable clearfix">
                       <h3>
                         <span message key="certificatetypes.{{cert.typ | lowercase}}.typename"></span>
-                      </h3> <span>{{cert.lastsaved | date:'shortDate'}}</span> <span class="pull-right"><span message key="label.patient"></span> <strong>{{cert.patientid}}</strong></span>
-                  </span>
+                      </h3>
+                      <span>{{cert.lastsaved | date:'shortDate'}}</span>
+                      <span class="pull-right">
+                        <span message key="label.patient"></span>
+                        <strong>{{cert.patientid}}</strong>
+                      </span>
+                    </span>
                   </a>
                 </div>
                 <button id="unsigned-cert-list-btn-unsigned-showall" class="btn btn-block" type="button" ng-click="widgetState.pageSize = widgetState.showMax"
@@ -169,7 +175,7 @@
           </div>
           <div class="control-group">
             <div class="controls">
-              <span class="span9 certblock certblock-clickable">
+              <span class="span9 certblock certblock-clickable clearfix">
                 <h3>Läkarintyg FK 7263</h3> <span>2013-05-04</span>
               </span> <span class="span3 certblock-copy"><button class="btn btn-info span12">Kopiera</button></span>
             </div>
