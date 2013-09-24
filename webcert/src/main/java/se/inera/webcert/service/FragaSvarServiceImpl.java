@@ -45,6 +45,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // TODO - validation: does answer fit to question?
 
         // update the FragaSvar
+        fragaSvarRepository.save(fragaSvar);
 
         // send mail to enhet to inform about new question
         try {

@@ -3,6 +3,9 @@ package se.inera.webcert.converter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
 import se.inera.webcert.medcertqa.v1.FkKontaktType;
@@ -23,10 +26,15 @@ import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFrom
 @Component
 public class FragaSvarConverter {
 
+    private static final String FK_FRAGASTALLARE = "FK";
+
+    @Autowired
+    private CrudRepository<FragaSvar, Long> fragaSvarRepository;
+
     public FragaSvar convert(QuestionFromFkType source) {
 
         FragaSvar fragaSvar = new FragaSvar();
-        fragaSvar.setFrageStallare("FK");
+        fragaSvar.setFrageStallare(FK_FRAGASTALLARE);
         fragaSvar.setExternReferens(source.getFkReferensId());
         fragaSvar.setAmne(Amne.valueOf(source.getAmne().value().toUpperCase()));
 
@@ -105,10 +113,21 @@ public class FragaSvarConverter {
     public FragaSvar convert(AnswerFromFkType answer) {
 
         // lookup question in database
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(Long.parseLong(answer.getVardReferensId()));
+
+        if (fragaSvar == null) {
+            throw new IllegalStateException("No question found with internal ID " + answer.getVardReferensId());
+        }
+
+        if (FK_FRAGASTALLARE.equals(fragaSvar.getFrageStallare())) {
+            throw new IllegalStateException("Incoming answer referns to question initiated by Försäkringskassan.");
+        }
 
         // fill up FragaSvar with answer information
+        fragaSvar.setSvarsText(answer.getSvar().getMeddelandeText());
+        fragaSvar.setSvarSigneringsDatum(answer.getSvar().getSigneringsTidpunkt());
+        fragaSvar.setSvarSkickadDatum(new LocalDateTime());
 
-        return null;
-
+        return fragaSvar;
     }
 }
