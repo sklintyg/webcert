@@ -28,4 +28,11 @@ public interface FragaSvarRepositoryCustom {
      */
     public List<FragaSvar> findByIntygsReferensIntygsId(String intygsId);
 
+    /**
+     * Should return a {@link FragaSvar} matching the search criteria.
+     * @param externReferens
+     * @return
+     */
+    public FragaSvar findByExternReferens(String externReferens);
+
 }

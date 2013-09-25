@@ -26,6 +26,8 @@ public class Fraga extends RestClientFixture{
     String intygsId;
     String intygsTyp;
 
+    String enhetsId;
+
     String vardperson_mall;
     String fraga_mall;
 
@@ -43,6 +45,7 @@ public class Fraga extends RestClientFixture{
         def fraga  = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_${fraga_mall}_template.json").getInputStream()))
 
         fraga.vardperson = vardperson();
+        fraga.vardperson.enhetsId=enhetsId;
         fraga.amne = amne;
         fraga.meddelandeRubrik=meddelandeRubrik;
         fraga.frageText = frageText;
@@ -58,7 +61,8 @@ public class Fraga extends RestClientFixture{
         // slurping the vardperson template
         def vardperson  = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("vardperson_${vardperson_mall}_template.json").getInputStream()))
 
-        //JsonOutput.toJson(vardperson)
+
     }
 
 }
+

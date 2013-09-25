@@ -105,4 +105,16 @@ public class FragaSvarRepositoryTest {
         return f;
     }
 
+
+    @Test
+    public void testFindByExternReferens() {
+        FragaSvar saved = buildFragaSvarFraga("Enhet-1-id");
+
+
+        fragasvarRepository.save(saved);
+
+        FragaSvar read = fragasvarRepository.findByExternReferens(saved.getExternReferens());
+        assertEquals(read.getInternReferens(), saved.getInternReferens());
+
+    }
 }
