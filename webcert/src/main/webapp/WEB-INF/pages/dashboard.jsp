@@ -35,7 +35,7 @@
   <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
   <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
-  <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap-responsive.css"/>">
+  <link rel="stylesheet" href="<c:url value="/css/bootstrap-responsive-modified.css"/>">
   <link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
   <link rel="stylesheet" href="<c:url value="/css/inera-certificate.css"/>">
 
@@ -65,7 +65,7 @@
    },
    {
      link :'/web/dashboard', 
-     label:'Utkast',
+     label:'Mina osignerade intyg',
      requires_doctor: true
    },
    {
