@@ -164,6 +164,11 @@ span.location { font-size: 12px; font-weight: bold; }
 	font-weight: bold;
 }
 
+.certblock-mass-sign-check {
+	text-align: center;
+  padding: 6px 0 0 10px;
+}
+
 .cert-mark-forwarded {
 	float: left;
 	padding: 10px 0 0 10px;
@@ -349,6 +354,10 @@ span.location { font-size: 12px; font-weight: bold; }
 
 .dropdown-menu-center {
 	left: -23%;
+}
+
+input[type="radio"], input[type="checkbox"] {
+  margin: 0px 0 0;
 }
 
 .navbar {

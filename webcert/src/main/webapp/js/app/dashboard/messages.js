@@ -9,14 +9,14 @@ var webcertResources = {
         //labels
         "label.unsignedcerts" : "Osignerade Intyg",
         "label.unansweredcerts": "Intyg med obesvarad fråga",
-        "label.readytosigncerts": "Intyg färdiga att signera(massignering)",
+        "label.readytosigncerts": "Intyg färdiga att signera (massignering)",
         "label.showallcerts" : "Visa alla intyg",
         "label.showfewercerts" : "Visa färre intyg",
         "label.patient" : "Patient:",
         "label.signselectedcerts" :"Signera valda intyg",
         //certificate types
         "certificatetypes.fk7263.typename" : "Läkarintyg FK7263",
-        "certificatetypes.rli.typename" : "Läkarintyg utebliven resa(RLI)",
+        "certificatetypes.rli.typename" : "Läkarintyg utebliven resa (RLI)",
         
         //info messages
         "info.nounsignedcertsfound" : "Inga osignerade intyg hittades.",
