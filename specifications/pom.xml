@@ -22,7 +22,7 @@
     <skipTests>true</skipTests>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
 
-      <webcert.baseUrl>http://localhost:9088/inera-certificate/</webcert.baseUrl>
+      <webcert.baseUrl>http://localhost:9088/services/</webcert.baseUrl>
   </properties>
 
   <dependencies>
@@ -222,7 +222,7 @@
       <id>wiki</id>
       <!--
         This profile is for use when writing tests using the FitNesse wiki.
-        Simply run 'mvn verify -P wiki' and use a browser to visit http://localhost:9123/JavaExample
+        Simply run 'mvn verify -P wiki' and use a browser to visit http://localhost:9124/IneraWebcert
       -->
       <build>
         <plugins>

@@ -40,7 +40,7 @@
   </beans>
 
   <beans >
-    <jaxrs:server  address="/resources">
+    <jaxrs:server  address="/questions">
       <jaxrs:serviceBeans>
         <ref bean="questionBean"/>
         <!--

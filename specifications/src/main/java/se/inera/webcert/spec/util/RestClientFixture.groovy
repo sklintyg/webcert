@@ -5,5 +5,5 @@ package se.inera.webcert.spec.util
  */
 class RestClientFixture {
 
-    static String baseUrl = System.getProperty("certificate.baseUrl") + "resources/"
+    static String baseUrl = System.getProperty("webcert.baseUrl") + "questions/"
 }

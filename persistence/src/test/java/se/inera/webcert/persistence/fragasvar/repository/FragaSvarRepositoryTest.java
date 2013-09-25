@@ -68,7 +68,13 @@ public class FragaSvarRepositoryTest {
         
         return f;
     }
+       /*
+    @Test
+    public void testFind2() {
 
-    
+        FragaSvar read = fragasvarRepository.findOne(saved.getInternReferens());
+
+
+    }  */
 
 }

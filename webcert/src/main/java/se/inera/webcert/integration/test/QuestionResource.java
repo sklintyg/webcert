@@ -1,5 +1,7 @@
 package se.inera.webcert.integration.test;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 
@@ -18,14 +20,15 @@ import javax.ws.rs.core.Response;
 @Transactional
 public class QuestionResource {
 
-    @PersistenceContext
-    private javax.persistence.EntityManager entityManager;
+    @Autowired
+    private CrudRepository<FragaSvar, Long> fragasvarRepository;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/")
     public Response insertQuestion(FragaSvar question) {
-        entityManager.persist(question);
+        fragasvarRepository.save(question);
+
         return Response.ok().build();
     }
 }
