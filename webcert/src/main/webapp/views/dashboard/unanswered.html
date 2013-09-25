@@ -1,93 +1,104 @@
 <div class="row-fluid">
   <div class="span12 webcert-col webcert-col-primary">
     <h1><span message key="dashboard.unanswered.title"></span></h1>
-    <h2>Välj bland dina medarbetaruppdrag i Landstinget i Västmanland</h2>
+    <h2>Välj enhet <span style="font-size: 12px; color: #999">endast dina medarbetaruppdrag i Landstinget i Västmanland visas</span></h2>
     
     <div class="row-fluid">
-	    <table class="span7 table" cellspacing="0" cellpadding="0">
+	    <table class="span12 table">
 			    <tr>
-			      <th>Vårdenhet/Mottagning</th>
-			      <th>Obesvarade frågor initierade av Försäkringskassan</th>
-	          <th>Obesvarade frågor initierade av vården</th>
-			    </tr>
-			    <tr class="success">
-			      <td><a href="#">Enhet 1 - linköpings universitetssjukhus</a></td>
-			      <td>31</td>
-	          <td>2</td>
+			      <td><span class="qa-unit qa-unit-selected">Enhet 1 - linköpings universitetssjukhus</span></td>
+	          <td><span class="qa-circle qa-circle-active" title="Ohanterade frågor och svar">2</span></td>
 			    </tr>
 	        <tr>
-	          <td><a href="#">Enhet 1 - linköpings universitetssjukhus</a></td>
-	          <td>31</td>
-	          <td>2</td>
+	          <td><a class="qa-unit" href="#">Enhet 1 - linköpings universitetssjukhus</a></td>
+	          <td><span class="qa-circle qa-circle-inactive" title="Ohanterade frågor och svar">0</span></td>
 	        </tr>
 	    </table>
     </div>    
-    
+
+    <h2 class="col-head">Enhet 1 - linköpings universitetssjukhus</h2>
     <div class="row-fluid">
-      <div class="span12">
-        <span class="span7">
-          <span class="certblock-head">
-            <span class="certblock-field">Initierad av</span>
-            <span class="certblock-field certblock-field-large">Läkare</span>
-            <span class="certblock-field certblock-field-small">Skickat</span>
-            <span class="certblock-field">Patient</span>
-            <span class="certblock-field">Ämne</span>
-            <span class="certblock-field certblock-field-small">Svar senast</span>
-          </span>
-        </span>
-      </div>
-    </div>
-    <div class="row-fluid">
-      <div class="span12">
-	      <span class="span7">
-	        <a href="#">
-	          <span class="certblock certblock-clickable">
-	            <span class="certblock-field">Vården</span>
-	            <span class="certblock-field certblock-field-large">Lars Larsson Smith</span>
-	            <span class="certblock-field certblock-field-small">2013-01-01</span>
-	            <span class="certblock-field">19121212-1212</span>
-	            <span class="certblock-field">Komplettering</span>
-	            <span class="certblock-field certblock-field-small">2013-01-01</span>
-	          </span>
-	        </a>
-	      </span>
-        <span class="span5">
-          <span class="pull-left">
-	          <button class="btn btn-success">
-	            E-post
-	          </button>
-          </span>
-          <span class="cert-mark-forwarded">
-  	        <label for="selected"><input id="selected" type="checkbox" /> Markera detta intyg som vidarebefordrat</label>
-          </span>
-	      </span>
-      </div>
-    </div>
-    <div class="row-fluid">
-      <div class="span12">
-        <span class="span7">
-          <a href="#">
-            <span class="certblock certblock-clickable">
-              <span class="certblock-field">Vården</span>
-              <span class="certblock-field certblock-field-large">Lars Larsson Smith</span>
-              <span class="certblock-field certblock-field-small">2013-01-01</span>
-              <span class="certblock-field">19121212-1212</span>
-              <span class="certblock-field">Komplettering</span>
-              <span class="certblock-field certblock-field-small">2013-01-01</span>
-            </span>
-          </a>
-        </span>
-        <span class="span5">
-          <span class="pull-left">
-            <button class="btn btn-success">
-              E-post
-            </button>
-          </span>
-          <span class="cert-mark-forwarded">
-            <label for="selected"><input id="selected" type="checkbox" /> Markera detta intyg som vidarebefordrat</label>
-          </span>
-        </span>
-      </div>
+      <table class="span12 table table-striped table-qa">
+          <tr>
+            <th></th>
+            <th>Status</th>
+            <th>Initierad av</th>
+            <th>Läkare</th>
+            <th>Skickat</th>
+            <th>Patient</th>
+            <th>Ämne</th>
+            <th>Svar senast</th>
+            <th class="center">Vidarebefordrad</th>
+            <th></th>
+          </tr>
+          <tr>
+            <td>
+              <button class="btn btn-info">
+                Visa
+              </button>
+            </td>
+            <td class="marked">Besvarad - oläst</td>
+            <td>Försäkringskassan</td>
+            <td>Lars Larsson Smith</td>
+            <td>2013-01-01</td>
+            <td>19121212-1212</td>
+            <td>Komplettering</td>
+            <td>2013-01-01</td>
+            <td class="center"><input id="selected" type="checkbox" /></td>
+            <td class="table-qa-last">
+              <button class="btn btn-success">
+                E-post
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button class="btn btn-info">
+                Visa
+              </button>
+            </td>
+            <td class="marked">Besvarad - oläst</td>
+            <td>Försäkringskassan</td>
+            <td>Lars Larsson Smith</td>
+            <td>2013-01-01</td>
+            <td>19121212-1212</td>
+            <td>Komplettering</td>
+            <td>2013-01-01</td>
+            <td class="center"><input id="selected" type="checkbox" /></td>
+            <td class="table-qa-last">
+              <button class="btn btn-success">
+                E-post
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button class="btn btn-info">
+                Visa
+              </button>
+            </td>
+            <td>Besvarad - oläst</td>
+            <td>Försäkringskassan</td>
+            <td>Lars Larsson Smith</td>
+            <td>2013-01-01</td>
+            <td>19121212-1212</td>
+            <td>Komplettering</td>
+            <td>2013-01-01</td>
+            <td class="center"><input id="selected" type="checkbox" /></td>
+            <td class="table-qa-last">
+              <button class="btn btn-success">
+                E-post
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td class="nopadding" colspan="10">
+				      <button id="unsigned-cert-list-btn-unsigned-showall" class="btn btn-block" type="button">
+				        Visa hanterade frågor och svar
+				      </button>
+            </td>
+          </tr>
+      </table>
     </div>
   </div>
 </div>

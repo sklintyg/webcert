@@ -60,11 +60,6 @@
   menu-defs="[
    {
      link :'/web/dashboard', 
-     label:'Skriv intyg',
-     requires_doctor: false
-   },
-   {
-     link :'/web/dashboard', 
      label:'Mina osignerade intyg',
      requires_doctor: true
    },
@@ -76,6 +71,11 @@
    {
      link :'/web/dashboard#/unanswered',
      label:'Enhetens obesvarade frågor',
+     requires_doctor: false
+   },
+   {
+     link :'/web/dashboard', 
+     label:'Skriv intyg',
      requires_doctor: false
    },
    {
