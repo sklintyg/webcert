@@ -1,15 +1,16 @@
 package se.inera.webcert.service;
 
-import javax.mail.MessagingException;
-
 import java.util.List;
 
-import com.google.common.base.Throwables;
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+
+import com.google.common.base.Throwables;
 
 /**
  * @author andreaskaltenbach
@@ -21,7 +22,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private MailNotificationService mailNotificationService;
 
     @Autowired
-    private CrudRepository<FragaSvar, Long> fragaSvarRepository;
+    private FragaSvarRepository fragaSvarRepository;
 
     @Override
     public void processIncomingQuestion(FragaSvar fragaSvar) {
@@ -57,6 +58,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     public List<FragaSvar> getFragaSvar(List<String> enhetsHsaIds) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return fragaSvarRepository.findByEnhetsId(enhetsHsaIds);
     }
 }

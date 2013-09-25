@@ -21,7 +21,6 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:http="http://cxf.apache.org/transports/http/configuration"
-       xmlns:cxf="http://cxf.apache.org/core"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
@@ -29,18 +28,7 @@
 
         profile="dev,test,qa">
 
-  <beans>
-
-    <bean id="objectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
-
-    <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
-      <property name="mapper" ref="objectMapper"/>
-    </bean>
-
-  </beans>
-
-  <beans >
-    <jaxrs:server  address="/resources">
+    <jaxrs:server  address="/questions">
       <jaxrs:serviceBeans>
         <ref bean="questionBean"/>
         <!--
@@ -56,9 +44,4 @@
     </jaxrs:server>
 
     <bean id="questionBean" class="se.inera.webcert.integration.test.QuestionResource"/>
-      <!--
-    <bean id="fkBean" class="se.inera.certificate.integration.stub.FkStubResource"/>
-       -->
-  </beans>
-
 </beans>

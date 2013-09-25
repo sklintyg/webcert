@@ -2,6 +2,7 @@ package se.inera.webcert.converter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author andreaskaltenbach
@@ -78,7 +81,7 @@ public class FragaSvarConverter {
         return vardperson;
     }
 
-    private List<Komplettering> convertKompletteringar(List<KompletteringType> source) {
+    private Set<Komplettering> convertKompletteringar(List<KompletteringType> source) {
         List<Komplettering> kompletteringar = new ArrayList<>();
         for (KompletteringType kompletteringType : source) {
             Komplettering komplettering = new Komplettering();
@@ -86,7 +89,7 @@ public class FragaSvarConverter {
             komplettering.setText(kompletteringType.getText());
             kompletteringar.add(komplettering);
         }
-        return kompletteringar;
+        return ImmutableSet.copyOf(kompletteringar);
     }
 
     private IntygsReferens convert(LakarutlatandeEnkelType source) {
@@ -102,12 +105,12 @@ public class FragaSvarConverter {
         return intygsReferens;
     }
 
-    private List<String> convertFkKontaktInfo(List<FkKontaktType> source) {
+    private Set<String> convertFkKontaktInfo(List<FkKontaktType> source) {
         List<String> externaKontakter = new ArrayList<>();
         for (FkKontaktType kontaktInfo : source) {
             externaKontakter.add(kontaktInfo.getKontakt());
         }
-        return externaKontakter;
+        return ImmutableSet.copyOf(externaKontakter);
     }
 
     public FragaSvar convert(AnswerFromFkType answer) {

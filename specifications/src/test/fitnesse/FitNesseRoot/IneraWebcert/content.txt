@@ -1,1 +1,11 @@
-!contents -R2 -g -p -f -h
+!-FitNesse-!-baserade specifikationer för Intygstjänsten.
+
+!contents -R4
+
+!*> '''Variables Defined'''
+!define TEST_SYSTEM {slim}
+*!
+
+!*> '''Classpath'''
+${maven.classpath}
+*!
