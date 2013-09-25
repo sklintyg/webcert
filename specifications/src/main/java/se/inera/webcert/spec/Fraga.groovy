@@ -33,7 +33,7 @@ public class Fraga extends RestClientFixture{
         def restClient = new RESTClient(baseUrl)
         //def restClient = new RESTClient('http://localhost:9088/services/questions/')
             restClient.post(
-                    path: 'question',
+                    path: 'questions',
                     body:  questionJson(),
                     requestContentType: JSON
             )
