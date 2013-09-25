@@ -1,6 +1,6 @@
 package se.inera.webcert.persistence.fragasvar.model;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -9,6 +9,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -63,10 +64,10 @@ public class FragaSvar {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime svarSkickadDatum;
 
-    @ElementCollection
+    @ElementCollection (fetch = FetchType.EAGER)
     @CollectionTable(name = "EXTERNA_KONTAKTER", joinColumns = @JoinColumn(name = "FRAGASVAR_ID"))
     @Column(name = "KONTAKT")
-    private List<String> externaKontakter;
+    private Set<String> externaKontakter;
 
     @Column(name = "MEDDELANDE_RUBRIK")
     private String meddelandeRubrik;
@@ -79,9 +80,9 @@ public class FragaSvar {
     @Embedded
     private IntygsReferens intygsReferens;
 
-    @ElementCollection
+    @ElementCollection (fetch = FetchType.EAGER)
     @CollectionTable(name = "KOMPLETTERING", joinColumns = @JoinColumn(name = "FRAGASVAR_ID"))
-    private List<Komplettering> kompletteringar;
+    private Set<Komplettering> kompletteringar;
 
     @Embedded
     private Vardperson vardperson;
@@ -166,11 +167,11 @@ public class FragaSvar {
         this.svarSkickadDatum = svarSkickadDatum;
     }
 
-    public List<String> getExternaKontakter() {
+    public Set<String> getExternaKontakter() {
         return externaKontakter;
     }
 
-    public void setExternaKontakter(List<String> externaKontakter) {
+    public void setExternaKontakter(Set<String> externaKontakter) {
         this.externaKontakter = externaKontakter;
     }
 
@@ -198,11 +199,11 @@ public class FragaSvar {
         this.intygsReferens = intygsReferens;
     }
 
-    public List<Komplettering> getKompletteringar() {
+    public Set<Komplettering> getKompletteringar() {
         return kompletteringar;
     }
 
-    public void setKompletteringar(List<Komplettering> kompletteringar) {
+    public void setKompletteringar(Set<Komplettering> kompletteringar) {
         this.kompletteringar = kompletteringar;
     }
 

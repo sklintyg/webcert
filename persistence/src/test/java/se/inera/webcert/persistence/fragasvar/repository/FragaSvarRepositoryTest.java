@@ -3,6 +3,7 @@ package se.inera.webcert.persistence.fragasvar.repository;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -88,7 +89,7 @@ public class FragaSvarRepositoryTest {
 
     private FragaSvar buildFragaSvarFraga(String enhetsId) {
         FragaSvar f = new FragaSvar();
-        f.setExternaKontakter(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3"));
+        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
         f.setExternReferens("externReferens");
         f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
