@@ -1,7 +1,13 @@
 !3 Frågor:
 
-|Fraga|
+|Fraga Svar|
 |fraga_mall|amne|externReferens|frageStallare|meddelandeRubrik|frageText|intygsId|intygsTyp|vardperson_mall|enhetsId|sistaDatumForSvar|
-|1|OVRIGT|FK-123A|Pehr|Rubrik|Fungerar detta|b2f6d5bc-2f50-4623-9ce9-bf1ee5404347|FK7263|1|123456|2013-12-23|
-|1|OVRIGT|FK-123B|Pehr|Fråga2|En ny fråga ...|b2f6d5bc-2f50-4623-9ce9-bf1ee5404347|FK7263|2|654321|2013-12-23|
+|1|OVRIGT|FK-123A|FK|En fråga ... |Jag undrar om följande ... ipsum lorem|b2f6d5bc-2f50-4623-9ce9-bf1ee5404347|FK7263|1|123456|2013-12-23|
+|1|OVRIGT|FK-123B|FK|Fråga2|Varför ... ipsum lorum |b2f6d5bc-2f50-4623-9ce9-bf1ee5404347|FK7263|2|654321|2013-12-23|
 
+!3 Svar:
+
+|Fraga Svar|
+|fraga_mall|amne|externReferens|frageStallare|meddelandeRubrik|frageText|intygsId|intygsTyp|vardperson_mall|enhetsId|sistaDatumForSvar|svarsText|
+|1|OVRIGT|FK-223A|FK|En fråga ... |Jag undrar om följande ... ipsum lorem|b2f6d5bc-2f50-4623-9ce9-bf1ee5404347|FK7263|1|123456|2013-12-23|svar 111 |
+|1|OVRIGT|FK-223B|FK|Fråga2|Varför ... ipsum lorum |b2f6d5bc-2f50-4623-9ce9-bf1ee5404347|FK7263|2|654321|2013-12-23|svar 222|
