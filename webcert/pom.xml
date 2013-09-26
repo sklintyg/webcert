@@ -208,6 +208,10 @@
               <name>jetty.port</name>
               <value>9088</value>
             </systemProperty>
+            <systemProperty>
+              <name>java.awt.headless</name>
+              <value>true</value>
+            </systemProperty>            
           </systemProperties>
         </configuration>
       </plugin>
