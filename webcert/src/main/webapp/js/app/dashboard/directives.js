@@ -9,7 +9,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
         template: 
     	    '<table class="span12 table unit-table">'+
         		'<tr ng-repeat="vardenhet in vardenheter">'+
-        			'<td><span class="qa-unit" ng-class="{selected : valdVardenhet == vardenhet}">{{vardenhet.namn}}</span></td>'+
+        			'<td><button type="button" ng-click="selectUnit(vardenhet)" ng-href="#" class="qa-unit" ng-class="{selected : valdVardenhet == vardenhet}">{{vardenhet.namn}}</button></td>'+
         			'<!--<td><span class="qa-circle qa-circle-active" title="Ohanterade frågor och svar">2</span></td>-->'+
         		'</tr>'+
         	'</table>',
@@ -38,6 +38,10 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
                 $rootScope.$broadcast("vardenhet", $scope.valdVardenhet);
             }
 
+            $scope.selectUnit = function(unit) {
+            	$scope.valdVardenhet = unit;
+            }
+            
             $scope.updateMottagningsval = function () {
                 $rootScope.$broadcast("mottagning", $scope.valdMottagning);
             }
