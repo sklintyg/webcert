@@ -11,13 +11,14 @@ import se.inera.webcert.spec.util.RestClientFixture
 /**
  * Created by pehr on 9/23/13.
  */
-public class Fraga extends RestClientFixture{
+public class FragaSvar extends RestClientFixture implements GroovyObject{
 
     String amne;
     String externReferens;
     String frageStallare;
     String meddelandeRubrik;
     String frageText;
+    String svarsText;
     String frageSigneringsDatum;
     String frageSkickadDatum;
     String sistaDatumForSvar;
@@ -27,21 +28,26 @@ public class Fraga extends RestClientFixture{
     String intygsTyp;
 
     String enhetsId;
+    String status;
+    Boolean vidarebefordrad;
 
     String vardperson_mall;
     String fraga_mall;
+
+
+
 
     public void execute() {
         def restClient = new RESTClient(baseUrl)
         //def restClient = new RESTClient('http://localhost:9088/services/questions/')
             restClient.post(
                     path: 'questions',
-                    body:  questionJson(),
+                    body:  questionAnswerJson(),
                     requestContentType: JSON
             )
     }
 
-    private questionJson() {
+    private questionAnswerJson() {
         def fraga  = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_${fraga_mall}_template.json").getInputStream()))
 
         fraga.vardperson = vardperson();
@@ -53,7 +59,12 @@ public class Fraga extends RestClientFixture{
         fraga.intygsReferens.intygsId = intygsId;
         fraga.intygsReferens.intygsTyp = intygsTyp;
         fraga.sistaDatumForSvar = sistaDatumForSvar;
+        fraga.status = status;
+        fraga.vidarebefordrad = vidarebefordrad;
 
+        if (svarsText) {
+           fraga.svarsText = svarsText;
+        }
         JsonOutput.toJson(fraga)
     }
 

@@ -9,7 +9,7 @@ import static groovyx.net.http.ContentType.JSON
 /**
  * @author johannesc
  */
-public class Medarbetare extends RestClientFixture{
+public class HsaMedarbetare extends RestClientFixture {
 
     String hsaId
     String name
@@ -18,13 +18,13 @@ public class Medarbetare extends RestClientFixture{
 
 
     public void execute() {
+        System.out.println("HsaMedarbetare.execute()!!!!!!")
         def restClient = new RESTClient(baseUrl)
-        //def restClient = new RESTClient('http://localhost:9088/services/questions/')
-            restClient.post(
-                    path: 'hsa-api/medarbetaruppdrag',
-                    body:  questionJson(),
-                    requestContentType: JSON
-            )
+        restClient.post(
+                path: 'hsa-api/medarbetaruppdrag',
+                body: questionJson(),
+                requestContentType: JSON
+        )
     }
 
     private questionJson() {
