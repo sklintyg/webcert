@@ -63,7 +63,7 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
         fraga.intygsReferens.intygsId = intygsId;
         fraga.intygsReferens.intygsTyp = intygsTyp;
         fraga.sistaDatumForSvar = sistaDatumForSvar;
-        if (frageStallare) fraga.frageStallare = frageStallarew
+        if (frageStallare) fraga.frageStallare = frageStallare
         if (status) fraga.status = status
         if (vidarebefordrad) fraga.vidarebefordrad = vidarebefordrad
         if (svarsText) {
