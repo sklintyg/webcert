@@ -4,7 +4,7 @@
  * formatting in this file as-is, otherwise the inline templates will be hard to follow. 
  */
 angular.module('wc.common.directives', []);
-angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', function($rootScope) {
+angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$location', function($rootScope,$location) {
     return {
         restrict : "A",
         replace : true,
@@ -19,7 +19,19 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
             //Expose "now" as a model property for the template to render as todays date
             $scope.today = new Date();
             $scope.menuItems = eval($scope.menuDefs);
+            //alert($location.path());
             
+            $scope.isActive = function (page) {
+              /*if (angular.isString($scope.defaultActive)) {
+                  if (page == $scope.defaultActive) {
+                      return 'active';
+                  }
+              }*/
+            	
+            	page = page.substr(page.lastIndexOf('/') + 1);
+              var currentRoute = $location.path().substring(1) || 'index';
+              return page === currentRoute;
+          };              
         },
         template:
         	'<div>'
@@ -63,7 +75,7 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope', func
 				    					+'</a>'
 				    					+'<div class="nav-collapse collapse navbar-responsive-collapse">'
 				    						+'<ul class="nav">'
-			    								+'<li class="active" ng-repeat="menu in menuItems">'
+			    								+'<li ng-class="{active: isActive(menu.link)}" ng-repeat="menu in menuItems">'
 		    										+'<a ng-href="{{menu.link}}" ng-show="(menu.requires_doctor && isDoctor) || !menu.requires_doctor">{{menu.label}}</a>'
 		    									+'</li>'
 		            				+'</ul>'
