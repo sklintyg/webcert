@@ -26,9 +26,26 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
         });
     }
     
+    /* 
+     * Load questions and answers data for  
+     */
+
+    function _getQA(unitId, callback) {
+        $log.debug("_getQA unitId:" + unitId);
+        var restPath = '/api/fragasvar/' + unitId + '/list';
+        $http.get(restPath).success(function(data) {
+            $log.debug("got data:" + data);
+            callback(data);
+        }).error(function(data, status, headers, config) {
+            $log.error("error " + status);
+            //Let calling code handle the error of no data response 
+            callback(null);
+        });
+    }
     
     // Return public API for the service
     return {
-        getCertificates : _getCertificates
+        getCertificates : _getCertificates,
+        getQA : _getQA
     }
 } ]);

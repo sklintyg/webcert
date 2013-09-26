@@ -107,8 +107,8 @@
   <%-- Application files --%>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/app.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/controllers.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/services.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/messages.js"/>"></script>
 
   <%-- Dependencies to common components --%>

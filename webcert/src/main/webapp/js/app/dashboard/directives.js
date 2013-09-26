@@ -18,7 +18,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
             $scope.vardenheter = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare.vardenheter;
 
             $scope.units = []; // aggregated units to present for vardenhet/mottagning choice
-                        
+            
             angular.forEach($scope.vardenheter, function(vardenhet, key){
               this.push(vardenhet);
               
@@ -33,6 +33,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
 
             $scope.selectUnit = function(unit) {
             	$scope.selectedUnit = unit;
+            	$scope.getQA($scope.selectedUnit.id);
             }
             
             // Local function getting the first care unit's hsa id in the data struct.
