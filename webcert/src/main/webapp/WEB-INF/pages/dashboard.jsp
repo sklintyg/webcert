@@ -69,7 +69,7 @@
      requires_doctor: false
    },
    {
-     link :'/web/dashboard#/unanswered',
+     link :'/web/dashboard#/unhandled-qa',
      label:'Enhetens obesvarade frågor',
      requires_doctor: false
    },
