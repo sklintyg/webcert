@@ -368,6 +368,7 @@ body span:hover.qa-unit-selected {
 	background: none;
 	background-color: #42a341;
 	cursor: pointer;
+	white-space:nowrap;
 }
 
 .btn-success:hover {
@@ -465,7 +466,6 @@ input[type="radio"], input[type="checkbox"] {
 
 .navbar .nav {
     margin: 0 0px 0 0;
-    min-width: 800px;
 }
 
 .navbar .nav>li {
@@ -567,3 +567,7 @@ th.center, td.center { text-align: center; }
 .table-qa tr > td.nopadding { padding: 0; }
 
 .marked { color: #ff4565; }
+
+.scrollable {
+    overflow-x:auto;
+}
