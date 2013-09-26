@@ -47,6 +47,7 @@ public class Fraga extends RestClientFixture{
         fraga.vardperson = vardperson();
         fraga.vardperson.enhetsId=enhetsId;
         fraga.amne = amne;
+        fraga.externReferens = externReferens;
         fraga.meddelandeRubrik=meddelandeRubrik;
         fraga.frageText = frageText;
         fraga.intygsReferens.intygsId = intygsId;

@@ -28,11 +28,16 @@ public class QuestionResource {
     }
 
     @DELETE
-    @Path("/{extref}")
+    @Path("/{externReferens}")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response deleteQuestion(@PathParam("extref") String extref) {
-        FragaSvar fraga = fragasvarRepository.findByExternReferens( extref);
+    public Response deleteQuestion(@PathParam("externReferens") String externReferens) {
+        System.out.println("ext ref: " + externReferens);
+        FragaSvar fraga = fragasvarRepository.findByExternReferens( externReferens);
+        if (fraga == null) {
+            System.out.println("Fraga IS NULL !!!!!!");
+        }
+        System.out.println("fraga!! : " + fraga.getFrageText());
         fragasvarRepository.delete(fraga);
         return Response.ok().build();
     }
