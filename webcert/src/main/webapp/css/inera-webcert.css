@@ -306,16 +306,13 @@ a.qa-unit {
 	color: #323232;
 }
 
-span.qa-unit-selected {
+.unit-table span.selected {
 	color: #fff;
 	font-weight: bold;
 	background: none;
   background-color: #28b4c4;
 }
 
-span.qa-unit-selected {
-	color: #fff;
-}
 body span:hover.qa-unit-selected {
   color: #fff;
 }
