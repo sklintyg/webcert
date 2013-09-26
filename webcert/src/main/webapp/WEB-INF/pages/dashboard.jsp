@@ -59,12 +59,12 @@
   caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>" 
   menu-defs="[
    {
-     link :'/web/dashboard', 
+     link :'/web/dashboard#/index', 
      label:'Mina osignerade intyg',
      requires_doctor: true
    },
    {
-     link :'/web/unsigned', 
+     link :'/web/dashboard#/unsigned', 
      label:'Enhetens osignerade intyg',
      requires_doctor: false
    },
@@ -74,12 +74,12 @@
      requires_doctor: false
    },
    {
-     link :'/web/dashboard', 
+     link :'/web/dashboard#/create', 
      label:'Skriv intyg',
      requires_doctor: false
    },
    {
-     link :'/web/about',
+     link :'/web/dashboard#/about',
      label:'Om webcert',
      requires_doctor: false
    },

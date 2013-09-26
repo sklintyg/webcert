@@ -11,7 +11,7 @@ import static groovyx.net.http.ContentType.JSON
 /**
  * @author johannesc
  */
-public class Hsaenhet extends RestClientFixture{
+public class HsaEnhet extends RestClientFixture {
 
     String vardgivarid;
     String hsaId;
@@ -20,12 +20,11 @@ public class Hsaenhet extends RestClientFixture{
 
     public void execute() {
         def restClient = new RESTClient(baseUrl)
-        //def restClient = new RESTClient('http://localhost:9088/services/questions/')
-            restClient.post(
-                    path: 'hsa-api/enhet',
-                    body:  questionJson(),
-                    requestContentType: JSON
-            )
+        restClient.post(
+                path: 'hsa-api/enheter',
+                body: questionJson(),
+                requestContentType: JSON
+        )
     }
 
     private questionJson() {

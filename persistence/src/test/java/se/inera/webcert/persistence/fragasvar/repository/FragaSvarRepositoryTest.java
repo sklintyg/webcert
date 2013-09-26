@@ -129,7 +129,6 @@ public class FragaSvarRepositoryTest {
     public void testFindByExternReferens() {
         FragaSvar saved = buildFragaSvarFraga("Enhet-1-id", Status.PENDING_EXTERNAL_ACTION);
 
-
         fragasvarRepository.save(saved);
 
         FragaSvar read = fragasvarRepository.findByExternReferens(saved.getExternReferens());

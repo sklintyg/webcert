@@ -19,6 +19,13 @@ public class QuestionResource {
     @Autowired
     private FragaSvarRepository fragasvarRepository;
 
+    @GET
+    @Path("/{externReferens}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public FragaSvar getCertificate(@PathParam("externReferens") String externReferens) {
+        return fragasvarRepository.findByExternReferens( externReferens);
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response insertQuestion(FragaSvar question) {
@@ -28,11 +35,12 @@ public class QuestionResource {
     }
 
     @DELETE
-    @Path("/{extref}")
+    @Path("/{externReferens}")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public Response deleteQuestion(@PathParam("extref") String extref) {
-        FragaSvar fraga = fragasvarRepository.findByExternReferens( extref);
+    public Response deleteQuestion(@PathParam("externReferens") String externReferens) {
+        FragaSvar fraga = fragasvarRepository.findByExternReferens( externReferens);
+
         fragasvarRepository.delete(fraga);
         return Response.ok().build();
     }
