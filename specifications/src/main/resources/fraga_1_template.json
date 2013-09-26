@@ -13,6 +13,8 @@
         "intygsTyp" : "fk7263",
         "patientNamn" : "Tomten",
         "patientPersonNummer" : "19121212-1212"
-    }
+    },
+    "status" : "PENDING_INTERNAL_ACTION",
+    "vidarebefordrad" : false
 
 }

@@ -100,6 +100,12 @@
       <column name="VARDGIVARNAMN" type="varchar(255)">
         <constraints nullable="true" />
       </column>
+      <column name="STATUS" type="varchar(32)">
+        <constraints nullable="false" />
+      </column>
+      <column name="VIDAREBEFORDRAD" type="boolean">
+        <constraints nullable="false" />
+      </column>        
     </createTable>
     <!-- Add auto incremented id column to table -->
     <addAutoIncrement columnDataType="int" columnName="internReferens" incrementBy="1" startWith="1" tableName="FRAGASVAR" />

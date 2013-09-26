@@ -28,6 +28,8 @@ public class FragaSvar extends RestClientFixture implements GroovyObject{
     String intygsTyp;
 
     String enhetsId;
+    String status;
+    Boolean vidarebefordrad;
 
     String vardperson_mall;
     String fraga_mall;
@@ -57,6 +59,8 @@ public class FragaSvar extends RestClientFixture implements GroovyObject{
         fraga.intygsReferens.intygsId = intygsId;
         fraga.intygsReferens.intygsTyp = intygsTyp;
         fraga.sistaDatumForSvar = sistaDatumForSvar;
+        fraga.status = status;
+        fraga.vidarebefordrad = vidarebefordrad;
 
         if (svarsText) {
            fraga.svarsText = svarsText;

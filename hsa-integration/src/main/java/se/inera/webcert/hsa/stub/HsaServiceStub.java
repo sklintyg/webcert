@@ -13,6 +13,7 @@ public class HsaServiceStub {
 
     // Map of vardgivarid and a collection of units. Inner map is unit's hsa id plus unit
     private Map<String, Map<String, HsaUnitStub>> vardgivare = new HashMap();
+    // Straightforward access to all persons
     private Map<String, PersonStub> persons = new HashMap();
 
 
@@ -75,5 +76,18 @@ public class HsaServiceStub {
 
     public PersonStub getPerson(String hsaIdentity) {
         return persons.get(hsaIdentity);
+    }
+
+    public void clearCache() {
+        vardgivare = new HashMap();
+        persons = new HashMap();
+    }
+
+    public Map<String, Map<String, HsaUnitStub>> getUnitCache() {
+        return vardgivare;
+    }
+
+    public Map<String, PersonStub> getPersonCache() {
+        return persons;
     }
 }
