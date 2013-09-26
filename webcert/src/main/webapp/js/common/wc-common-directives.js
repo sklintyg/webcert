@@ -19,15 +19,8 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
             //Expose "now" as a model property for the template to render as todays date
             $scope.today = new Date();
             $scope.menuItems = eval($scope.menuDefs);
-            //alert($location.path());
             
             $scope.isActive = function (page) {
-              /*if (angular.isString($scope.defaultActive)) {
-                  if (page == $scope.defaultActive) {
-                      return 'active';
-                  }
-              }*/
-            	
             	page = page.substr(page.lastIndexOf('/') + 1);
               var currentRoute = $location.path().substring(1) || 'index';
               return page === currentRoute;
