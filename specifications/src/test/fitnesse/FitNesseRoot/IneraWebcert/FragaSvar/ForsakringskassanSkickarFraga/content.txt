@@ -17,8 +17,8 @@
 
 !3 så ska det finnas en fråga med extern referens 'FK-1234' från Försäkringskassan som behöver svaras på
 |Fragor och svar|
-|externReferens|finns?|
-|FK-1234|true|
+|externReferens|finns?|fraga?|
+|FK-1234|true|Fungerar detta?|
 
 !3 och ett mejl har skickats till enheten
 |Mail|

@@ -17,8 +17,8 @@
 
 !3 så ska det finnas en fråga med svar 
 |Fragor och svar|
-|internReferens|finns?|
-|$internReferens|true|
+|internReferens|finns?|svar?|
+|$internReferens|true|Han är tyvärr inte med i adressboken|
 
 !3 och ett mejl har skickats till enheten
 |Mail|

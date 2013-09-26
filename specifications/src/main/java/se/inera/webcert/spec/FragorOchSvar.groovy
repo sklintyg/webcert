@@ -17,15 +17,21 @@ class FragorOchSvar extends RestClientFixture {
         def restClient = new RESTClient(baseUrl)
 
         if (internReferens)
-            fragaSvar = restClient.get(path: "questions/${internReferens}")
+            fragaSvar = restClient.get(path: "questions/${internReferens}").data
 
         if (externReferens)
-            fragaSvar = restClient.get(path: "questions/extern/${externReferens}")
+            fragaSvar = restClient.get(path: "questions/extern/${externReferens}").data
     }
 
     public boolean finns() {
-        return fragaSvar.data != null
+        return fragaSvar != null
     }
 
-    // TODO - use MOP
+    def fraga() {
+        fragaSvar.frageText
+    }
+
+    def svar() {
+        fragaSvar.svarsText
+    }
 }
