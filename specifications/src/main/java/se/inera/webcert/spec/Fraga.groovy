@@ -27,6 +27,8 @@ public class Fraga extends RestClientFixture{
     String intygsTyp;
 
     String enhetsId;
+    String status;
+    Boolean vidarebefordrad;
 
     String vardperson_mall;
     String fraga_mall;
@@ -53,6 +55,8 @@ public class Fraga extends RestClientFixture{
         fraga.intygsReferens.intygsId = intygsId;
         fraga.intygsReferens.intygsTyp = intygsTyp;
         fraga.sistaDatumForSvar = sistaDatumForSvar;
+        fraga.status = status;
+        fraga.vidarebefordrad = vidarebefordrad;
 
         JsonOutput.toJson(fraga)
     }
