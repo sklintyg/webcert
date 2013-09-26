@@ -1,7 +1,43 @@
-!3 Frågor:
+!3 Det finns en enhet i HSA katalogen
+|Hsa Enhet|
+|vardgivarid|hsaId|name|email|
+|vg1|enhet-1|Vårdenhet 1|!-enhet1@hsastub.se-!|
 
-|Fraga|
-|fraga_mall|amne|externReferens|frageStallare|meddelandeRubrik|frageText|intygsId|intygsTyp|vardperson_mall|sistaDatumForSvar|
-|1|OVRIGT|FK-123|Pehr|Rubrik|Fungerar detta|b2f6d5bc-2f50-4623-9ce9-bf1ee5404347|FK7263|1|2013-12-23|
-|1|OVRIGT|FK-123|Pehr|Fråga2|En ny fråga ...|b2f6d5bc-2f50-4623-9ce9-bf1ee5404347|FK7263|2|2013-12-23|
+!3 Och det finns ingen fråga med extern referens 'FK-1234'.
+|Fragor och svar|
+|externReferens|finns?|
+|FK-1234|false|
 
+!3 Om Försäkringskassan skickar en ny fråga
+
+|Fk skickar fraga|
+|amne|externReferens|frageText|intygsId|vardpersonal|vardenhet|resultat?|
+|OVRIGT|FK-1234|Fungerar detta?|intyg-1|lakare-1|enhet-1|OK|
+
+
+!3 så ska det finnas en fråga med extern referens 'FK-1234' från Försäkringskassan som behöver svaras på
+|Fragor och svar|
+|externReferens|finns?|
+|FK-1234|true|
+
+!3 och ett mejl har skickats till enheten
+|Mail|
+|mottagare?|amne?|innehall?|
+|!-[enhet1@hsastub.se]-!|!-Inkommen fråga från Försäkringskassan finns att hämta i WebCert.-!|!-Vårdenhetens namn är Vårdenhet 1 och id är enhet-1<br/><br/><a href="http://localhost:9088/questions/enhet-1">Länk till vårdenheten</a><br/><br/><a href="http://localhost:9088/questions/enhet-1/intyg-1">Länk till frågan</a>-!|
+
+
+
+!3 Ta bort test frågor, HSA katalog och mail
+
+|Ta bort fraga|
+|externReferens|
+|FK-1234|
+
+|script|Mailbox|
+|rensa|
+
+|script|Hsa Cache|
+|rensa|
+
+
+TODO - integrate intygstjänsten stub!

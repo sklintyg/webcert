@@ -41,7 +41,7 @@ class WsClientFixture {
 		throw new Exception("message:<<${s.replace(System.getProperty('line.separator'), ' ')}>>")
 	}
 	
-    static String baseUrl = System.getProperty("certificate.baseUrl", "http://localhost:8080/inera-certificate/")
+    static String baseUrl = System.getProperty("webcert.baseUrl")
 
 	def setEndpoint(def responder, String serviceName, String url = baseUrl + serviceName) {
 		if (!url) url = baseUrl + serviceName
