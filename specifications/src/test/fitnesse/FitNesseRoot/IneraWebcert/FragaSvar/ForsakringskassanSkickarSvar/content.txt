@@ -4,7 +4,7 @@
 |vg1|enhet-1|Vårdenhet 1|!-enhet1@hsastub.se-!|
 
 !3 Och det finns en fråga som initierades av vården
-|Fraga|
+|Fraga Svar|
 |fraga_mall|amne|frageStallare|frageText|intygsId|vardperson_mall|enhetsId|internReferens?|
 |1|OVRIGT|WC|Tomten kan inte vara sjukskriven den 24e december!|intyg-1|1|enhet-1|$internReferens=|
 
@@ -17,8 +17,8 @@
 
 !3 så ska det finnas en fråga med svar 
 |Fragor och svar|
-|externReferens|finns?|
-|FK-1234|true|
+|internReferens|finns?|
+|$internReferens|true|
 
 !3 och ett mejl har skickats till enheten
 |Mail|
@@ -30,14 +30,11 @@
 !3 Ta bort test frågor, HSA katalog och mail
 
 |Ta bort fraga|
-|externReferens|
-|FK-1234|
+|internReferens|
+|$internReferens|
 
 |script|Mailbox|
 |rensa|
 
 |script|Hsa Cache|
 |rensa|
-
-
-TODO - integrate intygstjänsten stub!

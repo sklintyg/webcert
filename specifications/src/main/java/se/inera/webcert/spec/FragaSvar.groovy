@@ -11,40 +11,48 @@ import se.inera.webcert.spec.util.RestClientFixture
 /**
  * Created by pehr on 9/23/13.
  */
-public class Fraga extends RestClientFixture{
+public class FragaSvar extends RestClientFixture implements GroovyObject {
 
     String amne;
     String externReferens;
     String frageStallare;
     String meddelandeRubrik;
     String frageText;
+    String svarsText;
     String frageSigneringsDatum;
     String frageSkickadDatum;
     String sistaDatumForSvar;
     String externaKontakter;
 
-    String intygsId
-    String intygsTyp
+    String intygsId;
+    String intygsTyp;
 
-    String enhetsId
-    String status
-    Boolean vidarebefordrad
+    String enhetsId;
+    String status;
+    Boolean vidarebefordrad;
 
-    String vardperson_mall
-    String fraga_mall
+    String vardperson_mall;
+    String fraga_mall;
+
+    String internReferens
+
+
+    public String internReferens() {
+        internReferens
+    }
 
     public void execute() {
         def restClient = new RESTClient(baseUrl)
-        //def restClient = new RESTClient('http://localhost:9088/services/questions/')
-            restClient.post(
-                    path: 'questions',
-                    body:  questionJson(),
-                    requestContentType: JSON
-            )
+        def response = restClient.post(
+                path: 'questions',
+                body: questionAnswerJson(),
+                requestContentType: JSON
+        )
+        internReferens = response.data.internReferens
     }
 
-    private questionJson() {
-        def fraga  = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_${fraga_mall}_template.json").getInputStream()))
+    private questionAnswerJson() {
+        def fraga = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_${fraga_mall}_template.json").getInputStream()))
 
         fraga.vardperson = vardperson();
         fraga.vardperson.enhetsId = enhetsId;
@@ -55,12 +63,11 @@ public class Fraga extends RestClientFixture{
         fraga.intygsReferens.intygsId = intygsId;
         fraga.intygsReferens.intygsTyp = intygsTyp;
         fraga.sistaDatumForSvar = sistaDatumForSvar;
-        if (frageStallare != null) fraga.frageStallare = frageStallare
-        if (status != null) fraga.status = status;
-        if (vidarebefordrad != null) fraga.vidarebefordrad = vidarebefordrad;
-
+        if (frageStallare) fraga.frageStallare = frageStallarew
+        if (status) fraga.status = status
+        if (vidarebefordrad) fraga.vidarebefordrad = vidarebefordrad
         if (svarsText) {
-           fraga.svarsText = svarsText;
+            fraga.svarsText = svarsText
         }
         JsonOutput.toJson(fraga)
     }
@@ -74,4 +81,3 @@ public class Fraga extends RestClientFixture{
     }
 
 }
-

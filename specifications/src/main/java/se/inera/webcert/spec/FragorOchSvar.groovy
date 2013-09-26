@@ -9,15 +9,23 @@ import se.inera.webcert.spec.util.RestClientFixture
  */
 class FragorOchSvar extends RestClientFixture {
 
-    String externReferens;
+    String internReferens
+    String externReferens
     def fragaSvar
 
     public void execute() {
         def restClient = new RESTClient(baseUrl)
-        fragaSvar = restClient.get(path: "questions/${externReferens}")
+
+        if (internReferens)
+            fragaSvar = restClient.get(path: "questions/${internReferens}")
+
+        if (externReferens)
+            fragaSvar = restClient.get(path: "questions/extern/${externReferens}")
     }
 
     public boolean finns() {
         return fragaSvar.data != null
     }
+
+    // TODO - use MOP
 }
