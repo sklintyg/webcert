@@ -10,18 +10,6 @@
 
   <jdbc:embedded-database id="dataSource" type="H2" />
 
-    <bean id="org.h2.tools.Server"
-          class="org.h2.tools.Server"
-          factory-method="createTcpServer"
-          init-method="start"
-          destroy-method="stop" lazy-init="false">
-        <constructor-arg value="-tcp,-tcpAllowOthers,-tcpPort, 9094"/>
-    </bean>
-    <bean id="h2WebServer" class="org.h2.tools.Server" factory-method="createWebServer" init-method="start"
-          destroy-method="stop">
-        <constructor-arg value="-web,-webAllowOthers,-webPort,9082"/>
-    </bean>
-
   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="dataSource" ref="dataSource" />
     <property name="persistenceUnitName" value="jpa.webcert" />
