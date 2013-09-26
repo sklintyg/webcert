@@ -9,15 +9,13 @@ import static groovyx.net.http.ContentType.JSON
 /**
  * @author johannesc
  */
-public class HsaRensaCache extends RestClientFixture {
+public class HsaCache extends RestClientFixture {
 
-    public void execute() {
-        System.out.println("HsaRensaCache.execute()!!!!!!")
+    public void rensa() {
+        System.out.println("HsaCache.execute()!!!!!!")
         def restClient = new RESTClient(baseUrl)
-        restClient.post(
-                path: 'hsa-api/rensa-cache',
-                body: '',
-                requestContentType: JSON
+        restClient.delete(
+                path: 'hsa-api/rensa-cache'
         )
     }
 
