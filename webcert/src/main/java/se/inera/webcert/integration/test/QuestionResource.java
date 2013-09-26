@@ -19,6 +19,13 @@ public class QuestionResource {
     @Autowired
     private FragaSvarRepository fragasvarRepository;
 
+    @GET
+    @Path("/{externReferens}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public FragaSvar getCertificate(@PathParam("externReferens") String externReferens) {
+        return fragasvarRepository.findByExternReferens( externReferens);
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response insertQuestion(FragaSvar question) {
@@ -32,12 +39,8 @@ public class QuestionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response deleteQuestion(@PathParam("externReferens") String externReferens) {
-        System.out.println("ext ref: " + externReferens);
         FragaSvar fraga = fragasvarRepository.findByExternReferens( externReferens);
-        if (fraga == null) {
-            System.out.println("Fraga IS NULL !!!!!!");
-        }
-        System.out.println("fraga!! : " + fraga.getFrageText());
+
         fragasvarRepository.delete(fraga);
         return Response.ok().build();
     }
