@@ -8,12 +8,13 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
         controller : 'WebCertCtrl'
     }).when('/create', {
     	templateUrl : '/views/dashboard/create-cert.html',
-    	controller : 'CreateCertCtrl',
-    }).when('/unanswered', {
-    	templateUrl : '/views/dashboard/unanswered.html',
+    	controller : 'CreateCertCtrl'
+    }).when('/unhandled-qa', {
+    	templateUrl : '/views/dashboard/unhandled-qa.html',
+    	controller : 'UnhandledQACtrl'
     }).when('/view', {
     	templateUrl : '/views/dashboard/view-cert.html',
-    	controller : 'ViewCertCtrl',
+    	controller : 'ViewCertCtrl'
     }).otherwise({
         redirectTo : '/index'
     });
