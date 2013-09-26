@@ -1,0 +1,43 @@
+<Answer xmlns="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1"
+        xmlns:qa="urn:riv:insuranceprocess:healthreporting:medcertqa:1"
+                  xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
+        <vardReferens-id>123</vardReferens-id>
+        <amne>Ovrigt</amne>
+        <fraga>
+          <qa:meddelandeText>Har ni kontaktuppgifter till tomten?</qa:meddelandeText>
+          <qa:signeringsTidpunkt>2012-12-22T21:00:00</qa:signeringsTidpunkt>
+        </fraga>
+        <svar>
+          <qa:meddelandeText>Nej, han är tyvärr inte med i adressboken</qa:meddelandeText>
+          <qa:signeringsTidpunkt>2012-12-22T23:00:00</qa:signeringsTidpunkt>
+        </svar>
+        <avsantTidpunkt>2012-12-22T21:05:00</avsantTidpunkt>
+        <adressVard>
+          <qa:hosPersonal>
+            <hr:personal-id root="1.2.752.129.2.1.4.1" extension="Personal HSA-ID"/>
+            <hr:fullstandigtNamn>En Läkare</hr:fullstandigtNamn>
+            <hr:forskrivarkod>1234567</hr:forskrivarkod>
+            <hr:enhet>
+              <hr:enhets-id root="1.2.752.129.2.1.4.1" extension="IFV1239877878-103F"/>
+              <hr:arbetsplatskod root="1.2.752.29.4.71" extension="123456789011"/>
+              <hr:enhetsnamn>Kir mott</hr:enhetsnamn>
+              <hr:postadress>Lasarettsvägen 13</hr:postadress>
+              <hr:postnummer>85150</hr:postnummer>
+              <hr:postort>Sundsvall</hr:postort>
+              <hr:telefonnummer>060-1818000</hr:telefonnummer>
+              <hr:vardgivare>
+                <hr:vardgivare-id root="1.2.752.129.2.1.4.1" extension="VardgivarId"/>
+                <hr:vardgivarnamn>Landstinget Norrland</hr:vardgivarnamn>
+              </hr:vardgivare>
+            </hr:enhet>
+          </qa:hosPersonal>
+        </adressVard>
+        <lakarutlatande>
+          <qa:lakarutlatande-id>b2f6d5bc-2f50-4623-9ce9-bf1ee5404347</qa:lakarutlatande-id>
+          <qa:signeringsTidpunkt>2013-11-30T12:12:12</qa:signeringsTidpunkt>
+          <qa:patient>
+            <hr:person-id root="1.2.752.129.2.1.3.1" extension="19121212-1212"/>
+            <hr:fullstandigtNamn>Tomten</hr:fullstandigtNamn>
+          </qa:patient>
+        </lakarutlatande>
+      </Answer>

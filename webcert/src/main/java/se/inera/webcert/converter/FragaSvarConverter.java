@@ -17,6 +17,7 @@ import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
@@ -38,6 +39,7 @@ public class FragaSvarConverter {
 
         FragaSvar fragaSvar = new FragaSvar();
         fragaSvar.setFrageStallare(FK_FRAGASTALLARE);
+        fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
         fragaSvar.setExternReferens(source.getFkReferensId());
         fragaSvar.setAmne(Amne.valueOf(source.getAmne().value().toUpperCase()));
 
@@ -123,7 +125,7 @@ public class FragaSvarConverter {
         }
 
         if (FK_FRAGASTALLARE.equals(fragaSvar.getFrageStallare())) {
-            throw new IllegalStateException("Incoming answer referns to question initiated by Försäkringskassan.");
+            throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
 
         // fill up FragaSvar with answer information

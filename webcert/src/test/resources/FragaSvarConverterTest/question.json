@@ -1,5 +1,4 @@
-{
-    "externReferens" : "123",
+{"externReferens" : "123",
     "frageStallare" : "FK",
     "amne" : "KOMPLETTERING_AV_LAKARINTYG",
     "frageText" : "Tomten kan inte vara sjukskriven den 24e december!",
@@ -33,6 +32,7 @@
         "telefonnummer" : "060-1818000",
         "vardgivarId" : "Landstinget Norrland"
     },
-    "vidarebefordrad": false,
-    "senasteHandelseDatum": "2012-12-22T21:05:00.000"
+    "status" : "PENDING_INTERNAL_ACTION",
+    "vidarebefordrad" : false,
+    "senasteHandelseDatum" : "2012-12-22T21:05:00.000"
 }

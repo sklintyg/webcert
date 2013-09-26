@@ -1,5 +1,6 @@
 package se.inera.webcert.service;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 
 import com.google.common.base.Throwables;
 
@@ -23,6 +25,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private FragaSvarRepository fragaSvarRepository;
+
+    private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
 
     @Override
     public void processIncomingQuestion(FragaSvar fragaSvar) {
@@ -58,6 +62,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     public List<FragaSvar> getFragaSvar(List<String> enhetsHsaIds) {
-        return fragaSvarRepository.findByEnhetsId(enhetsHsaIds);
+        List<FragaSvar> result = fragaSvarRepository.findByEnhetsId(enhetsHsaIds);
+        if (result != null) {
+            // We do the sorting in code, since we need to sort on a derived property and not a direct entity persisted
+            // proerty in which case we could have used an order by in the query.
+            Collections.sort(result, senasteHandelseDatumComparator);
+        }
+        return result;
     }
 }

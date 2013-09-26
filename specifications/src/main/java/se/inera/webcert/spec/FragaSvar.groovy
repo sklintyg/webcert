@@ -11,7 +11,7 @@ import se.inera.webcert.spec.util.RestClientFixture
 /**
  * Created by pehr on 9/23/13.
  */
-public class FragaSvar extends RestClientFixture implements GroovyObject{
+public class FragaSvar extends RestClientFixture implements GroovyObject {
 
     String amne;
     String externReferens;
@@ -34,36 +34,40 @@ public class FragaSvar extends RestClientFixture implements GroovyObject{
     String vardperson_mall;
     String fraga_mall;
 
+    String internReferens
 
 
+    public String internReferens() {
+        internReferens
+    }
 
     public void execute() {
         def restClient = new RESTClient(baseUrl)
-        //def restClient = new RESTClient('http://localhost:9088/services/questions/')
-            restClient.post(
-                    path: 'questions',
-                    body:  questionAnswerJson(),
-                    requestContentType: JSON
-            )
+        def response = restClient.post(
+                path: 'questions',
+                body: questionAnswerJson(),
+                requestContentType: JSON
+        )
+        internReferens = response.data.internReferens
     }
 
     private questionAnswerJson() {
-        def fraga  = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_${fraga_mall}_template.json").getInputStream()))
+        def fraga = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_${fraga_mall}_template.json").getInputStream()))
 
         fraga.vardperson = vardperson();
-        fraga.vardperson.enhetsId=enhetsId;
+        fraga.vardperson.enhetsId = enhetsId;
         fraga.amne = amne;
         fraga.externReferens = externReferens;
-        fraga.meddelandeRubrik=meddelandeRubrik;
+        fraga.meddelandeRubrik = meddelandeRubrik;
         fraga.frageText = frageText;
         fraga.intygsReferens.intygsId = intygsId;
         fraga.intygsReferens.intygsTyp = intygsTyp;
         fraga.sistaDatumForSvar = sistaDatumForSvar;
-        fraga.status = status;
-        fraga.vidarebefordrad = vidarebefordrad;
-
+        if (frageStallare) fraga.frageStallare = frageStallarew
+        if (status) fraga.status = status
+        if (vidarebefordrad) fraga.vidarebefordrad = vidarebefordrad
         if (svarsText) {
-           fraga.svarsText = svarsText;
+            fraga.svarsText = svarsText
         }
         JsonOutput.toJson(fraga)
     }
@@ -71,10 +75,9 @@ public class FragaSvar extends RestClientFixture implements GroovyObject{
 
     protected vardperson() {
         // slurping the vardperson template
-        def vardperson  = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("vardperson_${vardperson_mall}_template.json").getInputStream()))
+        def vardperson = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("vardperson_${vardperson_mall}_template.json").getInputStream()))
 
 
     }
 
 }
-
