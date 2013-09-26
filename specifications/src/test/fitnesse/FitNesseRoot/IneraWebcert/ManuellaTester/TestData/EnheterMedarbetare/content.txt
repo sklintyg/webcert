@@ -1,11 +1,17 @@
 !3 Enheter:
 
-|Hsaenhet|
-|vardgivarid|hsaId|name|email|
-|vg1|HSA_UNIT_1|Vårdenhet 1|!-enhet1@hsastub.se-!|
-|vg1|HSA_UNIT_2|Vårdenhet 2|!-enhet2@hsastub.se-!|
+|Hsa Enhet                                               |
+|vardgivarid|hsaId     |name       |email                |
+|vg1        |HSA_UNIT_1|Vårdenhet 1|!-enhet1@hsastub.se-!|
+|vg1        |HSA_UNIT_2|Vårdenhet 2|!-enhet2@hsastub.se-!|
 
-|Medarbetare|
-|hsaId|name|medarbetaruppdrag|
-|HSA_PERSON_1|Per Persson|HSA_UNIT_1,HSA_UNIT_2|
-|HSA_PERSON_2|Karl Karlsson|HSA_UNIT_1|
+!3 Medarbetare med uppdrag
+
+|Hsa Medarbetare                                 |
+|hsaId       |name         |medarbetaruppdrag    |
+|HSA_PERSON_1|Per Persson  |HSA_UNIT_1,HSA_UNIT_2|
+|HSA_PERSON_2|Karl Karlsson|HSA_UNIT_1           |
+
+!3 För att rensa cachen kan man göra så här
+!note |Hsa Rensa Cache|
+

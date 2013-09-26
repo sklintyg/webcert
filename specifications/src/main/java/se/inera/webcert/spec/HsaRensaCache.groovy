@@ -1,9 +1,7 @@
 package se.inera.webcert.spec
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import groovyx.net.http.RESTClient
-import org.springframework.core.io.ClassPathResource
 import se.inera.webcert.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
@@ -11,24 +9,16 @@ import static groovyx.net.http.ContentType.JSON
 /**
  * @author johannesc
  */
-public class HsaEnhet extends RestClientFixture {
-
-    String vardgivarid;
-    String hsaId;
-    String name;
-    String email;
+public class HsaRensaCache extends RestClientFixture {
 
     public void execute() {
+        System.out.println("HsaRensaCache.execute()!!!!!!")
         def restClient = new RESTClient(baseUrl)
         restClient.post(
-                path: 'hsa-api/enheter',
-                body: questionJson(),
+                path: 'hsa-api/rensa-cache',
+                body: '',
                 requestContentType: JSON
         )
-    }
-
-    private questionJson() {
-        JsonOutput.toJson(this)
     }
 
 }
