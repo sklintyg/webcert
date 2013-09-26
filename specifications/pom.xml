@@ -13,10 +13,10 @@
   <name>Inera Webcert FitNesse specifications</name>
 
   <properties>
-    <groovy.version>2.0.6</groovy.version>
+    <groovy.version>2.0.7</groovy.version>
     <selenium.version>2.33.0</selenium.version>
     <geb.env>firefox</geb.env>
-    <fitnesse.port>9124</fitnesse.port>
+    <fitnesse.port>9126</fitnesse.port>
     <fitnesse.working>${project.basedir}/src/test/fitnesse</fitnesse.working>
     <fitnesse.root>FitNesseRoot</fitnesse.root>
     <!-- This example has no unit tests, just integration tests -->
@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.fitnesse</groupId>
       <artifactId>fitnesse</artifactId>
-      <version>20121220</version>
+      <version>20130924</version>
       <scope>test</scope>
     </dependency>
 
@@ -120,39 +120,32 @@
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-eclipse-compiler</artifactId>
-            <version>2.7.0-01</version>
+            <version>2.8.0-01</version>
           </dependency>
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-eclipse-batch</artifactId>
-            <version>2.0.6-01</version>
+            <version>2.0.7-03</version>
           </dependency>
         </dependencies>
       </plugin>
       <plugin>
         <groupId>uk.co.javahelp.fitnesse</groupId>
         <artifactId>fitnesse-launcher-maven-plugin</artifactId>
-        <version>1.2.1</version>
+        <version>1.4.0-20130924</version>
         <configuration>
           <!-- These next 3 are the default values anyway. -->
           <port>${fitnesse.port}</port>
           <workingDir>${fitnesse.working}</workingDir>
           <root>${fitnesse.root}</root>
           <createSymLink>false</createSymLink>
-          <suite>CitizenWeb</suite>
+          <markerFile>${project.build.directory}/fitnesse-launcher-plugin-marker</markerFile>
+          <suite>IneraWebcert</suite>
+          <useProjectDependencies>
+              <scope>compile</scope>
+              <scope>test</scope>
+          </useProjectDependencies>
         </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.2</version>
-          </dependency>
-          <dependency>
-            <groupId>org.beanshell</groupId>
-            <artifactId>bsh</artifactId>
-            <version>2.0b5</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
     <pluginManagement>
@@ -213,16 +206,9 @@
     </profile>
     <profile>
       <id>headless</id>
-      <properties>
-        <geb.env>headless</geb.env>
-      </properties>
-    </profile>
-    <profile>
-      <id>test-server</id>
-      <properties>
-        <certificate.baseUrl>http://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
-        <certificate.web.baseUrl>https://test.minaintyg.se/web/</certificate.web.baseUrl>
-      </properties>
+        <properties>
+          <geb.env>headless</geb.env>
+        </properties>
     </profile>
     <profile>
       <id>wiki</id>

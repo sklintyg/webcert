@@ -11,17 +11,17 @@ import se.inera.webcert.spec.util.RestClientFixture
 /**
  * Created by pehr on 9/23/13.
  */
-public class Fraga extends RestClientFixture {
+public class Fraga extends RestClientFixture{
 
-    String amne
-    String externReferens
-    String frageStallare
-    String meddelandeRubrik
-    String frageText
-    String frageSigneringsDatum
-    String frageSkickadDatum
-    String sistaDatumForSvar
-    String externaKontakter
+    String amne;
+    String externReferens;
+    String frageStallare;
+    String meddelandeRubrik;
+    String frageText;
+    String frageSigneringsDatum;
+    String frageSkickadDatum;
+    String sistaDatumForSvar;
+    String externaKontakter;
 
     String intygsId
     String intygsTyp
@@ -33,24 +33,18 @@ public class Fraga extends RestClientFixture {
     String vardperson_mall
     String fraga_mall
 
-    String internReferens
-
     public void execute() {
         def restClient = new RESTClient(baseUrl)
-        def response = restClient.post(
-                path: 'questions',
-                body: questionJson(),
-                requestContentType: JSON
-        )
-        internReferens = response.data.internReferens
-    }
-
-    public String internReferens() {
-        internReferens
+        //def restClient = new RESTClient('http://localhost:9088/services/questions/')
+            restClient.post(
+                    path: 'questions',
+                    body:  questionJson(),
+                    requestContentType: JSON
+            )
     }
 
     private questionJson() {
-        def fraga = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_${fraga_mall}_template.json").getInputStream()))
+        def fraga  = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_${fraga_mall}_template.json").getInputStream()))
 
         fraga.vardperson = vardperson();
         fraga.vardperson.enhetsId = enhetsId;
@@ -65,6 +59,9 @@ public class Fraga extends RestClientFixture {
         if (status != null) fraga.status = status;
         if (vidarebefordrad != null) fraga.vidarebefordrad = vidarebefordrad;
 
+        if (svarsText) {
+           fraga.svarsText = svarsText;
+        }
         JsonOutput.toJson(fraga)
     }
 

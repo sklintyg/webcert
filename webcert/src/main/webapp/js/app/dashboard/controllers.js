@@ -23,6 +23,14 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$wind
 } ]);
 
 /*
+ *  UnhandledQACtrl - Controller for logic related to listing questions and answers 
+ * 
+ */
+angular.module('wcDashBoardApp').controller('UnhandledQACtrl', [ '$scope', '$window', function UnhandledCertCtrl($scope, $window) {
+
+} ]);
+
+/*
  *  ViewCertCtrl - Controller for logic related to viewing a certificate 
  * 
  */
