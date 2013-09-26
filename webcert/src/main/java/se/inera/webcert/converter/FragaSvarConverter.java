@@ -125,7 +125,7 @@ public class FragaSvarConverter {
         }
 
         if (FK_FRAGASTALLARE.equals(fragaSvar.getFrageStallare())) {
-            throw new IllegalStateException("Incoming answer referns to question initiated by Försäkringskassan.");
+            throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
 
         // fill up FragaSvar with answer information

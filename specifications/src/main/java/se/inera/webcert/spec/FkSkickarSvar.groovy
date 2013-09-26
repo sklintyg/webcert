@@ -1,36 +1,31 @@
 package se.inera.webcert.spec
-
 import org.springframework.core.io.ClassPathResource
 import se.inera.webcert.receivemedicalcertificateanswer.v1.rivtabp20.ReceiveMedicalCertificateAnswerResponderInterface
-import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType
-import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType
-import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType
+import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType
+import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType
 import se.inera.webcert.spec.util.WsClientFixture
 
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Unmarshaller
 import javax.xml.transform.stream.StreamSource
-
 /**
  *
  * @author andreaskaltenbach
  */
 class FkSkickarSvar extends WsClientFixture {
 
-    private ReceiveMedicalCertificateAnswerResponderInterface questionResponder
+    private def answerResponder
 
     String amne;
-    String externReferens;
-    String frageText;
-    String intygsId;
-    String vardpersonal;
-    String vardenhet;
+    String vardreferens
+    String svarText
+    String vardenhet
 
-    public FkSkickarFraga() {
+    public FkSkickarSvar() {
         this(WsClientFixture.LOGICAL_ADDRESS)
     }
 
-    public FkSkickarFraga(String logiskAddress) {
+    public FkSkickarSvar(String logiskAddress) {
         super(logiskAddress)
         String url = baseUrl + "receive-answer/v1.0"
         answerResponder = createClient(ReceiveMedicalCertificateAnswerResponderInterface.class, url)
@@ -38,19 +33,18 @@ class FkSkickarSvar extends WsClientFixture {
 
     public String resultat() {
         // read request template from file
-        JAXBContext jaxbContext = JAXBContext.newInstance(ReceiveMedicalCertificateQuestionType.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(ReceiveMedicalCertificateAnswerType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        QuestionFromFkType question = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("fraga.xml").getInputStream()), QuestionFromFkType.class).getValue()
-        question.amne = amne
-        question.fkReferensId = externReferens
-        question.fraga.meddelandeText = frageText
-        question.lakarutlatande.lakarutlatandeId = intygsId
-        question.adressVard.hosPersonal.personalId.extension = vardpersonal
-        question.adressVard.hosPersonal.enhet.enhetsId.extension = vardenhet
+        AnswerFromFkType answer = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("svar.xml").getInputStream()), AnswerFromFkType.class).getValue()
+        answer.amne = amne
+        answer.vardReferensId = vardreferens
+        answer.svar.meddelandeText = svarText
+        answer.adressVard.hosPersonal.enhet.enhetsId.extension = vardenhet
 
-        ReceiveMedicalCertificateQuestionType request = new ReceiveMedicalCertificateQuestionType();
-        request.question = question
+        def request = new ReceiveMedicalCertificateAnswerType();
+        request.answer = answer
 
-        ReceiveMedicalCertificateQuestionResponseType response = questionResponder.receiveMedicalCertificateQuestion(logicalAddress, request);
+        def response = answerResponder.receiveMedicalCertificateAnswer(logicalAddress, request);
         resultAsString(response)
     }
+}

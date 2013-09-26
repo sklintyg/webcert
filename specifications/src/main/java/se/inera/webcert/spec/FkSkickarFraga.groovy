@@ -1,23 +1,20 @@
 package se.inera.webcert.spec
-
 import org.springframework.core.io.ClassPathResource
 import se.inera.webcert.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType
-import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType
 import se.inera.webcert.spec.util.WsClientFixture
 
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Unmarshaller
 import javax.xml.transform.stream.StreamSource
-
 /**
  *
  * @author andreaskaltenbach
  */
 class FkSkickarFraga extends WsClientFixture {
 
-    private ReceiveMedicalCertificateQuestionResponderInterface questionResponder
+    private def questionResponder
 
     String amne;
     String externReferens;
@@ -40,7 +37,7 @@ class FkSkickarFraga extends WsClientFixture {
         // read request template from file
         JAXBContext jaxbContext = JAXBContext.newInstance(ReceiveMedicalCertificateQuestionType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        QuestionFromFkType question = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("fraga.xml").getInputStream()), QuestionFromFkType.class).getValue()
+        def question = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("fraga.xml").getInputStream()), QuestionFromFkType.class).getValue()
         question.amne = amne
         question.fkReferensId = externReferens
         question.fraga.meddelandeText = frageText
@@ -48,10 +45,10 @@ class FkSkickarFraga extends WsClientFixture {
         question.adressVard.hosPersonal.personalId.extension = vardpersonal
         question.adressVard.hosPersonal.enhet.enhetsId.extension = vardenhet
 
-        ReceiveMedicalCertificateQuestionType request = new ReceiveMedicalCertificateQuestionType();
+        def request = new ReceiveMedicalCertificateQuestionType();
         request.question = question
 
-        ReceiveMedicalCertificateQuestionResponseType response = questionResponder.receiveMedicalCertificateQuestion(logicalAddress, request);
+        def response = questionResponder.receiveMedicalCertificateQuestion(logicalAddress, request);
         resultAsString(response)
     }
 
