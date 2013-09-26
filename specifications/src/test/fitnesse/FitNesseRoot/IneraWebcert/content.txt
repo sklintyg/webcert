@@ -4,6 +4,8 @@
 
 !*> '''Variables Defined'''
 !define TEST_SYSTEM {slim}
+!define COMMAND_PATTERN {java -Djava.awt.headless=true -cp %p %m}
+!define REMOTE_DEBUG_COMMAND {java -Djava.awt.headless=true -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -cp %p %m}
 *!
 
 !*> '''Classpath'''
