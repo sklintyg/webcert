@@ -16,8 +16,9 @@ public interface FragaSvarRepositoryCustom {
      * @return A list of {@link FragaSvar} matching the search criteria. If no entities are found, this method returns
      *         an empty list.
      */
-    @Query("SELECT fs FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList)")
+    @Query("SELECT fs FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED'")
     public List<FragaSvar> findByEnhetsId(@Param("idList") List<String> enhetsIds);
+
 
     /**
      * Should return a list of {@link FragaSvar} entities in the repository related to the specified intygsId.

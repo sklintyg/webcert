@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -72,6 +73,21 @@ public class FragaSvarRepositoryTest {
         assertEquals(3, result.size());
 
     }
+    
+    @Test
+    public void testFindByEnhetsIdDontMatchClosed() {
+
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID,Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.CLOSED));
+        
+
+        List<FragaSvar> result = fragasvarRepository.findByEnhetsId(Arrays.asList(ENHET_1_ID,ENHET_2_ID, ENHET_3_ID));
+        assertEquals(3, result.size());
+
+    }
 
     @Test
     public void testFindByIntygsReferens() {
@@ -86,8 +102,10 @@ public class FragaSvarRepositoryTest {
         assertEquals(2, result.size());
 
     }
-
     private FragaSvar buildFragaSvarFraga(String enhetsId) {
+        return buildFragaSvarFraga(enhetsId, Status.PENDING_EXTERNAL_ACTION);
+    }
+    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
@@ -101,6 +119,7 @@ public class FragaSvarRepositoryTest {
         f.setVardperson(vardperson);
         f.setFrageText("Detta var ju otydligt formulerat!");
         f.setIntygsReferens(INTYGS_REFERENS);
+        f.setStatus(status);
 
         return f;
     }
@@ -108,7 +127,7 @@ public class FragaSvarRepositoryTest {
 
     @Test
     public void testFindByExternReferens() {
-        FragaSvar saved = buildFragaSvarFraga("Enhet-1-id");
+        FragaSvar saved = buildFragaSvarFraga("Enhet-1-id", Status.PENDING_EXTERNAL_ACTION);
 
 
         fragasvarRepository.save(saved);

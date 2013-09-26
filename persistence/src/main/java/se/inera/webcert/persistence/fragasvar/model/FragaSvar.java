@@ -27,9 +27,9 @@ public class FragaSvar {
     /**
      * The (system-wide) unique id for this entity
      */
-    
+
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long internReferens;
 
     @Column(name = "EXTERN_REFERENS")
@@ -64,7 +64,7 @@ public class FragaSvar {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime svarSkickadDatum;
 
-    @ElementCollection (fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "EXTERNA_KONTAKTER", joinColumns = @JoinColumn(name = "FRAGASVAR_ID"))
     @Column(name = "KONTAKT")
     private Set<String> externaKontakter;
@@ -80,12 +80,35 @@ public class FragaSvar {
     @Embedded
     private IntygsReferens intygsReferens;
 
-    @ElementCollection (fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "KOMPLETTERING", joinColumns = @JoinColumn(name = "FRAGASVAR_ID"))
     private Set<Komplettering> kompletteringar;
 
     @Embedded
     private Vardperson vardperson;
+
+    @Column(name = "STATUS")
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
+    private Boolean vidarebefordrad = Boolean.FALSE;
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Boolean getVidarebefordrad() {
+        return vidarebefordrad;
+    }
+
+    public void setVidarebefordrad(Boolean vidarebefordrad) {
+        this.vidarebefordrad = vidarebefordrad;
+    }
 
     public String getFrageStallare() {
         return frageStallare;
@@ -215,4 +238,17 @@ public class FragaSvar {
         this.vardperson = vardperson;
     }
 
+    /**
+     * Return latest event for this FragaSvar. If no svarsDatum has been set, the fragaSkickadDatum is considered the
+     * lastest event.
+     * 
+     * @return lastest date
+     */
+    public LocalDateTime getSenasteHandelseDatum() {
+        if (svarSkickadDatum != null) {
+            return svarSkickadDatum;
+        } else {
+            return frageSkickadDatum;
+        }
+    }
 }
