@@ -88,7 +88,7 @@ public class FragaSvarRepositoryTest {
         assertEquals(3, result.size());
 
     }
-
+    
     @Test
     public void testFindByIntygsReferens() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
