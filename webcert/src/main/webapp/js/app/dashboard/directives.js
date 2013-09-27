@@ -15,7 +15,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
         	'</table>',
         controller: function ($scope) {
             // init
-            $scope.vardenheter = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare.vardenheter;
+            $scope.vardenheter = angular.copy($rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare.vardenheter);
 
             $scope.units = []; // aggregated units to present for vardenhet/mottagning choice
             
