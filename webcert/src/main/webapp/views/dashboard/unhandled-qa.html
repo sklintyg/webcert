@@ -17,109 +17,69 @@
 	    </table> -->
 	  </div>    
 
-    <h2 class="col-head">{{selectedUnit.namn}}</h2><!-- Linköpings Universitetssjukhus -->
-    <div class="row-fluid scrollable">
-      <table class="span12 table table-striped table-qa">
-          <tr>
-            <th></th>
-            <th>Status</th>
-            <th>Initierad av</th>
-            <th>Läkare</th>
-            <th>Skickat</th>
-            <th>Patient</th>
-            <th>Ämne</th>
-            <th>Svar senast</th>
-            <th class="center">Vidarebefordrad</th>
-            <th></th>
-          </tr>
-          <tr>
-            <td>
-              <button class="btn btn-info">
-                Visa
-              </button>
-            </td>
-            <td class="marked">Ej kompletterad</td>
-            <td>Försäkringskassan</td>
-            <td>Lars Larsson Smith</td>
-            <td>2013-01-01</td>
-            <td>19121212-1212</td>
-            <td>Komplettering</td>
-            <td>2013-01-04</td>
-            <td class="center"><input id="selected" type="checkbox" /></td>
-            <td class="table-qa-last">
-              <button class="btn btn-success">
-                E-post
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <button class="btn btn-info">
-                Visa
-              </button>
-            </td>
-            <td class="marked">Obesvarad</td>
-            <td>Försäkringskassan</td>
-            <td>Lars Larsson Smith</td>
-            <td>2013-01-01</td>
-            <td>19121212-1212</td>
-            <td>Övrigt</td>
-            <td></td>
-            <td class="center"><input id="selected" type="checkbox" /></td>
-            <td class="table-qa-last">
-              <button class="btn btn-success">
-                E-post
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <button class="btn btn-info">
-                Visa
-              </button>
-            </td>
-            <td class="marked">Besvarad</td>
-            <td>Vården</td>
-            <td>Lars Larsson Smith</td>
-            <td>2013-01-01</td>
-            <td>19121212-1212</td>
-            <td>Övrigt</td>
-            <td></td>
-            <td class="center"><input id="selected" type="checkbox" /></td>
-            <td class="table-qa-last">
-              <button class="btn btn-success">
-                E-post
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <button class="btn btn-info">
-                Visa
-              </button>
-            </td>
-            <td class="marked">Obesvarad</td>
-            <td>Vården</td>
-            <td>Lars Larsson Smith</td>
-            <td>2013-01-01</td>
-            <td>19121212-1212</td>
-            <td>Övrigt</td>
-            <td>2013-01-04</td>
-            <td class="center"><input id="selected" type="checkbox" /></td>
-            <td class="table-qa-last">
-              <button class="btn btn-success">
-                E-post
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td class="nopadding" colspan="10">
-              <button id="unsigned-cert-list-btn-unsigned-showall" class="btn btn-block" type="button">
-                Visa hanterade frågor och svar
-              </button>
-            </td>
-          </tr>
-      </table>
+    <div ng-show="qaList.length > 0">
+	    <h2 class="col-head">{{selectedUnit.namn}}</h2><!-- Linköpings Universitetssjukhus -->
+	    <div class="row-fluid scrollable">
+	      <table class="span12 table table-striped table-qa">
+	          <tr>
+	            <th></th>
+	            <th>Status</th>
+	            <th>Initierad av</th>
+	            <th>Läkare</th>
+	            <th>Senaste händelsen</th>
+	            <th>Patient</th>
+	            <th>Ämne</th>
+	            <th>Svar senast</th>
+	            <th class="center">Vidarebefordrad</th>
+	            <th></th>
+	          </tr>
+	          <tr ng-repeat="qa in qaList">
+		          <td>
+	                <button class="btn btn-info">
+	                  Visa
+	                </button>
+	              </td>
+              <td><span message key="qa.status.{{qa.status}}"></span></td>
+              <td><span message key="qa.frageStallare.{{qa.frageStallare}}"></span></td>
+              <td>{{qa.vardperson.namn}}</td>
+              <td>{{qa.senasteHandelseDatum | date:'shortDate'}}</td>
+              <td>{{qa.intygsReferens.patientPersonNummer}}</td>
+              <td><span message key="qa.amne.{{qa.amne}}"></span></td>
+              <td>{{qa.sistaDatumForSvar}}</td>
+              <td class="center"><input id="selected" type="checkbox" ng-checked="qa.vidarebefordrad"/></td>
+              <td class="table-qa-last">
+                <button class="btn btn-success">
+                  E-post
+                </button>
+              </td>
+<!--          <td>
+	              <button class="btn btn-info">
+	                Visa
+	              </button>
+	            </td>
+	            <td class="marked">Ej kompletterad</td>
+	            <td>Försäkringskassan</td>
+	            <td>Lars Larsson Smith</td>
+	            <td>2013-01-01</td>
+	            <td>19121212-1212</td>
+	            <td>Komplettering</td>
+	            <td>2013-01-04</td>
+	            <td class="center"><input id="selected" type="checkbox" /></td>
+	            <td class="table-qa-last">
+	              <button class="btn btn-success">
+	                E-post
+	              </button>
+	            </td>
+	          </tr>
+	          <tr>
+	            <td class="nopadding" colspan="10">
+	              <button id="unsigned-cert-list-btn-unsigned-showall" class="btn btn-block" type="button">
+	                Visa hanterade frågor och svar
+	              </button>
+	            </td>
+	          </tr>-->
+	      </table>
+	    </div>
     </div>
   </div>
 </div>
