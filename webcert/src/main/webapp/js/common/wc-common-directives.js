@@ -103,9 +103,9 @@ angular.module('wc.common.directives').directive("wcSpinner", ['$rootScope', fun
         },
         template :
             '<div>'
-           +'  <div ng-show="showSpinner" style="text-align: center; padding: 20px;">'
-           +'    <img aria-labelledby="loading-message" src="/img/ajax-loader.gif" style="text-align: center;" />'
-           +'    <p id="loading-message" style="text-align: center; color: #64ABC0; margin-top: 20px;">'
+           +'  <div ng-show="showSpinner" class="wc-spinner">'
+           +'    <img aria-labelledby="loading-message" src="/img/ajax-loader.gif"/>'
+           +'    <p id="loading-message">'
            +'      <strong><span message key="{{ label }}"></span></strong>'
            +'    </p>'
            +'  </div>'

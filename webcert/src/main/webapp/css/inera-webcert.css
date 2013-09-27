@@ -575,5 +575,19 @@ th.center, td.center { text-align: center; }
 }
 
 .no-padding {
-	padding: 0;
+    padding: 0;
 }
+
+/**
+ Directive(s) css
+**/
+.wc-spinner {
+	text-align: center;
+	padding: 20px;
+}
+.wc-spinner p {
+	text-align: center; 
+	color: #64ABC0; 
+	margin-top: 20px;
+}
+

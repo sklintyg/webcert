@@ -10,7 +10,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
     	    '<table class="span12 table unit-table">'+
         		'<tr ng-repeat="unit in units">'+
         			'<td><button type="button" ng-click="selectUnit(unit)" ng-href="#" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}</button></td>'+
-        			'<!--<td><span class="qa-circle qa-circle-active" title="Ohanterade frågor och svar">2</span></td>-->'+
+        			'<td><span class="qa-circle qa-circle-active" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></td>'+
         		'</tr>'+
         	'</table>',
         controller: function ($scope) {

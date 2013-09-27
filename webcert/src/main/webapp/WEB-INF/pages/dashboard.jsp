@@ -26,27 +26,27 @@
 <!DOCTYPE html>
 <html lang="sv" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="wcDashBoardApp">
 <head>
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="ROBOTS" content="nofollow, noindex" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="ROBOTS" content="nofollow, noindex" />
 
-  <title><spring:message code="application.name" /></title>
+<title><spring:message code="application.name" /></title>
 
-  <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
+<link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
-  <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
-  <link rel="stylesheet" href="<c:url value="/css/bootstrap-responsive-modified.css"/>">
-  <link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
-  <link rel="stylesheet" href="<c:url value="/css/inera-certificate.css"/>">
+<link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
+<link rel="stylesheet" href="<c:url value="/css/bootstrap-responsive-modified.css"/>">
+<link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
+<link rel="stylesheet" href="<c:url value="/css/inera-certificate.css"/>">
 
-  <script type="text/javascript">
+<script type="text/javascript">
     /**
      Global JS config/constants for this app, to be used by scripts
      **/
     var MODULE_CONFIG = {
-      USERCONTEXT : <sec:authentication property="principal.asJson" htmlEscape="false"/>
+        USERCONTEXT : <sec:authentication property="principal.asJson" htmlEscape="false"/>
     }
-  </script>
+</script>
 
 </head>
 
@@ -96,7 +96,7 @@
         <spring:message code="error.noscript.text" />
       </div>
     </noscript>
-    
+
     <%-- ng-view that holds dynamic content managed by angular app --%>
     <div id="view" ng-view></div>
   </div>
@@ -110,6 +110,7 @@
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/controllers.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/UnhandledQAController.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/services.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/app/dashboard/filters.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/messages.js"/>"></script>
 

@@ -30,6 +30,7 @@ var webcertResources = {
         "info.nounansweredcertsfound" : "Inga intyg med obesvarade frågor hittades.",
         "info.noreadytosigncertsfound" : "Inga klarmarkerade intyg hittades.",
         "info.loadingdata" :"Uppdaterar lista...",
+        "info.nounanswered.qa.for.unit" : "Inga ohanterade frågor & svar för enheten.",
         
         //error messages
         "error.unsignedcerts.couldnotbeloaded" :"Kunde inte hämta osignerade intyg!",
