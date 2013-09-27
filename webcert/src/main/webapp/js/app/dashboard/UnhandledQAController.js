@@ -2,38 +2,43 @@
  *  UnhandledQACtrl - Controller for logic related to listing questions and answers 
  * 
  */
-angular.module('wcDashBoardApp').controller('UnhandledQACtrl', [ '$scope', '$window', '$log', '$timeout','$filter', 'dashBoardService', function UnhandledCertCtrl($scope, $window, $log, $timeout, $filter, dashBoardService) {
- // init state
-    $scope.widgetState = {
-        doneLoading : false,
-        hasError : false
-    }
-    
-    $scope.qaList = {};
-    $scope.activeUnit = "";
+angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
+        [ '$scope', '$window', '$log', '$timeout', '$filter', 'dashBoardService', function UnhandledCertCtrl($scope, $window, $log, $timeout, $filter, dashBoardService) {
+            // init state
+            $scope.widgetState = {
+                doneLoading : false,
+                hasError : false
+            }
 
-    // load all fragasvar for all units in usercontext
-    $timeout(function() { // wrap in timeout to simulate latency - remove soon
-    dashBoardService.getQA(function(data) {
-        $scope.widgetState.doneLoading = true;
-        if (data != null) {
-            $scope.qaList = data;
-            $log.debug("got Data!"); 
-        } else {
-            $scope.widgetState.hasError = true;
-        }
-    });
-    }, 1000);
-    
-    $scope.setActiveUnit = function(unit) {
-        $log.debug("ActiveUnit is now:" + unit); 
-        $scope.activeUnit = unit;
-    }
+            $scope.qaList = {};
+            $scope.activeUnit = "";
 
-    $scope.getItemCountForUnitId = function(unit) {
-        
-        var count = $filter('QAEnhetsIdFilter')($scope.qaList, unit.id).length;
-        $log.debug("Count for " + unit.namn + " is " + count); 
-        return count;
-    }
-} ]);
+            // load all fragasvar for all units in usercontext
+            $timeout(function() { // wrap in timeout to simulate latency -
+                // remove soon
+                dashBoardService.getQA(function(data) {
+                    $scope.widgetState.doneLoading = true;
+                    if (data != null) {
+                        $scope.qaList = data;
+                        $log.debug("got Data!");
+                    } else {
+                        $scope.widgetState.hasError = true;
+                    }
+                });
+            }, 1000);
+
+            $scope.setActiveUnit = function(unit) {
+                $log.debug("ActiveUnit is now:" + unit);
+                $scope.activeUnit = unit;
+            }
+
+            // Calculate how many entities we have for a specific enhetsId
+            $scope.getItemCountForUnitId = function(unit) {
+                if (!$scope.widgetState.doneLoading) {
+                    return "?";
+                }
+                var count = $filter('QAEnhetsIdFilter')($scope.qaList, unit.id).length;
+               
+                return count;
+            }
+        } ]);

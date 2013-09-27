@@ -10,7 +10,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
     	    '<table class="span12 table unit-table">'+
         		'<tr ng-repeat="unit in units">'+
         			'<td><button type="button" ng-click="selectUnit(unit)" ng-href="#" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}</button></td>'+
-        			'<td><span class="qa-circle qa-circle-active" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></td>'+
+        			'<td><span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></td>'+
         		'</tr>'+
         	'</table>',
         controller: function ($scope) {
@@ -36,6 +36,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
             	//call method actually on parent scope: NOTE: not very nice coupling between this directive and controller
             	$scope.setActiveUnit($scope.selectedUnit);
             }
+            
             //initial selection
             $scope.selectUnit(selectFirstUnit($scope.units));
             
