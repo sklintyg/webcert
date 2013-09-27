@@ -29,12 +29,15 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
               
             }, $scope.units);
             
-            $scope.selectedUnit = selectFirstUnit($scope.units);
+            $scope.selectedUnit = {};
 
             $scope.selectUnit = function(unit) {
             	$scope.selectedUnit = unit;
-            	$scope.getQA($scope.selectedUnit.id);
+            	//call method actually on parent scope: NOTE: not very nice coupling between this directive and controller
+            	$scope.setActiveUnit($scope.selectedUnit);
             }
+            //initial selection
+            $scope.selectUnit(selectFirstUnit($scope.units));
             
             // Local function getting the first care unit's hsa id in the data struct.
             function selectFirstUnit(units) {

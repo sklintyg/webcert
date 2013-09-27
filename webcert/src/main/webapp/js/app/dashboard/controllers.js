@@ -22,27 +22,7 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$wind
 
 } ]);
 
-/*
- *  UnhandledQACtrl - Controller for logic related to listing questions and answers 
- * 
- */
-angular.module('wcDashBoardApp').controller('UnhandledQACtrl', [ '$scope', '$window', 'dashBoardService', function UnhandledCertCtrl($scope, $window, dashBoardService) {
-  
-	$scope.qaList = {};
 
-	$scope.getQA = function getQA(unitId) {
-  	dashBoardService.getQA(unitId, function(data) {
-      //$scope.widgetState.doneLoading = true;
-      if (data != null) {
-          $scope.qaList = data;
-      } else {
-       //   $scope.widgetState.hasError = true;
-      }
-    });            	
-  }
-
-
-} ]);
 
 /*
  *  ViewCertCtrl - Controller for logic related to viewing a certificate 

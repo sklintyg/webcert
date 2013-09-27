@@ -30,9 +30,9 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
      * Load questions and answers data for  
      */
 
-    function _getQA(unitId, callback) {
-        $log.debug("_getQA unitId:" + unitId);
-        var restPath = '/api/fragasvar/' + unitId + '/list';
+    function _getQA(callback) {
+        $log.debug("_getQA");
+        var restPath = '/api/fragasvar/list';
         $http.get(restPath).success(function(data) {
             $log.debug("got data:" + data);
             callback(data);
