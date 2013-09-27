@@ -47,3 +47,61 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
         }
     };
 }]);
+
+angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location', function($rootScope,$location) {
+  return {
+      restrict : "A",
+      transclude : true,
+      replace : true,
+      scope : {
+        menuDefsAbout: "@"
+      },
+      controller: function($scope, $element, $attrs) {
+        //Expose "now" as a model property for the template to render as todays date
+        $scope.today = new Date();
+        $scope.menuItems = [
+	        {
+	        	link :'/web/dashboard#/about.support', 
+	          label:'Support',
+	        },
+	        {
+	        	link :'/web/dashboard#/about.webcert', 
+	          label:'Om webcert',
+	        },
+        ];
+        
+        var currentRoute = $location.path().substring( $location.path().lastIndexOf('.') + 1) || 'index';
+        $scope.currentSubMenuLabel = "";
+
+        // set header label based on menu items label
+        angular.forEach($scope.menuItems, function(menu, key) {
+        	var page = menu.link.substr(menu.link.lastIndexOf('.') + 1);
+        	if(page == currentRoute) {
+        		$scope.currentSubMenuLabel = menu.label; 
+        	}
+        });
+        
+        $scope.isActive = function (page) {
+        	page = page.substr(page.lastIndexOf('.') + 1);
+          return page === currentRoute;
+        };                 
+      },
+      template:
+        '<div>'+
+	        '<h1><span message key="dashboard.about.title"></span></h1>'+
+	        '<div class="row-fluid">'+
+	    			'<div class="span3">'+
+							'<ul class="nav nav-tabs nav-stacked">'+
+								'<li ng-class="{active: isActive(menu.link)}" ng-repeat="menu in menuItems">'+
+									'<a ng-href="{{menu.link}}">{{menu.label}}<i class="icon-chevron-right"></i></a>'+
+								'</li>'+
+							'</ul>'+
+	    			'</div>'+
+	    			'<div class="span9">'+
+	      	    '<h2 class="col-head no-padding">{{currentSubMenuLabel}}</h2>'+
+	     	    	'<div ng-transclude></div>'+
+	    			'</div>'+
+	        '</div>'+
+        '</div>'
+  }
+} ]);

@@ -16,15 +16,23 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
               
         },
         controller: function($scope, $element, $attrs) {
-            //Expose "now" as a model property for the template to render as todays date
-            $scope.today = new Date();
-            $scope.menuItems = eval($scope.menuDefs);
-            
-            $scope.isActive = function (page) {
-            	page = page.substr(page.lastIndexOf('/') + 1);
-              var currentRoute = $location.path().substring(1) || 'index';
-              return page === currentRoute;
-          };              
+          //Expose "now" as a model property for the template to render as todays date
+          $scope.today = new Date();
+          $scope.menuItems = eval($scope.menuDefs);
+          
+          $scope.isActive = function (page) {
+          	
+          	page = page.substr(page.lastIndexOf('/') + 1);
+          	var hasSubMenu = page.lastIndexOf('.') > -1;
+
+            var currentRoute = $location.path().substring(1) || 'index';
+          	if(hasSubMenu) {
+          		page = page.substring(0, page.lastIndexOf('.'));
+          		currentRoute = currentRoute.substring(0, currentRoute.lastIndexOf('.'));
+          	}
+          	
+            return page === currentRoute;
+          };
         },
         template:
         	'<div>'

@@ -4,7 +4,8 @@ var webcertResources = {
         "webcert.header": "Webcert",
         "webcert.description" : "Välkommen till Webcert.",
         "dashboard.title" : "Mina osignerade intyg",
-        "dashboard.unanswered.title" : "Enhetens ohanterade frågor och svar",
+        "dashboard.unanswered.title" : "Ohanterade frågor och svar",
+        "dashboard.about.title" : "Om Webcert",
         
         //labels
         "label.unsignedcerts" : "Osignerade Intyg",
@@ -34,8 +35,6 @@ var webcertResources = {
         "error.unsignedcerts.couldnotbeloaded" :"Kunde inte hämta osignerade intyg!",
         "error.unansweredcerts.couldnotbeloaded":"Kunde inte hämta listan med obesvarade frågor!",
         "error.readytosigncerts.couldnotbeloaded": "Kunde inte hämta intyg klara för signering!"
-            
-            
     },
     "en": {
         "webcert.header": "Webcert Application (en)",

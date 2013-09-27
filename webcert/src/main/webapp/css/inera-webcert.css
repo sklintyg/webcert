@@ -573,3 +573,7 @@ th.center, td.center { text-align: center; }
 .scrollable {
     overflow-x:auto;
 }
+
+.no-padding {
+	padding: 0;
+}

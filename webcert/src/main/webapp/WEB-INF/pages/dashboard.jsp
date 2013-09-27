@@ -54,36 +54,37 @@
 
   <%-- Web-cert top navigation bar --%>
   <div id="wcHeader" wc-header 
-  is-doctor="<sec:authentication property="principal.lakare"/>" 
-  user-name="<sec:authentication property="principal.namn"/>"
-  caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>" 
-  menu-defs="[
-   {
-     link :'/web/dashboard#/index', 
-     label:'Mina osignerade intyg',
-     requires_doctor: true
-   },
-   {
-     link :'/web/dashboard#/unsigned', 
-     label:'Enhetens osignerade intyg',
-     requires_doctor: false
-   },
-   {
-     link :'/web/dashboard#/unhandled-qa',
-     label:'Enhetens obesvarade frågor',
-     requires_doctor: false
-   },
-   {
-     link :'/web/dashboard#/create', 
-     label:'Skriv intyg',
-     requires_doctor: false
-   },
-   {
-     link :'/web/dashboard#/about',
-     label:'Om webcert',
-     requires_doctor: false
-   },
-  ]">
+	  is-doctor="<sec:authentication property="principal.lakare"/>" 
+	  user-name="<sec:authentication property="principal.namn"/>"
+	  caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>" 
+	  menu-defs="[
+	   {
+	     link :'/web/dashboard#/index', 
+	     label:'Mina osignerade intyg',
+	     requires_doctor: true
+	   },
+	   {
+	     link :'/web/dashboard#/unsigned', 
+	     label:'Enhetens osignerade intyg',
+	     requires_doctor: false
+	   },
+	   {
+	     link :'/web/dashboard#/unhandled-qa',
+	     label:'Enhetens obesvarade frågor',
+	     requires_doctor: false
+	   },
+	   {
+	     link :'/web/dashboard#/create', 
+	     label:'Skriv intyg',
+	     requires_doctor: false
+	   },
+	   {
+	     link :'/web/dashboard#/about.support',
+	     label:'Om webcert',
+	     requires_doctor: false
+	   },
+	  ]">
+	  
   </div>
   <div class="container-fluid">
     <%-- No script to show at least something when javascript is off --%>

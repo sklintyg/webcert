@@ -15,6 +15,12 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
     }).when('/view', {
     	templateUrl : '/views/dashboard/view-cert.html',
     	controller : 'ViewCertCtrl'
+    }).when('/about.support', {
+    	templateUrl : '/views/dashboard/about.support.html',
+    	controller : 'AboutWebcertCtrl'
+    }).when('/about.webcert', {
+    	templateUrl : '/views/dashboard/about.webcert.html',
+    	controller : 'AboutWebcertCtrl'
     }).otherwise({
         redirectTo : '/index'
     });
