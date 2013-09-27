@@ -33,7 +33,7 @@
 	            <th class="center">Vidarebefordrad</th>
 	            <th></th>
 	          </tr>
-	          <tr ng-repeat="qa in qaList">
+	          <tr ng-repeat="qa in qaList | filter: {vardperson.enhetsId:activeUnit.id}">
 		          <td>
 	                <button class="btn btn-info">
 	                  Visa
