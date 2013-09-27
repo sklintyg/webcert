@@ -1,5 +1,8 @@
 package se.inera.webcert.security;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,5 +49,16 @@ public class WebCertUser {
            throw new RuntimeException(e);
         }
         
+    }
+
+    public List<String> getVardEnheter() {
+        List<String> list = new ArrayList<String>();
+        for(Vardenhet enhet: vardgivare.getVardenheter()) {
+            list.add(enhet.getId());
+            for(Mottagning mottagning: enhet.getMottagningar()) {
+                list.add(mottagning.getId());
+            }
+        }
+        return list;
     }
 }

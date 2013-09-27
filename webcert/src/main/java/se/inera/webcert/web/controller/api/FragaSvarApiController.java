@@ -1,12 +1,10 @@
 package se.inera.webcert.web.controller.api;
 
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -43,13 +41,11 @@ public class FragaSvarApiController {
     }
     
     @GET
-    @Path("/{enhetsId}/list")
+    @Path("/list")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    public List<FragaSvar> listForEnhet(@PathParam("enhetsId") final String enhetsId) {
+    public List<FragaSvar> list() {
         WebCertUser user = webCertUserService.getWebCertUser();
-        //TODO: authorization checking: does this use have the right to list fragor/svar for this enhet?
-        LOG.debug("listForEnhet {0}", enhetsId);
-        return fragaSvarService.getFragaSvar(Arrays.asList(enhetsId));
+        return fragaSvarService.getFragaSvar(user.getVardEnheter());
    
     }
 
