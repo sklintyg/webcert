@@ -57,11 +57,15 @@
           "vardenheter" : [
             {
               "id" : "centrum-vast",
-              "namn" : "Vårdcentrum i väst",
+              "namn" : "Vårdcentrum i Väst",
               "mottagningar" : [
                 {
-                  "id" : "kirmott",
-                  "namn" : "KirMott"
+                  "id" : "dialys",
+                  "namn" : "Dialys"
+                },
+                {
+                  "id" : "akuten",
+                  "namn" : "Akuten"
                 }
               ]
             }
@@ -79,12 +83,22 @@
           "vardenheter" : [
             {
               "id" : "centrum-vast",
-              "namn" : "Vårdcentrum i väst"
+              "namn" : "Vårdcentrum i Väst",
+              "mottagningar" : [
+                {
+                  "id" : "dialys",
+                  "namn" : "Dialys"
+                },
+                {
+                  "id" : "akuten",
+                  "namn" : "Akuten"
+                }
+              ]
             }
           ]
         }
       },
-      //Admin personal med 2 enheter och mottagningar
+      //Admin personal med 3 enheter och mottagningar
       {
         "namn" : "Adamo Admin",
         "hsaId" : "adamo",
@@ -95,7 +109,7 @@
           "vardenheter" : [
             {
               "id" : "centrum-vast",
-              "namn" : "Vårdcentrum i väst",
+              "namn" : "Vårdcentrum i Väst",
               "mottagningar" : [
                 {
                   "id" : "dialys",
@@ -116,6 +130,10 @@
                   "namn" : "Nagelmottagningen"
                 }
               ]
+            },
+            {
+              "id" : "centrum-norr",
+              "namn" : "Vårdcentrum i Norr"
             }
           ]
         }
