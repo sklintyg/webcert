@@ -12,10 +12,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class WebCertUser {
 
+    private String hsaId;
     private String namn;
     private boolean lakare;
 
     private Vardgivare vardgivare;
+
+    public String getHsaId() {
+        return hsaId;
+    }
+
+    public void setHsaId(String hsaId) {
+        this.hsaId = hsaId;
+    }
 
     public String getNamn() {
         return namn;

@@ -13,29 +13,32 @@ import se.inera.webcert.spec.util.RestClientFixture
  */
 public class FragaSvar extends RestClientFixture implements GroovyObject {
 
-    String amne;
-    String externReferens;
-    String frageStallare;
-    String meddelandeRubrik;
-    String frageText;
-    String svarsText;
-    String frageSigneringsDatum;
-    String frageSkickadDatum;
-    String sistaDatumForSvar;
-    String externaKontakter;
+    String amne
+    String externReferens
+    String frageStallare
+    String meddelandeRubrik
+    String frageText
+    String fragaSkickad
 
-    String intygsId;
-    String intygsTyp;
+    String svarsText
+    String svarSkickat
 
-    String enhetsId;
-    String status;
-    Boolean vidarebefordrad;
+    String sistaDatumForSvar
 
-    String vardperson_mall;
-    String fraga_mall;
+    String intygsId
+    String intygsTyp
+
+    String lakareId
+    String lakareNamn
+    String enhetsId
+
+    String status
+
+    Boolean vidarebefordrad
 
     String internReferens
 
+    String beskrivning
 
     public String internReferens() {
         internReferens
@@ -52,32 +55,26 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
     }
 
     private questionAnswerJson() {
-        def fraga = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_${fraga_mall}_template.json").getInputStream()))
+        def fraga = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_svar_template.json").getInputStream()))
 
-        fraga.vardperson = vardperson();
-        fraga.vardperson.enhetsId = enhetsId;
-        fraga.amne = amne;
-        fraga.externReferens = externReferens;
-        fraga.meddelandeRubrik = meddelandeRubrik;
-        fraga.frageText = frageText;
+        if (amne) fraga.amne = amne
+        if (externReferens) fraga.externReferens = externReferens
+        fraga.meddelandeRubrik = meddelandeRubrik
+        fraga.frageText = frageText
+        if (fragaSkickad) fraga.frageSkickadDatum = fragaSkickad
         fraga.intygsReferens.intygsId = intygsId;
-        fraga.intygsReferens.intygsTyp = intygsTyp;
-        fraga.sistaDatumForSvar = sistaDatumForSvar;
+        if (intygsTyp) fraga.intygsReferens.intygsTyp = intygsTyp
+        if (sistaDatumForSvar) fraga.sistaDatumForSvar = sistaDatumForSvar
         if (frageStallare) fraga.frageStallare = frageStallare
         if (status) fraga.status = status
         if (vidarebefordrad) fraga.vidarebefordrad = vidarebefordrad
-        if (svarsText) {
-            fraga.svarsText = svarsText
-        }
+        if (svarsText) fraga.svarsText = svarsText
+        if (svarSkickat) fraga.svarSkickadDatum = svarSkickat
+
+        if (lakareId) fraga.vardperson.hsaId = lakareId
+        if (lakareNamn) fraga.vardperson.namn = lakareNamn
+        if (enhetsId) fraga.vardperson.enhetsId = enhetsId
+
         JsonOutput.toJson(fraga)
     }
-
-
-    protected vardperson() {
-        // slurping the vardperson template
-        def vardperson = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("vardperson_${vardperson_mall}_template.json").getInputStream()))
-
-
-    }
-
 }

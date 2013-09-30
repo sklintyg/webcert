@@ -122,8 +122,8 @@
         <constraints nullable="false" />
       </column>
     </createTable>
-    <addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="KOMPLETTERING" constraintName="KOMPLETTERING_FRAGASVAR_FK" referencedColumnNames="internReferens"
-      referencedTableName="FRAGASVAR" />
+    <!--<addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="KOMPLETTERING" constraintName="KOMPLETTERING_FRAGASVAR_FK" referencedColumnNames="internReferens"
+      referencedTableName="FRAGASVAR" />  -->
 
 
     <createTable tableName="EXTERNA_KONTAKTER">
@@ -134,8 +134,8 @@
         <constraints nullable="false" />
       </column>
     </createTable>
-    <addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="EXTERNA_KONTAKTER" constraintName="EXTERNA_KONTAKTER_FRAGASVAR_FK" referencedColumnNames="internReferens"
-      referencedTableName="FRAGASVAR" />
+    <!--<addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="EXTERNA_KONTAKTER" constraintName="EXTERNA_KONTAKTER_FRAGASVAR_FK" referencedColumnNames="internReferens"
+      referencedTableName="FRAGASVAR" />-->
 
   </changeSet>
 </databaseChangeLog>
