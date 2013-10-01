@@ -194,6 +194,18 @@
 
   <profiles>
     <profile>
+      <id>demo</id>
+        <properties>
+          <webcert.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.baseUrl>
+        </properties>
+    </profile>
+    <profile>
+      <id>utveckling</id>
+        <properties>
+          <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
+        </properties>
+    </profile>
+    <profile>
       <id>chrome</id>
       <properties>
         <geb.env>chrome</geb.env>

@@ -249,14 +249,12 @@
       <id>demo</id>
         <properties>
           <cargo.remote.uri>http://demo.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
-          <webcert.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.baseUrl>
         </properties>
     </profile>
     <profile>
       <id>utveckling</id>
         <properties>
           <cargo.remote.uri>http://utveckling.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
-          <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
         </properties>
     </profile>
   </profiles>
