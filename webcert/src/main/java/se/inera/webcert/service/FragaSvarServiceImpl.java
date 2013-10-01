@@ -1,18 +1,18 @@
 package se.inera.webcert.service;
 
+import javax.mail.MessagingException;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
+import com.google.common.base.Throwables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.webcert.security.WebCertUser;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
-
-import com.google.common.base.Throwables;
+import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * @author andreaskaltenbach
@@ -25,6 +25,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private FragaSvarRepository fragaSvarRepository;
+
+    @Autowired
+    private WebCertUserService webCertUserService;
 
     private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
 
@@ -69,5 +72,26 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             Collections.sort(result, senasteHandelseDatumComparator);
         }
         return result;
+    }
+
+    @Override
+    public List<FragaSvar> getFragaSvar(String intygId) {
+
+        List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
+
+        WebCertUser user = webCertUserService.getWebCertUser();
+        List<String> hsaEnhetIds = user.getVardEnheter();
+
+        // Filter questions to that current user only sees questions issued to units with active employment role
+        Iterator<FragaSvar> iterator = fragaSvarList.iterator();
+        while (iterator.hasNext()) {
+            FragaSvar fragaSvar = iterator.next();
+
+            if (!hsaEnhetIds.contains(fragaSvar.getVardperson().getEnhetsId())) {
+                iterator.remove();
+            }
+        }
+
+        return fragaSvarList;
     }
 }

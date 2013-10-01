@@ -38,7 +38,13 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
                     return "?";
                 }
                 var count = $filter('QAEnhetsIdFilter')($scope.qaList, unit.id).length;
-               
+
                 return count;
             }
+
+            $scope.openIntyg = function (intygsReferens) {
+                $log.debug("open intyg " + intygsReferens.intygsId);
+                $window.location.href = "/m/" + intygsReferens.intygsTyp.toLowerCase() + "/webcert/intyg/" + intygsReferens.intygsId;
+            }
+
         } ]);

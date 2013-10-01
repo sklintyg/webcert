@@ -36,7 +36,7 @@
           </tr>
           <tr ng-repeat="qa in qaList | QAEnhetsIdFilter:activeUnit.id">
             <td>
-              <button class="btn btn-info">Visa</button>
+              <button class="btn btn-info" ng-click="openIntyg(qa.intygsReferens)">Visa</button>
             </td>
             <td><span message key="qa.status.{{qa.status}}"></span></td>
             <td><span message key="qa.frageStallare.{{qa.frageStallare}}"></span></td>

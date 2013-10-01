@@ -27,6 +27,6 @@ public interface WebCertUserService {
      * 
      * @return WebCertUser
      */
-    public WebCertUser getWebCertUser();
+    WebCertUser getWebCertUser();
 
 }

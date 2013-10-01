@@ -18,7 +18,7 @@ public interface FragaSvarRepositoryCustom {
      *         an empty list.
      */
     @Query("SELECT fs FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED'")
-    public List<FragaSvar> findByEnhetsId(@Param("idList") List<String> enhetsIds);
+    List<FragaSvar> findByEnhetsId(@Param("idList") List<String> enhetsIds);
 
 
     /**
@@ -28,13 +28,13 @@ public interface FragaSvarRepositoryCustom {
      * @return A list of {@link FragaSvar} matching the search criteria. If no entities are found, this method returns
      *         an empty list.
      */
-    public List<FragaSvar> findByIntygsReferensIntygsId(String intygsId);
+    List<FragaSvar> findByIntygsReferensIntygsId(String intygsId);
 
     /**
      * Should return a {@link FragaSvar} matching the search criteria.
      * @param externReferens
      * @return
      */
-    public FragaSvar findByExternReferens(String externReferens);
+    FragaSvar findByExternReferens(String externReferens);
 
 }

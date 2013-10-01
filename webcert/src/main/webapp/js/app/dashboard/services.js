@@ -32,7 +32,7 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
 
     function _getQA(callback) {
         $log.debug("_getQA");
-        var restPath = '/api/fragasvar/list';
+        var restPath = '/api/fragasvar';
         $http.get(restPath).success(function(data) {
             $log.debug("got data:" + data);
             callback(data);

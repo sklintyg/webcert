@@ -148,7 +148,7 @@
   </script>
 </head>
 <body onLoad="updateJsonInput()">
-<form id="loginForm" action="/fake" method="POST" class="form-inline">
+<form id="loginForm" action="/fake" method="POST" class="form-inline" >
   <div class="container">
 
     <div id="content-container">
