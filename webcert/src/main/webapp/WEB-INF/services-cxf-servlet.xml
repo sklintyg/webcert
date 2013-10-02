@@ -18,6 +18,7 @@
   <import resource="classpath:fk-stub-context.xml"/>
   <import resource="classpath:hsa-stub-context.xml"/>
   <import resource="classpath:/mail-stub-context.xml"/>
+  <import resource="classpath:/webcert-config.xml"/>
 
   <cxf:bus>
     <cxf:features>

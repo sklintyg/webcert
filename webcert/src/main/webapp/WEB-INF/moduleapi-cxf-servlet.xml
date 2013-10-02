@@ -26,6 +26,8 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
     http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
 
+  <import resource="classpath:/webcert-config.xml"/>
+
    <cxf:bus>
      <cxf:features>
        <cxf:logging/>
