@@ -3,33 +3,21 @@
   it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. Inera
   Certificate Web is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
   General Public License for more details. You should have received a copy of the GNU Affero General Public License along with this program. If not, see <http://www.gnu.org/licenses/>. -->
+
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:cxf="http://cxf.apache.org/core"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
-       xmlns:sec="http://cxf.apache.org/configuration/security"
-       xmlns:cache="http://www.springframework.org/schema/cache"
-       xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
         http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
         http://cxf.apache.org/transports/http/configuration
-                http://cxf.apache.org/schemas/configuration/http-conf.xsd http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+                http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
-  <import resource="classpath:META-INF/cxf/cxf.xml"/>
-  <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
-  <import resource="classpath:META-INF/cxf/cxf-extension-http.xml"/>
-
-  <bean id="objectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
-
-  <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
-    <property name="mapper" ref="objectMapper"/>
-  </bean>
+  <import resource="classpath:fk-stub-context.xml"/>
+  <import resource="classpath:hsa-stub-context.xml"/>
+  <import resource="classpath:/mail-stub-context.xml"/>
 
   <cxf:bus>
     <cxf:features>
@@ -56,10 +44,21 @@
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
 
-  <jaxws:endpoint address="/ping-for-configuration/v1.0" implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl"/>
+  <jaxws:endpoint address="/ping-for-configuration/v1.0"
+                  implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl"/>
 
-  <import resource="classpath:fk-stub-context.xml"/>
-  <import resource="classpath:jaxrs-context.xml"/>
-  <import resource="classpath:hsa-stub-context.xml"/>
-
+  <beans profile="dev,test,qa">
+    <jaxrs:server address="/questions">
+      <jaxrs:serviceBeans>
+        <ref bean="questionBean"/>
+      </jaxrs:serviceBeans>
+      <jaxrs:providers>
+        <ref bean="jacksonJsonProvider"/>
+      </jaxrs:providers>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json"/>
+      </jaxrs:extensionMappings>
+    </jaxrs:server>
+    <bean id="questionBean" class="se.inera.webcert.integration.test.QuestionResource"/>
+  </beans>
 </beans>
