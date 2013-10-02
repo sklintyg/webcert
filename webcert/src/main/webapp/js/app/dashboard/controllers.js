@@ -11,33 +11,22 @@ angular.module('wcDashBoardApp').controller('WebCertCtrl', [ '$scope', '$window'
 	$scope.viewCert = function(item) {
     $log.debug("open " + item.id);
     //listCertService.selectedCertificate = item;
-    var path = "/m/" + item.typ.toLowerCase() + "/webcert/intyg/" + item.id
+    var path = "/m/" + item.typ.toLowerCase() + "/webcert/intyg/" + item.id + "#/view"
     $window.location.href = path;
 	}
 	
 } ]);
 
 
-
 /*
  *  CreateCertCtrl - Controller for logic related to creating a new certificate 
  * 
  */
-/*angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$window', function CreateCertCtrl($scope, $window) {
+angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$window', function CreateCertCtrl($scope, $window) {
 
 } ]);
-*/
 
 
-/*
- *  ViewCertCtrl - Controller for logic related to viewing a certificate 
- * 
- */
-/*angular.module('wcDashBoardApp').controller('ViewCertCtrl', [ '$scope', '$window', function CreateCertCtrl($scope, $window) {
-	$scope.cert = {}
-	$scope.cert.filledAlways = true;
-} ]);
-*/
 /*
  *  ListUnsignedCertCtrl - Controller for logic related to displaying the list of unsigned certificates 
  * 
