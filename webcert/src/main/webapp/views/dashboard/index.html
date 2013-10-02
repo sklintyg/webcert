@@ -27,7 +27,7 @@
             <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading && wipCertList.length>0">
               <div>
                 <div ng-repeat="cert in wipCertList | limitTo:widgetState.pageSize">
-                  <a href="#/view">
+                  <a ng-click="viewCert(cert)" ng-href="#">
                     <span class="certblock certblock-clickable clearfix">
                       <h3>
                         <span message key="certificatetypes.{{cert.typ | lowercase}}.typename"></span>
