@@ -251,4 +251,22 @@ public class FragaSvar {
             return frageSkickadDatum;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FragaSvar fragaSvar = (FragaSvar) o;
+
+        if (internReferens != null ? !internReferens.equals(fragaSvar.internReferens) : fragaSvar.internReferens != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return internReferens != null ? internReferens.hashCode() : 0;
+    }
 }

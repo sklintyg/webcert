@@ -13,4 +13,9 @@ public interface FragaSvarService {
     void processIncomingAnswer(FragaSvar fragaSvar);
 
     List<FragaSvar> getFragaSvar(List<String> enhetsHsaIds);
+
+    /**
+     * Returns all the question/answer pairs that exist for the given certificate.
+     */
+    List<FragaSvar> getFragaSvar(String intygId);
 }
