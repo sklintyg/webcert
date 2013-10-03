@@ -38,11 +38,14 @@
       <column name="PATIENT_NAMN" type="varchar(255)">
         <constraints nullable="true" />
       </column>
-      <column name="PATIENT_PERSON_NUMMER" type="varchar(255)">
+      <column name="PATIENT_ID_ROOT" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="PATIENT_ID" type="varchar(255)">
         <constraints nullable="true" />
       </column>
       <column name="SIGNERINGS_DATUM" type="datetime">
-        <constraints nullable="true" />
+      <constraints nullable="true" />
       </column>
       <column name="MEDDELANDE_RUBRIK" type="varchar(255)">
         <constraints nullable="true" />
