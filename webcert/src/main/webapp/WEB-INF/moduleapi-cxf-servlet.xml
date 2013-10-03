@@ -36,9 +36,9 @@
 
   <context:annotation-config />
   <context:component-scan base-package="se.inera.webcert.web.controller.api" />
-  <jaxrs:server address="/fragasvar">
+  <jaxrs:server address="/intyg">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.webcert.web.controller.api.FragaSvarApiController" />
+      <bean class="se.inera.webcert.web.controller.moduleapi.IntygModuleApiController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
