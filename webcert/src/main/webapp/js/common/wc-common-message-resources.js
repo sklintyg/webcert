@@ -54,6 +54,10 @@ var commonMessageResources = {
         "view.label.confirmedby" : "Ovanstående uppgifter och bedömningar har bekräftas",
         "view.label.date" : "Datum",
         "view.label.contactinfo" : "Namnförtydligande, mottagningens adress och telefon",
+        "vardkontakt.undersokning" : "Min undersökning av patienten den ",
+        "vardkontakt.telefonkontakt" : "Min telefonkontakt med patienten den ",
+        "referens.journal" : "Journaluppgifter, den ",
+        "referens.annat" : "Annat, den ",
 
         "view.message.certificateloading" : "Hämtar intyg...",
         
@@ -69,7 +73,7 @@ var commonMessageResources = {
         "qa.amne.arbetstidsforlaggning" : "Arbetstidsförläggning",
         "qa.amne.kontakt" : "Kontakt",
         "qa.amne.avstamningsmote" : "Avstämningsmöte",
-        "qa.amne.komplettering_av_lakarintyg" : "Komplettering av lakarintyg",
+        "qa.amne.komplettering_av_lakarintyg" : "Komplettering av läkarintyg",
         "qa.amne.ovrigt" : "Övrigt",
 	    	
     },
