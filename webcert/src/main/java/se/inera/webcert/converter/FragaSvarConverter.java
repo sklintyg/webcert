@@ -73,7 +73,7 @@ public class FragaSvarConverter {
         vardperson.setTelefonnummer(source.getHosPersonal().getEnhet().getTelefonnummer());
         vardperson.setEpost(source.getHosPersonal().getEnhet().getEpost());
         vardperson.setVardgivarId(source.getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
-        vardperson.setVardgivarId(source.getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn());
+        vardperson.setVardgivarnamn(source.getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn());
 
         return vardperson;
     }
@@ -103,6 +103,7 @@ public class FragaSvarConverter {
                 id.setPatientId(source.getPatient().getPersonId().getExtension());
                 id.setPatientIdRoot(source.getPatient().getPersonId().getRoot());
                 intygsReferens.setPatientId(id);
+                intygsReferens.setSigneringsDatum(source.getSigneringsTidpunkt());
             }
         }
 

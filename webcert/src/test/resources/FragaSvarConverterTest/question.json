@@ -11,9 +11,10 @@
         "intygsId" : "b2f6d5bc-2f50-4623-9ce9-bf1ee5404347",
         "intygsTyp" : "fk7263",
         "patientNamn" : "Tomten",
+        "signeringsDatum":"2013-11-30T12:12:12.000",
         "patientId" :{
-            "patientId" : "19121212-1212",
-            "patientIdRoot" : "1.2.752.129.2.1.3.1"
+            "patientIdRoot" : "1.2.752.129.2.1.3.1",
+            "patientId" : "19121212-1212"
         }
     },
     "kompletteringar" : [
@@ -33,7 +34,8 @@
         "postnummer" : "85150",
         "postort" : "Sundsvall",
         "telefonnummer" : "060-1818000",
-        "vardgivarId" : "Landstinget Norrland"
+        "vardgivarId" : "VardgivarId",
+        "vardgivarnamn" : "Landstinget Norrland"
     },
     "status" : "PENDING_INTERNAL_ACTION",
     "vidarebefordrad" : false,

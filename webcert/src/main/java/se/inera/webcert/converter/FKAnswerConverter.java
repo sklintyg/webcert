@@ -2,8 +2,10 @@ package se.inera.webcert.converter;
 
 import se.inera.webcert.converter.util.ConvertToFKTypes;
 import se.inera.webcert.medcertqa.v1.Amnetyp;
+import se.inera.webcert.medcertqa.v1.KompletteringType;
 import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 
 /**
@@ -28,6 +30,15 @@ public class FKAnswerConverter {
 
         fkAnswer.setLakarutlatande(ConvertToFKTypes.toLakarUtlatande(fs.getIntygsReferens()));
 
+        for (Komplettering komplettering: fs.getKompletteringar()) {
+            KompletteringType kt = new KompletteringType();
+            kt.setFalt(komplettering.getFalt());
+            kt.setText(komplettering.getText());
+            fkAnswer.getFkKomplettering().add(kt);
+
+        }
         return fkAnswer;
     }
+
+
 }
