@@ -39,7 +39,13 @@ Enhet '''Vårdcentrum i Norr''' utan mottagningar
 | hsaId | name | medarbetaruppdrag |
 | adamo | Adamo Admin | centrum-vast,centrum-ost,centrum-norr |
 
-Frågor:
+!3 Intyg:
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhet | typ | id | mall |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | läkare1 | enhet1 | FK7263 | intyg-1 | M |
+
+!3 Frågor:
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning |

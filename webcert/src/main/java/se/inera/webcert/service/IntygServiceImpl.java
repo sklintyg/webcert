@@ -13,6 +13,7 @@ import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.common.v1.ObjectFactory;
 import se.inera.certificate.common.v1.UtlatandeType;
@@ -25,13 +26,14 @@ import se.inera.certificate.integration.rest.dto.CertificateStatus;
 import se.inera.certificate.integration.rest.exception.ModuleCallFailedException;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateStatusType;
-import se.inera.ifv.insuranceprocess.healthreporting.vardgetcertificate.v1.rivtabp20.GetCertificateForCareResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.vardgetcertificateresponder.v1.GetCertificateForCareRequestType;
-import se.inera.ifv.insuranceprocess.healthreporting.vardgetcertificateresponder.v1.GetCertificateForCareResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcare.v1.rivtabp20.GetCertificateForCareResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcareresponder.v1.GetCertificateForCareRequestType;
+import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
 
 /**
  * @author andreaskaltenbach
  */
+@Service
 public class IntygServiceImpl implements IntygService {
 
     private static Marshaller marshaller;
@@ -99,7 +101,7 @@ public class IntygServiceImpl implements IntygService {
         case 200:
             return response.readEntity(String.class);
         default:
-            String message = "Failed to convert inyg to internal JSON.";
+            String message = "Failed to convert intyg to internal JSON.";
             LOG.error(message);
             throw new ModuleCallFailedException(message, response);
         }
@@ -127,7 +129,7 @@ public class IntygServiceImpl implements IntygService {
         case 200:
             return response.readEntity(String.class);
         default:
-            String message = "Failed to convert inyg to external JSON.";
+            String message = "Failed to convert intyg to external JSON.";
             LOG.error(message);
             throw new ModuleCallFailedException(message, response);
         }
