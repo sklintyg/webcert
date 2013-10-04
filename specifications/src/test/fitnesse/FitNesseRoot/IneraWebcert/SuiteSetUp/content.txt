@@ -2,10 +2,13 @@
 |Import|
 |se.inera.webcert.spec|
 |se.inera.webcert.spec.util|
+|se.inera.certificate.spec|
+|se.inera.certificate.spec.util|
 
 !|Config|
 |property|value|
 |webcert.baseUrl|${webcert.baseUrl}|
+|certificate.baseUrl|${certificate.baseUrl}|
 |service.listCertificatesUrl|${services.listCertificatesUrl}|
 |service.getCertificateUrl|${services.getCertificateUrl}|
 |service.setCertificateStatusUrl|${services.setCertificateStatusUrl}|

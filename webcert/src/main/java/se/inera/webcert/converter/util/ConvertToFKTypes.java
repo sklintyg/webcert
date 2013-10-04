@@ -70,6 +70,8 @@ public class ConvertToFKTypes {
         pt.setFullstandigtNamn(ir.getPatientNamn());
         pt.setPersonId(toII(ir.getPatientId().getPatientIdRoot(),ir.getPatientId().getPatientId()));
 
+        lu.setPatient(pt);
+        lu.setSigneringsTidpunkt(ir.getSigneringsDatum());
         return  lu;
     }
 
@@ -90,6 +92,7 @@ public class ConvertToFKTypes {
 
     public static EnhetType toEnhetType(Vardperson vp){
         EnhetType et = new EnhetType();
+        et.setEnhetsId(toII(HSAID_ROOT,vp.getEnhetsId()));
         et.setEnhetsnamn(vp.getEnhetsnamn());
         et.setEpost(vp.getEpost());
         et.setPostadress(vp.getPostadress());
@@ -97,6 +100,7 @@ public class ConvertToFKTypes {
         et.setPostort(vp.getPostort());
         et.setTelefonnummer(vp.getTelefonnummer());
         et.setArbetsplatskod(toII(ARBETSPLATSKOD_ROOT, vp.getArbetsplatsKod()));
+        et.setEpost(vp.getEpost());
 
         VardgivareType vgt = new VardgivareType();
         vgt.setVardgivarnamn(vp.getVardgivarnamn());
@@ -106,4 +110,6 @@ public class ConvertToFKTypes {
 
         return et;
     }
+
+
 }

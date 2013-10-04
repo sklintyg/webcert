@@ -21,6 +21,7 @@ public class FKQuestionConverter {
 
         fkQuestion.setLakarutlatande(ConvertToFKTypes.toLakarUtlatande(fs.getIntygsReferens()));
         fkQuestion.setVardReferensId(fs.getInternReferens().toString());
+
         return fkQuestion;
     }
 }

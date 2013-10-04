@@ -24,6 +24,7 @@
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
 
     <webcert.baseUrl>http://localhost:9088/services/</webcert.baseUrl>
+    <certificate.baseUrl>http://localhost:8080/inera-certificate/</certificate.baseUrl>
   </properties>
 
   <dependencies>
@@ -197,12 +198,14 @@
       <id>demo</id>
         <properties>
           <webcert.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.baseUrl>
+          <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
         </properties>
     </profile>
     <profile>
       <id>utveckling</id>
         <properties>
           <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
+          <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
         </properties>
     </profile>
     <profile>
