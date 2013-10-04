@@ -73,7 +73,7 @@ public class FragaSvarConverter {
         vardperson.setTelefonnummer(source.getHosPersonal().getEnhet().getTelefonnummer());
         vardperson.setEpost(source.getHosPersonal().getEnhet().getEpost());
         vardperson.setVardgivarId(source.getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
-        vardperson.setVardgivarId(source.getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn());
+        vardperson.setVardgivarnamn(source.getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn());
 
         return vardperson;
     }
