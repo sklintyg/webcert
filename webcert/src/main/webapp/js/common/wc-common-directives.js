@@ -12,7 +12,8 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
           userName: "@",
           caregiverName: "@",
           isDoctor: "@",
-          menuDefs: "@"
+          menuDefs: "@",
+          defaultActive: "@"
               
         },
         controller: function($scope, $element, $attrs) {
@@ -23,6 +24,12 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
           $scope.isActive = function (page) {
           	
           	page = page.substr(page.lastIndexOf('/') + 1);
+          	if (angular.isString($scope.defaultActive)) {
+              if (page == $scope.defaultActive) {
+                  return 'active';
+              }
+          	}
+          	
           	var hasSubMenu = page.lastIndexOf('.') > -1;
 
             var currentRoute = $location.path().substring(1) || 'index';

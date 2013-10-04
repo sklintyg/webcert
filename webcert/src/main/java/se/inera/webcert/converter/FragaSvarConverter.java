@@ -13,12 +13,7 @@ import se.inera.webcert.medcertqa.v1.FkKontaktType;
 import se.inera.webcert.medcertqa.v1.KompletteringType;
 import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
-import se.inera.webcert.persistence.fragasvar.model.Amne;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.webcert.persistence.fragasvar.model.Status;
-import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.webcert.persistence.fragasvar.model.*;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 
@@ -101,7 +96,14 @@ public class FragaSvarConverter {
 
         if (source.getPatient() != null) {
             intygsReferens.setPatientNamn(source.getPatient().getFullstandigtNamn());
-            intygsReferens.setPatientPersonNummer(source.getPatient().getPersonId().getExtension());
+
+            if(source.getPatient().getPersonId()!=null){
+                Id id = new Id();
+
+                id.setPatientId(source.getPatient().getPersonId().getExtension());
+                id.setPatientIdRoot(source.getPatient().getPersonId().getRoot());
+                intygsReferens.setPatientId(id);
+            }
         }
 
         return intygsReferens;

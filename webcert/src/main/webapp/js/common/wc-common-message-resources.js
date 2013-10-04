@@ -54,8 +54,27 @@ var commonMessageResources = {
         "view.label.confirmedby" : "Ovanstående uppgifter och bedömningar har bekräftas",
         "view.label.date" : "Datum",
         "view.label.contactinfo" : "Namnförtydligande, mottagningens adress och telefon",
+        "vardkontakt.undersokning" : "Min undersökning av patienten den ",
+        "vardkontakt.telefonkontakt" : "Min telefonkontakt med patienten den ",
+        "referens.journal" : "Journaluppgifter, den ",
+        "referens.annat" : "Annat, den ",
 
         "view.message.certificateloading" : "Hämtar intyg...",
+        
+        // Fraga/svar resource - used both by 
+        "qa.status.pending_internal_action" : "Kräver svar",
+        "qa.status.pending_external_action" : "Inväntar svar",
+        "qa.status.answered" : "Besvarat",
+        "qa.status.closed" : "Hanterat",
+
+        "qa.fragestallare.fk" : "Försäkringskassan",
+        "qa.fragestallare.wc" : "Vården",
+        "qa.amne.paminnelse" : "Påminnelse",
+        "qa.amne.arbetstidsforlaggning" : "Arbetstidsförläggning",
+        "qa.amne.kontakt" : "Kontakt",
+        "qa.amne.avstamningsmote" : "Avstämningsmöte",
+        "qa.amne.komplettering_av_lakarintyg" : "Komplettering av läkarintyg",
+        "qa.amne.ovrigt" : "Övrigt",
 	    	
     },
     "en" : {

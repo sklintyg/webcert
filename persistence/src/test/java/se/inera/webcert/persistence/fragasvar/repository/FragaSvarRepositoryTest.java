@@ -38,7 +38,7 @@ public class FragaSvarRepositoryTest {
 
     private LocalDateTime FRAGE_SIGN_DATE = new LocalDateTime("2013-03-01T11:11:11");
     private LocalDateTime FRAGE_SENT_DATE = new LocalDateTime("2013-03-01T12:00:00");
-    private IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk", "Sven Persson", "19121212-1212",
+    private IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk", "Sven Persson",
             FRAGE_SENT_DATE);
     private static String ENHET_1_ID = "ENHET_1_ID";
     private static String ENHET_2_ID = "ENHET_2_ID";
@@ -92,7 +92,7 @@ public class FragaSvarRepositoryTest {
     @Test
     public void testFindByIntygsReferens() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
-        saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk", "Sven Persson", "19121212-1212",
+        saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk", "Sven Persson",
                 FRAGE_SENT_DATE));
         fragasvarRepository.save(saved);
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
