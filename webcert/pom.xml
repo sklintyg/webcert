@@ -153,6 +153,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+    </dependency>
+    <dependency>
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
       <version>2.7.1</version>
@@ -211,7 +215,7 @@
             <systemProperty>
               <name>java.awt.headless</name>
               <value>true</value>
-            </systemProperty>            
+            </systemProperty>
           </systemProperties>
         </configuration>
       </plugin>
@@ -243,20 +247,20 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <profiles>
     <profile>
       <id>demo</id>
-        <properties>
-          <cargo.remote.uri>http://demo.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
-        </properties>
+      <properties>
+        <cargo.remote.uri>http://demo.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
+      </properties>
     </profile>
     <profile>
       <id>utveckling</id>
-        <properties>
-          <cargo.remote.uri>http://utveckling.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
-        </properties>
+      <properties>
+        <cargo.remote.uri>http://utveckling.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
+      </properties>
     </profile>
   </profiles>
-  
+
 </project>

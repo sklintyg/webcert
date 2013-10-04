@@ -17,12 +17,24 @@ import se.inera.webcert.service.FragaSvarService;
 public class IntygModuleApiController {
 
     @Autowired
-        private FragaSvarService fragaSvarService;
+    private FragaSvarService fragaSvarService;
 
     @GET
     @Path("/{intygId}/fragasvar")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     public List<FragaSvar> fragaSvarForIntyg(@PathParam("intygId") String intygId) {
+        return fragaSvarService.getFragaSvar(intygId);
+    }
+
+    @GET
+    @Path("/{intygId}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public List<FragaSvar> intyg(@PathParam("intygId") String intygId) {
+
+        // fetch intyg from intygstjanst
+
+
+
         return fragaSvarService.getFragaSvar(intygId);
     }
 }
