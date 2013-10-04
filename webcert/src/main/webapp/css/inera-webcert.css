@@ -231,7 +231,8 @@ span.location { font-size: 12px; font-weight: bold; }
   -webkit-border-radius: 8px 8px 8px 8px;
   -moz-border-radius: 8px 8px 8px 8px;
   border-radius: 8px 8px 8px 8px;
-  padding: 20px; 
+  padding: 20px;
+  margin-bottom: 20px; 
 }
 
 .qa-panel h3 {
