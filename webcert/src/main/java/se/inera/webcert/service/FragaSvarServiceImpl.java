@@ -1,18 +1,21 @@
 package se.inera.webcert.service;
 
-import javax.mail.MessagingException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.common.base.Throwables;
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.security.WebCertUser;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import com.google.common.base.Throwables;
 
 /**
  * @author andreaskaltenbach
@@ -92,6 +95,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             }
         }
 
+        //Finally sort by senasteHandelseDatum
+        // We do the sorting in code, since we need to sort on a derived property and not a direct entity persisted
+        // property in which case we could have used an order by in the query.
+        Collections.sort(fragaSvarList, senasteHandelseDatumComparator);
         return fragaSvarList;
     }
 }
