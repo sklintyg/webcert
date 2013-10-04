@@ -103,6 +103,7 @@ public class FragaSvarConverter {
                 id.setPatientId(source.getPatient().getPersonId().getExtension());
                 id.setPatientIdRoot(source.getPatient().getPersonId().getRoot());
                 intygsReferens.setPatientId(id);
+                intygsReferens.setSigneringsDatum(source.getSigneringsTidpunkt());
             }
         }
 
