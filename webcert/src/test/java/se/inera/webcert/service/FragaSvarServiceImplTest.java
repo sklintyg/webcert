@@ -1,6 +1,7 @@
-package se.inera.webcert.web.service;
+package se.inera.webcert.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,12 +18,13 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.security.Vardenhet;
 import se.inera.webcert.security.Vardgivare;
 import se.inera.webcert.security.WebCertUser;
-import se.inera.webcert.service.FragaSvarServiceImpl;
+import se.inera.webcert.web.service.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
@@ -39,7 +41,7 @@ public class FragaSvarServiceImplTest {
     private LocalDateTime JANUARY = new LocalDateTime("2013-01-12T11:22:11");
     private LocalDateTime MAY = new LocalDateTime("2013-05-01T11:11:11");
     private LocalDateTime AUGUST = new LocalDateTime("2013-08-02T11:11:11");
-    private LocalDateTime DECEMBER = new LocalDateTime("2014-12-11T10:22:00");
+    private LocalDateTime DECEMBER = new LocalDateTime("2013-12-11T10:22:00");
 
     @SuppressWarnings("unchecked")
     @Test
@@ -85,8 +87,10 @@ public class FragaSvarServiceImplTest {
 
     private FragaSvar buildFragaSvarFraga(Long id, LocalDateTime fragaSkickadDatum, LocalDateTime svarSkickadDatum) {
         FragaSvar f = new FragaSvar();
+        f.setStatus(Status.PENDING_INTERNAL_ACTION);
         f.setInternReferens(id);
         f.setFrageSkickadDatum(fragaSkickadDatum);
+        f.setFrageText("frageText");
         f.setSvarSkickadDatum(svarSkickadDatum);
 
         f.setVardperson(new Vardperson());
@@ -97,9 +101,9 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testGetFragaSvarForIntyg() {
         List<FragaSvar> fragaSvarList = new ArrayList<>();
-        fragaSvarList.add(buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime()));
+        fragaSvarList.add(buildFragaSvarFraga(1L, DECEMBER, DECEMBER));
         fragaSvarList.add(buildFragaSvarFraga(2L, new LocalDateTime(), new LocalDateTime()));
-        fragaSvarList.add(buildFragaSvarFraga(3L, new LocalDateTime(), new LocalDateTime()));
+        fragaSvarList.add(buildFragaSvarFraga(3L, JANUARY, JANUARY));
 
         when(fragasvarRepository.findByIntygsReferensIntygsId("intyg-1")).thenReturn(new ArrayList<>(fragaSvarList));
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
@@ -116,9 +120,9 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testGetFragaSvarFilteringForIntyg() {
         List<FragaSvar> fragaSvarList = new ArrayList<>();
-        fragaSvarList.add(buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime()));
+        fragaSvarList.add(buildFragaSvarFraga(1L, DECEMBER, DECEMBER));
         fragaSvarList.add(buildFragaSvarFraga(2L, new LocalDateTime(), new LocalDateTime()));
-        fragaSvarList.add(buildFragaSvarFraga(3L, new LocalDateTime(), new LocalDateTime()));
+        fragaSvarList.add(buildFragaSvarFraga(3L, JANUARY, JANUARY));
 
         // the second question/answer pair was sent to a unit out of the current user's range -> has to be filtered
         fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
@@ -134,6 +138,58 @@ public class FragaSvarServiceImplTest {
         assertEquals(2, result.size());
         assertEquals(fragaSvarList.get(0), result.get(0));
         assertEquals(fragaSvarList.get(2), result.get(1));
+    }
+
+    @Test
+    public void testSaveSvarOK() {
+        FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());
+
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+
+        FragaSvar result = service.saveSvar(1L, "svarsText");
+
+        verify(fragasvarRepository).findOne(1L);
+        verify(webCertUserService).getWebCertUser();
+        verify(fragasvarRepository).save(fragaSvar);
+
+        assertEquals("svarsText", result.getSvarsText());
+        assertEquals(Status.ANSWERED, result.getStatus());
+        assertNotNull(result.getSvarSkickadDatum());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSaveSvarWrongStateForAnswering() {
+        FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setStatus(Status.ANSWERED);
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+
+        service.saveSvar(1L, "svarsText");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testSaveSvarNotAuthorizedForunit() {
+        FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        WebCertUser webCertUser = webCertUser();
+        webCertUser.getVardgivare().setVardenheter(new ArrayList<Vardenhet>()); // remove all medarbetaruppdrag
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+
+        service.saveSvar(1L, "svarsText");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSaveBadInput() {
+        service.saveSvar(1L, null);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testSaveSvarIntygNotFound() {
+
+        when(fragasvarRepository.findOne(1L)).thenReturn(null);
+        service.saveSvar(1L, "svarsText");
+
     }
 
     private WebCertUser webCertUser() {
