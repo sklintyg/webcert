@@ -3,12 +3,12 @@
   xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
-  profile="dev">
+  profile="test">
 
   <context:annotation-config />
 
   <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-       <property name="jndiName" value="java:comp/env/jdbc/intyg" />
+       <property name="jndiName" value="java:comp/env/jdbc/webcert" />
   </bean>
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
