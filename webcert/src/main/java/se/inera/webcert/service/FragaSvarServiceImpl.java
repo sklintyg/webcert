@@ -110,38 +110,38 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    public FragaSvar saveSvar(FragaSvar fragaSvarRemote) {
+    public FragaSvar saveSvar(Long fragaSvarsId, String svarsText) {
         //Input sanity check
-        if (StringUtils.isEmpty(fragaSvarRemote.getSvarsText())) {
+        if (StringUtils.isEmpty(svarsText)) {
             throw new IllegalArgumentException("SvarsText cannot be empty!");
         }
         
         // Look up entity in repository
-        FragaSvar fragaSvarLocal = fragaSvarRepository.findOne(fragaSvarRemote.getInternReferens());
-        if (fragaSvarLocal == null) {
-            throw new RuntimeException("Could not find FragaSvar with id:" + fragaSvarRemote.getInternReferens());
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarsId);
+        if (fragaSvar == null) {
+            throw new RuntimeException("Could not find FragaSvar with id:" + fragaSvarsId);
         }
 
         //Is user authorized to save an answer to this question?
         WebCertUser user = webCertUserService.getWebCertUser();
-        String fragaEnhetsId = fragaSvarLocal.getVardperson().getEnhetsId();
+        String fragaEnhetsId = fragaSvar.getVardperson().getEnhetsId();
         if (!user.getVardEnheter().contains(fragaEnhetsId))  {
             throw new RuntimeException("User " + user.getHsaId() + " not authorized to answer question for enhet " + fragaEnhetsId);
         }
         
-        if (!fragaSvarLocal.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
-            throw new IllegalStateException("FragaSvar with id " + fragaSvarLocal.getInternReferens().toString() + " has invalid state for saving new answer(" + fragaSvarLocal.getStatus() + ")"); 
+        if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
+            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString() + " has invalid state for saving answer(" + fragaSvar.getStatus() + ")"); 
         }
 
         //Ok, lets save the answer
-        fragaSvarLocal.setSvarsText(fragaSvarRemote.getSvarsText());
-        fragaSvarLocal.setSvarSkickadDatum(new LocalDateTime());
-        fragaSvarLocal.setStatus(Status.ANSWERED);
+        fragaSvar.setSvarsText(svarsText);
+        fragaSvar.setSvarSkickadDatum(new LocalDateTime());
+        fragaSvar.setStatus(Status.ANSWERED);
         //TODO: SvarSigneringsDatum??
-        fragaSvarRepository.save(fragaSvarLocal);
+        fragaSvarRepository.save(fragaSvar);
         
         //TODO: How about actually sending answer to fragestallaren (FK)?
       
-        return fragaSvarLocal;
+        return fragaSvar;
     }
 }
