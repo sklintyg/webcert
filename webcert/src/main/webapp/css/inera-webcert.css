@@ -491,11 +491,14 @@ input[type="radio"], input[type="checkbox"] {
 
 .navbar .nav {
     margin: 0 0px 0 0;
+    white-space: nowrap;
 }
 
 .navbar .nav>li {
 	border-left: 1px solid #999;
   border-right: 1px solid #999;
+  display: inline-block;
+  float: none;
 }
 
 .navbar .nav>li>a {
