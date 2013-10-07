@@ -1,0 +1,46 @@
+package se.inera.webcert.service;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface;
+import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
+import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
+
+/**
+ * Created by pehr on 10/7/13.
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:test-services-cxf-servlet.xml"})
+@ActiveProfiles("dev")
+public class SendQuestionToFKTest {
+
+
+    @Autowired
+    SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
+
+    @Before
+    public void setup(){
+
+    }
+
+    @Test
+    @Ignore
+    public void sendQuestionTest(){
+        SendMedicalCertificateQuestionType sendType = new SendMedicalCertificateQuestionType();
+        QuestionToFkType q2fk = new QuestionToFkType();
+        sendType.setQuestion(q2fk);
+        SendMedicalCertificateQuestionResponseType resp =  sendQuestionToFKClient.sendMedicalCertificateQuestion(null, sendType);
+        Assert.assertTrue(resp.getResult().getResultCode().equals(ResultCodeEnum.OK));
+    }
+
+}
