@@ -18,4 +18,10 @@ public interface FragaSvarService {
      * Returns all the question/answer pairs that exist for the given certificate.
      */
     List<FragaSvar> getFragaSvar(String intygId);
+    
+
+    /**
+     * Create an answer for a question based on info in the supplied FragaSvar parameter
+     */
+    FragaSvar saveSvar(Long frageSvarId, String svarsText);
 }

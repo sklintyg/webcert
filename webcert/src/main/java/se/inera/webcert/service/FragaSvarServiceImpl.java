@@ -6,10 +6,15 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.apache.cxf.common.util.StringUtils;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.security.WebCertUser;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
@@ -22,6 +27,8 @@ import com.google.common.base.Throwables;
  */
 @Service
 public class FragaSvarServiceImpl implements FragaSvarService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
     @Autowired
     private MailNotificationService mailNotificationService;
@@ -95,10 +102,46 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             }
         }
 
-        //Finally sort by senasteHandelseDatum
+        // Finally sort by senasteHandelseDatum
         // We do the sorting in code, since we need to sort on a derived property and not a direct entity persisted
         // property in which case we could have used an order by in the query.
         Collections.sort(fragaSvarList, senasteHandelseDatumComparator);
         return fragaSvarList;
+    }
+
+    @Override
+    public FragaSvar saveSvar(Long fragaSvarsId, String svarsText) {
+        //Input sanity check
+        if (StringUtils.isEmpty(svarsText)) {
+            throw new IllegalArgumentException("SvarsText cannot be empty!");
+        }
+        
+        // Look up entity in repository
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarsId);
+        if (fragaSvar == null) {
+            throw new RuntimeException("Could not find FragaSvar with id:" + fragaSvarsId);
+        }
+
+        //Is user authorized to save an answer to this question?
+        WebCertUser user = webCertUserService.getWebCertUser();
+        String fragaEnhetsId = fragaSvar.getVardperson().getEnhetsId();
+        if (!user.getVardEnheter().contains(fragaEnhetsId))  {
+            throw new RuntimeException("User " + user.getHsaId() + " not authorized to answer question for enhet " + fragaEnhetsId);
+        }
+        
+        if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
+            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString() + " has invalid state for saving answer(" + fragaSvar.getStatus() + ")"); 
+        }
+
+        //Ok, lets save the answer
+        fragaSvar.setSvarsText(svarsText);
+        fragaSvar.setSvarSkickadDatum(new LocalDateTime());
+        fragaSvar.setStatus(Status.ANSWERED);
+        //TODO: SvarSigneringsDatum??
+        fragaSvarRepository.save(fragaSvar);
+        
+        //TODO: How about actually sending answer to fragestallaren (FK)?
+      
+        return fragaSvar;
     }
 }
