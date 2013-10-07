@@ -23,5 +23,5 @@ public interface FragaSvarService {
     /**
      * Create an answer for a question based on info in the supplied FragaSvar parameter
      */
-    FragaSvar saveSvar(FragaSvar fragaSvar);
+    FragaSvar saveSvar(Long frageSvarId, String svarsText);
 }
