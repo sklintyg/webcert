@@ -20,7 +20,10 @@ public class FKAnswerConverter {
         fkAnswer.setAdressVard(ConvertToFKTypes.toVardAdresseringsType(fs.getVardperson()));
 
         fkAnswer.setAvsantTidpunkt(fs.getFrageSkickadDatum());
-        fkAnswer.setFkMeddelanderubrik(fs.getMeddelandeRubrik());
+        if (fs.getMeddelandeRubrik() != null) {
+            fkAnswer.setFkMeddelanderubrik(fs.getMeddelandeRubrik());
+        }
+
         fkAnswer.setFkReferensId(fs.getExternReferens());
         fkAnswer.setVardReferensId(fs.getInternReferens().toString());
 
@@ -32,12 +35,13 @@ public class FKAnswerConverter {
 
         fkAnswer.setLakarutlatande(ConvertToFKTypes.toLakarUtlatande(fs.getIntygsReferens()));
 
-        for (Komplettering komplettering: fs.getKompletteringar()) {
-            KompletteringType kt = new KompletteringType();
-            kt.setFalt(komplettering.getFalt());
-            kt.setText(komplettering.getText());
-            fkAnswer.getFkKomplettering().add(kt);
-
+        if(fs.getKompletteringar()!=null){
+            for (Komplettering komplettering: fs.getKompletteringar()) {
+                KompletteringType kt = new KompletteringType();
+                kt.setFalt(komplettering.getFalt());
+                kt.setText(komplettering.getText());
+                fkAnswer.getFkKomplettering().add(kt);
+            }
         }
         return fkAnswer;
     }
