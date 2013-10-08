@@ -48,15 +48,7 @@
   <jaxws:endpoint address="/ping-for-configuration/v1.0"
                   implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl"/>
 
-    <!-- ws clients -->
-    <jaxws:client id="sendQuestionToFKClient"
-                  serviceClass="se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface"
-                  address="${sendquestiontofk.endpoint.url}">
-    </jaxws:client>
-    <jaxws:client id="sendAnswerToFKClient"
-                  serviceClass="se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface"
-                  address="${sendanswertofk.endpoint.url}">
-    </jaxws:client>
+   
 
   <beans profile="dev,test,qa">
     <jaxrs:server address="/questions">
