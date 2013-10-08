@@ -26,7 +26,7 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$wind
 
 	$scope.editCert = function() {
     $log.debug("edit cert");
-    var path = "/m/fk7263/webcert/intyg/edit#/edit";
+    var path = "/m/fk7263/webcert/intyg/new/edit#/edit";
     $window.location.href = path;
 	}
 	
