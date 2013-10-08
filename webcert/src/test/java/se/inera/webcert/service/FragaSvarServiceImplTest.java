@@ -2,11 +2,13 @@ package se.inera.webcert.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
@@ -16,27 +18,43 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.w3.wsaddressing10.AttributedURIType;
 
+import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
+import se.inera.webcert.fkstub.util.ResultOfCallUtil;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.Id;
+import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.security.Vardenhet;
 import se.inera.webcert.security.Vardgivare;
 import se.inera.webcert.security.WebCertUser;
+import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
+import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
+import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
 import se.inera.webcert.web.service.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
+
+    private static final Id PATIENT_ID = new Id("patiend-id-root", "19121212-1212");
 
     @Mock
     private FragaSvarRepository fragasvarRepository;
 
     @Mock
     private WebCertUserService webCertUserService;
+    
+    @Mock
+    SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
 
     @InjectMocks
     private FragaSvarServiceImpl service;
+    
 
     private LocalDateTime JANUARY = new LocalDateTime("2013-01-12T11:22:11");
     private LocalDateTime MAY = new LocalDateTime("2013-05-01T11:11:11");
@@ -88,11 +106,19 @@ public class FragaSvarServiceImplTest {
     private FragaSvar buildFragaSvarFraga(Long id, LocalDateTime fragaSkickadDatum, LocalDateTime svarSkickadDatum) {
         FragaSvar f = new FragaSvar();
         f.setStatus(Status.PENDING_INTERNAL_ACTION);
+        f.setAmne(Amne.OVRIGT);
+        f.setExternReferens("<fk-extern-referens>");
         f.setInternReferens(id);
         f.setFrageSkickadDatum(fragaSkickadDatum);
         f.setFrageText("frageText");
         f.setSvarSkickadDatum(svarSkickadDatum);
-
+        
+        IntygsReferens intygsReferens = new IntygsReferens();
+        intygsReferens.setIntygsId("<intygsId>");
+        intygsReferens.setIntygsTyp("fk7263");
+        intygsReferens.setPatientId(PATIENT_ID);
+        f.setIntygsReferens(intygsReferens);
+        f.setKompletteringar(new HashSet<Komplettering>());
         f.setVardperson(new Vardperson());
         f.getVardperson().setEnhetsId("enhet");
         return f;
@@ -146,18 +172,43 @@ public class FragaSvarServiceImplTest {
 
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
+        
+        //mock ws ok response
+        SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
+        wsResponse.setResult(ResultOfCallUtil.okResult());
+        when(sendAnswerToFKClient.sendMedicalCertificateAnswer(any(AttributedURIType.class), any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
+        
 
         FragaSvar result = service.saveSvar(1L, "svarsText");
 
         verify(fragasvarRepository).findOne(1L);
         verify(webCertUserService).getWebCertUser();
         verify(fragasvarRepository).save(fragaSvar);
+        verify(sendAnswerToFKClient).sendMedicalCertificateAnswer(any(AttributedURIType.class),any(SendMedicalCertificateAnswerType.class));
 
         assertEquals("svarsText", result.getSvarsText());
         assertEquals(Status.ANSWERED, result.getStatus());
         assertNotNull(result.getSvarSkickadDatum());
     }
 
+    @Test(expected = ExternalWebServiceCallFailedException.class)
+    public void testSaveSvarWsError() {
+        FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());
+
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
+        
+        //mock ws error response
+        SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
+        wsResponse.setResult(ResultOfCallUtil.failResult("some error"));
+        when(sendAnswerToFKClient.sendMedicalCertificateAnswer(any(AttributedURIType.class), any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
+        
+
+        service.saveSvar(1L, "svarsText");
+    }
+    
     @Test(expected = IllegalStateException.class)
     public void testSaveSvarWrongStateForAnswering() {
         FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());

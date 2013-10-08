@@ -12,11 +12,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.security.WebCertUser;
+import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
+import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
+import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
+import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -26,6 +34,7 @@ import com.google.common.base.Throwables;
  * @author andreaskaltenbach
  */
 @Service
+@Transactional
 public class FragaSvarServiceImpl implements FragaSvarService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
@@ -38,6 +47,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private WebCertUserService webCertUserService;
+
+    @Autowired
+    SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
 
     private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
 
@@ -111,37 +123,48 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     public FragaSvar saveSvar(Long fragaSvarsId, String svarsText) {
-        //Input sanity check
+        // Input sanity check
         if (StringUtils.isEmpty(svarsText)) {
             throw new IllegalArgumentException("SvarsText cannot be empty!");
         }
-        
+
         // Look up entity in repository
         FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarsId);
         if (fragaSvar == null) {
             throw new RuntimeException("Could not find FragaSvar with id:" + fragaSvarsId);
         }
 
-        //Is user authorized to save an answer to this question?
+        // Is user authorized to save an answer to this question?
         WebCertUser user = webCertUserService.getWebCertUser();
         String fragaEnhetsId = fragaSvar.getVardperson().getEnhetsId();
-        if (!user.getVardEnheter().contains(fragaEnhetsId))  {
-            throw new RuntimeException("User " + user.getHsaId() + " not authorized to answer question for enhet " + fragaEnhetsId);
-        }
-        
-        if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
-            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString() + " has invalid state for saving answer(" + fragaSvar.getStatus() + ")"); 
+        if (!user.getVardEnheter().contains(fragaEnhetsId)) {
+            throw new RuntimeException("User " + user.getHsaId() + " not authorized to answer question for enhet "
+                    + fragaEnhetsId);
         }
 
-        //Ok, lets save the answer
+        if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
+            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString()
+                    + " has invalid state for saving answer(" + fragaSvar.getStatus() + ")");
+        }
+
+        // Ok, lets save the answer
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
-        //TODO: SvarSigneringsDatum??
-        fragaSvarRepository.save(fragaSvar);
-        
-        //TODO: How about actually sending answer to fragestallaren (FK)?
-      
-        return fragaSvar;
+        // TODO: SvarSigneringsDatum??
+        FragaSvar saved = fragaSvarRepository.save(fragaSvar);
+
+        // Send to external party (FK)
+        SendMedicalCertificateAnswerType sendType = new SendMedicalCertificateAnswerType();
+        AnswerToFkType answer = FKAnswerConverter.convert(saved);
+        sendType.setAnswer(answer);
+        SendMedicalCertificateAnswerResponseType response = sendAnswerToFKClient.sendMedicalCertificateAnswer(null,
+                sendType);
+        if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
+            LOG.error("Failed to send answer to FK, result is " + response.getResult().toString());
+            throw new ExternalWebServiceCallFailedException(response.getResult());
+        }
+        return saved;
+
     }
 }
