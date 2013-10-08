@@ -59,7 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <!--
     <value>file:${webcert.home}/services.properties</value>
     -->
-        <value>file:webcert/src/main/resources/services.properties</value>
+        <value>classpath:services.properties</value>
 
       </list>
     </property>
