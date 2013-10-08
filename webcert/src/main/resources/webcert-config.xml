@@ -24,7 +24,7 @@
   <import resource="classpath:repository-context.xml"/>
   <import resource="security/securityContext.xml"/>
   <import resource="classpath:/hsa-services-config.xml"/>
-  <import resource="classpath:/repository-context.xml"/>
+
 
   <context:property-placeholder location="file:${user.home}/.${spring.profiles.active}.minaintyg.se/config.properties"
                                 ignore-resource-not-found="true" ignore-unresolvable="true"/>
