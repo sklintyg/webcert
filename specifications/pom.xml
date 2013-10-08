@@ -131,11 +131,36 @@
         </dependencies>
       </plugin>
       <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>src/test/fitnesse/Resources</directory>
+            </fileset>
+            <fileset>
+              <directory>src/test/fitnesse/FitNesseRoot/ErrorLogs</directory>
+            </fileset>
+            <fileset>
+              <directory>src/test/fitnesse/FitNesseRoot/FitNesse</directory>
+            </fileset>
+            <fileset>
+              <directory>src/test/fitnesse/FitNesseRoot/PageHeader</directory>
+            </fileset>
+            <fileset>
+              <directory>src/test/fitnesse/FitNesseRoot/RecentChanges</directory>
+            </fileset>
+            <fileset>
+              <directory>src/test/fitnesse/FitNesseRoot/files</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>uk.co.javahelp.fitnesse</groupId>
         <artifactId>fitnesse-launcher-maven-plugin</artifactId>
-        <version>1.4.0-20130924</version>
+        <version>1.4.0-20131008</version>
         <configuration>
-          <!-- These next 3 are the default values anyway. -->
           <port>${fitnesse.port}</port>
           <workingDir>${fitnesse.working}</workingDir>
           <root>${fitnesse.root}</root>
