@@ -104,19 +104,42 @@ public class ConvertToFKTypes {
             return null;
         }
         EnhetType et = new EnhetType();
-        et.setEnhetsId(toII(HSAID_ROOT,vp.getEnhetsId()));
-        et.setEnhetsnamn(vp.getEnhetsnamn());
-        et.setEpost(vp.getEpost());
-        et.setPostadress(vp.getPostadress());
-        et.setPostnummer(vp.getPostnummer());
-        et.setPostort(vp.getPostort());
-        et.setTelefonnummer(vp.getTelefonnummer());
-        et.setArbetsplatskod(toII(ARBETSPLATSKOD_ROOT, vp.getArbetsplatsKod()));
-        et.setEpost(vp.getEpost());
+        if (vp.getEnhetsId() != null) {
+            et.setEnhetsId(toII(HSAID_ROOT, vp.getEnhetsId()));
+        }
+        if (vp.getEnhetsnamn() != null) {
+            et.setEnhetsnamn(vp.getEnhetsnamn());
+        }
+        if (vp.getEpost() != null) {
+            et.setEpost(vp.getEpost());
+        }
+        if (vp.getPostadress() != null) {
+            et.setPostadress(vp.getPostadress());
+        }
+        if (vp.getPostnummer() != null) {
+            et.setPostnummer(vp.getPostnummer());
+        }
+        if (vp.getPostort() != null) {
+            et.setPostort(vp.getPostort());
+        }
+        if (vp.getTelefonnummer() != null) {
+            et.setTelefonnummer(vp.getTelefonnummer());
+        }
+        if(vp.getArbetsplatsKod()!=null){
+            et.setArbetsplatskod(toII(ARBETSPLATSKOD_ROOT, vp.getArbetsplatsKod()));
+        }
+        if(vp.getEpost()!=null) {
+            et.setEpost(vp.getEpost());
+        }
 
         VardgivareType vgt = new VardgivareType();
-        vgt.setVardgivarnamn(vp.getVardgivarnamn());
-        vgt.setVardgivareId(toII(VARDGIVARE_ROOT, vp.getVardgivarId()));
+        if (vp.getVardgivarnamn() != null) {
+            vgt.setVardgivarnamn(vp.getVardgivarnamn());
+        }
+
+        if (vp.getVardgivarId() != null) {
+            vgt.setVardgivareId(toII(VARDGIVARE_ROOT, vp.getVardgivarId()));
+        }
 
         et.setVardgivare(vgt);
 

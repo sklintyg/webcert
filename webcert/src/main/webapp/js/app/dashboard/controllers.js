@@ -22,8 +22,14 @@ angular.module('wcDashBoardApp').controller('WebCertCtrl', [ '$scope', '$window'
  *  CreateCertCtrl - Controller for logic related to creating a new certificate 
  * 
  */
-angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$window', function CreateCertCtrl($scope, $window) {
+angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$window', '$log', function CreateCertCtrl($scope, $window, $log) {
 
+	$scope.editCert = function() {
+    $log.debug("edit cert");
+    var path = "/m/fk7263/webcert/intyg/edit#/edit";
+    $window.location.href = path;
+	}
+	
 } ]);
 
 
