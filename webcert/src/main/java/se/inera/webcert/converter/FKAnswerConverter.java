@@ -24,7 +24,9 @@ public class FKAnswerConverter {
         fkAnswer.setFkReferensId(fs.getExternReferens());
         fkAnswer.setVardReferensId(fs.getInternReferens().toString());
 
-        fkAnswer.setFkSistaDatumForSvar(fs.getSistaDatumForSvar());
+        if(fs.getSistaDatumForSvar()!= null){
+            fkAnswer.setFkSistaDatumForSvar(fs.getSistaDatumForSvar());
+        }
         fkAnswer.setFraga(ConvertToFKTypes.toInnehallType(fs.getFrageText(), fs.getFrageSigneringsDatum()));
         fkAnswer.setSvar(ConvertToFKTypes.toInnehallType(fs.getSvarsText(), fs.getSvarSigneringsDatum()));
 

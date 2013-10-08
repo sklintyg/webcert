@@ -59,11 +59,16 @@ public class ConvertToFKTypes {
     public static InnehallType toInnehallType(String text, LocalDateTime singeringsDatum){
         InnehallType iht = new InnehallType();
         iht.setMeddelandeText(text);
-        iht.setSigneringsTidpunkt(singeringsDatum);
+        if(singeringsDatum!=null){
+            iht.setSigneringsTidpunkt(singeringsDatum);
+        }
         return iht;
     }
 
     public static LakarutlatandeEnkelType toLakarUtlatande(IntygsReferens ir) {
+        if (ir == null) {
+            return null;
+        }
         LakarutlatandeEnkelType lu = new LakarutlatandeEnkelType();
         lu.setLakarutlatandeId(ir.getIntygsId());
         PatientType pt = new PatientType();
@@ -76,6 +81,10 @@ public class ConvertToFKTypes {
     }
 
     public static VardAdresseringsType toVardAdresseringsType(Vardperson vp){
+        if (vp == null) {
+            return null;
+        }
+
         VardAdresseringsType vat = new VardAdresseringsType();
 
         HosPersonalType hos = new HosPersonalType();
@@ -91,6 +100,9 @@ public class ConvertToFKTypes {
     }
 
     public static EnhetType toEnhetType(Vardperson vp){
+        if (vp == null) {
+            return null;
+        }
         EnhetType et = new EnhetType();
         et.setEnhetsId(toII(HSAID_ROOT,vp.getEnhetsId()));
         et.setEnhetsnamn(vp.getEnhetsnamn());

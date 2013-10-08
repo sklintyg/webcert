@@ -2,7 +2,10 @@ package se.inera.webcert.fkstub;
 
 
 import org.w3.wsaddressing10.AttributedURIType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.webcert.fkstub.util.ResultOfCallUtil;
 import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface;
+import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderService;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
 
@@ -14,6 +17,9 @@ public class SendQuestionStub implements SendMedicalCertificateQuestionResponder
     @Override
     public SendMedicalCertificateQuestionResponseType sendMedicalCertificateQuestion(AttributedURIType logicalAddress, SendMedicalCertificateQuestionType parameters) {
         SendMedicalCertificateQuestionResponseType response = new SendMedicalCertificateQuestionResponseType();
+        response.setResult(ResultOfCallUtil.okResult());
+        //System.out.println("!!!! SEND QUESTION TO FK");
         return response;
     }
+
 }
