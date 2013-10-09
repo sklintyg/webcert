@@ -146,11 +146,11 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-      <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-test</artifactId>
-          <scope>test</scope>
-      </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -264,6 +264,12 @@
       <id>utveckling</id>
       <properties>
         <cargo.remote.uri>http://utveckling.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
+      </properties>
+    </profile>
+    <profile>
+      <id>test</id>
+      <properties>
+        <cargo.remote.uri>http://10.250.35.51:8080/manager/text</cargo.remote.uri>
       </properties>
     </profile>
   </profiles>
