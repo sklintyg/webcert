@@ -1,5 +1,6 @@
 package se.inera.webcert.security;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author andreaskaltenbach
  */
-public class WebCertUser {
+public class WebCertUser implements Serializable {
 
     private String hsaId;
     private String namn;
