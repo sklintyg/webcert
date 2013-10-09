@@ -417,7 +417,7 @@ body span:hover.qa-unit-selected {
 }
 
 .btn-info[disabled]:hover {
-  cursor: arrow;
+  cursor: auto;
 	background-color: #28b4c4;
 /*  opacity: .5; /* Standards Compliant Browsers */
   filter: alpha(opacity=50); /* IE 7 and Earlier */
