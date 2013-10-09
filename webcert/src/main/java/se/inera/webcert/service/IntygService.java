@@ -1,5 +1,7 @@
 package se.inera.webcert.service;
 
+import se.inera.certificate.model.Utlatande;
+
 /**
  * @author andreaskaltenbach
  */
@@ -14,4 +16,10 @@ public interface IntygService {
      *             if a call to the module API fails
      */
     String fetchIntygData(String intygId);
+    
+    /**
+     * Fetches the {@link Utlatande} with id IntygsId from the Intygstjanst
+     * @throws se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException
+     */
+    Utlatande fetchIntygCommonModel(String intygId);
 }
