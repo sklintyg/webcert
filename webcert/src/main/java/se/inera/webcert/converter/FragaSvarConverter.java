@@ -9,11 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
+import se.inera.certificate.model.HosPersonal;
+import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.medcertqa.v1.FkKontaktType;
 import se.inera.webcert.medcertqa.v1.KompletteringType;
 import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
-import se.inera.webcert.persistence.fragasvar.model.*;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.Id;
+import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.webcert.persistence.fragasvar.model.Status;
+import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 
@@ -78,6 +86,36 @@ public class FragaSvarConverter {
         return vardperson;
     }
 
+    /**
+     * Converts a from common models {@link HosPersonal} to an {@link Vardperson} new instance
+     * 
+     * @param HosPersonal
+     *            source
+     * @return Vardperson
+     */
+    public static Vardperson convert(HosPersonal source) {
+        Vardperson vardperson = new Vardperson();
+        vardperson.setHsaId(source.getId().getExtension());
+        vardperson.setNamn(source.getNamn());
+        vardperson.setForskrivarKod(source.getForskrivarkod());
+        vardperson.setEnhetsId(source.getVardenhet().getId().getExtension());
+
+        if (source.getVardenhet().getArbetsplatskod() != null) {
+            vardperson.setArbetsplatsKod(source.getVardenhet().getArbetsplatskod().getExtension());
+        }
+
+        vardperson.setEnhetsnamn(source.getVardenhet().getNamn());
+        vardperson.setPostadress(source.getVardenhet().getPostadress());
+        vardperson.setPostnummer(source.getVardenhet().getPostnummer());
+        vardperson.setPostort(source.getVardenhet().getPostort());
+        vardperson.setTelefonnummer(source.getVardenhet().getTelefonnummer());
+        vardperson.setEpost(source.getVardenhet().getEpost());
+        vardperson.setVardgivarId(source.getVardenhet().getVardgivare().getId().getExtension());
+        vardperson.setVardgivarnamn(source.getVardenhet().getVardgivare().getNamn());
+
+        return vardperson;
+    }
+
     private Set<Komplettering> convertKompletteringar(List<KompletteringType> source) {
         List<Komplettering> kompletteringar = new ArrayList<>();
         for (KompletteringType kompletteringType : source) {
@@ -97,7 +135,7 @@ public class FragaSvarConverter {
         if (source.getPatient() != null) {
             intygsReferens.setPatientNamn(source.getPatient().getFullstandigtNamn());
 
-            if(source.getPatient().getPersonId()!=null){
+            if (source.getPatient().getPersonId() != null) {
                 Id id = new Id();
 
                 id.setPatientId(source.getPatient().getPersonId().getExtension());
@@ -138,4 +176,25 @@ public class FragaSvarConverter {
 
         return fragaSvar;
     }
+
+    /**
+     * Extract / Convert from {@link Utlatande} to {@link IntygsReferens}
+     * 
+     * @param utlatande
+     * @return
+     */
+    public static IntygsReferens convertToIntygsReferens(Utlatande utlatande) {
+        IntygsReferens intygsReferens = new IntygsReferens();
+        intygsReferens.setIntygsId(utlatande.getId().getExtension());
+        intygsReferens.setIntygsTyp(utlatande.getTyp().getCode());
+        intygsReferens.setPatientId(toCommonId(utlatande.getPatient().getId()));
+        intygsReferens.setPatientNamn(utlatande.getPatient().getFullstandigtNamn());
+        intygsReferens.setSigneringsDatum(utlatande.getSigneringsDatum());
+        return intygsReferens;
+    }
+
+    private static Id toCommonId(se.inera.certificate.model.Id id) {
+        return new Id(id.getRoot(), id.getExtension());
+    }
+
 }

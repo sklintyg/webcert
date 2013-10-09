@@ -2,6 +2,7 @@ package se.inera.webcert.service;
 
 import java.util.List;
 
+import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
@@ -21,7 +22,13 @@ public interface FragaSvarService {
     
 
     /**
-     * Create an answer for a question based on info in the supplied FragaSvar parameter
+     * Create an answer for an existing  question
      */
     FragaSvar saveSvar(Long frageSvarId, String svarsText);
+    
+    /**
+     * Create a new FragaSvar instance for a certificate and send it to external receiver (FK)
+     */
+    FragaSvar saveNewQuestion(String intygId, Amne amne, String frageText);
+    
 }

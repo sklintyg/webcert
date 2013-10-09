@@ -15,16 +15,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
+import se.inera.certificate.model.Utlatande;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
+import se.inera.webcert.converter.FKQuestionConverter;
+import se.inera.webcert.converter.FragaSvarConverter;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Status;
+import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.security.WebCertUser;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
+import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface;
+import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
+import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
+import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -39,6 +49,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
+    private static final String FRAGE_STALLARE_WEBCERT = "WC";
+
     @Autowired
     private MailNotificationService mailNotificationService;
 
@@ -46,10 +58,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private FragaSvarRepository fragaSvarRepository;
 
     @Autowired
+    private IntygService intygService;
+
+    @Autowired
     private WebCertUserService webCertUserService;
 
     @Autowired
     SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
+
+    @Autowired
+    SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
 
     private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
 
@@ -161,7 +179,58 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         SendMedicalCertificateAnswerResponseType response = sendAnswerToFKClient.sendMedicalCertificateAnswer(null,
                 sendType);
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
-            LOG.error("Failed to send answer to FK, result is " + response.getResult().toString());
+            LOG.error("Failed to send answer to FK, result was " + response.getResult().toString());
+            throw new ExternalWebServiceCallFailedException(response.getResult());
+        }
+        return saved;
+
+    }
+
+    @Override
+    public FragaSvar saveNewQuestion(String intygId, Amne amne, String frageText) {
+        // Input sanity check
+        if (StringUtils.isEmpty(frageText)) {
+            throw new IllegalArgumentException("frageText cannot be empty!");
+        }
+        
+        // Fetch from Intygstjansten
+        Utlatande utlatande = intygService.fetchIntygCommonModel(intygId);
+
+        //Get utfardande vardperson
+        Vardperson vardPerson = FragaSvarConverter.convert(utlatande.getSkapadAv());
+
+        // Is user authorized to save an answer to this question?
+        //Yes, if current user has the cerificate issuers unit in his list of authorized units
+        WebCertUser user = webCertUserService.getWebCertUser();
+        String fragaEnhetsId = vardPerson.getEnhetsId();
+        if (!user.getVardEnheter().contains(fragaEnhetsId)) {
+            throw new RuntimeException("User " + user.getHsaId() + " not authorized to answer question for enhet "
+                    + fragaEnhetsId);
+        }
+
+        IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(utlatande);
+
+        FragaSvar fraga = new FragaSvar();
+        fraga.setFrageStallare(FRAGE_STALLARE_WEBCERT);
+        fraga.setAmne(amne);
+        fraga.setFrageText(frageText);
+        fraga.setFrageSkickadDatum(new LocalDateTime());
+
+        fraga.setIntygsReferens(intygsReferens);
+        fraga.setVardperson(vardPerson);
+        fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
+
+        // Ok, lets save the question
+        FragaSvar saved = fragaSvarRepository.save(fraga);
+
+        // Send to external party (FK)
+        SendMedicalCertificateQuestionType sendType = new SendMedicalCertificateQuestionType();
+        QuestionToFkType question = FKQuestionConverter.convert(saved);
+        sendType.setQuestion(question);
+        SendMedicalCertificateQuestionResponseType response = sendQuestionToFKClient.sendMedicalCertificateQuestion(
+                null, sendType);
+        if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
+            LOG.error("Failed to send question to FK, result was " + response.getResult().toString());
             throw new ExternalWebServiceCallFailedException(response.getResult());
         }
         return saved;
