@@ -1,0 +1,41 @@
+!3 Lägg till ett HSA Enhet:
+| Hsa Enhet |
+| vardgivarid | hsaId | name | email |
+| vardgivare-fitnesse | vardenhet-fit-1 | FitNesse vardgivare | test@test.se |
+
+!3 Lägg till ett HSA medarbetare:
+| Hsa Medarbetare |
+| hsaId | name | medarbetaruppdrag |
+| fitness1 | Test Testsson | vardenhet-fit-1 |
+
+#!3 Lägg till ett intyg:
+
+#| Intyg |
+#| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhet | typ | id | mall |
+#| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | läkare1 |vardenhet-fit-1| FK7263 |intyg-fit-1| M |
+ 
+!3 Lägg till en Fråga:
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | internReferens? |
+| OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-1| eva | Eva Holgersson |vardenhet-fit-1| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
+
+
+!3 Givet att det finns en fråga visa och svara på denna.
+
+|script|!-SvaraOchFraga-!|
+|logga på som|3|
+|obehandladeFragarSidanVisas|
+|listaMedObehandladeFragarVisas|
+|visa fraga|$internReferens1|
+|intyg med fraga svar sidan visas|
+|svara pa fraga|$internReferens1|
+
+
+
+
+!3 Ta bort Frågor:
+
+|ta bort Fraga|
+|internReferens|
+|$internReferens1|
