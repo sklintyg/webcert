@@ -9,8 +9,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
         template: 
     	    '<table class="span12 table unit-table">'+
         		'<tr ng-repeat="unit in units">'+
-        			'<td><button type="button" ng-click="selectUnit(unit)" ng-href="#" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}</button></td>'+
-        			'<td><span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></td>'+
+        			'<td><button type="button" ng-click="selectUnit(unit)" ng-href="#" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}<span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></button></td>'+
         		'</tr>'+
         	'</table>',
         controller: function ($scope) {

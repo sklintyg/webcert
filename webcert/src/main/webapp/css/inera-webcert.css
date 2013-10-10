@@ -298,6 +298,10 @@ span.location { font-size: 12px; font-weight: bold; }
   vertical-align: middle;
 }
 
+td.unbreakable {
+	white-space:nowrap;
+}
+
 .table th:last-child, .table td:last-child {
   text-align: center;
 }

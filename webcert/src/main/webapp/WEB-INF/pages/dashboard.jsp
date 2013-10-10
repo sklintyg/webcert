@@ -37,7 +37,6 @@
 <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
 <link rel="stylesheet" href="<c:url value="/css/bootstrap-responsive-modified.css"/>">
 <link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
-<link rel="stylesheet" href="<c:url value="/css/inera-certificate.css"/>">
 
 <script type="text/javascript">
     /**
@@ -58,29 +57,29 @@
 	  user-name="<sec:authentication property="principal.namn"/>"
 	  caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>" 
 	  menu-defs="[
+     {
+       link :'/web/dashboard#/create', 
+       label:'Sök/Skriv intyg',
+       requires_doctor: false
+     },
 	   {
 	     link :'/web/dashboard#/index', 
 	     label:'Mina osignerade intyg',
 	     requires_doctor: true
 	   },
+     {
+       link :'/web/dashboard#/unhandled-qa',
+       label:'Enhetens frågor och svar',
+       requires_doctor: false
+     },
 	   {
 	     link :'/web/dashboard#/unsigned', 
 	     label:'Enhetens osignerade intyg',
 	     requires_doctor: false
 	   },
 	   {
-	     link :'/web/dashboard#/unhandled-qa',
-	     label:'Enhetens obesvarade frågor',
-	     requires_doctor: false
-	   },
-	   {
-	     link :'/web/dashboard#/create', 
-	     label:'Skriv intyg',
-	     requires_doctor: false
-	   },
-	   {
 	     link :'/web/dashboard#/about.support',
-	     label:'Om webcert',
+	     label:'Om Webcert',
 	     requires_doctor: false
 	   },
 	  ]">
