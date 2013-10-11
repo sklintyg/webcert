@@ -2,12 +2,10 @@ package se.inera.webcert.integration;
 
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.certificate.integration.util.ResultOfCallUtil;
-import se.inera.webcert.converter.FragaSvarConverter;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.medcertqa.v1.InnehallType;
 import se.inera.webcert.receivemedicalcertificateanswer.v1.rivtabp20.ReceiveMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
@@ -16,12 +14,8 @@ import se.inera.webcert.service.FragaSvarService;
 /**
  * @author andreaskaltenbach
  */
-@Transactional
 @SchemaValidation
 public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnswerResponderInterface {
-
-    @Autowired
-    private FragaSvarConverter converter;
 
     @Autowired
     private FragaSvarService fragaSvarService;
@@ -31,8 +25,14 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
             AttributedURIType logicalAddress, ReceiveMedicalCertificateAnswerType request) {
         ReceiveMedicalCertificateAnswerResponseType response = new ReceiveMedicalCertificateAnswerResponseType();
 
-        FragaSvar fragaSvar = converter.convert(request.getAnswer());
-        fragaSvarService.processIncomingAnswer(fragaSvar);
+        if (request.getAnswer().getSvar() == null) {
+            response.setResult(ResultOfCallUtil.failResult("Missing svar element."));
+            return response;
+        }
+
+        InnehallType svar = request.getAnswer().getSvar();
+        fragaSvarService.processIncomingAnswer(Long.parseLong(request.getAnswer().getVardReferensId()),
+                svar.getMeddelandeText(), svar.getSigneringsTidpunkt());
 
         response.setResult(ResultOfCallUtil.okResult());
         return response;

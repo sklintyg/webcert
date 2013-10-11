@@ -2,9 +2,7 @@ package se.inera.webcert.integration;
 
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.webcert.converter.FragaSvarConverter;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
@@ -16,7 +14,6 @@ import se.inera.webcert.service.FragaSvarService;
 /**
  * @author andreaskaltenbach
  */
-@Transactional
 @SchemaValidation
 public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQuestionResponderInterface {
 

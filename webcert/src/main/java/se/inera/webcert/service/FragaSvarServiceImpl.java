@@ -88,9 +88,24 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    public void processIncomingAnswer(FragaSvar fragaSvar) {
+    public void processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum) {
+
+        // lookup question in database
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(internId);
+
+        if (fragaSvar == null) {
+            throw new IllegalStateException("No question found with internal ID " + internId);
+        }
+
+        if ("FK".equals(fragaSvar.getFrageStallare())) {
+            throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
+        }
 
         // TODO - validation: does answer fit to question?
+
+        fragaSvar.setSvarsText(svarsText);
+        fragaSvar.setSvarSigneringsDatum(svarSigneringsDatum);
+        fragaSvar.setSvarSkickadDatum(new LocalDateTime());
 
         // update the FragaSvar
         fragaSvarRepository.save(fragaSvar);
@@ -192,15 +207,15 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         if (StringUtils.isEmpty(frageText)) {
             throw new IllegalArgumentException("frageText cannot be empty!");
         }
-        
+
         // Fetch from Intygstjansten
         Utlatande utlatande = intygService.fetchIntygCommonModel(intygId);
 
-        //Get utfardande vardperson
+        // Get utfardande vardperson
         Vardperson vardPerson = FragaSvarConverter.convert(utlatande.getSkapadAv());
 
         // Is user authorized to save an answer to this question?
-        //Yes, if current user has the cerificate issuers unit in his list of authorized units
+        // Yes, if current user has the cerificate issuers unit in his list of authorized units
         WebCertUser user = webCertUserService.getWebCertUser();
         String fragaEnhetsId = vardPerson.getEnhetsId();
         if (!user.getVardEnheter().contains(fragaEnhetsId)) {

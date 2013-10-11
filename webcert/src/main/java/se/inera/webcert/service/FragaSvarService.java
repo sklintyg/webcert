@@ -2,6 +2,7 @@ package se.inera.webcert.service;
 
 import java.util.List;
 
+import org.joda.time.LocalDateTime;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 
@@ -11,7 +12,8 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 public interface FragaSvarService {
 
     void processIncomingQuestion(FragaSvar fragaSvar);
-    void processIncomingAnswer(FragaSvar fragaSvar);
+
+    void processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum);
 
     List<FragaSvar> getFragaSvar(List<String> enhetsHsaIds);
 
