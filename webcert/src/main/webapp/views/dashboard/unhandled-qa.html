@@ -1,4 +1,4 @@
-<div class="row-fluid">
+<div class="row-fluid" id="unhandled-qa">
   <div class="span12 webcert-col webcert-col-primary">
     <h1>
       <span message key="dashboard.unanswered.title"></span>
@@ -20,35 +20,35 @@
         <span message key="info.nounanswered.qa.for.unit"></span>
       </div>
       
-      <div class="row-fluid scrollable" ng-show="(qaList | QAEnhetsIdFilter:activeUnit.id).length>0">
+      <div class="row-fluid" ng-show="(qaList | QAEnhetsIdFilter:activeUnit.id).length>0" id="qaTable">
         <table class="span12 table table-striped table-qa">
           <tr>
             <th></th>
-            <th>Status</th>
-            <th>Initierad av</th>
-            <th>Läkare</th>
-            <th>Senaste händelsen</th>
-            <th>Patient</th>
-            <th>Ämne</th>
-            <th>Svar senast</th>
-            <th class="center">Vidarebefordrad</th>
             <th></th>
+            <th class="center">Vidarebefordrad</th>
+            <th>Väntar på...</th>
+            <th>Läkare</th>
+            <th>Patient</th>
+            <th>Ändringsdatum</th>
+            <th>Svar senast</th>
           </tr>
           <tr ng-repeat="qa in qaList | QAEnhetsIdFilter:activeUnit.id">
             <td>
-              <button class="btn btn-info" ng-click="openIntyg(qa.intygsReferens)">Visa</button>
+                  <button class="btn btn-info" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
             </td>
-            <td><span message key="qa.status.{{qa.status}}"></span></td>
-            <td><span message key="qa.frageStallare.{{qa.frageStallare}}"></span></td>
-            <td>{{qa.vardperson.namn}}</td>
-            <td>{{qa.senasteHandelseDatum | date:'shortDate'}}</td>
-            <td>{{qa.intygsReferens.patientPersonNummer}}</td>
-            <td><span message key="qa.amne.{{qa.amne}}"></span></td>
-            <td>{{qa.sistaDatumForSvar}}</td>
-            <td class="center"><input id="selected" type="checkbox" ng-checked="qa.vidarebefordrad" /></td>
-            <td class="table-qa-last">
+            <td>
               <button class="btn btn-success">E-post</button>
             </td>
+            <td><input id="selected" type="checkbox" ng-checked="qa.vidarebefordrad" /></td>
+            <td><span message key="qa.frageStallare.{{qa.frageStallare}}"></span></td>
+<!--             
+            <td><span message key="qa.status.{{qa.status}}"></span></td>
+            <td><span message key="qa.frageStallare.{{qa.frageStallare}}"></span></td>
+            <td><span message key="qa.amne.{{qa.amne}}"></span></td> -->
+            <td>{{qa.vardperson.namn}}</td>
+            <td class="unbreakable">{{qa.intygsReferens.patientPersonNummer}}</td>
+            <td class="unbreakable">{{qa.senasteHandelseDatum | date:'shortDate'}}</td>
+            <td class="unbreakable table-qa-last">{{qa.sistaDatumForSvar}}</td>
         </table>
       </div>
       

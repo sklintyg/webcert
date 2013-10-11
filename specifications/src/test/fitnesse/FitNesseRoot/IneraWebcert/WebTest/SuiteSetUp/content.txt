@@ -1,0 +1,15 @@
+|Import|
+|se.inera.webcert.spec|
+|se.inera.webcert.spec.util|
+|se.inera.webcert.spec.web|
+|se.inera.webcert.spec.web.pages|
+|se.inera.webcert.spec.web.pages.fk7264|
+|se.inera.certificate.spec|
+|se.inera.certificate.spec.util|
+
+!|Config|
+|property|value|
+|geb.env|${geb.env}|
+|geb.build.baseUrl|${webcert.web.baseUrl}|
+|webcert.baseUrl|${webcert.baseUrl}|
+|certificate.baseUrl|${certificate.baseUrl}|

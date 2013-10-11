@@ -22,7 +22,7 @@
     <!-- This example has no unit tests, just integration tests -->
     <skipTests>true</skipTests>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
-
+    <webcert.web.baseUrl>http://localhost:9088</webcert.web.baseUrl>
     <webcert.baseUrl>http://localhost:9088/services/</webcert.baseUrl>
     <certificate.baseUrl>http://localhost:8080/inera-certificate/</certificate.baseUrl>
   </properties>

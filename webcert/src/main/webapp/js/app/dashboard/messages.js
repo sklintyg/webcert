@@ -4,7 +4,7 @@ var webcertResources = {
         "webcert.header": "Webcert",
         "webcert.description" : "Välkommen till Webcert.",
         "dashboard.title" : "Mina osignerade intyg",
-        "dashboard.unanswered.title" : "Ohanterade frågor och svar",
+        "dashboard.unanswered.title" : "Enhetens frågor och svar",
         "dashboard.about.title" : "Om Webcert",
         
         //labels

@@ -99,45 +99,67 @@
         }
       },
       //Admin personal med 3 enheter och mottagningar
-      {
-        "namn" : "Adamo Admin",
-        "hsaId" : "adamo",
-        "lakare" : false,
-        "vardgivare" : {
-          "id" : "vastmanland",
-          "namn" : "Landstinget Västmanland",
-          "vardenheter" : [
-            {
-              "id" : "centrum-vast",
-              "namn" : "Vårdcentrum i Väst",
-              "mottagningar" : [
-                {
-                  "id" : "dialys",
-                  "namn" : "Dialys"
-                },
-                {
-                  "id" : "akuten",
-                  "namn" : "Akuten"
-                }
-              ]
-            },
-            {
-              "id" : "centrum-ost",
-              "namn" : "Vårdcentrum i Öst",
-              "mottagningar" : [
-                {
-                  "id" : "nagel",
-                  "namn" : "Nagelmottagningen"
-                }
-              ]
-            },
-            {
-              "id" : "centrum-norr",
-              "namn" : "Vårdcentrum i Norr"
+        {
+            "namn" : "Adamo Admin",
+            "hsaId" : "adamo",
+            "lakare" : false,
+            "vardgivare" : {
+                "id" : "vastmanland",
+                "namn" : "Landstinget Västmanland",
+                "vardenheter" : [
+                    {
+                        "id" : "centrum-vast",
+                        "namn" : "Vårdcentrum i Väst",
+                        "mottagningar" : [
+                            {
+                                "id" : "dialys",
+                                "namn" : "Dialys"
+                            },
+                            {
+                                "id" : "akuten",
+                                "namn" : "Akuten"
+                            }
+                        ]
+                    },
+                    {
+                        "id" : "centrum-ost",
+                        "namn" : "Vårdcentrum i Öst",
+                        "mottagningar" : [
+                            {
+                                "id" : "nagel",
+                                "namn" : "Nagelmottagningen"
+                            }
+                        ]
+                    },
+                    {
+                        "id" : "centrum-norr",
+                        "namn" : "Vårdcentrum i Norr"
+                    }
+                ]
             }
-          ]
+        } ,
+        //FitNesse Admin personal med 1 enhet
+        {
+            "namn" : "Test Testsson",
+            "hsaId" : "fitness1",
+            "lakare" : false,
+            "vardgivare" : {
+                "id" : "vardgivare-fitnesse",
+                "namn" : "FitNesse vardgivare",
+                "vardenheter" : [
+                    {
+                        "id" : "vardenhet-fit-1",
+                        "namn" : "Vardenhet Fitnesse 1",
+                        "mottagningar" : [
+                            {
+                                "id" : "mottagning-fit-1",
+                                "namn" : "Motagning FitNesse 1"
+                            }
+                        ]
+                    }
+                ]
+            }
         }
-      }
     ];
 
     function updateJsonInput() {
@@ -167,10 +189,11 @@
             <option value="0" selected>Eva Holgersson (Läkare)</option>
             <option value="1">Adam Admin (Administratör)</option>
             <option value="2">Adamo Admin (Administratör flera enheter)</option>
+            <option value="3">Fitnesse Admin (Administratör)</option>
           </select>
           </p>
 
-          <input type="submit" value="Logga in" class="btn btn-primary btn-default" style="width: 100%">
+          <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-default" style="width: 100%">
 
         </div>
 

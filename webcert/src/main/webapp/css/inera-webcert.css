@@ -22,7 +22,7 @@ html,body,container-fluid {
   font-size: 14px;
 	font-family: helvetica, arial, sans-serif;
   text-align: left;
-  overflow-x: hidden;
+  overflow-x: hidden; /* disable horizontal scroll to prevent user from peeking outside of intended view in case something is too long. fix such things in another way! */
 }
 
 .container-fluid {
@@ -298,6 +298,10 @@ span.location { font-size: 12px; font-weight: bold; }
   vertical-align: middle;
 }
 
+td.unbreakable {
+	white-space:nowrap;
+}
+
 .table th:last-child, .table td:last-child {
   text-align: center;
 }
@@ -498,8 +502,8 @@ input[type="radio"], input[type="checkbox"] {
 .navbar .nav>li {
 	border-left: 1px solid #999;
   border-right: 1px solid #999;
-  display: inline-block;
-  float: none;
+/*  display: inline-block; /* Uncomment to lock menu items to one row (during 800x600 demos buttons won't be accessible otherwise) 
+  float: none;*/
 }
 
 .navbar .nav>li>a {

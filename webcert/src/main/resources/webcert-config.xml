@@ -32,7 +32,6 @@
           ignore-resource-not-found="true"/>
 
   <context:component-scan base-package="se.inera.webcert.web.service"/>
-
   <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basenames">
       <list>
@@ -81,4 +80,11 @@
                 serviceClass="se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface"
                 address="${sendanswertofk.endpoint.url}">
   </jaxws:client>
+
+
+ <!-- In dev mode we bootstrap data -->
+  <beans profile="dev">
+    <bean id="FragaSvarBootstrapBean" class="se.inera.webcert.service.util.FragaSvarBootstrapBean" />
+  </beans>
+  
 </beans>
