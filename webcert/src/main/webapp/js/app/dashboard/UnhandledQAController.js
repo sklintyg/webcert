@@ -47,4 +47,21 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
                 $window.location.href = "/m/" + intygsReferens.intygsTyp.toLowerCase() + "/webcert/intyg/" + intygsReferens.intygsId;
             }
 
+            
+            $scope.mailDialogOpen = false;
+            $scope.qaToMail = {};
+            $scope.dialogOpts = {
+                backdropFade: true,
+                dialogFade: true
+            };
+            
+            $scope.openDialog = function (mail) {
+              $scope.qaToMail = mail;
+              $scope.mailDialogOpen = true;
+            }
+
+            $scope.closeDialog = function () {
+              $scope.mailDialogOpen = false;
+            }
+            
         } ]);

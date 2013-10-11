@@ -3,6 +3,9 @@
 var commonMessageResources = {
     "sv" : {
 
+    		"common.yes":"Ja",
+    		"common.no":"Nej",
+    		"common.nodontask":"Nej, och fråga inte igen",
 		    "common.ok":"OK",
 		    "common.cancel":"Avbryt",
 		    "common.goback":"Tillbaka",

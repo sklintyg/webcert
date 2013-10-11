@@ -1,3 +1,18 @@
+<div id="dialog" modal="mailDialogOpen" close="closeArchiveDialog()" options="dialogOpts" role="alertdialog">
+  <div class="modal-header">
+    <button class="close" ng-click="closeDialog()">×</button>
+    <h3 tabindex="-1"><span message key="qa.modal.header"></span></h3>
+  </div>
+  <div class="modal-body">
+    Det verkar som att du har informerat den som ska ta hand om frågan. Vill du markera frågan som vidarebefordrad?
+  </div>
+  <div class="modal-footer">
+    <button id="buttonYes" class="btn btn-success" ng-click="closeDialog()" ng-disabled="!doneArchiving"><img ng-hide="doneArchiving" ng-src="/img/ajax-loader-small-green.gif" /> <span message key="common.yes"></span></button>
+    <button id="buttonNo" class="btn btn-info" ng-click="closeDialog()"><span message key="common.no"></span></button>
+    <button id="buttonNoDontAsk" class="btn btn-info" ng-click="closeDialog()"><span message key="common.nodontask"></span></button>
+  </div>
+</div>
+
 <div class="row-fluid" id="unhandled-qa">
   <div class="span12 webcert-col webcert-col-primary">
     <h1>
@@ -34,10 +49,10 @@
           </tr>
           <tr ng-repeat="qa in qaList | QAEnhetsIdFilter:activeUnit.id">
             <td>
-                  <button class="btn btn-info" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
+              <button class="btn btn-info" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
             </td>
             <td>
-              <button class="btn btn-success">E-post</button>
+              <button class="btn btn-success" ng-click="openDialog(qa.internReferens)">E-post</button>
             </td>
             <td><input id="selected" type="checkbox" ng-checked="qa.vidarebefordrad" /></td>
             <td><span message key="qa.frageStallare.{{qa.frageStallare}}"></span></td>

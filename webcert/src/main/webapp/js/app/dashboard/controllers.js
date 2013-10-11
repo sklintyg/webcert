@@ -110,6 +110,7 @@ angular.module('wcDashBoardApp').controller('UnansweredCertCtrl', [ '$scope', 'd
             }
         });
     }, 500);
+    
 } ]);
 
 /*

@@ -19,7 +19,7 @@ var webcertResources = {
         "certificatetypes.fk7263.typename" : "Läkarintyg FK7263",
         "certificatetypes.rli.typename" : "Läkarintyg utebliven resa (RLI)",
         
-       
+        "qa.modal.header" : "Markera som vidarebefordrad?",
         
         //info messages
         "info.nounsignedcertsfound" : "Inga osignerade intyg hittades.",
