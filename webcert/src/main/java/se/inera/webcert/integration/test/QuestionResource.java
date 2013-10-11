@@ -50,7 +50,6 @@ public class QuestionResource {
     @DELETE
     @Path("/extern/{externReferens}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public Response deleteQuestionByExternReferens(@PathParam("externReferens") String externReferens) {
         FragaSvar fraga = fragasvarRepository.findByExternReferens(externReferens);
         fragasvarRepository.delete(fraga);
@@ -60,7 +59,6 @@ public class QuestionResource {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public Response deleteQuestion(@PathParam("id") Long id) {
         fragasvarRepository.delete(id);
         return Response.ok().build();

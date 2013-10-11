@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.joda.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
+import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Component;
-
 import se.inera.certificate.model.HosPersonal;
 import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.medcertqa.v1.FkKontaktType;
@@ -22,10 +19,7 @@ import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * @author andreaskaltenbach
@@ -34,9 +28,6 @@ import com.google.common.collect.ImmutableSet;
 public class FragaSvarConverter {
 
     private static final String FK_FRAGASTALLARE = "FK";
-
-    @Autowired
-    private CrudRepository<FragaSvar, Long> fragaSvarRepository;
 
     public FragaSvar convert(QuestionFromFkType source) {
 
@@ -88,10 +79,6 @@ public class FragaSvarConverter {
 
     /**
      * Converts a from common models {@link HosPersonal} to an {@link Vardperson} new instance
-     * 
-     * @param HosPersonal
-     *            source
-     * @return Vardperson
      */
     public static Vardperson convert(HosPersonal source) {
         Vardperson vardperson = new Vardperson();
@@ -154,27 +141,6 @@ public class FragaSvarConverter {
             externaKontakter.add(kontaktInfo.getKontakt());
         }
         return ImmutableSet.copyOf(externaKontakter);
-    }
-
-    public FragaSvar convert(AnswerFromFkType answer) {
-
-        // lookup question in database
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(Long.parseLong(answer.getVardReferensId()));
-
-        if (fragaSvar == null) {
-            throw new IllegalStateException("No question found with internal ID " + answer.getVardReferensId());
-        }
-
-        if (FK_FRAGASTALLARE.equals(fragaSvar.getFrageStallare())) {
-            throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
-        }
-
-        // fill up FragaSvar with answer information
-        fragaSvar.setSvarsText(answer.getSvar().getMeddelandeText());
-        fragaSvar.setSvarSigneringsDatum(answer.getSvar().getSigneringsTidpunkt());
-        fragaSvar.setSvarSkickadDatum(new LocalDateTime());
-
-        return fragaSvar;
     }
 
     /**
