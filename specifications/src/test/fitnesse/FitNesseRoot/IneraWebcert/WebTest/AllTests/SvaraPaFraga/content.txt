@@ -1,13 +1,3 @@
-!3 Lägg till ett HSA Enhet:
-| Hsa Enhet |
-| vardgivarid | hsaId | name | email |
-| vardgivare-fitnesse | vardenhet-fit-1 | FitNesse vardgivare | test@test.se |
-
-!3 Lägg till ett HSA medarbetare:
-| Hsa Medarbetare |
-| hsaId | name | medarbetaruppdrag |
-| fitness1 | Test Testsson | vardenhet-fit-1 |
-
 #!3 Lägg till ett intyg:
 
 #| Intyg |
@@ -29,7 +19,7 @@
 |listaMedObehandladeFragarVisas|
 |visa fraga|$internReferens1|
 |intyg med fraga svar sidan visas|
-|svara pa fraga|$internReferens1|
+|svara pa fraga|$internReferens1|med svar|Här svarar fitnesse på frågan|
 
 
 

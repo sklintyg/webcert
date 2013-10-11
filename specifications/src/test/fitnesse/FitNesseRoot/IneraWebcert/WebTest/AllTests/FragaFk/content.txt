@@ -29,7 +29,7 @@
 |listaMedObehandladeFragarVisas|
 |visa fraga|$internReferens1|
 |intyg med fraga svar sidan visas|
-|stall fraga|
+|stall fraga|Nu ställer fitnesse en fråga !!|
 
 
 
