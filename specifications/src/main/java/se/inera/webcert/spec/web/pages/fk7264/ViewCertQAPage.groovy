@@ -8,9 +8,12 @@ class ViewCertQAPage extends Page {
 
     static content = {
         unhandledQAList(required: false) { $("#unhandledQACol") }
-        //userSelect { $("#jsonSelect") }
-        //certificateType { $("#certType") }
-        //sendAnswerBtn { $("#sendAnswerBtn") }
+        askQuestionBtn { $("#askQuestionBtn") }
+        newQuestionForm { $("#newQuestionForm") }
+        newQuestionText { $("#newQuestionText") }
+        sendQuestionBtn { $("#sendQuestionBtn") }
+        cancelQuestionBtn { $("#cancelQuestionBtn") }
+
     }
 
     def addAnswerText(String internid, String answer){
@@ -23,5 +26,21 @@ class ViewCertQAPage extends Page {
 
     def sendAnswer(String internid) {
         $("#sendAnswerBtn-${internid}").click()
+    }
+
+    def initQuestion(){
+        $("#askQuestionBtn").click()
+    }
+
+    def addQuestionText( String question){
+        newQuestionText<< question
+    }
+
+    def sendQuestion() {
+       sendQuestionBtn.click()
+    }
+
+    def cancelQuestion() {
+        cancelQuestionBtn.click()
     }
 }
