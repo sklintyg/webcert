@@ -145,7 +145,7 @@
             "lakare" : false,
             "vardgivare" : {
                 "id" : "vardgivare-fitnesse",
-                "namn" : "FitNesse vardgivare",
+                    "namn" : "FitNesse vardgivare",
                 "vardenheter" : [
                     {
                         "id" : "vardenhet-fit-1",

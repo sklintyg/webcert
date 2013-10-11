@@ -41,7 +41,7 @@
       <column name="PATIENT_ID_ROOT" type="varchar(255)">
         <constraints nullable="true" />
       </column>
-      <column name="PATIENT_ID" type="varchar(255)">
+      <column name="PATIENT_ID_EXTENSION" type="varchar(255)">
         <constraints nullable="true" />
       </column>
       <column name="SIGNERINGS_DATUM" type="datetime">

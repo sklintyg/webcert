@@ -125,7 +125,7 @@ public class FragaSvarConverter {
             if (source.getPatient().getPersonId() != null) {
                 Id id = new Id();
 
-                id.setPatientId(source.getPatient().getPersonId().getExtension());
+                id.setPatientIdExtension(source.getPatient().getPersonId().getExtension());
                 id.setPatientIdRoot(source.getPatient().getPersonId().getRoot());
                 intygsReferens.setPatientId(id);
                 intygsReferens.setSigneringsDatum(source.getSigneringsTidpunkt());

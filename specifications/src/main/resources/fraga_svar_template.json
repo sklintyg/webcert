@@ -11,7 +11,7 @@
         "intygsTyp" : "fk7263",
         "patientNamn" : "Tomten",
         "patientId" :{
-            "patientId" : "19121212-1212",
+            "patientIdExtension" : "19121212-1212",
             "patientIdRoot" : "1.2.752.129.2.1.3.1"
         }
     },

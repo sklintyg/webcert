@@ -61,7 +61,7 @@ public class SvaraOchFraga {
         }
     }
 
-    public boolean svaraPaFraga(String internid) {
+    public boolean svaraPaFragaMedSvar(String internid, String svar) {
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
@@ -69,7 +69,7 @@ public class SvaraOchFraga {
             waitFor {
                 page.unhandledQAList.isDisplayed();
             }
-            page.addAnswerText(internid, "Nu svarar FitNesse!!!")
+            page.addAnswerText(internid, svar)
 
             waitFor {
                 page.sendAnswer(internid)
@@ -78,7 +78,8 @@ public class SvaraOchFraga {
         }
     }
 
-    public stallFraga(){
+    public boolean stallFraga(String fraga){
+        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
@@ -93,13 +94,13 @@ public class SvaraOchFraga {
 
                 page.newQuestionForm.isDisplayed()
             }
-            page.addQuestionText("Nu frågar FitNesse en fråga!!!")
+            page.addQuestionText(fraga)
 
             waitFor {
-                page.sendQuestion()
+                result = page.sendQuestion()
             }
 
         }
-
+        result
     }
 }
