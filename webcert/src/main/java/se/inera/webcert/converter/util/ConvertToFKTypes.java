@@ -73,7 +73,7 @@ public class ConvertToFKTypes {
         lu.setLakarutlatandeId(ir.getIntygsId());
         PatientType pt = new PatientType();
         pt.setFullstandigtNamn(ir.getPatientNamn());
-        pt.setPersonId(toII(ir.getPatientId().getPatientIdRoot(),ir.getPatientId().getPatientId()));
+        pt.setPersonId(toII(ir.getPatientId().getPatientIdRoot(),ir.getPatientId().getPatientIdExtension()));
 
         lu.setPatient(pt);
         lu.setSigneringsTidpunkt(ir.getSigneringsDatum());

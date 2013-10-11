@@ -34,8 +34,15 @@
 
 
 
-!3 Ta bort Frågor:
+!3 Ta bort test-Frågor:
 
 |ta bort Fraga|
 |internReferens|
 |$internReferens1|
+
+
+#!3 Rensa bort test-intyg
+#
+#|ta bort Intyg|
+#|id|
+#|intyg-fit-1|

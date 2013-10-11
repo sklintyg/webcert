@@ -15,26 +15,26 @@ public class Id {
 
     @Column(name = "PATIENT_ID_ROOT")
     private String patientIdRoot;
-    @Column(name = "PATIENT_ID")
-    private String patientId;
+    @Column(name = "PATIENT_ID_EXTENSION")
+    private String patientIdExtension;
 
     public Id() {}
 
     public Id(String patientId) {
-        this.patientId = patientId;
+        this.patientIdExtension = patientId;
     }
 
     public Id(String patientIdRoot, String patientId) {
         this.patientIdRoot = patientIdRoot;
-        this.patientId = patientId;
+        this.patientIdExtension = patientId;
     }
 
-    public String getPatientId() {
-        return patientId;
+    public String getPatientIdExtension() {
+        return patientIdExtension;
     }
 
-    public void setPatientId(String extension) {
-        this.patientId = extension;
+    public void setPatientIdExtension(String extension) {
+        this.patientIdExtension = extension;
     }
 
     public String getPatientIdRoot() {
