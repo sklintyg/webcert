@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
@@ -26,7 +26,7 @@
 <html lang="sv">
 <head>
   <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta name="ROBOTS" content="nofollow, noindex"/>
 
   <title>WebCert test inloggning</title>
@@ -43,21 +43,21 @@
   </style>
 
   <script type="text/javascript">
-    //LÃ¤gg till fler templates i arrayen + i options fÃ¶r att utÃ¶ka antalet inloggingar 
+    //Lägg till fler templates i arrayen + i options för att utöka antalet inloggingar 
 
     var loginArr = [
-      //LÃ¤kare med flera enheter&mottagningar
+      //Läkare med flera enheter&mottagningar
       {
         "namn" : "Eva Holgersson",
         "hsaId" : "eva",
         "lakare" : true,
         "vardgivare" : {
           "id" : "vastmanland",
-          "namn" : "Landstinget VÃ¤stmanland",
+          "namn" : "Landstinget Västmanland",
           "vardenheter" : [
             {
               "id" : "centrum-vast",
-              "namn" : "VÃ¥rdcentrum i VÃ¤st",
+              "namn" : "Vårdcentrum i Väst",
               "mottagningar" : [
                 {
                   "id" : "dialys",
@@ -79,11 +79,11 @@
         "lakare" : false,
         "vardgivare" : {
           "id" : "vastmanland",
-          "namn" : "Landstinget VÃ¤stmanland",
+          "namn" : "Landstinget Västmanland",
           "vardenheter" : [
             {
               "id" : "centrum-vast",
-              "namn" : "VÃ¥rdcentrum i VÃ¤st",
+              "namn" : "Vårdcentrum i Väst",
               "mottagningar" : [
                 {
                   "id" : "dialys",
@@ -105,11 +105,11 @@
             "lakare" : false,
             "vardgivare" : {
                 "id" : "vastmanland",
-                "namn" : "Landstinget VÃ¤stmanland",
+                "namn" : "Landstinget Västmanland",
                 "vardenheter" : [
                     {
                         "id" : "centrum-vast",
-                        "namn" : "VÃ¥rdcentrum i VÃ¤st",
+                        "namn" : "Vårdcentrum i Väst",
                         "mottagningar" : [
                             {
                                 "id" : "dialys",
@@ -123,7 +123,7 @@
                     },
                     {
                         "id" : "centrum-ost",
-                        "namn" : "VÃ¥rdcentrum i Ã–st",
+                        "namn" : "Vårdcentrum i Öst",
                         "mottagningar" : [
                             {
                                 "id" : "nagel",
@@ -133,7 +133,7 @@
                     },
                     {
                         "id" : "centrum-norr",
-                        "namn" : "VÃ¥rdcentrum i Norr"
+                        "namn" : "Vårdcentrum i Norr"
                     }
                 ]
             }
@@ -179,17 +179,17 @@
 
         <h1>Testinloggningar WebCert</h1>
 
-        <p class="well">Templatelista till vÃ¤nster - Manuella Ã¤ndringar kan gÃ¶ras i jsonstrukturen - detta omvandlas
+        <p class="well">Templatelista till vänster - Manuella ändringar kan göras i jsonstrukturen - detta omvandlas
           till inloggad userContext</p>
 
         <div class="form-group span4">
 
           <h4>Mallar</h4>
           <select id="jsonSelect" name="jsonSelect" onChange="updateJsonInput()" size="8" style="width: 100%">
-            <option value="0" selected>Eva Holgersson (LÃ¤kare)</option>
-            <option value="1">Adam Admin (AdministratÃ¶r)</option>
-            <option value="2">Adamo Admin (AdministratÃ¶r flera enheter)</option>
-            <option value="3">Fitnesse Admin (AdministratÃ¶r)</option>
+            <option value="0" selected>Eva Holgersson (Läkare)</option>
+            <option value="1">Adam Admin (Administratör)</option>
+            <option value="2">Adamo Admin (Administratör flera enheter)</option>
+            <option value="3">Fitnesse Admin (Administratör)</option>
           </select>
           </p>
 
