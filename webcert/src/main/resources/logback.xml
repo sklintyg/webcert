@@ -20,7 +20,7 @@
     </layout>
   </appender>
 
-  <logger name="org.springframework" level="debug" />
+  <logger name="org.springframework" level="error" />
 
   <logger name="org.hibernate" level="error" />
 
