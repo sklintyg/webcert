@@ -164,13 +164,16 @@
 
     function updateJsonInput() {
       var jsonEl = document.getElementById("userJson");
+      var jsonElView = document.getElementById("userJsonDisplay");
       var selector = document.getElementById("jsonSelect");
-      jsonEl.value = JSON.stringify(loginArr[selector.selectedIndex], undefined, 2);
+      //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
+      jsonElView.value = JSON.stringify(loginArr[selector.selectedIndex], undefined, 1);
+      jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 1));
     }
   </script>
 </head>
 <body onLoad="updateJsonInput()">
-<form id="loginForm" action="/fake" method="POST" class="form-inline" >
+<form id="loginForm" action="/fake" method="POST" class="form-inline">
   <div class="container">
 
     <div id="content-container">
@@ -191,7 +194,6 @@
             <option value="2">Adamo Admin (Administratör flera enheter)</option>
             <option value="3">Fitnesse Admin (Administratör)</option>
           </select>
-          </p>
 
           <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-default" style="width: 100%">
 
@@ -200,9 +202,9 @@
         <div class="form-group span8">
           <p>
           <h4>Inloggningsprofil</h4>
-          <textarea id="userJson" name="userjson" class="field" style="height: 400px; width: 100%">
+          <input type="hidden" id="userJson" name="userjson"/>
+          <textarea id="userJsonDisplay" name="userJsonDisplay" class="field" style="height: 400px; width: 100%">
           </textarea>
-          </p>
         </div>
 
 
