@@ -131,19 +131,19 @@
           <tr>
             <th></th>
             <th></th>
-            <th class="center">Vidarebefordrad</th>
-            <th>Väntar på...</th>
-            <th>Läkare</th>
-            <th>Patient</th>
-            <th>Ändringsdatum</th>
-            <th>Svar senast</th>
+            <th class="center" title="Markerar om frågan/svaret är vidarebefordrat till den som ska ta hand om frågan/svaret">Vidarebefordrad</th>
+            <th title="Vad frågan/svaret väntar på för att inte längre räknas som ohanterad">Väntar på...</th>
+            <th title="Läkare som har signerat intyget">Läkare</th>
+            <th title="Personnumret på patienten som läkarintyget berör">Patient</th>
+            <th title="Det datum då något senast hände med frågan/svaret. Ex: när frågan skickades eller när ett svar inkom">Ändringsdatum</th>
+            <th title="Eventuellt datum som vårdenheten måste inkomma med svar till Försäkringskassan">Svar senast</th>
           </tr>
           <tr ng-repeat="qa in qaList | QAEnhetsIdFilter:activeUnit.id">
             <td>
-              <button class="btn btn-info" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
+              <button class="btn btn-info" title="Visa intyget och frågan/svaret" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
             </td>
             <td>
-              <button class="btn btn-success" ng-click="openDialog(qa.internReferens)"><img src="/img/mail.png"></button>
+              <button class="btn btn-success" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret" ng-click="openDialog(qa.internReferens)"><img src="/img/mail.png"></button>
             </td>
             <td><input id="selected" type="checkbox" ng-checked="qa.vidarebefordrad" /></td>
             <td><span message key="qa.waiting.{{qa.vantarpa}}"></span></td>
