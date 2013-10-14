@@ -183,7 +183,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Ok, lets save the answer
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
-        fragaSvar.setStatus(Status.ANSWERED);
+        fragaSvar.setStatus(Status.CLOSED);
         // TODO: SvarSigneringsDatum??
         FragaSvar saved = fragaSvarRepository.save(fragaSvar);
 
