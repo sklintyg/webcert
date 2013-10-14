@@ -30,16 +30,24 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
 
 												if (qa.status == "ANSWERED") {
 	                        qa.vantarpa = "markhandled"; 
-												} else if (qa.amne == "KOMPLETTERING") {
+												} else if (qa.status == "CLOSED") {
+	                        qa.vantarpa = "handled"; 
+												} else if (qa.amne == "KOMPLETTERING_AV_LAKARINTYG") {
 	                        qa.vantarpa = "komplettering"; 
-												} else{
+												} else {
 
-													if (qa.frageStallare == "fk") {
+													if (qa.status == "PENDING_INTERNAL_ACTION") {
 		                        qa.vantarpa = "svarfranvarden"; 
+													} else if(qa.status == "PENDING_EXTERNAL_ACTION") {
+		                        qa.vantarpa = "svarfranfk";
 													} else {
-		                        qa.vantarpa = "svarfranfk"; 
-													}
-												}
+														qa.vantarpa = "";
+														$log.debug("warning: undefined status");
+													} 
+/*												} else {
+													qa.vantarpa = "";
+													$log.debug("warning: undefined status");*/
+												} 
 											});
                         
                     } else {
