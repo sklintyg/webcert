@@ -21,6 +21,27 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
                     if (data != null) {
                         $scope.qaList = data;
                         $log.debug("got Data!");
+                        
+                        // set waiting messages
+
+											angular.forEach($scope.qaList, function (qa, key) {
+												//qa.amne
+												//qa.status
+
+												if (qa.status == "ANSWERED") {
+	                        qa.vantarpa = "markhandled"; 
+												} else if (qa.amne == "KOMPLETTERING") {
+	                        qa.vantarpa = "komplettering"; 
+												} else{
+
+													if (qa.frageStallare == "fk") {
+		                        qa.vantarpa = "svarfranvarden"; 
+													} else {
+		                        qa.vantarpa = "svarfranfk"; 
+													}
+												}
+											});
+                        
                     } else {
                         $scope.widgetState.hasError = true;
                     }
