@@ -1,4 +1,4 @@
-package se.inera.webcert.security;
+package se.inera.webcert.hsa.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,6 @@ public class Vardenhet {
     private List<Mottagning> mottagningar = new ArrayList<>();
 
     public Vardenhet() {
-
     }
 
     public Vardenhet(String id, String namn) {

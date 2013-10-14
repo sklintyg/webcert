@@ -1,4 +1,4 @@
-package se.inera.webcert.security;
+package se.inera.webcert.hsa.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,8 +16,11 @@ public class WebCertUser implements Serializable {
     private String hsaId;
     private String namn;
     private boolean lakare;
+    private String prescriptionCode;
 
     private Vardgivare vardgivare;
+
+    private List<Vardenhet> vardenheter;
 
     public String getHsaId() {
         return hsaId;
@@ -58,17 +61,32 @@ public class WebCertUser implements Serializable {
         } catch (JsonProcessingException e) {
            throw new RuntimeException(e);
         }
-        
     }
 
     public List<String> getVardEnheter() {
         List<String> list = new ArrayList<String>();
-        for(Vardenhet enhet: vardgivare.getVardenheter()) {
+        for(Vardenhet enhet: vardenheter) {
             list.add(enhet.getId());
             for(Mottagning mottagning: enhet.getMottagningar()) {
                 list.add(mottagning.getId());
             }
         }
         return list;
+    }
+
+    public String getPrescriptionCode() {
+        return prescriptionCode;
+    }
+
+    public void setPrescriptionCode(String prescriptionCode) {
+        this.prescriptionCode = prescriptionCode;
+    }
+
+    public List<Vardenhet> getVardenheter() {
+        return vardenheter;
+    }
+
+    public void setVardenheter(List<Vardenhet> vardenheter) {
+        this.vardenheter = vardenheter;
     }
 }

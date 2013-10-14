@@ -106,14 +106,14 @@ public class HSAWebServiceCalls implements InitializingBean {
      * @return
      * @throws Exception
      */
-    public GetMiuForPersonResponseType callMiuRights(GetMiuForPersonType parameters) throws Exception {
+    public GetMiuForPersonResponseType callMiuRights(GetMiuForPersonType parameters) {
         try {
             GetMiuForPersonResponseType response = serverInterface.getMiuForPerson(logicalAddressHeader, messageId,
                     parameters);
             return response;
         } catch (Exception ex) {
-            log.error("Exception={}", ex.getMessage(), ex);
-            throw new Exception(ex);
+            Throwables.propagate(ex);
+            return null;
         }
     }
 
@@ -160,14 +160,14 @@ public class HSAWebServiceCalls implements InitializingBean {
      * @return
      * @throws Exception
      */
-    public HsawsSimpleLookupResponseType callHsawsSimpleLookup(HsawsSimpleLookupType parameters) throws Exception {
+    public HsawsSimpleLookupResponseType callHsawsSimpleLookup(HsawsSimpleLookupType parameters) {
         try {
             HsawsSimpleLookupResponseType response = serverInterface.hsawsSimpleLookup(logicalAddressHeader, messageId,
                     parameters);
             return response;
         } catch (Exception ex) {
-            log.error("Exception={}", ex.getMessage(), ex);
-            throw new Exception(ex);
+            Throwables.propagate(ex);
+            return null;
         }
     }
 
