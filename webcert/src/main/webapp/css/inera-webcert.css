@@ -443,6 +443,10 @@ body span:hover.qa-unit-selected {
     padding: 0;
 }
 
+button.btn-link-minimal {
+	padding: 0;
+}
+
 .btn-inverse {
 	background: none;
 	background-color: #3f3f3f;

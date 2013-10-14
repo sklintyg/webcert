@@ -9,6 +9,8 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
                 doneLoading : false,
                 hasError : false
             }
+            
+            $scope.isCollapsed = true;
 
             $scope.qaList = {};
             $scope.activeUnit = "";
