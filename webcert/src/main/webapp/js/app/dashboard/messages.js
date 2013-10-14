@@ -8,8 +8,8 @@ var webcertResources = {
         "dashboard.about.title" : "Om Webcert",
         
         //labels
-        "label.unsignedcerts" : "Osignerade Intyg",
-        "label.unansweredcerts": "Intyg med obesvarad fråga",
+        "label.unsignedcerts" : "Osignerade intyg",
+        "label.unansweredcerts": "Intyg med ohanterad fråga",
         "label.readytosigncerts": "Intyg färdiga att signera (massignering)",
         "label.showallcerts" : "Visa alla intyg",
         "label.showfewercerts" : "Visa färre intyg",
@@ -29,14 +29,14 @@ var webcertResources = {
         
         //info messages
         "info.nounsignedcertsfound" : "Inga osignerade intyg hittades.",
-        "info.nounansweredcertsfound" : "Inga intyg med obesvarade frågor hittades.",
+        "info.nounansweredcertsfound" : "Inga intyg med ohanterade frågor hittades.",
         "info.noreadytosigncertsfound" : "Inga klarmarkerade intyg hittades.",
         "info.loadingdata" :"Uppdaterar lista...",
         "info.nounanswered.qa.for.unit" : "Inga ohanterade frågor & svar för enheten.",
         
         //error messages
         "error.unsignedcerts.couldnotbeloaded" :"Kunde inte hämta osignerade intyg!",
-        "error.unansweredcerts.couldnotbeloaded":"Kunde inte hämta listan med obesvarade frågor!",
+        "error.unansweredcerts.couldnotbeloaded":"Kunde inte hämta listan med ohanterade frågor och svar!",
         "error.readytosigncerts.couldnotbeloaded": "Kunde inte hämta intyg klara för signering!"
     },
     "en": {
