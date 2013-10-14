@@ -30,7 +30,7 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
 												//qa.amne
 												//qa.status
 
-												if (qa.status == "ANSWERED") {
+												if (qa.status == "ANSWERED" || qa.amne == "MAKULERING" || qa.amne == "PAMINNELSE") {
 	                        qa.vantarpa = "markhandled"; 
 												} else if (qa.status == "CLOSED") {
 	                        qa.vantarpa = "handled"; 
