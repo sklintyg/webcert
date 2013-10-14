@@ -135,10 +135,7 @@
         </bean>
       </list>
     </constructor-arg>
-    <!-- OPTIONAL used when one of the metadata files contains information about this service provider -->
-    <!-- <property name="hostedSPName" value=""/> -->
-    <!-- OPTIONAL property: can tell the system which IDP should be used for authenticating user by default. -->
-    <!-- <property name="defaultIDP" value="http://localhost:8080/opensso"/> -->
+    <property name="refreshCheckInterval" value="86400000"/> <!-- refresh meta data once a day -->
   </bean>
 
   <bean id="httpClientFactory" class="se.inera.auth.HttpClientFactory"/>
