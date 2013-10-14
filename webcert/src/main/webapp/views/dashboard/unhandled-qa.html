@@ -28,6 +28,10 @@
 
 
     <h2 class="col-head">{{selectedUnit.namn}}</h2>
+    <p>
+      Visar alla ohanterade frågor för {{selectedUnit.namn}}<br>
+      <a href="#">Visa avancerat sökfilter</a> 
+    </p>
     <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading">
 
       <!-- No results message -->
@@ -55,7 +59,7 @@
               <button class="btn btn-success" ng-click="openDialog(qa.internReferens)">E-post</button>
             </td>
             <td><input id="selected" type="checkbox" ng-checked="qa.vidarebefordrad" /></td>
-            <td><span message key="qa.frageStallare.{{qa.frageStallare}}"></span></td>
+            <td><span message key="qa.waiting.{{qa.vantarpa}}"></span></td>
 <!--             
             <td><span message key="qa.status.{{qa.status}}"></span></td>
             <td><span message key="qa.frageStallare.{{qa.frageStallare}}"></span></td>
