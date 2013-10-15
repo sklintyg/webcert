@@ -42,10 +42,7 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
 													} else {
 														qa.vantarpa = "";
 														$log.debug("warning: undefined status");
-													} 
-												} else {
-													qa.vantarpa = "";
-													$log.debug("warning: undefined status");
+													}
 												} 
 											});
                         
