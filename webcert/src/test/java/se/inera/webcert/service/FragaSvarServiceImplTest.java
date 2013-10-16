@@ -1,15 +1,15 @@
 package se.inera.webcert.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
 import se.inera.webcert.fkstub.util.ResultOfCallUtil;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
@@ -47,13 +48,12 @@ public class FragaSvarServiceImplTest {
 
     @Mock
     private WebCertUserService webCertUserService;
-    
+
     @Mock
     SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
 
     @InjectMocks
     private FragaSvarServiceImpl service;
-    
 
     private LocalDateTime JANUARY = new LocalDateTime("2013-01-12T11:22:11");
     private LocalDateTime MAY = new LocalDateTime("2013-05-01T11:11:11");
@@ -111,7 +111,7 @@ public class FragaSvarServiceImplTest {
         f.setFrageSkickadDatum(fragaSkickadDatum);
         f.setFrageText("frageText");
         f.setSvarSkickadDatum(svarSkickadDatum);
-        
+
         IntygsReferens intygsReferens = new IntygsReferens();
         intygsReferens.setIntygsId("<intygsId>");
         intygsReferens.setIntygsTyp("fk7263");
@@ -165,6 +165,7 @@ public class FragaSvarServiceImplTest {
         assertEquals(fragaSvarList.get(2), result.get(1));
     }
 
+    
     @Test
     public void testSaveSvarOK() {
         FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());
@@ -172,19 +173,21 @@ public class FragaSvarServiceImplTest {
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
-        
-        //mock ws ok response
+
+        // mock ws ok response
         SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
         wsResponse.setResult(ResultOfCallUtil.okResult());
-        when(sendAnswerToFKClient.sendMedicalCertificateAnswer(any(AttributedURIType.class), any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
-        
+        when(
+                sendAnswerToFKClient.sendMedicalCertificateAnswer(any(AttributedURIType.class),
+                        any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
 
         FragaSvar result = service.saveSvar(1L, "svarsText");
 
         verify(fragasvarRepository).findOne(1L);
         verify(webCertUserService).getWebCertUser();
         verify(fragasvarRepository).save(fragaSvar);
-        verify(sendAnswerToFKClient).sendMedicalCertificateAnswer(any(AttributedURIType.class),any(SendMedicalCertificateAnswerType.class));
+        verify(sendAnswerToFKClient).sendMedicalCertificateAnswer(any(AttributedURIType.class),
+                any(SendMedicalCertificateAnswerType.class));
 
         assertEquals("svarsText", result.getSvarsText());
         assertEquals(Status.CLOSED, result.getStatus());
@@ -198,20 +201,43 @@ public class FragaSvarServiceImplTest {
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
-        
-        //mock ws error response
+
+        // mock ws error response
         SendMedicalCertificateAnswerResponseType wsResponse = new SendMedicalCertificateAnswerResponseType();
         wsResponse.setResult(ResultOfCallUtil.failResult("some error"));
-        when(sendAnswerToFKClient.sendMedicalCertificateAnswer(any(AttributedURIType.class), any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
-        
+        when(
+                sendAnswerToFKClient.sendMedicalCertificateAnswer(any(AttributedURIType.class),
+                        any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
 
         service.saveSvar(1L, "svarsText");
     }
-    
+
     @Test(expected = IllegalStateException.class)
     public void testSaveSvarWrongStateForAnswering() {
         FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+
+        service.saveSvar(1L, "svarsText");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSaveSvarForKompletteringAndNotDoctor() {
+        FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        WebCertUser nonDoctor = webCertUser();
+        nonDoctor.setLakare(false);
+        when(webCertUserService.getWebCertUser()).thenReturn(nonDoctor);
+
+        service.saveSvar(1L, "svarsText");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSaveSvarForPaminnelse() {
+        FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setAmne(Amne.PAMINNELSE);
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
 

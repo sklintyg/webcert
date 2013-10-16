@@ -1,11 +1,9 @@
 package se.inera.webcert.fkstub;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
@@ -25,6 +23,18 @@ public class StubRestApi {
     public Collection<QuestionToFkType> fragor() {
         return questionAnswerStore.getQuestions().values();
     }
+    @DELETE
+    @Path("/fragor")
+    public void rensaFragor() {
+        System.out.println("!!!Questions111s :" +questionAnswerStore.getQuestions().size() );
+        questionAnswerStore.getQuestions().clear();
+        System.out.println("!!!Questions222 :" +questionAnswerStore.getQuestions().size() );
+    }
+    @DELETE
+    @Path("/fragor/{id}")
+    public void rensaFraga(@PathParam("id") String id) {
+        questionAnswerStore.getQuestions().remove(id);
+    }
 
     @GET
     @Path("/fragor/{id}")
@@ -38,6 +48,18 @@ public class StubRestApi {
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<AnswerToFkType> svar() {
         return questionAnswerStore.getAnswers().values();
+    }
+
+    @DELETE
+    @Path("/svar")
+    public void rensaSvar() {
+        questionAnswerStore.getAnswers().clear();
+    }
+
+    @DELETE
+    @Path("/svar/{id}")
+    public void rensaSvar(@PathParam("id") String id) {
+        questionAnswerStore.getAnswers().remove(id);
     }
 
     @GET

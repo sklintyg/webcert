@@ -5,8 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
 
-import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
 
 /**
  * @author marced

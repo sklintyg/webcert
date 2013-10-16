@@ -28,11 +28,12 @@ import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.integration.rest.dto.CertificateStatus;
 import se.inera.certificate.integration.rest.exception.ModuleCallFailedException;
 import se.inera.certificate.model.Utlatande;
+import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.rivtabp20.GetCertificateForCareResponderInterface;
+import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareRequestType;
+import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateStatusType;
-import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcare.v1.rivtabp20.GetCertificateForCareResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcareresponder.v1.GetCertificateForCareRequestType;
-import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
+
 
 import com.google.common.base.Throwables;
 
@@ -65,6 +66,7 @@ public class IntygServiceImpl implements IntygService {
     public String fetchIntygData(String intygId) {
 
         GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
+
         CertificateContentMeta metaData = convert(intyg.getMeta());
 
         ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(intyg.getMeta().getCertificateType());
@@ -170,10 +172,10 @@ public class IntygServiceImpl implements IntygService {
                 request);
 
         switch (response.getResult().getResultCode()) {
-        case OK:
-            return response;
-        default:
-            throw new ExternalWebServiceCallFailedException(response.getResult());
+            case OK:
+                return response;
+            default:
+                throw new ExternalWebServiceCallFailedException(response.getResult());
         }
     }
 }

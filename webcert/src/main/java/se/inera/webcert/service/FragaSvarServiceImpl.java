@@ -68,7 +68,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
-
+    
     private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
 
     @Override
@@ -180,6 +180,17 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + " has invalid state for saving answer(" + fragaSvar.getStatus() + ")");
         }
 
+        //Implement Business Rule RE-20
+        if (Amne.PAMINNELSE.equals(fragaSvar.getAmne())) {
+            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString()
+                    + " has invalid Amne(" + fragaSvar.getAmne() + ") for saving answer");
+        }
+        
+        //Implement Business Rule RE-06
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.isLakare()) {
+            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString()
+                    + " and amne (" + fragaSvar.getAmne() + ") can only be answered by user that is Lakare");
+        }
         // Ok, lets save the answer
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
@@ -207,6 +218,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         if (StringUtils.isEmpty(frageText)) {
             throw new IllegalArgumentException("frageText cannot be empty!");
         }
+        
+        if (amne == null) {
+            throw new IllegalArgumentException("Amne cannot be null!");
+        }
+
 
         // Fetch from Intygstjansten
         Utlatande utlatande = intygService.fetchIntygCommonModel(intygId);
