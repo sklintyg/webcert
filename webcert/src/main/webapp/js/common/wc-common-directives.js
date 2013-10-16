@@ -46,7 +46,7 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
         		+'<div class="row-fluid header">'
 	        		+'<div class="span6">'
 	        			+'<div class="row-fluid">'
-		        			+'<div class="span12">'
+		        			+'<div class="span12 headerbox">'
 			        			+'<span class="headerbox-logo pull-left"><a href="/web/start"><img alt="Till startsidan" src="/img/webcert_logo.png"/></a></span>'
 			          		+'<span class="headerbox-date pull-left">'
 			        				+'{{today | date:"shortDate"}}'
