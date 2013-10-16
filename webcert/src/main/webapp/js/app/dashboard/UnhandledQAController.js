@@ -9,6 +9,8 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
                 doneLoading : false,
                 hasError : false
             }
+            
+            $scope.isCollapsed = true;
 
             $scope.qaList = {};
             $scope.activeUnit = "";
@@ -19,16 +21,13 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
                 dashBoardService.getQA(function(data) {
                     $scope.widgetState.doneLoading = true;
                     if (data != null) {
-                        $scope.qaList = data;
-                        $log.debug("got Data!");
+                      $scope.qaList = data;
+                      $log.debug("got Data!");
                         
                         // set waiting messages
-
 											angular.forEach($scope.qaList, function (qa, key) {
-												//qa.amne
-												//qa.status
 
-												if (qa.status == "ANSWERED") {
+												if (qa.status == "ANSWERED" || qa.amne == "MAKULERING" || qa.amne == "PAMINNELSE") {
 	                        qa.vantarpa = "markhandled"; 
 												} else if (qa.status == "CLOSED") {
 	                        qa.vantarpa = "handled"; 
@@ -43,10 +42,7 @@ angular.module('wcDashBoardApp').controller('UnhandledQACtrl',
 													} else {
 														qa.vantarpa = "";
 														$log.debug("warning: undefined status");
-													} 
-/*												} else {
-													qa.vantarpa = "";
-													$log.debug("warning: undefined status");*/
+													}
 												} 
 											});
                         

@@ -28,10 +28,97 @@
 
 
     <h2 class="col-head">{{selectedUnit.namn}}</h2>
-    <p>
+    <div>
       Visar alla ohanterade frågor för {{selectedUnit.namn}}<br>
-      <a href="#">Visa avancerat sökfilter</a> 
-    </p>
+		  <button class="btn btn-link btn-link-minimal" ng-click="isCollapsed = !isCollapsed" ng-switch="isCollapsed"><span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span></button>
+		  <div collapse="isCollapsed" class="form-horizontal form-inline" style="background-color: #f5f5f5;">
+		    <div style="padding: 20px 20px 0 20px">
+			    <div class="control-group">
+			      <label class="control-label">Frågor från</label>
+			      <div class="controls">
+			        <input id="frageStallareFK" name="frageStallareFK" type="checkbox" checked>
+			        <label for="frageStallareFK">Försäkringskassan</label>
+	            <input id="frageStallareWC" name="frageStallareWC" type="checkbox" checked>
+	            <label for="frageStallareWC">Vården</label>
+			      </div>
+			    </div>
+	        <div class="control-group">
+	          <label class="control-label">Läkare</label>
+	          <div class="controls">
+	            <select name="doctors"></select>
+	          </div>
+	        </div>
+	        <div class="control-group">
+	          <label class="control-label">Frågor som är</label>
+	          <div class="controls">
+	            <input id="ohanterade" name="ohanterade" type="checkbox" checked>
+	            <label for="ohanterade">Ohanterade</label>
+	            <input id="hanterade" name="hanterade" type="checkbox" checked>
+	            <label for="hanterade">Hanterade</label><br>
+	            <input id="ejvidare" name="ejvidare" type="checkbox" checked>
+	            <label for="ejvidare">Ej vidarebefordrade</label>
+	            <input id="vidare" name="vidare" type="checkbox" checked>
+	            <label for="vidare">Vidarebefordrade</label><br>
+	          </div>
+	        </div>
+	        <div class="control-group">
+	          <label class="control-label">Ändringsdatum</label>
+	          <div class="controls">
+		          Från 
+		          <input
+		              type="text" datepicker-popup="dd-MMMM-yyyy" ng-model="dt"
+		              is-open="opened" min="minDate" max="'2015-06-22'"
+		              datepicker-options="dateOptions"
+		              date-disabled="disabled(date, mode)" ng-required="true" />
+		            <button class="btn" ng-click="open()">
+		              <i class="icon-calendar"></i>
+		            </button>          
+		           till 
+		          <input
+		              type="text" datepicker-popup="dd-MMMM-yyyy" ng-model="dt"
+		              is-open="opened" min="minDate" max="'2015-06-22'"
+		              datepicker-options="dateOptions"
+		              date-disabled="disabled(date, mode)" ng-required="true" />
+		            <button class="btn" ng-click="open()">
+		              <i class="icon-calendar"></i>
+		            </button>          
+	          </div>
+	        </div>
+	        <div class="control-group">
+	          <label class="control-label">Ämne</label>
+	          <div class="controls">
+	            <select name="amne">
+	              <option value="alla">Visa alla</option>
+	              <option value="arbetstid">Arbetstidsförläggning</option>
+	              <option value="avtsamning">Avstämningsmöte</option>
+	              <option value="komplettering">Komplettering</option>
+	              <option value="makulering">Makulering</option>
+	              <option value="kontakt">Kontakt</option>
+	              <option value="paminnelse">Påminnelse</option>
+	              <option value="ovrigt">Övrigt</option>
+	            </select>
+	          </div>
+	        </div>
+	        <div class="control-group">
+	          <label class="control-label">Svar senast</label>
+	          <div class="controls">
+	            <input
+	                type="text" datepicker-popup="dd-MMMM-yyyy" ng-model="dt"
+	                is-open="opened" min="minDate" max="'2015-06-22'"
+	                datepicker-options="dateOptions"
+	                date-disabled="disabled(date, mode)" ng-required="true" />
+	              <button class="btn" ng-click="open()">
+	                <i class="icon-calendar"></i>
+	              </button>          
+	          </div>
+	        </div>
+	        <div class="control-group">
+	          <button class="btn">Sök</button>
+	          <button class="btn">Återställ sökformuläret</button>
+	        </div>
+        </div>      
+		  </div>      
+    </div>
     <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading">
 
       <!-- No results message -->
@@ -44,19 +131,19 @@
           <tr>
             <th></th>
             <th></th>
-            <th class="center">Vidarebefordrad</th>
-            <th>Väntar på...</th>
-            <th>Läkare</th>
-            <th>Patient</th>
-            <th>Ändringsdatum</th>
-            <th>Svar senast</th>
+            <th class="center" title="Markerar om frågan/svaret är vidarebefordrat till den som ska ta hand om frågan/svaret">Vidarebefordrad</th>
+            <th title="Vad frågan/svaret väntar på för att inte längre räknas som ohanterad">Väntar på...</th>
+            <th title="Läkare som har signerat intyget">Läkare</th>
+            <th title="Personnumret på patienten som läkarintyget berör">Patient</th>
+            <th title="Det datum då något senast hände med frågan/svaret. Ex: när frågan skickades eller när ett svar inkom">Ändringsdatum</th>
+            <th title="Eventuellt datum som vårdenheten måste inkomma med svar till Försäkringskassan">Svar senast</th>
           </tr>
           <tr ng-repeat="qa in qaList | QAEnhetsIdFilter:activeUnit.id">
             <td>
-              <button class="btn btn-info" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
+              <button class="btn btn-info" title="Visa intyget och frågan/svaret" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
             </td>
             <td>
-              <button class="btn btn-success" ng-click="openDialog(qa.internReferens)">E-post</button>
+              <button class="btn btn-success" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret" ng-click="openDialog(qa.internReferens)"><img src="/img/mail.png"></button>
             </td>
             <td><input id="selected" type="checkbox" ng-checked="qa.vidarebefordrad" /></td>
             <td><span message key="qa.waiting.{{qa.vantarpa}}"></span></td>
