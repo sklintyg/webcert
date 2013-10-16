@@ -22,7 +22,10 @@
 |svara pa fraga|$internReferens1|med svar|Här svarar fitnesse på frågan|
 
 
-
+!3 Kontrollera att det kommit in en fråga till FK (stub)
+|Svar Skickad Till Fk|
+|svar?|
+|Här svarar fitnesse på frågan|
 
 !3 Ta bort test-Frågor:
 
@@ -30,6 +33,9 @@
 |internReferens|
 |$internReferens1|
 
+!3
+|script|Rensa Fragor Svar Till Fk|
+|rensa svar|
 
 #!3 Rensa bort test-intyg
 #

@@ -31,15 +31,19 @@
 |intyg med fraga svar sidan visas|
 |stall fraga|Nu ställer fitnesse en fråga !!|
 
-
-
+!3 Kontrollera att det kommit in en fråga till FK (stub)
+|Fraga Skickad Till Fk|
+|fraga?|
+|Nu ställer fitnesse en fråga !!|
 
 !3 Ta bort Frågor:
-
 |ta bort Fraga|
 |internReferens|
 |$internReferens1|
 
+!3
+|script|Rensa Fragor Svar Till Fk|
+|rensa fraga|
 
 #!3 Rensa bort test-intyg
 #
