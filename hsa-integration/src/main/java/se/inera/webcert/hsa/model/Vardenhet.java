@@ -8,8 +8,9 @@ import java.util.List;
  */
 public class Vardenhet {
 
-    private String namn;
     private String id;
+    private String namn;
+    private String mail;
 
     private List<Mottagning> mottagningar = new ArrayList<>();
 
@@ -43,6 +44,14 @@ public class Vardenhet {
 
     public void setMottagningar(List<Mottagning> mottagningar) {
         this.mottagningar = mottagningar;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public List<String> getHsaIds() {

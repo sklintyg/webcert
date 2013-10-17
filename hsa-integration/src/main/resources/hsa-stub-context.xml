@@ -25,4 +25,5 @@
 
   <bean id="hsaStubRestApi" class="se.inera.webcert.hsa.stub.HsaStubRestApi"/>
 
+  <bean class="se.inera.webcert.hsa.stub.BootstrapBean"/>
 </beans>
