@@ -23,7 +23,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
 
-import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.fkstub.util.ResultOfCallUtil;
@@ -44,6 +43,7 @@ import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCert
 import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
+import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -236,19 +236,19 @@ public class FragaSvarServiceImplTest {
                 .getEnhetsId());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveFragaNoFrageText() throws JsonParseException, JsonMappingException, IOException {
         FragaSvar fraga = buildFraga(1L, null, Amne.OVRIGT, new LocalDateTime());
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveFragaNoAmne() throws JsonParseException, JsonMappingException, IOException {
         FragaSvar fraga = buildFraga(1L, "frageText", null, new LocalDateTime());
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveFragaNotAuthorizedForUnit() throws JsonParseException, JsonMappingException, IOException {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
 
@@ -315,7 +315,7 @@ public class FragaSvarServiceImplTest {
         assertNotNull(result.getSvarSkickadDatum());
     }
 
-    @Test(expected = ExternalWebServiceCallFailedException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveSvarWsError() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
@@ -333,7 +333,7 @@ public class FragaSvarServiceImplTest {
         service.saveSvar(1L, "svarsText");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveSvarWrongStateForAnswering() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
@@ -343,7 +343,7 @@ public class FragaSvarServiceImplTest {
         service.saveSvar(1L, "svarsText");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveSvarForKompletteringAndNotDoctor() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
@@ -355,7 +355,7 @@ public class FragaSvarServiceImplTest {
         service.saveSvar(1L, "svarsText");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveSvarForPaminnelse() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.setAmne(Amne.PAMINNELSE);
@@ -365,7 +365,7 @@ public class FragaSvarServiceImplTest {
         service.saveSvar(1L, "svarsText");
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveSvarNotAuthorizedForunit() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
@@ -376,12 +376,12 @@ public class FragaSvarServiceImplTest {
         service.saveSvar(1L, "svarsText");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveBadInput() {
         service.saveSvar(1L, null);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testSaveSvarIntygNotFound() {
 
         when(fragasvarRepository.findOne(1L)).thenReturn(null);

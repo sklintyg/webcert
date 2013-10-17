@@ -51,6 +51,7 @@
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
+      <bean class="se.inera.webcert.web.controller.moduleapi.ModuleRestExceptionHandler"/>
     </jaxrs:providers>
     <jaxrs:extensionMappings>
       <entry key="json" value="application/json" />

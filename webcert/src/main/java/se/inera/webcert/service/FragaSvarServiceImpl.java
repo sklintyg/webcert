@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
 import se.inera.certificate.model.Utlatande;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
@@ -35,6 +34,8 @@ import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalC
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
+import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -158,37 +159,37 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar saveSvar(Long fragaSvarsId, String svarsText) {
         // Input sanity check
         if (StringUtils.isEmpty(svarsText)) {
-            throw new IllegalArgumentException("SvarsText cannot be empty!");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "SvarsText cannot be empty!");
         }
 
         // Look up entity in repository
         FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarsId);
         if (fragaSvar == null) {
-            throw new RuntimeException("Could not find FragaSvar with id:" + fragaSvarsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not find FragaSvar with id:" + fragaSvarsId);
         }
 
         // Is user authorized to save an answer to this question?
         WebCertUser user = webCertUserService.getWebCertUser();
         String fragaEnhetsId = fragaSvar.getVardperson().getEnhetsId();
         if (!user.getVardEnheter().contains(fragaEnhetsId)) {
-            throw new RuntimeException("User " + user.getHsaId() + " not authorized to answer question for enhet "
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User " + user.getHsaId() + " not authorized to answer question for enhet "
                     + fragaEnhetsId);
         }
 
         if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
-            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString()
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "FragaSvar with id " + fragaSvar.getInternReferens().toString()
                     + " has invalid state for saving answer(" + fragaSvar.getStatus() + ")");
         }
 
         // Implement Business Rule RE-20
         if (Amne.PAMINNELSE.equals(fragaSvar.getAmne())) {
-            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString()
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "FragaSvar with id " + fragaSvar.getInternReferens().toString()
                     + " has invalid Amne(" + fragaSvar.getAmne() + ") for saving answer");
         }
 
         // Implement Business Rule RE-06
         if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.isLakare()) {
-            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString()
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id " + fragaSvar.getInternReferens().toString()
                     + " and amne (" + fragaSvar.getAmne() + ") can only be answered by user that is Lakare");
         }
         // Ok, lets save the answer
@@ -206,7 +207,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 sendType);
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOG.error("Failed to send answer to FK, result was " + response.getResult().toString());
-            throw new ExternalWebServiceCallFailedException(response.getResult());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult().getErrorText());
         }
         return saved;
 
@@ -216,11 +217,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar saveNewQuestion(String intygId, Amne amne, String frageText) {
         // Input sanity check
         if (StringUtils.isEmpty(frageText)) {
-            throw new IllegalArgumentException("frageText cannot be empty!");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "frageText cannot be empty!");
         }
 
         if (amne == null) {
-            throw new IllegalArgumentException("Amne cannot be null!");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Amne cannot be null!");
         }
 
         // Fetch from Intygstjansten
@@ -234,7 +235,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         WebCertUser user = webCertUserService.getWebCertUser();
         String fragaEnhetsId = vardPerson.getEnhetsId();
         if (!user.getVardEnheter().contains(fragaEnhetsId)) {
-            throw new RuntimeException("User " + user.getHsaId() + " not authorized to answer question for enhet "
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User " + user.getHsaId() + " not authorized to answer question for enhet "
                     + fragaEnhetsId);
         }
 
@@ -261,7 +262,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 null, sendType);
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOG.error("Failed to send question to FK, result was " + response.getResult().toString());
-            throw new ExternalWebServiceCallFailedException(response.getResult());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult().getErrorText());
         }
         return saved;
 
@@ -272,7 +273,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Look up entity in repository
         FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
         if (fragaSvar == null) {
-            throw new RuntimeException("Could not find FragaSvar with id:" + frageSvarId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not find FragaSvar with id:" + frageSvarId);
         }
         // Set & save new vidarebefordrad state
         fragaSvar.setVidarebefordrad(isDispatched);
@@ -283,7 +284,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar closeQuestionAsHandled(Long frageSvarId){
         FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
         if (fragaSvar == null) {
-            throw new RuntimeException("Could not find FragaSvar with id:" + frageSvarId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not find FragaSvar with id:" + frageSvarId);
         }
 
         fragaSvar.setStatus(Status.CLOSED);
@@ -297,7 +298,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar openQuestionAsUnhandled(Long frageSvarId){
         FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
         if (fragaSvar == null) {
-            throw new RuntimeException("Could not find FragaSvar with id:" + frageSvarId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not find FragaSvar with id:" + frageSvarId);
         }
 
         if (fragaSvar.getSvarsText() != null && !fragaSvar.getSvarsText().isEmpty()) {
