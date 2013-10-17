@@ -278,4 +278,42 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setVidarebefordrad(isDispatched);
         return fragaSvarRepository.save(fragaSvar);
     }
+
+    @Override
+    public FragaSvar closeQuestionAsHandled(Long frageSvarId){
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
+        if (fragaSvar == null) {
+            throw new RuntimeException("Could not find FragaSvar with id:" + frageSvarId);
+        }
+
+        fragaSvar.setStatus(Status.CLOSED);
+        FragaSvar saved = fragaSvarRepository.save(fragaSvar);
+
+
+        return saved;
+    }
+
+    @Override
+    public FragaSvar openQuestionAsUnhandled(Long frageSvarId){
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
+        if (fragaSvar == null) {
+            throw new RuntimeException("Could not find FragaSvar with id:" + frageSvarId);
+        }
+
+        if (fragaSvar.getSvarsText() != null && !fragaSvar.getSvarsText().isEmpty()) {
+            fragaSvar.setStatus(Status.ANSWERED);
+        } else {
+            if(fragaSvar.getFrageStallare().equalsIgnoreCase(FRAGE_STALLARE_WEBCERT)){
+                fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
+            }else{
+                fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
+            }
+
+
+        }
+        FragaSvar saved = fragaSvarRepository.save(fragaSvar);
+
+
+        return saved;
+    }
 }
