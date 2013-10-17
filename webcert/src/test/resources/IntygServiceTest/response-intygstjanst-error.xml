@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1"
-                                   xmlns="urn:riv:insuranceprocess:healthreporting:GetCertificateForCareResponder:1"
+                                   xmlns="urn:riv:clinicalprocess:healtcond:certificate:GetCertificateForCareResponder:1"
                                    xmlns:ns3="urn:intyg:common-model:1"
                                    xmlns:ns4="urn:riv:insuranceprocess:healthreporting:2">
   <result>

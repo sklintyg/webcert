@@ -99,7 +99,7 @@ public class SvaraOchFraga {
             waitFor {
                 result = page.sendQuestion()
             }
-
+            sleep(1000L)
         }
         result
     }

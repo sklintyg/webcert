@@ -1,9 +1,9 @@
 {
-    "externReferens": "FK-5001",
+    "externReferens": "FK-5003",
     "frageStallare": "FK",
-    "amne": "PAMINNELSE",
-    "frageText": "Glöm inte fikat kl. 15.00 hos FK idag.",
-    "frageSigneringsDatum": "2012-12-22T21:00:00.000",
+    "amne": "KOMPLETTERING_AV_LAKARINTYG",
+    "frageText": "Helt åt skogen, komplettera omedelbart detta!",
+    "frageSigneringsDatum": "2012-12-23T21:00:00.000",
     "frageSkickadDatum": "2013-09-08T00:00:00.000",
     "intygsReferens": {
         "intygsId": "intyg-1",
@@ -27,6 +27,5 @@
         "telefonnummer": "060-1818000",
         "vardgivarId": "Landstinget Norrland"
     },
-    "status": "PENDING_INTERNAL_ACTION",
-    "vidarebefordrad": true
+    "status": "PENDING_INTERNAL_ACTION"
 }

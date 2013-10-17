@@ -1,17 +1,23 @@
 package se.inera.auth;
 
+import java.io.IOException;
+import java.net.URLDecoder;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+
+import se.inera.webcert.security.WebCertUser;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author andreaskaltenbach
@@ -34,8 +40,13 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
         if (!"dev".equals(profiles) && !"test".equals(profiles) && !"qa".equals(profiles)) {
             return null;
         }
-
+        
         String json = request.getParameter("userjson");
+        //we manually encode the json parameter
+        json = URLDecoder.decode(json,"ISO-8859-1");
+        if (json == null) {
+            return null;
+        }
 
         try {
             FakeCredentials fakeCredentials = new ObjectMapper().readValue(json, FakeCredentials.class);

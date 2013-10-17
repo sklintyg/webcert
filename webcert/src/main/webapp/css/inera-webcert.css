@@ -22,11 +22,11 @@ html,body,container-fluid {
   font-size: 14px;
 	font-family: helvetica, arial, sans-serif;
   text-align: left;
-  overflow-x: hidden; /* disable horizontal scroll to prevent user from peeking outside of intended view in case something is too long. fix such things in another way! */
+/*  overflow-x: hidden;  disable horizontal scroll to prevent user from peeking outside of intended view in case something is too long. fix such things in another way! */
 }
 
 .container-fluid {
-	overflow:hidden; 
+	/*overflow:hidden;*/ 
 	padding: 0;
 	height: 100%;
 /*  min-height: 832px;*/
@@ -65,6 +65,9 @@ h3 {
 	line-height: 20px;
 }
 
+.headerbox {
+	padding: 6px 0 0 0;
+}
 span.headerbox-logo { padding: 3px 20px 0 30px;  border-right: 1px solid #595c66; display: block;}
 span.headerbox-date { padding-left: 20px; font-weight: bold; line-height: 34px; display: block;}
 div.headerbox-user { font-size: 13px; line-height: 16px;}
@@ -350,24 +353,17 @@ body span:hover.qa-unit-selected {
 
 .qa-circle {
 	background-color: #999;
-	border: 5px solid #999;
-  -moz-border-radius: 50%;
-  -webkit-border-radius: 50%;
-  border-radius: 50%;
-  color: #fff;
-  padding: 0px 5px 0 5px;
-  margin-left: 10px; 
-  font-size: 16px;
-  font-weight: bold;
-  position: absolute;
-  right: 5px;
-  top: 5px;
-/*
-  border-radius: 12px;
-  box-shadow: 1px 1px 1px black;
-  height: 16px; 
-  min-width: 14px;
-  text-align: center;*/
+	-moz-border-radius: 50%;
+	-webkit-border-radius: 50%;
+	border-radius: 50%;
+	color: #fff;
+	padding: 1px 6px 1px 6px;
+	margin-left: 10px;
+	font-size: 14px;
+	font-weight: bold;
+	position: absolute;
+	right: 15px;
+	top: 9px;
 }
 
 .qa-circle-active {
@@ -509,11 +505,12 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 .navbar .nav>li {
-	border-left: 1px solid #999;
-  border-right: 1px solid #999;
+  border-right: 1px solid #ddd;
 /*  display: inline-block; /* Uncomment to lock menu items to one row (during 800x600 demos buttons won't be accessible otherwise) 
   float: none;*/
 }
+
+.navbar .nav>li:first-child {border-left: 1px solid #ddd;}
 
 .navbar .nav>li>a {
     padding: 10px 25px 10px;
@@ -604,7 +601,7 @@ background-color: #f9f9f9;
 
 th.center, td.center { text-align: center; }
 
-.table-qa .btn-info, .table-qa .btn-success { padding: 7px 15px; }
+.table-qa .btn-info, .table-qa .btn-success { padding: 7px 15px; min-width: 50px; }
 
 .table-qa tr > td.nopadding { padding: 0; }
 
@@ -621,6 +618,14 @@ th.center, td.center { text-align: center; }
 textarea {
 	width: 75%;
 	min-width: 200px;
+}
+
+label {
+  cursor: default;
+}
+
+input[type=radio] + label, input[type=checkbox] + label {
+  cursor: pointer;
 }
 
 /**

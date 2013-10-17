@@ -34,14 +34,13 @@
 
     <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon"/>
 
-    <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
-    <link rel="stylesheet" href="<c:url value="/css/inera.css"/>">
-    <style type="text/css">
-        textarea {
-            font-family: Consolas, Lucida Console, monospace;
-            font-size: 0.7em;
-        }
-    </style>
+  <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
+  <style type="text/css">
+    textarea {
+      font-family: Consolas, Lucida Console, monospace;
+      font-size: 0.7em;
+    }
+  </style>
 
     <script type="text/javascript">
         //Lägg till fler templates i arrayen + i options för att utöka antalet inloggingar
@@ -94,16 +93,19 @@
             }
         ];
 
-        function updateJsonInput() {
-            var jsonEl = document.getElementById("userJson");
-            var selector = document.getElementById("jsonSelect");
-            jsonEl.value = JSON.stringify(loginArr[selector.selectedIndex], undefined, 2);
-        }
-    </script>
+    function updateJsonInput() {
+      var jsonEl = document.getElementById("userJson");
+      var jsonElView = document.getElementById("userJsonDisplay");
+      var selector = document.getElementById("jsonSelect");
+      //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
+      jsonElView.value = JSON.stringify(loginArr[selector.selectedIndex], undefined, 1);
+      jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 1));
+    }
+  </script>
 </head>
 <body onLoad="updateJsonInput()">
 <form id="loginForm" action="/fake" method="POST" class="form-inline">
-    <div class="container">
+  <div class="container">
 
         <div id="content-container">
             <div class="content row">
@@ -133,13 +135,13 @@
 
                 </div>
 
-                <div class="form-group span8">
-                    <p>
-                    <h4>Inloggningsprofil</h4>
-                    <textarea id="userJson" name="userjson" class="field" style="height: 400px; width: 100%">
-                    </textarea>
-                    </p>
-                </div>
+        <div class="form-group span8">
+          <p>
+          <h4>Inloggningsprofil</h4>
+          <input type="hidden" id="userJson" name="userjson"/>
+          <textarea id="userJsonDisplay" name="userJsonDisplay" class="field" style="height: 400px; width: 100%">
+          </textarea>
+        </div>
 
 
             </div>

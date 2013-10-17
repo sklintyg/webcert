@@ -180,6 +180,17 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + " has invalid state for saving answer(" + fragaSvar.getStatus() + ")");
         }
 
+        // Implement Business Rule RE-20
+        if (Amne.PAMINNELSE.equals(fragaSvar.getAmne())) {
+            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString()
+                    + " has invalid Amne(" + fragaSvar.getAmne() + ") for saving answer");
+        }
+
+        // Implement Business Rule RE-06
+        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.isLakare()) {
+            throw new IllegalStateException("FragaSvar with id " + fragaSvar.getInternReferens().toString()
+                    + " and amne (" + fragaSvar.getAmne() + ") can only be answered by user that is Lakare");
+        }
         // Ok, lets save the answer
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
@@ -206,6 +217,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Input sanity check
         if (StringUtils.isEmpty(frageText)) {
             throw new IllegalArgumentException("frageText cannot be empty!");
+        }
+
+        if (amne == null) {
+            throw new IllegalArgumentException("Amne cannot be null!");
         }
 
         // Fetch from Intygstjansten
@@ -250,5 +265,55 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
         return saved;
 
+    }
+
+    @Override
+    public FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched) {
+        // Look up entity in repository
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
+        if (fragaSvar == null) {
+            throw new RuntimeException("Could not find FragaSvar with id:" + frageSvarId);
+        }
+        // Set & save new vidarebefordrad state
+        fragaSvar.setVidarebefordrad(isDispatched);
+        return fragaSvarRepository.save(fragaSvar);
+    }
+
+    @Override
+    public FragaSvar closeQuestionAsHandled(Long frageSvarId){
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
+        if (fragaSvar == null) {
+            throw new RuntimeException("Could not find FragaSvar with id:" + frageSvarId);
+        }
+
+        fragaSvar.setStatus(Status.CLOSED);
+        FragaSvar saved = fragaSvarRepository.save(fragaSvar);
+
+
+        return saved;
+    }
+
+    @Override
+    public FragaSvar openQuestionAsUnhandled(Long frageSvarId){
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
+        if (fragaSvar == null) {
+            throw new RuntimeException("Could not find FragaSvar with id:" + frageSvarId);
+        }
+
+        if (fragaSvar.getSvarsText() != null && !fragaSvar.getSvarsText().isEmpty()) {
+            fragaSvar.setStatus(Status.ANSWERED);
+        } else {
+            if(fragaSvar.getFrageStallare().equalsIgnoreCase(FRAGE_STALLARE_WEBCERT)){
+                fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
+            }else{
+                fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
+            }
+
+
+        }
+        FragaSvar saved = fragaSvarRepository.save(fragaSvar);
+
+
+        return saved;
     }
 }

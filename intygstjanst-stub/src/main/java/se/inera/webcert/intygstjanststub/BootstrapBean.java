@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
 
-import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
 
 public class BootstrapBean {
     private static final Logger LOG = LoggerFactory.getLogger(BootstrapBean.class);
@@ -33,6 +33,7 @@ public class BootstrapBean {
         try {
             LOG.debug("Intygstjanst Stub : initializing intyg data...");
             jaxbContext = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
+
             unmarshaller = jaxbContext.createUnmarshaller();
 
             List<Resource> files = getResourceListing("bootstrap-intyg/*.xml");

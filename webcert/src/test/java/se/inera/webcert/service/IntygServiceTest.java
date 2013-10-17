@@ -31,9 +31,9 @@ import se.inera.certificate.integration.rest.ModuleRestApi;
 import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.exception.ModuleCallFailedException;
-import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcare.v1.rivtabp20.GetCertificateForCareResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcareresponder.v1.GetCertificateForCareRequestType;
-import se.inera.ifv.insuranceprocess.healthreporting.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
+import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.rivtabp20.GetCertificateForCareResponderInterface;
+import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareRequestType;
+import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
 import se.inera.webcert.test.NamespacePrefixNameIgnoringListener;
 
 /**
