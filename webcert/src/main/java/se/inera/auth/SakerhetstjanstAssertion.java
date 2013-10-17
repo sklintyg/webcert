@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
+import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.xml.XMLObject;
 
 /**
@@ -12,14 +13,15 @@ import org.opensaml.xml.XMLObject;
  */
 public class SakerhetstjanstAssertion {
 
+    public static final String TITEL_ATTRIBUTE = "urn:sambi:names:attribute:title";
     private static final String TITEL_KOD_ATTRIBUTE = "urn:sambi:names:attribute:titleCode";
 
     private static final String FORSKRIVARKOD_ATTRIBUTE = "urn:sambi:names:attribute:personalPrescriptionCode";
 
-    private static final String HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:employeeHsaId";
+    public static final String HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:employeeHsaId";
 
-    private static final String FORNAMN_ATTRIBUTE = "urn:sambi:names:attribute:givenName";
-    private static final String MELLAN_OCH_EFTERNAMN_ATTRIBUTE = "urn:sambi:names:attribute:middleAndSurname";
+    public static final String FORNAMN_ATTRIBUTE = "urn:sambi:names:attribute:givenName";
+    public static final String MELLAN_OCH_EFTERNAMN_ATTRIBUTE = "urn:sambi:names:attribute:middleAndSurname";
 
     private static final String ENHET_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careUnitHsaId";
     private static final String ENHET_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careUnitName";
@@ -28,6 +30,7 @@ public class SakerhetstjanstAssertion {
     private static final String VARDGIVARE_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careProviderName";
 
     private String titelKod;
+    private String titel;
 
     private String forskrivarkod;
 
@@ -43,14 +46,19 @@ public class SakerhetstjanstAssertion {
     private String vardgivareNamn;
 
     public SakerhetstjanstAssertion(Assertion assertion) {
-        if (assertion.getAttributeStatements() != null && !assertion.getAttributeStatements().isEmpty()) {
-            extractAttributes(assertion.getAttributeStatements().get(0).getAttributes());
+        if (assertion.getAttributeStatements() != null) {
+            for (AttributeStatement attributeStatement : assertion.getAttributeStatements()) {
+                extractAttributes(assertion.getAttributeStatements().get(0).getAttributes());
+            }
         }
     }
 
     private void extractAttributes(List<Attribute> attributes) {
         for (Attribute attribute : attributes) {
             switch (attribute.getName()) {
+            case TITEL_ATTRIBUTE:
+                titel = getValue(attribute);
+                break;
             case TITEL_KOD_ATTRIBUTE:
                 titelKod = getValue(attribute);
                 break;
@@ -96,6 +104,10 @@ public class SakerhetstjanstAssertion {
             values.add(xmlObject.getDOM().getTextContent());
         }
         return values;
+    }
+
+    public String getTitel() {
+        return titel;
     }
 
     public String getTitelKod() {
