@@ -72,9 +72,6 @@ public class FragaSvarModuleApiController {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     public Response createQuestion(@PathParam( "intygId" ) final String intygId, CreateQuestionParameter parameter) {
         LOG.debug("New question for cert:" + intygId + ", ämne:" + parameter.getAmne());
-        
-        //Amne amnet = Amne.valueOf(parameter.getAmne());
-        
         FragaSvar fragaSvarResponse =  fragaSvarService.saveNewQuestion(intygId, parameter.getAmne(), parameter.getFrageText());
         return Response.ok(fragaSvarResponse).build();
     }
