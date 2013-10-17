@@ -34,7 +34,6 @@
   <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon"/>
 
   <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
-  <link rel="stylesheet" href="<c:url value="/css/inera.css"/>">
   <style type="text/css">
     textarea {
       font-family: Consolas, Lucida Console, monospace;
