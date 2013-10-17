@@ -112,9 +112,15 @@
     <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading">
 
       <!-- No results message -->
-      <div id="unsigned-cert-list-noResults" ng-show="widgetState.doneLoading && !widgetState.hasError && (qaList | QAEnhetsIdFilter:activeUnit.id).length<1" class="alert alert-info">
+      <div id="unsigned-cert-list-noResults" ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && (qaList | QAEnhetsIdFilter:activeUnit.id).length<1" class="alert alert-info">
         <span message key="info.nounanswered.qa.for.unit"></span>
       </div>
+
+      <!-- error message -->
+      <div id="unsigned-cert-list-noResults" ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" class="alert alert-error">
+        <span message key="{{widgetState.activeErrorMessageKey}}"></span>
+      </div>
+
 
       <div class="row-fluid" ng-show="(qaList | QAEnhetsIdFilter:activeUnit.id).length>0" id="qaTable">
         <table class="span12 table table-striped table-qa">
