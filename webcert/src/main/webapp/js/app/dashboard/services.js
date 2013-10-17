@@ -4,7 +4,7 @@
  * Dashboard Services
  */
 angular.module('dashboard.services', []);
-angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$log', function($http, $log) {
+angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$log', '$dialog', function($http, $log, $dialog) {
 
     /*
      * Load certificate list of specified type(unsigned, with unanswered
@@ -41,7 +41,6 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
             callback(null);
         });
 
-        
     }
 
     /*
@@ -59,10 +58,24 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
             callback(null);
         });
     }
+
+    function _showErrorMessageDialog(message, callback) {
+        var msgbox = $dialog.messageBox("Ett fel inträffade", message, [ {
+            label : 'OK',
+            result : true
+        } ]);
+
+        msgbox.open().then(function(result) {
+            if (callback) {
+                callback(result)
+            }
+        });
+    }
     // Return public API for the service
     return {
         getCertificates : _getCertificates,
         getQA : _getQA,
-        setVidareBefordradState : _setVidareBefordradState
+        setVidareBefordradState : _setVidareBefordradState,
+        showErrorMessageDialog : _showErrorMessageDialog
     }
 } ]);
