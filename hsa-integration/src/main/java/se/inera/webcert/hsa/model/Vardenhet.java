@@ -44,4 +44,13 @@ public class Vardenhet {
     public void setMottagningar(List<Mottagning> mottagningar) {
         this.mottagningar = mottagningar;
     }
+
+    public List<String> getHsaIds() {
+        List<String> ids = new ArrayList<>();
+        ids.add(id);
+        for (Mottagning mottagning : mottagningar) {
+            ids.add(mottagning.getId());
+        }
+        return ids;
+    }
 }

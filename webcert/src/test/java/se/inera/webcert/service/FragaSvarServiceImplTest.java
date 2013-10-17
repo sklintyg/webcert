@@ -29,9 +29,9 @@ import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.security.Vardenhet;
-import se.inera.webcert.security.Vardgivare;
-import se.inera.webcert.security.WebCertUser;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
@@ -223,7 +223,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar fragaSvar = buildFragaSvarFraga(1L, new LocalDateTime(), new LocalDateTime());
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
         WebCertUser webCertUser = webCertUser();
-        webCertUser.getVardgivare().setVardenheter(new ArrayList<Vardenhet>()); // remove all medarbetaruppdrag
+        webCertUser.setVardgivare(new ArrayList<Vardgivare>()); // remove all medarbetaruppdrag
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
 
         service.saveSvar(1L, "svarsText");
@@ -244,8 +244,11 @@ public class FragaSvarServiceImplTest {
 
     private WebCertUser webCertUser() {
         WebCertUser user = new WebCertUser();
-        user.setVardgivare(new Vardgivare());
-        user.getVardgivare().getVardenheter().add(new Vardenhet("enhet", "Enhet"));
+
+        Vardgivare vardgivare = new Vardgivare();
+        vardgivare.getVardenheter().add(new Vardenhet("enhet", "Enhet"));
+        user.setVardgivare(Arrays.asList(vardgivare));
+
         return user;
     }
 

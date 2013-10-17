@@ -55,7 +55,7 @@
   <div id="wcHeader" wc-header 
 	  is-doctor="<sec:authentication property="principal.lakare"/>" 
 	  user-name="<sec:authentication property="principal.namn"/>"
-	  caregiver-name="<sec:authentication property="principal.vardgivare.namn"/>" 
+	  caregiver-name="<sec:authentication property="principal.vardgivare[0].namn"/>"
 	  menu-defs="[
      {
        link :'/web/dashboard#/create', 

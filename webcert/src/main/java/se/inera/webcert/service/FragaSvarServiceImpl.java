@@ -26,7 +26,7 @@ import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.security.WebCertUser;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -135,7 +135,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
 
         WebCertUser user = webCertUserService.getWebCertUser();
-        List<String> hsaEnhetIds = user.getVardEnheter();
+        List<String> hsaEnhetIds = user.getVardenheterIds();
 
         // Filter questions to that current user only sees questions issued to units with active employment role
         Iterator<FragaSvar> iterator = fragaSvarList.iterator();
@@ -170,7 +170,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Is user authorized to save an answer to this question?
         WebCertUser user = webCertUserService.getWebCertUser();
         String fragaEnhetsId = fragaSvar.getVardperson().getEnhetsId();
-        if (!user.getVardEnheter().contains(fragaEnhetsId)) {
+        if (!user.getVardenheterIds().contains(fragaEnhetsId)) {
             throw new RuntimeException("User " + user.getHsaId() + " not authorized to answer question for enhet "
                     + fragaEnhetsId);
         }
@@ -218,7 +218,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Yes, if current user has the cerificate issuers unit in his list of authorized units
         WebCertUser user = webCertUserService.getWebCertUser();
         String fragaEnhetsId = vardPerson.getEnhetsId();
-        if (!user.getVardEnheter().contains(fragaEnhetsId)) {
+        if (!user.getVardenheterIds().contains(fragaEnhetsId)) {
             throw new RuntimeException("User " + user.getHsaId() + " not authorized to answer question for enhet "
                     + fragaEnhetsId);
         }

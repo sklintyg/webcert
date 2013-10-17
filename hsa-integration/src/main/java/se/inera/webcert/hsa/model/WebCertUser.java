@@ -16,11 +16,9 @@ public class WebCertUser implements Serializable {
     private String hsaId;
     private String namn;
     private boolean lakare;
-    private String prescriptionCode;
+    private String forskrivarkod;
 
-    private Vardgivare vardgivare;
-
-    private List<Vardenhet> vardenheter;
+    private List<Vardgivare> vardgivare;
 
     public String getHsaId() {
         return hsaId;
@@ -46,11 +44,11 @@ public class WebCertUser implements Serializable {
         this.lakare = lakare;
     }
 
-    public Vardgivare getVardgivare() {
+    public List<Vardgivare> getVardgivare() {
         return vardgivare;
     }
 
-    public void setVardgivare(Vardgivare vardgivare) {
+    public void setVardgivare(List<Vardgivare> vardgivare) {
         this.vardgivare = vardgivare;
     }
     
@@ -63,30 +61,19 @@ public class WebCertUser implements Serializable {
         }
     }
 
-    public List<String> getVardEnheter() {
+    public List<String> getVardenheterIds() {
         List<String> list = new ArrayList<String>();
-        for(Vardenhet enhet: vardenheter) {
-            list.add(enhet.getId());
-            for(Mottagning mottagning: enhet.getMottagningar()) {
-                list.add(mottagning.getId());
-            }
+        for(Vardgivare v : vardgivare) {
+            list.addAll(v.getHsaIds());
         }
         return list;
     }
 
-    public String getPrescriptionCode() {
-        return prescriptionCode;
+    public String getForskrivarkod() {
+        return forskrivarkod;
     }
 
-    public void setPrescriptionCode(String prescriptionCode) {
-        this.prescriptionCode = prescriptionCode;
-    }
-
-    public List<Vardenhet> getVardenheter() {
-        return vardenheter;
-    }
-
-    public void setVardenheter(List<Vardenhet> vardenheter) {
-        this.vardenheter = vardenheter;
+    public void setForskrivarkod(String forskrivarkod) {
+        this.forskrivarkod = forskrivarkod;
     }
 }

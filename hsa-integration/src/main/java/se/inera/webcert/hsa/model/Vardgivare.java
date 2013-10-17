@@ -40,6 +40,14 @@ public class Vardgivare {
     public List<Vardenhet> getVardenheter() {
         return vardenheter;
     }
+    
+    public List<String> getHsaIds() {
+        List<String> ids = new ArrayList<>();
+        for (Vardenhet vardenhet : vardenheter) {
+            ids.addAll(vardenhet.getHsaIds());
+        }
+        return ids;
+    }
 
     public void setVardenheter(List<Vardenhet> vardenheter) {
         this.vardenheter = vardenheter;

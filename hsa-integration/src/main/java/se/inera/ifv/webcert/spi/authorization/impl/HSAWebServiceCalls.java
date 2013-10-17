@@ -30,6 +30,8 @@ import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.ifv.hsaws.v3.HsaWsFault;
 import se.inera.ifv.hsaws.v3.HsaWsResponderInterface;
 import se.inera.ifv.hsaws.v3.HsaWsResponderService;
+import se.inera.ifv.hsawsresponder.v3.GetCareUnitListResponseType;
+import se.inera.ifv.hsawsresponder.v3.GetCareUnitMembersResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonResponseType;
@@ -165,11 +167,33 @@ public class HSAWebServiceCalls implements InitializingBean {
             HsawsSimpleLookupResponseType response = serverInterface.hsawsSimpleLookup(logicalAddressHeader, messageId,
                     parameters);
             return response;
-        } catch (Exception ex) {
+        } catch (HsaWsFault ex) {
             Throwables.propagate(ex);
             return null;
         }
     }
+
+    public GetCareUnitMembersResponseType callGetCareUnitMembers(LookupHsaObjectType parameters) {
+        try {
+            GetCareUnitMembersResponseType response = serverInterface.getCareUnitMembers(logicalAddressHeader,
+                    messageId, parameters);
+            return response;
+        } catch (HsaWsFault ex) {
+            Throwables.propagate(ex);
+            return null;
+        }
+    }
+
+    public GetCareUnitListResponseType callGetCareUnitList(LookupHsaObjectType parameters) {
+            try {
+                GetCareUnitListResponseType response = serverInterface.getCareUnitList(logicalAddressHeader,
+                        messageId, parameters);
+                return response;
+            } catch (HsaWsFault ex) {
+                Throwables.propagate(ex);
+                return null;
+            }
+        }
 
     private HsaWsResponderInterface getServerInterface(String wsUrl) {
         try {
