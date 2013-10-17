@@ -44,6 +44,7 @@ public class FragaSvarModuleApiController {
     public List<FragaSvar> fragaSvarForIntyg(@PathParam("intygId") String intygId) {
         return fragaSvarService.getFragaSvar(intygId);
     }
+    
     @PUT
     @Path("/{fragasvarId}/answer" )
     @Consumes(MediaType.APPLICATION_JSON)
@@ -53,6 +54,17 @@ public class FragaSvarModuleApiController {
         FragaSvar fragaSvarResponse =  fragaSvarService.saveSvar(frageSvarId, svarsText);
         return Response.ok(fragaSvarResponse).build();
     }
+    
+    @PUT
+    @Path("/{fragasvarId}/setDispatchState" )
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public Response setDispatchState(@PathParam( "fragasvarId" ) final Long frageSvarId, Boolean isDispatched) {
+        LOG.debug("setDispatchState" + frageSvarId + ", isDispatched:" + isDispatched);
+        FragaSvar fragaSvarResponse =  fragaSvarService.setDispatchState(frageSvarId, isDispatched);
+        return Response.ok(fragaSvarResponse).build();
+    }
+
     
     @POST
     @Path("/{intygId}")
