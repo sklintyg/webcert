@@ -637,6 +637,8 @@ textarea {
 	min-width: 200px;
 }
 
+th {cursor: default; }
+
 label {
   cursor: default;
 }
