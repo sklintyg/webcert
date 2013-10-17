@@ -1,0 +1,32 @@
+{
+    "id" : "ifv-testdata",
+    "namn" : "IFV Testdata",
+    "vardenheter" : [
+        {
+            "id" : "IFV1239877878-103C",
+            "namn" : "OrgEnhet1"
+        },
+        {
+            "id" : "IFV1239877878-103F",
+            "namn" : "VårdEnhet1A"
+        },
+        {
+            "id" : "IFV1239877878-103G",
+            "namn" : "OrgEnhet2"
+        },
+        {
+            "id" : "IFV1239877878-103H",
+            "namn" : "VårdEnhet2A",
+            "mottagningar" : [
+                {
+                    "id" : "IFV1239877878-103J",
+                    "namn" : "Enhet2A1"
+                }
+            ]
+        },
+        {
+            "id" : "IFV1239877878-103D",
+            "namn" : "VårdEnhetA"
+        }
+    ]
+}

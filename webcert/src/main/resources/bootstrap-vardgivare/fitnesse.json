@@ -1,0 +1,16 @@
+{
+    "id" : "vardgivare-fitnesse",
+    "namn" : "FitNesse vardgivare",
+    "vardenheter" : [
+        {
+            "id" : "vardenhet-fit-1",
+            "namn" : "Vardenhet Fitnesse 1",
+            "mottagningar" : [
+                {
+                    "id" : "mottagning-fit-1",
+                    "namn" : "Motagning FitNesse 1"
+                }
+            ]
+        }
+    ]
+}
