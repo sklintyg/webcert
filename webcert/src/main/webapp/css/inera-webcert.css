@@ -35,7 +35,7 @@ body.start > .container-fluid {
   -webkit-box-shadow: 0px -5px 25px #323232;
   -moz-box-shadow: 0px -5px 25px #323232;
   box-shadow: 0px -5px 25px #323232;
-  padding: 100px 0;
+  padding: 100px 50px;
 }
 
 body.start h1, body.start p {

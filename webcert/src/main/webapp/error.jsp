@@ -27,17 +27,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta name="ROBOTS" content="nofollow, noindex" />
-
-<title><spring:message code="application.name" /></title>
-
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="ROBOTS" content="nofollow, noindex" />
+	
+	<title><spring:message code="application.name" /></title>
+	
+	<link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
+	
+	<link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
+	<link rel="stylesheet" href="<c:url value="/css/bootstrap-responsive-modified.css"/>">
+	<link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
 </head>
 
+<body class="start">
 
-<body>
+  <div class="container-fluid">
 
-
+    <div class="row-fluid">
+      <div class="span6">
+        <img class="pull-right" src="/img/webcert_big.png"/>
+      </div>
+      <div class="span6">
 
             <c:choose>
               <c:when test="${param.reason eq \"logout\"}">
@@ -87,5 +98,10 @@
     <c:out value="${element}" />, 
     </c:forEach>
 -->
+
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

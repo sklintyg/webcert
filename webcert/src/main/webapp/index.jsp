@@ -43,15 +43,6 @@
 <body class="start">
 
   <div class="container-fluid">
-    <%-- No script to show at least something when javascript is off --%>
-    <noscript>
-      <h1>
-        <span><spring:message code="error.noscript.title" /></span>
-      </h1>
-      <div class="alert alert-error">
-        <spring:message code="error.noscript.text" />
-      </div>
-    </noscript>
 
     <div class="row-fluid">
       <div class="span6">
