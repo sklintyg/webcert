@@ -25,6 +25,23 @@ html,body,container-fluid {
 /*  overflow-x: hidden;  disable horizontal scroll to prevent user from peeking outside of intended view in case something is too long. fix such things in another way! */
 }
 
+body.start {
+	background-color: #28b4c4;
+}
+
+body.start > .container-fluid {
+	background-color: #fff;
+	 -ms-box-shadow: 0px -5px 25px #323232;
+  -webkit-box-shadow: 0px -5px 25px #323232;
+  -moz-box-shadow: 0px -5px 25px #323232;
+  box-shadow: 0px -5px 25px #323232;
+  padding: 100px 0;
+}
+
+body.start h1, body.start p {
+	color: #28b4c4;
+}
+
 .container-fluid {
 	/*overflow:hidden;*/ 
 	padding: 0;
