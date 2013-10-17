@@ -1,8 +1,5 @@
 package se.inera.webcert.hsa.stub;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -12,7 +9,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.webcert.hsa.model.Vardgivare;
 
 /**
  * @author johannesc
@@ -23,58 +24,48 @@ public class HsaStubRestApi {
     HsaServiceStub hsaServiceStub;
 
     @POST
-    @Path("/enheter")
+    @Path("/vardgivare")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addUnit(HsaUnitStub unit) {
-        hsaServiceStub.addHsaUnit(unit);
-        return Response.ok().build();
-    }
-
-    @DELETE
-    @Path("/enheter/{id}")
-    public Response deleteUnit(@PathParam("id") String id) {
-        hsaServiceStub.deleteHsaUnit(id);
+    public Response addUnit(Vardgivare vardgivare) {
+        hsaServiceStub.getVardgivare().add(vardgivare);
         return Response.ok().build();
     }
 
     @POST
     @Path("/medarbetaruppdrag")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addUnit(PersonStub person) {
-        try {
-            hsaServiceStub.addPerson(person);
-        } catch (RuntimeException e) {
-            return Response.serverError().build();
-        }
+    public Response addUnit(Medarbetaruppdrag medarbetaruppdrag) {
+        hsaServiceStub.getMedarbetaruppdrag().add(medarbetaruppdrag);
         return Response.ok().build();
     }
 
     @DELETE
     @Path("/medarbetaruppdrag/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deletePerson(@PathParam("id") String id) {
-        hsaServiceStub.deletePerson(id);
+    public Response deleteMedarbetaruppdrag(@PathParam("id") String id) {
+        hsaServiceStub.deleteMedarbetareuppdrag(id);
         return Response.ok().build();
     }
 
     @DELETE
-    @Path("/rensa-cache")
-    public Response clearCache() {
-        hsaServiceStub.clearCache();
+    @Path("/vardgivare/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteVardgivare(@PathParam("id") String id) {
+        hsaServiceStub.deleteVardgivare(id);
         return Response.ok().build();
     }
 
     @GET
-    @Path("/enheter")
+    @Path("/vardgivare")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String,Map<String,HsaUnitStub>> viewUnitCache() {
-        return hsaServiceStub.getUnitCache();
+    public List<Vardgivare> getVardgivare() {
+        return hsaServiceStub.getVardgivare();
     }
 
     @GET
     @Path("/medarbetaruppdrag")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, PersonStub> viewPersonCache() {
-        return hsaServiceStub.getPersonCache();
+    public List<Medarbetaruppdrag> getMedarbetaruppdrag() {
+        return hsaServiceStub.getMedarbetaruppdrag();
     }
 }
