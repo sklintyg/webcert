@@ -19,7 +19,39 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
         controller: function($scope, $element, $attrs) {
           //Expose "now" as a model property for the template to render as todays date
           $scope.today = new Date();
-          $scope.menuItems = eval($scope.menuDefs);
+          
+          var defaultMenuDefs = "["+
+				     "{"+
+				       "link :'/web/dashboard#/create',"+ 
+				       "label:'Sök/Skriv intyg',"+
+				       "requires_doctor: false"+
+				     "},"+
+				     "{"+
+				       "link :'/web/dashboard#/index',"+ 
+				       "label:'Mina osignerade intyg',"+
+				       "requires_doctor: true"+
+				     "},"+
+				     "{"+
+				       "link :'/web/dashboard#/unhandled-qa',"+
+				       "label:'Enhetens frågor och svar',"+
+				       "requires_doctor: false"+
+				     "},"+
+				     "{"+
+				       "link :'/web/dashboard#/unsigned',"+ 
+				       "label:'Enhetens osignerade intyg',"+
+				       "requires_doctor: false"+
+				     "},"+
+				     "{"+
+				       "link :'/web/dashboard#/about.support',"+
+				       "label:'Om Webcert',"+
+				       "requires_doctor: false"+
+				     "},"+
+				    "]";
+          
+          $scope.menuItems = eval(defaultMenuDefs);
+          if($scope.menuDefs != undefined && $scope.menuDefs != ''){
+          	$scope.menuItems = eval($scope.menuDefs);
+          }
           
           $scope.isActive = function (page) {
           	
