@@ -32,5 +32,23 @@ public interface FragaSvarService {
      * Create a new FragaSvar instance for a certificate and send it to external receiver (FK)
      */
     FragaSvar saveNewQuestion(String intygId, Amne amne, String frageText);
-    
+
+    /**
+     * A FragaSvar is set as handled.
+     * Sets the status of a FragaSvar as "closed"
+     *
+     * @param frageSvarId
+     * @return
+     */
+    FragaSvar closeQuestionAsHandled(Long frageSvarId);
+
+    /**
+     * A FragaSvar is set as unhandled.
+     * If it has an answer, the status is set to "ANSWERED"
+     * If it doesn't have an answer, the status is set to "PENDING_EXTERNAL_ACTION"
+     * @param frageSvarId
+     * @return
+     */
+    FragaSvar openQuestionAsUnhandled(Long frageSvarId);
+
 }

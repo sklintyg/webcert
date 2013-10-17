@@ -66,4 +66,17 @@ public class FragaSvarModuleApiController {
         FragaSvar fragaSvarResponse =  fragaSvarService.saveNewQuestion(intygId, parameter.getAmne(), parameter.getFrageText());
         return Response.ok(fragaSvarResponse).build();
     }
+    @GET
+    @Path("/close/{fragasvarId}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public FragaSvar closeAsHandled(@PathParam("fragasvarId") Long fragasvarId) {
+        return fragaSvarService.closeQuestionAsHandled(fragasvarId);
+    }
+    @GET
+    @Path("/open/{fragasvarId}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public FragaSvar openAsUnhandled(@PathParam("fragasvarId") Long fragasvarId) {
+        return fragaSvarService.openQuestionAsUnhandled(fragasvarId);
+    }
+
 }
