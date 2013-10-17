@@ -268,6 +268,26 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test
+    public void testSetVidareBefordradOK() {
+        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
+        // set it to false initially
+        fraga.setVidarebefordrad(false);
+
+        when(fragasvarRepository.findOne(any(Long.class))).thenReturn(fraga);
+
+        ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
+        when(fragasvarRepository.save(capture.capture())).thenReturn(fraga);
+
+        // test call
+        service.setDispatchState(fraga.getInternReferens(), true);
+
+        verify(fragasvarRepository).findOne(any(Long.class));
+        verify(fragasvarRepository).save(any(FragaSvar.class));
+
+        assertEquals(true, capture.getValue().getVidarebefordrad());
+    }
+
+    @Test
     public void testSaveSvarOK() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
