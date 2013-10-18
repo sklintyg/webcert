@@ -87,7 +87,6 @@ public class SvaraOchFraga {
             waitFor {
                 page.sendAnswer(internid)
             }
-
         }
     }
 
@@ -142,7 +141,6 @@ public class SvaraOchFraga {
             waitFor{
                 result = page.qaHandledPanel(internId).isDisplayed()
             }
-
         }
         return result
     }
@@ -157,8 +155,6 @@ public class SvaraOchFraga {
             }
 
             page.markAsUnhandledBtn(internId).click()
-
-
         }
     }
 
@@ -172,7 +168,6 @@ public class SvaraOchFraga {
             waitFor{
                 result = page.qaUnhandledPanel(internId).isDisplayed()
             }
-
         }
         return result
     }
