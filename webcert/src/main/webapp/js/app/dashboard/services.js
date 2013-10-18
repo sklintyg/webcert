@@ -4,7 +4,7 @@
  * Dashboard Services
  */
 angular.module('dashboard.services', []);
-angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$log', '$dialog', function($http, $log, $dialog) {
+angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$log', '$modal', function($http, $log, $modal) {
 
     /*
      * Load certificate list of specified type(unsigned, with unanswered
@@ -52,6 +52,7 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
         $http.put(restPath, isVidareBefordrad.toString()).success(function(data) {
             $log.debug("got data:" + data);
             callback(data);
+            //callback(null); // error test 
         }).error(function(data, status, headers, config) {
             $log.error("error " + status);
             // Let calling code handle the error of no data response
@@ -60,22 +61,61 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
     }
 
     function _showErrorMessageDialog(message, callback) {
-        var msgbox = $dialog.messageBox("Ett fel inträffade", message, [ {
-            label : 'OK',
-            result : true
-        } ]);
+    	
+      var msgbox = $modal.open({
+            templateUrl: '/views/partials/error-dialog.html',
+            controller: ErrorMessageDialogInstanceCtrl,
+            resolve: { bodyText: function() { return angular.copy(message);}}
+      });
 
-        msgbox.open().then(function(result) {
-            if (callback) {
-                callback(result)
-            }
-        });
+      msgbox.result.then(function(result) {
+      	if (callback) {
+      		callback(result)
+        }
+      }, function() {});
     }
+
+    function _showDialog(title, bodyText, yesCallback, noCallback, noDontAskCallback, callback) {
+    	
+      var msgbox = $modal.open({
+            templateUrl: '/views/partials/general-dialog.html',
+            controller: DialogInstanceCtrl,
+            resolve: {
+            	title: function() { return angular.copy(title); },
+            	bodyText: function() { return angular.copy(bodyText); },
+            	yesCallback: function() { return yesCallback; },
+            	noCallback: function() { return noCallback; },
+            	noDontAskCallback: function() { return noDontAskCallback; }
+            }
+      });
+
+      msgbox.result.then(function(result) {
+      	if (callback) {
+      		callback(result)
+        }
+      }, function() {});
+    }
+    
     // Return public API for the service
     return {
         getCertificates : _getCertificates,
         getQA : _getQA,
         setVidareBefordradState : _setVidareBefordradState,
-        showErrorMessageDialog : _showErrorMessageDialog
+        showErrorMessageDialog : _showErrorMessageDialog,
+        showDialog : _showDialog
     }
 } ]);
+
+
+var ErrorMessageDialogInstanceCtrl = function ($scope, $modalInstance, bodyText) {
+	$scope.bodyText = bodyText;
+};
+
+var DialogInstanceCtrl = function ($scope, $modalInstance, title, bodyText, yesCallback, noCallback, noDontAskCallback) {
+	$scope.title = title;
+	$scope.bodyText = bodyText;
+	$scope.noDontAskVisible = noDontAskCallback != undefined;
+	$scope.yes = function(result) { yesCallback(); $modalInstance.close(result) };
+	$scope.no = function(result) { noCallback(); $modalInstance.dismiss('cancel') };
+	$scope.noDontAsk = function(result) { noDontAskCallback(); $modalInstance.dismiss('cancel') };
+};
