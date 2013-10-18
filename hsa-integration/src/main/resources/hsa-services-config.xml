@@ -21,34 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:sec="http://cxf.apache.org/configuration/security"
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
-       xmlns:cache="http://www.springframework.org/schema/cache"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:jaxws="http://cxf.apache.org/jaxws"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-        http://www.springframework.org/schema/cache
-        http://www.springframework.org/schema/cache/spring-cache.xsd
-      http://cxf.apache.org/configuration/security
-	    http://cxf.apache.org/schemas/configuration/security.xsd
+        http://cxf.apache.org/configuration/security
+	      http://cxf.apache.org/schemas/configuration/security.xsd
         http://cxf.apache.org/transports/http/configuration  
         http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
-
-  <cache:annotation-driven/>
-
-  <bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
-    <property name="caches">
-      <set>
-        <bean
-                class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
-                p:name="hsacache"/>
-        <!--
-        TODO Add other cache instances in here
-         -->
-      </set>
-    </property>
-  </bean>
 
   <jaxws:client id="hsaClient" serviceClass="se.inera.ifv.hsaws.v3.HsaWsResponderInterface"
                 address="${hsa.ws.services.url}">
@@ -60,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
 
   <beans profile="qa,test">
 
-    <http:conduit name="{urn:riv:hsa:HsaWs:3}HsaWsResponderPort.http-conduit">
+    <http:conduit name="{urn:riv:hsa:HsaWs:3}HsaWsResponderInterfacePort.http-conduit">
       <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive"/>
       <http:tlsClientParameters disableCNCheck="true">
         <sec:keyManagers keyPassword="${hsa.ws.key.manager.password}">
