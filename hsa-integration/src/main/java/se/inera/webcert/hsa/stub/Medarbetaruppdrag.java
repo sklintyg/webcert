@@ -10,6 +10,14 @@ public class Medarbetaruppdrag {
     private String hsaId;
     private List<String> enhetIds;
 
+    public Medarbetaruppdrag() {
+    }
+
+    public Medarbetaruppdrag(String hsaId, List<String> enhetIds) {
+        this.hsaId = hsaId;
+        this.enhetIds = enhetIds;
+    }
+
     public String getHsaId() {
         return hsaId;
     }

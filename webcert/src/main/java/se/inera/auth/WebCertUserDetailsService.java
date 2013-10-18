@@ -16,6 +16,9 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserDetailsService.class);
 
+    private static final String LAKARE = "Läkare";
+    private static final String LAKARE_CODE = "204010";
+
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
 
@@ -35,11 +38,11 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
     private WebCertUser createWebCertUser(SakerhetstjanstAssertion assertion) {
         WebCertUser webcertUser = new WebCertUser();
         webcertUser.setHsaId(assertion.getHsaId());
-        webcertUser.setNamn(assertion.getFornamn() + assertion.getMellanOchEfternamn());
+        webcertUser.setNamn(assertion.getFornamn() + " " + assertion.getMellanOchEfternamn());
         webcertUser.setForskrivarkod(assertion.getForskrivarkod());
 
         // lakare flag is calculated by checking for lakare profession in title and title code
-        webcertUser.setLakare("Läkare".equals(assertion.getTitel()) || "204010".equals(assertion.getTitelKod()));
+        webcertUser.setLakare(LAKARE.equals(assertion.getTitel()) || LAKARE_CODE.equals(assertion.getTitelKod()));
 
         return webcertUser;
     }

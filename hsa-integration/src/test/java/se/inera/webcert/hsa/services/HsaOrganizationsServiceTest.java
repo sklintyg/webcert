@@ -1,119 +1,143 @@
 package se.inera.webcert.hsa.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonResponseType;
-import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonType;
-import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
-import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.hsa.stub.HsaServiceStub;
+import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
 
 /**
  * @author andreaskaltenbach
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:HsaOrganizationsServiceTest/test-context.xml")
 public class HsaOrganizationsServiceTest {
 
-    private static final String HSA_ID = "hsaId";
+    private static final String PERSON_HSA_ID = "Gunilla";
 
-    private static List<MiuInformationType> twoVardgivareWithTwoEnheter = new ArrayList<MiuInformationType>() {
-        {
-            add(miuInformation("N1", "Gul-1", "N", "Norr", "Vård och behandling"));
-            add(miuInformation("N2", "Gul-2", "N", "Norr", "Vård och behandling"));
-            add(miuInformation("S1", "Röd-1", "S", "Södra", "Vård och behandling"));
-            add(miuInformation("S2", "Röd-2", "S", "Södra", "Vård och behandling"));
-        }
-    };
+    private static final String CENTRUM_VAST = "centrum-vast";
+    private static final String CENTRUM_OST = "centrum-ost";
+    private static final String CENTRUM_NORR = "centrum-norr";
 
-    private static List<MiuInformationType> vardenhetWithTwoDifferentMedarbetaruppdrag = new ArrayList<MiuInformationType>() {
-        {
-            add(miuInformation("N1", "Gul-1", "N", "Norr", "Vård och behandling"));
-            add(miuInformation("N2", "Gul-2", "N", "Norr", "Medarbetarunderhållning"));
-        }
-    };
+    @Autowired
+    private HsaOrganizationsService service;
 
-    @Mock
-    private HSAWebServiceCalls client;
-
-    @InjectMocks
-    private HsaOrganizationsServiceImpl service;
-
-    private GetMiuForPersonType hsaRequest() {
-        GetMiuForPersonType request = new GetMiuForPersonType();
-        request.setHsaIdentity(HSA_ID);
-        return request;
-    }
+    @Autowired
+    private HsaServiceStub serviceStub;
 
     @Test
     public void testEmptyResultSet() {
-        when(client.callMiuRights(hsaRequest())).thenReturn(new GetMiuForPersonResponseType());
 
-        Collection<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(HSA_ID);
+        Collection<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
         assertTrue(vardgivare.isEmpty());
     }
 
     @Test
-    public void testMultipleEnheterAndVardgivare() {
-        GetMiuForPersonResponseType response = new GetMiuForPersonResponseType();
-        response.getMiuInformation().addAll(twoVardgivareWithTwoEnheter);
-        when(client.callMiuRights(hsaRequest())).thenReturn(response);
+    public void testSingleEnhetWithoutMottagningar() {
+        addMedarbetaruppdrag(PERSON_HSA_ID, asList(CENTRUM_NORR));
 
-        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(HSA_ID);
-        assertEquals(2, vardgivare.size());
+        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+        assertEquals(1, vardgivare.size());
 
-        Vardgivare norr = vardgivare.get(0);
-        assertEquals("N", norr.getId());
-        assertEquals("Norr", norr.getNamn());
-        assertEquals(2, norr.getVardenheter().size());
-        assertEquals("N1", norr.getVardenheter().get(0).getId());
-        assertEquals("N2", norr.getVardenheter().get(1).getId());
+        Vardgivare vg = vardgivare.get(0);
+        assertEquals("vastmanland", vg.getId());
+        assertEquals("Landstinget Västmanland", vg.getNamn());
+        assertEquals(1, vg.getVardenheter().size());
 
-        Vardgivare sodra = vardgivare.get(1);
-        assertEquals("S", sodra.getId());
-        assertEquals("Södra", sodra.getNamn());
-        assertEquals(2, sodra.getVardenheter().size());
-        assertEquals("S1", sodra.getVardenheter().get(0).getId());
-        assertEquals("S2", sodra.getVardenheter().get(1).getId());
-
-    }
-
-    private static MiuInformationType miuInformation(String enhetId, String enhetNamn, String vardgivareId,
-            String vardgivareNamn, String syfte) {
-        MiuInformationType miuInformationType = new MiuInformationType();
-        miuInformationType.setCareUnitHsaIdentity(enhetId);
-        miuInformationType.setCareUnitName(enhetNamn);
-        miuInformationType.setCareGiver(vardgivareId);
-        miuInformationType.setCareGiverName(vardgivareNamn);
-        miuInformationType.setMiuPurpose(syfte);
-        return miuInformationType;
+        Vardenhet enhet = vg.getVardenheter().get(0);
+        assertEquals("centrum-norr", enhet.getId());
+        assertEquals("Vårdcentrum i Norr", enhet.getNamn());
+        assertTrue(enhet.getMottagningar().isEmpty());
     }
 
     @Test
-    public void testMedarbetaruppdragFiltering() {
+    public void testMultipleEnheter() {
+        addMedarbetaruppdrag(PERSON_HSA_ID, asList(CENTRUM_VAST, CENTRUM_OST, CENTRUM_NORR));
 
-        GetMiuForPersonResponseType response = new GetMiuForPersonResponseType();
-        response.getMiuInformation().addAll(vardenhetWithTwoDifferentMedarbetaruppdrag);
-        when(client.callMiuRights(hsaRequest())).thenReturn(response);
-
-        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(HSA_ID);
-
+        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
         assertEquals(1, vardgivare.size());
 
-        Vardgivare norr = vardgivare.get(0);
-        assertEquals(1, norr.getVardenheter().size());
-        assertEquals("N1", norr.getVardenheter().get(0).getId());
+        Vardgivare vg = vardgivare.get(0);
+        assertEquals(3, vg.getVardenheter().size());
+
+        Vardenhet centrumVast = vg.getVardenheter().get(0);
+        assertEquals(2, centrumVast.getMottagningar().size());
+
+        Vardenhet centrumOst = vg.getVardenheter().get(1);
+        assertEquals(1, centrumOst.getMottagningar().size());
+
+        Vardenhet centrumNorr = vg.getVardenheter().get(2);
+        assertEquals(0, centrumNorr.getMottagningar().size());
+    }
+
+    @Test
+    public void testMultipleVardgivare() throws IOException {
+        addVardgivare("HsaOrganizationsServiceTest/landstinget-kings-landing.json");
+
+        addMedarbetaruppdrag("Gunilla", asList(CENTRUM_NORR, "red-keep"));
+
+        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+        assertEquals(2, vardgivare.size());
+
+        assertEquals("vastmanland", vardgivare.get(0).getId());
+        assertEquals("kings-landing", vardgivare.get(1).getId());
+    }
+
+    private void addMedarbetaruppdrag(String hsaId, List<String> enhetIds) {
+        serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(hsaId, enhetIds));
+    }
+
+    private void addVardgivare(String file) throws IOException {
+        Vardgivare vardgivare = new ObjectMapper().readValue(new ClassPathResource(file).getFile(), Vardgivare.class);
+        serviceStub.getVardgivare().add(vardgivare);
+    }
+
+    @Before
+    public void setupVardgivare() throws IOException {
+        addVardgivare("HsaOrganizationsServiceTest/landstinget-vastmanland.json");
+    }
+
+    @After
+    public void cleanupServiceStub() {
+        serviceStub.getVardgivare().clear();
+        serviceStub.getMedarbetaruppdrag().clear();
+    }
+
+    @Test
+    @Ignore
+    public void testUppdragFiltering() {
+        fail();
+    }
+
+    @Test
+    @Ignore
+    public void testInactiveEnhetFiltering() {
+        fail();
+        // before and after date
+    }
+
+    @Test
+    @Ignore
+    public void testInactiveMottagningFiltering() {
+        fail();
+        // before and after date
     }
 }
