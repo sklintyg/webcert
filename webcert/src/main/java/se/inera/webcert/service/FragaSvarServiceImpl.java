@@ -171,7 +171,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Is user authorized to save an answer to this question?
         WebCertUser user = webCertUserService.getWebCertUser();
         String fragaEnhetsId = fragaSvar.getVardperson().getEnhetsId();
-        if (!user.getVardEnheter().contains(fragaEnhetsId)) {
+        if (!user.getVardenheterIds().contains(fragaEnhetsId)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User " + user.getHsaId() + " not authorized to answer question for enhet "
                     + fragaEnhetsId);
         }
@@ -234,7 +234,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Yes, if current user has the cerificate issuers unit in his list of authorized units
         WebCertUser user = webCertUserService.getWebCertUser();
         String fragaEnhetsId = vardPerson.getEnhetsId();
-        if (!user.getVardEnheter().contains(fragaEnhetsId)) {
+        if (!user.getVardenheterIds().contains(fragaEnhetsId)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User " + user.getHsaId() + " not authorized to answer question for enhet "
                     + fragaEnhetsId);
         }
