@@ -6,10 +6,7 @@
 	<RecentChanges>true</RecentChanges>
 	<Refactor>true</Refactor>
 	<Search>true</Search>
-	<Suite>true</Suite>
-	<SymbolicLinks>
-		<AllTests>.IneraWebcert.WebTest.AllTests</AllTests>
-	</SymbolicLinks>
+	<Test/>
 	<Versions>true</Versions>
 	<WhereUsed>true</WhereUsed>
 </properties>
