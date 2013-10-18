@@ -26,8 +26,8 @@ public class HsaStubRestApi {
     @POST
     @Path("/vardgivare")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addUnit(Vardgivare vardgivare) {
-        hsaServiceStub.getVardgivare().add(vardgivare);
+    public Response addUnit(List<Vardgivare> vardgivare) {
+        hsaServiceStub.getVardgivare().addAll(vardgivare);
         return Response.ok().build();
     }
 

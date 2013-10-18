@@ -1,6 +1,6 @@
 !3 Det finns en enhet i HSA katalogen
-|Hsa Enhet|
-|vardgivarid|hsaId|name|email|
+|Vardgivare|
+|vardgivarid|enhetsid|enhetsnamn|enhetsmail|
 |vg1|enhet-1|Vårdenhet 1|!-enhet1@hsastub.se-!|
 
 !3 Och det finns ingen fråga med extern referens 'FK-1234'.
