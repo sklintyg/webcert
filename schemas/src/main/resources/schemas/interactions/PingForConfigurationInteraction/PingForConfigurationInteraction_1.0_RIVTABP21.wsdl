@@ -41,10 +41,10 @@
     </xs:schema>
   </wsdl:types>
   <wsdl:message name='PingForConfigurationRequest'>
+    <xs:annotation>
+      <xs:documentation>The org nr of AB Inera (SE165565594230-1000)</xs:documentation>
+    </xs:annotation>
     <wsdl:part name='LogicalAddress' element='rgy:LogicalAddress'>
-      <xs:annotation>
-        <xs:documentation>The org nr of AB Inera (SE165565594230-1000)</xs:documentation>
-      </xs:annotation>
     </wsdl:part>
     <wsdl:part name='parameters' element='tjsr:PingForConfiguration' />
   </wsdl:message>
