@@ -1,23 +1,18 @@
 package se.inera.auth;
 
-import java.io.IOException;
-import java.net.URLDecoder;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLDecoder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-
-import se.inera.webcert.security.WebCertUser;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author andreaskaltenbach
@@ -37,7 +32,7 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
 
-        if (!"dev".equals(profiles) && !"test".equals(profiles)) {
+        if (!"dev".equals(profiles) && !"test".equals(profiles) && !"qa".equals(profiles)) {
             return null;
         }
         
@@ -49,12 +44,9 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
         }
 
         try {
-            WebCertUser webCertUser = new ObjectMapper().readValue(json, WebCertUser.class);
-            TestingAuthenticationToken token = new TestingAuthenticationToken(webCertUser, null);
-
-            LOG.info("Fake authentication with user " + webCertUser);
-            return getAuthenticationManager().authenticate(token);
-
+            FakeCredentials fakeCredentials = new ObjectMapper().readValue(json, FakeCredentials.class);
+            LOG.info("Detected fake credentials " + fakeCredentials);
+            return getAuthenticationManager().authenticate(new FakeAuthenticationToken(fakeCredentials));
         } catch (IOException e) {
             String message = "Failed to parse JSON: " + json;
             LOG.error(message, e);

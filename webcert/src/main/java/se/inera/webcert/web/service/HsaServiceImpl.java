@@ -1,8 +1,8 @@
 package se.inera.webcert.web.service;
 
 import org.springframework.stereotype.Service;
-import se.inera.webcert.security.Mottagning;
-import se.inera.webcert.security.Vardenhet;
+import se.inera.webcert.hsa.model.Mottagning;
+import se.inera.webcert.hsa.model.Vardenhet;
 
 /**
  * @author johannesc

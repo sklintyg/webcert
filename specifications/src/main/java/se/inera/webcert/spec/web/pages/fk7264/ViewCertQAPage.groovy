@@ -23,6 +23,22 @@ class ViewCertQAPage extends Page {
     def answerBtn(String internid) {
         $("#sendAnswerBtn-${internid}")
     }
+    def markAsHandledFkOriginBtn(String internid) {
+        $("#markAsHandledFkOriginBtn-${internid}")
+    }
+    def markAsHandledWcOriginBtn(String internid) {
+        $("#markAsHandledWcOriginBtn-${internid}")
+    }
+    def qaHandledPanel(String internid) {
+        $("#qahandled-${internid}")
+    }
+    def qaUnhandledPanel(String internid) {
+        $("#qaunhandled-${internid}")
+    }
+
+    def markAsUnhandledBtn(String internid) {
+        $("#markAsUnhandledBtn-${internid}")
+    }
 
     def sendAnswer(String internid) {
         $("#sendAnswerBtn-${internid}").click()

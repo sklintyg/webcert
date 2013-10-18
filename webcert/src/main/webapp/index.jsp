@@ -40,7 +40,7 @@
 
 </head>
 
-<body class="start">
+<body class="start" id="indexPage">
 
   <div class="container-fluid">
 
@@ -51,7 +51,7 @@
       <div class="span6">
         <h1>Välkommen till Webcert</h1>
         <p>Du måste logga in med SITHS-kort.</p>
-        <a href="/web/start" class="btn btn-success">Logga in</a>
+        <a href="/web/start" class="btn btn-success" id="loginBtn">Logga in</a>
       </div>
     </div>
   </div>

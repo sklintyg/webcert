@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        xmlns:sec="http://cxf.apache.org/configuration/security"
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
-       xmlns:cxf="http://cxf.apache.org/core"
+       xmlns:cxf="http://cxf.apache.org/core" xmlns:contex="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -45,6 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   <import resource="classpath:META-INF/cxf/cxf.xml"/>
   <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
   <import resource="classpath:META-INF/cxf/cxf-extension-http.xml"/>
+
+  <contex:component-scan base-package="se.inera"/>
 
   <cxf:bus>
     <cxf:features>

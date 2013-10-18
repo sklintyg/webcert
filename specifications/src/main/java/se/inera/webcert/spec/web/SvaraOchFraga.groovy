@@ -1,6 +1,7 @@
 package se.inera.webcert.spec.web
 
 import geb.Browser
+import se.inera.webcert.spec.web.pages.IndexPage
 import se.inera.webcert.spec.web.pages.UnhandledQAPage
 import se.inera.webcert.spec.web.pages.WelcomePage
 import se.inera.webcert.spec.web.pages.fk7264.ViewCertQAPage
@@ -16,6 +17,18 @@ public class SvaraOchFraga {
                 at WelcomePage
             }
             page.userSelect=id
+
+            page.startLogin()
+        }
+    }
+
+    public void loggaInIndex() {
+        Browser.drive {
+
+            waitFor{
+                at IndexPage
+            }
+
 
             page.startLogin()
         }
@@ -74,7 +87,6 @@ public class SvaraOchFraga {
             waitFor {
                 page.sendAnswer(internid)
             }
-
         }
     }
 
@@ -103,4 +115,61 @@ public class SvaraOchFraga {
         }
         result
     }
+
+    public void markeraFragaSomHanterad(String internId){
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.unhandledQAList.isDisplayed();
+            }
+
+            page.markAsHandledWcOriginBtn(internId).click()
+
+            sleep(1000L)
+        }
+    }
+    public boolean arFragaHanterad(String internId){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+                page.unhandledQAList.isDisplayed();
+            }
+
+            waitFor{
+                result = page.qaHandledPanel(internId).isDisplayed()
+            }
+        }
+        return result
+    }
+
+    public void markeraFragaSomOhanterad(String internId){
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor{
+                page.qaHandledPanel(internId).isDisplayed()
+            }
+
+            page.markAsUnhandledBtn(internId).click()
+        }
+    }
+
+    public boolean arFragaOhanterad(String internId){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+
+            waitFor{
+                result = page.qaUnhandledPanel(internId).isDisplayed()
+            }
+        }
+        return result
+    }
+
 }

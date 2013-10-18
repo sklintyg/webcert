@@ -8,7 +8,10 @@
 	<Refactor/>
 	<Search/>
 	<Static/>
-	<Suites></Suites>
+	<Suites/>
+	<SymbolicLinks>
+		<AllTests>.IneraWebcert.WebTest.AllTests</AllTests>
+	</SymbolicLinks>
 	<Versions/>
 	<WhereUsed/>
 </properties>

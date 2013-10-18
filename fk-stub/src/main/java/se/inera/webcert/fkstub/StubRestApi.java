@@ -26,9 +26,7 @@ public class StubRestApi {
     @DELETE
     @Path("/fragor")
     public void rensaFragor() {
-        System.out.println("!!!Questions111s :" +questionAnswerStore.getQuestions().size() );
         questionAnswerStore.getQuestions().clear();
-        System.out.println("!!!Questions222 :" +questionAnswerStore.getQuestions().size() );
     }
     @DELETE
     @Path("/fragor/{id}")

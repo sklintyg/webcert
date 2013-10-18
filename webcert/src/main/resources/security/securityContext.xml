@@ -13,11 +13,13 @@
   <!-- Unsecured pages -->
   <security:http security="none" pattern="/css/**"/>
   <security:http security="none" pattern="/js/**"/>
+  <security:http security="none" pattern="/img/**"/>
   <!-- TODO - how do we secure web services on the web? -->
   <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/welcome.jsp"/>
   <security:http security="none" pattern="/version.jsp"/>
   <security:http security="none" pattern="/saml/web/**"/>
+  <security:http security="none" pattern="/index.jsp"/>
   <security:http security="none" pattern="/logout.jsp"/>
   <security:http security="none" pattern="/favicon.ico"/>
 
@@ -32,6 +34,11 @@
   <!-- Fake authentication filter is only enabled in DEV and TEST profiles -->
   <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
     <property name="authenticationManager" ref="authenticationManager"/>
+    <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
+  </bean>
+  <bean id="fakeSuccessHandler"
+        class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
+    <property name="defaultTargetUrl" value="/web/start"/>
   </bean>
 
   <bean id="samlFilter" class="org.springframework.security.web.FilterChainProxy">
@@ -48,14 +55,8 @@
   <!-- Handler deciding where to redirect user after successful login -->
   <bean id="successRedirectHandler"
         class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
-    <property name="defaultTargetUrl" value="/"/>
+    <property name="defaultTargetUrl" value="/web/start"/>
   </bean>
-  <!--
-  Use the following for interpreting RelayState coming from unsolicited response as redirect URL:
-  <bean id="successRedirectHandler" class="org.springframework.security.saml.SAMLRelayStateSuccessHandler">
-     <property name="defaultTargetUrl" value="/" />
-  </bean>
-  -->
 
   <!-- Handler for successful logout -->
   <bean id="successLogoutHandler"
@@ -66,11 +67,13 @@
   <!-- Register authentication manager with SAML provider -->
   <security:authentication-manager alias="authenticationManager">
     <security:authentication-provider ref="samlAuthenticationProvider"/>
-    <security:authentication-provider ref="testAuthenticationProvider"/>
+    <security:authentication-provider ref="fakeAuthenticationProvider"/>
   </security:authentication-manager>
 
-  <bean id="testAuthenticationProvider"
-        class="org.springframework.security.authentication.TestingAuthenticationProvider"/>
+  <bean id="fakeAuthenticationProvider"
+        class="se.inera.auth.FakeAuthenticationProvider">
+    <property name="userDetails" ref="userDetailsService"/>
+  </bean>
 
   <!-- Logger for SAML messages and events -->
   <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger"/>
@@ -135,7 +138,8 @@
         </bean>
       </list>
     </constructor-arg>
-    <property name="refreshCheckInterval" value="86400000"/> <!-- refresh meta data once a day -->
+    <property name="refreshCheckInterval" value="86400000"/>
+    <!-- refresh meta data once a day -->
   </bean>
 
   <bean id="httpClientFactory" class="se.inera.auth.HttpClientFactory"/>
@@ -145,7 +149,8 @@
   <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">
     <property name="userDetails" ref="userDetailsService"/>
   </bean>
-  <bean id="userDetailsService" class="se.inera.webcert.security.WebCertUserDetailsService">
+
+  <bean id="userDetailsService" class="se.inera.auth.WebCertUserDetailsService">
   </bean>
 
   <!-- Provider of default SAML Context -->

@@ -1,4 +1,4 @@
-package se.inera.webcert.security;
+package se.inera.webcert.hsa.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +8,13 @@ import java.util.List;
  */
 public class Vardenhet {
 
-    private String namn;
     private String id;
+    private String namn;
+    private String mail;
 
     private List<Mottagning> mottagningar = new ArrayList<>();
 
     public Vardenhet() {
-
     }
 
     public Vardenhet(String id, String namn) {
@@ -44,5 +44,22 @@ public class Vardenhet {
 
     public void setMottagningar(List<Mottagning> mottagningar) {
         this.mottagningar = mottagningar;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public List<String> getHsaIds() {
+        List<String> ids = new ArrayList<>();
+        ids.add(id);
+        for (Mottagning mottagning : mottagningar) {
+            ids.add(mottagning.getId());
+        }
+        return ids;
     }
 }
