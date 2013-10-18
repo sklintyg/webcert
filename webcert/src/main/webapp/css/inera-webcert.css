@@ -424,10 +424,13 @@ body span:hover.qa-unit-selected {
 }
 
 .btn-info,.btn-info[disabled]  {
-  padding: 10px 35px;
   font-weight: bold;
   background: none;
   background-color: #28b4c4;
+}
+
+.qa-table .btn-info, .buttonbar .btn-info, .qa-panel .btn-info {
+  padding: 10px 35px;
 }
 
 .certblock-copy .btn-info {
@@ -468,14 +471,18 @@ button.btn-link-minimal {
 .btn-inverse {
 	background: none;
 	background-color: #3f3f3f;
+}
+
+.buttonbar .btn-inverse {
   padding: 10px 35px;
 }
 
+/*
 .btn-block {
   padding-top: 10px;
   padding-bottom: 10px;
 }
-
+*/
 .btn-inverse:hover {
 	background-color: #656565;
 }
@@ -647,6 +654,15 @@ input[type=radio] + label, input[type=checkbox] + label {
   cursor: pointer;
 }
 
+.modal-footer {
+  text-align:left;
+}
+
+input[datepicker-popup] .btn-block {
+	padding: 0;
+}
+
+
 /**
  Directive(s) css
 **/
@@ -659,4 +675,3 @@ input[type=radio] + label, input[type=checkbox] + label {
 	color: #64ABC0; 
 	margin-top: 20px;
 }
-
