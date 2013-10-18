@@ -21,7 +21,7 @@ package se.inera.webcert.web.service;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import se.inera.webcert.security.WebCertUser;
+import se.inera.webcert.hsa.model.WebCertUser;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {

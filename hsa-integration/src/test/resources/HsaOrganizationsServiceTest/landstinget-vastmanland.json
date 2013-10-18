@@ -1,0 +1,34 @@
+{
+    "id" : "vastmanland",
+    "namn" : "Landstinget Västmanland",
+    "vardenheter" : [
+        {
+            "id" : "centrum-vast",
+            "namn" : "Vårdcentrum i Väst",
+            "mottagningar" : [
+                {
+                    "id" : "dialys",
+                    "namn" : "Dialys"
+                },
+                {
+                    "id" : "akuten",
+                    "namn" : "Akuten"
+                }
+            ]
+        },
+        {
+            "id" : "centrum-ost",
+            "namn" : "Vårdcentrum i Öst",
+            "mottagningar" : [
+                {
+                    "id" : "nagel",
+                    "namn" : "Nagelmottagningen"
+                }
+            ]
+        },
+        {
+            "id" : "centrum-norr",
+            "namn" : "Vårdcentrum i Norr"
+        }
+    ]
+}

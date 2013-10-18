@@ -66,11 +66,13 @@
   <!-- Register authentication manager with SAML provider -->
   <security:authentication-manager alias="authenticationManager">
     <security:authentication-provider ref="samlAuthenticationProvider"/>
-    <security:authentication-provider ref="testAuthenticationProvider"/>
+    <security:authentication-provider ref="fakeAuthenticationProvider"/>
   </security:authentication-manager>
 
-  <bean id="testAuthenticationProvider"
-        class="org.springframework.security.authentication.TestingAuthenticationProvider"/>
+  <bean id="fakeAuthenticationProvider"
+        class="se.inera.auth.FakeAuthenticationProvider">
+    <property name="userDetails" ref="userDetailsService"/>
+  </bean>
 
   <!-- Logger for SAML messages and events -->
   <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger"/>
@@ -145,7 +147,8 @@
   <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">
     <property name="userDetails" ref="userDetailsService"/>
   </bean>
-  <bean id="userDetailsService" class="se.inera.webcert.security.WebCertUserDetailsService">
+
+  <bean id="userDetailsService" class="se.inera.auth.WebCertUserDetailsService">
   </bean>
 
   <!-- Provider of default SAML Context -->

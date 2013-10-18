@@ -1,8 +1,12 @@
 package se.inera.webcert.hsa.stub;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
+import se.inera.webcert.hsa.model.Mottagning;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
 
 /**
  * @author johannesc
@@ -11,83 +15,59 @@ public class HsaServiceStub {
 
     // Data cache
 
-    // Map of vardgivarid and a collection of units. Inner map is unit's hsa id plus unit
-    private Map<String, Map<String, HsaUnitStub>> vardgivare = new HashMap();
-    // Straightforward access to all persons
-    private Map<String, PersonStub> persons = new HashMap();
+    private List<Vardgivare> vardgivare = new ArrayList<>();
+    private List<Medarbetaruppdrag> medarbetaruppdrag = new ArrayList<>();
 
+    public Vardenhet getVardenhet(String hsaIdentity) {
 
-    public HsaUnitStub getHsaUnit(String hsaIdentity) {
-        for (Map<String, HsaUnitStub> enheter : vardgivare.values()) {
-            for (HsaUnitStub unit : enheter.values()) {
-                if (unit.getHsaId().equals(hsaIdentity)) {
-                    return unit;
+        for (Vardgivare vg : vardgivare) {
+            for (Vardenhet vardenhet : vg.getVardenheter()) {
+                if (vardenhet.getId().equals(hsaIdentity)) {
+                    return vardenhet;
                 }
             }
         }
         return null;
     }
 
-    public void addHsaUnit(HsaUnitStub unit) {
-        Map<String, HsaUnitStub> enheter = this.vardgivare.get(unit.getVardgivarid());
-        if (enheter == null) {
-            this.vardgivare.put(unit.getVardgivarid(), new HashMap());
-        }
-        this.vardgivare.get(unit.getVardgivarid()).put(unit.getHsaId(), unit);
-    }
-
-    public void deleteHsaUnit(String id) {
-        HsaUnitStub unitToDelete = getHsaUnit(id);
-        vardgivare.get(unitToDelete.getVardgivarid()).remove(unitToDelete.getHsaId());
-    }
-
-    public void addPerson(PersonStub person) {
-        HsaUnitStub enhet;
-        for (String unitId : person.getMedarbetaruppdrag()) {
-            enhet = getHsaUnit(unitId);
-            if (enhet == null) {
-                throw new RuntimeException(("HSA unit does not exist: " + unitId));
-            }
-            enhet.getMedarbetaruppdrag().add(person);
-        }
-        persons.put(person.getHsaId(), person);
-    }
-
-    public void deletePerson(String id) {
-        for (Map<String, HsaUnitStub> enheter : vardgivare.values()) {
-            for (HsaUnitStub unit : enheter.values()) {
-                PersonStub person = getPersonFromList(id, unit.getMedarbetaruppdrag());
-                if (person != null) {
-                    unit.getMedarbetaruppdrag().remove(person);
-                }
+    public void deleteVardgivare(String id) {
+        Iterator<Vardgivare> iterator = vardgivare.iterator();
+        while (iterator.hasNext()) {
+            Vardgivare next = iterator.next();
+            if (next.getId().equals(id)) {
+                iterator.remove();
             }
         }
-        persons.remove(id);
     }
 
-    private PersonStub getPersonFromList(String hsaId, List<PersonStub> personer) {
-        for (PersonStub person : personer) {
-            if (person.getHsaId().equals(hsaId)) {
-                return person;
+    public void deleteMedarbetareuppdrag(String hsaId) {
+        Iterator<Medarbetaruppdrag> iterator = medarbetaruppdrag.iterator();
+        while (iterator.hasNext()) {
+            Medarbetaruppdrag next = iterator.next();
+            if (next.getHsaId().equals(hsaId)) {
+                iterator.remove();
             }
         }
-        return null;
     }
 
-    public PersonStub getPerson(String hsaIdentity) {
-        return persons.get(hsaIdentity);
-    }
-
-    public void clearCache() {
-        vardgivare = new HashMap();
-        persons = new HashMap();
-    }
-
-    public Map<String, Map<String, HsaUnitStub>> getUnitCache() {
+    public List<Vardgivare> getVardgivare() {
         return vardgivare;
     }
 
-    public Map<String, PersonStub> getPersonCache() {
-        return persons;
+    public List<Medarbetaruppdrag> getMedarbetaruppdrag() {
+        return medarbetaruppdrag;
+    }
+
+    public Mottagning getMottagning(String hsaIdentity) {
+        for (Vardgivare vg : vardgivare) {
+            for (Vardenhet vardenhet : vg.getVardenheter()) {
+                for (Mottagning mottagning : vardenhet.getMottagningar()) {
+                    if (mottagning.getId().equals(hsaIdentity)) {
+                        return mottagning;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

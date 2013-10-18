@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import se.inera.webcert.security.WebCertUser;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**

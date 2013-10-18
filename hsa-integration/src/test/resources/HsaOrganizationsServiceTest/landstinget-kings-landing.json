@@ -1,0 +1,10 @@
+{
+    "id" : "kings-landing",
+    "namn" : "King's Landing",
+    "vardenheter" : [
+        {
+            "id" : "red-keep",
+            "namn" : "Vårdcentrum Red Keep"
+        }
+    ]
+}

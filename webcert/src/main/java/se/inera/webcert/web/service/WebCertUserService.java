@@ -18,7 +18,7 @@
  */
 package se.inera.webcert.web.service;
 
-import se.inera.webcert.security.WebCertUser;
+import se.inera.webcert.hsa.model.WebCertUser;
 
 public interface WebCertUserService {
 

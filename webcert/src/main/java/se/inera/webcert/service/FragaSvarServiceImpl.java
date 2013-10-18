@@ -25,7 +25,7 @@ import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.security.WebCertUser;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -136,7 +136,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
 
         WebCertUser user = webCertUserService.getWebCertUser();
-        List<String> hsaEnhetIds = user.getVardEnheter();
+        List<String> hsaEnhetIds = user.getVardenheterIds();
 
         // Filter questions to that current user only sees questions issued to units with active employment role
         Iterator<FragaSvar> iterator = fragaSvarList.iterator();

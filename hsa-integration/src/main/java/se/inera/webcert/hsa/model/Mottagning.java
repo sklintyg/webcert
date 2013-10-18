@@ -1,4 +1,4 @@
-package se.inera.webcert.security;
+package se.inera.webcert.hsa.model;
 
 /**
  * @author andreaskaltenbach
