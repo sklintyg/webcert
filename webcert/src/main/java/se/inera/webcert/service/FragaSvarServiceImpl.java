@@ -177,7 +177,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "FragaSvar with id " + fragaSvar.getInternReferens().toString()
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "FragaSvar with id " + fragaSvar.getInternReferens().toString()
                     + " has invalid state for saving answer(" + fragaSvar.getStatus() + ")");
         }
 
