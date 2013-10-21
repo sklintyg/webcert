@@ -6,6 +6,18 @@
 
        profile="dev,test,qa">
 
-  <aop:aspectj-autoproxy/>
-  <bean id="mailAdvice" class="se.inera.webcert.mailstub.JavaMailSenderAroundAdvice"/>
+  <jaxrs:server address="/mail-stub">
+    <jaxrs:serviceBeans>
+      <ref bean="mailStubRestApi"/>
+    </jaxrs:serviceBeans>
+    <jaxrs:providers>
+      <ref bean="jacksonJsonProvider"/>
+    </jaxrs:providers>
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json"/>
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+
+  <bean id="mailStubRestApi" class="se.inera.webcert.mailstub.MailStubRestApi"/>
+
 </beans>

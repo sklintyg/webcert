@@ -24,6 +24,8 @@
   <import resource="security/securityContext.xml"/>
   <import resource="classpath:/hsa-services-config.xml"/>
 
+  <import resource="classpath:/mail-stub-context.xml" />
+
   <context:property-placeholder location="file:${user.home}/.${spring.profiles.active}.webcert.se/config.properties"
                                 order="1" ignore-resource-not-found="true" ignore-unresolvable="true"/>
   <context:property-placeholder

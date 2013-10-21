@@ -21,8 +21,6 @@ public class JavaMailSenderAroundAdvice {
      */
     @Around("execution(* org.springframework.mail.javamail.JavaMailSender+.send(..))")
     public Object interceptMailSending(ProceedingJoinPoint pjp) throws Throwable {
-        System.out.println("In around advice");
-
         for (Object argument : pjp.getArgs()) {
             if (argument instanceof MimeMessage) {
                 mailStore.getMails().add(new OutgoingMail((MimeMessage) argument));
