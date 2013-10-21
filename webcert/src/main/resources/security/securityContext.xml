@@ -14,7 +14,6 @@
   <security:http security="none" pattern="/css/**"/>
   <security:http security="none" pattern="/js/**"/>
   <security:http security="none" pattern="/img/**"/>
-  <!-- TODO - how do we secure web services on the web? -->
   <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/welcome.jsp"/>
   <security:http security="none" pattern="/version.jsp"/>
@@ -22,14 +21,6 @@
   <security:http security="none" pattern="/index.jsp"/>
   <security:http security="none" pattern="/logout.jsp"/>
   <security:http security="none" pattern="/favicon.ico"/>
-
-  <!-- Secured pages -->
-  <security:http entry-point-ref="samlEntryPoint">
-    <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-    <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
-    <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
-    <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
-  </security:http>
 
   <!-- Fake authentication filter is only enabled in DEV and TEST profiles -->
   <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
@@ -52,6 +43,7 @@
     </security:filter-chain-map>
   </bean>
 
+
   <!-- Handler deciding where to redirect user after successful login -->
   <bean id="successRedirectHandler"
         class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
@@ -63,12 +55,6 @@
         class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
     <property name="defaultTargetUrl" value="/logout.jsp"/>
   </bean>
-
-  <!-- Register authentication manager with SAML provider -->
-  <security:authentication-manager alias="authenticationManager">
-    <security:authentication-provider ref="samlAuthenticationProvider"/>
-    <security:authentication-provider ref="fakeAuthenticationProvider"/>
-  </security:authentication-manager>
 
   <bean id="fakeAuthenticationProvider"
         class="se.inera.auth.FakeAuthenticationProvider">
@@ -258,5 +244,37 @@
   <bean id="parserPool" class="org.opensaml.xml.parse.StaticBasicParserPool" scope="singleton"
         init-method="initialize"/>
   <bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder" scope="singleton"/>
+
+  <beans profile="dev">
+    <security:http entry-point-ref="samlEntryPoint">
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
+    </security:http>
+    <security:authentication-manager alias="authenticationManager">
+      <security:authentication-provider ref="fakeAuthenticationProvider"/>
+    </security:authentication-manager>
+  </beans>
+  <beans profile="test,qa">
+    <security:http entry-point-ref="samlEntryPoint">
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
+      <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
+      <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
+    </security:http>
+    <security:authentication-manager alias="authenticationManager">
+      <security:authentication-provider ref="samlAuthenticationProvider"/>
+      <security:authentication-provider ref="fakeAuthenticationProvider"/>
+    </security:authentication-manager>
+  </beans>
+  <beans profile="prod">
+    <security:http entry-point-ref="samlEntryPoint">
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
+      <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
+    </security:http>
+    <security:authentication-manager alias="authenticationManager">
+      <security:authentication-provider ref="samlAuthenticationProvider"/>
+    </security:authentication-manager>
+  </beans>
 
 </beans>
