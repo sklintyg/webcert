@@ -14,12 +14,13 @@
   <security:http security="none" pattern="/css/**"/>
   <security:http security="none" pattern="/js/**"/>
   <security:http security="none" pattern="/img/**"/>
-  <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/welcome.jsp"/>
   <security:http security="none" pattern="/version.jsp"/>
-  <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/index.jsp"/>
+  <security:http security="none" pattern="/error.jsp"/>
   <security:http security="none" pattern="/logout.jsp"/>
+  <security:http security="none" pattern="/saml/web/**"/>
+  <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/favicon.ico"/>
 
   <!-- Logger for SAML messages and events -->
@@ -37,6 +38,20 @@
   <bean id="parserPool" class="org.opensaml.xml.parse.StaticBasicParserPool" scope="singleton"
         init-method="initialize"/>
   <bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder" scope="singleton"/>
+
+  <bean id="failureHandler"
+        class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
+    <property name="exceptionMappings">
+      <props>
+        <prop key="se.inera.auth.exceptions.MissingMedarbetaruppdragException">/error.jsp?reason=medarbetaruppdrag
+        </prop>
+        <prop key="org.springframework.security.authentication.BadCredentialsException">
+          /error.jsp?reason=badcredentials
+        </prop>
+      </props>
+    </property>
+    <property name="defaultFailureUrl" value="/error.jsp"/>
+  </bean>
 
   <beans profile="dev">
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
@@ -76,6 +91,7 @@
     <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
+      <property name="authenticationFailureHandler" ref="failureHandler"/>
     </bean>
     <bean id="fakeSuccessHandler"
           class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
@@ -181,6 +197,7 @@
     <bean id="samlWebSSOProcessingFilter" class="org.springframework.security.saml.SAMLProcessingFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="authenticationSuccessHandler" ref="successRedirectHandler"/>
+      <property name="authenticationFailureHandler" ref="failureHandler"/>
     </bean>
 
     <!-- Processing filter for WebSSO Holder-of-Key profile -->

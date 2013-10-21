@@ -27,6 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
 import se.inera.auth.WebCertUserDetailsService;
+import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
@@ -38,17 +39,22 @@ import se.inera.webcert.hsa.services.HsaOrganizationsService;
 public class WebCertUserDetailsServiceTest {
 
     public static final String HSA_ID = "TST5565594230-106J";
+
     @InjectMocks
     private WebCertUserDetailsService userDetailsService = new WebCertUserDetailsService();
 
     @Mock
     private HsaOrganizationsService hsaOrganizationsService;
 
+    @BeforeClass
+    public static void bootstrapOpenSaml() throws Exception {
+        DefaultBootstrap.bootstrap();
+    }
+
     @Test
     public void testPopulatingWebCertUser() throws Exception {
 
-        List<Vardgivare> vardgivare = Collections.singletonList(new Vardgivare("vg", "Landstinget Ingenmansland"));
-        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(HSA_ID)).thenReturn(vardgivare);
+        setupHsaOrganizationService();
 
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
 
@@ -62,8 +68,14 @@ public class WebCertUserDetailsServiceTest {
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(HSA_ID);
     }
 
+    private void setupHsaOrganizationService() {
+        List<Vardgivare> vardgivare = Collections.singletonList(new Vardgivare("vg", "Landstinget Ingenmansland"));
+        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(HSA_ID)).thenReturn(vardgivare);
+    }
+
     @Test
     public void testLakareTitle() throws Exception {
+        setupHsaOrganizationService();
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertTrue(webCertUser.isLakare());
@@ -71,6 +83,7 @@ public class WebCertUserDetailsServiceTest {
 
     @Test
     public void testLakareTitleCode() throws Exception {
+        setupHsaOrganizationService();
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertTrue(webCertUser.isLakare());
@@ -78,14 +91,16 @@ public class WebCertUserDetailsServiceTest {
 
     @Test
     public void testNoLakare() throws Exception {
+        setupHsaOrganizationService();
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertFalse(webCertUser.isLakare());
     }
 
-    @BeforeClass
-    public static void bootstrapOpenSaml() throws Exception {
-        DefaultBootstrap.bootstrap();
+    @Test(expected = MissingMedarbetaruppdragException.class)
+    public void testMissingMedarbetaruppdrag() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
+        userDetailsService.loadUserBySAML(samlCredential);
     }
 
     private SAMLCredential createSamlCredential(String filename) throws Exception {

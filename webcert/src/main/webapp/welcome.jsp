@@ -139,7 +139,7 @@
           <p>
           <h4>Inloggningsprofil</h4>
           <input type="hidden" id="userJson" name="userjson"/>
-          <textarea id="userJsonDisplay" name="userJsonDisplay" class="field" style="height: 400px; width: 100%">
+          <textarea id="userJsonDisplay" name="userJsonDisplay" class="field" style="height: 200px; width: 50%">
           </textarea>
         </div>
 
