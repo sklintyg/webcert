@@ -357,10 +357,11 @@ a.qa-unit {
 	color: #323232;
 }
 
-.unit-table .selected {
+.unit-table button.selected {
 	color: #fff;
 	font-weight: bold;
 	background: none;
+	filter: none;
   background-color: #28b4c4;
 }
 
