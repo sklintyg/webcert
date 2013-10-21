@@ -33,11 +33,11 @@
 |externReferens|
 |FK-1234|
 
+|Ta bort vardgivare|
+|vardgivarid|
+|vg1|
+
 |script|Mailbox|
 |rensa|
-
-|script|Hsa Cache|
-|rensa|
-
 
 TODO - integrate intygstjänsten stub!

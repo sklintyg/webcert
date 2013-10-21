@@ -1,7 +1,7 @@
 !3 Det finns en enhet i HSA katalogen
-| Hsa Enhet |
-| vardgivarid | hsaId | name | email |
-| vg1 | enhet-1 | Vårdenhet 1 | !-enhet1@hsastub.se-! |
+|Vardgivare|
+|vardgivarid|enhetsid|enhetsnamn|enhetsmail|
+|vg1|enhet-1|Vårdenhet 1|!-enhet1@hsastub.se-!|
 
 !3 Och det finns en fråga som initierades av vården
 | Fraga Svar |
@@ -28,8 +28,9 @@
 | internReferens |
 | $internReferens |
 
-| script | Mailbox |
-| rensa |
+|Ta bort vardgivare|
+|vardgivarid|
+|vg1|
 
-| script | Hsa Cache |
+| script | Mailbox |
 | rensa |
