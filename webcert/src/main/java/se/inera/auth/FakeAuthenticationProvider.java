@@ -4,8 +4,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.util.Collection;
-import java.util.Date;
+import java.util.ArrayList;
 
 import static se.inera.auth.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
@@ -27,17 +26,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
-import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLCredential;
+import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
  * @author andreaskaltenbach
  */
-public class FakeAuthenticationProvider extends SAMLAuthenticationProvider implements AuthenticationProvider {
+public class FakeAuthenticationProvider implements AuthenticationProvider {
 
     private static DocumentBuilder documentBuilder;
+
+    private SAMLUserDetailsService userDetails;
 
     static {
         try {
@@ -53,14 +54,10 @@ public class FakeAuthenticationProvider extends SAMLAuthenticationProvider imple
         FakeAuthenticationToken token = (FakeAuthenticationToken) authentication;
 
         SAMLCredential credential = createSamlCredential(token);
+        Object details = userDetails.loadUserBySAML(credential);
 
-        Object userDetails = getUserDetails(credential);
-        Object principal = getPrincipal(credential, userDetails);
-        Collection<? extends GrantedAuthority> entitlements = getEntitlements(credential, userDetails);
-
-        Date expiration = getExpirationDate(credential);
-        ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(expiration, principal,
-                credential, entitlements);
+        ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details,
+                credential, new ArrayList<GrantedAuthority>());
         result.setDetails(userDetails);
 
         return result;
@@ -105,5 +102,9 @@ public class FakeAuthenticationProvider extends SAMLAuthenticationProvider imple
         attribute.getAttributeValues().add(xmlObject);
 
         return attribute;
+    }
+
+    public void setUserDetails(SAMLUserDetailsService userDetails) {
+        this.userDetails = userDetails;
     }
 }
