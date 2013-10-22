@@ -7,12 +7,10 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,12 +121,6 @@ public class HsaOrganizationsServiceTest {
     }
 
     @Test
-    @Ignore
-    public void testUppdragFiltering() {
-        fail();
-    }
-
-    @Test
     public void testInactiveEnhetFiltering() throws IOException {
 
         addVardgivare("HsaOrganizationsServiceTest/landstinget-upp-och-ner.json");
@@ -164,5 +156,21 @@ public class HsaOrganizationsServiceTest {
         assertEquals("mottagning-here-and-now", mottagningar.get(0).getId());
         assertEquals("mottagning-still-open", mottagningar.get(1).getId());
         assertEquals("mottagning-will-shutdown", mottagningar.get(2).getId());
+    }
+
+    @Test
+    public void testUppdragFiltering() {
+
+        // user has different medarbetaruppdrag ändamål in different enheter
+        serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(PERSON_HSA_ID, asList("centrum-vast"), Medarbetaruppdrag.VARD_OCH_BEHANDLING));
+        serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(PERSON_HSA_ID, asList("centrum-ost"), "Animatör"));
+
+        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+
+        // only centrum-vast is with ändamål 'Vård och behandling'
+        assertEquals(1, vardgivareList.size());
+        Vardgivare vardgivare = vardgivareList.get(0);
+        assertEquals(1, vardgivare.getVardenheter().size());
+        assertEquals("centrum-vast", vardgivare.getVardenheter().get(0).getId());
     }
 }

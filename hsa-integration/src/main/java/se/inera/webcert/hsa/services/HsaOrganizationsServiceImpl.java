@@ -32,6 +32,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
+import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
 
 /**
  * @author andreaskaltenbach
@@ -40,8 +41,6 @@ import com.google.common.collect.Multimaps;
 public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(HsaOrganizationsServiceImpl.class);
-
-    public static final String VARD_OCH_BEHANDLING = "Vård och behandling";
 
     @Autowired
     private HSAWebServiceCalls client;
@@ -62,7 +61,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                 new Predicate<MiuInformationType>() {
                     @Override
                     public boolean apply(MiuInformationType miuInformationType) {
-                        return VARD_OCH_BEHANDLING.equalsIgnoreCase(miuInformationType.getMiuPurpose());
+                        return Medarbetaruppdrag.VARD_OCH_BEHANDLING.equalsIgnoreCase(miuInformationType.getMiuPurpose());
                     }
                 });
 
