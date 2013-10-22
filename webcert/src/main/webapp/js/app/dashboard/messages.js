@@ -26,9 +26,6 @@ var webcertResources = {
         "qa.waiting.markhandled" : "Att markeras som hanterad",
         "qa.waiting.handled" : "",
         
-        // modal messages
-        "modal.title.markforward" : "Markera som vidarebefordrad?",
-        
         //info messages
         "info.nounsignedcertsfound" : "Inga osignerade intyg hittades.",
         "info.nounansweredcertsfound" : "Inga intyg med ohanterade frågor hittades.",

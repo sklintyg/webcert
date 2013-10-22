@@ -7,18 +7,17 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.stub.HsaServiceStub;
@@ -122,22 +121,56 @@ public class HsaOrganizationsServiceTest {
     }
 
     @Test
-    @Ignore
+    public void testInactiveEnhetFiltering() throws IOException {
+
+        addVardgivare("HsaOrganizationsServiceTest/landstinget-upp-och-ner.json");
+
+        addMedarbetaruppdrag(PERSON_HSA_ID, asList("finito", "here-and-now", "futuro", "still-open", "will-shutdown"));
+
+        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+        assertEquals(1, vardgivareList.size());
+
+        Vardgivare vardgivare = vardgivareList.get(0);
+        assertEquals(3, vardgivare.getVardenheter().size());
+
+        assertEquals("here-and-now", vardgivare.getVardenheter().get(0).getId());
+        assertEquals("still-open", vardgivare.getVardenheter().get(1).getId());
+        assertEquals("will-shutdown", vardgivare.getVardenheter().get(2).getId());
+    }
+
+    @Test
+    public void testInactiveMottagningFiltering() throws IOException {
+        addVardgivare("HsaOrganizationsServiceTest/landstinget-upp-och-ner.json");
+
+        addMedarbetaruppdrag(PERSON_HSA_ID, asList("with-subs"));
+
+        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+        assertEquals(1, vardgivareList.size());
+
+        Vardgivare vardgivare = vardgivareList.get(0);
+        assertEquals(1, vardgivare.getVardenheter().size());
+
+        List<Mottagning> mottagningar = vardgivare.getVardenheter().get(0).getMottagningar();
+        assertEquals(3, mottagningar.size());
+
+        assertEquals("mottagning-here-and-now", mottagningar.get(0).getId());
+        assertEquals("mottagning-still-open", mottagningar.get(1).getId());
+        assertEquals("mottagning-will-shutdown", mottagningar.get(2).getId());
+    }
+
+    @Test
     public void testUppdragFiltering() {
-        fail();
-    }
 
-    @Test
-    @Ignore
-    public void testInactiveEnhetFiltering() {
-        fail();
-        // before and after date
-    }
+        // user has different medarbetaruppdrag ändamål in different enheter
+        serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(PERSON_HSA_ID, asList("centrum-vast"), Medarbetaruppdrag.VARD_OCH_BEHANDLING));
+        serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(PERSON_HSA_ID, asList("centrum-ost"), "Animatör"));
 
-    @Test
-    @Ignore
-    public void testInactiveMottagningFiltering() {
-        fail();
-        // before and after date
+        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+
+        // only centrum-vast is with ändamål 'Vård och behandling'
+        assertEquals(1, vardgivareList.size());
+        Vardgivare vardgivare = vardgivareList.get(0);
+        assertEquals(1, vardgivare.getVardenheter().size());
+        assertEquals("centrum-vast", vardgivare.getVardenheter().get(0).getId());
     }
 }

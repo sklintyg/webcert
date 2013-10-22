@@ -61,6 +61,8 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
             response.setHsaIdentity(enhet.getId());
             response.setName(enhet.getNamn());
             response.setEmail(enhet.getMail());
+            response.setStartDate(enhet.getStart());
+            response.setEndDate(enhet.getEnd());
             return response;
         }
 
@@ -68,6 +70,8 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         if (mottagning != null) {
             response.setHsaIdentity(mottagning.getId());
             response.setName(mottagning.getNamn());
+            response.setStartDate(mottagning.getStart());
+            response.setEndDate(mottagning.getEnd());
             return response;
         }
         return response;
@@ -85,22 +89,21 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         for (Medarbetaruppdrag medarbetaruppdrag : hsaService.getMedarbetaruppdrag()) {
             if (medarbetaruppdrag.getHsaId().equals(parameters.getHsaIdentity())) {
                 response.getMiuInformation().addAll(
-                        miuInformationTypesForEnhetsIds(medarbetaruppdrag.getEnhetIds(), medarbetaruppdrag.getHsaId()));
-
+                        miuInformationTypesForEnhetsIds(medarbetaruppdrag));
             }
         }
         return response;
     }
 
-    private List<MiuInformationType> miuInformationTypesForEnhetsIds(List<String> enhetIds, String personHsaId) {
+    private List<MiuInformationType> miuInformationTypesForEnhetsIds(Medarbetaruppdrag medarbetaruppdrag) {
         List<MiuInformationType> informationTypes = new ArrayList<>();
 
         for (Vardgivare vardgivare : hsaService.getVardgivare()) {
             for (Vardenhet enhet : vardgivare.getVardenheter()) {
-                if (enhetIds.contains(enhet.getId())) {
+                if (medarbetaruppdrag.getEnhetIds().contains(enhet.getId())) {
                     MiuInformationType miuInfo = new MiuInformationType();
-                    miuInfo.setHsaIdentity(personHsaId);
-                    miuInfo.setMiuPurpose("Vård och behandling");
+                    miuInfo.setHsaIdentity(medarbetaruppdrag.getHsaId());
+                    miuInfo.setMiuPurpose(medarbetaruppdrag.getAndamal());
                     miuInfo.setCareUnitHsaIdentity(enhet.getId());
                     miuInfo.setCareUnitName(enhet.getNamn());
                     miuInfo.setCareGiver(vardgivare.getId());
@@ -191,8 +194,11 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
                     CareUnitType careUnit = new CareUnitType();
                     careUnit.setHsaIdentity(enhet.getId());
                     careUnit.setCareUnitName(enhet.getNamn());
+                    careUnit.setCareUnitStartDate(enhet.getStart());
+                    careUnit.setCareUnitEndDate(enhet.getEnd());
                     response.setCareUnits(new GetCareUnitListResponseType.CareUnits());
                     response.getCareUnits().getCareUnit().add(careUnit);
+
                     return response;
                 }
             }

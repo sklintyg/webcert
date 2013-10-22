@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings version="2.1" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+               xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+               xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+  <jaxb:bindings>
+    <jaxb:globalBindings
+            collectionType="java.util.ArrayList"
+            generateValueClass="true">
+      <jaxb:javaType name="org.joda.time.LocalDate" xmlType="xs:date"
+                     parseMethod="se.inera.certificate.schema.adapter.LocalDateAdapter.parseDate"
+                     printMethod="se.inera.certificate.schema.adapter.LocalDateAdapter.printDate"/>
+
+      <jaxb:javaType name="org.joda.time.LocalDateTime" xmlType="xs:dateTime"
+                     parseMethod="se.inera.certificate.schema.adapter.LocalDateAdapter.parseDateTime"
+                     printMethod="se.inera.certificate.schema.adapter.LocalDateAdapter.printDateTime"/>
+    </jaxb:globalBindings>
+  </jaxb:bindings>
+
+</jaxb:bindings>

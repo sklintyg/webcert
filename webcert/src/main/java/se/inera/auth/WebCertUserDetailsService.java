@@ -1,11 +1,15 @@
 package se.inera.auth;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 
@@ -30,8 +34,14 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
         WebCertUser webCertUser = createWebCertUser(assertion);
 
-        webCertUser.setVardgivare(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId()));
+        List<Vardgivare> authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId());
 
+        // if user does not have access to any vardgivare, we have to reject authentication
+        if (authorizedVardgivare.isEmpty()) {
+            throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
+        }
+
+        webCertUser.setVardgivare(authorizedVardgivare);
         return webCertUser;
     }
 
