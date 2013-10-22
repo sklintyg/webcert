@@ -1,6 +1,7 @@
 package se.inera.webcert.persistence.fragasvar.model;
 
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 /**
  * Created by pehr on 10/21/13.
@@ -12,14 +13,13 @@ public class FragaSvarFilter {
 
     private String hsaId;
 
-    private boolean  statusClosed;
-    private boolean statusOpen;
-
     //TODO do we need a "NotVidarebefordrad". How do we show all?
     private boolean vidarebefordrad;
 
-    private LocalDate changedFrom;
+    private LocalDateTime changedFrom;
     private LocalDate changedTo;
+
+    private Status status;
 
     //TODO is subject always 1 or All. Can user select multiple?
     private Amne subject;
@@ -50,22 +50,6 @@ public class FragaSvarFilter {
         this.hsaId = hsaId;
     }
 
-    public boolean isStatusClosed() {
-        return statusClosed;
-    }
-
-    public void setStatusClosed(boolean statusClosed) {
-        this.statusClosed = statusClosed;
-    }
-
-    public boolean isStatusOpen() {
-        return statusOpen;
-    }
-
-    public void setStatusOpen(boolean statusOpen) {
-        this.statusOpen = statusOpen;
-    }
-
     public boolean isVidarebefordrad() {
         return vidarebefordrad;
     }
@@ -74,11 +58,11 @@ public class FragaSvarFilter {
         this.vidarebefordrad = vidarebefordrad;
     }
 
-    public LocalDate getChangedFrom() {
+    public LocalDateTime getChangedFrom() {
         return changedFrom;
     }
 
-    public void setChangedFrom(LocalDate changedFrom) {
+    public void setChangedFrom(LocalDateTime changedFrom) {
         this.changedFrom = changedFrom;
     }
 
@@ -104,5 +88,13 @@ public class FragaSvarFilter {
 
     public void setReplyLatest(LocalDate replyLatest) {
         this.replyLatest = replyLatest;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

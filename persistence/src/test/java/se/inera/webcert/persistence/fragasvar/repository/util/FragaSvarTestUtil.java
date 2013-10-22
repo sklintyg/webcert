@@ -1,6 +1,8 @@
 package se.inera.webcert.persistence.fragasvar.repository.util;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
 import se.inera.webcert.persistence.fragasvar.model.*;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 
@@ -24,9 +26,7 @@ public class FragaSvarTestUtil {
     private static String ENHET_3_ID = "ENHET_3_ID";
     private static String ENHET_4_ID = "ENHET_4_ID";
 
-    public static FragaSvar buildFragaSvarFraga(String enhetsId) {
-        return buildFragaSvarFraga(enhetsId, Status.PENDING_EXTERNAL_ACTION,"fk","ingen-vardperson-hsaid");
-    }
+
 
     public static void buildFragaSvar(FragaSvarFilter filter,int antal, final FragaSvarRepository fragasvarRepository){
         String fragestallare;
@@ -34,6 +34,8 @@ public class FragaSvarTestUtil {
         Status status;
         Status antistatus=Status.CLOSED;
         String hsaid="ingen-vardperson-hsaid";
+        LocalDateTime changedFrom=null;
+        LocalDateTime antichangedFrom=null;
 
         if (filter.isQuestionFromWC()&&!filter.isQuestionFromFK()) {
             fragestallare="WC";
@@ -48,15 +50,21 @@ public class FragaSvarTestUtil {
         if(filter.getHsaId()!=null&&!filter.getHsaId().isEmpty()){
             hsaid = filter.getHsaId();
         }
+
+        if(filter.getChangedFrom()!=null){
+            changedFrom=filter.getChangedFrom();
+            antichangedFrom=new LocalDateTime(changedFrom.getYear(),changedFrom.minusMonths(1).getMonthOfYear(), changedFrom.getDayOfMonth(),0,0) ;
+        }
+
         for (int count = 0; count < antal; count++) {
-            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",status,fragestallare,hsaid));
+            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",status,fragestallare,hsaid,changedFrom));
         }
         for (int count = 0; count < antal; count++) {
-            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",antistatus,antifragestallare,"ingen-vardperson-hsaid"));
+            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",antistatus,antifragestallare,"ingen-vardperson-hsaid",antichangedFrom));
         }
     }
 
-    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String fragestallare,String hsaId) {
+    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String fragestallare,String hsaId, LocalDateTime fragaSkickad) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.OVRIGT);
@@ -67,7 +75,13 @@ public class FragaSvarTestUtil {
         }
 
         f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
-        f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+
+        if (fragaSkickad!=null){
+            f.setFrageSkickadDatum(fragaSkickad);
+
+        }else{
+            f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+        }
         f.setFrageStallare(fragestallare);
         Vardperson vardperson = new Vardperson();
         vardperson.setHsaId(hsaId);

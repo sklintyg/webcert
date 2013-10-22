@@ -1,5 +1,7 @@
 package se.inera.webcert.persistence.fragasvar.repository;
 
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvarFilter;
@@ -39,7 +41,9 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
             pred = builder.and(pred, builder.equal(root.get("vardperson").get("hsaId"), filter.getHsaId()));
         }
 
-
+        if (filter.getChangedFrom() != null) {
+            pred = builder.and(pred, builder.greaterThan(root.<LocalDate>get("senasteHandelse"), filter.getChangedFrom())) ;
+        }
 
         return pred;
     }
@@ -57,19 +61,17 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         return entityManager.createQuery(query).getResultList();
     }
 
-
+    @Override
     public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, Pageable pages) {
 
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<FragaSvar> query = builder.createQuery(FragaSvar.class);
+        builder = entityManager.getCriteriaBuilder();
+        query = builder.createQuery(FragaSvar.class);
 
-        Root<FragaSvar> root = query.from(FragaSvar.class);
+        root = query.from(FragaSvar.class);
 
-        Predicate pred= builder.conjunction();
-        pred = builder.and(pred, builder.equal(root.get("frageStallare"), "FK"));
 
-        query.where(pred);
+        query.where(createPredicate(filter));
 
-        return entityManager.createQuery(query).getResultList().subList(pages.getPageNumber(),pages.getPageSize());
+        return entityManager.createQuery(query).setMaxResults(pages.getPageSize()).setFirstResult(pages.getPageNumber()).getResultList();
     }
 }
