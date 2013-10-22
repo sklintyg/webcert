@@ -107,24 +107,13 @@ angular
                                 $window.location.href = "/m/" + intygsReferens.intygsTyp.toLowerCase() + "/webcert/intyg/" + intygsReferens.intygsId;
                             }
 
-                            // Mail dialog
-                            $scope.openMailDialog = function(mail) {
-
-                                $scope.qaToMail = mail;
-                                // wait some time before showing the dialog
+                            // Handle vidarebefordra dialog
+                            $scope.openMailDialog = function(qa) {
                                 $timeout(function() {
-                                    dashBoardService.showDialog("markforward", "Det verkar som att du har informerat den som ska ta hand om frågan. Vill du markera frågan som vidarebefordrad?",
-                                            function() { // yes
-                                                $log.debug("yes");
-                                            }, function() { // no
-                                                $log.debug("no");
-                                            }, function() { // no and don't ask
-                                                // again
-                                                $log.debug("no and dont ask");
-                                            }, "yes", "no", "nodontask");
+                                    fragaSvarCommonService.handleVidareBefodradToggle(qa, $scope.onVidareBefordradChange);
                                 }, 1000);
-                                $window.location = "mailto:foo@bar.com?subject=mail subject&body=mail body";
-
+                                //Launch mail client
+                                $window.location = fragaSvarCommonService.buildMailToLink(qa);
                             }
 
                             // Search filter date controls
