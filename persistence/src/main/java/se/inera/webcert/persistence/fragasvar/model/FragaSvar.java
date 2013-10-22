@@ -2,19 +2,8 @@ package se.inera.webcert.persistence.fragasvar.model;
 
 import java.util.Set;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
@@ -64,6 +53,10 @@ public class FragaSvar {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime svarSkickadDatum;
 
+    @Column(name = "SENASTE_HANDELSE")
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    private LocalDateTime senasteHandelse;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "EXTERNA_KONTAKTER", joinColumns = @JoinColumn(name = "FRAGASVAR_ID"))
     @Column(name = "KONTAKT")
@@ -93,6 +86,22 @@ public class FragaSvar {
 
     @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
     private Boolean vidarebefordrad = Boolean.FALSE;
+
+    @PrePersist
+    void onPrePersist(){
+        if(getSvarSkickadDatum()==null && getFrageSkickadDatum()!=null){
+            senasteHandelse = getFrageSkickadDatum();
+        }else if(getSvarSkickadDatum()!=null){
+            senasteHandelse =getSvarSkickadDatum();
+        }
+    }
+
+    @PreUpdate
+    void onPreUpdate(){
+        if(getSvarSkickadDatum()!=null){
+            senasteHandelse = getSvarSkickadDatum();
+        }
+    }
 
     public Status getStatus() {
         return status;
@@ -269,4 +278,10 @@ public class FragaSvar {
     public int hashCode() {
         return internReferens != null ? internReferens.hashCode() : 0;
     }
+
+    public LocalDateTime getSenasteHandelse() {
+        return senasteHandelse;
+    }
+
+
 }

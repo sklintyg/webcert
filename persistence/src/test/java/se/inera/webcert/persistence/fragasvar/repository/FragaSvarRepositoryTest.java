@@ -38,6 +38,8 @@ public class FragaSvarRepositoryTest {
 
     private LocalDateTime FRAGE_SIGN_DATE = new LocalDateTime("2013-03-01T11:11:11");
     private LocalDateTime FRAGE_SENT_DATE = new LocalDateTime("2013-03-01T12:00:00");
+    private LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2013-04-01T11:11:11");
+    private LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2013-04-01T12:00:00");
     private IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk", "Sven Persson",
             FRAGE_SENT_DATE);
     private static String ENHET_1_ID = "ENHET_1_ID";
@@ -133,6 +135,27 @@ public class FragaSvarRepositoryTest {
 
         FragaSvar read = fragasvarRepository.findByExternReferens(saved.getExternReferens());
         assertEquals(read.getInternReferens(), saved.getInternReferens());
+
+    }
+    @Test
+    public void testFragaSenasteHandelse() {
+        FragaSvar saved = buildFragaSvarFraga("Enhet-1-id", Status.PENDING_EXTERNAL_ACTION);
+
+        fragasvarRepository.save(saved);
+
+        FragaSvar read = fragasvarRepository.findByExternReferens(saved.getExternReferens());
+
+        assertEquals(read.getFrageSkickadDatum(), read.getSenasteHandelse());
+
+        read.setSvarsText("svarstext");
+        read.setSvarSkickadDatum(SVAR_SENT_DATE);
+        read.setSvarSigneringsDatum(SVAR_SIGN_DATE);
+
+        FragaSvar svar2 = fragasvarRepository.save(read);
+
+        FragaSvar read2 = fragasvarRepository.findByExternReferens(svar2.getExternReferens());
+
+        assertEquals(read2.getSvarSkickadDatum(), read2.getSenasteHandelse());
 
     }
 }

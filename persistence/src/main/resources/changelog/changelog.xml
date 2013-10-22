@@ -57,10 +57,13 @@
       <column name="SVAR_SIGNERINGS_DATUM" type="datetime">
         <constraints nullable="true" />
       </column>
-      <column name="SVAR_SKICKAD_DATUM" type="datetime">
-        <constraints nullable="true" />
-      </column>
-      <column name="SVARS_TEXT" type="text">
+        <column name="SVAR_SKICKAD_DATUM" type="datetime">
+            <constraints nullable="true" />
+        </column>
+        <column name="SENASTE_HANDELSE" type="datetime">
+            <constraints nullable="true" />
+        </column>
+        <column name="SVARS_TEXT" type="text">
         <constraints nullable="true" />
       </column>
 
