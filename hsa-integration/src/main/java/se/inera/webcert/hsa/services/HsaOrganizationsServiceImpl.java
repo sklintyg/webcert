@@ -3,15 +3,12 @@ package se.inera.webcert.hsa.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimaps;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import se.inera.ifv.hsawsresponder.v3.AttributeListType;
 import se.inera.ifv.hsawsresponder.v3.AttributeValuePairType;
 import se.inera.ifv.hsawsresponder.v3.CareUnitType;
@@ -30,6 +27,12 @@ import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimaps;
+
 /**
  * @author andreaskaltenbach
  */
@@ -37,6 +40,7 @@ import se.inera.webcert.hsa.model.Vardgivare;
 public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(HsaOrganizationsServiceImpl.class);
+
     public static final String VARD_OCH_BEHANDLING = "Vård och behandling";
 
     @Autowired
@@ -49,8 +53,9 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         // Set hos person hsa ID
         GetMiuForPersonType parameters = new GetMiuForPersonType();
         parameters.setHsaIdentity(hosPersonHsaId);
-
         GetMiuForPersonResponseType response = client.callMiuRights(parameters);
+        LOG.debug("User with HSA-Id " + hosPersonHsaId + " has " + response.getMiuInformation().size()
+                + " medarbetaruppdrag");
 
         // filter by syfte. Only 'Vård och behandling' assignments are relevant for WebCert.
         Iterable<MiuInformationType> filteredMius = Iterables.filter(response.getMiuInformation(),
@@ -69,6 +74,8 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                         return miuInformation.getCareGiver();
                     }
                 });
+        LOG.debug("User with HSA-Id has active 'Vård och behandling' for " + vardgivareIdToMiuInformation.size()
+                + " vårdgivare");
 
         for (String vardgivareId : vardgivareIdToMiuInformation.keySet()) {
             vardgivareList.add(convert(vardgivareIdToMiuInformation.get(vardgivareId)));
@@ -80,19 +87,39 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
         List<Vardenhet> vardenheter = new ArrayList<>();
 
-        String enhetDn = fetchDistinguishedName(miuInformationType);
+        String enhetHsaId = miuInformationType.getCareUnitHsaIdentity();
+
+        String enhetDn = fetchDistinguishedName(enhetHsaId);
+        LOG.debug("DN for enhet " + enhetHsaId + " is " + enhetDn);
 
         List<CareUnitType> careUnits = fetchSubEnheter(vardgivare, enhetDn);
 
-        // TODO - check care unit start and end date!!!
-
         for (CareUnitType careUnit : careUnits) {
-            Vardenhet vardenhet = new Vardenhet(careUnit.getHsaIdentity(), careUnit.getCareUnitName());
-            attachMottagningar(vardenhet);
-            vardenheter.add(vardenhet);
+            Vardenhet vardenhet = new Vardenhet(careUnit.getHsaIdentity(), careUnit.getCareUnitName(),
+                    careUnit.getCareUnitStartDate(), careUnit.getCareUnitEndDate());
+
+            // only add enhet if it is currently active
+            if (isActive(vardenhet.getStart(), vardenhet.getEnd())) {
+                attachMottagningar(vardenhet);
+                vardenheter.add(vardenhet);
+            } else {
+                LOG.debug("Enhet " + enhetHsaId + " is not active right now");
+            }
         }
 
         return vardenheter;
+    }
+
+    private boolean isActive(LocalDateTime fromDate, LocalDateTime toDate) {
+        LocalDateTime now = new LocalDateTime();
+
+        if (fromDate != null && now.isBefore(fromDate)) {
+            return false;
+        }
+        if (toDate != null && now.isAfter(toDate)) {
+            return false;
+        }
+        return true;
     }
 
     private List<CareUnitType> fetchSubEnheter(Vardgivare vardgivare, String enhetDn) {
@@ -100,15 +127,16 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         parameters.setHsaIdentity(vardgivare.getId());
         parameters.setSearchBase(enhetDn);
         GetCareUnitListResponseType response = client.callGetCareUnitList(parameters);
+        LOG.debug("Enhet " + enhetDn + " has " + response.getCareUnits().getCareUnit().size() + " enheter beneath");
         return response.getCareUnits().getCareUnit();
     }
 
-    private String fetchDistinguishedName(MiuInformationType miuInformationType) {
+    private String fetchDistinguishedName(String hsaId) {
         HsawsSimpleLookupType lookupType = new HsawsSimpleLookupType();
         ExactType exactType = new ExactType();
         exactType.setSearchAttribute("hsaIdentity");
         exactType.setSearchOperator(SearchOperatorExact.EXACT);
-        exactType.setValue(miuInformationType.getCareUnitHsaIdentity());
+        exactType.setValue(hsaId);
 
         AttributeListType attributeList = new AttributeListType();
         attributeList.getAttribute().add("hsaIdentity");
@@ -124,15 +152,24 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         List<String> mottagningsIds = fetchMottagningsHsaId(vardenhet);
         for (String mottagningsId : mottagningsIds) {
             Mottagning mottagning = fetchMottagning(mottagningsId);
-            vardenhet.getMottagningar().add(mottagning);
+            if (isActive(mottagning.getStart(), mottagning.getEnd())) {
+                vardenhet.getMottagningar().add(mottagning);
+            }
+            else {
+                LOG.debug("Mottagning " + mottagningsId + " is not active right now");
+            }
         }
     }
 
     private Mottagning fetchMottagning(String mottagningsHsaId) {
-        GetHsaUnitResponseType response = client.callGetHsaunit(mottagningsHsaId);
-        return new Mottagning(response.getHsaIdentity(), response.getName());
-    }
 
+        GetHsaUnitResponseType response = client.callGetHsaunit(mottagningsHsaId);
+        LOG.debug("Fetching details for mottagning " + mottagningsHsaId);
+
+        // TODO - filter by date
+
+        return new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(), response.getEndDate());
+    }
 
     private List<String> fetchMottagningsHsaId(Vardenhet vardenhet) {
         List<String> ids = new ArrayList<>();
@@ -159,12 +196,15 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         }
 
         List<AttributeValuePairType> attributes = lookupResponse.getResponseValues().get(0).getResponse();
+
+        LOG.debug("Enhet " + vardenhet.getId() + " has " + attributes.size() + " mottagningar");
+
         for (AttributeValuePairType attribute : attributes) {
             if ("hsaHealthCareUnitMember".equals(attribute.getAttribute())) {
                 ids.addAll(attribute.getValue());
             }
         }
-        
+
         return ids;
     }
 
@@ -174,9 +214,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                 .getCareGiverName());
 
         for (MiuInformationType miuInformationType : miuInformationTypes) {
-
-            List<Vardenhet> enheter = fetchAllEnheter(vardgivare, miuInformationType);
-            vardgivare.getVardenheter().addAll(enheter);
+            vardgivare.getVardenheter().addAll(fetchAllEnheter(vardgivare, miuInformationType));
         }
         return vardgivare;
     }

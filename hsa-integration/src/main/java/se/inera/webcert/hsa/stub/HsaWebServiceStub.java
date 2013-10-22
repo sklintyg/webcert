@@ -61,6 +61,8 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
             response.setHsaIdentity(enhet.getId());
             response.setName(enhet.getNamn());
             response.setEmail(enhet.getMail());
+            response.setStartDate(enhet.getStart());
+            response.setEndDate(enhet.getEnd());
             return response;
         }
 
@@ -68,6 +70,8 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         if (mottagning != null) {
             response.setHsaIdentity(mottagning.getId());
             response.setName(mottagning.getNamn());
+            response.setStartDate(mottagning.getStart());
+            response.setEndDate(mottagning.getEnd());
             return response;
         }
         return response;
@@ -191,8 +195,11 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
                     CareUnitType careUnit = new CareUnitType();
                     careUnit.setHsaIdentity(enhet.getId());
                     careUnit.setCareUnitName(enhet.getNamn());
+                    careUnit.setCareUnitStartDate(enhet.getStart());
+                    careUnit.setCareUnitEndDate(enhet.getEnd());
                     response.setCareUnits(new GetCareUnitListResponseType.CareUnits());
                     response.getCareUnits().getCareUnit().add(careUnit);
+
                     return response;
                 }
             }

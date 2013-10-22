@@ -3,6 +3,8 @@ package se.inera.webcert.hsa.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.LocalDateTime;
+
 /**
  * @author andreaskaltenbach
  */
@@ -12,6 +14,9 @@ public class Vardenhet {
     private String namn;
     private String mail;
 
+    private LocalDateTime start;
+    private LocalDateTime end;
+
     private List<Mottagning> mottagningar = new ArrayList<>();
 
     public Vardenhet() {
@@ -20,6 +25,13 @@ public class Vardenhet {
     public Vardenhet(String id, String namn) {
         this.id = id;
         this.namn = namn;
+    }
+
+    public Vardenhet(String id, String namn, LocalDateTime start, LocalDateTime end) {
+        this.id = id;
+        this.namn = namn;
+        this.start = start;
+        this.end = end;
     }
 
     public String getNamn() {
@@ -61,5 +73,21 @@ public class Vardenhet {
             ids.add(mottagning.getId());
         }
         return ids;
+    }
+
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    public void setStart(LocalDateTime start) {
+        this.start = start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    public void setEnd(LocalDateTime end) {
+        this.end = end;
     }
 }

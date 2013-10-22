@@ -1,0 +1,69 @@
+{
+    "id" : "upp-och-ner",
+    "namn" : "Landstinget Upp och ner",
+    "vardenheter" : [
+        {
+            "id" : "finito",
+            "namn" : "Finito",
+            "start" : "2000-01-01",
+            "end" : "2001-12-31"
+        },
+        {
+            "id" : "here-and-now",
+            "namn" : "Here and now",
+            "start" : "2010-01-01",
+            "end" : "2500-12-31"
+        },
+        {
+            "id" : "futuro",
+            "namn" : "Futuro",
+            "start" : "2525-01-01",
+            "end" : "2525-12-31"
+        },
+        {
+            "id" : "still-open",
+            "namn" : "Still open",
+            "start" : "2000-01-01"
+        },
+        {
+            "id" : "will-shutdown",
+            "namn" : "Will shutdown",
+            "end" : "2500-01-01"
+        } ,
+        {
+            "id" : "with-subs",
+            "namn" : "With subs",
+            "mottagningar" : [
+                {
+                    "id" : "mottagning-finito",
+                    "namn" : "Finito",
+                    "start" : "2000-01-01",
+                    "end" : "2001-12-31"
+                },
+                {
+                    "id" : "mottagning-here-and-now",
+                    "namn" : "Here and now",
+                    "start" : "2010-01-01",
+                    "end" : "2500-12-31"
+                },
+                {
+                    "id" : "mottagning-futuro",
+                    "namn" : "Futuro",
+                    "start" : "2525-01-01",
+                    "end" : "2525-12-31"
+                },
+                {
+                    "id" : "mottagning-still-open",
+                    "namn" : "Still open",
+                    "start" : "2000-01-01"
+                },
+                {
+                    "id" : "mottagning-will-shutdown",
+                    "namn" : "Will shutdown",
+                    "end" : "2500-01-01"
+                }
+            ]
+        }
+
+    ]
+}
