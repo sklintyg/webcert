@@ -13,7 +13,9 @@ angular
                         '$timeout',
                         '$filter',
                         'dashBoardService',
-                        function UnhandledCertCtrl($scope, $window, $log, $timeout, $filter, dashBoardService) {
+                        'fragaSvarCommonService',
+                        'wcDialogService',
+                        function UnhandledCertCtrl($scope, $window, $log, $timeout, $filter, dashBoardService, fragaSvarCommonService, wcDialogService) {
                             // init state
                             $scope.widgetState = {
                                 doneLoading : false,
@@ -63,9 +65,9 @@ angular
                                 qa.updateInProgress = true;
                                 $timeout(
                                         function() { // wrap in timeout to
-                                                        // simulate
+                                            // simulate
                                             // latency -
-                                            dashBoardService
+                                            fragaSvarCommonService
                                                     .setVidareBefordradState(
                                                             qa.internReferens,
                                                             qa.vidarebefordrad,
@@ -76,7 +78,7 @@ angular
                                                                     qa.vidarebefordrad = result.vidarebefordrad;
                                                                 } else {
                                                                     qa.vidarebefordrad = !qa.vidarebefordrad;
-                                                                    dashBoardService
+                                                                    wcDialogService
                                                                             .showErrorMessageDialog("Kunde inte markera/avmarkera frågan som vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. Annars kan du kontakta supporten");
                                                                 }
                                                             });
@@ -107,32 +109,29 @@ angular
 
                             // Mail dialog
                             $scope.openMailDialog = function(mail) {
-                              $scope.qaToMail = mail;
-                              dashBoardService
-                              	.showDialog(
-                              			"markforward", 
-                              			"Det verkar som att du har informerat den som ska ta hand om frågan. Vill du markera frågan som vidarebefordrad?",
-                              			function() { // yes
-                              				$log.debug("yes");
-                              			},
-                              			function() { // no
-                              				$log.debug("no");
-                              			},
-                              			function() { // no and don't ask again
-                              				$log.debug("no and dont ask");
-                              			},
-                              			"yes",
-                              			"no",
-                              			"nodontask"
-                              	);
-                              
+
+                                $scope.qaToMail = mail;
+                                // wait some time before showing the dialog
+                                $timeout(function() {
+                                    dashBoardService.showDialog("markforward", "Det verkar som att du har informerat den som ska ta hand om frågan. Vill du markera frågan som vidarebefordrad?",
+                                            function() { // yes
+                                                $log.debug("yes");
+                                            }, function() { // no
+                                                $log.debug("no");
+                                            }, function() { // no and don't ask
+                                                // again
+                                                $log.debug("no and dont ask");
+                                            }, "yes", "no", "nodontask");
+                                }, 1000);
+                                $window.location = "mailto:foo@bar.com?subject=mail subject&body=mail body";
+
                             }
 
                             // Search filter date controls
                             $scope.today = function() {
-                              $scope.dtF = new Date();
-                              $scope.dtT = new Date();
-                              $scope.dtA = new Date();
+                                $scope.dtF = new Date();
+                                $scope.dtT = new Date();
+                                $scope.dtA = new Date();
                             };
                             $scope.today();
 
@@ -141,28 +140,28 @@ angular
 
                             $scope.dpFromOpen = false;
                             $scope.openDPFrom = function() {
-                              $timeout(function() {
-                                $scope.dpFromOpen = !$scope.dpFromOpen;
-                              });
+                                $timeout(function() {
+                                    $scope.dpFromOpen = !$scope.dpFromOpen;
+                                });
                             };
-                            
+
                             $scope.dpToOpen = false;
                             $scope.openDPTo = function() {
-                              $timeout(function() {
-                                $scope.dpToOpen = !$scope.dpToOpen;
-                              });
+                                $timeout(function() {
+                                    $scope.dpToOpen = !$scope.dpToOpen;
+                                });
                             };
-                            
+
                             $scope.dpAnswerOpen = false;
                             $scope.openDPAnswer = function() {
-                              $timeout(function() {
-                                $scope.dpAnswerOpen = !$scope.dpAnswerOpen;
-                              });
+                                $timeout(function() {
+                                    $scope.dpAnswerOpen = !$scope.dpAnswerOpen;
+                                });
                             };
 
                             $scope.dateOptions = {
-                              'year-format': "'yy'",
-                              'starting-day': 1
-                            };                            
+                                'year-format' : "'yy'",
+                                'starting-day' : 1
+                            };
 
                         } ]);

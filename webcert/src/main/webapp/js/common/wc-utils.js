@@ -28,3 +28,51 @@ angular.module('wc.utils').factory('httpRequestInterceptorCacheBuster', function
         }
     };
 });
+
+/*
+ * Generic Dialog services
+ */
+angular.module('wc.utils').factory(
+        'wcDialogService',
+        [
+                '$http',
+                '$log',
+                '$modal',
+                function($http, $log, $modal) {
+
+                    function _showErrorMessageDialog(message, callback) {
+
+                        var msgbox = $modal.open({
+                            template : 
+                                ' <div class="modal-header">' 
+                                + '<h3>Tekniskt fel</h3>' 
+                                + '</div>' 
+                                + '<div class="modal-body">' 
+                                + ' {{bodyText}}' 
+                                + '</div>' 
+                                + '<div class="modal-footer">'
+                                + ' <button class="btn btn-success" ng-click="$close()">OK</button>' 
+                                + '</div>',
+                            controller : function($scope, $modalInstance, bodyText) {
+                                $scope.bodyText = bodyText;
+                            },
+                            resolve : {
+                                bodyText : function() {
+                                    return angular.copy(message);
+                                }
+                            }
+                        });
+
+                        msgbox.result.then(function(result) {
+                            if (callback) {
+                                callback(result)
+                            }
+                        }, function() {
+                        });
+                    }
+                    // Return public API for the service
+                    return {
+                        showErrorMessageDialog : _showErrorMessageDialog
+                    }
+
+                } ]);
