@@ -2,10 +2,9 @@ package se.inera.webcert.intygstjanststub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
-import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.rivtabp20.GetCertificateForCareResponderInterface;
-import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareRequestType;
-import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
-
+import se.inera.certificate.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
+import se.inera.certificate.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
+import se.inera.certificate.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 
 /**
  * Stub class for mocking Intygstjanstens {@link GetCertificateForCareResponderStub} WS interface

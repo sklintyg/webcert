@@ -1,24 +1,26 @@
 package se.inera.webcert.service;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3.wsaddressing10.AttributedURIType;
-
-import se.inera.certificate.common.v1.ObjectFactory;
-import se.inera.certificate.common.v1.UtlatandeType;
+import se.inera.certificate.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
+import se.inera.certificate.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
+import se.inera.certificate.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.inera.certificate.clinicalprocess.healtcond.certificate.v1.ObjectFactory;
+import se.inera.certificate.clinicalprocess.healtcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.integration.rest.ModuleRestApi;
@@ -28,14 +30,8 @@ import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.integration.rest.dto.CertificateStatus;
 import se.inera.certificate.integration.rest.exception.ModuleCallFailedException;
 import se.inera.certificate.model.Utlatande;
-import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.rivtabp20.GetCertificateForCareResponderInterface;
-import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareRequestType;
-import se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcareresponder.v1.GetCertificateForCareResponseType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateStatusType;
-
-
-import com.google.common.base.Throwables;
 
 /**
  * @author andreaskaltenbach
