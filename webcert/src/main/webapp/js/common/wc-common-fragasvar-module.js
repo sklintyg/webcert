@@ -4,7 +4,7 @@
  * related to certificates. (As of this time, only fk7263 module)
  */
 angular.module('wc.common.fragasvarmodule', []);
-angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ '$http', '$log', '$modal', function($http, $log, $modal) {
+angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ '$http', '$log', '$modal', '$window', function($http, $log, $modal, $window) {
 
     /*
      * Toggle vidarebefordrad state of a fragasvar entity with given id
@@ -13,7 +13,7 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
         $log.debug("_setVidareBefordradState");
         var restPath = '/moduleapi/fragasvar/' + id + "/setDispatchState";
         $http.put(restPath, isVidareBefordrad.toString()).success(function(data) {
-            $log.debug("got data:" + data);
+            $log.debug("_setVidareBefordradState data:" + data);
             callback(data);
         }).error(function(data, status, headers, config) {
             $log.error("error " + status);
@@ -21,16 +21,24 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
             callback(null);
         });
     }
+
     function _buildMailToLink(qa) {
-        return "mailto:mottagare@enhet.se?subject=Du har fått ett grej&body=Här är länken!";
+        var baseURL = $window.location.protocol + "//" + $window.location.hostname + ($window.location.port ? ':' + $window.location.port : '');
+        var url = baseURL + "/m/fk7263/webcert/intyg/" + qa.intygsReferens.intygsId + "#/view";
+        var recipient = "ange_mottagare@epostadress.se";
+        var subject = "Du har blivit tilldelad ett Fråga&Svar ärende i WebCert";
+        var body = "Klicka länken för att gå till ärendet:\n" + url;
+        var link = "mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+        $log.debug(link);
+        return link;
     }
 
     function _setSkipVidareBefodradCookie() {
-        var secsDays = 12*30*24*3600*1000; //1 year
+        var secsDays = 12 * 30 * 24 * 3600 * 1000; // 1 year
         var now = new Date();
         var expires = new Date(now.getTime() + secsDays);
-        document.cookie = 'WCDontAskForVidareBefordradToggle=1; expires='+expires.toUTCString();
-  
+        document.cookie = 'WCDontAskForVidareBefordradToggle=1; expires=' + expires.toUTCString();
+
     }
     function _isSkipVidareBefodradCookieSet() {
         if (document.cookie && document.cookie.indexOf('WCDontAskForVidareBefordradToggle=1') != -1) {
@@ -38,7 +46,7 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
         } else {
             return false;
         }
-  
+
     }
     function _handleVidareBefodradToggle(qa, onYesCallback) {
         // Only ask about toggle if not already set AND not skipFlag cookie is
@@ -48,7 +56,7 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
                 $log.debug("yes");
                 qa.vidarebefordrad = true;
                 if (onYesCallback) {
-                    //let calling scope handle yes answer
+                    // let calling scope handle yes answer
                     onYesCallback(qa);
                 }
             }, function() { // no
@@ -118,6 +126,6 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
     return {
         setVidareBefordradState : _setVidareBefordradState,
         handleVidareBefodradToggle : _handleVidareBefodradToggle,
-        buildMailToLink: _buildMailToLink
+        buildMailToLink : _buildMailToLink
     }
 } ]);
