@@ -73,7 +73,17 @@ public class SvaraOchFraga {
             }
         }
     }
-
+    public void fragaVisasIBehandladlistan(String internid) {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor{
+                page.qaHandledPanel(internid).isDisplayed()
+            }
+        }
+    }
+    
     public boolean svaraPaFragaMedSvar(String internid, String svar) {
         Browser.drive {
             waitFor {
@@ -90,7 +100,7 @@ public class SvaraOchFraga {
         }
     }
 
-    public boolean stallFraga(String fraga){
+    public boolean stallFragaMedAmne(String fraga, String amne){
         def result = false
         Browser.drive {
             waitFor {
@@ -106,6 +116,7 @@ public class SvaraOchFraga {
 
                 page.newQuestionForm.isDisplayed()
             }
+            page.selectSubject(amne)
             page.addQuestionText(fraga)
 
             waitFor {
