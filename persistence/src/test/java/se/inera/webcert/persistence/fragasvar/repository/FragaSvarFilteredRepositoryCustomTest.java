@@ -1,8 +1,6 @@
 package se.inera.webcert.persistence.fragasvar.repository;
 
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,8 +111,40 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
         System.out.println("REPO-COUNT :" + fragasvarRepository.count());
-        System.out.println("svar COUNT :"+ fsList.size());
+        System.out.println("svar COUNT :" + fsList.size());
         //Assert.assertTrue(fsList.size() == 1);
+        fragasvarRepository.deleteAll();
+    }
+    @Test
+    public void testFilterChangedTo() {
+        LocalDateTime changeDateTo =  new LocalDateTime( 2013, 06, 15,0,0);
+        FragaSvarFilter filter = new FragaSvarFilter();
+
+
+        filter.setChangedTo(changeDateTo);
+        FragaSvarTestUtil.buildFragaSvar(filter, 1,fragasvarRepository);
+
+        filter.setChangedTo(filter.getChangedTo().plusDays(3));
+
+        List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
+        System.out.println("REPO-COUNT :" + fragasvarRepository.count());
+        System.out.println("svar COUNT :" + fsList.size());
+        //Assert.assertTrue(fsList.size() == 1);
+        fragasvarRepository.deleteAll();
+    }
+    @Test
+    public void testFilterVidarebefordrad() {
+        FragaSvarFilter filter = new FragaSvarFilter();
+
+
+        filter.setVidarebefordrad(true);
+        FragaSvarTestUtil.buildFragaSvar(filter, 1,fragasvarRepository);
+
+
+        List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
+        System.out.println("REPO-COUNT :" + fragasvarRepository.count());
+        System.out.println("svar COUNT :" + fsList.size());
+        Assert.assertTrue(fsList.size() == 1);
         fragasvarRepository.deleteAll();
     }
 

@@ -247,66 +247,6 @@ span.location { font-size: 12px; font-weight: bold; }
   margin-top: 20px;
 }
 
-.qa-panel {
-	background-color: #ddd;
-  -webkit-border-radius: 8px 8px 8px 8px;
-  -moz-border-radius: 8px 8px 8px 8px;
-  border-radius: 8px 8px 8px 8px;
-  padding: 20px;
-  margin-bottom: 20px; 
-}
-
-.qa-panel h3 {
-  font-size: 13px;
-  margin: 0;
-  padding: 0 0 10px 0;
-  font-weight: normal;
-}
-
-.qa-block {
-  margin: 0 0 20px 0;
-  background-color: #fff;
-  border: 1px solid #d8d8d8;
-  -webkit-border-radius: 8px 8px 8px 8px;
-  -moz-border-radius: 8px 8px 8px 8px;
-  border-radius: 8px 8px 8px 8px; 
-}
-
-.qa-block-fk {
-	margin-left: 20px;
-}
-
-.qa-block-handled {
-	background-color: #f5f5f5;
-}
-
-.qa-block-head {
-  margin: 0;
-  color: #000;
-  font-size: 13px;
-  display: block;
-  padding: 10px 20px;
-  border-bottom: 1px solid #d8d8d8;
-  -webkit-border-radius: 8px 8px 0px 0px;
-  -moz-border-radius: 8px 8px 0px 0px;
-  border-radius: 8px 8px 0px 0px;
-}
-
-.qa-block-head h3 {
-	font-size: 13px;
-	margin: 0;
-	font-weight: normal;
-}
-
-.qa-block-body {
-  display: block;
-  padding: 20px 20px;
-}
-
-.qa-sender, .qa-date {
-	font-weight: bold;
-}
-
 .table {
   border-collapse:separate;
   border-spacing: 0 0px;
