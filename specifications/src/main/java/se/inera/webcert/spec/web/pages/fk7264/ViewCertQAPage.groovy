@@ -13,7 +13,7 @@ class ViewCertQAPage extends Page {
         newQuestionText { $("#newQuestionText") }
         sendQuestionBtn { $("#sendQuestionBtn") }
         cancelQuestionBtn { $("#cancelQuestionBtn") }
-
+        selectSubjectListbox { $("#new-question-topic") }
     }
 
     def addAnswerText(String internid, String answer){
@@ -52,8 +52,11 @@ class ViewCertQAPage extends Page {
         newQuestionText<< question
     }
 
+    def selectSubject(String amne) {
+        selectSubjectListbox = amne
+    }
     def sendQuestion() {
-       sendQuestionBtn.click()
+        sendQuestionBtn.click()
     }
 
     def cancelQuestion() {

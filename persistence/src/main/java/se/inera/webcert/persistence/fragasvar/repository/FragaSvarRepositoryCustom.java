@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvarFilter;
-import se.inera.webcert.persistence.fragasvar.model.Status;
 
 public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCustom{
     /**

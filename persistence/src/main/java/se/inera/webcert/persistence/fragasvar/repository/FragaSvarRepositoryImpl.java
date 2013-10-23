@@ -1,10 +1,9 @@
 package se.inera.webcert.persistence.fragasvar.repository;
 
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvarFilter;
+import se.inera.webcert.persistence.fragasvar.model.Status;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,11 +39,33 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         if(filter.getHsaId()!=null&&!filter.getHsaId().isEmpty()){
             pred = builder.and(pred, builder.equal(root.get("vardperson").get("hsaId"), filter.getHsaId()));
         }
-
+        if (filter.getVidarebefordrad() != null) {
+            pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getVidarebefordrad())) ;
+        }
         if (filter.getChangedFrom() != null) {
             pred = builder.and(pred, builder.greaterThan(root.<LocalDate>get("senasteHandelse"), filter.getChangedFrom())) ;
         }
 
+        if (filter.getChangedTo() != null) {
+            pred = builder.and(pred, builder.lessThan(root.<LocalDate>get("senasteHandelse"), filter.getChangedTo())) ;
+        }
+        if (filter.getReplyLatest() != null) {
+            pred = builder.and(pred, builder.lessThan(root.<LocalDate>get("sistaDatumForSvar"), filter.getReplyLatest())) ;
+        }
+
+
+        switch(filter.getShowStatus()){
+            case ALL_OPEN:                  pred = builder.and(pred, builder.notEqual(root.<Status>get("status"), Status.CLOSED)) ;
+                                            break;
+            case CLOSED:                    pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.CLOSED)) ;
+                                            break;
+            case PENDING_EXTERNAL_ACTION:   pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_EXTERNAL_ACTION)) ;
+                                            break;
+            case PENDING_INTERNAL_ACTION:   pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION)) ;
+                                            break;
+            case ALL:
+            default:                        break;
+        }
         return pred;
     }
 

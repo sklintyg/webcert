@@ -20,6 +20,7 @@
 |visa fraga|$internReferens1|
 |intyg med fraga svar sidan visas|
 |svara pa fraga|$internReferens1|med svar|Här svarar fitnesse på frågan|
+|fraga visas i behandladlistan|$internReferens1|
 
 
 !3 Kontrollera att det kommit in en fråga till FK (stub)
