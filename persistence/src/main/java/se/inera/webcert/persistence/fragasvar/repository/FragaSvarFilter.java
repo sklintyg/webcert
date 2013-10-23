@@ -1,7 +1,9 @@
-package se.inera.webcert.persistence.fragasvar.model;
+package se.inera.webcert.persistence.fragasvar.repository;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
+import se.inera.webcert.persistence.fragasvar.model.Status;
 
 /**
  * Created by pehr on 10/21/13.
@@ -14,12 +16,12 @@ public class FragaSvarFilter {
     private String hsaId;
 
     //TODO do we need a "NotVidarebefordrad". How do we show all?
-    private boolean vidarebefordrad;
+    private Boolean vidarebefordrad;
 
     private LocalDateTime changedFrom;
-    private LocalDate changedTo;
+    private LocalDateTime changedTo;
 
-    private Status status;
+    private ShowStatuses showStatus=ShowStatuses.ALL_OPEN;
 
     //TODO is subject always 1 or All. Can user select multiple?
     private Amne subject;
@@ -50,11 +52,11 @@ public class FragaSvarFilter {
         this.hsaId = hsaId;
     }
 
-    public boolean isVidarebefordrad() {
+    public Boolean getVidarebefordrad() {
         return vidarebefordrad;
     }
 
-    public void setVidarebefordrad(boolean vidarebefordrad) {
+    public void setVidarebefordrad(Boolean vidarebefordrad) {
         this.vidarebefordrad = vidarebefordrad;
     }
 
@@ -66,11 +68,11 @@ public class FragaSvarFilter {
         this.changedFrom = changedFrom;
     }
 
-    public LocalDate getChangedTo() {
+    public LocalDateTime getChangedTo() {
         return changedTo;
     }
 
-    public void setChangedTo(LocalDate changedTo) {
+    public void setChangedTo(LocalDateTime changedTo) {
         this.changedTo = changedTo;
     }
 
@@ -90,11 +92,11 @@ public class FragaSvarFilter {
         this.replyLatest = replyLatest;
     }
 
-    public Status getStatus() {
-        return status;
+    public ShowStatuses getShowStatus() {
+        return showStatus;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setShowStatus(ShowStatuses showStatus) {
+        this.showStatus = showStatus;
     }
 }

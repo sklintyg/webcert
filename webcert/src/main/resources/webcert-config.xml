@@ -71,7 +71,7 @@
 
   <!-- ws clients -->
   <jaxws:client id="getCertificateForCareResponder"
-                serviceClass="se.inera.ifv.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.rivtabp20.GetCertificateForCareResponderInterface"
+                serviceClass="se.inera.certificate.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface"
                 address="${intygstjanst.getcertificateforcare.endpoint.url}">
   </jaxws:client>
   <jaxws:client id="sendQuestionToFKClient"
