@@ -1,9 +1,8 @@
 package se.inera.webcert.persistence.fragasvar.repository.util;
 
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
 import se.inera.webcert.persistence.fragasvar.model.*;
+import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 
 import java.util.Arrays;
@@ -36,6 +35,10 @@ public class FragaSvarTestUtil {
         String hsaid="ingen-vardperson-hsaid";
         LocalDateTime changedFrom=null;
         LocalDateTime antichangedFrom=null;
+        LocalDateTime changedTo=null;
+        LocalDateTime antichangedTo=null;
+
+        boolean vidarebefordrad = false;
 
         if (filter.isQuestionFromWC()&&!filter.isQuestionFromFK()) {
             fragestallare="WC";
@@ -54,17 +57,26 @@ public class FragaSvarTestUtil {
         if(filter.getChangedFrom()!=null){
             changedFrom=filter.getChangedFrom();
             antichangedFrom=new LocalDateTime(changedFrom.getYear(),changedFrom.minusMonths(1).getMonthOfYear(), changedFrom.getDayOfMonth(),0,0) ;
+
+        }
+        if(filter.getChangedTo()!=null){
+            changedTo=filter.getChangedTo();
+            antichangedTo=new LocalDateTime(changedTo.getYear(),changedTo.plusMonths(1).getMonthOfYear(), changedTo.getDayOfMonth(),0,0) ;
+        }
+
+        if(filter.getVidarebefordrad()!=null){
+             vidarebefordrad=filter.getVidarebefordrad().booleanValue();
         }
 
         for (int count = 0; count < antal; count++) {
-            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",status,fragestallare,hsaid,changedFrom));
+            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",status,fragestallare,hsaid,changedTo,vidarebefordrad));
         }
         for (int count = 0; count < antal; count++) {
-            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",antistatus,antifragestallare,"ingen-vardperson-hsaid",antichangedFrom));
+            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",antistatus,antifragestallare,"ingen-vardperson-hsaid",antichangedTo,!vidarebefordrad));
         }
     }
 
-    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String fragestallare,String hsaId, LocalDateTime fragaSkickad) {
+    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String fragestallare,String hsaId, LocalDateTime fragaSkickad, boolean vidarebefordrad) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.OVRIGT);
@@ -82,6 +94,8 @@ public class FragaSvarTestUtil {
         }else{
             f.setFrageSkickadDatum(FRAGE_SENT_DATE);
         }
+        f.setVidarebefordrad(vidarebefordrad);
+
         f.setFrageStallare(fragestallare);
         Vardperson vardperson = new Vardperson();
         vardperson.setHsaId(hsaId);
