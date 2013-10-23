@@ -1,12 +1,13 @@
 package se.inera.webcert.hsa.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author andreaskaltenbach
  */
-public class Vardgivare {
+public class Vardgivare implements Serializable {
 
     private String id;
     private String namn;
