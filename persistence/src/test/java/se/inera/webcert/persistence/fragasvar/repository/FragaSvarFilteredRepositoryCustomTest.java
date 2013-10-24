@@ -36,23 +36,8 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @PersistenceContext
     private EntityManager em;
 
-    @Before
-    public void setUp(){
-        //FragaSvarTestUtil.buildFragaSvar(10,fragasvarRepository);
-
-        //System.out.println("COUNT :" + fragasvarRepository.count());
-    }
-
-    //@After
-    public void closeDown(){
-        fragasvarRepository.deleteAll();
-        System.out.println("COUNT 333:" + fragasvarRepository.count());
-    }
-
     @Test
     public void testFilterFragaFromWC() {
-
-
         FragaSvarFilter filter = new FragaSvarFilter();
 
 
@@ -60,25 +45,20 @@ public class FragaSvarFilteredRepositoryCustomTest {
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
-        System.out.println("COUNT222 :"+ fsList.size());
         Assert.assertTrue(fsList.size() == 1);
         Assert.assertTrue(fsList.get(0).getFrageStallare().equalsIgnoreCase("WC"));
+        Assert.assertTrue(fsList.get(0).getFrageText().equalsIgnoreCase(FragaSvarTestUtil.visa_fraga));
         fragasvarRepository.deleteAll();
     }
 
     @Test
     public void testFilterFragaFromWCWithPaging() {
-
-
         FragaSvarFilter filter = new FragaSvarFilter();
-
 
         filter.setQuestionFromWC(true);
         FragaSvarTestUtil.populateFragaSvar(filter, 10,fragasvarRepository);
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter,new PageRequest(4,3));
 
-        System.out.println("REPO-COUNT :" + fragasvarRepository.count());
-        System.out.println("svar COUNT :"+ fsList.size());
         Assert.assertTrue(fsList.size()==3);
         fragasvarRepository.deleteAll();
     }
@@ -92,10 +72,9 @@ public class FragaSvarFilteredRepositoryCustomTest {
         filter.setHsaId(hsaid);
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
-        System.out.println("REPO-COUNT :" + fragasvarRepository.count());
-        System.out.println("svar COUNT :"+ fsList.size());
         Assert.assertTrue(fsList.size() == 1);
         Assert.assertTrue(fsList.get(0).getVardperson().getHsaId().equals(hsaid));
+        Assert.assertTrue(fsList.get(0).getFrageText().equalsIgnoreCase(FragaSvarTestUtil.visa_fraga));
         fragasvarRepository.deleteAll();
     }
 
@@ -111,8 +90,6 @@ public class FragaSvarFilteredRepositoryCustomTest {
         filter.setChangedFrom(filter.getChangedFrom().minusDays(3));
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
-        System.out.println("REPO-COUNT :" + fragasvarRepository.count());
-        System.out.println("svar COUNT :" + fsList.size());
         //Assert.assertTrue(fsList.size() == 1);
         fragasvarRepository.deleteAll();
     }
@@ -128,8 +105,6 @@ public class FragaSvarFilteredRepositoryCustomTest {
         filter.setChangedTo(filter.getChangedTo().plusDays(3));
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
-        System.out.println("REPO-COUNT :" + fragasvarRepository.count());
-        System.out.println("svar COUNT :" + fsList.size());
         //Assert.assertTrue(fsList.size() == 1);
         fragasvarRepository.deleteAll();
     }
@@ -149,6 +124,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
         Assert.assertTrue(fsList.size() == 1);
         //The SenasteHandelse should be set automatically from the SvarsDatum.
         Assert.assertTrue(fsList.get(0).getSenasteHandelseDatum().equals(changeDateFrom));
+        Assert.assertTrue(fsList.get(0).getFrageText().equalsIgnoreCase(FragaSvarTestUtil.visa_fraga));
         fragasvarRepository.deleteAll();
     }
     @Test
@@ -159,9 +135,8 @@ public class FragaSvarFilteredRepositoryCustomTest {
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
-        System.out.println("REPO-COUNT :" + fragasvarRepository.count());
-        System.out.println("svar COUNT :" + fsList.size());
         Assert.assertTrue(fsList.size() == 1);
+        Assert.assertTrue(fsList.get(0).getFrageText().equalsIgnoreCase(FragaSvarTestUtil.visa_fraga));
         fragasvarRepository.deleteAll();
     }
 

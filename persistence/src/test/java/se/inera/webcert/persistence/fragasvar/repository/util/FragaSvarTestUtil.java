@@ -25,6 +25,11 @@ public class FragaSvarTestUtil {
     private static String ENHET_3_ID = "ENHET_3_ID";
     private static String ENHET_4_ID = "ENHET_4_ID";
 
+    public final static String visa_fraga = "Fraga skall visas i filter";
+    public final static String dolj_fraga = "Fraga skall INTE visas i filter";
+    public final static String visa_svar = "Svar skall visas i filter";
+    public final static String dolj_svar = "Svar skall INTE visas i filter";
+
     /**
      * Populates the database with "antal" FragaSvar that matches and "antal" that doesn't match the filter.
      * @param filter the filter the FragaSvar should be built from.
@@ -93,11 +98,11 @@ public class FragaSvarTestUtil {
 
 
         if(filter.getChangedTo()!=null){
-            fs[0] = buildFragaSvarSvar("ENHET_1_ID",status,fragestallare,hsaid,changedFrom,changedTo,vidarebefordrad);
-            fs[1] = buildFragaSvarSvar("ENHET_1_ID",antistatus,antifragestallare,"ingen-vardperson-hsaid",antichangedFrom,antichangedTo,!vidarebefordrad);
+            fs[0] = buildFragaSvarSvar("ENHET_1_ID",status,fragestallare,visa_fraga, hsaid,changedFrom,changedTo,vidarebefordrad,visa_svar);
+            fs[1] = buildFragaSvarSvar("ENHET_1_ID",antistatus,antifragestallare,dolj_fraga,"ingen-vardperson-hsaid",antichangedFrom,antichangedTo,!vidarebefordrad, dolj_svar);
         }else {
-            fs[0] = buildFragaSvarFraga("ENHET_1_ID",status,fragestallare,hsaid,changedFrom,vidarebefordrad);
-            fs[1] = buildFragaSvarFraga("ENHET_1_ID",antistatus,antifragestallare,"ingen-vardperson-hsaid",antichangedFrom,!vidarebefordrad);
+            fs[0] = buildFragaSvarFraga("ENHET_1_ID",status,fragestallare,visa_fraga, hsaid,changedFrom,vidarebefordrad);
+            fs[1] = buildFragaSvarFraga("ENHET_1_ID",antistatus,antifragestallare,dolj_fraga, "ingen-vardperson-hsaid",antichangedFrom,!vidarebefordrad);
 
         }
 
@@ -115,7 +120,7 @@ public class FragaSvarTestUtil {
      * @param vidarebefordrad
      * @return
      */
-    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String fragestallare,String hsaId, LocalDateTime fragaSkickad,  boolean vidarebefordrad) {
+    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String fragestallare, String frageText, String hsaId, LocalDateTime fragaSkickad,  boolean vidarebefordrad) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.OVRIGT);
@@ -143,7 +148,7 @@ public class FragaSvarTestUtil {
         vardperson.setEnhetsId(enhetsId);
         vardperson.setEnhetsnamn(enhetsId + "-namnet");
         f.setVardperson(vardperson);
-        f.setFrageText("Detta var ju otydligt formulerat!");
+        f.setFrageText(frageText);
         f.setIntygsReferens(INTYGS_REFERENS);
         f.setStatus(status);
 
@@ -162,13 +167,13 @@ public class FragaSvarTestUtil {
      * @param vidarebefordrad
      * @return
      */
-    public static FragaSvar buildFragaSvarSvar(String enhetsId, Status status, String fragestallare,String hsaId, LocalDateTime fragaSkickad, LocalDateTime svarSkickad, boolean vidarebefordrad) {
+    public static FragaSvar buildFragaSvarSvar(String enhetsId, Status status, String fragestallare, String frageText, String hsaId, LocalDateTime fragaSkickad, LocalDateTime svarSkickad, boolean vidarebefordrad, String svarsText) {
 
-        FragaSvar f = buildFragaSvarFraga(enhetsId,status,fragestallare,hsaId,fragaSkickad, vidarebefordrad);
+        FragaSvar f = buildFragaSvarFraga(enhetsId,status,fragestallare,frageText,hsaId,fragaSkickad, vidarebefordrad);
 
         f.setSvarSigneringsDatum(svarSkickad);
         f.setSvarSkickadDatum(svarSkickad);
-        f.setSvarsText("Ett svar");
+        f.setSvarsText(svarsText);
 
         if (svarSkickad!=null){
             f.setSvarSkickadDatum(fragaSkickad);
