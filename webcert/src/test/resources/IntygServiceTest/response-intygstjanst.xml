@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1"
-                                   xmlns="urn:riv:clinicalprocess:healtcond:certificate:GetCertificateForCareResponder:1"
-                                   xmlns:ns3="urn:riv:clinicalprocess:healtcond:certificate:1"
+                                   xmlns="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
+                                   xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:1"
                                    xmlns:ns4="urn:riv:insuranceprocess:healthreporting:2">
   <meta>
     <c:certificateId>123</c:certificateId>
     <c:certificateType>fk7263</c:certificateType>
   </meta>
   <certificate>
-    <ns3:utlatande-id xmlns="urn:riv:clinicalprocess:healtcond:certificate:1" extension="123" root="root"/>
+    <ns3:utlatande-id xmlns="urn:riv:clinicalprocess:healthcond:certificate:1" extension="123" root="root"/>
   </certificate>
   <result>
     <ns4:resultCode>OK</ns4:resultCode>

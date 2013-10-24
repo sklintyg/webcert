@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.certificate.clinicalprocess.healtcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 
 /**
  * @author marced

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <gc:GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1" 
-xmlns:gc="urn:riv:clinicalprocess:healtcond:certificate:GetCertificateForCareResponder:1"
-xmlns="urn:riv:clinicalprocess:healtcond:certificate:1"
+xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
+xmlns="urn:riv:clinicalprocess:healthcond:certificate:1"
 xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
   <gc:meta>
     <c:certificateId>intyg-3</c:certificateId>
