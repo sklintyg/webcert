@@ -253,7 +253,7 @@ span.location { font-size: 12px; font-weight: bold; }
 }
 
 .table th, .table td {
-	padding: 5px 0;
+	padding: 2px 0;
   border: 0;
   vertical-align: middle;
 }
@@ -273,7 +273,9 @@ td.unbreakable {
 	outline: none;
 	display: block;
 	width: 100%;
-	padding: 10px 50px 10px 15px;
+  min-width: 400px;
+  max-width: 500px;
+  padding: 10px 50px 10px 15px;
 	position: relative;
 	-ms-border-radius: 5px;
   -moz-border-radius: 5px;
@@ -293,6 +295,11 @@ td.unbreakable {
   transition: none;  
 }
 
+.qa-unit:hover {
+	background:none;
+	background-color: #f0f0f0;
+}
+
 a.qa-unit {
 	color: #323232;
 }
@@ -302,7 +309,7 @@ a.qa-unit {
 	font-weight: bold;
 	background: none;
 	filter: none;
-  background-color: #28b4c4;
+  background-color: #666;
 }
 
 body span:hover.qa-unit-selected {
