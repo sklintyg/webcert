@@ -81,14 +81,16 @@ public class FragaSvarTestUtil {
         }
 
         if(filter.getChangedFrom()!=null){
-            changedFrom=filter.getChangedFrom();
+            //Make the date 1 day later so we are sure it will be inside the filter
+            changedFrom=new LocalDateTime(filter.getChangedFrom().getYear(),filter.getChangedFrom().getMonthOfYear(), filter.getChangedFrom().plusDays(1).getDayOfMonth(),0,0) ;
             //Make the date 1 month earlier
             antichangedFrom=new LocalDateTime(changedFrom.getYear(),changedFrom.minusMonths(1).getMonthOfYear(), changedFrom.getDayOfMonth(),0,0) ;
 
         }
         if(filter.getChangedTo()!=null){
-            changedTo=filter.getChangedTo();
-            //Make the date 1 month later
+            //Make the date 1 day earlier so we are sure it will be inside the filter
+            changedTo=new LocalDateTime(filter.getChangedTo().getYear(),filter.getChangedTo().getMonthOfYear(), filter.getChangedTo().minusDays(1).getDayOfMonth(),0,0) ;
+            //Make the date 1 month later. So it's outside the filter
             antichangedTo=new LocalDateTime(changedTo.getYear(),changedTo.plusMonths(1).getMonthOfYear(), changedTo.getDayOfMonth(),0,0) ;
         }
 
