@@ -54,13 +54,13 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
           }
           
           $scope.isActive = function (page) {
-          	
-          	page = page.substr(page.lastIndexOf('/') + 1);
-          	if (angular.isString($scope.defaultActive)) {
-              if (page == $scope.defaultActive) {
-                  return 'active';
-              }
-          	}
+          	if (!page) {return false;}
+          	 page = page.substr(page.lastIndexOf('/') + 1);
+          	 if (angular.isString($scope.defaultActive)) {
+               if (page == $scope.defaultActive) {
+                   return 'active';
+               }
+          	 }
           	
           	var hasSubMenu = page.lastIndexOf('.') > -1;
 
