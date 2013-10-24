@@ -349,6 +349,11 @@ body span:hover.qa-unit-selected {
 .btn-secondary {
 	 padding: 10px 20px;
 	 background: none;
+	 background-color: #f0f0f0;
+}
+
+.btn-secondary:hover {
+  background-color: #f6f6f6;
 }
 
 .btn-success {

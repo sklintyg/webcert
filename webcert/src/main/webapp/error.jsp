@@ -60,6 +60,7 @@
                     <div id="loggedOut" class="alert alert-info">
                         <spring:message code="info.loggedout.text"/>
                     </div>
+                    <!-- reason: loggedout -->
                 </c:when>
 
                 <c:when test="${param.reason eq \"denied\"}">
@@ -70,6 +71,8 @@
                     <div id="noAuth" class="alert alert-error">
                         <spring:message code="error.noauth.text"/>
                     </div>
+                    
+                    <!-- reason: denied -->
                 </c:when>
 
                 <c:when test="${param.reason eq \"medarbetaruppdrag\"}">
@@ -80,6 +83,7 @@
                     <div id="noAuth" class="alert alert-error">
                         <spring:message code="error.medarbetaruppdrag.text"/>
                     </div>
+                    
                 </c:when>
 
                 <c:when test="${param.reason eq \"notfound\"}">
@@ -100,6 +104,8 @@
                     <div id="genericTechProblem" class="alert alert-error">
                         <spring:message code="error.generictechproblem.text"/>
                     </div>
+                    
+                    <!-- reason: generic -->
                 </c:otherwise>
             </c:choose>
 
