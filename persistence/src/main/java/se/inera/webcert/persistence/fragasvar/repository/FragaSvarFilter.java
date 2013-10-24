@@ -10,12 +10,12 @@ import se.inera.webcert.persistence.fragasvar.model.Status;
  */
 public class FragaSvarFilter {
 
+    private String enhetsId;
     private boolean questionFromFK;
     private boolean questionFromWC;
 
     private String hsaId;
 
-    //TODO do we need a "NotVidarebefordrad". How do we show all?
     private Boolean vidarebefordrad;
 
     private LocalDateTime changedFrom;
@@ -23,10 +23,15 @@ public class FragaSvarFilter {
 
     private ShowStatuses showStatus=ShowStatuses.ALL_OPEN;
 
-    //TODO is subject always 1 or All. Can user select multiple?
-    private Amne subject;
-
     private LocalDate replyLatest;
+
+    public String getEnhetsId() {
+        return enhetsId;
+    }
+
+    public void setEnhetsId(String enhetsId) {
+        this.enhetsId = enhetsId;
+    }
 
     public boolean isQuestionFromFK() {
         return questionFromFK;
@@ -74,14 +79,6 @@ public class FragaSvarFilter {
 
     public void setChangedTo(LocalDateTime changedTo) {
         this.changedTo = changedTo;
-    }
-
-    public Amne getSubject() {
-        return subject;
-    }
-
-    public void setSubject(Amne subject) {
-        this.subject = subject;
     }
 
     public LocalDate getReplyLatest() {

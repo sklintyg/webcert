@@ -2,8 +2,10 @@ package se.inera.webcert.persistence.fragasvar.repository;
 
 import org.joda.time.LocalDate;
 import org.springframework.data.domain.Pageable;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Status;
+import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,6 +13,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,6 +32,8 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
     private Predicate createPredicate(FragaSvarFilter filter){
         Predicate pred= builder.conjunction();
+
+        pred = builder.and(pred, builder.equal(root.get("vardperson").get("enhetsId"), filter.getEnhetsId()));
 
         if (filter.isQuestionFromFK()){
             pred = builder.and(pred, builder.equal(root.get("frageStallare"), "FK"));
@@ -55,16 +61,38 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
 
         switch(filter.getShowStatus()){
-            case ALL_OPEN:                  pred = builder.and(pred, builder.notEqual(root.<Status>get("status"), Status.CLOSED)) ;
-                                            break;
-            case CLOSED:                    pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.CLOSED)) ;
-                                            break;
-            case PENDING_EXTERNAL_ACTION:   pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_EXTERNAL_ACTION)) ;
-                                            break;
-            case PENDING_INTERNAL_ACTION:   pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION)) ;
-                                            break;
+            case ALL_OPEN:
+                pred = builder.and(pred, builder.notEqual(root.<Status>get("status"), Status.CLOSED)) ;
+                break;
+            case CLOSED:
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.CLOSED)) ;
+                break;
+            case ADDED_DATA_FROM_CARE:
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION)) ;
+                pred = builder.and(pred, builder.equal(root.<Amne>get("amne"), Amne.KOMPLETTERING_AV_LAKARINTYG)) ;
+                break;
+            case REPLY_FROM_CARE:
+                Predicate careReplyAmnePred;
+                careReplyAmnePred = builder.or(builder.equal(root.<Amne>get("amne"), Amne.OVRIGT), builder.equal(root.<Amne>get("amne"), Amne.ARBETSTIDSFORLAGGNING), builder.equal(root.<Amne>get("amne"), Amne.AVSTAMNINGSMOTE), builder.equal(root.<Amne>get("amne"), Amne.KONTAKT) );
+
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION),careReplyAmnePred) ;
+                break;
+            case REPLY_FROM_FK:
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_EXTERNAL_ACTION)) ;
+                pred = builder.and(pred, builder.notEqual(root.<Amne>get("amne"), Amne.MAKULERING_AV_LAKARINTYG)) ;
+                break;
+            case MARK_AS_HANDLED:
+                Predicate amnePred1= builder.conjunction();
+                amnePred1 = builder.and(amnePred1, builder.equal(root.<Amne>get("status"), Status.PENDING_EXTERNAL_ACTION), builder.equal(root.<Amne>get("amne"), Amne.MAKULERING_AV_LAKARINTYG) );
+
+                Predicate amnePred2= builder.conjunction();
+                amnePred2 = builder.and(amnePred2, builder.equal(root.<Amne>get("status"), Status.PENDING_INTERNAL_ACTION), builder.equal(root.<Amne>get("amne"), Amne.PAMINNELSE)) ;
+
+                pred = builder.and(pred, builder.or(amnePred1, amnePred2,builder.equal(root.<Status>get("status"), Status.CLOSED) )) ;
+                break;
             case ALL:
-            default:                        break;
+            default:
+                break;
         }
         return pred;
     }
@@ -95,4 +123,17 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
         return entityManager.createQuery(query).setMaxResults(pages.getPageSize()).setFirstResult(pages.getPageNumber()).getResultList();
     }
+
+    @Override
+    public int filterCountFragaSvar(FragaSvarFilter filter) {
+        builder = entityManager.getCriteriaBuilder();
+        query = builder.createQuery(FragaSvar.class);
+
+        root = query.from(FragaSvar.class);
+
+        query.where(createPredicate(filter));
+
+        return entityManager.createQuery(query).getResultList().size();
+    }
+
 }

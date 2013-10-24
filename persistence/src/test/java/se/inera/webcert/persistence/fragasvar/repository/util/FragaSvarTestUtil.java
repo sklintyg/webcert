@@ -20,10 +20,8 @@ public class FragaSvarTestUtil {
     private static LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2014-10-21T12:00:00");
     private static IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk", "Sven Persson",
             FRAGE_SENT_DATE);
-    public static String ENHET_1_ID = "ENHET_1_ID";
-    private static String ENHET_2_ID = "ENHET_2_ID";
-    private static String ENHET_3_ID = "ENHET_3_ID";
-    private static String ENHET_4_ID = "ENHET_4_ID";
+    public static String ENHET_1_ID = "ENHET_TEST_1_ID";
+
 
     public final static String visa_fraga = "Fraga skall visas i filter";
     public final static String dolj_fraga = "Fraga skall INTE visas i filter";
@@ -58,6 +56,8 @@ public class FragaSvarTestUtil {
         String antifragestallare;
         Status status;
         Status antistatus=Status.CLOSED;
+        Amne amne=null;
+        Amne antiamne=null;
         String hsaid="ingen-vardperson-hsaid";
         LocalDateTime changedFrom=null;
         LocalDateTime antichangedFrom=null;
@@ -76,6 +76,13 @@ public class FragaSvarTestUtil {
             status=Status.PENDING_INTERNAL_ACTION;
         }
 
+        switch (filter.getShowStatus()){
+            case REPLY_FROM_CARE:
+                amne = Amne.KONTAKT;
+                antiamne=Amne.KOMPLETTERING_AV_LAKARINTYG;
+                break;
+            default:
+        }
         if(filter.getHsaId()!=null&&!filter.getHsaId().isEmpty()){
             hsaid = filter.getHsaId();
         }
@@ -100,11 +107,11 @@ public class FragaSvarTestUtil {
 
 
         if(filter.getChangedTo()!=null){
-            fs[0] = buildFragaSvarSvar("ENHET_1_ID",status,fragestallare,visa_fraga, hsaid,changedFrom,changedTo,vidarebefordrad,visa_svar);
-            fs[1] = buildFragaSvarSvar("ENHET_1_ID",antistatus,antifragestallare,dolj_fraga,"ingen-vardperson-hsaid",antichangedFrom,antichangedTo,!vidarebefordrad, dolj_svar);
+            fs[0] = buildFragaSvarSvar(ENHET_1_ID,status,amne,fragestallare,visa_fraga, hsaid,changedFrom,changedTo,vidarebefordrad,visa_svar);
+            fs[1] = buildFragaSvarSvar(ENHET_1_ID,antistatus,antiamne,antifragestallare,dolj_fraga,"ingen-vardperson-hsaid",antichangedFrom,antichangedTo,!vidarebefordrad, dolj_svar);
         }else {
-            fs[0] = buildFragaSvarFraga("ENHET_1_ID",status,fragestallare,visa_fraga, hsaid,changedFrom,vidarebefordrad);
-            fs[1] = buildFragaSvarFraga("ENHET_1_ID",antistatus,antifragestallare,dolj_fraga, "ingen-vardperson-hsaid",antichangedFrom,!vidarebefordrad);
+            fs[0] = buildFragaSvarFraga(ENHET_1_ID,status,amne,fragestallare,visa_fraga, hsaid,changedFrom,vidarebefordrad);
+            fs[1] = buildFragaSvarFraga(ENHET_1_ID,antistatus,antiamne,antifragestallare,dolj_fraga, "ingen-vardperson-hsaid",antichangedFrom,!vidarebefordrad);
 
         }
 
@@ -122,7 +129,7 @@ public class FragaSvarTestUtil {
      * @param vidarebefordrad
      * @return
      */
-    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String fragestallare, String frageText, String hsaId, LocalDateTime fragaSkickad,  boolean vidarebefordrad) {
+    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, Amne amne, String fragestallare, String frageText, String hsaId, LocalDateTime fragaSkickad,  boolean vidarebefordrad) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.OVRIGT);
@@ -141,6 +148,10 @@ public class FragaSvarTestUtil {
         }else{
             f.setFrageSkickadDatum(FRAGE_SENT_DATE);
             f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
+        }
+
+        if(amne!=null){
+            f.setAmne(amne);
         }
         f.setVidarebefordrad(vidarebefordrad);
 
@@ -169,9 +180,9 @@ public class FragaSvarTestUtil {
      * @param vidarebefordrad
      * @return
      */
-    public static FragaSvar buildFragaSvarSvar(String enhetsId, Status status, String fragestallare, String frageText, String hsaId, LocalDateTime fragaSkickad, LocalDateTime svarSkickad, boolean vidarebefordrad, String svarsText) {
+    public static FragaSvar buildFragaSvarSvar(String enhetsId, Status status, Amne amne, String fragestallare, String frageText, String hsaId, LocalDateTime fragaSkickad, LocalDateTime svarSkickad, boolean vidarebefordrad, String svarsText) {
 
-        FragaSvar f = buildFragaSvarFraga(enhetsId,status,fragestallare,frageText,hsaId,fragaSkickad, vidarebefordrad);
+        FragaSvar f = buildFragaSvarFraga(enhetsId,status,amne, fragestallare,frageText,hsaId,fragaSkickad, vidarebefordrad);
 
         f.setSvarSigneringsDatum(svarSkickad);
         f.setSvarSkickadDatum(svarSkickad);

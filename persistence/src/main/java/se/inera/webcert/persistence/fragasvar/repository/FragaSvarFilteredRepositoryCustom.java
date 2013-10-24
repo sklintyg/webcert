@@ -13,4 +13,6 @@ public interface FragaSvarFilteredRepositoryCustom {
     List<FragaSvar> filterFragaSvar(FragaSvarFilter filter);
 
     public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, Pageable pages);
+
+    public int filterCountFragaSvar(FragaSvarFilter filter) ;
 }
