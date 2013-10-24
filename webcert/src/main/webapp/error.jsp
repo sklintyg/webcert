@@ -68,7 +68,7 @@
                         <spring:message code="error.noauth.title"/>
                     </h1>
 
-                    <div id="noAuth" class="alert alert-error">
+                    <div id="noAuth" class="alert alert-warning">
                         <spring:message code="error.noauth.text"/>
                     </div>
                     
