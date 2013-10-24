@@ -57,11 +57,12 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
 
         filter.setQuestionFromWC(true);
-        FragaSvarTestUtil.buildFragaSvar(filter, 1,fragasvarRepository);
+        FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
 
         System.out.println("COUNT222 :"+ fsList.size());
         Assert.assertTrue(fsList.size() == 1);
+        Assert.assertTrue(fsList.get(0).getFrageStallare().equalsIgnoreCase("WC"));
         fragasvarRepository.deleteAll();
     }
 
@@ -73,7 +74,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
 
         filter.setQuestionFromWC(true);
-        FragaSvarTestUtil.buildFragaSvar(filter, 10,fragasvarRepository);
+        FragaSvarTestUtil.populateFragaSvar(filter, 10,fragasvarRepository);
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter,new PageRequest(4,3));
 
         System.out.println("REPO-COUNT :" + fragasvarRepository.count());
@@ -89,7 +90,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
 
         filter.setHsaId(hsaid);
-        FragaSvarTestUtil.buildFragaSvar(filter, 1,fragasvarRepository);
+        FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
         System.out.println("REPO-COUNT :" + fragasvarRepository.count());
         System.out.println("svar COUNT :"+ fsList.size());
@@ -105,7 +106,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
 
         filter.setChangedFrom(changeDateFrom);
-        FragaSvarTestUtil.buildFragaSvar(filter, 1,fragasvarRepository);
+        FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
 
         filter.setChangedFrom(filter.getChangedFrom().minusDays(3));
 
@@ -122,7 +123,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
 
         filter.setChangedTo(changeDateTo);
-        FragaSvarTestUtil.buildFragaSvar(filter, 1,fragasvarRepository);
+        FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
 
         filter.setChangedTo(filter.getChangedTo().plusDays(3));
 
@@ -133,13 +134,29 @@ public class FragaSvarFilteredRepositoryCustomTest {
         fragasvarRepository.deleteAll();
     }
     @Test
+    public void testFilterChangedFrom() {
+        LocalDateTime changeDateFrom =  new LocalDateTime( 2013, 06, 15,0,0);
+        FragaSvarFilter filter = new FragaSvarFilter();
+
+        filter.setChangedFrom(changeDateFrom);
+        FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
+
+        filter.setChangedFrom(filter.getChangedFrom().minusDays(3));
+
+        List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
+
+        //We should only have one that matches the filter
+        Assert.assertTrue(fsList.size() == 1);
+        //The SenasteHandelse should be set automatically from the SvarsDatum.
+        Assert.assertTrue(fsList.get(0).getSenasteHandelseDatum().equals(changeDateFrom));
+        fragasvarRepository.deleteAll();
+    }
+    @Test
     public void testFilterVidarebefordrad() {
         FragaSvarFilter filter = new FragaSvarFilter();
 
-
         filter.setVidarebefordrad(true);
-        FragaSvarTestUtil.buildFragaSvar(filter, 1,fragasvarRepository);
-
+        FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
         System.out.println("REPO-COUNT :" + fragasvarRepository.count());

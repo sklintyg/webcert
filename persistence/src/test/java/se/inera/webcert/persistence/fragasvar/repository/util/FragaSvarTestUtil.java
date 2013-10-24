@@ -14,10 +14,10 @@ import java.util.HashSet;
 public class FragaSvarTestUtil {
 
     private static long ref_count=1;
-    private static LocalDateTime FRAGE_SIGN_DATE = new LocalDateTime("2013-03-01T11:11:11");
-    private static LocalDateTime FRAGE_SENT_DATE = new LocalDateTime("2013-03-01T12:00:00");
-    private static LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2013-10-21T11:11:11");
-    private static LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2013-10-21T12:00:00");
+    private static LocalDateTime FRAGE_SIGN_DATE = new LocalDateTime("2012-03-01T11:11:11");
+    private static LocalDateTime FRAGE_SENT_DATE = new LocalDateTime("2012-03-01T12:00:00");
+    private static LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2014-10-21T11:11:11");
+    private static LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2014-10-21T12:00:00");
     private static IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk", "Sven Persson",
             FRAGE_SENT_DATE);
     public static String ENHET_1_ID = "ENHET_1_ID";
@@ -25,9 +25,30 @@ public class FragaSvarTestUtil {
     private static String ENHET_3_ID = "ENHET_3_ID";
     private static String ENHET_4_ID = "ENHET_4_ID";
 
+    /**
+     * Populates the database with "antal" FragaSvar that matches and "antal" that doesn't match the filter.
+     * @param filter the filter the FragaSvar should be built from.
+     * @param antal the number of items that should match, and not match the filter
+     * @param fragasvarRepository
+     */
+    public static void populateFragaSvar (FragaSvarFilter filter,int antal, final FragaSvarRepository fragasvarRepository){
+        for (int count = 0; count < antal; count++) {
+            FragaSvar[] fsArray = buildFragaSvarFromFilter(filter);
 
+            fragasvarRepository.save(fsArray[0]);
+            fragasvarRepository.save(fsArray[1]);
+        }
+    }
 
-    public static void buildFragaSvar(FragaSvarFilter filter,int antal, final FragaSvarRepository fragasvarRepository){
+    /**
+     * Creates a FragaSvar that matches the criteria in the supplied filter.
+     * It also creates a FragaSvar that doesn't match the filter.
+     * @param filter
+     * @return  an array of 2 FragaSvar, where the first item matches the filter and the second doesn't.
+     */
+    public static FragaSvar[] buildFragaSvarFromFilter(FragaSvarFilter filter){
+        FragaSvar[] fs = new FragaSvar[2];
+
         String fragestallare;
         String antifragestallare;
         Status status;
@@ -56,11 +77,13 @@ public class FragaSvarTestUtil {
 
         if(filter.getChangedFrom()!=null){
             changedFrom=filter.getChangedFrom();
+            //Make the date 1 month earlier
             antichangedFrom=new LocalDateTime(changedFrom.getYear(),changedFrom.minusMonths(1).getMonthOfYear(), changedFrom.getDayOfMonth(),0,0) ;
 
         }
         if(filter.getChangedTo()!=null){
             changedTo=filter.getChangedTo();
+            //Make the date 1 month later
             antichangedTo=new LocalDateTime(changedTo.getYear(),changedTo.plusMonths(1).getMonthOfYear(), changedTo.getDayOfMonth(),0,0) ;
         }
 
@@ -68,15 +91,31 @@ public class FragaSvarTestUtil {
              vidarebefordrad=filter.getVidarebefordrad().booleanValue();
         }
 
-        for (int count = 0; count < antal; count++) {
-            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",status,fragestallare,hsaid,changedTo,vidarebefordrad));
+
+        if(filter.getChangedTo()!=null){
+            fs[0] = buildFragaSvarSvar("ENHET_1_ID",status,fragestallare,hsaid,changedFrom,changedTo,vidarebefordrad);
+            fs[1] = buildFragaSvarSvar("ENHET_1_ID",antistatus,antifragestallare,"ingen-vardperson-hsaid",antichangedFrom,antichangedTo,!vidarebefordrad);
+        }else {
+            fs[0] = buildFragaSvarFraga("ENHET_1_ID",status,fragestallare,hsaid,changedFrom,vidarebefordrad);
+            fs[1] = buildFragaSvarFraga("ENHET_1_ID",antistatus,antifragestallare,"ingen-vardperson-hsaid",antichangedFrom,!vidarebefordrad);
+
         }
-        for (int count = 0; count < antal; count++) {
-            fragasvarRepository.save(buildFragaSvarFraga("ENHET_1_ID",antistatus,antifragestallare,"ingen-vardperson-hsaid",antichangedTo,!vidarebefordrad));
-        }
+
+        return fs;
     }
 
-    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String fragestallare,String hsaId, LocalDateTime fragaSkickad, boolean vidarebefordrad) {
+    /**
+     * Builds a FragaSvara, a question without reply, from the supplied params.
+     *
+     * @param enhetsId
+     * @param status
+     * @param fragestallare
+     * @param hsaId
+     * @param fragaSkickad
+     * @param vidarebefordrad
+     * @return
+     */
+    public static FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String fragestallare,String hsaId, LocalDateTime fragaSkickad,  boolean vidarebefordrad) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.OVRIGT);
@@ -86,13 +125,15 @@ public class FragaSvarTestUtil {
             f.setInternReferens(ref_count);
         }
 
-        f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
+
 
         if (fragaSkickad!=null){
             f.setFrageSkickadDatum(fragaSkickad);
+            f.setFrageSigneringsDatum(fragaSkickad);
 
         }else{
             f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+            f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
         }
         f.setVidarebefordrad(vidarebefordrad);
 
@@ -110,28 +151,33 @@ public class FragaSvarTestUtil {
         return f;
     }
 
-    public static FragaSvar buildFragaSvarSvar(String enhetsId, Status status, String fragestallare,String hsaId) {
-        FragaSvar f = new FragaSvar();
-        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
-        f.setAmne(Amne.OVRIGT);
-        f.setExternReferens("externReferens-"+ref_count);
-        f.setInternReferens(ref_count);
-        f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
-        f.setFrageSkickadDatum(FRAGE_SENT_DATE);
-        f.setSvarSigneringsDatum(SVAR_SIGN_DATE);
-        f.setSvarSkickadDatum(SVAR_SENT_DATE);
-        f.setFrageStallare(fragestallare);
-        Vardperson vardperson = new Vardperson();
-        vardperson.setHsaId(hsaId);
-        vardperson.setEnhetsId(enhetsId);
-        vardperson.setEnhetsnamn(enhetsId + "-namnet");
-        f.setVardperson(vardperson);
-        f.setFrageText("Detta var ju otydligt formulerat!");
-        f.setSvarsText("Då skall vi bättra oss!");
-        f.setIntygsReferens(INTYGS_REFERENS);
-        f.setStatus(status);
+    /**
+     * Builds a FragaSvara, a question with reply, from the supplied params.
+     * @param enhetsId
+     * @param status
+     * @param fragestallare
+     * @param hsaId
+     * @param fragaSkickad
+     * @param svarSkickad
+     * @param vidarebefordrad
+     * @return
+     */
+    public static FragaSvar buildFragaSvarSvar(String enhetsId, Status status, String fragestallare,String hsaId, LocalDateTime fragaSkickad, LocalDateTime svarSkickad, boolean vidarebefordrad) {
 
-        ref_count++;
+        FragaSvar f = buildFragaSvarFraga(enhetsId,status,fragestallare,hsaId,fragaSkickad, vidarebefordrad);
+
+        f.setSvarSigneringsDatum(svarSkickad);
+        f.setSvarSkickadDatum(svarSkickad);
+        f.setSvarsText("Ett svar");
+
+        if (svarSkickad!=null){
+            f.setSvarSkickadDatum(fragaSkickad);
+            f.setSvarSigneringsDatum(fragaSkickad);
+
+        }else{
+            f.setSvarSkickadDatum(SVAR_SENT_DATE);
+            f.setSvarSigneringsDatum(SVAR_SIGN_DATE);
+        }
         return f;
     }
 }

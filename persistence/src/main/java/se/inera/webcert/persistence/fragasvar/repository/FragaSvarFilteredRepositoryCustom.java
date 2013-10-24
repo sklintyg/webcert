@@ -11,5 +11,6 @@ import java.util.List;
 public interface FragaSvarFilteredRepositoryCustom {
 
     List<FragaSvar> filterFragaSvar(FragaSvarFilter filter);
+
     public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, Pageable pages);
 }

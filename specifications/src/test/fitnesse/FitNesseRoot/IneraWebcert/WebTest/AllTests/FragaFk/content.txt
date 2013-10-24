@@ -19,12 +19,13 @@
 |listaMedObehandladeFragarVisas|
 |visa fraga|$internReferens1|
 |intyg med fraga svar sidan visas|
-|stall fraga|Nu ställer fitnesse en fråga !!|
+|stall fraga|Nu ställer fitnesse en fråga|med amne |4|
 
 !3 Kontrollera att det kommit in en fråga till FK (stub)
+#Ställ en fråga med ämne Övrigt
 |Fraga Skickad Till Fk|
 |fraga?|
-|Nu ställer fitnesse en fråga !!|
+|Nu ställer fitnesse en fråga|
 
 !3 Ta bort Frågor:
 |ta bort Fraga|

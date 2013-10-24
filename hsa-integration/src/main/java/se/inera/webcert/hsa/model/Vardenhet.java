@@ -1,5 +1,6 @@
 package se.inera.webcert.hsa.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import org.joda.time.LocalDateTime;
 /**
  * @author andreaskaltenbach
  */
-public class Vardenhet {
+public class Vardenhet implements Serializable {
 
     private String id;
     private String namn;

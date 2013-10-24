@@ -1,11 +1,13 @@
 package se.inera.webcert.hsa.model;
 
+import java.io.Serializable;
+
 import org.joda.time.LocalDateTime;
 
 /**
  * @author andreaskaltenbach
  */
-public class Mottagning {
+public class Mottagning implements Serializable {
 
     private String id;
     private String namn;
