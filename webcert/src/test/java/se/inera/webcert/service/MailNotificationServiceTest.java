@@ -33,7 +33,6 @@ public class MailNotificationServiceTest {
 
     private static final String LANDCENTRALEN = "landcentralen";
     private static final String VANSTERAKUTEN = "vansterakuten";
-    private static final String HOGERAKUTEN = "hogerakuten";
     private static final String KUSTAKUTEN = "kustakuten";
 
     @Autowired
