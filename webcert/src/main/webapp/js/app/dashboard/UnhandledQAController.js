@@ -21,6 +21,9 @@ angular
                                 doneLoading : false,
                                 activeErrorMessageKey : null,
                                 queryMode : false,
+                                queryStartFrom : 0,
+                                queryPageSize: 10,
+                                totalCount : 0,
                                 currentList : undefined
                             }
 
@@ -73,18 +76,48 @@ angular
                                 $scope.widgetState.queryMode = true;
                                 $scope.widgetState.runningQuery = true;
                                 $scope.widgetState.activeErrorMessageKey = null;
-                                var toSend = $scope.prepareSearchFormForQuery($scope.qp);
+                                var toSend = $scope.prepareSearchFormForQuery($scope.qp, $scope.widgetState);
+                                $scope.widgetState.lastQuery = toSend;
                                 $timeout(function() {
                                     dashBoardService.getQAByQuery(toSend, function(successData) {
                                         $scope.widgetState.runningQuery = false;
 
                                         
-                                        $scope.qaListQuery = successData;
+                                        $scope.qaListQuery = successData.results;
                                         $scope.widgetState.currentList = $scope.qaListQuery;
+                                        $scope.widgetState.totalCount = successData.totalCount;
                                         $scope.decorateList($scope.widgetState.currentList);
 
                                     }, function(errorData) {
                                         $scope.widgetState.runningQuery = false;
+                                        $log.debug("Query Error");
+                                        // TODO: real errorhandling
+                                        $scope.widgetState.activeErrorMessageKey = "error.query.error";
+                                    });
+
+                                }, 1000);
+                            }
+                            
+                            $scope.fetchMore = function() {
+                                $log.debug("fetchMore");
+                                $scope.widgetState.queryMode = true;
+                                $scope.widgetState.fetchingMoreInProgress = true;
+                                $scope.widgetState.activeErrorMessageKey = null;
+                                var queryInstance = $scope.widgetState.lastQuery;
+                                queryInstance.startFrom = queryInstance.startFrom + queryInstance.pageSize;
+                                $scope.widgetState.lastQuery = queryInstance;
+                                
+                                $timeout(function() {
+                                    dashBoardService.getQAByQueryFetchMore(queryInstance, function(successData) {
+                                        $scope.widgetState.fetchingMoreInProgress = false;
+                                        $scope.decorateList(successData.results);
+                                        for(var i = 0; i < successData.results.length; i++) {
+                                            $scope.qaListQuery.push(successData.results[i]);
+                                        }
+                                       
+                                        $scope.widgetState.currentList = $scope.qaListQuery;
+                                    }, function(errorData) {
+                                        $scope.widgetState.fetchingMoreInProgress = false;
                                         $log.debug("Query Error");
                                         // TODO: real errorhandling
                                         $scope.widgetState.activeErrorMessageKey = "error.query.error";
@@ -98,7 +131,8 @@ angular
 
                             }
 
-                            $scope.prepareSearchFormForQuery = function(qp) {
+                            $scope.prepareSearchFormForQuery = function(qp, ws) {
+                                
                                 qp.enhetsId = $scope.activeUnit.id;
                                 qp.vantarPa = qp.vantarPaSelector.value;
                                 if (qp.changedFrom) {
@@ -125,8 +159,8 @@ angular
                                 }
 
                                 var queryInstance = {};
-                                queryInstance.startFrom = 0;
-                                queryInstance.pageSize = 3;
+                                queryInstance.startFrom = ws.queryStartFrom;
+                                queryInstance.pageSize = ws.queryPageSize;
                                 queryInstance.filter = qp;
                                 return queryInstance;
                             }
@@ -166,6 +200,7 @@ angular
                                     $scope.widgetState.activeErrorMessageKey = null;
                                     $scope.qaListUnhandled = data;
                                     $scope.widgetState.currentList = $scope.qaListUnhandled;
+                                    $scope.widgetState.totalCount = $scope.widgetState.currentList.length;
                                     $scope.decorateList($scope.widgetState.currentList);
                                     $scope.widgetState.queryMode = false;
 

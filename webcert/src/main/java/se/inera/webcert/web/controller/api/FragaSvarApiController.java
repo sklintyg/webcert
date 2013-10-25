@@ -16,6 +16,7 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.service.FragaSvarService;
 import se.inera.webcert.web.controller.api.dto.QueryFragaSvarParameter;
+import se.inera.webcert.web.controller.api.dto.QueryFragaSvarResponse;
 import se.inera.webcert.web.service.WebCertUserService;
 
 public class FragaSvarApiController {
@@ -41,8 +42,28 @@ public class FragaSvarApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     public Response query(final QueryFragaSvarParameter queryParam) {
-        List<FragaSvar> fragaSvarByFilter = fragaSvarService.getFragaSvarByFilter(queryParam.getFilter(),
+        QueryFragaSvarResponse result = new QueryFragaSvarResponse();
+        result.setTotalCount(fragaSvarService.getFragaSvarByFilterCount(queryParam.getFilter()));
+        
+        List<FragaSvar> queryResults = fragaSvarService.getFragaSvarByFilter(queryParam.getFilter(),
                 queryParam.getStartFrom(), queryParam.getPageSize());
-        return Response.ok(fragaSvarByFilter).build();
+        result.setResults(queryResults);
+        
+        return Response.ok(result).build();
+    }
+    
+    @PUT
+    @Path("/query/paging")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public Response queryNoCount(final QueryFragaSvarParameter queryParam) {
+        QueryFragaSvarResponse result = new QueryFragaSvarResponse();
+        result.setTotalCount(-1);
+        
+        List<FragaSvar> queryResults = fragaSvarService.getFragaSvarByFilter(queryParam.getFilter(),
+                queryParam.getStartFrom(), queryParam.getPageSize());
+        result.setResults(queryResults);
+        
+        return Response.ok(result).build();
     }
 }

@@ -66,5 +66,10 @@ public interface FragaSvarService {
      * Returns all the question/answer matching filter criteria.
      */
     List<FragaSvar> getFragaSvarByFilter(FragaSvarFilter filter, int startFrom, int pageSize);
+    
+    /**
+     * Returns total count of question/answers matching filter criteria.
+     */
+    int getFragaSvarByFilterCount(FragaSvarFilter filter);
 
 }
