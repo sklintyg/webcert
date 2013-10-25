@@ -78,11 +78,11 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
                 break;
             case MARKERA_SOM_HANTERAD:
-                Predicate amnePred1= builder.conjunction();
-                amnePred1 = builder.and(amnePred1, builder.equal(root.<Amne>get("status"), Status.PENDING_EXTERNAL_ACTION), builder.equal(root.<Amne>get("amne"), Amne.MAKULERING_AV_LAKARINTYG) );
+                Predicate amnePred1;
+                amnePred1 = builder.and(builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION), builder.equal(root.<Amne>get("amne"), Amne.MAKULERING_AV_LAKARINTYG) );
 
-                Predicate amnePred2= builder.conjunction();
-                amnePred2 = builder.and(amnePred2, builder.equal(root.<Amne>get("status"), Status.PENDING_INTERNAL_ACTION), builder.equal(root.<Amne>get("amne"), Amne.PAMINNELSE)) ;
+                Predicate amnePred2;
+                amnePred2 = builder.and(builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION), builder.equal(root.<Amne>get("amne"), Amne.PAMINNELSE)) ;
 
                 pred = builder.and(pred, builder.or(amnePred1, amnePred2, builder.equal(root.<Status>get("status"), Status.ANSWERED))) ;
                 break;
