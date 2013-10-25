@@ -46,14 +46,14 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
             pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getVidarebefordrad())) ;
         }
         if (filter.getChangedFrom() != null) {
-            pred = builder.and(pred, builder.greaterThan(root.<LocalDate>get("senasteHandelse"), filter.getChangedFrom())) ;
+            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDate>get("senasteHandelse"), filter.getChangedFrom())) ;
         }
 
         if (filter.getChangedTo() != null) {
-            pred = builder.and(pred, builder.lessThan(root.<LocalDate>get("senasteHandelse"), filter.getChangedTo())) ;
+            pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDate>get("senasteHandelse"), filter.getChangedTo())) ;
         }
         if (filter.getReplyLatest() != null) {
-            pred = builder.and(pred, builder.lessThan(root.<LocalDate>get("sistaDatumForSvar"), filter.getReplyLatest())) ;
+            pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDate>get("sistaDatumForSvar"), filter.getReplyLatest())) ;
         }
 
 
