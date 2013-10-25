@@ -387,7 +387,7 @@ body span:hover.qa-unit-selected {
   background-color: #28b4c4;
 }
 
-.qa-table .btn-info, .buttonbar .btn-info, .qa-panel .btn-info, .modal-footer .brn-info {
+.qa-table .btn-info, .buttonbar .btn-info, .qa-panel .btn-info, .modal-footer .btn-info {
   padding: 10px 35px;
 }
 
