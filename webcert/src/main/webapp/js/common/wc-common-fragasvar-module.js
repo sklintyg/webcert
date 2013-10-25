@@ -25,7 +25,7 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
     function _buildMailToLink(qa) {
         var baseURL = $window.location.protocol + "//" + $window.location.hostname + ($window.location.port ? ':' + $window.location.port : '');
         var url = baseURL + "/m/fk7263/webcert/intyg/" + qa.intygsReferens.intygsId + "#/view";
-        var recipient = "ange_mottagare@epostadress.se";
+        var recipient = "";
         var subject = "Du har blivit tilldelad ett Fråga&Svar ärende i WebCert";
         var body = "Klicka länken för att gå till ärendet:\n" + url;
         var link = "mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);

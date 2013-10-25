@@ -92,7 +92,7 @@ angular
                                         $scope.widgetState.runningQuery = false;
                                         $log.debug("Query Error");
                                         // TODO: real errorhandling
-                                        $scope.widgetState.activeErrorMessageKey = "error.query.error";
+                                        $scope.widgetState.activeErrorMessageKey = "info.query.error";
                                     });
 
                                 }, 1000);
@@ -120,7 +120,7 @@ angular
                                         $scope.widgetState.fetchingMoreInProgress = false;
                                         $log.debug("Query Error");
                                         // TODO: real errorhandling
-                                        $scope.widgetState.activeErrorMessageKey = "error.query.error";
+                                        $scope.widgetState.activeErrorMessageKey = "info.query.error";
                                     });
 
                                 }, 1000);
