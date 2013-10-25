@@ -22,10 +22,10 @@ angular
                                 activeErrorMessageKey : null,
                                 queryMode : false,
                                 queryStartFrom : 0,
-                                queryPageSize: 10,
+                                queryPageSize : 10,
                                 totalCount : 0,
                                 currentList : undefined,
-                                queryFormCollapsed: true
+                                queryFormCollapsed : true
                             }
 
                             $scope.qaListUnhandled = {};
@@ -81,7 +81,6 @@ angular
                                     dashBoardService.getQAByQuery(toSend, function(successData) {
                                         $scope.widgetState.runningQuery = false;
 
-                                        
                                         $scope.qaListQuery = successData.results;
                                         $scope.widgetState.currentList = $scope.qaListQuery;
                                         $scope.widgetState.totalCount = successData.totalCount;
@@ -96,7 +95,7 @@ angular
 
                                 }, 1000);
                             }
-                            
+
                             $scope.fetchMore = function() {
                                 $log.debug("fetchMore");
                                 $scope.widgetState.queryMode = true;
@@ -105,15 +104,15 @@ angular
                                 var queryInstance = $scope.widgetState.lastQuery;
                                 queryInstance.startFrom = queryInstance.startFrom + queryInstance.pageSize;
                                 $scope.widgetState.lastQuery = queryInstance;
-                                
+
                                 $timeout(function() {
                                     dashBoardService.getQAByQueryFetchMore(queryInstance, function(successData) {
                                         $scope.widgetState.fetchingMoreInProgress = false;
                                         $scope.decorateList(successData.results);
-                                        for(var i = 0; i < successData.results.length; i++) {
+                                        for ( var i = 0; i < successData.results.length; i++) {
                                             $scope.qaListQuery.push(successData.results[i]);
                                         }
-                                       
+
                                         $scope.widgetState.currentList = $scope.qaListQuery;
                                     }, function(errorData) {
                                         $scope.widgetState.fetchingMoreInProgress = false;
@@ -131,7 +130,7 @@ angular
                             }
 
                             $scope.prepareSearchFormForQuery = function(qp, ws) {
-                                
+
                                 qp.enhetsId = $scope.activeUnit.id;
                                 qp.vantarPa = qp.vantarPaSelector.value;
                                 if (qp.changedFrom) {
@@ -169,11 +168,10 @@ angular
                             $scope.decorateList = function(list) {
 
                                 angular.forEach(list, function(qa, key) {
-
-                                    if (qa.status == "ANSWERED" || qa.amne == "MAKULERING" || qa.amne == "PAMINNELSE") {
-                                        qa.vantarpaResKey = "markhandled";
-                                    } else if (qa.status == "CLOSED") {
+                                    if (qa.status == "CLOSED") {
                                         qa.vantarpaResKey = "handled";
+                                    } else if (qa.status == "ANSWERED" || qa.amne == "MAKULERING" || qa.amne == "PAMINNELSE") {
+                                        qa.vantarpaResKey = "markhandled";
                                     } else if (qa.amne == "KOMPLETTERING_AV_LAKARINTYG") {
                                         qa.vantarpaResKey = "komplettering";
                                     } else {

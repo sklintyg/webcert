@@ -24,7 +24,7 @@ var webcertResources = {
         "qa.waiting.svarfranfk" : "Svar från Försäkringskassan",
         "qa.waiting.komplettering" : "Komplettering från vårdenheten",
         "qa.waiting.markhandled" : "Att markeras som hanterad",
-        "qa.waiting.handled" : "",
+        "qa.waiting.handled" : "Inget - frågan är hanterad",
         
         //info messages
         "info.nounsignedcertsfound" : "Inga osignerade intyg hittades.",
