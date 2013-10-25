@@ -2,7 +2,6 @@ package se.inera.webcert.persistence.fragasvar.repository;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,7 +133,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
         FragaSvarFilter filter = new FragaSvarFilter();
         filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
         filter.setVidarebefordrad(true);
-        FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
+        FragaSvarTestUtil.populateFragaSvar(filter, 1, fragasvarRepository);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
         Assert.assertTrue(fsList.size() == 1);
@@ -145,7 +144,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     public void testFilterWaitingForReplyFromCare() {
         FragaSvarFilter filter = new FragaSvarFilter();
         filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
-        filter.setShowStatus(ShowStatuses.REPLY_FROM_CARE);
+        filter.setVantarPa(VantarPa.SVAR_FRAN_VARDEN);
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -154,4 +153,62 @@ public class FragaSvarFilteredRepositoryCustomTest {
         fragasvarRepository.deleteAll();
     }
 
+    @Test
+    public void testFilterWaitingForReplyFromFK() {
+        //Add correct FragaSvar into repo
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.OVRIGT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.ARBETSTIDSFORLAGGNING,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.AVSTAMNINGSMOTE,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.KONTAKT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
+
+        //Add incorrect data into repo. Create filter to more easily create them with util function.
+        FragaSvarFilter tempfilter = new FragaSvarFilter();
+        tempfilter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
+        tempfilter.setQuestionFromFK(true);
+        tempfilter.setVidarebefordrad(true);
+        FragaSvarTestUtil.populateFragaSvar(tempfilter, 5, fragasvarRepository);
+
+        //Make the filter search
+        FragaSvarFilter filter = new FragaSvarFilter();
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
+        filter.setVantarPa(VantarPa.SVAR_FRAN_FK);
+
+
+        List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
+        Assert.assertTrue(fsList.size() == 4);
+        for (FragaSvar fs:fsList){
+            Assert.assertTrue(fs.getFrageText().equalsIgnoreCase(FragaSvarTestUtil.visa_fraga));
+
+        }
+        fragasvarRepository.deleteAll();
+    }
+
+    //@Test
+    public void testFilterMarkAsHandled() {
+        //Add correct FragaSvar into repo
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,Amne.PAMINNELSE,"FK",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.MAKULERING_AV_LAKARINTYG,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.ANSWERED,Amne.KONTAKT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
+
+        //Add incorrect data into repo. Create filter to more easily create them with util function.
+        FragaSvarFilter tempfilter = new FragaSvarFilter();
+        tempfilter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
+        tempfilter.setQuestionFromFK(true);
+        tempfilter.setVidarebefordrad(true);
+        FragaSvarTestUtil.populateFragaSvar(tempfilter,5,fragasvarRepository);
+
+        //Make the filter search
+        FragaSvarFilter filter = new FragaSvarFilter();
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
+        filter.setVantarPa(VantarPa.SVAR_FRAN_FK);
+
+
+        List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
+        Assert.assertTrue(fsList.size() == 3);
+        for (FragaSvar fs:fsList){
+            Assert.assertTrue(fs.getFrageText().equalsIgnoreCase(FragaSvarTestUtil.visa_fraga));
+
+        }
+        fragasvarRepository.deleteAll();
+    }
 }

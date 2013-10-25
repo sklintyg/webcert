@@ -2,8 +2,6 @@ package se.inera.webcert.persistence.fragasvar.repository;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import se.inera.webcert.persistence.fragasvar.model.Amne;
-import se.inera.webcert.persistence.fragasvar.model.Status;
 
 /**
  * Created by pehr on 10/21/13.
@@ -21,7 +19,7 @@ public class FragaSvarFilter {
     private LocalDateTime changedFrom;
     private LocalDateTime changedTo;
 
-    private ShowStatuses showStatus=ShowStatuses.ALL_OPEN;
+    private VantarPa vantarPa = VantarPa.ALLA_OHANTERADE;
 
     private LocalDate replyLatest;
 
@@ -89,11 +87,11 @@ public class FragaSvarFilter {
         this.replyLatest = replyLatest;
     }
 
-    public ShowStatuses getShowStatus() {
-        return showStatus;
+    public VantarPa getVantarPa() {
+        return vantarPa;
     }
 
-    public void setShowStatus(ShowStatuses showStatus) {
-        this.showStatus = showStatus;
+    public void setVantarPa(VantarPa vantarPa) {
+        this.vantarPa = vantarPa;
     }
 }

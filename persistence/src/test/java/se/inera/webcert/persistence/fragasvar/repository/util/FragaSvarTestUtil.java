@@ -76,8 +76,8 @@ public class FragaSvarTestUtil {
             status=Status.PENDING_INTERNAL_ACTION;
         }
 
-        switch (filter.getShowStatus()){
-            case REPLY_FROM_CARE:
+        switch (filter.getVantarPa()){
+            case SVAR_FRAN_VARDEN:
                 amne = Amne.KONTAKT;
                 antiamne=Amne.KOMPLETTERING_AV_LAKARINTYG;
                 break;
