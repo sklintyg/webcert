@@ -2,31 +2,34 @@ package se.inera.webcert.persistence.fragasvar.repository;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import se.inera.webcert.persistence.fragasvar.model.Amne;
-import se.inera.webcert.persistence.fragasvar.model.Status;
 
 /**
  * Created by pehr on 10/21/13.
  */
 public class FragaSvarFilter {
 
+    private String enhetsId;
     private boolean questionFromFK;
     private boolean questionFromWC;
 
     private String hsaId;
 
-    //TODO do we need a "NotVidarebefordrad". How do we show all?
     private Boolean vidarebefordrad;
 
     private LocalDateTime changedFrom;
     private LocalDateTime changedTo;
 
-    private ShowStatuses showStatus=ShowStatuses.ALL_OPEN;
-
-    //TODO is subject always 1 or All. Can user select multiple?
-    private Amne subject;
+    private VantarPa vantarPa = VantarPa.ALLA_OHANTERADE;
 
     private LocalDate replyLatest;
+
+    public String getEnhetsId() {
+        return enhetsId;
+    }
+
+    public void setEnhetsId(String enhetsId) {
+        this.enhetsId = enhetsId;
+    }
 
     public boolean isQuestionFromFK() {
         return questionFromFK;
@@ -76,14 +79,6 @@ public class FragaSvarFilter {
         this.changedTo = changedTo;
     }
 
-    public Amne getSubject() {
-        return subject;
-    }
-
-    public void setSubject(Amne subject) {
-        this.subject = subject;
-    }
-
     public LocalDate getReplyLatest() {
         return replyLatest;
     }
@@ -92,11 +87,11 @@ public class FragaSvarFilter {
         this.replyLatest = replyLatest;
     }
 
-    public ShowStatuses getShowStatus() {
-        return showStatus;
+    public VantarPa getVantarPa() {
+        return vantarPa;
     }
 
-    public void setShowStatus(ShowStatuses showStatus) {
-        this.showStatus = showStatus;
+    public void setVantarPa(VantarPa vantarPa) {
+        this.vantarPa = vantarPa;
     }
 }
