@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Common directives used in both WC main application as well as in a certificate's module app pages. 
  * Since this js will be used/loaded from different contextpaths, all templates are inlined. PLEASE keep source 
@@ -20,35 +22,35 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
           //Expose "now" as a model property for the template to render as todays date
           $scope.today = new Date();
           
-          var defaultMenuDefs = "["+
-				     "{"+
-				       "link :'/web/dashboard#/create',"+ 
-				       "label:'Sök/Skriv intyg',"+
-				       "requires_doctor: false"+
-				     "},"+
-				     "{"+
-				       "link :'/web/dashboard#/index',"+ 
-				       "label:'Mina osignerade intyg',"+
-				       "requires_doctor: true"+
-				     "},"+
-				     "{"+
-				       "link :'/web/dashboard#/unhandled-qa',"+
-				       "label:'Enhetens frågor och svar',"+
-				       "requires_doctor: false"+
-				     "},"+
-				     "{"+
-				       "link :'/web/dashboard#/unsigned',"+ 
-				       "label:'Enhetens osignerade intyg',"+
-				       "requires_doctor: false"+
-				     "},"+
-				     "{"+
-				       "link :'/web/dashboard#/about.support',"+
-				       "label:'Om Webcert',"+
-				       "requires_doctor: false"+
-				     "},"+
-				    "]";
+          var defaultMenuDefs = [
+				     {
+				       link :'/web/dashboard#/create', 
+				       label:'Sök/skriv intyg',
+				       requires_doctor: false
+				     },
+				     {
+				       link :'/web/dashboard#/index', 
+				       label:'Mina osignerade intyg',
+				       requires_doctor: true
+				     },
+				     {
+				       link :'/web/dashboard#/unhandled-qa',
+				       label:'Enhetens frågor och svar',
+				       requires_doctor: false
+				     },
+				     {
+				       link :'/web/dashboard#/unsigned', 
+				       label:'Enhetens osignerade intyg',
+				       requires_doctor: false
+				     },
+				     {
+				       link :'/web/dashboard#/about.support',
+				       label:'Om Webcert',
+				       requires_doctor: false
+				     }
+				    ];
           
-          $scope.menuItems = eval(defaultMenuDefs);
+          $scope.menuItems = defaultMenuDefs;
           if($scope.menuDefs != undefined && $scope.menuDefs != ''){
           	$scope.menuItems = eval($scope.menuDefs);
           }
@@ -126,7 +128,7 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
 	          	+'</div>'	
 	    			+'</div>'
 	    		+'</div>'
-    }
+    };
 } ]);
 
 
@@ -152,6 +154,6 @@ angular.module('wc.common.directives').directive("wcSpinner", ['$rootScope', fun
            +'    <div ng-transclude></div>'
            +'  </div>'
            +'</div>'
-    }
+    };
 } ]);
 

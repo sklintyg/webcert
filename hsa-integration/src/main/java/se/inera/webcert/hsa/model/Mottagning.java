@@ -11,6 +11,7 @@ public class Mottagning implements Serializable {
 
     private String id;
     private String namn;
+    private String mail;
 
     private LocalDateTime start;
     private LocalDateTime end;
@@ -61,5 +62,13 @@ public class Mottagning implements Serializable {
 
     public void setEnd(LocalDateTime end) {
         this.end = end;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 }

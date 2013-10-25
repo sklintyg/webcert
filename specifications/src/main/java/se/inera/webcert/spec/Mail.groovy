@@ -9,23 +9,22 @@ import se.inera.webcert.spec.util.RestClientFixture
  */
 class Mail extends RestClientFixture {
 
-    def mail;
+    def mail
 
-    public void execute() {
+    void execute() {
         def restClient = new RESTClient(baseUrl)
         mail = restClient.get(path: "mail-stub/mails").data[0]
     }
 
-    public def mottagare() {
+    def mottagare() {
         mail.recipients.toString()
     }
 
-    public def amne() {
+    def amne() {
         mail.subject
     }
 
-    public def innehall() {
+    def innehall() {
         mail.body
     }
-
 }
