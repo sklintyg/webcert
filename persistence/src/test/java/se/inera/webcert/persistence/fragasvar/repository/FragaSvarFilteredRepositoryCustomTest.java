@@ -39,7 +39,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterFragaFromWC() {
         FragaSvarFilter filter = new FragaSvarFilter();
-
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
         filter.setQuestionFromWC(true);
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
@@ -53,7 +53,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterFragaFromWCWithPaging() {
         FragaSvarFilter filter = new FragaSvarFilter();
-
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
         filter.setQuestionFromWC(true);
         FragaSvarTestUtil.populateFragaSvar(filter, 10,fragasvarRepository);
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter,new PageRequest(4,3));
@@ -66,7 +66,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     public void testFilterHsaId() {
         String hsaid =  "HSA-User-123";
         FragaSvarFilter filter = new FragaSvarFilter();
-
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
 
         filter.setHsaId(hsaid);
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
@@ -81,7 +81,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
     public void testFilterChangedAfter() {
         LocalDateTime changeDateFrom =  new LocalDateTime( 2013, 06, 15,0,0);
         FragaSvarFilter filter = new FragaSvarFilter();
-
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
 
         filter.setChangedFrom(changeDateFrom);
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
@@ -92,16 +92,15 @@ public class FragaSvarFilteredRepositoryCustomTest {
         //Assert.assertTrue(fsList.size() == 1);
         fragasvarRepository.deleteAll();
     }
+
     @Test
     public void testFilterChangedTo() {
         LocalDateTime changeDateTo =  new LocalDateTime( 2013, 06, 15,0,0);
         FragaSvarFilter filter = new FragaSvarFilter();
-
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
 
         filter.setChangedTo(changeDateTo);
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
-
-
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
         Assert.assertTrue(fsList.size() == 1);
@@ -115,6 +114,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
         LocalDateTime changeDateFrom =  new LocalDateTime( 2013, 06, 15,0,0);
         FragaSvarFilter filter = new FragaSvarFilter();
 
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
         filter.setChangedFrom(changeDateFrom);
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
 
@@ -132,8 +132,20 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterVidarebefordrad() {
         FragaSvarFilter filter = new FragaSvarFilter();
-
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
         filter.setVidarebefordrad(true);
+        FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
+
+        List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
+        Assert.assertTrue(fsList.size() == 1);
+        Assert.assertTrue(fsList.get(0).getFrageText().equalsIgnoreCase(FragaSvarTestUtil.visa_fraga));
+        fragasvarRepository.deleteAll();
+    }
+    @Test
+    public void testFilterWaitingForReplyFromCare() {
+        FragaSvarFilter filter = new FragaSvarFilter();
+        filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
+        filter.setShowStatus(ShowStatuses.REPLY_FROM_CARE);
         FragaSvarTestUtil.populateFragaSvar(filter, 1,fragasvarRepository);
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
