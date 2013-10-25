@@ -42,13 +42,31 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
         });
 
     }
+    
+    /*
+     * Load questions and answers data for
+     */
+    function _getQAByQuery(qp, onSuccess, onError) {
+        $log.debug("_getQAByQuery");
+        var restPath = '/api/fragasvar/query';
+        $http.put(restPath, qp).success(function(data) {
+            $log.debug("_getQAByQuery got data:" + data);
+            onSuccess(data);
+        }).error(function(data, status, headers, config) {
+            $log.error("_getQAByQuery error " + status);
+            // Let calling code handle the error of no data response
+            onError(data);
+        });
+
+    }
 
 
     
     // Return public API for the service
     return {
         getCertificates : _getCertificates,
-        getQA : _getQA
+        getQA : _getQA,
+        getQAByQuery : _getQAByQuery
     }
 } ]);
 

@@ -1,5 +1,6 @@
 package se.inera.webcert.service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,8 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +22,14 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -51,6 +55,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
     private static final String FRAGE_STALLARE_WEBCERT = "WC";
+
+    private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE, Amne.KONTAKT, Amne.OVRIGT);
 
     @Autowired
     private MailNotificationService mailNotificationService;
@@ -220,8 +226,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "frageText cannot be empty!");
         }
 
+        
         if (amne == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Amne cannot be null!");
+        } else if (!VALID_VARD_AMNEN.contains(amne)) {
+            //Businessrule RE-013 
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne + " for new question from vard!");
         }
 
         // Fetch from Intygstjansten
@@ -316,5 +326,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
 
         return saved;
+    }
+
+    @Override
+    public List<FragaSvar> getFragaSvarByFilter(FragaSvarFilter filter, int startFrom, int pageSize) {
+        Pageable pages = new PageRequest(startFrom, pageSize);
+        return fragaSvarRepository.filterFragaSvar(filter, pages);
     }
 }

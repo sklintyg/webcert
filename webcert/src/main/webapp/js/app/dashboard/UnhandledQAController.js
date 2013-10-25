@@ -19,42 +19,155 @@ angular
                             // init state
                             $scope.widgetState = {
                                 doneLoading : false,
-                                activeErrorMessageKey : null
+                                activeErrorMessageKey : null,
+                                queryMode : false,
+                                currentList : undefined
                             }
 
                             $scope.isCollapsed = true;
 
-                            $scope.qaList = {};
-                            $scope.activeUnit = "";
+                            $scope.qaListUnhandled = {};
+                            $scope.qaListQuery = {};
+                            $scope.activeUnit = null;
+
+                            $scope.statusList = [ {
+                                label : 'Visa Alla',
+                                value : 'ALLA'
+                            }, {
+                                label : 'Alla ohanterade',
+                                value : 'ALLA_OHANTERADE'
+                            }, {
+                                label : 'Att markeras som hanterad',
+                                value : 'MARKERA_SOM_HANTERAD'
+                            }, {
+                                label : 'Komplettering från vårdenheten',
+                                value : 'KOMPLETTERING_FRAN_VARDEN'
+                            }, {
+                                label : 'Svar från vårdenheten',
+                                value : 'SVAR_FRAN_VARDEN'
+                            }, {
+                                label : 'Svar från Försäkringskassan',
+                                value : 'SVAR_FRAN_FK'
+                            }, {
+                                label : 'Inget - frågan är hanterad',
+                                value : 'HANTERAD'
+                            } ];
+
+                            var defaultQuery = {
+                                enhetsId : undefined, // set to chosen enhet
+                                // before submitting query
+                                questionFrom : "",
+                                questionFromFK : false,
+                                questionFromWC : false,
+                                hsaId : "", // läkare
+                                vidarebefordrad : undefined, // 3-state
+                                // boolean
+                                changedFrom : undefined,
+                                changedTo : undefined,
+                                vantarPaSelector : $scope.statusList[0],
+                                replyLatest : undefined
+                            }
+
+                            $scope.doSearch = function() {
+                                $log.debug("doSearch");
+                                $scope.widgetState.queryMode = true;
+                                $scope.widgetState.runningQuery = true;
+                                $scope.widgetState.activeErrorMessageKey = null;
+                                var toSend = $scope.prepareSearchFormForQuery($scope.qp);
+                                $timeout(function() {
+                                    dashBoardService.getQAByQuery(toSend, function(successData) {
+                                        $scope.widgetState.runningQuery = false;
+
+                                        
+                                        $scope.qaListQuery = successData;
+                                        $scope.widgetState.currentList = $scope.qaListQuery;
+                                        $scope.decorateList($scope.widgetState.currentList);
+
+                                    }, function(errorData) {
+                                        $scope.widgetState.runningQuery = false;
+                                        $log.debug("Query Error");
+                                        // TODO: real errorhandling
+                                        $scope.widgetState.activeErrorMessageKey = "error.query.error";
+                                    });
+
+                                }, 1000);
+                            }
+                            $scope.resetSearchForm = function() {
+                                $scope.qp = angular.copy(defaultQuery);
+                                $scope.qp.vantarPaSelector = $scope.statusList[0];
+
+                            }
+
+                            $scope.prepareSearchFormForQuery = function(qp) {
+                                qp.enhetsId = $scope.activeUnit.id;
+                                qp.vantarPa = qp.vantarPaSelector.value;
+                                if (qp.changedFrom) {
+                                    qp.changedFrom = $filter('date')(qp.changedFrom, 'yyyy-MM-dd');
+                                }
+
+                                if (qp.changedTo) {
+                                    qp.changedTo = $filter('date')(qp.changedTo, 'yyyy-MM-dd');
+                                }
+
+                                if (qp.replyLatest) {
+                                    qp.replyLatest = $filter('date')(qp.replyLatest, 'yyyy-MM-dd');
+                                }
+
+                                if (qp.questionFrom == "FK") {
+                                    qp.questionFromFK = true;
+                                    qp.questionFromWC = false;
+                                } else if (qp.questionFrom == "WC") {
+                                    qp.questionFromFK = false;
+                                    qp.questionFromWC = true;
+                                } else {
+                                    qp.questionFromFK = false;
+                                    qp.questionFromWC = false;
+                                }
+
+                                var queryInstance = {};
+                                queryInstance.startFrom = 0;
+                                queryInstance.pageSize = 3;
+                                queryInstance.filter = qp;
+                                return queryInstance;
+                            }
+
+                            $scope.resetSearchForm();
+
+                            $scope.decorateList = function(list) {
+
+                                angular.forEach(list, function(qa, key) {
+
+                                    if (qa.status == "ANSWERED" || qa.amne == "MAKULERING" || qa.amne == "PAMINNELSE") {
+                                        qa.vantarpaResKey = "markhandled";
+                                    } else if (qa.status == "CLOSED") {
+                                        qa.vantarpaResKey = "handled";
+                                    } else if (qa.amne == "KOMPLETTERING_AV_LAKARINTYG") {
+                                        qa.vantarpaResKey = "komplettering";
+                                    } else {
+
+                                        if (qa.status == "PENDING_INTERNAL_ACTION") {
+                                            qa.vantarpaResKey = "svarfranvarden";
+                                        } else if (qa.status == "PENDING_EXTERNAL_ACTION") {
+                                            qa.vantarpaResKey = "svarfranfk";
+                                        } else {
+                                            qa.vantarpaResKey = "";
+                                            $log.debug("warning: undefined status");
+                                        }
+                                    }
+                                });
+                            }
 
                             // load all fragasvar for all units in usercontext
+
                             dashBoardService.getQA(function(data) {
+                                $scope.widgetState.queryMode = false;
                                 $scope.widgetState.doneLoading = true;
                                 if (data != null) {
                                     $scope.widgetState.activeErrorMessageKey = null;
-                                    $scope.qaList = data;
-
-                                    // set waiting messages
-                                    angular.forEach($scope.qaList, function(qa, key) {
-
-                                        if (qa.status == "ANSWERED" || qa.amne == "MAKULERING" || qa.amne == "PAMINNELSE") {
-                                            qa.vantarpa = "markhandled";
-                                        } else if (qa.status == "CLOSED") {
-                                            qa.vantarpa = "handled";
-                                        } else if (qa.amne == "KOMPLETTERING_AV_LAKARINTYG") {
-                                            qa.vantarpa = "komplettering";
-                                        } else {
-
-                                            if (qa.status == "PENDING_INTERNAL_ACTION") {
-                                                qa.vantarpa = "svarfranvarden";
-                                            } else if (qa.status == "PENDING_EXTERNAL_ACTION") {
-                                                qa.vantarpa = "svarfranfk";
-                                            } else {
-                                                qa.vantarpa = "";
-                                                $log.debug("warning: undefined status");
-                                            }
-                                        }
-                                    });
+                                    $scope.qaListUnhandled = data;
+                                    $scope.widgetState.currentList = $scope.qaListUnhandled;
+                                    $scope.decorateList($scope.widgetState.currentList);
+                                    $scope.widgetState.queryMode = false;
 
                                 } else {
                                     $scope.widgetState.activeErrorMessageKey = "error.unansweredcerts.couldnotbeloaded";
@@ -63,31 +176,30 @@ angular
 
                             $scope.onVidareBefordradChange = function(qa) {
                                 qa.updateInProgress = true;
-                                $timeout(
-                                        function() { // wrap in timeout to
-                                            // simulate
-                                            // latency -
-                                            fragaSvarCommonService
-                                                    .setVidareBefordradState(
-                                                            qa.internReferens,
-                                                            qa.vidarebefordrad,
-                                                            function(result) {
-                                                                qa.updateInProgress = false;
+                                fragaSvarCommonService
+                                        .setVidareBefordradState(
+                                                qa.internReferens,
+                                                qa.vidarebefordrad,
+                                                function(result) {
+                                                    qa.updateInProgress = false;
 
-                                                                if (result != null) {
-                                                                    qa.vidarebefordrad = result.vidarebefordrad;
-                                                                } else {
-                                                                    qa.vidarebefordrad = !qa.vidarebefordrad;
-                                                                    wcDialogService
-                                                                            .showErrorMessageDialog("Kunde inte markera/avmarkera frågan som vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. Annars kan du kontakta supporten");
-                                                                }
-                                                            });
-                                        }, 1000);
+                                                    if (result != null) {
+                                                        qa.vidarebefordrad = result.vidarebefordrad;
+                                                    } else {
+                                                        qa.vidarebefordrad = !qa.vidarebefordrad;
+                                                        wcDialogService
+                                                                .showErrorMessageDialog("Kunde inte markera/avmarkera frågan som vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. Annars kan du kontakta supporten");
+                                                    }
+                                                });
                             }
 
                             $scope.setActiveUnit = function(unit) {
                                 $log.debug("ActiveUnit is now:" + unit);
                                 $scope.activeUnit = unit;
+                                $scope.widgetState.queryMode = false;
+                                $scope.isCollapsed = true;
+                                $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
+
                             }
 
                             // Calculate how many entities we have for a
@@ -97,7 +209,7 @@ angular
                                 if (!$scope.widgetState.doneLoading) {
                                     return "?";
                                 }
-                                var count = $filter('QAEnhetsIdFilter')($scope.qaList, unit.id).length;
+                                var count = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, unit.id).length;
 
                                 return count;
                             }
@@ -112,7 +224,7 @@ angular
                                 $timeout(function() {
                                     fragaSvarCommonService.handleVidareBefodradToggle(qa, $scope.onVidareBefordradChange);
                                 }, 1000);
-                                //Launch mail client
+                                // Launch mail client
                                 $window.location = fragaSvarCommonService.buildMailToLink(qa);
                             }
 

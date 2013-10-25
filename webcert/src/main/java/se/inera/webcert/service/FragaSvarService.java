@@ -6,6 +6,7 @@ import org.joda.time.LocalDateTime;
 
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 
 /**
  * @author andreaskaltenbach
@@ -60,5 +61,10 @@ public interface FragaSvarService {
      * @return
      */
     FragaSvar openQuestionAsUnhandled(Long frageSvarId);
+    
+    /**
+     * Returns all the question/answer matching filter criteria.
+     */
+    List<FragaSvar> getFragaSvarByFilter(FragaSvarFilter filter, int startFrom, int pageSize);
 
 }
