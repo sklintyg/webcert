@@ -70,6 +70,7 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         if (mottagning != null) {
             response.setHsaIdentity(mottagning.getId());
             response.setName(mottagning.getNamn());
+            response.setEmail(mottagning.getMail());
             response.setStartDate(mottagning.getStart());
             response.setEndDate(mottagning.getEnd());
             return response;
@@ -164,6 +165,19 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
     @Override
     public GetCareUnitResponseType getCareUnit(AttributedURIType logicalAddress, AttributedURIType id,
             LookupHsaObjectType parameters) throws HsaWsFault {
+
+        for (Vardgivare vardgivare : hsaService.getVardgivare()) {
+            for (Vardenhet vardenhet : vardgivare.getVardenheter()) {
+                for (Mottagning mottagning : vardenhet.getMottagningar()) {
+                    if (mottagning.getId().equals(parameters.getHsaIdentity())) {
+                        GetCareUnitResponseType response = new GetCareUnitResponseType();
+                        response.setCareUnitHsaIdentity(vardenhet.getId());
+                        return response;
+                    }
+                }
+            }
+        }
+
         return null;
     }
 

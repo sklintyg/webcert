@@ -16,12 +16,12 @@ class FkSkickarFraga extends WsClientFixture {
 
     private def questionResponder
 
-    String amne;
-    String externReferens;
-    String frageText;
-    String intygsId;
-    String vardpersonal;
-    String vardenhet;
+    String amne
+    String externReferens
+    String frageText
+    String intygsId
+    String vardpersonal
+    String vardenhet
 
     public FkSkickarFraga() {
         this(WsClientFixture.LOGICAL_ADDRESS)
@@ -33,7 +33,7 @@ class FkSkickarFraga extends WsClientFixture {
         questionResponder = createClient(ReceiveMedicalCertificateQuestionResponderInterface.class, url)
     }
 
-    public String resultat() {
+    def resultat() {
         // read request template from file
         JAXBContext jaxbContext = JAXBContext.newInstance(ReceiveMedicalCertificateQuestionType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
