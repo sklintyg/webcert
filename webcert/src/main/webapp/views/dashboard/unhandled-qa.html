@@ -16,10 +16,10 @@
         <h2 class="col-head">{{selectedUnit.namn}}</h2>
 
         <span ng-if="!widgetState.queryMode">Visar alla ohanterade frågor för {{selectedUnit.namn}}<br></span> 
-        <button class="btn btn-link btn-link-minimal" ng-click="isCollapsed = !isCollapsed" ng-switch="isCollapsed">
+        <button class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
           <span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span>
         </button>
-        <div ng-hide="isCollapsed" class="form-horizontal form-inline" style="background-color: #f5f5f5;">
+        <div ng-show="!widgetState.queryFormCollapsed" class="form-horizontal form-inline" style="background-color: #f5f5f5;">
           <div style="padding: 20px">
             <div class="control-group">
               <label class="control-label">Frågor från</label>

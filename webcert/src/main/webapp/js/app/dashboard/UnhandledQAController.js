@@ -24,10 +24,9 @@ angular
                                 queryStartFrom : 0,
                                 queryPageSize: 10,
                                 totalCount : 0,
-                                currentList : undefined
+                                currentList : undefined,
+                                queryFormCollapsed: true
                             }
-
-                            $scope.isCollapsed = true;
 
                             $scope.qaListUnhandled = {};
                             $scope.qaListQuery = {};
@@ -232,7 +231,7 @@ angular
                                 $log.debug("ActiveUnit is now:" + unit);
                                 $scope.activeUnit = unit;
                                 $scope.widgetState.queryMode = false;
-                                $scope.isCollapsed = true;
+                                $scope.widgetState.queryFormCollapsed = true;
                                 $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
 
                             }
