@@ -139,14 +139,17 @@
             </table>
           </div>
           <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}}</div>
-          <div ng-show="widgetState.queryMode && (widgetState.queryStartFrom + widgetState.queryPageSize) < widgetState.totalCount">
+          <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
             <button class="btn btn-info" title="Hämta fler träffar" ng-click="fetchMore()" ng-disabled="widgetState.fetchingMoreInProgress">
                       <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress">Hämta fler träffar
+            </button>
+            <p></p>
           </div>
         </div>
         <!-- spinner end -->
       </div>
     </div>
   </div>
+  
 </div>
 
