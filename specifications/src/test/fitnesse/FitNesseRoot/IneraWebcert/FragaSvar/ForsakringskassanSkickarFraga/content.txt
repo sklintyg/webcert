@@ -17,13 +17,13 @@
 
 !3 så ska det finnas en fråga med extern referens 'FK-1234' från Försäkringskassan som behöver svaras på
 |Fragor och svar|
-|externReferens|finns?|fraga?|
-|FK-1234|true|Fungerar detta?|
+|externReferens|finns?|fraga?|internId?|
+|FK-1234|true|Fungerar detta?|$id=|
 
 !3 och ett mejl har skickats till enheten
 |Mail|
 |mottagare?|amne?|innehall?|
-|!-[enhet1@hsastub.se]-!|!-Inkommen fråga från Försäkringskassan finns att hämta i WebCert.-!|!-Vårdenhetens namn är Vårdenhet 1 och id är enhet-1<br/><br/><a href="http://localhost:9088/questions/enhet-1">Länk till vårdenheten</a><br/><br/><a href="http://localhost:9088/questions/enhet-1/intyg-1">Länk till frågan</a>-!|
+|!-[enhet1@hsastub.se]-!|!-Inkommen fråga från Försäkringskassan-!|!-<p>Försäkringskassan har skickat en ny fråga till Vårdenhet 1.<br>Frågan kan besvaras i <a href="http://localhost:9088/m/fk7263/webcert/intyg/-!$id!-#/view">Webcert</a></p>-!|
 
 
 

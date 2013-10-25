@@ -3,6 +3,7 @@ package se.inera.webcert.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +27,9 @@ import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.fkstub.util.ResultOfCallUtil;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Id;
@@ -34,9 +38,6 @@ import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
@@ -305,7 +306,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar result = service.saveSvar(1L, "svarsText");
 
         verify(fragasvarRepository).findOne(1L);
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService, times(2)).getWebCertUser();
         verify(fragasvarRepository).save(fragaSvar);
         verify(sendAnswerToFKClient).sendMedicalCertificateAnswer(any(AttributedURIType.class),
                 any(SendMedicalCertificateAnswerType.class));

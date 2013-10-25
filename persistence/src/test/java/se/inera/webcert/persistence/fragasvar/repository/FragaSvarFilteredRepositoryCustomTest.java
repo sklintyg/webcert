@@ -156,10 +156,10 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Test
     public void testFilterWaitingForReplyFromFK() {
         //Add correct FragaSvar into repo
-        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.OVRIGT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.ARBETSTIDSFORLAGGNING,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.AVSTAMNINGSMOTE,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.KONTAKT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.OVRIGT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",new LocalDateTime(2013,10,01,0,0),false));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.ARBETSTIDSFORLAGGNING,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",new LocalDateTime(2013,10,02,0,0),false));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.AVSTAMNINGSMOTE,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",new LocalDateTime(2013,10,03,0,0),false));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.KONTAKT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",new LocalDateTime(2013,10,04,0,0),false));
 
         //Add incorrect data into repo. Create filter to more easily create them with util function.
         FragaSvarFilter tempfilter = new FragaSvarFilter();
@@ -248,9 +248,9 @@ public class FragaSvarFilteredRepositoryCustomTest {
     public void testFilterOHanterade() {
         //Add correct FragaSvar into repo
         fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarSvar(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.OVRIGT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,null,false,"SVAR"));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarSvar(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.ARBETSTIDSFORLAGGNING,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,null,false,"SVAR"));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarSvar(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.AVSTAMNINGSMOTE,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,null,false,"SVAR"));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarSvar(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_EXTERNAL_ACTION,Amne.KONTAKT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,null,false,"SVAR"));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarSvar(FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.ARBETSTIDSFORLAGGNING, "WC", FragaSvarTestUtil.visa_fraga, "HSA-ID", null, null, false, "SVAR"));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarSvar(FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.AVSTAMNINGSMOTE, "WC", FragaSvarTestUtil.visa_fraga, "HSA-ID", null, null, false, "SVAR"));
+        fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarSvar(FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.KONTAKT, "WC", FragaSvarTestUtil.visa_fraga, "HSA-ID", null, null, false, "SVAR"));
         fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,Amne.PAMINNELSE,"FK",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
         fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,Amne.MAKULERING_AV_LAKARINTYG,"FK",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));
         fragasvarRepository.save(FragaSvarTestUtil.buildFragaSvarFraga(FragaSvarTestUtil.ENHET_1_ID,Status.ANSWERED,Amne.KONTAKT,"WC",FragaSvarTestUtil.visa_fraga,"HSA-ID",null,false));

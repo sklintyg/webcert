@@ -32,11 +32,15 @@ var webcertResources = {
         "info.noreadytosigncertsfound" : "Inga klarmarkerade intyg hittades.",
         "info.loadingdata" :"Uppdaterar lista...",
         "info.nounanswered.qa.for.unit" : "Inga ohanterade frågor & svar för enheten.",
+        "info.query.noresults" : "Sökningen gav inga resultat.",
+        "info.query.error" : "Sökningen kunde inte utföras.",
+        "info.running.query" : "Söker...",
         
         //error messages
         "error.unsignedcerts.couldnotbeloaded" :"Kunde inte hämta osignerade intyg!",
         "error.unansweredcerts.couldnotbeloaded":"Kunde inte hämta listan med ohanterade frågor och svar!",
         "error.readytosigncerts.couldnotbeloaded": "Kunde inte hämta intyg klara för signering!"
+           
     },
     "en": {
         "webcert.header": "Webcert Application (en)",

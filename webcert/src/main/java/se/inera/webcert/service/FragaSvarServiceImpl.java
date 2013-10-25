@@ -1,5 +1,6 @@
 package se.inera.webcert.service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,8 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +22,14 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -51,6 +55,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
     private static final String FRAGE_STALLARE_WEBCERT = "WC";
+
+    private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE,
+            Amne.KONTAKT, Amne.OVRIGT);
 
     @Autowired
     private MailNotificationService mailNotificationService;
@@ -159,38 +166,39 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar saveSvar(Long fragaSvarsId, String svarsText) {
         // Input sanity check
         if (StringUtils.isEmpty(svarsText)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "SvarsText cannot be empty!");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "SvarsText cannot be empty!");
         }
 
         // Look up entity in repository
         FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarsId);
         if (fragaSvar == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not find FragaSvar with id:" + fragaSvarsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Could not find FragaSvar with id:" + fragaSvarsId);
         }
 
         // Is user authorized to save an answer to this question?
-        WebCertUser user = webCertUserService.getWebCertUser();
-        String fragaEnhetsId = fragaSvar.getVardperson().getEnhetsId();
-        if (!user.getVardenheterIds().contains(fragaEnhetsId)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User " + user.getHsaId() + " not authorized to answer question for enhet "
-                    + fragaEnhetsId);
-        }
+        verifyEnhetsAuth(fragaSvar.getVardperson().getEnhetsId());
 
         if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "FragaSvar with id " + fragaSvar.getInternReferens().toString()
-                    + " has invalid state for saving answer(" + fragaSvar.getStatus() + ")");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "FragaSvar with id "
+                    + fragaSvar.getInternReferens().toString() + " has invalid state for saving answer("
+                    + fragaSvar.getStatus() + ")");
         }
 
         // Implement Business Rule RE-20
         if (Amne.PAMINNELSE.equals(fragaSvar.getAmne())) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "FragaSvar with id " + fragaSvar.getInternReferens().toString()
-                    + " has invalid Amne(" + fragaSvar.getAmne() + ") for saving answer");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "FragaSvar with id "
+                    + fragaSvar.getInternReferens().toString() + " has invalid Amne(" + fragaSvar.getAmne()
+                    + ") for saving answer");
         }
 
         // Implement Business Rule RE-06
+        WebCertUser user = webCertUserService.getWebCertUser();
         if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.isLakare()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id " + fragaSvar.getInternReferens().toString()
-                    + " and amne (" + fragaSvar.getAmne() + ") can only be answered by user that is Lakare");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
+                    + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
+                    + ") can only be answered by user that is Lakare");
         }
         // Ok, lets save the answer
         fragaSvar.setSvarsText(svarsText);
@@ -207,7 +215,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 sendType);
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOG.error("Failed to send answer to FK, result was " + response.getResult().toString());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult().getErrorText());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
+                    .getErrorText());
         }
         return saved;
 
@@ -217,11 +226,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar saveNewQuestion(String intygId, Amne amne, String frageText) {
         // Input sanity check
         if (StringUtils.isEmpty(frageText)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "frageText cannot be empty!");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "frageText cannot be empty!");
         }
 
         if (amne == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Amne cannot be null!");
+        } else if (!VALID_VARD_AMNEN.contains(amne)) {
+            // Businessrule RE-013
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
+                    + " for new question from vard!");
         }
 
         // Fetch from Intygstjansten
@@ -231,13 +245,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         Vardperson vardPerson = FragaSvarConverter.convert(utlatande.getSkapadAv());
 
         // Is user authorized to save an answer to this question?
-        // Yes, if current user has the cerificate issuers unit in his list of authorized units
-        WebCertUser user = webCertUserService.getWebCertUser();
-        String fragaEnhetsId = vardPerson.getEnhetsId();
-        if (!user.getVardenheterIds().contains(fragaEnhetsId)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User " + user.getHsaId() + " not authorized to answer question for enhet "
-                    + fragaEnhetsId);
-        }
+        verifyEnhetsAuth(vardPerson.getEnhetsId());
+
 
         IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(utlatande);
 
@@ -262,7 +271,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 null, sendType);
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOG.error("Failed to send question to FK, result was " + response.getResult().toString());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult().getErrorText());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
+                    .getErrorText());
         }
         return saved;
 
@@ -273,7 +283,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Look up entity in repository
         FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
         if (fragaSvar == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not find FragaSvar with id:" + frageSvarId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Could not find FragaSvar with id:" + frageSvarId);
         }
         // Set & save new vidarebefordrad state
         fragaSvar.setVidarebefordrad(isDispatched);
@@ -281,40 +292,63 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    public FragaSvar closeQuestionAsHandled(Long frageSvarId){
+    public FragaSvar closeQuestionAsHandled(Long frageSvarId) {
         FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
         if (fragaSvar == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not find FragaSvar with id:" + frageSvarId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Could not find FragaSvar with id:" + frageSvarId);
         }
 
         fragaSvar.setStatus(Status.CLOSED);
         FragaSvar saved = fragaSvarRepository.save(fragaSvar);
 
-
         return saved;
     }
 
     @Override
-    public FragaSvar openQuestionAsUnhandled(Long frageSvarId){
+    public FragaSvar openQuestionAsUnhandled(Long frageSvarId) {
         FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
         if (fragaSvar == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Could not find FragaSvar with id:" + frageSvarId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Could not find FragaSvar with id:" + frageSvarId);
         }
 
         if (fragaSvar.getSvarsText() != null && !fragaSvar.getSvarsText().isEmpty()) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
-            if(fragaSvar.getFrageStallare().equalsIgnoreCase(FRAGE_STALLARE_WEBCERT)){
+            if (fragaSvar.getFrageStallare().equalsIgnoreCase(FRAGE_STALLARE_WEBCERT)) {
                 fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
-            }else{
+            } else {
                 fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
             }
-
 
         }
         FragaSvar saved = fragaSvarRepository.save(fragaSvar);
 
-
         return saved;
+    }
+
+    @Override
+    public List<FragaSvar> getFragaSvarByFilter(FragaSvarFilter filter, int startFrom, int pageSize) {
+        verifyEnhetsAuth(filter.getEnhetsId());
+        Pageable pages = new PageRequest(startFrom, pageSize);
+        return fragaSvarRepository.filterFragaSvar(filter, pages);
+    }
+
+
+
+    @Override
+    public int getFragaSvarByFilterCount(FragaSvarFilter filter) {
+        verifyEnhetsAuth(filter.getEnhetsId());
+        return fragaSvarRepository.filterCountFragaSvar(filter);
+    }
+    
+    private void verifyEnhetsAuth(String enhetsId) {
+        WebCertUser user = webCertUserService.getWebCertUser();
+        if (!user.getVardenheterIds().contains(enhetsId)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User "
+                    + user.getHsaId() + " not authorized for for enhet " + enhetsId);
+        }
+
     }
 }

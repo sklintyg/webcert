@@ -102,7 +102,7 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         root = query.from(FragaSvar.class);
 
         query.where(createPredicate(filter));
-
+        query.orderBy(builder.desc(root.get("senasteHandelse")));
         return entityManager.createQuery(query).getResultList();
     }
 
@@ -114,9 +114,8 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
         root = query.from(FragaSvar.class);
 
-
         query.where(createPredicate(filter));
-
+        query.orderBy(builder.desc(root.get("senasteHandelse")));
         return entityManager.createQuery(query).setMaxResults(pages.getPageSize()).setFirstResult(pages.getPageNumber()).getResultList();
     }
 

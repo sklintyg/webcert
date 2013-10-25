@@ -1,0 +1,37 @@
+{
+    "id" : "testland",
+    "namn" : "Landstinget Testland",
+    "vardenheter" : [
+        {
+            "id" : "cityakuten",
+            "namn" : "Testland Cityakuten",
+            "mail" : "cityakuten@testland.se"
+        },
+        {
+            "id" : "landcentralen",
+            "namn" : "Landcentralen",
+            "mottagningar" : [
+                {
+                    "id" : "vansterakuten",
+                    "namn" : "Vänsterakuten",
+                    "mail" : "vansterakuten@testland.se"
+                },
+                {
+                    "id" : "hogerakuten",
+                    "namn" : "Högerakuten"
+                }
+            ]
+        },
+        {
+            "id" : "sjocentralen",
+            "namn" : "Sjöcentralen",
+            "mail" : "sjocentralen@testland.se",
+            "mottagningar" : [
+                {
+                    "id" : "kustakuten",
+                    "namn" : "Kustakuten"
+                }
+            ]
+        }
+    ]
+}

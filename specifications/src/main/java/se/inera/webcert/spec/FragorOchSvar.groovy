@@ -23,8 +23,12 @@ class FragorOchSvar extends RestClientFixture {
             fragaSvar = restClient.get(path: "questions/extern/${externReferens}").data
     }
 
-    public boolean finns() {
+    def finns() {
         return fragaSvar != null
+    }
+
+    def internId() {
+        fragaSvar.internReferens
     }
 
     def fraga() {

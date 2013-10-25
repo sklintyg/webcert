@@ -45,3 +45,14 @@
 | OVRIGT | FK-6000 | FK | Hur allvarlig är Zlatans knäskada? | intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-10-07 | PENDING_INTERNAL_ACTION | false | | | FK initierar frågan och inväntar svar från vården |
 | OVRIGT | FK-6001 | FK | Hur allvarlig är Zlatans knäskada? | intyg-1 | TST5565594230-106J | Markus Gran | centrum-vast | 2013-10-08 | PENDING_INTERNAL_ACTION | true | | | FK initierar frågan och inväntar svar från vården, vidarebefodrat av administratören |
 | OVRIGT | FK-6004 | FK | Hur allvarlig är Zlatans knäskada? | intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-11-09 | CLOSED | false | Det ordnar sig. | 2011-11-09 | Gammal fråga som besvarades av vården |
+
+!3 Frågor med svarSenast datum.
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | sistaDatumForSvar|
+| KOMPLETTERING_AV_LAKARINTYG | FK-7000 | FK | Vi behöver en komplettering | intyg-1 | TST5565594230-106J | Markus Gran | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Komplettering önskad av FK | 2013-10-30 |
+| OVRIGT | | WC | Vi behöver ett snabbt svar | intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-10-03 | PENDING_EXTERNAL_ACTION | false | | | Vården initierar frågan och inväntar svar från FK | 2013-10-29 |
+| KOMPLETTERING_AV_LAKARINTYG | FK-7001 | FK | Vi behöver en komplettering | intyg-1 | TST5565594230-106J | Markus Gran | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Komplettering önskad av FK | 2013-10-29 |
+| OVRIGT | | WC | Vi behöver ett snabbt svar | intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-10-03 | PENDING_EXTERNAL_ACTION | false | | | Vården initierar frågan och inväntar svar från FK | 2013-10-28 |
+| KOMPLETTERING_AV_LAKARINTYG | FK-7002 | FK | Vi behöver en komplettering | intyg-1 | TST5565594230-106J | Markus Gran | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Komplettering önskad av FK | 2013-10-27 |
+| OVRIGT | | WC | Vi behöver ett snabbt svar | intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-10-03 | PENDING_EXTERNAL_ACTION | false | | | Vården initierar frågan och inväntar svar från FK | 2013-10-26|
