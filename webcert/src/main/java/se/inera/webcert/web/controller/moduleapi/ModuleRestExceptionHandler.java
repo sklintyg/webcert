@@ -12,7 +12,7 @@ public class ModuleRestExceptionHandler implements ExceptionMapper<RuntimeExcept
 
     @Override
     public Response toResponse(RuntimeException e) {
-        ModuleRestExceptionResponse moduleResponse = new ModuleRestExceptionResponse();
+        ModuleRestExceptionResponse moduleResponse;
         //If this is an exception thown by our code, we have a more specific error code
         if (e instanceof WebCertServiceException) {
             moduleResponse = new ModuleRestExceptionResponse(((WebCertServiceException) e).getErrorCode(), e.getMessage());

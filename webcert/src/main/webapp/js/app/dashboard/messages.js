@@ -20,11 +20,11 @@ var webcertResources = {
         "certificatetypes.rli.typename" : "Läkarintyg utebliven resa (RLI)",
         
         // qa messages
-        "qa.waiting.svarfranvarden" : "Svar från vårdenheten",
-        "qa.waiting.svarfranfk" : "Svar från Försäkringskassan",
-        "qa.waiting.komplettering" : "Komplettering från vårdenheten",
-        "qa.waiting.markhandled" : "Att markeras som hanterad",
-        "qa.waiting.handled" : "Inget - frågan är hanterad",
+        "qa.waiting.svarfranvarden" : "Svara",
+        "qa.waiting.svarfranfk" : "Invänta svar från Försäkringskassan",
+        "qa.waiting.komplettering" : "Komplettera",
+        "qa.waiting.markhandled" : "Markera som hanterad",
+        "qa.waiting.handled" : "Ingen",
         
         //info messages
         "info.nounsignedcertsfound" : "Inga osignerade intyg hittades.",

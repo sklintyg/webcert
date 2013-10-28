@@ -122,11 +122,27 @@ public class SvaraOchFraga {
             waitFor {
                 result = page.sendQuestion()
             }
+
+            waitFor {
+
+                !page.newQuestionForm.isDisplayed()
+            }
             sleep(1000L)
         }
         result
     }
 
+    public void valjVardenhet(String careunit){
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            waitFor {
+                page.selectCareUnit(careunit);
+            }
+
+        }
+    }
     public void markeraFragaSomHanterad(String internId){
         Browser.drive {
             waitFor {

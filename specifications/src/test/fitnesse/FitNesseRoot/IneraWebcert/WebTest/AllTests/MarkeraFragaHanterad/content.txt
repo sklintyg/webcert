@@ -16,6 +16,7 @@
 |script|!-SvaraOchFraga-!|
 |logga på som|5|
 |obehandladeFragarSidanVisas|
+|valj vardenhet|vardenhet-fit-1|
 |listaMedObehandladeFragarVisas|
 |visa fraga|$internReferens1|
 |intyg med fraga svar sidan visas|

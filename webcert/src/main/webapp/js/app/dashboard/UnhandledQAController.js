@@ -36,22 +36,22 @@ angular
                                 label : 'Visa Alla',
                                 value : 'ALLA'
                             }, {
-                                label : 'Alla ohanterade',
+                                label : 'Alla som kräver åtgärd',
                                 value : 'ALLA_OHANTERADE'
                             }, {
-                                label : 'Att markeras som hanterad',
+                                label : 'Markera som hanterad',
                                 value : 'MARKERA_SOM_HANTERAD'
                             }, {
-                                label : 'Komplettering från vårdenheten',
+                                label : 'Komplettera',
                                 value : 'KOMPLETTERING_FRAN_VARDEN'
                             }, {
-                                label : 'Svar från vårdenheten',
+                                label : 'Svara',
                                 value : 'SVAR_FRAN_VARDEN'
                             }, {
-                                label : 'Svar från Försäkringskassan',
+                                label : 'Invänta svar från Försäkringskassan',
                                 value : 'SVAR_FRAN_FK'
                             }, {
-                                label : 'Inget - frågan är hanterad',
+                                label : 'Ingen',
                                 value : 'HANTERAD'
                             } ];
 
