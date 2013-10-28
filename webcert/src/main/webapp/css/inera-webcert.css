@@ -345,6 +345,45 @@ body span:hover.qa-unit-selected {
   
 }
 
+.qa-filter-panel {
+  -webkit-border-radius: 0 5px 5px 5px;
+  -moz-border-radius: 0 5px 5px 5px;
+  -ms-border-radius: 0 5px 5px 5px;
+  -o-border-radius: 0 5px 5px 5px;
+  border-radius: 0 5px 5px 5px;
+}
+
+.qa-filter-panel {
+	padding: 10px;
+	font-size: 12px;
+	max-width: 800px;
+}
+
+.qa-filter-panel label {
+	display: inline-block;
+	font-size: 12px;
+  padding-right: 10px;
+}
+
+.qa-filter-panel .control-label {
+  font-size: 12px;
+  width: 120px;
+}
+
+.qa-filter-panel .control-group {
+  margin-bottom: 7px;
+}
+
+.qa-filter-panel .controls {
+  margin-left: 140px;
+}
+
+#query-count {
+	padding: 10px 0 20px 0;
+}
+
+#showing-nr-hits { padding-bottom: 10px;}
+
 /* bootstrap override */
 
 .control-label {
