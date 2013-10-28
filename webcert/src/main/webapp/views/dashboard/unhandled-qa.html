@@ -15,7 +15,7 @@
       <div ng-if="activeUnit!=null">
         <h2 class="col-head">{{selectedUnit.namn}}</h2>
 
-        <span ng-if="!widgetState.queryMode">Visar alla ohanterade frågor för {{selectedUnit.namn}}<br></span> 
+        <span ng-if="!widgetState.queryMode">Visar alla ohanterade frågor för {{selectedUnit.namn}}<br></span>
         <button class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
           <span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span>
         </button>
@@ -85,12 +85,13 @@
         <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery" show-content="!widgetState.runningQuery">
 
           <!-- No results message for unhandled -->
-          <div id="current-list-noResults" ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && !widgetState.queryMode && widgetState.currentList.length<1" class="alert alert-info">
+          <div id="current-list-noResults-unit" ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && !widgetState.queryMode && widgetState.currentList.length<1"
+            class="alert alert-info">
             <span message key="info.nounanswered.qa.for.unit"></span>
           </div>
 
           <!-- No results message for query -->
-          <div id="current-list-noResults" ng-show="!widgetState.activeErrorMessageKey && widgetState.currentList.length<1 && widgetState.queryMode" class="alert alert-info">
+          <div id="current-list-noResults-query" ng-show="widgetState.totalCount<1 && widgetState.queryMode" class="alert alert-info">
             <span message key="info.query.noresults"></span>
           </div>
 
@@ -101,10 +102,7 @@
             <span message key="{{widgetState.activeErrorMessageKey}}"></span>
           </div>
 
-          <div id="query-count" ng-show="widgetState.queryMode">Sökresultat - {{widgetState.totalCount}} träffar för {{selectedUnit.namn}}
-          
-          <span ng-show="widgetState.currentList.length<1"> ing täffar ju</span>
-          </div>
+          <div id="query-count" ng-show="widgetState.queryMode && widgetState.totalCount>0">Sökresultat - {{widgetState.totalCount}} träffar för {{selectedUnit.namn}}</div>
 
           <!-- qa table -->
           <div class="row-fluid" ng-show="widgetState.currentList.length>0" id="qaTable">
@@ -141,7 +139,7 @@
           <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}}</div>
           <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
             <button class="btn btn-info" title="Hämta fler träffar" ng-click="fetchMore()" ng-disabled="widgetState.fetchingMoreInProgress">
-                      <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress">Hämta fler träffar
+              <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress">Hämta fler träffar
             </button>
             <p></p>
           </div>
@@ -150,6 +148,6 @@
       </div>
     </div>
   </div>
-  
+
 </div>
 
