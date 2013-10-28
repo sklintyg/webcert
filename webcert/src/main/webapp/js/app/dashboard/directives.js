@@ -65,12 +65,12 @@ angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location',
         $scope.menuItems = [
 	        {
 	        	link :'/web/dashboard#/about.support', 
-	          label:'Support',
+	          label:'Support'
 	        },
 	        {
 	        	link :'/web/dashboard#/about.webcert', 
-	          label:'Om webcert',
-	        },
+	          label:'Om webcert'
+	        }
         ];
         
         var currentRoute = $location.path().substring( $location.path().lastIndexOf('.') + 1) || 'index';
