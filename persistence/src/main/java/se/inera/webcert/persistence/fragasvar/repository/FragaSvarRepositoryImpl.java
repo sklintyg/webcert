@@ -22,12 +22,10 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
     @PersistenceContext
     private EntityManager entityManager;
 
-    CriteriaBuilder builder;
-    CriteriaQuery<FragaSvar> query;
-    Root<FragaSvar> root;
 
 
-    private Predicate createPredicate(FragaSvarFilter filter){
+
+    private Predicate createPredicate(FragaSvarFilter filter, CriteriaBuilder builder,Root<FragaSvar> root){
         Predicate pred= builder.conjunction();
 
         pred = builder.and(pred, builder.equal(root.get("vardperson").get("enhetsId"), filter.getEnhetsId()));
@@ -95,38 +93,48 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
     @Override
     public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter) {
+        CriteriaBuilder builder;
+        CriteriaQuery<FragaSvar> query;
+        Root<FragaSvar> root;
 
         builder = entityManager.getCriteriaBuilder();
         query = builder.createQuery(FragaSvar.class);
 
         root = query.from(FragaSvar.class);
 
-        query.where(createPredicate(filter));
+        query.where(createPredicate(filter, builder, root));
         query.orderBy(builder.desc(root.get("senasteHandelse")));
         return entityManager.createQuery(query).getResultList();
     }
 
     @Override
     public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, Pageable pages) {
+        CriteriaBuilder builder;
+        CriteriaQuery<FragaSvar> query;
+        Root<FragaSvar> root;
 
         builder = entityManager.getCriteriaBuilder();
         query = builder.createQuery(FragaSvar.class);
 
         root = query.from(FragaSvar.class);
 
-        query.where(createPredicate(filter));
+        query.where(createPredicate(filter, builder, root));
         query.orderBy(builder.desc(root.get("senasteHandelse")));
         return entityManager.createQuery(query).setMaxResults(pages.getPageSize()).setFirstResult(pages.getPageNumber()).getResultList();
     }
 
     @Override
     public int filterCountFragaSvar(FragaSvarFilter filter) {
+        CriteriaBuilder builder;
+        CriteriaQuery<FragaSvar> query;
+        Root<FragaSvar> root;
+
         builder = entityManager.getCriteriaBuilder();
         query = builder.createQuery(FragaSvar.class);
 
         root = query.from(FragaSvar.class);
 
-        query.where(createPredicate(filter));
+        query.where(createPredicate(filter, builder, root));
 
         return entityManager.createQuery(query).getResultList().size();
     }
