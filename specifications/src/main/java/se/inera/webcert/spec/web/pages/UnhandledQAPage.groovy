@@ -13,6 +13,10 @@ class UnhandledQAPage extends Page {
         //sendCertificateBtn { $("#loginBtn") }
     }
 
+    def selectCareUnit(String careunit){
+        $("#select-active-unit-${careunit}").click()
+    }
+
     def showQA(String externid) {
         $("#showqaBtn-${externid}").click()
     }
