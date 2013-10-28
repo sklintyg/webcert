@@ -35,10 +35,10 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
         if (!"dev".equals(profiles) && !"test".equals(profiles) && !"qa".equals(profiles)) {
             return null;
         }
-        
-        String json = request.getParameter("userJsonDisplay");
-        //we manually encode the json parameter
-        json = URLDecoder.decode(json,"ISO-8859-1");
+
+        String parameter = request.getParameter("userJsonDisplay");
+        // we manually encode the json parameter
+        String json = URLDecoder.decode(parameter, "ISO-8859-1");
         if (json == null) {
             return null;
         }
