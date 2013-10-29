@@ -199,4 +199,16 @@ public class SvaraOchFraga {
         return result
     }
 
+
+    public void visaAvanceratFilter(){
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+
+            waitFor{
+                page.qaUnhandledPanel(internId).isDisplayed()
+            }
+        }
+    }
 }

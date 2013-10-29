@@ -16,10 +16,10 @@
         <h2 class="col-head">{{selectedUnit.namn}}</h2>
 
         <span ng-if="!widgetState.queryMode">Visar alla ohanterade frågor för {{selectedUnit.namn}}<br></span>
-        <button class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
+        <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
           <span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span>
         </button>
-        <div ng-show="!widgetState.queryFormCollapsed" class="form-horizontal form-inline" style="background-color: #f5f5f5;">
+        <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed" class="form-horizontal form-inline" style="background-color: #f5f5f5;">
           <div style="padding: 20px">
             <div class="control-group">
               <label class="control-label">Frågor från</label>
@@ -76,7 +76,7 @@
               </div>
             </div>
             <div>
-              <button class="btn" ng-click="doSearch()">Sök</button>
+              <button id="filter-qa-btn" class="btn" ng-click="doSearch()">Sök</button>
               <button class="btn" ng-click="resetSearchForm()">Återställ sökformuläret</button>
             </div>
           </div>

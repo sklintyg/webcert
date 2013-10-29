@@ -20,4 +20,9 @@ class UnhandledQAPage extends Page {
     def showQA(String externid) {
         $("#showqaBtn-${externid}").click()
     }
+
+    def showAdvancedFilter(){
+        $("#show-advanced-filter-btn").click()
+    }
+
 }
