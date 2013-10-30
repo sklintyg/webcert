@@ -10,8 +10,8 @@ class UnhandledQAPage extends Page {
         unhandledQATable(required: false) { $("#qaTable") }
         advancedFilterForm { $("#advanced-filter-form") }
         filterBtn { $("#filter-qa-btn") }
-
-        //userSelect { $("#jsonSelect") }
+        replyBy { $("#filter-reply-by") }
+            //userSelect { $("#jsonSelect") }
         //certificateType { $("#certType") }
         //sendCertificateBtn { $("#loginBtn") }
     }
