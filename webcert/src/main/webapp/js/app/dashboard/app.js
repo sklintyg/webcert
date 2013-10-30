@@ -7,20 +7,20 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
         templateUrl : '/views/dashboard/index.html',
         controller : 'WebCertCtrl'
     }).when('/create', {
-    	templateUrl : '/views/dashboard/create-cert.html',
-    	controller : 'CreateCertCtrl'
+        templateUrl : '/views/dashboard/create-cert.html',
+        controller : 'CreateCertCtrl'
     }).when('/unhandled-qa', {
-    	templateUrl : '/views/dashboard/unhandled-qa.html',
-    	controller : 'UnhandledQACtrl'
+        templateUrl : '/views/dashboard/unhandled-qa.html',
+        controller : 'UnhandledQACtrl'
     }).when('/view', {
-    	templateUrl : '/views/dashboard/view-cert.html',
-    	controller : 'ViewCertCtrl'
+        templateUrl : '/views/dashboard/view-cert.html',
+        controller : 'ViewCertCtrl'
     }).when('/about.support', {
-    	templateUrl : '/views/dashboard/about.support.html',
-    	controller : 'AboutWebcertCtrl'
+        templateUrl : '/views/dashboard/about.support.html',
+        controller : 'AboutWebcertCtrl'
     }).when('/about.webcert', {
-    	templateUrl : '/views/dashboard/about.webcert.html',
-    	controller : 'AboutWebcertCtrl'
+        templateUrl : '/views/dashboard/about.webcert.html',
+        controller : 'AboutWebcertCtrl'
     }).otherwise({
         redirectTo : '/index'
     });
@@ -28,6 +28,19 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
     // Add cache buster interceptor
     $httpProvider.interceptors.push('httpRequestInterceptorCacheBuster');
 } ]);
+
+// Global config of default date picker config (individual attributes can be
+// overridden per directive usage)
+angular.module('wcDashBoardApp').constant('datepickerPopupConfig', {
+    dateFormat : "yyyy-MM-dd",
+    closeOnDateSelection : true,
+    appendToBody : false,
+    showWeeks : true,
+    closeText : 'OK',
+    currentText : "Idag",
+    toggleWeeksText : "Visa Veckor",
+    clearText : "Rensa"
+});
 
 // Inject language resources
 angular.module('wcDashBoardApp').run([ '$rootScope', 'messageService', function($rootScope, messageService) {
