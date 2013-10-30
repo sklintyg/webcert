@@ -90,6 +90,13 @@
                 "efternamn" : "Testsson",
                 "hsaId" : "fitness1",
                 "lakare" : false
+            },
+            {
+                "fornamn" : "Han",
+                "efternamn" : "Solo",
+                "hsaId" : "hansolo",
+                "lakare" : false
+
             }
         ];
 
@@ -127,6 +134,7 @@
                         <option value="3">Adam Admin (Administratör)</option>
                         <option value="4">Adamo Admin (Administratör flera enheter)</option>
                         <option value="5">Fitnesse Admin (Administratör)</option>
+                        <option value="5">Han Solo (Administratör, 1 enhet)</option>
                     </select>
                     </p>
 
