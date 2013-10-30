@@ -33,7 +33,7 @@ angular
                             $scope.activeUnit = null;
 
                             $scope.statusList = [ {
-                                label : 'Visa Alla',
+                                label : 'Visa alla',
                                 value : 'ALLA'
                             }, {
                                 label : 'Alla som kräver åtgärd',
@@ -66,7 +66,7 @@ angular
                                 // boolean
                                 changedFrom : undefined,
                                 changedTo : undefined,
-                                vantarPaSelector : $scope.statusList[0],
+                                vantarPaSelector : $scope.statusList[1],
                                 replyLatest : undefined
                             }
 
@@ -125,7 +125,7 @@ angular
                             }
                             $scope.resetSearchForm = function() {
                                 $scope.qp = angular.copy(defaultQuery);
-                                $scope.qp.vantarPaSelector = $scope.statusList[0];
+                                $scope.qp.vantarPaSelector = $scope.statusList[1];
 
                             }
 

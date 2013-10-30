@@ -4,14 +4,16 @@
       <span message key="dashboard.unanswered.title"></span>
     </h1>
     <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading">
-      <h2>
-        Välj enhet <span style="font-size: 12px; color: #999">endast dina medarbetaruppdrag för {{MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn}} visas</span>
-      </h2>
-
-      <div class="row-fluid">
-        <div wc-care-unit-clinic-selector></div>
+      <div ng-show="units.length > 1">
+	      <h2>
+	        Välj enhet <span style="font-size: 12px; color: #999">endast dina medarbetaruppdrag för {{MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn}} visas</span>
+	      </h2>
+	
+	      <div class="row-fluid">
+	        <div wc-care-unit-clinic-selector></div>
+	      </div>
       </div>
-
+      
       <div ng-if="activeUnit!=null">
         <h2 class="col-head">{{selectedUnit.namn}}</h2>
 
@@ -123,7 +125,7 @@
 	                  <button class="btn btn-info" title="Visa intyget och frågan/svaret" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
 	                </td>
 	                <td>
-	                  <button class="btn btn-info" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret" ng-click="openMailDialog(qa)">
+	                  <button class="btn btn-info" ng-disabled="qa.vidarebefordrad" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret" ng-click="openMailDialog(qa)">
 	                    <img src="/img/mail.png">
 	                  </button>
 	                </td>
