@@ -30,7 +30,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <meta name="ROBOTS" content="nofollow, noindex"/>
 
-    <title>WebCert test inloggning</title>
+    <title>Webcert test inloggning</title>
 
     <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon"/>
 
@@ -111,7 +111,7 @@
             <div class="content row">
 
 
-                <h1>Testinloggningar WebCert</h1>
+                <h1>Testinloggningar Webcert</h1>
 
                 <p class="well">Templatelista till vänster - Manuella ändringar kan göras i jsonstrukturen - detta
                     omvandlas
