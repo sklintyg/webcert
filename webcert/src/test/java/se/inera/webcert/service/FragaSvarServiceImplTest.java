@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Pageable;
 import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
@@ -37,6 +38,7 @@ import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -388,6 +390,69 @@ public class FragaSvarServiceImplTest {
         when(fragasvarRepository.findOne(1L)).thenReturn(null);
         service.saveSvar(1L, "svarsText");
 
+    }
+
+    @Test
+    public void testVerifyEnhetsAuthOK() {
+        WebCertUser webCertUser = webCertUser();
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        service.verifyEnhetsAuth("enhet");
+
+        verify(webCertUserService).getWebCertUser();
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testVerifyEnhetsAuthFail() {
+        WebCertUser webCertUser = webCertUser();
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        service.verifyEnhetsAuth("<doesnt-exist>");
+
+    }
+
+    @Test
+    public void testGetFragaSvarByFilterCountOK() {
+        WebCertUser webCertUser = webCertUser();
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        FragaSvarFilter filter = new FragaSvarFilter();
+        filter.setEnhetsId(webCertUser.getVardgivare().get(0).getVardenheter().get(0).getId());
+
+        when(fragasvarRepository.filterCountFragaSvar(Mockito.any(FragaSvarFilter.class))).thenReturn(42);
+        int result = service.getFragaSvarByFilterCount(filter);
+        assertEquals(42, result);
+
+        verify(webCertUserService).getWebCertUser();
+        verify(fragasvarRepository).filterCountFragaSvar(filter);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testGetFragaSvarByFilterCountAuthFail() {
+        WebCertUser webCertUser = webCertUser();
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        FragaSvarFilter filter = new FragaSvarFilter();
+        filter.setEnhetsId("no-auth-unit");
+        service.getFragaSvarByFilterCount(filter);
+    }
+
+    @Test
+    public void testGetFragaSvarByFilterOK() {
+        WebCertUser webCertUser = webCertUser();
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        FragaSvarFilter filter = new FragaSvarFilter();
+        filter.setEnhetsId(webCertUser.getVardgivare().get(0).getVardenheter().get(0).getId());
+        ArgumentCaptor<Pageable> capture = ArgumentCaptor.forClass(Pageable.class);
+        
+        List<FragaSvar> queryResult = new ArrayList<FragaSvar>();
+        queryResult.add(buildFragaSvar(1L, MAY, null));
+        queryResult.add(buildFragaSvar(2L, MAY, null));
+        
+        when(fragasvarRepository.filterFragaSvar(any(FragaSvarFilter.class), capture.capture())).thenReturn(queryResult);
+        List<FragaSvar> result = service.getFragaSvarByFilter(filter, 10, 20);
+
+        verify(webCertUserService).getWebCertUser();
+        verify(fragasvarRepository).filterFragaSvar(any(FragaSvarFilter.class), capture.capture());
+        assertEquals(capture.getValue().getPageSize(),20);
+        assertEquals(capture.getValue().getPageNumber(),10);
+        assertEquals(2, result.size());
     }
 
     private WebCertUser webCertUser() {
