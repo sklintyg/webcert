@@ -343,7 +343,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return fragaSvarRepository.filterCountFragaSvar(filter);
     }
     
-    private void verifyEnhetsAuth(String enhetsId) {
+    protected void verifyEnhetsAuth(String enhetsId) {
         WebCertUser user = webCertUserService.getWebCertUser();
         if (!user.getVardenheterIds().contains(enhetsId)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User "
