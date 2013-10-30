@@ -48,12 +48,12 @@
               <label class="control-label">Ändringsdatum</label>
               <div class="controls">
                 Från <input type="text" datepicker-popup="yyyy-MM-dd" ng-model="qp.changedFrom" is-open="dpFromOpen" datepicker-options="dateOptions" date-disabled="disabled(date, mode)"
-                  ng-required="true" />
+                  ng-required="true" id="filter-changedate-from"/>
                 <button class="btn" ng-click="openDPFrom()">
                   <i class="icon-calendar"></i>
                 </button>
                 till <input type="text" datepicker-popup="yyyy-MM-dd" ng-model="qp.changedTo" is-open="dpToOpen" min="minDate" max="'2015-06-22'" datepicker-options="dateOptions"
-                  date-disabled="disabled(date, mode)" ng-required="true" />
+                  date-disabled="disabled(date, mode)" ng-required="true" id="filter-changedate-to"/>
                 <button class="btn" ng-click="openDPTo()">
                   <i class="icon-calendar"></i>
                 </button>
@@ -69,7 +69,7 @@
               <label class="control-label">Svar senast</label>
               <div class="controls">
                 <input type="text" datepicker-popup="yyyy-MM-dd" ng-model="qp.replyLatest" is-open="dpAnswerOpen" min="minDate" max="'2015-06-22'" datepicker-options="dateOptions"
-                  date-disabled="disabled(date, mode)" ng-required="true" />
+                  date-disabled="disabled(date, mode)" ng-required="true" id="filter-reply-by"/>
                 <button class="btn" ng-click="openDPAnswer()">
                   <i class="icon-calendar"></i>
                 </button>

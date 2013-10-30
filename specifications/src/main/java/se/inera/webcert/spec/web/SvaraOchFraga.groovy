@@ -207,8 +207,67 @@ public class SvaraOchFraga {
             }
 
             waitFor{
-                page.qaUnhandledPanel(internId).isDisplayed()
+                page.showAdvancedFilter()
+            }
+            waitFor{
+                page.advancedFilterForm.isDisplayed()
             }
         }
     }
+    public void valjFragestallare(String fragestallare){
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            waitFor{
+                page.advancedFilterForm.isDisplayed()
+            }
+            if(fragestallare.equalsIgnoreCase("fk"))
+            {
+                selectFragestallareFK();
+            }else if(fragestallare.equalsIgnoreCase("wc"))
+            {
+                selectFragestallareWC();
+            }else {
+                selectFragestallareAlla();
+            }
+        }
+    }
+
+    public boolean visasFraga(String internid){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            waitFor {
+                page.unhandledQATable.isDisplayed()
+            }
+
+                result = page.isQAVisible( internid)
+
+        }
+        return result
+    }
+
+    public boolean doljsFraga(String internid){
+        def result = false
+        result = visasFraga(internid)
+        return !result
+    }
+
+
+
+    public void filtreraFragorOchSvar(){
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+
+            waitFor{
+                page.filterBtn.click()
+            }
+        }
+    }
+
 }
