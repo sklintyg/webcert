@@ -11,9 +11,6 @@ class UnhandledQAPage extends Page {
         advancedFilterForm { $("#advanced-filter-form") }
         filterBtn { $("#filter-qa-btn") }
         replyBy { $("#filter-reply-by") }
-            //userSelect { $("#jsonSelect") }
-        //certificateType { $("#certType") }
-        //sendCertificateBtn { $("#loginBtn") }
     }
 
     def selectCareUnit(String careunit){
