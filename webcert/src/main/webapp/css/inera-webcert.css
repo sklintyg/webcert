@@ -87,8 +87,9 @@ h3 {
 }
 span.headerbox-logo { padding: 3px 20px 0 30px;  border-right: 1px solid #595c66; display: block;}
 span.headerbox-date { padding-left: 20px; font-weight: bold; line-height: 34px; display: block;}
-div.headerbox-user { font-size: 13px; line-height: 16px;}
-div.headerbox-user-profile { padding-left: 20px; font-size: 13px; line-height: 16px;}
+div.headerbox-user { font-size: 13px; line-height: 16px; }
+div.headerbox-avatar { padding-right: 30px; }
+div.headerbox-user-profile { padding-right: 20px; font-size: 13px; line-height: 16px; text-align: right;}
 div.headerbox-user-profile a { color: #28b4c4; font-size: 13px; line-height: 14px;}
 span.location { font-size: 12px; font-weight: bold; }
 .logout-button {
