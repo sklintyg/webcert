@@ -30,6 +30,12 @@ var commonMessageResources = {
         "qa.amne.avstamningsmote" : "Avstämningsmöte",
         "qa.amne.komplettering_av_lakarintyg" : "Komplettering av läkarintyg",
         "qa.amne.ovrigt" : "Övrigt",
+        
+        "qa.measure.svarfranvarden" : "Svara",
+        "qa.measure.svarfranfk" : "Invänta svar från Försäkringskassan",
+        "qa.measure.komplettering" : "Komplettera",
+        "qa.measure.markhandled" : "Markera som hanterad",
+        "qa.measure.handled" : "Ingen",
 
     },
     "en" : {
