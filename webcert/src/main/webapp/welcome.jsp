@@ -84,11 +84,18 @@
                 "hsaId" : "adamo",
                 "lakare" : false
             },
-            //FitNesse Admin personal med 1 enhet
+           
             {
                 "fornamn" : "Test",
                 "efternamn" : "Testsson",
                 "hsaId" : "fitness1",
+                "lakare" : false
+            },
+            //FitNesse Admin personal med 1 enhet
+            {
+                "fornamn" : "fit",
+                "efternamn" : "nesse",
+                "hsaId" : "fitness2",
                 "lakare" : false
             },
             {
@@ -134,7 +141,8 @@
                         <option value="3">Adam Admin (Administratör)</option>
                         <option value="4">Adamo Admin (Administratör flera enheter)</option>
                         <option value="5">Fitnesse Admin (Administratör)</option>
-                        <option value="5">Han Solo (Administratör, 1 enhet)</option>
+                        <option value="6">Fitnesse Admin-1 (1 enhet)</option>
+                        <option value="7">Han Solo (Administratör, 1 enhet)</option>
                     </select>
                     </p>
 

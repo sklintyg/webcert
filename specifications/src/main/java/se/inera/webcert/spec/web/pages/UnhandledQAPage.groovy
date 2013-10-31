@@ -8,6 +8,7 @@ class UnhandledQAPage extends Page {
 
     static content = {
         unhandledQATable(required: false) { $("#qaTable") }
+        careUnitSelector(required: false) { $("#wc-care-unit-clinic-selector") }
         advancedFilterForm { $("#advanced-filter-form") }
         filterBtn { $("#filter-qa-btn") }
         replyBy { $("#filter-reply-by") }

@@ -34,6 +34,18 @@ public class SvaraOchFraga {
         }
     }
 
+                   
+    public boolean enhetsvaljareVisas(boolean expected) {
+    def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = page.careUnitSelector.isDisplayed()
+            
+        }
+        result == expected
+    }
 
     public boolean obehandladeFragarSidanVisas(){
         Browser.drive {
@@ -42,7 +54,7 @@ public class SvaraOchFraga {
            }
         }
     }
-
+    
     public boolean listaMedObehandladeFragarVisas() {
         def result = false
         Browser.drive {
