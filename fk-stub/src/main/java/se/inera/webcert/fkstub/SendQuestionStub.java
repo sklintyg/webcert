@@ -3,8 +3,7 @@ package se.inera.webcert.fkstub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
-
-import se.inera.webcert.fkstub.util.ResultOfCallUtil;
+import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;

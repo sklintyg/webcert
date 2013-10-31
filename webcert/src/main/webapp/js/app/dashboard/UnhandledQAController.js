@@ -79,7 +79,7 @@ angular
                                 replyLatest : undefined
                             }
                             
-                            $scope.decorateList = function() {
+                            $scope.decorateList = function(list) {
                               angular.forEach(list, function(qa, key) {
                                 fragaSvarCommonService.decorateSingleItemMeasure(qa);
                               });

@@ -1,5 +1,11 @@
 package se.inera.webcert.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
@@ -7,12 +13,6 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
@@ -25,10 +25,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Pageable;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.certificate.model.Utlatande;
-import se.inera.webcert.fkstub.util.ResultOfCallUtil;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -49,9 +48,6 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCert
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
@@ -207,7 +203,7 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test
-    public void testSaveFragaOK() throws JsonParseException, JsonMappingException, IOException {
+    public void testSaveFragaOK() throws IOException {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
 
         // create mocked Utlatande from intygstjansten
@@ -241,19 +237,19 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testSaveFragaNoFrageText() throws JsonParseException, JsonMappingException, IOException {
+    public void testSaveFragaNoFrageText() throws IOException {
         FragaSvar fraga = buildFraga(1L, null, Amne.OVRIGT, new LocalDateTime());
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testSaveFragaNoAmne() throws JsonParseException, JsonMappingException, IOException {
+    public void testSaveFragaNoAmne() throws IOException {
         FragaSvar fraga = buildFraga(1L, "frageText", null, new LocalDateTime());
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testSaveFragaNotAuthorizedForUnit() throws JsonParseException, JsonMappingException, IOException {
+    public void testSaveFragaNotAuthorizedForUnit() throws IOException {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
 
         // create mocked Utlatande from intygstjansten

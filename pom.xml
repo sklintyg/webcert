@@ -23,6 +23,7 @@
   <modules>
     <module>schemas</module>
     <module>fk-stub</module>
+    <module>loggtjanst-stub</module>
     <module>intygstjanst-stub</module>
     <module>mail-stub</module>
     <module>webcert</module>
@@ -250,6 +251,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>loggtjanst-stub</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>persistence</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -294,6 +300,11 @@
         <groupId>se.inera.certificate</groupId>
         <artifactId>module-api</artifactId>
         <version>${inera.certificate.moduleapi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.certificate</groupId>
+        <artifactId>schemas</artifactId>
+        <version>${inera.certificate.schemas.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.certificate.proxy</groupId>
