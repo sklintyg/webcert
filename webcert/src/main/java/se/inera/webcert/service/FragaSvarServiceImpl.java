@@ -331,8 +331,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Override
     public List<FragaSvar> getFragaSvarByFilter(FragaSvarFilter filter, int startFrom, int pageSize) {
         verifyEnhetsAuth(filter.getEnhetsId());
-        Pageable pages = new PageRequest(startFrom, pageSize);
-        return fragaSvarRepository.filterFragaSvar(filter, pages);
+        return fragaSvarRepository.filterFragaSvar(filter, startFrom, pageSize);
     }
 
 
