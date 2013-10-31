@@ -55,7 +55,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
         filter.setEnhetsId(FragaSvarTestUtil.ENHET_1_ID);
         filter.setQuestionFromWC(true);
         FragaSvarTestUtil.populateFragaSvar(filter, 10,fragasvarRepository);
-        List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter,new PageRequest(4,3));
+        List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter,4,3);
 
         Assert.assertTrue(fsList.size()==3);
         fragasvarRepository.deleteAll();
