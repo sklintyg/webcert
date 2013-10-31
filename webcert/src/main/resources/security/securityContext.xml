@@ -133,7 +133,6 @@
         <security:filter-chain pattern="/saml/logout/**" filters="samlLogoutFilter"/>
         <security:filter-chain pattern="/saml/metadata/**" filters="metadataDisplayFilter"/>
         <security:filter-chain pattern="/saml/SSO/**" filters="samlWebSSOProcessingFilter"/>
-        <security:filter-chain pattern="/saml/SSOHoK/**" filters="samlWebSSOHoKProcessingFilter"/>
         <security:filter-chain pattern="/saml/SingleLogout/**" filters="samlLogoutProcessingFilter"/>
       </security:filter-chain-map>
     </bean>
@@ -223,12 +222,6 @@
       <property name="authenticationFailureHandler" ref="failureHandler"/>
     </bean>
 
-    <!-- Processing filter for WebSSO Holder-of-Key profile -->
-    <bean id="samlWebSSOHoKProcessingFilter" class="org.springframework.security.saml.SAMLWebSSOHoKProcessingFilter">
-      <property name="authenticationManager" ref="authenticationManager"/>
-      <property name="authenticationSuccessHandler" ref="successRedirectHandler"/>
-    </bean>
-
     <!-- Class loading incoming SAML messages from httpRequest stream -->
     <bean id="processor" class="org.springframework.security.saml.processor.SAMLProcessorImpl">
       <constructor-arg>
@@ -262,19 +255,15 @@
     </bean>
 
     <!-- SAML 2.0 WebSSO Assertion Consumer -->
-    <bean id="webSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerImpl"/>
+    <bean id="webSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerImpl">
+      <property name="responseSkew" value="${saml.responseSkew}"/>
+    </bean>
 
     <!-- SAML 2.0 Holder-of-Key WebSSO Assertion Consumer -->
     <bean id="hokWebSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl"/>
 
     <!-- SAML 2.0 Web SSO profile -->
     <bean id="webSSOprofile" class="org.springframework.security.saml.websso.WebSSOProfileImpl"/>
-
-    <!-- SAML 2.0 Holder-of-Key Web SSO profile -->
-    <bean id="hokWebSSOProfile" class="org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl"/>
-
-    <!-- SAML 2.0 ECP profile -->
-    <bean id="ecpprofile" class="org.springframework.security.saml.websso.WebSSOProfileECPImpl"/>
 
     <!-- SAML 2.0 Logout Profile -->
     <bean id="logoutprofile" class="org.springframework.security.saml.websso.SingleLogoutProfileImpl"/>
