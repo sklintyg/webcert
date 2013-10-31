@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,6 +41,7 @@ import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.webcert.persistence.fragasvar.repository.LakarIdNamn;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
@@ -440,7 +442,7 @@ public class FragaSvarServiceImplTest {
         List<FragaSvar> queryResult = new ArrayList<FragaSvar>();
         queryResult.add(buildFragaSvar(1L, MAY, null));
         queryResult.add(buildFragaSvar(2L, MAY, null));
-        
+
         when(fragasvarRepository.filterFragaSvar(any(FragaSvarFilter.class), anyInt(), anyInt())).thenReturn(queryResult);
         List<FragaSvar> result = service.getFragaSvarByFilter(filter, 10, 20);
 
@@ -448,6 +450,27 @@ public class FragaSvarServiceImplTest {
         verify(fragasvarRepository).filterFragaSvar(any(FragaSvarFilter.class), anyInt(), anyInt());
 
         assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testGetMDByEnhetsIdOK() {
+        String enhetsId = "enhet";
+        WebCertUser webCertUser = webCertUser();
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+
+        List<Object[]> queryResult = new ArrayList<Object[]>();
+        queryResult.add(new Object[]{"HSA-1_ID", "NAMN1"});
+        queryResult.add(new Object[]{"HSA-2_ID", "NAMN2"});
+        queryResult.add(new Object[]{"HSA-3_ID", "NAMN3"});
+        queryResult.add(new Object[]{"HSA-4_ID", "NAMN4"});
+
+        when(fragasvarRepository.findDistinctFragaSvarHsaIdByEnhet(anyString())).thenReturn(queryResult);
+        List<LakarIdNamn> result = service.getFragaSvarHsaIdByEnhet(enhetsId);
+
+        verify(webCertUserService).getWebCertUser();
+        verify(fragasvarRepository).findDistinctFragaSvarHsaIdByEnhet(anyString());
+
+        assertEquals(4, result.size());
     }
 
     private WebCertUser webCertUser() {
