@@ -14,8 +14,8 @@
         }
     },
     "vardperson": {
-        "hsaId": "eva",
-        "namn": "Eva Holgersson",
+        "hsaId": "hans",
+        "namn": "Hans Njurgren",
         "forskrivarKod": "1234567",
         "enhetsId": "dialys",
         "arbetsplatsKod": "123456789011",

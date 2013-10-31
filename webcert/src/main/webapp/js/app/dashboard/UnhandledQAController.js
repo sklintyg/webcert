@@ -64,25 +64,33 @@ angular
                                 value : 'HANTERAD'
                             } ];
 
+                            $scope.doctorListEmptyChoice = {
+                                hsaId : undefined,
+                                name : "Alla"
+                            }
+                            $scope.doctorList = [];
+                            $scope.doctorList.push($scope.doctorListEmptyChoice);
+
                             var defaultQuery = {
                                 enhetsId : undefined, // set to chosen enhet
                                 // before submitting query
                                 questionFrom : "",
                                 questionFromFK : false,
                                 questionFromWC : false,
-                                hsaId : "", // läkare
+                                hsaId : undefined, // läkare
                                 vidarebefordrad : undefined, // 3-state
                                 // boolean
                                 changedFrom : undefined,
                                 changedTo : undefined,
                                 vantarPaSelector : $scope.statusList[1],
+                                doctorSelector : $scope.doctorList[0],
                                 replyLatest : undefined
                             }
-                            
+
                             $scope.decorateList = function(list) {
-                              angular.forEach(list, function(qa, key) {
-                                fragaSvarCommonService.decorateSingleItemMeasure(qa);
-                              });
+                                angular.forEach(list, function(qa, key) {
+                                    fragaSvarCommonService.decorateSingleItemMeasure(qa);
+                                });
                             }
 
                             $scope.doSearch = function() {
@@ -123,7 +131,8 @@ angular
                                 $timeout(function() {
                                     dashBoardService.getQAByQueryFetchMore(queryInstance, function(successData) {
                                         $scope.widgetState.fetchingMoreInProgress = false;
-                                        $scope.decorateList(successData.results);;
+                                        $scope.decorateList(successData.results);
+                                        ;
                                         for ( var i = 0; i < successData.results.length; i++) {
                                             $scope.qaListQuery.push(successData.results[i]);
                                         }
@@ -132,7 +141,6 @@ angular
                                     }, function(errorData) {
                                         $scope.widgetState.fetchingMoreInProgress = false;
                                         $log.debug("Query Error");
-                                        // TODO: real errorhandling
                                         $scope.widgetState.activeErrorMessageKey = "info.query.error";
                                     });
 
@@ -141,6 +149,7 @@ angular
                             $scope.resetSearchForm = function() {
                                 $scope.qp = angular.copy(defaultQuery);
                                 $scope.qp.vantarPaSelector = $scope.statusList[1];
+                                $scope.qp.doctorSelector = $scope.doctorList[0];
 
                             }
 
@@ -148,6 +157,11 @@ angular
 
                                 qp.enhetsId = $scope.activeUnit.id;
                                 qp.vantarPa = qp.vantarPaSelector.value;
+
+                                if (qp.doctorSelector) {
+                                    qp.hsaId = qp.doctorSelector.hsaId;
+                                }
+
                                 if (qp.changedFrom) {
                                     qp.changedFrom = $filter('date')(qp.changedFrom, 'yyyy-MM-dd');
                                 }
@@ -222,8 +236,29 @@ angular
                                 $scope.activeUnit = unit;
                                 $scope.widgetState.queryMode = false;
                                 $scope.widgetState.queryFormCollapsed = true;
+                                $scope.initDoctorList(unit.id);
                                 $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
 
+                            }
+
+                            $scope.initDoctorList = function(unitId) {
+                                $scope.widgetState.loadingDoctors = true;
+                                dashBoardService.getDoctorList(unitId, function(list) {
+                                    $scope.widgetState.loadingDoctors = false;
+
+                                    $scope.doctorList = list;
+                                    if (list && (list.length > 0)) {
+                                        $scope.doctorList.unshift($scope.doctorListEmptyChoice);
+                                        $scope.doctorSelector = $scope.doctorList[0];
+                                    }
+                                }, function(errorData) {
+                                    $scope.widgetState.loadingDoctors = false;
+                                    $scope.doctorList = [];
+                                    $scope.doctorList.push({
+                                        hsaId : undefined,
+                                        name : "<Kunde inte hämta lista>"
+                                    });
+                                });
                             }
 
                             // Calculate how many entities we have for a
@@ -252,12 +287,10 @@ angular
                                 $window.location = fragaSvarCommonService.buildMailToLink(qa);
                             }
 
-
                             $scope.toggleDatePickerInstance = function(instance) {
                                 $timeout(function() {
                                     instance.open = !instance.open;
                                 });
                             }
-
 
                         } ]);

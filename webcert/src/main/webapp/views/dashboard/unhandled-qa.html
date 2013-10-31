@@ -34,7 +34,7 @@
             <div class="control-group">
               <label class="control-label">Läkare</label>
               <div class="controls">
-                <select name="doctors"></select>
+                <select id="qp-doctorSelector" ng-model="qp.doctorSelector" ng-options="s.name for s in doctorList" ng-disabled="widgetState.loadingDoctors"></select>
               </div>
             </div>
 
