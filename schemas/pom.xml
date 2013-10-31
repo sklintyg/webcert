@@ -133,6 +133,23 @@
                   <extraarg>
                     urn:riv:itintegration:registry:1=se.riv.itintegration.registry.v1
                   </extraarg>
+
+                  <extraarg>-p</extraarg>
+                  <extraarg>
+                    urn:riv:ehr:log:store:StoreLog:1:rivtabp21=se.riv.ehr.log.store.storelog.v1
+                  </extraarg>
+                  <extraarg>-p</extraarg>
+                  <extraarg>
+                    urn:riv:ehr:log:store:StoreLogResponder:1=se.riv.ehr.log.store.storelog.v1
+                  </extraarg>
+                  <extraarg>-p</extraarg>
+                  <extraarg>
+                    urn:riv:ehr:log:1=se.riv.ehr.log.v1
+                  </extraarg>
+                  <extraarg>-p</extraarg>
+                  <extraarg>
+                    urn:riv:ehr:log:store:1=se.riv.ehr.log.store.v1
+                  </extraarg>
                 </extraargs>
               </defaultOptions>
               <wsdlOptions>
@@ -157,9 +174,16 @@
                   </wsdl>
                 </wsdlOption>
                 <wsdlOption>
-                  <wsdl>${schema.path}/interactions/PingForConfigurationInteraction/PingForConfigurationInteraction_1.0_RIVTABP21.wsdl</wsdl>
+                  <wsdl>
+                    ${schema.path}/interactions/PingForConfigurationInteraction/PingForConfigurationInteraction_1.0_RIVTABP21.wsdl
+                  </wsdl>
+                </wsdlOption>
+                <wsdlOption>
+                  <wsdl>${schema.path}/interactions/StoreLogInteraction/StoreLogInteraction_1.0_RIVTABP21.wsdl</wsdl>
                 </wsdlOption>
               </wsdlOptions>
+
+
             </configuration>
             <goals>
               <goal>wsdl2java</goal>

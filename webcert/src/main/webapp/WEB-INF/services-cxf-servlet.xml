@@ -22,6 +22,7 @@
   <import resource="classpath:hsa-stub-context.xml" />
   <import resource="classpath:/mail-stub-rest-api-context.xml" />
   <import resource="classpath:/intygstjanst-stub-context.xml"/>
+  <import resource="classpath:/loggtjanst-stub-context.xml"/>
 
   <cxf:bus>
     <cxf:features>
