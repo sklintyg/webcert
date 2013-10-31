@@ -203,7 +203,7 @@ public class FragaSvarRepositoryTest {
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.PENDING_INTERNAL_ACTION,HSA_4_ID,HSA_4_NAMN));
 
-        List<Object[]> lakare = fragasvarRepository.findDistinctHsaIdByEnhet(ENHET_1_ID);
+        List<Object[]> lakare = fragasvarRepository.findDistinctFragaSvarHsaIdByEnhet(ENHET_1_ID);
 
         //Assert that no value is HSA_4_ID. Wrong Enhet
         for (int i = 0; i < lakare.size(); i++) {

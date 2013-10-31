@@ -11,6 +11,10 @@
                     "namn" : "Motagning FitNesse 1"
                 }
             ]
+        },
+        {
+            "id" : "vardenhet-fit-2",
+            "namn" : "Vardenhet Fitnesse 2"
         }
     ]
 }
