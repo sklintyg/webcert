@@ -228,9 +228,12 @@ span.location { font-size: 12px; font-weight: bold; }
 
 .webcert-col-primary {
 	background-color: #fff;
-	padding-left: 30px;
+	padding: 20px 0 2000px 30px;
 	height: 100%;
 	min-height: 832px !important;
+}
+
+.webcert-col-secondary {
 }
 
 .webcert-col-single {
@@ -249,6 +252,7 @@ span.location { font-size: 12px; font-weight: bold; }
 .webcert-col-section {
   border-top: 1px solid #CCC;
   margin-top: 20px;
+  padding-top: 12px;
 }
 
 .table {
@@ -414,10 +418,6 @@ body span:hover.qa-unit-selected {
 	background-color: #42a341;
 	cursor: pointer;
 	white-space:nowrap;
-}
-
-.btn-success:hover {
-	background-color: #52ab51;
 }
 
 .btn-info,.btn-info[disabled]  {
@@ -623,7 +623,7 @@ background-color: #f9f9f9;
 
 th.center, td.center { text-align: center; }
 
-.table-qa .btn-info, .table-qa .btn-success { padding: 7px 15px; min-width: 50px; }
+.table-qa .btn-info, .table-qa .btn-success, .qa-panel .btn-info { padding: 7px 15px; min-width: 50px; }
 
 .table-qa tr > td.nopadding { padding: 0; }
 
@@ -661,13 +661,16 @@ input[datepicker-popup] .btn-block {
 }
 
 .alert-warning {
-  color: #8A6D3B;
+  color: #8A6D3B; /* WCAG AA compliant */
 }
 
 .alert-danger, .alert-error {
-  color: #A94442;
+  color: #A94442; /* WCAG AA compliant */
 }
 
+.alert-info {
+	color: #306E8D; /* WCAG AA compliant */
+}
 
 /**
  Directive(s) css

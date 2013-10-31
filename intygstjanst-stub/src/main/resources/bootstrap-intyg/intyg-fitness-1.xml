@@ -15,7 +15,7 @@ xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
   </gc:meta>
   <gc:certificate>
     <utlatande-id extension="intyg-fit-1" />
-    <typAvUtlatande code="fk7263" />
+    <typAvUtlatande codeSystem="f6fb361a-e31d-48b8-8657-99b63912dd9b" code="fk7263" />
     <kommentar>Prognosen för patienten är god. Han kommer att kunna återgå till sitt arbete efter genomförd behandling.
     </kommentar>
     <signeringsdatum>2011-01-26T00:00:00</signeringsdatum>
@@ -42,18 +42,18 @@ xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
       <personal-id root="1.2.752.129.2.1.4.1" extension="Personal HSA-ID" />
       <fullstandigtNamn>En Läkare</fullstandigtNamn>
       <enhet>
-        <hr:enhets-id root="1.2.752.129.2.1.4.1" extension="vardenhet-fit-1" />
-        <hr:arbetsplatskod root="1.2.752.29.4.71" extension="123456789011" />
-        <hr:enhetsnamn>Vardenhet Fitnesse 1</hr:enhetsnamn>
-        <hr:postadress>Lasarettsvägen 13</hr:postadress>
-        <hr:postnummer>85150</hr:postnummer>
-        <hr:postort>Sundsvall</hr:postort>
-        <hr:telefonnummer>060-1818000</hr:telefonnummer>
-        <hr:epost>kirmott@vardenhet.se</hr:epost>
-        <hr:vardgivare>
-          <hr:vardgivare-id root="1.2.752.129.2.1.4.1" extension="vardgivare-fitnesse" />
-          <hr:vardgivarnamn>FitNesse vardgivare</hr:vardgivarnamn>
-        </hr:vardgivare>
+        <enhets-id root="1.2.752.129.2.1.4.1" extension="vardenhet-fit-1" />
+        <arbetsplatskod root="1.2.752.29.4.71" extension="123456789011" />
+        <enhetsnamn>Vardenhet Fitnesse 1</enhetsnamn>
+        <postadress>Lasarettsvägen 13</postadress>
+        <postnummer>85150</postnummer>
+        <postort>Sundsvall</postort>
+        <telefonnummer>060-1818000</telefonnummer>
+        <epost>kirmott@vardenhet.se</epost>
+        <vardgivare>
+          <vardgivare-id root="1.2.752.129.2.1.4.1" extension="vardgivare-fitnesse" />
+          <vardgivarnamn>FitNesse vardgivare</vardgivarnamn>
+        </vardgivare>
       </enhet>
     </skapadAv>
 

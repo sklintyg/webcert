@@ -1,6 +1,8 @@
 package se.inera.webcert.persistence.fragasvar.repository;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -46,6 +48,17 @@ public class FragaSvarRepositoryTest {
     private static String ENHET_2_ID = "ENHET_2_ID";
     private static String ENHET_3_ID = "ENHET_3_ID";
     private static String ENHET_4_ID = "ENHET_4_ID";
+
+    private static String HSA_1_ID = "HSA_1_ID";
+    private static String HSA_2_ID = "HSA_2_ID";
+    private static String HSA_3_ID = "HSA_3_ID";
+    private static String HSA_4_ID = "HSA_4_ID";
+
+    private static String HSA_1_NAMN = "A HSA NAMN 1";
+    private static String HSA_2_NAMN = "B HSA NAMN 2";
+    private static String HSA_3_NAMN = "C HSA NAMN 3";
+    private static String HSA_4_NAMN = "D HSA NAMN 4";
+
 
     @Test
     public void testFindOne() {
@@ -126,6 +139,27 @@ public class FragaSvarRepositoryTest {
         return f;
     }
 
+    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String hsaid, String hsaNamn) {
+        FragaSvar f = new FragaSvar();
+        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+        f.setAmne(Amne.AVSTAMNINGSMOTE);
+        f.setExternReferens("externReferens");
+        f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
+        f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+        f.setFrageStallare("Olle");
+        Vardperson vardperson = new Vardperson();
+        vardperson.setEnhetsId(enhetsId);
+        vardperson.setEnhetsnamn(enhetsId + "-namnet");
+        vardperson.setHsaId(hsaid);
+        vardperson.setNamn(hsaNamn);
+        f.setVardperson(vardperson);
+        f.setFrageText("Detta var ju otydligt formulerat!");
+        f.setIntygsReferens(INTYGS_REFERENS);
+        f.setStatus(status);
+
+        return f;
+    }
+
 
     @Test
     public void testFindByExternReferens() {
@@ -157,5 +191,31 @@ public class FragaSvarRepositoryTest {
 
         assertEquals(read2.getSvarSkickadDatum(), read2.getSenasteHandelse());
 
+    }
+
+    @Test
+    public void testFindAllHSAIDByEnhet(){
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_1_ID,HSA_1_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.PENDING_INTERNAL_ACTION,HSA_4_ID,HSA_4_NAMN));
+
+        List<Object[]> lakare = fragasvarRepository.findDistinctHsaIdByEnhet(ENHET_1_ID);
+
+        //Assert that no value is HSA_4_ID. Wrong Enhet
+        for (int i = 0; i < lakare.size(); i++) {
+            assertFalse(lakare.get(i)[0]==HSA_4_ID);
+        }
+
+        //Results should be sorted by name, so we should always get them in the same order.
+        assertTrue(lakare.get(0)[0]==HSA_1_ID);
+        assertTrue(lakare.get(1)[0]==HSA_2_ID);
+        assertTrue(lakare.get(2)[0]==HSA_3_ID);
+
+        //Assert that we only get 3 items back.
+        assertTrue(lakare.size()==3);
     }
 }

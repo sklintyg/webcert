@@ -30,7 +30,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <meta name="ROBOTS" content="nofollow, noindex"/>
 
-    <title>WebCert test inloggning</title>
+    <title>Webcert test inloggning</title>
 
     <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon"/>
 
@@ -90,6 +90,13 @@
                 "efternamn" : "Testsson",
                 "hsaId" : "fitness1",
                 "lakare" : false
+            },
+            {
+                "fornamn" : "Han",
+                "efternamn" : "Solo",
+                "hsaId" : "hansolo",
+                "lakare" : false
+
             }
         ];
 
@@ -111,7 +118,7 @@
             <div class="content row">
 
 
-                <h1>Testinloggningar WebCert</h1>
+                <h1>Testinloggningar Webcert</h1>
 
                 <p class="well">Templatelista till vänster - Manuella ändringar kan göras i jsonstrukturen - detta
                     omvandlas
@@ -127,6 +134,7 @@
                         <option value="3">Adam Admin (Administratör)</option>
                         <option value="4">Adamo Admin (Administratör flera enheter)</option>
                         <option value="5">Fitnesse Admin (Administratör)</option>
+                        <option value="5">Han Solo (Administratör, 1 enhet)</option>
                     </select>
                     </p>
 

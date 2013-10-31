@@ -19,6 +19,15 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
     @Query("SELECT fs FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED'")
     List<FragaSvar> findByEnhetsId(@Param("idList") List<String> enhetsIds);
 
+    /**
+     * Returns a list of all unique hsaId and name (of vardperson who signed the certificate the FragaSvar is linked to) where matches the supplied id.
+     *
+     * @param enhetsid
+     * @return A list of Object[] where the first [0] value is the HsaId and the second [1] is the name
+     */
+    @Query("SELECT DISTINCT fs.vardperson.hsaId, fs.vardperson.namn FROM FragaSvar fs WHERE fs.vardperson.enhetsId = :enhetsid order by fs.vardperson.namn asc")
+    List<Object[]> findDistinctHsaIdByEnhet(@Param("enhetsid") String enhetsid);
+
 
     /**
      * Should return a list of {@link FragaSvar} entities in the repository related to the specified intygsId.

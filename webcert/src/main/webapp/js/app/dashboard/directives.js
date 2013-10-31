@@ -37,7 +37,9 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
             }
             
             //initial selection
-            //$scope.selectUnit(selectFirstUnit($scope.units));
+            if($scope.units.length == 1) {
+            	$scope.selectUnit(selectFirstUnit($scope.units));
+            }
             
             // Local function getting the first care unit's hsa id in the data struct.
             function selectFirstUnit(units) {

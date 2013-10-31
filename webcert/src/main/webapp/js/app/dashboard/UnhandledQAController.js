@@ -25,7 +25,16 @@ angular
                                 queryPageSize : 10,
                                 totalCount : 0,
                                 currentList : undefined,
-                                queryFormCollapsed : true
+                                queryFormCollapsed : true,
+                                dpFromOpen : {
+                                    open : false
+                                },
+                                dpToOpen : {
+                                    open : false
+                                },
+                                dpAnswerOpen : {
+                                    open : false
+                                }
                             }
 
                             $scope.qaListUnhandled = {};
@@ -33,7 +42,7 @@ angular
                             $scope.activeUnit = null;
 
                             $scope.statusList = [ {
-                                label : 'Visa Alla',
+                                label : 'Visa alla',
                                 value : 'ALLA'
                             }, {
                                 label : 'Alla som kräver åtgärd',
@@ -66,7 +75,7 @@ angular
                                 // boolean
                                 changedFrom : undefined,
                                 changedTo : undefined,
-                                vantarPaSelector : $scope.statusList[0],
+                                vantarPaSelector : $scope.statusList[1],
                                 replyLatest : undefined
                             }
 
@@ -125,7 +134,7 @@ angular
                             }
                             $scope.resetSearchForm = function() {
                                 $scope.qp = angular.copy(defaultQuery);
-                                $scope.qp.vantarPaSelector = $scope.statusList[0];
+                                $scope.qp.vantarPaSelector = $scope.statusList[1];
 
                             }
 
@@ -260,41 +269,12 @@ angular
                                 $window.location = fragaSvarCommonService.buildMailToLink(qa);
                             }
 
-                            // Search filter date controls
-                            $scope.today = function() {
-                                $scope.dtF = new Date();
-                                $scope.dtT = new Date();
-                                $scope.dtA = new Date();
-                            };
-                            $scope.today();
 
-                            $scope.showWeeks = false;
-                            $scope.minDate = null;
-
-                            $scope.dpFromOpen = false;
-                            $scope.openDPFrom = function() {
+                            $scope.toggleDatePickerInstance = function(instance) {
                                 $timeout(function() {
-                                    $scope.dpFromOpen = !$scope.dpFromOpen;
+                                    instance.open = !instance.open;
                                 });
-                            };
+                            }
 
-                            $scope.dpToOpen = false;
-                            $scope.openDPTo = function() {
-                                $timeout(function() {
-                                    $scope.dpToOpen = !$scope.dpToOpen;
-                                });
-                            };
-
-                            $scope.dpAnswerOpen = false;
-                            $scope.openDPAnswer = function() {
-                                $timeout(function() {
-                                    $scope.dpAnswerOpen = !$scope.dpAnswerOpen;
-                                });
-                            };
-
-                            $scope.dateOptions = {
-                                'year-format' : "'yy'",
-                                'starting-day' : 1
-                            };
 
                         } ]);

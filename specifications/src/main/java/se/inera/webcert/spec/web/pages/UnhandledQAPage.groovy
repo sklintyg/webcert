@@ -8,9 +8,9 @@ class UnhandledQAPage extends Page {
 
     static content = {
         unhandledQATable(required: false) { $("#qaTable") }
-        //userSelect { $("#jsonSelect") }
-        //certificateType { $("#certType") }
-        //sendCertificateBtn { $("#loginBtn") }
+        advancedFilterForm { $("#advanced-filter-form") }
+        filterBtn { $("#filter-qa-btn") }
+        replyBy { $("#filter-reply-by") }
     }
 
     def selectCareUnit(String careunit){
@@ -20,4 +20,23 @@ class UnhandledQAPage extends Page {
     def showQA(String externid) {
         $("#showqaBtn-${externid}").click()
     }
+
+    def isQAVisible(String internid) {
+        $("#showqaBtn-${internid}").isDisplayed()
+    }
+
+    def showAdvancedFilter(){
+        $("#show-advanced-filter-btn").click()
+    }
+
+    def selectFragestallareFK(){
+        $("#frageStallareFK").click()
+    }
+    def selectFragestallareWC(){
+        $("#frageStallareWC").click()
+    }
+    def selectFragestallareAlla(){
+        $("#frageStallareAlla").click()
+    }
+
 }
