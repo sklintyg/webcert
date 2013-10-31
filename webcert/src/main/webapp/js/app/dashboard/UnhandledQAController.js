@@ -78,6 +78,12 @@ angular
                                 vantarPaSelector : $scope.statusList[1],
                                 replyLatest : undefined
                             }
+                            
+                            $scope.decorateList = function() {
+                              angular.forEach(list, function(qa, key) {
+                                fragaSvarCommonService.decorateSingleItemMeasure(qa);
+                              });
+                            }
 
                             $scope.doSearch = function() {
                                 $log.debug("doSearch");
@@ -117,7 +123,7 @@ angular
                                 $timeout(function() {
                                     dashBoardService.getQAByQueryFetchMore(queryInstance, function(successData) {
                                         $scope.widgetState.fetchingMoreInProgress = false;
-                                        $scope.decorateList(successData.results);
+                                        $scope.decorateList(successData.results);;
                                         for ( var i = 0; i < successData.results.length; i++) {
                                             $scope.qaListQuery.push(successData.results[i]);
                                         }
@@ -173,29 +179,6 @@ angular
                             }
 
                             $scope.resetSearchForm();
-
-                            $scope.decorateList = function(list) {
-
-                                angular.forEach(list, function(qa, key) {
-                                    if (qa.status == "CLOSED") {
-                                        qa.vantarpaResKey = "handled";
-                                    } else if (qa.status == "ANSWERED" || qa.amne == "MAKULERING" || qa.amne == "PAMINNELSE") {
-                                        qa.vantarpaResKey = "markhandled";
-                                    } else if (qa.amne == "KOMPLETTERING_AV_LAKARINTYG") {
-                                        qa.vantarpaResKey = "komplettering";
-                                    } else {
-
-                                        if (qa.status == "PENDING_INTERNAL_ACTION") {
-                                            qa.vantarpaResKey = "svarfranvarden";
-                                        } else if (qa.status == "PENDING_EXTERNAL_ACTION") {
-                                            qa.vantarpaResKey = "svarfranfk";
-                                        } else {
-                                            qa.vantarpaResKey = "";
-                                            $log.debug("warning: undefined status");
-                                        }
-                                    }
-                                });
-                            }
 
                             // load all fragasvar for all units in usercontext
 

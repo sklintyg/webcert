@@ -132,7 +132,7 @@
                   <td class="center"><input id="selected" type="checkbox" ng-disabled="qa.updateInProgress" ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" /> <span
                     ng-if="qa.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif">
                   </span></td>
-                  <td><span message key="qa.waiting.{{qa.vantarpaResKey}}"></span></td>
+                  <td><span message key="qa.measure.{{qa.measureResKey}}"></span></td>
                   <td>{{qa.vardperson.namn}}</td>
                   <td class="unbreakable">{{qa.intygsReferens.patientId.patientIdExtension}}</td>
                   <td class="unbreakable">{{qa.senasteHandelseDatum | date:'shortDate'}}</td>

@@ -40,6 +40,7 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
         document.cookie = 'WCDontAskForVidareBefordradToggle=1; expires=' + expires.toUTCString();
 
     }
+    
     function _isSkipVidareBefodradCookieSet() {
         if (document.cookie && document.cookie.indexOf('WCDontAskForVidareBefordradToggle=1') != -1) {
             return true;
@@ -48,6 +49,30 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
         }
 
     }
+    
+    function _decorateSingleItemMeasure(qa) {
+
+          if (qa.status == "CLOSED") {
+              qa.measureResKey = "handled";
+          } else if (qa.status == "ANSWERED" || qa.amne == "MAKULERING" || qa.amne == "PAMINNELSE") {
+              qa.measureResKey = "markhandled";
+          } else if (qa.amne == "KOMPLETTERING_AV_LAKARINTYG") {
+              qa.measureResKey = "komplettering";
+          } else {
+
+              if (qa.status == "PENDING_INTERNAL_ACTION") {
+                  qa.measureResKey = "svarfranvarden";
+              } else if (qa.status == "PENDING_EXTERNAL_ACTION") {
+                  qa.measureResKey = "svarfranfk";
+              } else {
+                  qa.measureResKey = "";
+                  $log.debug("warning: undefined status");
+              }
+          }
+      
+    }
+    
+    
     function _handleVidareBefodradToggle(qa, onYesCallback) {
         // Only ask about toggle if not already set AND not skipFlag cookie is
         // set
@@ -126,6 +151,7 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
     return {
         setVidareBefordradState : _setVidareBefordradState,
         handleVidareBefodradToggle : _handleVidareBefodradToggle,
-        buildMailToLink : _buildMailToLink
+        buildMailToLink : _buildMailToLink,
+        decorateSingleItemMeasure : _decorateSingleItemMeasure
     }
 } ]);
