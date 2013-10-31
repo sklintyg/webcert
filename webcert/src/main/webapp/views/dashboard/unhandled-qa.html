@@ -124,7 +124,7 @@
                     <button class="btn btn-info" title="Visa intyget och frågan/svaret" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
                   </td>
                   <td>
-                    <button class="btn btn-info" ng-disabled="qa.vidarebefordrad" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret"
+                    <button class="btn btn-info" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret"
                       ng-click="openMailDialog(qa)">
                       <img src="/img/mail.png">
                     </button>
@@ -132,7 +132,7 @@
                   <td class="center"><input id="selected" type="checkbox" ng-disabled="qa.updateInProgress" ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" /> <span
                     ng-if="qa.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif">
                   </span></td>
-                  <td><span message key="qa.waiting.{{qa.vantarpaResKey}}"></span></td>
+                  <td><span message key="qa.measure.{{qa.measureResKey}}"></span></td>
                   <td>{{qa.vardperson.namn}}</td>
                   <td class="unbreakable">{{qa.intygsReferens.patientId.patientIdExtension}}</td>
                   <td class="unbreakable">{{qa.senasteHandelseDatum | date:'shortDate'}}</td>

@@ -108,7 +108,7 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
     }
 
     @Override
-    public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, Pageable pages) {
+    public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, int startPos, int size) {
         CriteriaBuilder builder;
         CriteriaQuery<FragaSvar> query;
         Root<FragaSvar> root;
@@ -120,7 +120,7 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
         query.where(createPredicate(filter, builder, root));
         query.orderBy(builder.desc(root.get("senasteHandelse")));
-        return entityManager.createQuery(query).setMaxResults(pages.getPageSize()).setFirstResult(pages.getPageNumber()).getResultList();
+        return entityManager.createQuery(query).setMaxResults(size).setFirstResult(startPos).getResultList();
     }
 
     @Override
