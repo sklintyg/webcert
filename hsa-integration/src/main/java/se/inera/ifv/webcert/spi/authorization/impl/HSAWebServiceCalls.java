@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
-import se.inera.ifv.hsaws.v3.HsaWsFault;
 import se.inera.ifv.hsaws.v3.HsaWsResponderInterface;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitListResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
@@ -71,7 +70,7 @@ public class HSAWebServiceCalls {
             PingResponseType response = serverInterface.ping(logicalAddressHeader, messageId, pingtype);
             log.debug("Response:" + response.getMessage());
 
-        } catch (HsaWsFault ex) {
+        } catch (Throwable ex) {
             log.warn("Exception={}", ex.getMessage(), ex);
             throw new Exception(ex);
         }
@@ -89,7 +88,7 @@ public class HSAWebServiceCalls {
             GetMiuForPersonResponseType response = serverInterface.getMiuForPerson(logicalAddressHeader, messageId,
                     parameters);
             return response;
-        } catch (HsaWsFault ex) {
+        } catch (Throwable ex) {
             log.error("Failed to call getMiuForPerson", ex);
             Throwables.propagate(ex);
             return null;
@@ -109,7 +108,7 @@ public class HSAWebServiceCalls {
         try {
             GetCareUnitResponseType response = serverInterface.getCareUnit(logicalAddressHeader, messageId, parameters);
             return response;
-        } catch (HsaWsFault ex) {
+        } catch (Throwable ex) {
             log.error("Failed to call getCareUnit", ex);
             Throwables.propagate(ex);
             return null;
@@ -127,7 +126,7 @@ public class HSAWebServiceCalls {
 
         try {
             return serverInterface.getHsaUnit(logicalAddressHeader, messageId, parameters);
-        } catch (HsaWsFault ex) {
+        } catch (Throwable ex) {
             log.error("Failed to call getHsaUnit", ex);
             Throwables.propagate(ex);
             return null;
@@ -146,7 +145,7 @@ public class HSAWebServiceCalls {
             HsawsSimpleLookupResponseType response = serverInterface.hsawsSimpleLookup(logicalAddressHeader, messageId,
                     parameters);
             return response;
-        } catch (HsaWsFault ex) {
+        } catch (Throwable ex) {
             log.error("Failed to call hsawsSimpleLookup", ex);
             Throwables.propagate(ex);
             return null;
@@ -158,7 +157,7 @@ public class HSAWebServiceCalls {
             GetCareUnitListResponseType response = serverInterface.getCareUnitList(logicalAddressHeader, messageId,
                     parameters);
             return response;
-        } catch (HsaWsFault ex) {
+        } catch (Throwable ex) {
             log.error("Failed to call getCareUnitList", ex);
             Throwables.propagate(ex);
             return null;
