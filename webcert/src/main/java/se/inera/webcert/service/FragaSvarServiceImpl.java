@@ -1,9 +1,6 @@
 package se.inera.webcert.service;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.mail.MessagingException;
 
@@ -30,6 +27,7 @@ import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.webcert.persistence.fragasvar.repository.LakarIdNamn;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -349,5 +347,18 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + user.getHsaId() + " not authorized for for enhet " + enhetsId);
         }
 
+    }
+    @Override
+    public List<LakarIdNamn> getFragaSvarHsaIdByEnhet(String enhetsId){
+        verifyEnhetsAuth(enhetsId);
+        List<LakarIdNamn> mdList = new ArrayList<>();
+
+
+        List<Object[]> tempList = fragaSvarRepository.findDistinctFragaSvarHsaIdByEnhet(enhetsId);
+
+        for(Object[] obj : tempList){
+            mdList.add(new LakarIdNamn((String)obj[0], (String)obj[1]));
+        }
+        return mdList;
     }
 }

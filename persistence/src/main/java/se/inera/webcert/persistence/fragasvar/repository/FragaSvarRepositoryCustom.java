@@ -26,7 +26,7 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
      * @return A list of Object[] where the first [0] value is the HsaId and the second [1] is the name
      */
     @Query("SELECT DISTINCT fs.vardperson.hsaId, fs.vardperson.namn FROM FragaSvar fs WHERE fs.vardperson.enhetsId = :enhetsid order by fs.vardperson.namn asc")
-    List<Object[]> findDistinctHsaIdByEnhet(@Param("enhetsid") String enhetsid);
+    List<Object[]> findDistinctFragaSvarHsaIdByEnhet(@Param("enhetsid") String enhetsid);
 
 
     /**

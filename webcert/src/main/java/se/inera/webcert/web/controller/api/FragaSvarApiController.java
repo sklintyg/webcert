@@ -2,11 +2,7 @@ package se.inera.webcert.web.controller.api;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -14,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.repository.LakarIdNamn;
 import se.inera.webcert.service.FragaSvarService;
 import se.inera.webcert.web.controller.api.dto.QueryFragaSvarParameter;
 import se.inera.webcert.web.controller.api.dto.QueryFragaSvarResponse;
@@ -65,5 +62,13 @@ public class FragaSvarApiController {
         result.setResults(queryResults);
         
         return Response.ok(result).build();
+    }
+
+
+    @GET
+    @Path("/mdlist/{enhetsId}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public List<LakarIdNamn> getFragaSvarLakareByEnhet(@PathParam("enhetsId") String enhetsId) {
+        return fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
     }
 }

@@ -7,6 +7,7 @@ import org.joda.time.LocalDateTime;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
+import se.inera.webcert.persistence.fragasvar.repository.LakarIdNamn;
 
 /**
  * @author andreaskaltenbach
@@ -66,10 +67,15 @@ public interface FragaSvarService {
      * Returns all the question/answer matching filter criteria.
      */
     List<FragaSvar> getFragaSvarByFilter(FragaSvarFilter filter, int startFrom, int pageSize);
-    
+
     /**
      * Returns total count of question/answers matching filter criteria.
      */
     int getFragaSvarByFilterCount(FragaSvarFilter filter);
+
+    /**
+     * Returns a list of all unique hsaId and name (of vardperson who signed a certificate that a FragaSvar is linked to) that matches the supplied id.
+     */
+    List<LakarIdNamn> getFragaSvarHsaIdByEnhet(String enhetsId);
 
 }
