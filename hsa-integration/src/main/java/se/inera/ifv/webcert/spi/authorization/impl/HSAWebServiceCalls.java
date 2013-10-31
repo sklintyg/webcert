@@ -27,7 +27,6 @@ import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.ifv.hsaws.v3.HsaWsFault;
 import se.inera.ifv.hsaws.v3.HsaWsResponderInterface;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitListResponseType;
-import se.inera.ifv.hsawsresponder.v3.GetCareUnitMembersResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonResponseType;
@@ -72,7 +71,7 @@ public class HSAWebServiceCalls {
             PingResponseType response = serverInterface.ping(logicalAddressHeader, messageId, pingtype);
             log.debug("Response:" + response.getMessage());
 
-        } catch (Exception ex) {
+        } catch (HsaWsFault ex) {
             log.warn("Exception={}", ex.getMessage(), ex);
             throw new Exception(ex);
         }
@@ -90,7 +89,8 @@ public class HSAWebServiceCalls {
             GetMiuForPersonResponseType response = serverInterface.getMiuForPerson(logicalAddressHeader, messageId,
                     parameters);
             return response;
-        } catch (Exception ex) {
+        } catch (HsaWsFault ex) {
+            log.error("Failed to call getMiuForPerson", ex);
             Throwables.propagate(ex);
             return null;
         }
@@ -109,7 +109,8 @@ public class HSAWebServiceCalls {
         try {
             GetCareUnitResponseType response = serverInterface.getCareUnit(logicalAddressHeader, messageId, parameters);
             return response;
-        } catch (Exception ex) {
+        } catch (HsaWsFault ex) {
+            log.error("Failed to call getCareUnit", ex);
             Throwables.propagate(ex);
             return null;
         }
@@ -126,8 +127,9 @@ public class HSAWebServiceCalls {
 
         try {
             return serverInterface.getHsaUnit(logicalAddressHeader, messageId, parameters);
-        } catch (HsaWsFault hsaWsFault) {
-            Throwables.propagate(hsaWsFault);
+        } catch (HsaWsFault ex) {
+            log.error("Failed to call getHsaUnit", ex);
+            Throwables.propagate(ex);
             return null;
         }
     }
@@ -145,17 +147,7 @@ public class HSAWebServiceCalls {
                     parameters);
             return response;
         } catch (HsaWsFault ex) {
-            Throwables.propagate(ex);
-            return null;
-        }
-    }
-
-    public GetCareUnitMembersResponseType callGetCareUnitMembers(LookupHsaObjectType parameters) {
-        try {
-            GetCareUnitMembersResponseType response = serverInterface.getCareUnitMembers(logicalAddressHeader,
-                    messageId, parameters);
-            return response;
-        } catch (HsaWsFault ex) {
+            log.error("Failed to call hsawsSimpleLookup", ex);
             Throwables.propagate(ex);
             return null;
         }
@@ -167,6 +159,7 @@ public class HSAWebServiceCalls {
                     parameters);
             return response;
         } catch (HsaWsFault ex) {
+            log.error("Failed to call getCareUnitList", ex);
             Throwables.propagate(ex);
             return null;
         }
