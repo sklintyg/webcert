@@ -60,20 +60,30 @@ a.backlink {
   background:transparent url(/img/back-link-icon.gif) center left no-repeat;
 }
 
-h1 {
-	font-size: 24px;
-	color: #008391;
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding-bottom: 10px;
 }
 
-h2.col-head{
-	font-size: 20px;
+h1 {
+	font-size: 24px;
 	color: #008391;
 }
 
 h2 {
 	font-size: 16px;
 	line-height: 20px;
-	padding-top: 20px;
+	padding-top: 30px;
+}
+
+.col-head{
+  font-size: 20px;
+  color: #008391;
+  padding-bottom: 10px;
+}
+
+.col-head-about {
+	padding-top: 0;
 }
 
 h3 {
