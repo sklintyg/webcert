@@ -246,6 +246,21 @@ public class SvaraOchFraga {
         }
     }
 
+    public void valjLakareMedNamn(String namn){
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            waitFor{
+                page.advancedFilterSelectDoctor.isDisplayed()
+            }
+            
+            waitFor{
+                page.advancedFilterSelectDoctor = namn
+            }
+        }
+    }
+    
     public void valjSvarSenast(String svarSenast){
         Browser.drive {
             waitFor {
@@ -290,6 +305,10 @@ public class SvaraOchFraga {
 
             waitFor{
                 page.filterBtn.click()
+            }
+            
+            waitFor{
+                 page.unhandledQATable.isDisplayed()
             }
         }
     }
