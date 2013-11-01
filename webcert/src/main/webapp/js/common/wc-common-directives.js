@@ -24,12 +24,7 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
           
           var defaultMenuDefs = [
 				     {
-				       link :'/web/dashboard#/create', 
-				       label:'Sök/skriv intyg',
-				       requires_doctor: false
-				     },
-				     {
-				       link :'/web/dashboard#/index', 
+				       link :'/web/dashboard#/mycert', 
 				       label:'Mina osignerade intyg',
 				       requires_doctor: true
 				     },
@@ -49,6 +44,19 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
 				       requires_doctor: false
 				     }
 				    ];
+          
+          var writeCertMenuDef = {
+				       link :'/web/dashboard#/index', 
+				       label:'Sök/skriv intyg',
+				       requires_doctor: false
+				     };
+          
+          if (eval($scope.isDoctor) == true) {
+          	defaultMenuDefs.splice(0, 0, writeCertMenuDef);
+          }
+          else {
+          	defaultMenuDefs.splice(3, 0, writeCertMenuDef);
+          }
           
           $scope.menuItems = defaultMenuDefs;
           if($scope.menuDefs != undefined && $scope.menuDefs != ''){

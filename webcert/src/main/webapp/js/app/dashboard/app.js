@@ -4,14 +4,17 @@
 angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'modules.messages', 'wc.common.directives', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
 angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
     $routeProvider.when('/index', {
-        templateUrl : '/views/dashboard/index.html',
-        controller : 'WebCertCtrl'
-    }).when('/create', {
         templateUrl : '/views/dashboard/create-cert.html',
         controller : 'CreateCertCtrl'
+    }).when('/mycert', {
+      templateUrl : '/views/dashboard/mycert.html',
+      controller : 'WebCertCtrl'
     }).when('/unhandled-qa', {
         templateUrl : '/views/dashboard/unhandled-qa.html',
         controller : 'UnhandledQACtrl'
+    }).when('/unsigned', {
+      templateUrl : '/views/dashboard/unsigned.html',
+      controller : 'UnsignedCertCtrl'
     }).when('/view', {
         templateUrl : '/views/dashboard/view-cert.html',
         controller : 'ViewCertCtrl'
