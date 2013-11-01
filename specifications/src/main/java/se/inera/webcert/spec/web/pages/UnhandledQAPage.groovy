@@ -10,6 +10,7 @@ class UnhandledQAPage extends Page {
         unhandledQATable(required: false) { $("#qaTable") }
         careUnitSelector(required: false) { $("#wc-care-unit-clinic-selector") }
         advancedFilterForm { $("#advanced-filter-form") }
+        advancedFilterSelectDoctor { $("#qp-doctorSelector") }
         filterBtn { $("#filter-qa-btn") }
         replyBy { $("#filter-reply-by") }
     }
