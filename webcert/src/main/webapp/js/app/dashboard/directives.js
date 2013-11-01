@@ -103,7 +103,7 @@ angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location',
 							'</ul>'+
 	    			'</div>'+
 	    			'<div class="span9">'+
-	      	    '<h2 class="col-head no-padding">{{currentSubMenuLabel}}</h2>'+
+	      	    '<h2 class="col-head col-head-about">{{currentSubMenuLabel}}</h2>'+
 	     	    	'<div ng-transclude></div>'+
 	    			'</div>'+
 	        '</div>'+
