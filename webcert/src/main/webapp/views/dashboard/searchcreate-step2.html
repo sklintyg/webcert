@@ -1,0 +1,44 @@
+<div class="row-fluid">
+  <div class="span7 webcert-col webcert-col-primary">
+	  <a class="backlink" href="#start"><span message key="common.goback"></span></a>
+
+	  <h1>Sök/skriv intyg</h1>
+	  <div class="control-group">
+	    <label class="control-label">Patientuppgifter</label>
+	    <div class="well well-large">
+        <div class="control-group">
+	      <h4>Per Persson</h4>
+	      19230408-1234
+        </div>
+        <button class="btn" ng-click="toStep1()">Byt patient</button>	      
+        <button class="btn" ng-click="toEditPatient()">Ändra patientuppgifter</button>        
+	    </div>
+	  </div>
+    <div class="control-group">
+      <button class="btn btn-success" ng-click="editCert()">Skriv nytt Läkarintyg FK 7263</button>
+    </div>
+	  <div class="alert alert-warning">
+	   Tänk på att...
+	  </div>
+	  
+	  <div class="webcert-col-section">
+	  
+      <h2 class="col-head">Per Perssons tidigare intyg</h2>
+
+      <div class="control-group">
+        <div class="controls pointer-labels">
+          <label class="checkbox"><input type="radio" name="olderCerts" checked> Visa intyg för Vårdenheter och till mottagare som jag har medarbetaruppdrag på</label>
+          <label class="checkbox"><input type="radio" name="olderCerts"> Visa intyg för hela vårdgivaren som jag har medarbetaruppdrag på</label> 
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <span class="span9 certblock certblock-clickable clearfix">
+            <h3>Läkarintyg FK 7263</h3> <span>2013-05-04</span>
+          </span> <span class="span3 certblock-copy"><button class="btn btn-info span12">Kopiera</button></span>
+        </div>
+      </div>
+	  
+	  </div>
+  </div>
+</div>

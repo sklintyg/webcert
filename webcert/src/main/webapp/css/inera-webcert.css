@@ -660,7 +660,7 @@ label {
   cursor: default;
 }
 
-input[type=radio] + label, input[type=checkbox] + label {
+.pointer-labels label, input[type=radio] + label, input[type=checkbox] + label {
   cursor: pointer;
 }
 

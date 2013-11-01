@@ -1,0 +1,32 @@
+<div class="row-fluid">
+  <div class="span7 webcert-col webcert-col-primary">
+	  <a class="backlink" href="#start"><span message key="common.goback"></span></a>
+
+	  <h1>Sök/skriv intyg</h1>
+    <div class="alert alert-warning">
+     Vi lyckades inte hämta patientens namn från SPAR/NAVET. Eftersom patienten inte har några läkarintyg i Webcert, måste du därför ange patientens namn.
+    </div>
+	  <div class="control-group">
+	    <label class="control-label">Patientuppgifter</label>
+	    <div class="well well-large">
+        <div class="control-group">
+	      19230408-1234
+        </div>
+        <button class="btn" ng-click="toStep1()">Byt patient</button>	      
+	    </div>
+	  </div>
+    <div class="control-group">
+      <label class="control-label">Förnamn</label> <!-- Endast tilltalsnamn? -->
+      <input type="text" placeholder="" />
+    </div>
+    <div class="control-group">
+      <label class="control-label">Efternamn</label>
+      <input type="text" placeholder="" />
+    </div>
+    <div class="control-group">
+      <button class="btn btn-success" ng-click="toStep2()" ng-disabled="false">Spara personuppgifter</button>
+      <button class="btn btn-secondary" ng-click="toStep1()"><span message key="common.cancel"></span></button>
+    </div>
+	  
+  </div>
+</div>

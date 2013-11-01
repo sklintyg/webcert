@@ -4,8 +4,14 @@
 angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'modules.messages', 'wc.common.directives', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
 angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
     $routeProvider.when('/index', {
-        templateUrl : '/views/dashboard/create-cert.html',
+        templateUrl : '/views/dashboard/searchcreate-step1.html',
         controller : 'CreateCertCtrl'
+    }).when('/searchcreate-editpatient', {
+      templateUrl : '/views/dashboard/searchcreate-editpatient.html',
+      controller : 'CreateCertCtrl'
+    }).when('/searchcreate-step2', {
+      templateUrl : '/views/dashboard/searchcreate-step2.html',
+      controller : 'CreateCertCtrl'
     }).when('/mycert', {
       templateUrl : '/views/dashboard/mycert.html',
       controller : 'WebCertCtrl'
