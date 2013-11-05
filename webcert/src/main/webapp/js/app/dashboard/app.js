@@ -4,13 +4,13 @@
 angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'modules.messages', 'wc.common.directives', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
 angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
     $routeProvider.when('/index', {
-        templateUrl : '/views/dashboard/searchcreate-step1.html',
+        templateUrl : '/views/dashboard/index.step1.html',
         controller : 'CreateCertCtrl'
-    }).when('/searchcreate-editpatient', {
-      templateUrl : '/views/dashboard/searchcreate-editpatient.html',
+    }).when('/edit-patient/index', {
+      templateUrl : '/views/dashboard/index.editpatient.html',
       controller : 'CreateCertCtrl'
-    }).when('/searchcreate-step2', {
-      templateUrl : '/views/dashboard/searchcreate-step2.html',
+    }).when('/choose-cert/index', {
+      templateUrl : '/views/dashboard/index.step2.html',
       controller : 'CreateCertCtrl'
     }).when('/mycert', {
       templateUrl : '/views/dashboard/mycert.html',
@@ -24,10 +24,10 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
     }).when('/view', {
         templateUrl : '/views/dashboard/view-cert.html',
         controller : 'ViewCertCtrl'
-    }).when('/about.support', {
+    }).when('/support/about', {
         templateUrl : '/views/dashboard/about.support.html',
         controller : 'AboutWebcertCtrl'
-    }).when('/about.webcert', {
+    }).when('/webcert/about', {
         templateUrl : '/views/dashboard/about.webcert.html',
         controller : 'AboutWebcertCtrl'
     }).otherwise({
@@ -41,7 +41,7 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
 // Global config of default date picker config (individual attributes can be
 // overridden per directive usage)
 angular.module('wcDashBoardApp').constant('datepickerPopupConfig', {
-    dateFormat : "yyyy-MM-dd",
+    dateFormat : "yyyy-MM- dd",
     closeOnDateSelection : true,
     appendToBody : false,
     showWeeks : true,
@@ -59,3 +59,4 @@ angular.module('wcDashBoardApp').run([ '$rootScope', 'messageService', function(
     messageService.addResources(webcertResources);
     messageService.addResources(commonMessageResources);
 } ]);
+   

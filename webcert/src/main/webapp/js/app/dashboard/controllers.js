@@ -13,11 +13,11 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$wind
 	}
 
 	$scope.toEditPatient = function() {
-		$location.path("/searchcreate-editpatient");
+		$location.path("/edit-patient/index");
 	}
 	
 	$scope.toStep2 = function() {
-		$location.path("/searchcreate-step2");
+		$location.path("/choose-cert/index");
 	}
 
 	$scope.editCert = function() {

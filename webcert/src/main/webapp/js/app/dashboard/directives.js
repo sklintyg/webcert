@@ -66,29 +66,34 @@ angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location',
         $scope.today = new Date();
         $scope.menuItems = [
 	        {
-	        	link :'/web/dashboard#/about.support', 
+	        	link :'/web/dashboard#/support/about', 
 	          label:'Support'
 	        },
 	        {
-	        	link :'/web/dashboard#/about.webcert', 
+	        	link :'/web/dashboard#/webcert/about', 
 	          label:'Om webcert'
 	        }
         ];
         
-        var currentRoute = $location.path().substring( $location.path().lastIndexOf('.') + 1) || 'index';
+        function getSubMenuName(path) {
+          var path = path.substring(0, path.lastIndexOf('/'));
+        	return path.substring(path.lastIndexOf('/') + 1); 
+        }
+        
+        var currentSubMenuName = getSubMenuName($location.path()) || 'index';
         $scope.currentSubMenuLabel = "";
 
         // set header label based on menu items label
         angular.forEach($scope.menuItems, function(menu, key) {
-        	var page = menu.link.substr(menu.link.lastIndexOf('.') + 1);
-        	if(page == currentRoute) {
+        	var page = getSubMenuName(menu.link);
+        	if(page == currentSubMenuName) {
         		$scope.currentSubMenuLabel = menu.label; 
         	}
         });
         
         $scope.isActive = function (page) {
-        	page = page.substr(page.lastIndexOf('.') + 1);
-          return page === currentRoute;
+        	page = getSubMenuName(page);
+          return page === currentSubMenuName;
         };                 
       },
       template:

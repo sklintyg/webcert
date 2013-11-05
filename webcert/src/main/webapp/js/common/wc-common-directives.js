@@ -39,7 +39,7 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
 				       requires_doctor: false
 				     },
 				     {
-				       link :'/web/dashboard#/about.support',
+				       link :'/web/dashboard#/support/about',
 				       label:'Om Webcert',
 				       requires_doctor: false
 				     }
@@ -65,21 +65,15 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
           
           $scope.isActive = function (page) {
           	if (!page) {return false;}
-          	 page = page.substr(page.lastIndexOf('/') + 1);
-          	 if (angular.isString($scope.defaultActive)) {
-               if (page == $scope.defaultActive) {
-                   return 'active';
-               }
-          	 }
-          	
-          	var hasSubMenu = page.lastIndexOf('.') > -1;
-
-            var currentRoute = $location.path().substring(1) || 'index';
-          	if(hasSubMenu) {
-          		page = page.substring(0, page.lastIndexOf('.'));
-          		currentRoute = currentRoute.substring(0, currentRoute.lastIndexOf('.'));
+        		
+          	page = page.substr(page.lastIndexOf('/') + 1);
+        		if (angular.isString($scope.defaultActive)) {
+        			if (page == $scope.defaultActive) {
+        				return true;
+        			}
           	}
           	
+          	var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
             return page === currentRoute;
           };
         },
