@@ -31,10 +31,10 @@ body.start {
 
 body.start > .container-fluid {
 	background-color: #fff;
-	 -ms-box-shadow: 0px -5px 25px #323232;
-  -webkit-box-shadow: 0px -5px 25px #323232;
-  -moz-box-shadow: 0px -5px 25px #323232;
-  box-shadow: 0px -5px 25px #323232;
+	 -ms-box-shadow: 0 -5px 25px #323232;
+  -webkit-box-shadow: 0 -5px 25px #323232;
+  -moz-box-shadow: 0 -5px 25px #323232;
+  box-shadow: 0 -5px 25px #323232;
   padding: 100px 50px;
 }
 
@@ -93,7 +93,7 @@ h3 {
 }
 
 .headerbox {
-	padding: 0px 0 0 0;
+	padding: 0 0 0 0;
 }
 span.headerbox-logo { padding: 3px 20px 0 30px;  border-right: 1px solid #595c66; display: block;}
 span.headerbox-date { padding-left: 20px; font-weight: bold; line-height: 34px; display: block;}
@@ -220,7 +220,7 @@ span.location { font-size: 12px; font-weight: bold; }
 
 .header {
 	background-color: #212633;
-	padding: 15px 0px;
+	padding: 15px 0;
 	color: #fff;
 }
 
@@ -268,7 +268,7 @@ span.location { font-size: 12px; font-weight: bold; }
 
 .table {
   border-collapse:separate;
-  border-spacing: 0 0px;
+  border-spacing: 0 0;
 }
 
 .table th, .table td {
@@ -506,7 +506,7 @@ button.btn-link-minimal {
 }
 
 input[type="radio"], input[type="checkbox"] {
-  margin: 0px 0 0;
+  margin: 0 0 0;
 }
 
 .navbar {
@@ -534,7 +534,7 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 .navbar .nav {
-    margin: 0 0px 0 0;
+    margin: 0 0 0 0;
     white-space: nowrap;
 }
 
@@ -580,12 +580,12 @@ opacity: .25;
 */
 .table-qa tr > th {
   border: 0;
-  padding: 0px 15px 0 0px;
+  padding: 0 15px 0 0;
 }
 
 .table-qa tr > td {
 /*  border: 0;*/
-  padding: 0px 20px 0 0px;
+  padding: 0 20px 0 0;
   background-color: #e5e5e5;
 }
 
