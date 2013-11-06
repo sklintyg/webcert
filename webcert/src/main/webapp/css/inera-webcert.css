@@ -277,7 +277,7 @@ span.location { font-size: 12px; font-weight: bold; }
   vertical-align: middle;
 }
 
-td.unbreakable {
+.unbreakable {
 	white-space:nowrap;
 }
 
@@ -650,8 +650,8 @@ th.center, td.center { text-align: center; }
 }
 
 textarea {
-	width: 75%;
-	min-width: 200px;
+	width: auto;
+	max-width: 400px;
 }
 
 th {cursor: default; }
