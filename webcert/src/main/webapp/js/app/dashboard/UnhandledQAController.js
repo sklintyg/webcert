@@ -264,14 +264,15 @@ angular
                                     $scope.resetSearchForm();
                                 }
                                 $cookieStore.put("enhetsId" ,unit.id);
+
+                                $scope.initDoctorList(unit.id);
+                                $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
+
                                 //If we have a query stored, open the advanced filter
                                 if($cookieStore.get("query_instance")){
                                     $scope.widgetState.queryFormCollapsed = false
                                     $scope.doSearch();
                                 }
-                                $scope.initDoctorList(unit.id);
-                                $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
-
                             }
 
                             $scope.initDoctorList = function(unitId) {

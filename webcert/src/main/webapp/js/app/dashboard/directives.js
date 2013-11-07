@@ -39,7 +39,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
             //initial selection
             if($scope.units.length == 1) {
             	$scope.selectUnit(selectFirstUnit($scope.units));
-            }else if($cookieStore.get("enhetsId"))   {
+            }else if($scope.units.length > 1 && $cookieStore.get("enhetsId"))   {
                 $scope.selectUnit(selectUnitById($scope.units,$cookieStore.get("enhetsId")) ) ;
             }
 
@@ -59,7 +59,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
                           return units[count];
                       }
                    }
-                return null;
+                return selectFirstUnit(units);
             }
         }
     };
