@@ -496,6 +496,15 @@ button.btn-link-minimal {
 	background-color: #656565;
 }
 
+.dropdown-menu {
+	padding: 5px 5px;
+  -webkit-box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  -ms-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  -o-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus, .dropdown-submenu:hover > a, .dropdown-submenu:focus > a {
   background: none;
   background-color: #28b4c4;
