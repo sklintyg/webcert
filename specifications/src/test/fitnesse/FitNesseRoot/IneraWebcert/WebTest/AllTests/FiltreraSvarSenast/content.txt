@@ -23,7 +23,7 @@
 |filtreraFragorOchSvar|
 |visasFraga| $internReferens1 |
 |doljsFraga| $internReferens2 |
-
+|aterstall sokformular |
 
 !3 Ta bort Frågor:
 |ta bort Fraga|
