@@ -8,18 +8,10 @@
  */
 angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$window', '$log', '$location', function CreateCertCtrl($scope, $window, $log, $location) {
 
-	$scope.toStep1 = function() {
-		$location.path("/index");
-	}
-
-	$scope.toEditPatient = function() {
-		$location.path("/edit-patient/index");
-	}
-	
-	$scope.toStep2 = function() {
-		$location.path("/choose-cert/index");
-	}
-
+	$scope.toStep1 = function() {	$location.path("/index"); }
+	$scope.toEditPatient = function() { $location.path("/edit-patient/index"); }
+	$scope.toStep2 = function() {	$location.path("/choose-cert/index"); }
+	$scope.toStep3 = function() {	$location.path("/choose-unit/index");	}
 	$scope.editCert = function() {
     $log.debug("edit cert");
     var path = "/m/fk7263/webcert/intyg/new/edit#/edit";
