@@ -1,7 +1,7 @@
 'use strict';
 
 /* Directives */
-angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootScope', function ($rootScope) {
+angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootScope', '$cookieStore',function ($rootScope, $cookieStore) {
     return {
         restrict: "A",
         transclude: false,
@@ -39,8 +39,11 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
             //initial selection
             if($scope.units.length == 1) {
             	$scope.selectUnit(selectFirstUnit($scope.units));
+            }else if($cookieStore.get("enhetsId"))   {
+                $scope.selectUnit(selectUnitById($scope.units,$cookieStore.get("enhetsId")) ) ;
             }
-            
+
+
             // Local function getting the first care unit's hsa id in the data struct.
             function selectFirstUnit(units) {
                 if (typeof units === "undefined" || units.length == 0) {
@@ -48,6 +51,15 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
                 } else {
                     return units[0];
                 }
+            }
+
+            function selectUnitById(units, unitName){
+                for(var count =0;count<units.length;count++){
+                      if(units[count].id==unitName){
+                          return units[count];
+                      }
+                   }
+                return null;
             }
         }
     };

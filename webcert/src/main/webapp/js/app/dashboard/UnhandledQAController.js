@@ -12,10 +12,12 @@ angular
                         '$log',
                         '$timeout',
                         '$filter',
+                        '$cookieStore',
                         'dashBoardService',
                         'fragaSvarCommonService',
                         'wcDialogService',
-                        function UnhandledCertCtrl($scope, $window, $log, $timeout, $filter, dashBoardService, fragaSvarCommonService, wcDialogService) {
+                        function UnhandledCertCtrl($scope, $window, $log, $timeout, $filter, $cookieStore , dashBoardService, fragaSvarCommonService, wcDialogService) {
+
                             // init state
                             $scope.widgetState = {
                                 doneLoading : false,
@@ -71,6 +73,7 @@ angular
                             $scope.doctorList = [];
                             $scope.doctorList.push($scope.doctorListEmptyChoice);
 
+
                             var defaultQuery = {
                                 enhetsId : undefined, // set to chosen enhet
                                 // before submitting query
@@ -117,6 +120,7 @@ angular
                                     });
 
                                 }, 1000);
+
                             }
 
                             $scope.fetchMore = function() {
@@ -147,15 +151,32 @@ angular
                                 }, 1000);
                             }
                             $scope.resetSearchForm = function() {
+                                $cookieStore.remove("query_instance");
+
+
                                 $scope.qp = angular.copy(defaultQuery);
                                 $scope.qp.vantarPaSelector = $scope.statusList[1];
                                 $scope.qp.doctorSelector = $scope.doctorList[0];
-
                             }
 
+                            $scope.reloadSearchForm = function() {
+                                if($cookieStore.get("query_instance")){
+                                    $scope.qp=$cookieStore.get("query_instance").filter
+
+                                    if($scope.qp.vantarPaSelector){
+                                        $scope.qp.vantarPaSelector = selectVantarPaByValue($cookieStore.get("query_instance").filter.vantarPaSelector.value);
+                                    } else{
+                                        $scope.qp.vantarPaSelector = $scope.statusList[1];
+                                    }
+
+                                } else{
+                                    $scope.resetSearchForm();
+                                }
+                            }
                             $scope.prepareSearchFormForQuery = function(qp, ws) {
 
                                 qp.enhetsId = $scope.activeUnit.id;
+                                $cookieStore.put("enhetsId" ,qp.enhetsId);
                                 qp.vantarPa = qp.vantarPaSelector.value;
 
                                 if (qp.doctorSelector) {
@@ -189,10 +210,11 @@ angular
                                 queryInstance.startFrom = ws.queryStartFrom;
                                 queryInstance.pageSize = ws.queryPageSize;
                                 queryInstance.filter = qp;
+                                $cookieStore.put("query_instance" , queryInstance);
                                 return queryInstance;
                             }
 
-                            $scope.resetSearchForm();
+                            $scope.reloadSearchForm();
 
                             // load all fragasvar for all units in usercontext
 
@@ -236,6 +258,17 @@ angular
                                 $scope.activeUnit = unit;
                                 $scope.widgetState.queryMode = false;
                                 $scope.widgetState.queryFormCollapsed = true;
+
+                                //If we change enhet then we probably don't want the same filter criterias
+                                if($cookieStore.get("enhetsId") && $cookieStore.get("enhetsId")!=unit.id){
+                                    $scope.resetSearchForm();
+                                }
+                                $cookieStore.put("enhetsId" ,unit.id);
+                                //If we have a query stored, open the advanced filter
+                                if($cookieStore.get("query_instance")){
+                                    $scope.widgetState.queryFormCollapsed = false
+                                    $scope.doSearch();
+                                }
                                 $scope.initDoctorList(unit.id);
                                 $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
 
@@ -249,7 +282,12 @@ angular
                                     $scope.doctorList = list;
                                     if (list && (list.length > 0)) {
                                         $scope.doctorList.unshift($scope.doctorListEmptyChoice);
-                                        $scope.doctorSelector = $scope.doctorList[0];
+
+                                        if($cookieStore.get("query_instance") && $cookieStore.get("query_instance").filter.doctorSelector){
+                                            $scope.qp.doctorSelector = selectDoctorByHsaId($cookieStore.get("query_instance").filter.doctorSelector.hsaId);
+                                        }else{
+                                            $scope.doctorSelector = $scope.doctorList[0];
+                                        }
                                     }
                                 }, function(errorData) {
                                     $scope.widgetState.loadingDoctors = false;
@@ -259,6 +297,23 @@ angular
                                         name : "<Kunde inte hämta lista>"
                                     });
                                 });
+                            }
+
+                            function selectDoctorByHsaId(hsaId){
+                                for(var count =0;count<$scope.doctorList.length;count++){
+                                    if($scope.doctorList[count].hsaId==hsaId){
+                                        return $scope.doctorList[count];
+                                    }
+                                }
+                                return $scope.doctorList[0];
+                            }
+                            function selectVantarPaByValue(vantaValue){
+                                for(var count =0;count<$scope.statusList.length;count++){
+                                    if($scope.statusList[count].value==vantaValue){
+                                        return $scope.statusList[count];
+                                    }
+                                }
+                                return $scope.statusList[0];
                             }
 
                             // Calculate how many entities we have for a

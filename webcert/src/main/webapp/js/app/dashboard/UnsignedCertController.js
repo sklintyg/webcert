@@ -12,14 +12,15 @@ angular
                         '$log',
                         '$timeout',
                         '$filter',
+                        '$cookieStore',
                         'dashBoardService',
                         'fragaSvarCommonService',
                         'wcDialogService',
-                        function UnsignedCertCtrl($scope, $window, $log, $timeout, $filter, dashBoardService, fragaSvarCommonService, wcDialogService) {
+                        function UnsignedCertCtrl($scope, $window, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
                             // init state
                             $scope.widgetState = {
                                 doneLoading : false,
-                                activeErrorMessageKey : null,
+                                activeErrorMessageKey : null
                             }
 
                             $scope.unsignedList = {};

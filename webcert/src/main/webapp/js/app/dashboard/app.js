@@ -1,7 +1,7 @@
 'use strict';
 
 /* Lakare Dashboard App Module */
-angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'modules.messages', 'wc.common.directives', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
+angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'ngCookies','modules.messages', 'wc.common.directives', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
 angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
     $routeProvider.when('/index', {
         templateUrl : '/views/dashboard/index.step1.html',
@@ -19,8 +19,7 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
         templateUrl : '/views/dashboard/unhandled-qa.html',
         controller : 'UnhandledQACtrl'
     }).when('/unsigned', {
-      templateUrl : '/views/dashboard/unsigned.html',
-      controller : 'UnsignedCertCtrl'
+      templateUrl : '/views/dashboard/unsigned.html', controller : 'UnsignedCertCtrl'
     }).when('/view', {
         templateUrl : '/views/dashboard/view-cert.html',
         controller : 'ViewCertCtrl'
