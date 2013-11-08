@@ -230,11 +230,9 @@ angular
                                     $scope.widgetState.queryMode = false;
 
                                     //If active unit is  already set then do the filtering
-                                    if($scope.activeUnit.id){
+                                    if($scope.activeUnit){
                                         $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
                                     }
-
-
                                 } else {
                                     $scope.widgetState.activeErrorMessageKey = "error.unansweredcerts.couldnotbeloaded";
                                 }
