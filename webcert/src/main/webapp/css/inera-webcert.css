@@ -660,7 +660,7 @@ th.center, td.center { text-align: center; }
 
 textarea {
 	width: auto;
-	max-width: 400px;
+	max-width: 500px;
 }
 
 th {cursor: default; }
