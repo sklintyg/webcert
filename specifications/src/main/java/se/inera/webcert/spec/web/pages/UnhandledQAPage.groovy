@@ -13,6 +13,7 @@ class UnhandledQAPage extends Page {
         advancedFilterSelectDoctor { $("#qp-doctorSelector") }
         filterBtn { $("#filter-qa-btn") }
         replyBy { $("#filter-reply-by") }
+        resetSearchForm { $("#reset-search-form") }
     }
 
     def selectCareUnit(String careunit){
@@ -29,6 +30,10 @@ class UnhandledQAPage extends Page {
 
     def showAdvancedFilter(){
         $("#show-advanced-filter-btn").click()
+    }
+
+    def resetCookie(){
+        return $("#reset-search-form").click()
     }
 
     def selectFragestallareFK(){

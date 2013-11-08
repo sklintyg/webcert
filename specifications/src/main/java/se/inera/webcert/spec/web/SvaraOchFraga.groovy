@@ -306,9 +306,21 @@ public class SvaraOchFraga {
             waitFor{
                 page.filterBtn.click()
             }
-            
+
             waitFor{
-                 page.unhandledQATable.isDisplayed()
+                page.unhandledQATable.isDisplayed()
+            }
+        }
+    }
+
+    public void aterstallSokformular(){
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+
+            waitFor{
+                page.resetCookie()
             }
         }
     }

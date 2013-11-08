@@ -229,6 +229,12 @@ angular
                                     $scope.decorateList($scope.widgetState.currentList);
                                     $scope.widgetState.queryMode = false;
 
+                                    //If active unit is  already set then do the filtering
+                                    if($scope.activeUnit.id){
+                                        $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
+                                    }
+
+
                                 } else {
                                     $scope.widgetState.activeErrorMessageKey = "error.unansweredcerts.couldnotbeloaded";
                                 }
@@ -264,14 +270,15 @@ angular
                                     $scope.resetSearchForm();
                                 }
                                 $cookieStore.put("enhetsId" ,unit.id);
+
+                                $scope.initDoctorList(unit.id);
+                                $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
+
                                 //If we have a query stored, open the advanced filter
                                 if($cookieStore.get("query_instance")){
                                     $scope.widgetState.queryFormCollapsed = false
                                     $scope.doSearch();
                                 }
-                                $scope.initDoctorList(unit.id);
-                                $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
-
                             }
 
                             $scope.initDoctorList = function(unitId) {
