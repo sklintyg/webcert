@@ -36,9 +36,8 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$wind
     }
     $scope.initDoctorList(unit.id);
     $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
-*/
-}
-
+ 		*/
+  }
 	
 } ]);
 
