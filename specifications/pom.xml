@@ -256,6 +256,26 @@
       </properties>
     </profile>
     <profile>
+      <id>saucelabs</id>
+      <properties>
+        <geb.env>saucelabs</geb.env>
+      </properties>
+    </profile>
+    <profile>
+      <id>demo-server</id>
+        <properties>
+          <webcert.web.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.web.baseUrl>
+          <webcert.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.baseUrl>
+        </properties>
+    </profile>
+    <profile>
+      <id>utveckling-server</id>
+        <properties>
+          <webcert.web.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.web.baseUrl>
+          <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
+        </properties>
+    </profile>
+    <profile>
       <id>wiki</id>
       <!--
         This profile is for use when writing tests using the FitNesse wiki.
@@ -289,6 +309,33 @@
           <plugin>
             <groupId>uk.co.javahelp.fitnesse</groupId>
             <artifactId>fitnesse-launcher-maven-plugin</artifactId>
+             <executions>
+              <execution>
+                <goals>
+                  <goal>set-up</goal>
+                  <goal>run-tests</goal>
+                  <goal>tear-down</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>nightly</id>
+      <!--
+        This profile will boot FitNesse to automatically run the configured test suite. Simply run 'mvn verify -P nightly'
+      -->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>uk.co.javahelp.fitnesse</groupId>
+            <artifactId>fitnesse-launcher-maven-plugin</artifactId>
+            <configuration>
+            	<suite>IneraWebcert.WebTest</suite>
+            </configuration>
             <executions>
               <execution>
                 <goals>
