@@ -1,6 +1,10 @@
 package se.inera.webcert.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.mail.MessagingException;
 
@@ -9,12 +13,10 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.model.Utlatande;
+import se.inera.certificate.integration.rest.dto.CertificateStatus;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
@@ -36,6 +38,7 @@ import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalC
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
+import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
@@ -53,6 +56,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
     private static final String FRAGE_STALLARE_WEBCERT = "WC";
+
+    private static final Object FK_TARGET = "FK";
+
+    private static final String SENT_STATUS_TYPE = "SENT";
 
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT, Amne.OVRIGT);
@@ -237,16 +244,21 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Fetch from Intygstjansten
-        Utlatande utlatande = intygService.fetchIntygCommonModel(intygId);
+        UtlatandeCommonModelHolder utlatandeHolder = intygService.fetchIntygCommonModel(intygId);
 
         // Get utfardande vardperson
-        Vardperson vardPerson = FragaSvarConverter.convert(utlatande.getSkapadAv());
+        Vardperson vardPerson = FragaSvarConverter.convert(utlatandeHolder.getUtlatande().getSkapadAv());
 
         // Is user authorized to save an answer to this question?
         verifyEnhetsAuth(vardPerson.getEnhetsId());
 
+        // Verksamhetsregel FS-001 (Is the certificate sent to FK)
+        if (!isSentToFK(utlatandeHolder.getCertificateContentMeta().getStatuses())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "FS-001: Certificate must be sent to FK first before sending question!");
+        }
 
-        IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(utlatande);
+        IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(utlatandeHolder.getUtlatande());
 
         FragaSvar fraga = new FragaSvar();
         fraga.setFrageStallare(FRAGE_STALLARE_WEBCERT);
@@ -274,6 +286,17 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
         return saved;
 
+    }
+
+    private boolean isSentToFK(List<CertificateStatus> statuses) {
+        if (statuses != null) {
+            for (CertificateStatus status : statuses) {
+                if (FK_TARGET.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -332,14 +355,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return fragaSvarRepository.filterFragaSvar(filter, startFrom, pageSize);
     }
 
-
-
     @Override
     public int getFragaSvarByFilterCount(FragaSvarFilter filter) {
         verifyEnhetsAuth(filter.getEnhetsId());
         return fragaSvarRepository.filterCountFragaSvar(filter);
     }
-    
+
     protected void verifyEnhetsAuth(String enhetsId) {
         WebCertUser user = webCertUserService.getWebCertUser();
         if (!user.getVardenheterIds().contains(enhetsId)) {
@@ -348,16 +369,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
     }
+
     @Override
-    public List<LakarIdNamn> getFragaSvarHsaIdByEnhet(String enhetsId){
+    public List<LakarIdNamn> getFragaSvarHsaIdByEnhet(String enhetsId) {
         verifyEnhetsAuth(enhetsId);
         List<LakarIdNamn> mdList = new ArrayList<>();
 
-
         List<Object[]> tempList = fragaSvarRepository.findDistinctFragaSvarHsaIdByEnhet(enhetsId);
 
-        for(Object[] obj : tempList){
-            mdList.add(new LakarIdNamn((String)obj[0], (String)obj[1]));
+        for (Object[] obj : tempList) {
+            mdList.add(new LakarIdNamn((String) obj[0], (String) obj[1]));
         }
         return mdList;
     }

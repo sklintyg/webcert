@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<gc:GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1" xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
-  xmlns="urn:riv:clinicalprocess:healthcond:certificate:1" xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
+<gc:GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1" 
+xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
+xmlns="urn:riv:clinicalprocess:healthcond:certificate:1"
+xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
   <gc:meta>
-    <c:certificateId>intyg-2</c:certificateId>
+    <c:certificateId>intyg-3</c:certificateId>
     <c:certificateType>fk7263</c:certificateType>
     <c:validFrom>2013-01-01</c:validFrom>
     <c:validTo>2013-03-15</c:validTo>
@@ -10,28 +12,18 @@
     <c:facilityName>Kir mott</c:facilityName>
     <c:signDate>2013-01-01</c:signDate>
     <c:available>true</c:available>
-    <c:status>
-      <c:target>MI</c:target>
-      <c:type>RECEIVED</c:type>
-      <c:timestamp>2011-01-26T00:00:00</c:timestamp>
-    </c:status>
-    <c:status>
-      <c:target>FK</c:target>
-      <c:type>SENT</c:type>
-      <c:timestamp>2011-01-28T00:00:00</c:timestamp>
-    </c:status>
   </gc:meta>
   <gc:certificate>
-    <utlatande-id root="wc-root" extension="intyg-2" />
+    <utlatande-id root="wc-root" extension="intyg-3" />
     <typAvUtlatande codeSystem="f6fb361a-e31d-48b8-8657-99b63912dd9b" code="fk7263" />
-    <kommentar>Prognosen för patienten är god. Han kommer att kunna återgå till sitt arbete efter genomförd behandling.
+    <kommentar>Prognosen för patienten är ok. Han kommer att kunna återgå till sitt arbete efter genomförd behandling.
     </kommentar>
     <signeringsdatum>2011-01-26T00:00:00</signeringsdatum>
     <skickatdatum>2011-03-23T09:29:15</skickatdatum>
     <patient>
       <person-id root="1.2.752.129.2.1.3.1" extension="19121212-1212" />
       <fornamn></fornamn>
-      <efternamn>Test Testorsson stubbe</efternamn>
+      <efternamn>Test Testorsson stubbe3</efternamn>
       <arbetsuppgift>
         <typAvArbetsuppgift>Dirigent. Dirigerar en större orkester på deltid</typAvArbetsuppgift>
       </arbetsuppgift>

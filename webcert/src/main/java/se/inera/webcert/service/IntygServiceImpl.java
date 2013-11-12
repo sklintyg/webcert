@@ -33,6 +33,7 @@ import se.inera.certificate.integration.rest.exception.ModuleCallFailedException
 import se.inera.certificate.model.Utlatande;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateStatusType;
+import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 
 import com.google.common.base.Throwables;
 
@@ -62,7 +63,7 @@ public class IntygServiceImpl implements IntygService {
     private ModuleRestApiFactory moduleApiFactory;
 
     @Override
-    public String fetchIntygData(String intygId) {
+    public CertificateContentHolder fetchIntygData(String intygId) {
 
         GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
 
@@ -76,9 +77,11 @@ public class IntygServiceImpl implements IntygService {
     }
     
     @Override
-    public Utlatande fetchIntygCommonModel(String intygId) {
+    public UtlatandeCommonModelHolder fetchIntygCommonModel(String intygId) {
         //Get JAXB representation
         GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
+        
+        CertificateContentMeta metaData = convert(intyg.getMeta());
         
         //Get appropriate restapi..
         ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(intyg.getMeta().getCertificateType());
@@ -88,12 +91,13 @@ public class IntygServiceImpl implements IntygService {
 
         //Map it to our common model
         CustomObjectMapper objectMapper = new CustomObjectMapper();
+        Utlatande utlatande = null;
         try {
-            return objectMapper.readValue(externalJson, Utlatande.class);
+            utlatande = objectMapper.readValue(externalJson, Utlatande.class);
         } catch (IOException  e) {
             throw Throwables.propagate(e);
         }  
-
+        return new UtlatandeCommonModelHolder(utlatande, metaData);
     }
     private CertificateContentMeta convert(CertificateMetaType source) {
 
@@ -116,7 +120,7 @@ public class IntygServiceImpl implements IntygService {
         return new CertificateStatus(source.getType().value(), source.getTarget(), source.getTimestamp());
     }
 
-    private String convertToInternalJson(ModuleRestApi moduleRestApi, String externalJson,
+    private CertificateContentHolder convertToInternalJson(ModuleRestApi moduleRestApi, String externalJson,
             CertificateContentMeta metaData) {
 
         CertificateContentHolder holder = new CertificateContentHolder();
@@ -127,7 +131,10 @@ public class IntygServiceImpl implements IntygService {
 
         switch (response.getStatus()) {
         case 200:
-            return response.readEntity(String.class);
+            CertificateContentHolder responseHolder = new CertificateContentHolder();
+            responseHolder.setCertificateContentMeta(metaData);
+            responseHolder.setCertificateContent(response.readEntity(String.class));
+            return responseHolder;
         default:
             String message = "Failed to convert intyg to internal JSON.";
             LOG.error(message);

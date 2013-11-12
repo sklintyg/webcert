@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<gc:GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1" 
-xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
-xmlns="urn:riv:clinicalprocess:healthcond:certificate:1"
-xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
+<gc:GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1" xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
+  xmlns="urn:riv:clinicalprocess:healthcond:certificate:1" xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
   <gc:meta>
     <c:certificateId>intyg-fit-1</c:certificateId>
     <c:certificateType>fk7263</c:certificateType>
@@ -12,6 +10,11 @@ xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
     <c:facilityName>Kir mott</c:facilityName>
     <c:signDate>2013-01-01</c:signDate>
     <c:available>true</c:available>
+    <c:status>
+      <c:target>FK</c:target>
+      <c:type>SENT</c:type>
+      <c:timestamp>2011-01-28T00:00:00</c:timestamp>
+    </c:status>
   </gc:meta>
   <gc:certificate>
     <utlatande-id root="wc-root" extension="intyg-fit-1" />
