@@ -233,6 +233,7 @@
     <profile>
       <id>utveckling</id>
       <properties>
+        <webcert.web.baseUrl>http://utveckling.webcert.intygstjanster.se/</webcert.web.baseUrl>
         <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
         <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
       </properties>
