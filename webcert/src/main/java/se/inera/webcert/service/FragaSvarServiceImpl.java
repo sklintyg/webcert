@@ -362,10 +362,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     protected void verifyEnhetsAuth(String enhetsId) {
-        WebCertUser user = webCertUserService.getWebCertUser();
-        if (!user.getVardenheterIds().contains(enhetsId)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "User "
-                    + user.getHsaId() + " not authorized for for enhet " + enhetsId);
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsId);
         }
 
     }

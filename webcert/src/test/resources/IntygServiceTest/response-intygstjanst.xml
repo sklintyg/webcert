@@ -8,7 +8,25 @@
     <c:certificateType>fk7263</c:certificateType>
   </meta>
   <certificate>
-    <ns3:utlatande-id xmlns="urn:riv:clinicalprocess:healthcond:certificate:1" extension="123" root="root"/>
+    <ns3:utlatande-id extension="123" root="root"/>
+    <ns3:skapadAv>
+      <ns3:personal-id root="1.2.752.129.2.1.4.1" extension="Personal HSA-ID" />
+      <ns3:fullstandigtNamn>En Läkare</ns3:fullstandigtNamn>
+      <ns3:enhet>
+        <ns3:enhets-id root="1.2.752.129.2.1.4.1" extension="enhet" />
+        <ns3:arbetsplatskod root="1.2.752.29.4.71" extension="123456789011" />
+        <ns3:enhetsnamn>Centrum väst</ns3:enhetsnamn>
+        <ns3:postadress>Lasarettsvägen 13</ns3:postadress>
+        <ns3:postnummer>85150</ns3:postnummer>
+        <ns3:postort>Sundsvall</ns3:postort>
+        <ns3:telefonnummer>060-1818000</ns3:telefonnummer>
+        <ns3:epost>kirmott@vardenhet.se</ns3:epost>
+        <ns3:vardgivare>
+          <ns3:vardgivare-id root="1.2.752.129.2.1.4.1" extension="VardgivarId" />
+          <ns3:vardgivarnamn>Landstinget Norrland</ns3:vardgivarnamn>
+        </ns3:vardgivare>
+      </ns3:enhet>
+    </ns3:skapadAv>    
   </certificate>
   <result>
     <ns4:resultCode>OK</ns4:resultCode>

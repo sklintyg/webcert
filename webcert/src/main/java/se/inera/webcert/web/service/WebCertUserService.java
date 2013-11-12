@@ -28,5 +28,7 @@ public interface WebCertUserService {
      * @return WebCertUser
      */
     WebCertUser getWebCertUser();
+    
+    boolean isAuthorizedForUnit(String enhetsHsaId);
 
 }

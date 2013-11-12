@@ -36,7 +36,9 @@ import se.inera.certificate.integration.rest.ModuleRestApi;
 import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.exception.ModuleCallFailedException;
+import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.test.NamespacePrefixNameIgnoringListener;
+import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * @author andreaskaltenbach
@@ -58,10 +60,16 @@ public class IntygServiceTest {
 
     @InjectMocks
     private IntygService intygService = new IntygServiceImpl();
-
+    
+    
     private GetCertificateForCareResponseType intygtjanstResponse;
+    
     private GetCertificateForCareResponseType intygtjanstErrorResponse;
+
     private String intygXml;
+    
+    @Mock
+    private WebCertUserService webCertUserService;
 
     @Before
     public void setupIntygstjanstResponse() throws Exception {
@@ -82,6 +90,10 @@ public class IntygServiceTest {
                 .unmarshal(new StreamSource(errorResponse.getInputStream()), GetCertificateForCareResponseType.class)
                 .getValue();
 
+    }
+    @Before
+    public void setupDefaultAuthorization() {
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
     }
 
     @Test
@@ -138,7 +150,19 @@ public class IntygServiceTest {
         request.setCertificateId(CERTIFICATE_ID);
         when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
                 .thenReturn(intygtjanstErrorResponse);
+        
 
+        intygService.fetchIntygData(CERTIFICATE_ID);
+    }
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testFetchIntygWithFailingAuth() {
+        // setup intygstjansten WS mock to return success response
+        GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
+        request.setCertificateId(CERTIFICATE_ID);
+        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+                .thenReturn(intygtjanstResponse);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
 

@@ -34,6 +34,9 @@ import se.inera.certificate.model.Utlatande;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateStatusType;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
+import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.web.service.WebCertUserService;
 
 import com.google.common.base.Throwables;
 
@@ -61,25 +64,34 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private ModuleRestApiFactory moduleApiFactory;
+    
+    @Autowired
+    private WebCertUserService webCertUserService;
 
     @Override
     public CertificateContentHolder fetchIntygData(String intygId) {
 
         GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
 
+        verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
+        
         CertificateContentMeta metaData = convert(intyg.getMeta());
-
+        
         ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(intyg.getMeta().getCertificateType());
 
         String externalJson = convertToExternalJson(moduleRestApi, intyg);
+        
 
         return convertToInternalJson(moduleRestApi, externalJson, metaData);
     }
+    
     
     @Override
     public UtlatandeCommonModelHolder fetchIntygCommonModel(String intygId) {
         //Get JAXB representation
         GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
+        
+        verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
         
         CertificateContentMeta metaData = convert(intyg.getMeta());
         
@@ -99,6 +111,7 @@ public class IntygServiceImpl implements IntygService {
         }  
         return new UtlatandeCommonModelHolder(utlatande, metaData);
     }
+    
     private CertificateContentMeta convert(CertificateMetaType source) {
 
         CertificateContentMeta metaData = new CertificateContentMeta();
@@ -183,5 +196,13 @@ public class IntygServiceImpl implements IntygService {
             default:
                 throw new ExternalWebServiceCallFailedException(response.getResult());
         }
+    }
+    
+    protected void verifyEnhetsAuth(String enhetsId) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsId);
+        }
+
     }
 }

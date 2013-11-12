@@ -30,4 +30,14 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
+    @Override
+    public boolean isAuthorizedForUnit(String enhetsHsaId) {
+        WebCertUser user = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user != null && user.getVardenheterIds().contains(enhetsHsaId)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

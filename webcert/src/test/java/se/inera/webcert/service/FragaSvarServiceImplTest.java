@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -73,10 +72,9 @@ public class FragaSvarServiceImplTest {
 
     @Mock
     IntygService intygService;
-    
-    @Mock
-    CertificateContentMeta certificateContentMetaMock; 
 
+    @Mock
+    CertificateContentMeta certificateContentMetaMock;
 
     @InjectMocks
     private FragaSvarServiceImpl service;
@@ -218,16 +216,17 @@ public class FragaSvarServiceImplTest {
         // create mocked Utlatande from intygstjansten
         Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "FragaSvarServiceTest/utlatande.json").getFile(), Utlatande.class);
-        
-        UtlatandeCommonModelHolder utlatandeCommonModelHolder= new UtlatandeCommonModelHolder();
+
+        UtlatandeCommonModelHolder utlatandeCommonModelHolder = new UtlatandeCommonModelHolder();
         utlatandeCommonModelHolder.setCertificateContent(utlatande);
         utlatandeCommonModelHolder.setCertificateContentMeta(certificateContentMetaMock);
-        
-        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT","FK",null));
+
+        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null));
         when(certificateContentMetaMock.getStatuses()).thenReturn(list);
-        
-        when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(utlatandeCommonModelHolder);
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+
+        when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
+                utlatandeCommonModelHolder);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
 
         when(fragasvarRepository.save(capture.capture())).thenReturn(fraga);
@@ -243,7 +242,7 @@ public class FragaSvarServiceImplTest {
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
 
         verify(intygService).fetchIntygCommonModel(any(String.class));
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).isAuthorizedForUnit(anyString());
         verify(fragasvarRepository).save(any(FragaSvar.class));
         verify(sendQuestionToFKClient).sendMedicalCertificateQuestion(any(AttributedURIType.class),
                 any(SendMedicalCertificateQuestionType.class));
@@ -260,16 +259,16 @@ public class FragaSvarServiceImplTest {
         // create mocked Utlatande from intygstjansten
         Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "FragaSvarServiceTest/utlatande.json").getFile(), Utlatande.class);
-        
-        UtlatandeCommonModelHolder utlatandeCommonModelHolder= new UtlatandeCommonModelHolder();
+
+        UtlatandeCommonModelHolder utlatandeCommonModelHolder = new UtlatandeCommonModelHolder();
         utlatandeCommonModelHolder.setCertificateContent(utlatande);
         utlatandeCommonModelHolder.setCertificateContentMeta(certificateContentMetaMock);
         when(certificateContentMetaMock.getStatuses()).thenReturn(null);
-        
-        when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(utlatandeCommonModelHolder);
+
+        when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
+                utlatandeCommonModelHolder);
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
-
 
         // test call
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
@@ -295,15 +294,16 @@ public class FragaSvarServiceImplTest {
         Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "FragaSvarServiceTest/utlatande.json").getFile(), Utlatande.class);
         utlatande.getSkapadAv().getVardenhet().getId().setExtension("no-auth-for-this-unit");
-        UtlatandeCommonModelHolder utlatandeCommonModelHolder= new UtlatandeCommonModelHolder();
+        UtlatandeCommonModelHolder utlatandeCommonModelHolder = new UtlatandeCommonModelHolder();
         utlatandeCommonModelHolder.setCertificateContent(utlatande);
         utlatandeCommonModelHolder.setCertificateContentMeta(certificateContentMetaMock);
-        
-        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT","FK",null));
+
+        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null));
         when(certificateContentMetaMock.getStatuses()).thenReturn(list);
-        
-        when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(utlatandeCommonModelHolder);
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+
+        when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
+                utlatandeCommonModelHolder);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
 
         when(fragasvarRepository.save(capture.capture())).thenReturn(fraga);
@@ -338,7 +338,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
 
         // mock ws ok response
@@ -351,7 +351,8 @@ public class FragaSvarServiceImplTest {
         FragaSvar result = service.saveSvar(1L, "svarsText");
 
         verify(fragasvarRepository).findOne(1L);
-        verify(webCertUserService, times(2)).getWebCertUser();
+        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).isAuthorizedForUnit(anyString());
         verify(fragasvarRepository).save(fragaSvar);
         verify(sendAnswerToFKClient).sendMedicalCertificateAnswer(any(AttributedURIType.class),
                 any(SendMedicalCertificateAnswerType.class));
@@ -366,7 +367,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
 
         // mock ws error response
@@ -384,7 +385,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
 
         service.saveSvar(1L, "svarsText");
     }
@@ -415,9 +416,7 @@ public class FragaSvarServiceImplTest {
     public void testSaveSvarNotAuthorizedForunit() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
-        WebCertUser webCertUser = webCertUser();
-        webCertUser.setVardgivare(new ArrayList<Vardgivare>()); // remove all medarbetaruppdrag
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
 
         service.saveSvar(1L, "svarsText");
     }
@@ -431,7 +430,7 @@ public class FragaSvarServiceImplTest {
     public void testSaveMissingIntygsId() {
         service.saveSvar(null, "svarsText");
     }
-    
+
     @Test(expected = WebCertServiceException.class)
     public void testSaveSvarIntygNotFound() {
 
@@ -442,17 +441,15 @@ public class FragaSvarServiceImplTest {
 
     @Test
     public void testVerifyEnhetsAuthOK() {
-        WebCertUser webCertUser = webCertUser();
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         service.verifyEnhetsAuth("enhet");
 
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).isAuthorizedForUnit(anyString());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testVerifyEnhetsAuthFail() {
-        WebCertUser webCertUser = webCertUser();
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
         service.verifyEnhetsAuth("<doesnt-exist>");
 
     }
@@ -460,7 +457,7 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testGetFragaSvarByFilterCountOK() {
         WebCertUser webCertUser = webCertUser();
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         FragaSvarFilter filter = new FragaSvarFilter();
         filter.setEnhetsId(webCertUser.getVardgivare().get(0).getVardenheter().get(0).getId());
 
@@ -468,7 +465,7 @@ public class FragaSvarServiceImplTest {
         int result = service.getFragaSvarByFilterCount(filter);
         assertEquals(42, result);
 
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).isAuthorizedForUnit(anyString());
         verify(fragasvarRepository).filterCountFragaSvar(filter);
     }
 
@@ -484,7 +481,7 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testGetFragaSvarByFilterOK() {
         WebCertUser webCertUser = webCertUser();
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         FragaSvarFilter filter = new FragaSvarFilter();
         filter.setEnhetsId(webCertUser.getVardgivare().get(0).getVardenheter().get(0).getId());
 
@@ -492,10 +489,11 @@ public class FragaSvarServiceImplTest {
         queryResult.add(buildFragaSvar(1L, MAY, null));
         queryResult.add(buildFragaSvar(2L, MAY, null));
 
-        when(fragasvarRepository.filterFragaSvar(any(FragaSvarFilter.class), anyInt(), anyInt())).thenReturn(queryResult);
+        when(fragasvarRepository.filterFragaSvar(any(FragaSvarFilter.class), anyInt(), anyInt())).thenReturn(
+                queryResult);
         List<FragaSvar> result = service.getFragaSvarByFilter(filter, 10, 20);
 
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).isAuthorizedForUnit(anyString());
         verify(fragasvarRepository).filterFragaSvar(any(FragaSvarFilter.class), anyInt(), anyInt());
 
         assertEquals(2, result.size());
@@ -504,21 +502,21 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testGetMDByEnhetsIdOK() {
         String enhetsId = "enhet";
-        WebCertUser webCertUser = webCertUser();
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
 
         List<Object[]> queryResult = new ArrayList<Object[]>();
-        queryResult.add(new Object[]{"HSA-1_ID", "NAMN1"});
-        queryResult.add(new Object[]{"HSA-2_ID", "NAMN2"});
-        queryResult.add(new Object[]{"HSA-3_ID", "NAMN3"});
-        queryResult.add(new Object[]{"HSA-4_ID", "NAMN4"});
+        queryResult.add(new Object[] { "HSA-1_ID", "NAMN1" });
+        queryResult.add(new Object[] { "HSA-2_ID", "NAMN2" });
+        queryResult.add(new Object[] { "HSA-3_ID", "NAMN3" });
+        queryResult.add(new Object[] { "HSA-4_ID", "NAMN4" });
 
         when(fragasvarRepository.findDistinctFragaSvarHsaIdByEnhet(anyString())).thenReturn(queryResult);
         List<LakarIdNamn> result = service.getFragaSvarHsaIdByEnhet(enhetsId);
+        ArgumentCaptor<String> capture = ArgumentCaptor.forClass(String.class);
+        verify(webCertUserService).isAuthorizedForUnit(capture.capture());
 
-        verify(webCertUserService).getWebCertUser();
         verify(fragasvarRepository).findDistinctFragaSvarHsaIdByEnhet(anyString());
-
+        assertEquals(enhetsId, capture.getValue());
         assertEquals(4, result.size());
     }
 
