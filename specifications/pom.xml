@@ -262,20 +262,6 @@
       </properties>
     </profile>
     <profile>
-      <id>demo-server</id>
-        <properties>
-          <webcert.web.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.web.baseUrl>
-          <webcert.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        </properties>
-    </profile>
-    <profile>
-      <id>utveckling-server</id>
-        <properties>
-          <webcert.web.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.web.baseUrl>
-          <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        </properties>
-    </profile>
-    <profile>
       <id>wiki</id>
       <!--
         This profile is for use when writing tests using the FitNesse wiki.
