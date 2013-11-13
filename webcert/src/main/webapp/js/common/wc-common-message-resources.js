@@ -23,7 +23,7 @@ var commonMessageResources = {
         "qa.status.closed" : "Hanterat",
 
         "qa.fragestallare.fk" : "Försäkringskassan",
-        "qa.fragestallare.wc" : "Vården",
+        "qa.fragestallare.wc" : "Vårdenheten",
         "qa.amne.paminnelse" : "Påminnelse",
         "qa.amne.arbetstidsforlaggning" : "Arbetstidsförläggning",
         "qa.amne.kontakt" : "Kontakt",
