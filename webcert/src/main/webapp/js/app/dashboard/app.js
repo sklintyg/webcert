@@ -1,28 +1,29 @@
 'use strict';
 
 /* Lakare Dashboard App Module */
-angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'ngCookies','modules.messages', 'wc.common.directives', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
-angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
+angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'ngCookies', 'modules.messages', 'wc.common.directives', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
+angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', 'http403ResponseInterceptorProvider', function($routeProvider, $httpProvider, http403ResponseInterceptorProvider) {
     $routeProvider.when('/index', {
         templateUrl : '/views/dashboard/index.step1.html',
         controller : 'CreateCertCtrl'
     }).when('/edit-patient/index', {
-      templateUrl : '/views/dashboard/index.editpatient.html',
-      controller : 'CreateCertCtrl'
+        templateUrl : '/views/dashboard/index.editpatient.html',
+        controller : 'CreateCertCtrl'
     }).when('/choose-cert/index', {
-      templateUrl : '/views/dashboard/index.step2.html',
-      controller : 'CreateCertCtrl'
+        templateUrl : '/views/dashboard/index.step2.html',
+        controller : 'CreateCertCtrl'
     }).when('/choose-unit/index', {
-      templateUrl : '/views/dashboard/index.step3.html',
-      controller : 'CreateCertCtrl'
+        templateUrl : '/views/dashboard/index.step3.html',
+        controller : 'CreateCertCtrl'
     }).when('/mycert', {
-      templateUrl : '/views/dashboard/mycert.html',
-      controller : 'WebCertCtrl'
+        templateUrl : '/views/dashboard/mycert.html',
+        controller : 'WebCertCtrl'
     }).when('/unhandled-qa', {
         templateUrl : '/views/dashboard/unhandled-qa.html',
         controller : 'UnhandledQACtrl'
     }).when('/unsigned', {
-      templateUrl : '/views/dashboard/unsigned.html', controller : 'UnsignedCertCtrl'
+        templateUrl : '/views/dashboard/unsigned.html',
+        controller : 'UnsignedCertCtrl'
     }).when('/view', {
         templateUrl : '/views/dashboard/view-cert.html',
         controller : 'ViewCertCtrl'
@@ -38,6 +39,10 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', fun
 
     // Add cache buster interceptor
     $httpProvider.interceptors.push('httpRequestInterceptorCacheBuster');
+
+    // Configure 403 interceptor provider
+    http403ResponseInterceptorProvider.setRedirectUrl("/error.jsp?reason=denied");
+    $httpProvider.responseInterceptors.push('http403ResponseInterceptor');
 } ]);
 
 // Global config of default date picker config (individual attributes can be
@@ -61,4 +66,3 @@ angular.module('wcDashBoardApp').run([ '$rootScope', 'messageService', function(
     messageService.addResources(webcertResources);
     messageService.addResources(commonMessageResources);
 } ]);
-   
