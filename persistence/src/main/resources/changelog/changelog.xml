@@ -144,4 +144,16 @@
       referencedTableName="FRAGASVAR" />-->
 
   </changeSet>
+  <changeSet id="2" author="mc">
+   <addColumn tableName="FRAGASVAR">
+      <column name="VARD_AKTOR_HSAID" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+     <addColumn tableName="FRAGASVAR">
+      <column name="VARD_AKTOR_NAMN" type="varchar(255)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
 </databaseChangeLog>

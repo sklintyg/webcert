@@ -22,6 +22,16 @@ public class SvaraOchFraga {
         }
     }
 
+    public void GåTillIntygsVyMedIntygsId(String id) {
+        Browser.drive {
+            go "/m/fk7263/webcert/intyg/" + id + "#view"
+
+            waitFor{
+                at ViewCertQAPage
+            }
+            
+        }
+    }
     public void loggaInIndex() {
         Browser.drive {
 
@@ -111,7 +121,19 @@ public class SvaraOchFraga {
             }
         }
     }
-
+    
+    public boolean nyFragaKnappVisas(boolean expected) {
+        def result = false
+            Browser.drive {
+                waitFor {
+                    at ViewCertQAPage
+                }
+                result = page.askQuestionBtn.isDisplayed()
+                
+            }
+            result == expected
+        }
+    
     public boolean stallFragaMedAmne(String fraga, String amne){
         def result = false
         Browser.drive {

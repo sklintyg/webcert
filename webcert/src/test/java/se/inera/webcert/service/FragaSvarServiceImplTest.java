@@ -223,7 +223,9 @@ public class FragaSvarServiceImplTest {
 
         List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null));
         when(certificateContentMetaMock.getStatuses()).thenReturn(list);
-
+        
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        
         when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
                 utlatandeCommonModelHolder);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
@@ -242,6 +244,7 @@ public class FragaSvarServiceImplTest {
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
 
         verify(intygService).fetchIntygCommonModel(any(String.class));
+        verify(webCertUserService).getWebCertUser();
         verify(webCertUserService).isAuthorizedForUnit(anyString());
         verify(fragasvarRepository).save(any(FragaSvar.class));
         verify(sendQuestionToFKClient).sendMedicalCertificateQuestion(any(AttributedURIType.class),
@@ -338,6 +341,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
 
@@ -367,6 +371,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
 
@@ -523,6 +528,7 @@ public class FragaSvarServiceImplTest {
     private WebCertUser webCertUser() {
         WebCertUser user = new WebCertUser();
         user.setHsaId("testuser");
+        user.setNamn("test userman");
 
         Vardgivare vardgivare = new Vardgivare();
         vardgivare.getVardenheter().add(new Vardenhet("enhet", "Enhet"));

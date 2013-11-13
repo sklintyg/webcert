@@ -4,6 +4,8 @@
     "frageText": "Varför har ni inte godkänt detta? Var ju länge sedan vi skickade det.",
     "frageSigneringsDatum": "2012-12-23T21:00:00.000",
     "frageSkickadDatum": "2013-09-11T00:00:00.000",
+    "vardAktorNamn":"Thorbjörn Feldman",
+    "vardAktorHsaId":"SE-1.2.3.4",
     "intygsReferens": {
         "intygsId": "intyg-2",
         "intygsTyp": "fk7263",

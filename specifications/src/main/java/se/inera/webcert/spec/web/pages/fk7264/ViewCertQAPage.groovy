@@ -8,7 +8,7 @@ class ViewCertQAPage extends Page {
 
     static content = {
         unhandledQAList(required: false) { $("#unhandledQACol") }
-        askQuestionBtn { $("#askQuestionBtn") }
+        askQuestionBtn(required: false) { $("#askQuestionBtn") }
         newQuestionForm { $("#newQuestionForm") }
         newQuestionText { $("#newQuestionText") }
         sendQuestionBtn { $("#sendQuestionBtn") }
@@ -47,7 +47,7 @@ class ViewCertQAPage extends Page {
     def initQuestion(){
         $("#askQuestionBtn").click()
     }
-
+    
     def addQuestionText( String question){
         newQuestionText<< question
     }

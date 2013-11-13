@@ -2,8 +2,21 @@ package se.inera.webcert.persistence.fragasvar.model;
 
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
@@ -68,6 +81,12 @@ public class FragaSvar {
     @Column(name = "SISTA_DATUM_FOR_SVAR")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate sistaDatumForSvar;
+    
+    @Column(name = "VARD_AKTOR_HSAID")
+    private String vardAktorHsaId;
+    
+    @Column(name = "VARD_AKTOR_NAMN")
+    private String vardAktorNamn;
 
     // Composites
     @Embedded
@@ -281,6 +300,22 @@ public class FragaSvar {
 
     public LocalDateTime getSenasteHandelse() {
         return senasteHandelse;
+    }
+
+    public String getVardAktorHsaId() {
+        return vardAktorHsaId;
+    }
+
+    public void setVardAktorHsaId(String vardAktorHsaId) {
+        this.vardAktorHsaId = vardAktorHsaId;
+    }
+
+    public String getVardAktorNamn() {
+        return vardAktorNamn;
+    }
+
+    public void setVardAktorNamn(String vardAktorNamn) {
+        this.vardAktorNamn = vardAktorNamn;
     }
 
 
