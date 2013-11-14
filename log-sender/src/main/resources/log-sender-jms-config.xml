@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part
+  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
+  Inera Certificate Web is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published
+  by the Free Software Foundation, either version 3 of the License, or (at
+  your option) any later version. Inera Certificate Web is distributed in the
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Affero General Public License for more details. You should have received
+  a copy of the GNU Affero General Public License along with this program.
+  If not, see <http://www.gnu.org/licenses/>. -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xmlns:amq="http://activemq.apache.org/schema/core"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd
+        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+  <context:annotation-config/>
+  <context:component-scan base-package="se.inera.logsender"/>
+
+  <amq:broker persistent="false">
+    <amq:transportConnectors>
+      <amq:transportConnector uri="tcp://localhost:61617"/>
+    </amq:transportConnectors>
+  </amq:broker>
+
+  <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start"
+        destroy-method="stop">
+    <property name="connectionFactory">
+      <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61617"/>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="logMessageConsumer" class="se.inera.logsender.LogMessageConsumer"/>
+
+  <amq:queue id="queue" physicalName="logging.queue"/>
+
+  <bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+    <property name="connectionFactory" ref="jmsFactory"/>
+    <property name="destination" ref="queue"/>
+    <property name="messageListener" ref="logMessageConsumer"/>
+    <property name="concurrentConsumers" value="${logsender.bulkSize}"/>
+    <property name="maxConcurrentConsumers" value="${logsender.bulkSize}"/>
+    <property name="sessionTransacted" value="true"/>
+  </bean>
+</beans>

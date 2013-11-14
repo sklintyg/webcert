@@ -22,6 +22,7 @@
 
   <modules>
     <module>schemas</module>
+    <module>log-sender</module>
     <module>fk-stub</module>
     <module>loggtjanst-stub</module>
     <module>intygstjanst-stub</module>
@@ -57,6 +58,7 @@
     <liquibase.version>2.0.5</liquibase.version>
     <guava.version>14.0.1</guava.version>
     <jackson.version>2.1.1</jackson.version>
+    <activemq.version>5.8.0</activemq.version>
   </properties>
 
   <build>
@@ -449,6 +451,11 @@
         <version>${spring.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jms</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
         <version>${aspectj.version}</version>
@@ -485,6 +492,21 @@
         <groupId>com.fasterxml.jackson.jaxrs</groupId>
         <artifactId>jackson-jaxrs-json-provider</artifactId>
         <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-client</artifactId>
+        <version>${activemq.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-spring</artifactId>
+        <version>${activemq.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-pool</artifactId>
+        <version>${activemq.version}</version>
       </dependency>
 
       <dependency>
