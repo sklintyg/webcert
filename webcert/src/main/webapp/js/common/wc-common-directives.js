@@ -26,7 +26,7 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
 				     {
 				       link :'/web/dashboard#/mycert', 
 				       label:'Mina osignerade intyg',
-				       requires_doctor: true
+				       requires_doctor: false
 				     },
 				     {
 				       link :'/web/dashboard#/unhandled-qa',

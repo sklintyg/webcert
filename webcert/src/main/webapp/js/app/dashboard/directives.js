@@ -33,7 +33,9 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
             $scope.selectUnit = function(unit) {
             	$scope.selectedUnit = unit;
             	//call method actually on parent scope: NOTE: not very nice coupling between this directive and controller
-            	$scope.setActiveUnit($scope.selectedUnit);
+            	if ($scope.setActiveUnit) {
+            	  $scope.setActiveUnit($scope.selectedUnit);
+            	}
             }
             
             //initial selection

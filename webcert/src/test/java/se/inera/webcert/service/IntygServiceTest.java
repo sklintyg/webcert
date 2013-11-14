@@ -1,10 +1,5 @@
 package se.inera.webcert.service;
 
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayOutputStream;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -12,6 +7,12 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayOutputStream;
+
+import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
 
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -25,16 +26,22 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
 import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
+import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.integration.rest.ModuleRestApi;
 import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.exception.ModuleCallFailedException;
+import se.inera.certificate.model.Utlatande;
+import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
+import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.test.NamespacePrefixNameIgnoringListener;
+import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * @author andreaskaltenbach
@@ -56,10 +63,19 @@ public class IntygServiceTest {
 
     @InjectMocks
     private IntygService intygService = new IntygServiceImpl();
-
+    
+    
     private GetCertificateForCareResponseType intygtjanstResponse;
+    
     private GetCertificateForCareResponseType intygtjanstErrorResponse;
+    
+    private Utlatande utlatande;
+    
+
     private String intygXml;
+    
+    @Mock
+    private WebCertUserService webCertUserService;
 
     @Before
     public void setupIntygstjanstResponse() throws Exception {
@@ -79,7 +95,13 @@ public class IntygServiceTest {
         intygtjanstErrorResponse = context.createUnmarshaller()
                 .unmarshal(new StreamSource(errorResponse.getInputStream()), GetCertificateForCareResponseType.class)
                 .getValue();
-
+        
+        utlatande = new CustomObjectMapper().readValue(new ClassPathResource("IntygServiceTest/utlatande.json").getFile(), Utlatande.class);
+        
+    }
+    @Before
+    public void setupDefaultAuthorization() {
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
     }
 
     @Test
@@ -107,7 +129,7 @@ public class IntygServiceTest {
         when(moduleRestApi.convertExternalToInternal(any(CertificateContentHolder.class))).thenReturn(
                 externalToInternalResponse);
 
-        String intygData = intygService.fetchIntygData(CERTIFICATE_ID);
+        CertificateContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID);
 
         // ensure that correct WS call is made to intygstjanst
         verify(getCertificateForCareResponder).getCertificateForCare(any(AttributedURIType.class), eq(request));
@@ -125,7 +147,7 @@ public class IntygServiceTest {
         assertEquals("123", captor.getValue().getCertificateContentMeta().getId());
         assertEquals("fk7263", captor.getValue().getCertificateContentMeta().getType());
 
-        assertEquals("<internalJson>", intygData);
+        assertEquals("<internalJson>", intygData.getCertificateContent());
     }
 
     @Test(expected = ExternalWebServiceCallFailedException.class)
@@ -136,7 +158,19 @@ public class IntygServiceTest {
         request.setCertificateId(CERTIFICATE_ID);
         when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
                 .thenReturn(intygtjanstErrorResponse);
+        
 
+        intygService.fetchIntygData(CERTIFICATE_ID);
+    }
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testFetchIntygWithFailingAuth() {
+        // setup intygstjansten WS mock to return success response
+        GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
+        request.setCertificateId(CERTIFICATE_ID);
+        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+                .thenReturn(intygtjanstResponse);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
 
@@ -187,6 +221,83 @@ public class IntygServiceTest {
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
 
+    @Test
+    public void testFetchIntygCommonModel() throws Exception {
+
+        // setup intygstjansten WS mock to return intyg information
+        GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
+        request.setCertificateId(CERTIFICATE_ID);
+        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+                .thenReturn(intygtjanstResponse);
+
+        // setup module Rest API factory to return a mocked module Rest API
+        when(moduleRestApiFactory.getModuleRestService(CERTIFICATE_TYPE)).thenReturn(moduleRestApi);
+
+        // setup module API behaviour for conversion from transport to external
+        Response unmarshallResponse = mock(Response.class);
+        when(unmarshallResponse.getStatus()).thenReturn(Response.Status.OK.getStatusCode());
+        String utlatandeAsString = new CustomObjectMapper().writeValueAsString(utlatande);
+        when(unmarshallResponse.readEntity(String.class)).thenReturn(utlatandeAsString);
+        when(moduleRestApi.unmarshall(any(String.class))).thenReturn(unmarshallResponse);
+
+       
+        UtlatandeCommonModelHolder intygData = intygService.fetchIntygCommonModel(CERTIFICATE_ID);
+
+        // ensure that correct WS call is made to intygstjanst
+        verify(getCertificateForCareResponder).getCertificateForCare(any(AttributedURIType.class), eq(request));
+
+        // ensure correct module lookup is done with module Rest API factory
+        verify(moduleRestApiFactory).getModuleRestService("fk7263");
+
+        // ensure that correct utlatande XML is sent to module to convert from transport to external format
+        verify(moduleRestApi).unmarshall(argThat(new UtlatandeXmlMatcher()));
+
+        assertEquals(utlatandeAsString, new CustomObjectMapper().writeValueAsString(intygData.getUtlatande()));
+    }
+    
+    @Test(expected = ExternalWebServiceCallFailedException.class)
+    public void testFetchIntygCommonModelWithFailingIntygstjanst() {
+
+        // setup intygstjansten WS mock to return error response
+        GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
+        request.setCertificateId(CERTIFICATE_ID);
+        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+                .thenReturn(intygtjanstErrorResponse);
+        
+
+        intygService.fetchIntygCommonModel(CERTIFICATE_ID);
+    }
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testFetchIntygCommonModelWithFailingAuth() {
+        // setup intygstjansten WS mock to return success response
+        GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
+        request.setCertificateId(CERTIFICATE_ID);
+        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+                .thenReturn(intygtjanstResponse);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
+        intygService.fetchIntygCommonModel(CERTIFICATE_ID);
+    }
+    
+    @Test(expected = ModuleCallFailedException.class)
+    public void testFetchIntygCommonModelWithFailingUnmarshalling() {
+
+        // setup intygstjansten WS mock to return intyg information
+        GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
+        request.setCertificateId(CERTIFICATE_ID);
+        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+                .thenReturn(intygtjanstResponse);
+
+        // setup module Rest API factory to return a mocked module Rest API
+        when(moduleRestApiFactory.getModuleRestService(CERTIFICATE_TYPE)).thenReturn(moduleRestApi);
+
+        // setup module API behaviour for conversion from transport to external
+        Response unmarshallResponse = mock(Response.class);
+        when(unmarshallResponse.getStatus()).thenReturn(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        when(moduleRestApi.unmarshall(any(String.class))).thenReturn(unmarshallResponse);
+
+        intygService.fetchIntygCommonModel(CERTIFICATE_ID);
+    }
     private class UtlatandeXmlMatcher extends ArgumentMatcher<String> {
 
         public boolean matches(Object o) {

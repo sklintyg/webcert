@@ -19,7 +19,7 @@ angular
                         function UnsignedCertCtrl($scope, $window, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
                             // init state
                             $scope.widgetState = {
-                                doneLoading : false,
+                                doneLoading : true,
                                 activeErrorMessageKey : null
                             }
 

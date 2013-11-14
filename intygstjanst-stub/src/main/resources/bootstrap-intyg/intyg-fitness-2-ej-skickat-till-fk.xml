@@ -2,7 +2,7 @@
 <gc:GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1" xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
   xmlns="urn:riv:clinicalprocess:healthcond:certificate:1" xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
   <gc:meta>
-    <c:certificateId>intyg-2</c:certificateId>
+    <c:certificateId>intyg-fit-2-ej-skickat-till-fk</c:certificateId>
     <c:certificateType>fk7263</c:certificateType>
     <c:validFrom>2013-01-01</c:validFrom>
     <c:validTo>2013-03-15</c:validTo>
@@ -15,14 +15,9 @@
       <c:type>RECEIVED</c:type>
       <c:timestamp>2011-01-26T00:00:00</c:timestamp>
     </c:status>
-    <c:status>
-      <c:target>FK</c:target>
-      <c:type>SENT</c:type>
-      <c:timestamp>2011-01-28T00:00:00</c:timestamp>
-    </c:status>
   </gc:meta>
   <gc:certificate>
-    <utlatande-id root="wc-root" extension="intyg-2" />
+    <utlatande-id root="wc-root" extension="intyg-fit-2-ej-skickat-till-fk" />
     <typAvUtlatande codeSystem="f6fb361a-e31d-48b8-8657-99b63912dd9b" code="fk7263" />
     <kommentar>Prognosen för patienten är god. Han kommer att kunna återgå till sitt arbete efter genomförd behandling.
     </kommentar>
@@ -50,17 +45,17 @@
       <personal-id root="1.2.752.129.2.1.4.1" extension="Personal HSA-ID" />
       <fullstandigtNamn>En Läkare</fullstandigtNamn>
       <enhet>
-        <enhets-id root="1.2.752.129.2.1.4.1" extension="dialys" />
+        <enhets-id root="1.2.752.129.2.1.4.1" extension="vardenhet-fit-1" />
         <arbetsplatskod root="1.2.752.29.4.71" extension="123456789011" />
-        <enhetsnamn>Dialys mott</enhetsnamn>
+        <enhetsnamn>Vardenhet Fitnesse 1</enhetsnamn>
         <postadress>Lasarettsvägen 13</postadress>
         <postnummer>85150</postnummer>
         <postort>Sundsvall</postort>
         <telefonnummer>060-1818000</telefonnummer>
         <epost>kirmott@vardenhet.se</epost>
         <vardgivare>
-          <vardgivare-id root="1.2.752.129.2.1.4.1" extension="VardgivarId" />
-          <vardgivarnamn>Landstinget Norrland</vardgivarnamn>
+          <vardgivare-id root="1.2.752.129.2.1.4.1" extension="vardgivare-fitnesse" />
+          <vardgivarnamn>FitNesse vardgivare</vardgivarnamn>
         </vardgivare>
       </enhet>
     </skapadAv>
