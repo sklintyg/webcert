@@ -232,7 +232,23 @@ public class SvaraOchFraga {
         }
         return result
     }
+    
+    public boolean MarkeraObehandladknappFörFrågaVisas(String internId, boolean expectedVisibility){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor{
+                page.qaHandledPanel(internId).isDisplayed()
+            }
+           
+            result = page.markAsUnhandledBtn(internId).isDisplayed()
 
+           
+        }
+        return result == expectedVisibility
+    }
 
     public void visaAvanceratFilter(){
         Browser.drive {
