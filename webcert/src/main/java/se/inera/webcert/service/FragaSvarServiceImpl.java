@@ -340,6 +340,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     "Could not find FragaSvar with id:" + frageSvarId);
         }
 
+       //Enforce business rule FS-011
+       if (!FRAGE_STALLARE_WEBCERT.equals(fragaSvar.getFrageStallare()) && !StringUtils.isEmpty(fragaSvar.getSvarsText())) {
+           throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                   "FS-011: Cant revert status for question " + frageSvarId);
+       }
+       
         if (fragaSvar.getSvarsText() != null && !fragaSvar.getSvarsText().isEmpty()) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
