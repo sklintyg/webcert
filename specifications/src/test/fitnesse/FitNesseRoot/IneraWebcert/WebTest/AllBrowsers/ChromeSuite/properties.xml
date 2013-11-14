@@ -8,6 +8,7 @@
 	<Search>true</Search>
 	<Suite>true</Suite>
 	<SymbolicLinks>
+		<SuiteSetUp>.IneraWebcert.WebTest..SuiteSetUp</SuiteSetUp>
 		<AllTests>.IneraWebcert.WebTest.AllTests</AllTests>
 	</SymbolicLinks>
 	<Versions>true</Versions>
