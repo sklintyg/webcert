@@ -24,6 +24,16 @@
   <import resource="log-sender-jms-config.xml"/>
   <import resource="log-sender-ws-config.xml"/>
 
+  <import resource="classpath:loggtjanst-stub-context.xml" />
+
+  <beans profile="dev">
+    <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+        <property name="mapper">
+          <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
+        </property>
+      </bean>
+  </beans>
+
  <!-- <task:scheduler id="scheduler" pool-size="10"/>
   <task:scheduled-tasks>
     <task:scheduled ref="logSender" method="sendLogEntries" fixed-rate="1000"/>

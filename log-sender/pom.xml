@@ -107,21 +107,7 @@
       <artifactId>activemq-pool</artifactId>
     </dependency>
 
-
-    <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>1.4.01</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.kubek2k</groupId>
-      <artifactId>springockito</artifactId>
-      <version>1.0.8</version>
-    </dependency>
-
-
-    <dependency>
+   <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
@@ -136,13 +122,10 @@
       <artifactId>mockito-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <version>2.7.1</version>
+      <groupId>org.kubek2k</groupId>
+      <artifactId>springockito</artifactId>
+      <version>1.0.8</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -171,7 +154,7 @@
         <version>9.0.1.v20130408</version>
         <configuration>
           <webAppConfig>
-            <contextPath>/</contextPath>
+            <contextPath>/log-sender</contextPath>
           </webAppConfig>
           <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
           <systemProperties>
@@ -181,7 +164,7 @@
             </systemProperty>
             <systemProperty>
               <name>jetty.port</name>
-              <value>9088</value>
+              <value>9090</value>
             </systemProperty>
             <systemProperty>
               <name>java.awt.headless</name>
@@ -190,54 +173,6 @@
           </systemProperties>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.cargo</groupId>
-        <artifactId>cargo-maven2-plugin</artifactId>
-        <version>1.4.4</version>
-        <configuration>
-          <container>
-            <containerId>tomcat7x</containerId>
-            <type>remote</type>
-          </container>
-          <configuration>
-            <type>runtime</type>
-            <properties>
-              <cargo.remote.username>cargo-deploy</cargo.remote.username>
-              <cargo.remote.uri>${cargo.remote.uri}</cargo.remote.uri>
-            </properties>
-          </configuration>
-          <deployables>
-            <deployable>
-              <type>war</type>
-              <properties>
-                <context>/</context>
-              </properties>
-            </deployable>
-          </deployables>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>demo</id>
-      <properties>
-        <cargo.remote.uri>http://demo.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
-      </properties>
-    </profile>
-    <profile>
-      <id>utveckling</id>
-      <properties>
-        <cargo.remote.uri>http://utveckling.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
-      </properties>
-    </profile>
-    <profile>
-      <id>test</id>
-      <properties>
-        <cargo.remote.uri>http://10.250.35.51:8080/manager/text</cargo.remote.uri>
-      </properties>
-    </profile>
-  </profiles>
-
 </project>

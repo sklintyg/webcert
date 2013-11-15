@@ -22,12 +22,23 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
 
-  <display-name>Inera Log-Sender Web Application</display-name>
+  <display-name>Inera Log Sender Web Application</display-name>
 
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath:/log-sender-config.xml</param-value>
   </context-param>
+
+  <servlet>
+    <servlet-name>ws</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+      <servlet-name>ws</servlet-name>
+      <url-pattern>/*</url-pattern>
+    </servlet-mapping>
 
   <!-- Start spring context -->
   <listener>
