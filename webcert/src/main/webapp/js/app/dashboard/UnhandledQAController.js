@@ -16,7 +16,7 @@ angular
                         'dashBoardService',
                         'fragaSvarCommonService',
                         'wcDialogService',
-                        function UnhandledCertCtrl($scope, $window, $log, $timeout, $filter, $cookieStore , dashBoardService, fragaSvarCommonService, wcDialogService) {
+                        function UnhandledCertCtrl($scope, $window, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
 
                             // init state
                             $scope.widgetState = {
@@ -73,7 +73,6 @@ angular
                             $scope.doctorList = [];
                             $scope.doctorList.push($scope.doctorListEmptyChoice);
 
-
                             var defaultQuery = {
                                 enhetsId : undefined, // set to chosen enhet
                                 // before submitting query
@@ -103,23 +102,20 @@ angular
                                 $scope.widgetState.activeErrorMessageKey = null;
                                 var toSend = $scope.prepareSearchFormForQuery($scope.qp, $scope.widgetState);
                                 $scope.widgetState.lastQuery = toSend;
-                                $timeout(function() {
-                                    dashBoardService.getQAByQuery(toSend, function(successData) {
-                                        $scope.widgetState.runningQuery = false;
+                                dashBoardService.getQAByQuery(toSend, function(successData) {
+                                    $scope.widgetState.runningQuery = false;
 
-                                        $scope.qaListQuery = successData.results;
-                                        $scope.widgetState.currentList = $scope.qaListQuery;
-                                        $scope.widgetState.totalCount = successData.totalCount;
-                                        $scope.decorateList($scope.widgetState.currentList);
+                                    $scope.qaListQuery = successData.results;
+                                    $scope.widgetState.currentList = $scope.qaListQuery;
+                                    $scope.widgetState.totalCount = successData.totalCount;
+                                    $scope.decorateList($scope.widgetState.currentList);
 
-                                    }, function(errorData) {
-                                        $scope.widgetState.runningQuery = false;
-                                        $log.debug("Query Error");
-                                        // TODO: real errorhandling
-                                        $scope.widgetState.activeErrorMessageKey = "info.query.error";
-                                    });
-
-                                }, 1000);
+                                }, function(errorData) {
+                                    $scope.widgetState.runningQuery = false;
+                                    $log.debug("Query Error");
+                                    // TODO: real errorhandling
+                                    $scope.widgetState.activeErrorMessageKey = "info.query.error";
+                                });
 
                             }
 
@@ -132,27 +128,24 @@ angular
                                 queryInstance.startFrom = queryInstance.startFrom + queryInstance.pageSize;
                                 $scope.widgetState.lastQuery = queryInstance;
 
-                                $timeout(function() {
-                                    dashBoardService.getQAByQueryFetchMore(queryInstance, function(successData) {
-                                        $scope.widgetState.fetchingMoreInProgress = false;
-                                        $scope.decorateList(successData.results);
-                                        ;
-                                        for ( var i = 0; i < successData.results.length; i++) {
-                                            $scope.qaListQuery.push(successData.results[i]);
-                                        }
+                                dashBoardService.getQAByQueryFetchMore(queryInstance, function(successData) {
+                                    $scope.widgetState.fetchingMoreInProgress = false;
+                                    $scope.decorateList(successData.results);
+                                    ;
+                                    for ( var i = 0; i < successData.results.length; i++) {
+                                        $scope.qaListQuery.push(successData.results[i]);
+                                    }
 
-                                        $scope.widgetState.currentList = $scope.qaListQuery;
-                                    }, function(errorData) {
-                                        $scope.widgetState.fetchingMoreInProgress = false;
-                                        $log.debug("Query Error");
-                                        $scope.widgetState.activeErrorMessageKey = "info.query.error";
-                                    });
+                                    $scope.widgetState.currentList = $scope.qaListQuery;
+                                }, function(errorData) {
+                                    $scope.widgetState.fetchingMoreInProgress = false;
+                                    $log.debug("Query Error");
+                                    $scope.widgetState.activeErrorMessageKey = "info.query.error";
+                                });
 
-                                }, 1000);
                             }
                             $scope.resetSearchForm = function() {
                                 $cookieStore.remove("query_instance");
-
 
                                 $scope.qp = angular.copy(defaultQuery);
                                 $scope.qp.vantarPaSelector = $scope.statusList[1];
@@ -160,23 +153,23 @@ angular
                             }
 
                             $scope.reloadSearchForm = function() {
-                                if($cookieStore.get("query_instance")){
-                                    $scope.qp=$cookieStore.get("query_instance").filter
+                                if ($cookieStore.get("query_instance")) {
+                                    $scope.qp = $cookieStore.get("query_instance").filter
 
-                                    if($scope.qp.vantarPaSelector){
+                                    if ($scope.qp.vantarPaSelector) {
                                         $scope.qp.vantarPaSelector = selectVantarPaByValue($cookieStore.get("query_instance").filter.vantarPaSelector.value);
-                                    } else{
+                                    } else {
                                         $scope.qp.vantarPaSelector = $scope.statusList[1];
                                     }
 
-                                } else{
+                                } else {
                                     $scope.resetSearchForm();
                                 }
                             }
                             $scope.prepareSearchFormForQuery = function(qp, ws) {
 
                                 qp.enhetsId = $scope.activeUnit.id;
-                                $cookieStore.put("enhetsId" ,qp.enhetsId);
+                                $cookieStore.put("enhetsId", qp.enhetsId);
                                 qp.vantarPa = qp.vantarPaSelector.value;
 
                                 if (qp.doctorSelector) {
@@ -210,7 +203,7 @@ angular
                                 queryInstance.startFrom = ws.queryStartFrom;
                                 queryInstance.pageSize = ws.queryPageSize;
                                 queryInstance.filter = qp;
-                                $cookieStore.put("query_instance" , queryInstance);
+                                $cookieStore.put("query_instance", queryInstance);
                                 return queryInstance;
                             }
 
@@ -229,8 +222,9 @@ angular
                                     $scope.decorateList($scope.widgetState.currentList);
                                     $scope.widgetState.queryMode = false;
 
-                                    //If active unit is  already set then do the filtering
-                                    if($scope.activeUnit){
+                                    // If active unit is already set then do the
+                                    // filtering
+                                    if ($scope.activeUnit) {
                                         $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
                                     }
                                 } else {
@@ -263,17 +257,19 @@ angular
                                 $scope.widgetState.queryMode = false;
                                 $scope.widgetState.queryFormCollapsed = true;
 
-                                //If we change enhet then we probably don't want the same filter criterias
-                                if($cookieStore.get("enhetsId") && $cookieStore.get("enhetsId")!=unit.id){
+                                // If we change enhet then we probably don't
+                                // want the same filter criterias
+                                if ($cookieStore.get("enhetsId") && $cookieStore.get("enhetsId") != unit.id) {
                                     $scope.resetSearchForm();
                                 }
-                                $cookieStore.put("enhetsId" ,unit.id);
+                                $cookieStore.put("enhetsId", unit.id);
 
                                 $scope.initDoctorList(unit.id);
                                 $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
 
-                                //If we have a query stored, open the advanced filter
-                                if($cookieStore.get("query_instance")){
+                                // If we have a query stored, open the advanced
+                                // filter
+                                if ($cookieStore.get("query_instance")) {
                                     $scope.widgetState.queryFormCollapsed = false
                                     $scope.doSearch();
                                 }
@@ -288,9 +284,9 @@ angular
                                     if (list && (list.length > 0)) {
                                         $scope.doctorList.unshift($scope.doctorListEmptyChoice);
 
-                                        if($cookieStore.get("query_instance") && $cookieStore.get("query_instance").filter.doctorSelector){
+                                        if ($cookieStore.get("query_instance") && $cookieStore.get("query_instance").filter.doctorSelector) {
                                             $scope.qp.doctorSelector = selectDoctorByHsaId($cookieStore.get("query_instance").filter.doctorSelector.hsaId);
-                                        }else{
+                                        } else {
                                             $scope.doctorSelector = $scope.doctorList[0];
                                         }
                                     }
@@ -304,17 +300,17 @@ angular
                                 });
                             }
 
-                            function selectDoctorByHsaId(hsaId){
-                                for(var count =0;count<$scope.doctorList.length;count++){
-                                    if($scope.doctorList[count].hsaId==hsaId){
+                            function selectDoctorByHsaId(hsaId) {
+                                for ( var count = 0; count < $scope.doctorList.length; count++) {
+                                    if ($scope.doctorList[count].hsaId == hsaId) {
                                         return $scope.doctorList[count];
                                     }
                                 }
                                 return $scope.doctorList[0];
                             }
-                            function selectVantarPaByValue(vantaValue){
-                                for(var count =0;count<$scope.statusList.length;count++){
-                                    if($scope.statusList[count].value==vantaValue){
+                            function selectVantarPaByValue(vantaValue) {
+                                for ( var count = 0; count < $scope.statusList.length; count++) {
+                                    if ($scope.statusList[count].value == vantaValue) {
                                         return $scope.statusList[count];
                                     }
                                 }
