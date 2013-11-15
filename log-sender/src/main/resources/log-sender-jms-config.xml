@@ -32,25 +32,18 @@
     </amq:transportConnectors>
   </amq:broker>
 
-  <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start"
+   <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start"
         destroy-method="stop">
     <property name="connectionFactory">
-      <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://localhost:61617"/>
-      </bean>
+      <amq:connectionFactory brokerURL="tcp://localhost:61617" />
     </property>
   </bean>
 
-  <bean id="logMessageConsumer" class="se.inera.logsender.LogMessageConsumer"/>
-
   <amq:queue id="queue" physicalName="logging.queue"/>
 
-  <bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+  <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="jmsFactory"/>
-    <property name="destination" ref="queue"/>
-    <property name="messageListener" ref="logMessageConsumer"/>
-    <property name="concurrentConsumers" value="${logsender.bulkSize}"/>
-    <property name="maxConcurrentConsumers" value="${logsender.bulkSize}"/>
-    <property name="sessionTransacted" value="true"/>
+    <property name="defaultDestination" ref="queue"/>
+    <property name="sessionTransacted" value="true" />
   </bean>
 </beans>
