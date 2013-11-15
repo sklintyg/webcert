@@ -20,6 +20,17 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
     List<FragaSvar> findByEnhetsId(@Param("idList") List<String> enhetsIds);
 
     /**
+     * Should return a count of {@link FragaSvar} entities in the repository that has an enhetsId matching one of the
+     * supplied list of id's. Is also discards any entity with {@link se.inera.webcert.persistence.fragasvar.model.Status.CLOSED}.
+     *
+     * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities
+     * 
+     * @return A count of {@link FragaSvar} matching the search criteria.
+     */
+    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED'")
+    Long countUnhandledForEnhetsIds(@Param("idList") List<String> enhetsIds);
+    
+    /**
      * Returns a list of all unique hsaId and name (of vardperson who signed the certificate the FragaSvar is linked to) where matches the supplied id.
      *
      * @param enhetsid

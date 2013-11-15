@@ -16,7 +16,7 @@ public class StatRequestResponse {
     public StatRequestResponse(StatEntry unitStat, StatEntry userStat) {
         super();
         this.unitStat = unitStat;
-        this.setUserStat(userStat);
+        this.userStat = userStat;
     }
 
     public StatRequestResponse() {

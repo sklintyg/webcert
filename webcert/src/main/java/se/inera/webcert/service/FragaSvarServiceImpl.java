@@ -393,4 +393,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
         return mdList;
     }
+
+    @Override
+    public long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds) {
+        return fragaSvarRepository.countUnhandledForEnhetsIds(vardenheterIds);
+    }
 }
