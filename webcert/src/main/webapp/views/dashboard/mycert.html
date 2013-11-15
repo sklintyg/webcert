@@ -64,9 +64,9 @@
 	                  <td class="center"><input id="selected" type="checkbox" ng-disabled="cert.updateInProgress" ng-model="cert.vidarebefordrad" ng-change="onVidareBefordradChange(cert)" /> 
 	                    <span ng-if="cert.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
 	                  </td>
+                    <td class="unbreakable">{{cert.patientid}}</td>
                     <td class="unbreakable"></td>
                     <td class="unbreakable"></td>
-	                  <td class="unbreakable">{{cert.patientid}}</td>
 	                  <td class="unbreakable table-qa-last">{{cert.lastsaved | date:'shortDate'}}</td>
                   </tr>
 	              </table>

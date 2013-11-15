@@ -32,7 +32,7 @@ angular
                             $scope.unsignedList = {};
                             $scope.activeUnit = {}
                             
-                            dashBoardService.setActiveCareUnitViewCallback(function (unit) {
+                            $scope.$on('select-care-unit', function (event, unit) {
 	                              $log.debug("ActiveUnit is now:" + unit);
 	                              $scope.activeUnit = unit;
 	                              $scope.widgetState.queryMode = false;

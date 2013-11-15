@@ -43,7 +43,7 @@ angular
                             $scope.qaListQuery = {};
                             $scope.activeUnit = {}
                             
-                            dashBoardService.setActiveCareUnitViewCallback(function (unit) {
+                            $scope.$on('select-care-unit', function (event, unit) {
 	                              $log.debug("ActiveUnit is now:" + unit);
 	                              $scope.activeUnit = unit;
 	                              $scope.widgetState.queryMode = false;
@@ -56,7 +56,7 @@ angular
 	                              $cookieStore.put("enhetsId" ,unit.id);
 	
 	                              $scope.initDoctorList(unit.id);
-	                              $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, dashBoardService.getActiveCareUnit().id);
+	                              $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, unit.id);
 	
 	                              //If we have a query stored, open the advanced filter
 	                              if($cookieStore.get("query_instance")){
