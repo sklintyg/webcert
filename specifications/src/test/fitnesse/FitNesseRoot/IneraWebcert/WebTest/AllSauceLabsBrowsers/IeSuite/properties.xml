@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<properties>
+	<Edit>true</Edit>
+	<Files>true</Files>
+	<Properties>true</Properties>
+	<RecentChanges>true</RecentChanges>
+	<Refactor>true</Refactor>
+	<Search>true</Search>
+	<Suite/>
+	<SymbolicLinks>
+		<SuiteSetUp>.IneraWebcert.WebTest.SuiteSetUp</SuiteSetUp>
+		<AllTests>.IneraWebcert.WebTest.AllTests</AllTests>
+	</SymbolicLinks>
+	<Versions>true</Versions>
+	<WhereUsed>true</WhereUsed>
+</properties>
