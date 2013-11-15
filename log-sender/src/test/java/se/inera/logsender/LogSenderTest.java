@@ -5,18 +5,18 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 
-import org.apache.activemq.command.ActiveMQQueue;
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -29,6 +29,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import se.inera.logsender.messages.AbstractLogMessage;
+import se.inera.logsender.messages.IntygReadMessage;
 import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponseType;
@@ -56,14 +58,35 @@ public class LogSenderTest {
     @Autowired
     private Queue queue;
 
+    private List<AbstractLogMessage> logEntries = new ArrayList<AbstractLogMessage>() {
+        {
+            add(intygReadMessage("2013-01-01T10:00"));
+            add(intygReadMessage("2013-01-02T10:00"));
+            add(intygReadMessage("2013-01-03T10:00"));
+            add(intygReadMessage("2013-01-04T10:00"));
+            add(intygReadMessage("2013-01-05T10:00"));
+            add(intygReadMessage("2013-01-06T10:00"));
+        }
+    };
+
+    private AbstractLogMessage intygReadMessage(String timestamp) {
+        IntygReadMessage intygReadMessage = new IntygReadMessage();
+        intygReadMessage.setEnhetId("enhet1");
+        intygReadMessage.setSystemId("webcert");
+        intygReadMessage.setTimestamp(new LocalDateTime(timestamp));
+        intygReadMessage.setUserId("user1");
+        intygReadMessage.setVardgivareId("vg1");
+        return intygReadMessage;
+    }
+
     @Test
-    public void testBulkSendingOfLogMessages() throws InterruptedException {
+    public void testSendingLogMessages() throws InterruptedException {
 
         ArgumentCaptor<StoreLogRequestType> capture = ArgumentCaptor.forClass(StoreLogRequestType.class);
 
-        simpleSend("aaa");
-        simpleSend("bbb");
-        simpleSend("ccc");
+        for (AbstractLogMessage intygReadMessage : logEntries.subList(0, 3)) {
+            sendLogMessage(intygReadMessage);
+        }
 
         Thread.sleep(1000);
 
@@ -74,7 +97,10 @@ public class LogSenderTest {
         // ensure that all three entries are sent to loggtjänst
         StoreLogRequestType request = capture.getValue();
         assertEquals(3, request.getLog().size());
-        // TODO - check every log entry
+
+        assertEquals(logEntries.get(0).getLogId(), request.getLog().get(0).getLogId());
+        assertEquals(logEntries.get(1).getLogId(), request.getLog().get(1).getLogId());
+        assertEquals(logEntries.get(2).getLogId(), request.getLog().get(2).getLogId());
 
         // ensure that queue is empty
         assertEquals(0, queueSize());
@@ -85,12 +111,9 @@ public class LogSenderTest {
 
         ArgumentCaptor<StoreLogRequestType> capture = ArgumentCaptor.forClass(StoreLogRequestType.class);
 
-        simpleSend("aaa");
-        simpleSend("bbb");
-        simpleSend("ccc");
-        simpleSend("ddd");
-        simpleSend("eee");
-        simpleSend("fff");
+        for (AbstractLogMessage logMessage : logEntries) {
+            sendLogMessage(logMessage);
+        }
 
         Thread.sleep(1000);
 
@@ -110,32 +133,28 @@ public class LogSenderTest {
     @Test
     public void testBulkSendingFailingSecondTime() throws InterruptedException {
 
-        simpleSend("aaa");
-        simpleSend("bbb");
-        simpleSend("ccc");
-        simpleSend("ddd");
-        simpleSend("eee");
-        simpleSend("fff");
+        for (AbstractLogMessage logMessage : logEntries) {
+            sendLogMessage(logMessage);
+        }
 
         Thread.sleep(1000);
 
-        when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class)))
-                .thenReturn(storeLogResponse(ResultCodeType.OK))
-                .thenReturn(storeLogResponse(ResultCodeType.ERROR));
+        when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
+                storeLogResponse(ResultCodeType.OK)).thenReturn(storeLogResponse(ResultCodeType.ERROR));
 
         logSender.sendLogEntries();
 
         // ensure that queue still contains last messages
         assertEquals(1, queueSize());
-        //TODO - check that remaining element is 'fff'
+        // TODO - check that remaining element is 'fff'
     }
 
     @Test
     public void testBulkSendingWithFailingLoggtjanst() throws InterruptedException {
 
-        simpleSend("aaa");
-        simpleSend("bbb");
-        simpleSend("ccc");
+        for (AbstractLogMessage logMessage : logEntries.subList(0, 3)) {
+            sendLogMessage(logMessage);
+        }
 
         Thread.sleep(1000);
 
@@ -173,16 +192,10 @@ public class LogSenderTest {
         return response;
     }
 
-    private void simpleSend(final String intyg) {
-
-        Destination destination = new ActiveMQQueue("logging.queue");
-
-        this.jmsTemplate.send(destination, new MessageCreator() {
+    private void sendLogMessage(final AbstractLogMessage intygReadMessage) {
+        this.jmsTemplate.send(queue, new MessageCreator() {
             public Message createMessage(Session session) throws JMSException {
-                TextMessage message = session.createTextMessage(intyg);
-
-                System.out.println("Putting message " + intyg + " on queue");
-                return message;
+                return session.createObjectMessage(intygReadMessage);
             }
         });
     }

@@ -4,10 +4,10 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -20,12 +20,17 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.stereotype.Component;
 import se.inera.logsender.exception.LoggtjanstExecutionException;
+import se.inera.logsender.messages.AbstractLogMessage;
 import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponseType;
+import se.riv.ehr.log.v1.ActivityType;
+import se.riv.ehr.log.v1.CareProviderType;
+import se.riv.ehr.log.v1.CareUnitType;
 import se.riv.ehr.log.v1.LogType;
 import se.riv.ehr.log.v1.ResourceType;
 import se.riv.ehr.log.v1.ResourcesType;
+import se.riv.ehr.log.v1.SystemType;
 import se.riv.ehr.log.v1.UserType;
 
 /**
@@ -82,7 +87,6 @@ public class LogSender {
                 int queueDepth = queueDepth(session);
                 int chunk = Math.min(queueDepth, bulkSize);
 
-
                 if (chunk > 0) {
                     LOG.info("Transferring " + chunk + " log entries to loggtjänst.");
 
@@ -124,22 +128,54 @@ public class LogSender {
     }
 
     private LogType convert(Message message) {
-        LogType logType = new LogType();
-
         try {
-            String text = ((TextMessage) message).getText();
+            Object element = ((ObjectMessage) message).getObject();
 
-            UserType user = new UserType();
-            user.setUserId(text);
-            logType.setUser(user);
+            if (element instanceof AbstractLogMessage) {
+                AbstractLogMessage logMessage = (AbstractLogMessage) element;
+                return convert(logMessage);
 
-            ResourceType resource = new ResourceType();
-            logType.setResources(new ResourcesType());
-            logType.getResources().getResource().add(resource);
+            } else {
+                throw new RuntimeException("Unrecognized message type " + element.getClass().getCanonicalName());
+            }
 
         } catch (JMSException e) {
             throw new RuntimeException("Failed to read incoming JMS message", e);
         }
+    }
+
+    private LogType convert(AbstractLogMessage source) {
+        LogType logType = new LogType();
+
+        logType.setLogId(source.getLogId());
+
+        SystemType system = new SystemType();
+        system.setSystemId(source.getSystemId());
+        logType.setSystem(system);
+
+        ActivityType activity = new ActivityType();
+        activity.setActivityType(source.getActivityType());
+        activity.setStartDate(source.getTimestamp());
+        activity.setPurpose(source.getPurpose());
+        logType.setActivity(activity);
+
+        UserType user = new UserType();
+        user.setUserId(source.getUserId());
+        CareProviderType careProvider = new CareProviderType();
+        careProvider.setCareProviderId(source.getVardgivareId());
+        user.setCareProvider(careProvider);
+        CareUnitType careUnit = new CareUnitType();
+        careUnit.setCareUnitId(source.getEnhetId());
+        user.setCareUnit(careUnit);
+        logType.setUser(user);
+
+        logType.setResources(new ResourcesType());
+        ResourceType resource = new ResourceType();
+        resource.setResourceType(source.getResourceType());
+        CareProviderType resourceCareProvider = new CareProviderType();
+        resourceCareProvider.setCareProviderId(source.getVardgivareId());
+        logType.getResources().getResource().add(resource);
+
         return logType;
     }
 
