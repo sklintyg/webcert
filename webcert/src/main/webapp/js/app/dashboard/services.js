@@ -8,7 +8,7 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
 
     /*
      * Load certificate list of specified type(unsigned, with unanswered
-     * questions and ready to mass sign) TODO: Add careUnit and optionally
+     * questions and ready to mass sign) TODO: add optionally
      * careWard +
      */
 	

@@ -273,33 +273,6 @@ angular
                                                 });
                             }
 
-<<<<<<< HEAD
-=======
-                            $scope.setActiveUnit = function(unit) {
-                                $log.debug("ActiveUnit is now:" + unit);
-                                $scope.activeUnit = unit;
-                                $scope.widgetState.queryMode = false;
-                                $scope.widgetState.queryFormCollapsed = true;
-
-                                // If we change enhet then we probably don't
-                                // want the same filter criterias
-                                if ($cookieStore.get("enhetsId") && $cookieStore.get("enhetsId") != unit.id) {
-                                    $scope.resetSearchForm();
-                                }
-                                $cookieStore.put("enhetsId", unit.id);
-
-                                $scope.initDoctorList(unit.id);
-                                $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
-
-                                // If we have a query stored, open the advanced
-                                // filter
-                                if ($cookieStore.get("query_instance")) {
-                                    $scope.widgetState.queryFormCollapsed = false
-                                    $scope.doSearch();
-                                }
-                            }
-
->>>>>>> dd835f4a965a9ea9b39c3ae085beee6fdcb15659
                             $scope.initDoctorList = function(unitId) {
                                 $scope.widgetState.loadingDoctors = true;
                                 dashBoardService.getDoctorList(unitId, function(list) {
