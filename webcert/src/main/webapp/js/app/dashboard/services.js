@@ -12,22 +12,6 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
      * careWard +
      */
 	
-		var activeCareUnit = null;
-		var activeCareUnitViewCallback = null;
-		
-		function _setActiveCareUnitViewCallback(callback) {
-			activeCareUnitViewCallback = callback;
-		}
-
-		function _setActiveCareUnit(selectedUnit) {
-			activeCareUnit = selectedUnit;
-			if(activeCareUnitViewCallback) activeCareUnitViewCallback(activeCareUnit);
-		}
-
-		function _getActiveCareUnit() {
-			return activeCareUnit;
-		}
-
     function _getCertificates(requestConfig, callback) {
         $log.debug("_getCertificates type:" + requestConfig.type);
         // var restPath = '/api/certificates/' + dataType;
@@ -110,9 +94,6 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
     
     // Return public API for the service
     return {
-    		setActiveCareUnitViewCallback : _setActiveCareUnitViewCallback,
-    		setActiveCareUnit : _setActiveCareUnit,
-    		getActiveCareUnit : _getActiveCareUnit,
         getCertificates : _getCertificates,
         getQA : _getQA,
         getQAByQuery : _getQAByQuery,

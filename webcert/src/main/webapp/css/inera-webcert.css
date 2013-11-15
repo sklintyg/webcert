@@ -20,7 +20,7 @@
 
 html,body,container-fluid {
   font-size: 14px;
-	font-family: helvetica, arial, sans-serif;
+	font-family: "Helvetica Neue", helvetica, arial, sans-serif;
   text-align: left;
 /*  overflow-x: hidden;  disable horizontal scroll to prevent user from peeking outside of intended view in case something is too long. fix such things in another way! */
 }
@@ -551,6 +551,7 @@ input[type="radio"], input[type="checkbox"] {
   border-right: 1px solid #ddd;
 /*  display: inline-block; /* Uncomment to lock menu items to one row (during 800x600 demos buttons won't be accessible otherwise) 
   float: none;*/
+  position: relative;
 }
 
 .navbar .nav>li:first-child {border-left: 1px solid #ddd;}
@@ -697,15 +698,19 @@ input[datepicker-popup] .btn-block {
  Directive(s) css
 **/
 .stat-circle {
-    background-color: #999;
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
-    border-radius: 50%;
-    color: #fff;
-    padding: 1px 6px 1px 6px;
-    margin-left: 10px;
-    font-size: 12px;
-    font-weight: bold;
+  background-color: #999;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  color: #fff;
+  padding: 0px 6px 0px 6px;
+  font-size: 10px;
+  font-weight: bold;
+	position: absolute;
+	right: -4px;
+	top: -4px;
+	text-shadow: none;
+	z-index: 3000;
 }
 
 .stat-circle-active {

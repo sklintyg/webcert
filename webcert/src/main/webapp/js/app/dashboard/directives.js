@@ -32,7 +32,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
 
             $scope.selectUnit = function(unit) {
             	$scope.selectedUnit = unit;
-            	dashBoardService.setActiveCareUnit($scope.selectedUnit);
+            	$rootScope.$broadcast('select-care-unit', $scope.selectedUnit);
             }
             
             //initial selection
