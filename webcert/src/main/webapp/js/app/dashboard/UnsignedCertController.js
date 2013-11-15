@@ -21,10 +21,23 @@ angular
                             $scope.widgetState = {
                                 doneLoading : true,
                                 activeErrorMessageKey : null,
-                                queryFormCollapsed : true
+                                queryFormCollapsed : true,
+                                queryMode : false,
+                                queryStartFrom : 0,
+                                queryPageSize : 10,
+                                totalCount : 0,
+                                currentList : undefined
                             }
 
                             $scope.unsignedList = {};
+                            $scope.activeUnit = {}
+                            
+                            dashBoardService.setActiveCareUnitViewCallback(function (unit) {
+	                              $log.debug("ActiveUnit is now:" + unit);
+	                              $scope.activeUnit = unit;
+	                              $scope.widgetState.queryMode = false;
+	                              $scope.widgetState.queryFormCollapsed = true;
+	                          });
 
 
                         } ]);
