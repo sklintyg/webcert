@@ -1,7 +1,7 @@
 'use strict';
 
 /* Lakare Dashboard App Module */
-angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'ngCookies', 'modules.messages', 'wc.common.directives', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
+angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'ngCookies', 'modules.messages', 'wc.common', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
 angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', 'http403ResponseInterceptorProvider', function($routeProvider, $httpProvider, http403ResponseInterceptorProvider) {
     $routeProvider.when('/index', {
         templateUrl : '/views/dashboard/index.step1.html',

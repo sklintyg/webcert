@@ -696,6 +696,23 @@ input[datepicker-popup] .btn-block {
 /**
  Directive(s) css
 **/
+.stat-circle {
+    background-color: #999;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    color: #fff;
+    padding: 1px 6px 1px 6px;
+    margin-left: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.stat-circle-active {
+  background-color: #ff4565;
+  border-color: #ff4565;
+  color: #fff;
+}
 .wc-spinner {
 	text-align: center;
 	padding: 20px;
