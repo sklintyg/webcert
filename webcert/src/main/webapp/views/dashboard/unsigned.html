@@ -110,6 +110,7 @@
                   <td class="unbreakable">{{cert.intygsReferens.patientId.patientIdExtension}}</td>
                   <td class="unbreakable">{{cert.senastSparat | date:'shortDate'}}</td>
                   <td class="unbreakable table-qa-last">{{cert.sparatAv}}</td>
+                </tr>
               </table>
             </div>
             <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}}</div>
