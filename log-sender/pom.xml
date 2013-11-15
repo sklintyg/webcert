@@ -130,23 +130,7 @@
   </dependencies>
 
   <build>
-    <finalName>inera-webcert</finalName>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/version.properties</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>false</filtering>
-        <excludes>
-          <exclude>**/version.properties</exclude>
-        </excludes>
-      </resource>
-    </resources>
+    <finalName>inera-log-sender</finalName>
     <plugins>
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
