@@ -79,10 +79,10 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-jms</artifactId>
     </dependency>
-    <dependency>
+    <!--<dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-task</artifactId>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
@@ -106,10 +106,7 @@
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-pool</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-camel</artifactId>
-    </dependency>
+
 
     <dependency>
       <groupId>xml-apis</groupId>

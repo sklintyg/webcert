@@ -15,6 +15,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
@@ -51,7 +52,12 @@ public class LogSender {
     private StoreLogResponderInterface loggTjanstResponder;
 
     @Autowired
+    @Qualifier("jmsTemplate")
     private JmsTemplate jmsTemplate;
+
+    @Autowired
+    @Qualifier("nonTransactedJmsTemplate")
+    private JmsTemplate nonTransactedJmsTemplate;
 
     @Autowired
     private Queue queue;
@@ -67,56 +73,65 @@ public class LogSender {
         }
     }
 
-    private int queueDepth(Session session) throws JMSException {
-        QueueBrowser queueBrowser = session.createBrowser(queue);
-        Enumeration queueMessageEnum = queueBrowser.getEnumeration();
-        int count = 0;
-        while (queueMessageEnum.hasMoreElements()) {
-            queueMessageEnum.nextElement();
-            count++;
-        }
-        return count;
+    private int bulkSize() {
+        return nonTransactedJmsTemplate.execute(new SessionCallback<Integer>() {
+            @Override
+            public Integer doInJms(Session session) throws JMSException {
+                QueueBrowser queueBrowser = session.createBrowser(queue);
+                Enumeration queueMessageEnum = queueBrowser.getEnumeration();
+                int count = 0;
+                while (queueMessageEnum.hasMoreElements() && count < bulkSize) {
+                    queueMessageEnum.nextElement();
+                    count++;
+                }
+                return count;
+            }
+        }, true);
     }
 
     public void sendLogEntries() {
 
-        jmsTemplate.execute(new SessionCallback<Object>() {
-            @Override
-            public Object doInJms(Session session) throws JMSException {
+        final int chunk = bulkSize();
 
-                int queueDepth = queueDepth(session);
-                int chunk = Math.min(queueDepth, bulkSize);
+        if (chunk == 0) {
+            LOG.info("Zero messages in logging queue. Nothing will be sent to loggtjänst");
+        }
 
-                if (chunk > 0) {
-                    LOG.info("Transferring " + chunk + " log entries to loggtjänst.");
+        else {
+            Boolean reExecute = jmsTemplate.execute(new SessionCallback<Boolean>() {
+                @Override
+                public Boolean doInJms(Session session) throws JMSException {
 
-                    // consume messages
+                    int count = chunk;
+
+                    LOG.info("Transferring " + count + " log entries to loggtjänst.");
+
                     MessageConsumer consumer = session.createConsumer(queue);
 
                     List<Message> messages = new ArrayList<>();
-                    while (chunk > 0) {
+                    while (count > 0) {
                         messages.add(consumer.receive());
-                        chunk--;
+                        count--;
                     }
 
                     try {
                         sendLogEntriesToLoggtjanst(convert(messages));
                         session.commit();
-                        sendLogEntries();
-
+                        return true;
                     } catch (LoggtjanstExecutionException e) {
                         LOG.warn("Failed to send log entries to loggtjänst, JMS session will be rolled back.");
                         session.rollback();
+                        return false;
                     }
-
-                } else {
-                    LOG.info("Zero messages in logging queue. Nothing will be sent to loggtjänst");
-                    session.commit();
                 }
+            }, true);
 
-                return null;
+            // there may be messages left on the queue after the first chunk, so reperform the action
+            if (reExecute) {
+                sendLogEntries();
             }
-        }, true);
+        }
+
     }
 
     private List<LogType> convert(List<Message> messages) {

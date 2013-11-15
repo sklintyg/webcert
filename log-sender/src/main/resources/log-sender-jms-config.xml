@@ -32,18 +32,25 @@
     </amq:transportConnectors>
   </amq:broker>
 
-   <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start"
-        destroy-method="stop">
+  <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
     <property name="connectionFactory">
-      <amq:connectionFactory brokerURL="tcp://localhost:61617" />
+      <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61617"/>
+      </bean>
     </property>
   </bean>
+
 
   <amq:queue id="queue" physicalName="logging.queue"/>
 
   <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="jmsFactory"/>
     <property name="defaultDestination" ref="queue"/>
-    <property name="sessionTransacted" value="true" />
+    <property name="sessionTransacted" value="true"/>
+  </bean>
+  <bean id="nonTransactedJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="jmsFactory"/>
+    <property name="defaultDestination" ref="queue"/>
+
   </bean>
 </beans>

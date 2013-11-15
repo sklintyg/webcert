@@ -24,11 +24,11 @@
   <import resource="log-sender-jms-config.xml"/>
   <import resource="log-sender-ws-config.xml"/>
 
-  <task:scheduler id="scheduler" pool-size="10"/>
+ <!-- <task:scheduler id="scheduler" pool-size="10"/>
   <task:scheduled-tasks>
-    <!--<task:scheduled ref="logSender" method="sendLogEntries" fixed-rate="1000"/>-->
+    <task:scheduled ref="logSender" method="sendLogEntries" fixed-rate="1000"/>
 
     <task:scheduled ref="logSender" method="sendLogEntries" cron="*/5 * * * * *" />
-  </task:scheduled-tasks>
-  <bean id="logSender" class="se.inera.logsender.LogSender"/>
+  </task:scheduled-tasks>-->
+
 </beans>

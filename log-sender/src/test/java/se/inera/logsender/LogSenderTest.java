@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
@@ -50,6 +51,7 @@ public class LogSenderTest {
     private StoreLogResponderInterface storeLogMock;
 
     @Autowired
+    @Qualifier("nonTransactedJmsTemplate")
     private JmsTemplate jmsTemplate;
 
     @Autowired
@@ -88,8 +90,6 @@ public class LogSenderTest {
             sendLogMessage(intygReadMessage);
         }
 
-        Thread.sleep(1000);
-
         when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
 
         logSender.sendLogEntries();
@@ -107,7 +107,7 @@ public class LogSenderTest {
     }
 
     @Test
-    public void testBulkSendingMultipleTimes() throws InterruptedException {
+    public void testSendingAndSplittingInChunks() throws InterruptedException {
 
         ArgumentCaptor<StoreLogRequestType> capture = ArgumentCaptor.forClass(StoreLogRequestType.class);
 
@@ -115,29 +115,32 @@ public class LogSenderTest {
             sendLogMessage(logMessage);
         }
 
-        Thread.sleep(1000);
-
         when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
 
         logSender.sendLogEntries();
 
-        // ensure that all three entries are sent to loggtjänst
-        List<StoreLogRequestType> request = capture.getAllValues();
-        // assertEquals(3, request.getLog().size());
-        // TODO - check every log entry
+        // ensure that messages are split into two chunks
+        List<StoreLogRequestType> requests = capture.getAllValues();
+        assertEquals(5, requests.get(0).getLog().size());
+        assertEquals(logEntries.get(0).getLogId(), requests.get(0).getLog().get(0).getLogId());
+        assertEquals(logEntries.get(1).getLogId(), requests.get(0).getLog().get(1).getLogId());
+        assertEquals(logEntries.get(2).getLogId(), requests.get(0).getLog().get(2).getLogId());
+        assertEquals(logEntries.get(3).getLogId(), requests.get(0).getLog().get(3).getLogId());
+        assertEquals(logEntries.get(4).getLogId(), requests.get(0).getLog().get(4).getLogId());
+
+        assertEquals(1, requests.get(1).getLog().size());
+        assertEquals(logEntries.get(5).getLogId(), requests.get(1).getLog().get(0).getLogId());
 
         // ensure that queue is empty
         assertEquals(0, queueSize());
     }
 
     @Test
-    public void testBulkSendingFailingSecondTime() throws InterruptedException {
+    public void testBulkSendingFailingSecondTime() throws InterruptedException, JMSException {
 
         for (AbstractLogMessage logMessage : logEntries) {
             sendLogMessage(logMessage);
         }
-
-        Thread.sleep(1000);
 
         when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.OK)).thenReturn(storeLogResponse(ResultCodeType.ERROR));
@@ -146,7 +149,12 @@ public class LogSenderTest {
 
         // ensure that queue still contains last messages
         assertEquals(1, queueSize());
-        // TODO - check that remaining element is 'fff'
+
+        // ensure that remaining message is last log entry
+        Message message = jmsTemplate.receive();
+        ObjectMessage objectMessage = (ObjectMessage) message;
+        AbstractLogMessage logMessage = (AbstractLogMessage) objectMessage.getObject();
+        assertEquals(logEntries.get(5).getLogId(), logMessage.getLogId());
     }
 
     @Test
@@ -156,8 +164,6 @@ public class LogSenderTest {
             sendLogMessage(logMessage);
         }
 
-        Thread.sleep(1000);
-
         when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.ERROR));
 
@@ -165,14 +171,12 @@ public class LogSenderTest {
 
         // messages should still be in queue
         assertEquals(3, queueSize());
-
     }
 
     private int queueSize() {
         return jmsTemplate.execute(new SessionCallback<Integer>() {
             @Override
             public Integer doInJms(Session session) throws JMSException {
-
                 QueueBrowser queueBrowser = session.createBrowser(queue);
                 Enumeration queueMessageEnum = queueBrowser.getEnumeration();
                 int count = 0;
