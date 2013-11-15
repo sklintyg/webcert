@@ -7,31 +7,31 @@ package se.inera.webcert.web.controller.moduleapi.dto;
  * 
  */
 public class StatEntry {
-    private int unsignedCerts;
-    private int unhandledQuestions;
+    private long unsignedCerts;
+    private long unhandledQuestions;
 
     public StatEntry() {
     }
 
-    public StatEntry(int unsignedCerts, int unhandledQuestions) {
+    public StatEntry(long unsignedCerts, long unhandledQuestions) {
         super();
         this.unsignedCerts = unsignedCerts;
         this.unhandledQuestions = unhandledQuestions;
     }
 
-    public int getUnsignedCerts() {
+    public long getUnsignedCerts() {
         return unsignedCerts;
     }
 
-    public void setUnsignedCerts(int unsignedCerts) {
+    public void setUnsignedCerts(long unsignedCerts) {
         this.unsignedCerts = unsignedCerts;
     }
 
-    public int getUnhandledQuestions() {
+    public long getUnhandledQuestions() {
         return unhandledQuestions;
     }
 
-    public void setUnhandledQuestions(int unhandledQuestions) {
+    public void setUnhandledQuestions(long unhandledQuestions) {
         this.unhandledQuestions = unhandledQuestions;
     }
 }
