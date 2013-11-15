@@ -644,7 +644,7 @@ background-color: #f9f9f9;
 
 th.center, td.center { text-align: center; }
 
-.table-qa .btn-info, .table-qa .btn-success, .qa-panel .btn-info { padding: 7px 15px; min-width: 50px; }
+.table-qa .btn-info, .table-qa .btn-secondary, .table-qa .btn-success, .qa-panel .btn-info { padding: 7px 15px; min-width: 50px; }
 
 .table-qa tr > td.nopadding { padding: 0; }
 

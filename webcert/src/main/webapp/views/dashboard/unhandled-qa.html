@@ -124,9 +124,10 @@
                     <button class="btn btn-info" title="Visa intyget och frågan/svaret" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
                   </td>
                   <td>
-                    <button class="btn btn-info" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret"
+                    <button class="btn" ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-secondary' : qa.vidarebefordrad}" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret"
                       ng-click="openMailDialog(qa)">
-                      <img src="/img/mail.png">
+                      <img ng-if="!qa.vidarebefordrad" src="/img/mail.png">
+                      <img ng-if="qa.vidarebefordrad" src="/img/mail_dark.png">
                     </button>
                   </td>
                   <td class="center"><input id="selected" type="checkbox" ng-disabled="qa.updateInProgress" ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" /> <span
@@ -144,7 +145,6 @@
               <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()" ng-disabled="widgetState.fetchingMoreInProgress">
                 <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
               </button>
-              <p></p>
             </div>
           </div>
         </div>

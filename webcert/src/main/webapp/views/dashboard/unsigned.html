@@ -17,7 +17,7 @@
       <div ng-if="activeUnit!=null">
         <h2 class="col-head">{{selectedUnit.namn}}</h2>
 
-        <span ng-if="!widgetState.queryMode">Visar alla ohanterade frågor för {{selectedUnit.namn}}<br></span>
+        <span ng-if="!widgetState.queryMode">Visar alla osignerade intyg för {{selectedUnit.namn}}<br></span>
         <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
           <span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span>
         </button>

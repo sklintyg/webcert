@@ -249,7 +249,43 @@ public class SvaraOchFraga {
         }
         return result == expectedVisibility
     }
-
+    
+    public boolean FrågaMedIdHarFrågenamn(String internId, String namn) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor{
+                page.qaUnhandledPanel(internId).isDisplayed()
+            }
+            
+            waitFor{
+                page.frageStallarNamn(internId).isDisplayed()
+            }
+            
+            result = page.frageStallarNamn(internId).text().contains(namn)
+           
+        }
+        return result
+    }
+    
+    public boolean FrågaMedIdHarSvarsnamn(String internId, String namn) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor{
+                page.besvarareNamn(internId).isDisplayed()
+            }
+            
+            result = page.besvarareNamn(internId).text().contains(namn)
+           
+        }
+        return result
+    }
+    
     public void visaAvanceratFilter(){
         Browser.drive {
             waitFor {
