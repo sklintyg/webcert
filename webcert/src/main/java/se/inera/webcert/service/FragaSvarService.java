@@ -78,4 +78,9 @@ public interface FragaSvarService {
      */
     List<LakarIdNamn> getFragaSvarHsaIdByEnhet(String enhetsId);
 
+    /**
+     * Returns a count of unhandled {@link FragaSvar} entities that matches the supplied hsa unit id's vardenheterIds
+     */
+    long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds);
+
 }

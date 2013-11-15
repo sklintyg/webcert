@@ -1,7 +1,7 @@
 'use strict';
 
 /* Directives */
-angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootScope', '$cookieStore',function ($rootScope, $cookieStore) {
+angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootScope', '$cookieStore', 'dashBoardService', function ($rootScope, $cookieStore, dashBoardService) {
     return {
         restrict: "A",
         transclude: false,
@@ -28,14 +28,11 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
               
             }, $scope.units);
             
-            $scope.selectedUnit = {};
+            $scope.selectedUnit = null;
 
             $scope.selectUnit = function(unit) {
             	$scope.selectedUnit = unit;
-            	//call method actually on parent scope: NOTE: not very nice coupling between this directive and controller
-            	if ($scope.setActiveUnit) {
-            	  $scope.setActiveUnit($scope.selectedUnit);
-            	}
+            	dashBoardService.setActiveCareUnit($scope.selectedUnit);
             }
             
             //initial selection

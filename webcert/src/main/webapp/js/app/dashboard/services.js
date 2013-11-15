@@ -8,9 +8,25 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
 
     /*
      * Load certificate list of specified type(unsigned, with unanswered
-     * questions and ready to mass sign) TODO: Add careUnit and optionally
+     * questions and ready to mass sign) TODO: add optionally
      * careWard +
      */
+	
+		var activeCareUnit = null;
+		var activeCareUnitViewCallback = null;
+		
+		function _setActiveCareUnitViewCallback(callback) {
+			activeCareUnitViewCallback = callback;
+		}
+
+		function _setActiveCareUnit(selectedUnit) {
+			activeCareUnit = selectedUnit;
+			if(activeCareUnitViewCallback) activeCareUnitViewCallback(activeCareUnit);
+		}
+
+		function _getActiveCareUnit() {
+			return activeCareUnit;
+		}
 
     function _getCertificates(requestConfig, callback) {
         $log.debug("_getCertificates type:" + requestConfig.type);
@@ -94,6 +110,9 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
     
     // Return public API for the service
     return {
+    		setActiveCareUnitViewCallback : _setActiveCareUnitViewCallback,
+    		setActiveCareUnit : _setActiveCareUnit,
+    		getActiveCareUnit : _getActiveCareUnit,
         getCertificates : _getCertificates,
         getQA : _getQA,
         getQAByQuery : _getQAByQuery,

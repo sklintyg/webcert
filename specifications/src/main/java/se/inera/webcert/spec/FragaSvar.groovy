@@ -39,6 +39,10 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
     String internReferens
 
     String beskrivning
+    
+    String vardAktorHsaId
+    
+    String vardAktorNamn
 
     public String internReferens() {
         internReferens
@@ -74,6 +78,8 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
         if (lakareId) fraga.vardperson.hsaId = lakareId
         if (lakareNamn) fraga.vardperson.namn = lakareNamn
         if (enhetsId) fraga.vardperson.enhetsId = enhetsId
+        if (vardAktorHsaId) fraga.vardAktorHsaId = vardAktorHsaId
+        if (vardAktorNamn) fraga.vardAktorNamn = vardAktorNamn
 
         JsonOutput.toJson(fraga)
     }

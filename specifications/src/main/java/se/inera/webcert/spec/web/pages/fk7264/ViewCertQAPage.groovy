@@ -8,7 +8,7 @@ class ViewCertQAPage extends Page {
 
     static content = {
         unhandledQAList(required: false) { $("#unhandledQACol") }
-        askQuestionBtn { $("#askQuestionBtn") }
+        askQuestionBtn(required: false) { $("#askQuestionBtn") }
         newQuestionForm { $("#newQuestionForm") }
         newQuestionText { $("#newQuestionText") }
         sendQuestionBtn { $("#sendQuestionBtn") }
@@ -23,6 +23,14 @@ class ViewCertQAPage extends Page {
     def answerBtn(String internid) {
         $("#sendAnswerBtn-${internid}")
     }
+    
+    def frageStallarNamn(String internid) {
+        $("#fraga-vard-aktor-namn-${internid}")
+    }
+    def besvarareNamn(String internid) {
+        $("#svar-vard-aktor-namn-${internid}")
+    }
+    
     def markAsHandledFkOriginBtn(String internid) {
         $("#markAsHandledFkOriginBtn-${internid}")
     }
@@ -47,7 +55,7 @@ class ViewCertQAPage extends Page {
     def initQuestion(){
         $("#askQuestionBtn").click()
     }
-
+    
     def addQuestionText( String question){
         newQuestionText<< question
     }

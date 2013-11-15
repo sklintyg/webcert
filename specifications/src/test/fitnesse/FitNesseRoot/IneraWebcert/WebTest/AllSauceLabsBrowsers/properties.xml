@@ -2,15 +2,13 @@
 <properties>
 	<Edit>true</Edit>
 	<Files>true</Files>
+	<Help></Help>
 	<Properties>true</Properties>
 	<RecentChanges>true</RecentChanges>
 	<Refactor>true</Refactor>
 	<Search>true</Search>
 	<Suite/>
-	<SymbolicLinks>
-		<SuiteSetUp>.IneraWebcert.WebTest.SuiteSetUp</SuiteSetUp>
-		<AllTests>.IneraWebcert.WebTest.AllTests</AllTests>
-	</SymbolicLinks>
+	<Suites></Suites>
 	<Versions>true</Versions>
 	<WhereUsed>true</WhereUsed>
 </properties>

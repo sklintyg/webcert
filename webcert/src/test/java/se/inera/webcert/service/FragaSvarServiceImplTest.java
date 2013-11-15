@@ -223,7 +223,9 @@ public class FragaSvarServiceImplTest {
 
         List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null));
         when(certificateContentMetaMock.getStatuses()).thenReturn(list);
-
+        
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        
         when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
                 utlatandeCommonModelHolder);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
@@ -242,6 +244,7 @@ public class FragaSvarServiceImplTest {
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
 
         verify(intygService).fetchIntygCommonModel(any(String.class));
+        verify(webCertUserService).getWebCertUser();
         verify(webCertUserService).isAuthorizedForUnit(anyString());
         verify(fragasvarRepository).save(any(FragaSvar.class));
         verify(sendQuestionToFKClient).sendMedicalCertificateQuestion(any(AttributedURIType.class),
@@ -338,6 +341,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
 
@@ -367,6 +371,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
 
@@ -437,6 +442,70 @@ public class FragaSvarServiceImplTest {
         when(fragasvarRepository.findOne(1L)).thenReturn(null);
         service.saveSvar(1L, "svarsText");
 
+    }
+    
+    @Test
+    public void testCloseAshandledOk() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setFrageStallare("WC");
+        fragaSvar.setFrageText("Fråga till FK");
+        fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
+        
+        ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepository.save(capture.capture())).thenReturn(fragaSvar);
+        
+        service.closeQuestionAsHandled(1L);
+        
+        verify(fragasvarRepository).findOne(1L);
+        verify(fragasvarRepository).save(any(FragaSvar.class));
+        assertEquals(Status.CLOSED,capture.getValue().getStatus());
+    }
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testCloseAshandledNotFound() {
+        when(fragasvarRepository.findOne(1L)).thenReturn(null);
+        service.closeQuestionAsHandled(1L);
+    }
+    
+    @Test
+    public void testOpenAsUnhandledOk() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setFrageStallare("WC");
+        fragaSvar.setFrageText("Fråga till FK");
+        fragaSvar.setStatus(Status.CLOSED);
+        
+        ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepository.save(capture.capture())).thenReturn(fragaSvar);
+        
+        service.openQuestionAsUnhandled(1L);
+        
+        verify(fragasvarRepository).findOne(1L);
+        verify(fragasvarRepository).save(any(FragaSvar.class));
+        assertEquals(Status.PENDING_EXTERNAL_ACTION,capture.getValue().getStatus());
+    }
+    
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testOpenAsUnhandledNotFound() {
+        when(fragasvarRepository.findOne(1L)).thenReturn(null);
+        service.openQuestionAsUnhandled(1L);
+    }
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testOpenAsUnhandledInvalidState() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setFrageStallare("FK");
+        fragaSvar.setFrageText("Fråga från FK");
+        fragaSvar.setSvarsText("Svar till FK från WC");
+        fragaSvar.setStatus(Status.CLOSED);
+        
+        ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepository.save(capture.capture())).thenReturn(fragaSvar);
+        
+        service.openQuestionAsUnhandled(1L);
     }
 
     @Test
@@ -523,6 +592,7 @@ public class FragaSvarServiceImplTest {
     private WebCertUser webCertUser() {
         WebCertUser user = new WebCertUser();
         user.setHsaId("testuser");
+        user.setNamn("test userman");
 
         Vardgivare vardgivare = new Vardgivare();
         vardgivare.getVardenheter().add(new Vardenhet("enhet", "Enhet"));

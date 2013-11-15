@@ -103,6 +103,22 @@ public class FragaSvarRepositoryTest {
         assertEquals(3, result.size());
 
     }
+    @Test
+    public void testcountUnhandledForEnhetsIds() {
+
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.CLOSED));
+        
+
+        long result = fragasvarRepository.countUnhandledForEnhetsIds(Arrays.asList(ENHET_1_ID,ENHET_2_ID));
+        assertEquals(3, result);
+
+    }
     
     @Test
     public void testFindByIntygsReferens() {

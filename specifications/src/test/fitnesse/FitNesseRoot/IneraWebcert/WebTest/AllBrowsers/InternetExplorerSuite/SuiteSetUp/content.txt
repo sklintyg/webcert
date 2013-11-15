@@ -1,3 +1,0 @@
-!|Config|
-|property|value|
-|geb.env|ie|

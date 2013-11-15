@@ -22,6 +22,16 @@ public class SvaraOchFraga {
         }
     }
 
+    public void GåTillIntygsVyMedIntygsId(String id) {
+        Browser.drive {
+            go "/m/fk7263/webcert/intyg/" + id + "#view"
+
+            waitFor{
+                at ViewCertQAPage
+            }
+            
+        }
+    }
     public void loggaInIndex() {
         Browser.drive {
 
@@ -111,7 +121,19 @@ public class SvaraOchFraga {
             }
         }
     }
-
+    
+    public boolean nyFragaKnappVisas(boolean expected) {
+        def result = false
+            Browser.drive {
+                waitFor {
+                    at ViewCertQAPage
+                }
+                result = page.askQuestionBtn.isDisplayed()
+                
+            }
+            result == expected
+        }
+    
     public boolean stallFragaMedAmne(String fraga, String amne){
         def result = false
         Browser.drive {
@@ -210,8 +232,60 @@ public class SvaraOchFraga {
         }
         return result
     }
+    
+    public boolean MarkeraObehandladknappFörFrågaVisas(String internId, boolean expectedVisibility){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor{
+                page.qaHandledPanel(internId).isDisplayed()
+            }
+           
+            result = page.markAsUnhandledBtn(internId).isDisplayed()
 
-
+           
+        }
+        return result == expectedVisibility
+    }
+    
+    public boolean FrågaMedIdHarFrågenamn(String internId, String namn) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor{
+                page.qaUnhandledPanel(internId).isDisplayed()
+            }
+            
+            waitFor{
+                page.frageStallarNamn(internId).isDisplayed()
+            }
+            
+            result = page.frageStallarNamn(internId).text().contains(namn)
+           
+        }
+        return result
+    }
+    
+    public boolean FrågaMedIdHarSvarsnamn(String internId, String namn) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor{
+                page.besvarareNamn(internId).isDisplayed()
+            }
+            
+            result = page.besvarareNamn(internId).text().contains(namn)
+           
+        }
+        return result
+    }
+    
     public void visaAvanceratFilter(){
         Browser.drive {
             waitFor {

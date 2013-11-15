@@ -248,7 +248,7 @@ span.location { font-size: 12px; font-weight: bold; }
 }
 
 .webcert-col-single {
-	padding: 20px;
+	padding: 30px;
 }
 
 .webcert-col-shadow { 
@@ -644,7 +644,7 @@ background-color: #f9f9f9;
 
 th.center, td.center { text-align: center; }
 
-.table-qa .btn-info, .table-qa .btn-success, .qa-panel .btn-info { padding: 7px 15px; min-width: 50px; }
+.table-qa .btn-info, .table-qa .btn-secondary, .table-qa .btn-success, .qa-panel .btn-info { padding: 7px 15px; min-width: 50px; }
 
 .table-qa tr > td.nopadding { padding: 0; }
 
@@ -696,6 +696,23 @@ input[datepicker-popup] .btn-block {
 /**
  Directive(s) css
 **/
+.stat-circle {
+    background-color: #999;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    color: #fff;
+    padding: 1px 6px 1px 6px;
+    margin-left: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.stat-circle-active {
+  background-color: #ff4565;
+  border-color: #ff4565;
+  color: #fff;
+}
 .wc-spinner {
 	text-align: center;
 	padding: 20px;

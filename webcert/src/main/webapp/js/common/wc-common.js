@@ -1,12 +1,49 @@
 "use strict";
 
 /**
- * Common directives used in both WC main application as well as in a certificate's module app pages. 
+ * Common module used in both WC main application as well as in a certificate's module app pages. 
  * Since this js will be used/loaded from different contextpaths, all templates are inlined. PLEASE keep source 
  * formatting in this file as-is, otherwise the inline templates will be hard to follow. 
  */
-angular.module('wc.common.directives', []);
-angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$location', function($rootScope,$location) {
+angular.module('wc.common', []);
+angular.module('wc.common').factory('statService', [ '$http', '$log', '$timeout', '$rootScope', function($http, $log, $timeout, $rootScope) {
+
+    var timeOutPromise = undefined;
+    var msPollingInterval = 10* 1000; 
+    /*
+     * get stats from server
+     */
+    function _refreshStat() {
+        $log.debug("_getStat");
+        $http.get('/moduleapi/stat/').success(function(data) {
+            $log.debug("_getStat success - data:" + data);
+            $rootScope.$broadcast('wc-stat-update', data);
+            timeOutPromise = $timeout(_refreshStat, msPollingInterval);
+        }).error(function(data, status, headers, config) {
+            $log.error("_getStat error " + status);
+            timeOutPromise = $timeout(_refreshStat, msPollingInterval);
+        });
+    }
+    
+    function _startPolling() {
+        _refreshStat();
+        $log.debug("statService -> Start polling");
+    }
+    function _stopPolling() {
+        if (timeOutPromise) {
+            $timeout.cancel(timeOutPromise);
+            $log.debug("statService -> Stop polling");
+        }
+    }
+  
+    // Return public API for the service
+    return {
+        startPolling : _startPolling,
+        stopPolling : _stopPolling,
+    }
+} ]);
+
+angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','statService', function($rootScope,$location,statService) {
     return {
         restrict : "A",
         replace : true,
@@ -14,53 +51,63 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
           userName: "@",
           caregiverName: "@",
           isDoctor: "@",
-          menuDefs: "@",
           defaultActive: "@"
               
         },
         controller: function($scope, $element, $attrs) {
           //Expose "now" as a model property for the template to render as todays date
           $scope.today = new Date();
+          $scope.statService = statService;
+          $scope.statService.startPolling();
           
-          var defaultMenuDefs = [
+          $scope.stat = {
+                  userStat: {},
+                  unitStat:{}
+                  }
+        
+          $scope.$on("wc-stat-update", function(event, message){
+              $scope.stat = message;   
+            });
+          
+          $scope.menuDefs = [
 				     {
 				       link :'/web/dashboard#/mycert', 
 				       label:'Mina osignerade intyg',
-				       requires_doctor: true
+				       requires_doctor: false,
+				       getStat: function() { return $scope.stat.userStat.unsignedCerts || ""}
 				     },
 				     {
 				       link :'/web/dashboard#/unhandled-qa',
 				       label:'Enhetens frågor och svar',
-				       requires_doctor: false
+				       requires_doctor: false,
+                       getStat: function() { return $scope.stat.unitStat.unhandledQuestions || ""}
 				     },
 				     {
 				       link :'/web/dashboard#/unsigned', 
 				       label:'Enhetens osignerade intyg',
-				       requires_doctor: false
+				       requires_doctor: false,
+                       getStat: function() { return $scope.stat.unitStat.unsignedCerts || ""}
 				     },
 				     {
 				       link :'/web/dashboard#/support/about',
 				       label:'Om Webcert',
-				       requires_doctor: false
+				       requires_doctor: false,
+                       getStat: function() { return ""}
 				     }
 				    ];
           
           var writeCertMenuDef = {
 				       link :'/web/dashboard#/index', 
 				       label:'Sök/skriv intyg',
-				       requires_doctor: false
+				       requires_doctor: false,
+                       getStat: function() { return ""}
 				     };
           
           if (eval($scope.isDoctor) == true) {
-          	defaultMenuDefs.splice(0, 0, writeCertMenuDef);
+              $scope.menuDefs.splice(0, 0, writeCertMenuDef);
           }
           else {
-          	defaultMenuDefs.splice(3, 0, writeCertMenuDef);
-          }
-          
-          $scope.menuItems = defaultMenuDefs;
-          if($scope.menuDefs != undefined && $scope.menuDefs != ''){
-          	$scope.menuItems = eval($scope.menuDefs);
+              $scope.menuDefs.splice(3, 0, writeCertMenuDef);
           }
           
           $scope.isActive = function (page) {
@@ -118,8 +165,9 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
 				    					+'</a>'
 				    					+'<div class="nav-collapse collapse navbar-responsive-collapse">'
 				    						+'<ul class="nav">'
-			    								+'<li ng-class="{active: isActive(menu.link)}" ng-repeat="menu in menuItems">'
-		    										+'<a ng-href="{{menu.link}}" ng-show="(menu.requires_doctor && isDoctor) || !menu.requires_doctor">{{menu.label}}</a>'
+			    								+'<li ng-class="{active: isActive(menu.link)}" ng-repeat="menu in menuDefs">'
+		    										+'<a ng-href="{{menu.link}}" ng-show="(menu.requires_doctor && isDoctor) || !menu.requires_doctor">{{menu.label}}'
+		    										+'<span ng-if="menu.getStat()>0" class="stat-circle stat-circle-active">{{menu.getStat()}}</span></a>'
 		    									+'</li>'
 		            				+'</ul>'
 		            			+'</div><!-- /.nav-collapse -->'
@@ -133,7 +181,7 @@ angular.module('wc.common.directives').directive("wcHeader", ['$rootScope','$loc
 } ]);
 
 
-angular.module('wc.common.directives').directive("wcSpinner", ['$rootScope', function($rootScope) {
+angular.module('wc.common').directive("wcSpinner", ['$rootScope', function($rootScope) {
     return {
         restrict : "A",
         transclude : true,

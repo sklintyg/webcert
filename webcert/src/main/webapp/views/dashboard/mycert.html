@@ -1,7 +1,6 @@
-<div class="row-fluid webcert-multicol">
-  <div class="span6 webcert-col webcert-col-primary">
+<div class="row-fluid">
+  <div class="span12 webcert-col-primary">
     <!-- Left side -->
-    <div class="webcert-col-shadow"></div>
     <h1><span message key="dashboard.title"></span></h1>
 
     <div class="certlist">
@@ -26,6 +25,7 @@
 
             <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading && wipCertList.length>0">
               <div>
+              <!--
                 <div ng-repeat="cert in wipCertList | limitTo:widgetState.pageSize">
                   <a ng-click="viewCert(cert)" ng-href="#">
                     <span class="certblock certblock-clickable clearfix">
@@ -40,6 +40,45 @@
                     </span>
                   </a>
                 </div>
+                -->
+	              <table class="span12 table table-striped table-qa">
+	                <tr>
+	                  <th></th>
+	                  <th></th>
+	                  <th class="center" title="Markerar om intyget är vidarebefordrat till den som ska skriva intyget">Vidarebefordrad</th>
+	                  <th title="Personnumret på patienten som läkarintyget berör">Patient</th>
+                    <th title="Vårdgivaren som intyget är skrivet på">Vårdgivare</th>
+                    <th title="Vårdenheten som intyget är skrivet på">Vårdenhet/mottagning</th>
+	                  <th title="Datum då intyget senast sparades">Senast sparat</th>
+	                </tr>
+	                <tr ng-repeat="cert in wipCertList | limitTo:widgetState.pageSize">
+	                  <td>
+	                    <button class="btn btn-info" title="Visa intyget och frågan/svaret" ng-click="openIntyg(cert.intygsReferens)" id="showqaBtn-{{cert.internReferens}}">Visa</button>
+	                  </td>
+	                  <td>
+	                    <button class="btn btn-info" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret"
+	                      ng-click="openMailDialog(cert)">
+	                      <img src="/img/mail.png">
+	                    </button>
+	                  </td>
+	                  <td class="center"><input id="selected" type="checkbox" ng-disabled="cert.updateInProgress" ng-model="cert.vidarebefordrad" ng-change="onVidareBefordradChange(cert)" /> 
+	                    <span ng-if="cert.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+	                  </td>
+                    <td class="unbreakable"></td>
+                    <td class="unbreakable"></td>
+	                  <td class="unbreakable">{{cert.patientid}}</td>
+	                  <td class="unbreakable table-qa-last">{{cert.lastsaved | date:'shortDate'}}</td>
+                  </tr>
+	              </table>
+                              
+		            <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}}</div>
+		            <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
+		              <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()" ng-disabled="widgetState.fetchingMoreInProgress">
+		                <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
+		              </button>
+		              <p></p>
+		            </div>
+<!-- 
                 <button id="unsigned-cert-list-btn-unsigned-showall" class="btn btn-block" type="button" ng-click="widgetState.pageSize = widgetState.showMax"
                   ng-show="wipCertList.length > widgetState.pageSize">
                   <span message key="label.showallcerts"></span>
@@ -48,7 +87,7 @@
                   ng-show="widgetState.pageSize == widgetState.showMax">
                   <span message key="label.showfewercerts"></span>
                 </button>
-              </div>
+ -->            </div>
             </div>
           </div>
           <!-- End of template html for ListUnsignedCertCtrl ----------------------------------------------------------->
@@ -95,17 +134,18 @@
 
 
           <!-- ReadyToSignCertCtrl ----------------------------------------------------------->
-          <div id="unanswered-cert-list" ng-controller="ReadyToSignCertCtrl">
+<!--         <div id="unanswered-cert-list" ng-controller="ReadyToSignCertCtrl">
             <h2>
               <span message key="label.readytosigncerts"></span>
             </h2>
+ -->             
             <!-- No results message -->
-            <div id="unanswered-cert-list-noResults" ng-show="widgetState.doneLoading && signCertList.length<1 && !widgetState.hasError" class="alert alert-info">
+<!--            <div id="unanswered-cert-list-noResults" ng-show="widgetState.doneLoading && signCertList.length<1 && !widgetState.hasError" class="alert alert-info">
               <span message key="info.noreadytosigncertsfound"></span>
             </div>
-
+ --> 
             <!-- error message -->
-            <div id="unanswered-cert-list-error" ng-show="widgetState.hasError" class="alert alert-error">
+<!--        <div id="unanswered-cert-list-error" ng-show="widgetState.hasError" class="alert alert-error">
               <span message key="error.readytosigncerts.couldnotbeloaded"></span>
             </div>
 
@@ -132,6 +172,7 @@
               </div>
             </div>
           </div>
+           -->
           <!-- End of template html for ReadyToSignCertCtrl ----------------------------------------------------------->
 
 
@@ -143,15 +184,4 @@
   </div>
   <!-- Left side end -->
 
-
-
-  <div class="span6">
-    <!-- Right side -->
-    <div class="row-fluid">
-      <div class="span12 webcert-col">
-      </div>
-    </div>
-
-  </div>
-  <!-- Right side end -->
 </div>
