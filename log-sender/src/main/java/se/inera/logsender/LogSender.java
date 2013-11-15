@@ -174,6 +174,7 @@ public class LogSender {
         resource.setResourceType(source.getResourceType());
         CareProviderType resourceCareProvider = new CareProviderType();
         resourceCareProvider.setCareProviderId(source.getVardgivareId());
+        resource.setCareProvider(resourceCareProvider);
         logType.getResources().getResource().add(resource);
 
         return logType;
@@ -192,5 +193,4 @@ public class LogSender {
             throw new LoggtjanstExecutionException();
         }
     }
-
 }

@@ -14,25 +14,20 @@
        xmlns:context="http://www.springframework.org/schema/context" xmlns:jaxws="http://cxf.apache.org/jaxws"
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xmlns:sec="http://cxf.apache.org/configuration/security"
-       xmlns:amq="http://activemq.apache.org/schema/core"
-       xmlns:camel="http://camel.apache.org/schema/spring" xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
-        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
-        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">>
-
-  <context:annotation-config/>
-  <context:component-scan base-package="se.inera.logsender"/>
+        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
 
   <jaxws:client id="storeLogClient"
                 serviceClass="se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface"
                 address="${loggtjanst.endpoint.url}">
+    <jaxws:properties>
+            <entry key="schema-validation-enabled" value="true" />
+        </jaxws:properties>
   </jaxws:client>
-
 
   <beans profile="test,qa,prod">
     <http:conduit
