@@ -41,7 +41,29 @@ angular
 
                             $scope.qaListUnhandled = {};
                             $scope.qaListQuery = {};
-                            $scope.activeUnit = null;
+                            $scope.activeUnit = {}
+                            
+                            dashBoardService.setActiveCareUnitViewCallback(function (unit) {
+	                              $log.debug("ActiveUnit is now:" + unit);
+	                              $scope.activeUnit = unit;
+	                              $scope.widgetState.queryMode = false;
+	                              $scope.widgetState.queryFormCollapsed = true;
+	
+	                              //If we change enhet then we probably don't want the same filter criterias
+	                              if($cookieStore.get("enhetsId") && $cookieStore.get("enhetsId")!=unit.id){
+	                                  $scope.resetSearchForm();
+	                              }
+	                              $cookieStore.put("enhetsId" ,unit.id);
+	
+	                              $scope.initDoctorList(unit.id);
+	                              $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, dashBoardService.getActiveCareUnit().id);
+	
+	                              //If we have a query stored, open the advanced filter
+	                              if($cookieStore.get("query_instance")){
+	                                  $scope.widgetState.queryFormCollapsed = false
+	                                  $scope.doSearch();
+	                              }
+	                          });
 
                             $scope.statusList = [ {
                                 label : 'Visa alla',
@@ -255,28 +277,6 @@ angular
                                                                 .showErrorMessageDialog("Kunde inte markera/avmarkera frågan som vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. Annars kan du kontakta supporten");
                                                     }
                                                 });
-                            }
-
-                            $scope.setActiveUnit = function(unit) {
-                                $log.debug("ActiveUnit is now:" + unit);
-                                $scope.activeUnit = unit;
-                                $scope.widgetState.queryMode = false;
-                                $scope.widgetState.queryFormCollapsed = true;
-
-                                //If we change enhet then we probably don't want the same filter criterias
-                                if($cookieStore.get("enhetsId") && $cookieStore.get("enhetsId")!=unit.id){
-                                    $scope.resetSearchForm();
-                                }
-                                $cookieStore.put("enhetsId" ,unit.id);
-
-                                $scope.initDoctorList(unit.id);
-                                $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
-
-                                //If we have a query stored, open the advanced filter
-                                if($cookieStore.get("query_instance")){
-                                    $scope.widgetState.queryFormCollapsed = false
-                                    $scope.doSearch();
-                                }
                             }
 
                             $scope.initDoctorList = function(unitId) {

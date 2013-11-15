@@ -20,10 +20,11 @@ angular
                             // init state
                             $scope.widgetState = {
                                 doneLoading : true,
-                                activeErrorMessageKey : null
+                                activeErrorMessageKey : null,
+                                queryFormCollapsed : true
                             }
 
                             $scope.unsignedList = {};
-                            $scope.activeUnit = null;
+
 
                         } ]);
