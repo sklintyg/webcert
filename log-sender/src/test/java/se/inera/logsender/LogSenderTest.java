@@ -94,6 +94,8 @@ public class LogSenderTest {
 
         when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
 
+        Thread.sleep(1000);
+
         logSender.sendLogEntries();
 
         // ensure that all three entries are sent to loggtjänst
@@ -126,6 +128,8 @@ public class LogSenderTest {
         }
 
         when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
+
+        Thread.sleep(1000);
 
         logSender.sendLogEntries();
 
@@ -163,6 +167,8 @@ public class LogSenderTest {
         when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.OK)).thenReturn(storeLogResponse(ResultCodeType.ERROR));
 
+        Thread.sleep(1000);
+
         logSender.sendLogEntries();
 
         // ensure that queue still contains last messages
@@ -184,6 +190,8 @@ public class LogSenderTest {
 
         when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.ERROR));
+
+        Thread.sleep(1000);
 
         logSender.sendLogEntries();
 
