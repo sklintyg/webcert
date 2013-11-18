@@ -102,7 +102,7 @@ public class LogSenderTest {
 
         when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         logSender.sendLogEntries();
 
@@ -137,7 +137,7 @@ public class LogSenderTest {
 
         when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         logSender.sendLogEntries();
 
@@ -170,7 +170,7 @@ public class LogSenderTest {
         when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.OK)).thenReturn(storeLogResponse(ResultCodeType.ERROR));
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         logSender.sendLogEntries();
 
@@ -194,7 +194,7 @@ public class LogSenderTest {
         when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.ERROR));
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         logSender.sendLogEntries();
 
