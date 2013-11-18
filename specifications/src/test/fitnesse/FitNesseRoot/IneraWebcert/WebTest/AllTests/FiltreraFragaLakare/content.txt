@@ -20,6 +20,7 @@
 |logga på som|5|
 |obehandladeFragarSidanVisas|
 |valj vardenhet|vardenhet-fit-1|
+|Totalt antal ohanterade frågor för alla enheter är|4|
 |visaAvanceratFilter|
 |valj lakare med namn|Carl Persson|
 |filtreraFragorOchSvar|
