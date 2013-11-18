@@ -1,21 +1,22 @@
 package se.inera.logsender;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
@@ -30,7 +31,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import se.inera.logsender.messages.AbstractLogMessage;
 import se.inera.logsender.messages.IntygReadMessage;
 import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
@@ -72,6 +72,14 @@ public class LogSenderTest {
             add(intygReadMessage("2013-01-06T10:00"));
         }
     };
+    
+    private Collection<String> logIds() {
+        Collection<String> logIds = new HashSet<>();
+        for (AbstractLogMessage logEntry : logEntries) {
+            logIds.add(logEntry.getLogId());
+        }
+        return logIds;
+    }
 
     private AbstractLogMessage intygReadMessage(String timestamp) {
         IntygReadMessage intygReadMessage = new IntygReadMessage();
@@ -137,21 +145,16 @@ public class LogSenderTest {
         List<StoreLogRequestType> requests = capture.getAllValues();
         assertEquals(5, requests.get(0).getLog().size());
 
-        List<String> logIds = new ArrayList<String>() {
-            {
-                add(logEntries.get(0).getLogId());
-                add(logEntries.get(1).getLogId());
-                add(logEntries.get(2).getLogId());
-                add(logEntries.get(3).getLogId());
-                add(logEntries.get(4).getLogId());
-            }
-        };
+        // check that 5 of the 6 log IDs are sent to loggtjänst
+        Collection<String> logIds = logIds();
         for (LogType logType : requests.get(0).getLog()) {
             assertTrue(logIds.contains(logType.getLogId()));
+            logIds.remove(logType.getLogId());
         }
 
+        // check that the last log ID was sent in a second call to the loggtjänst
         assertEquals(1, requests.get(1).getLog().size());
-        assertEquals(logEntries.get(5).getLogId(), requests.get(1).getLog().get(0).getLogId());
+        assertEquals(logIds.iterator().next(), requests.get(1).getLog().get(0).getLogId());
 
         // ensure that queue is empty
         assertEquals(0, queueSize());
@@ -223,7 +226,7 @@ public class LogSenderTest {
     }
 
     private void sendLogMessage(final AbstractLogMessage intygReadMessage) {
-        this.jmsTemplate.send(queue, new MessageCreator() {
+        jmsTemplate.send(queue, new MessageCreator() {
             public Message createMessage(Session session) throws JMSException {
                 return session.createObjectMessage(intygReadMessage);
             }
