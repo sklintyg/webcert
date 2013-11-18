@@ -46,7 +46,7 @@ import se.riv.ehr.log.v1.ResultCodeType;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-context.xml")
 @ActiveProfiles(profiles = "dev")
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LogSenderTest {
 
     @Autowired
@@ -102,8 +102,6 @@ public class LogSenderTest {
 
         when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
 
-        Thread.sleep(2000);
-
         logSender.sendLogEntries();
 
         // ensure that all three entries are sent to loggtjänst
@@ -137,8 +135,6 @@ public class LogSenderTest {
 
         when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
 
-        Thread.sleep(2000);
-
         logSender.sendLogEntries();
 
         // ensure that messages are split into two chunks
@@ -170,8 +166,6 @@ public class LogSenderTest {
         when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.OK)).thenReturn(storeLogResponse(ResultCodeType.ERROR));
 
-        Thread.sleep(2000);
-
         logSender.sendLogEntries();
 
         // ensure that queue still contains last messages
@@ -193,8 +187,6 @@ public class LogSenderTest {
 
         when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.ERROR));
-
-        Thread.sleep(2000);
 
         logSender.sendLogEntries();
 
