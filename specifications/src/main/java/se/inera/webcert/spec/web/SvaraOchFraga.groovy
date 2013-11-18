@@ -269,6 +269,23 @@ public class SvaraOchFraga {
         }
         return result
     }
+    public boolean TotaltAntalOhanteradeFrågorFörAllaEnheterÄr(String expected) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            
+            waitFor{
+                page.unitstatUnhandledQuestionsBadgde.isDisplayed()
+            }
+            
+            result = page.unitstatUnhandledQuestionsBadgde.text()
+           
+        }
+        return result == expected
+    }
+    
     
     public boolean FrågaMedIdHarSvarsnamn(String internId, String namn) {
         def result = false
