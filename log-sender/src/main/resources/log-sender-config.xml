@@ -11,11 +11,9 @@
   a copy of the GNU Affero General Public License along with this program.
   If not, see <http://www.gnu.org/licenses/>. -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd">
@@ -24,21 +22,18 @@
   <import resource="log-sender-jms-config.xml"/>
   <import resource="log-sender-ws-config.xml"/>
 
-  <import resource="classpath:loggtjanst-stub-context.xml" />
+  <import resource="classpath:loggtjanst-stub-context.xml"/>
+
+  <bean id="logSender" class="se.inera.logsender.LogSender"/>
+  <task:scheduled-tasks>
+    <task:scheduled ref="logSender" method="sendLogEntries" fixed-rate="${logsender.deliveryIntervalInMilliseconds}"/>
+  </task:scheduled-tasks>
 
   <beans profile="dev">
     <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
-        <property name="mapper">
-          <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
-        </property>
-      </bean>
+      <property name="mapper">
+        <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
+      </property>
+    </bean>
   </beans>
-
- <!-- <task:scheduler id="scheduler" pool-size="10"/>
-  <task:scheduled-tasks>
-    <task:scheduled ref="logSender" method="sendLogEntries" fixed-rate="1000"/>
-
-    <task:scheduled ref="logSender" method="sendLogEntries" cron="*/5 * * * * *" />
-  </task:scheduled-tasks>-->
-
 </beans>

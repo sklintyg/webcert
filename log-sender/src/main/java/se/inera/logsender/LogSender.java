@@ -42,9 +42,6 @@ public class LogSender {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogSender.class);
 
-    @Value("${logsender.deliveryIntervalInSeconds}")
-    private int deliveryIntervalInSeconds;
-
     @Value("${logsender.bulkSize}")
     private int bulkSize;
 
@@ -64,10 +61,6 @@ public class LogSender {
 
     @PostConstruct
     public void checkConfiguration() {
-        if (deliveryIntervalInSeconds == 0) {
-            throw new IllegalStateException("'deliveryIntervalInSeconds' has to be greater than zero");
-        }
-
         if (bulkSize == 0) {
             throw new IllegalStateException("'bulkSize' has to be greater than zero");
         }
