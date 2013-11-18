@@ -1,6 +1,7 @@
 package se.inera.logsender;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -36,6 +37,7 @@ import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
+import se.riv.ehr.log.v1.LogType;
 import se.riv.ehr.log.v1.ResultCodeType;
 
 /**
@@ -98,9 +100,17 @@ public class LogSenderTest {
         StoreLogRequestType request = capture.getValue();
         assertEquals(3, request.getLog().size());
 
-        assertEquals(logEntries.get(0).getLogId(), request.getLog().get(0).getLogId());
-        assertEquals(logEntries.get(1).getLogId(), request.getLog().get(1).getLogId());
-        assertEquals(logEntries.get(2).getLogId(), request.getLog().get(2).getLogId());
+        List<String> logIds = new ArrayList<String>() {
+            {
+                add(logEntries.get(0).getLogId());
+                add(logEntries.get(1).getLogId());
+                add(logEntries.get(2).getLogId());
+            }
+        };
+
+        for (LogType logType : request.getLog()) {
+            assertTrue(logIds.contains(logType.getLogId()));
+        }
 
         // ensure that queue is empty
         assertEquals(0, queueSize());
@@ -122,11 +132,19 @@ public class LogSenderTest {
         // ensure that messages are split into two chunks
         List<StoreLogRequestType> requests = capture.getAllValues();
         assertEquals(5, requests.get(0).getLog().size());
-        assertEquals(logEntries.get(0).getLogId(), requests.get(0).getLog().get(0).getLogId());
-        assertEquals(logEntries.get(1).getLogId(), requests.get(0).getLog().get(1).getLogId());
-        assertEquals(logEntries.get(2).getLogId(), requests.get(0).getLog().get(2).getLogId());
-        assertEquals(logEntries.get(3).getLogId(), requests.get(0).getLog().get(3).getLogId());
-        assertEquals(logEntries.get(4).getLogId(), requests.get(0).getLog().get(4).getLogId());
+
+        List<String> logIds = new ArrayList<String>() {
+            {
+                add(logEntries.get(0).getLogId());
+                add(logEntries.get(1).getLogId());
+                add(logEntries.get(2).getLogId());
+                add(logEntries.get(3).getLogId());
+                add(logEntries.get(4).getLogId());
+            }
+        };
+        for (LogType logType : requests.get(0).getLog()) {
+            assertTrue(logIds.contains(logType.getLogId()));
+        }
 
         assertEquals(1, requests.get(1).getLog().size());
         assertEquals(logEntries.get(5).getLogId(), requests.get(1).getLog().get(0).getLogId());
