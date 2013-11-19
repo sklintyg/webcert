@@ -14,32 +14,22 @@
        xmlns:context="http://www.springframework.org/schema/context" xmlns:jaxws="http://cxf.apache.org/jaxws"
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xmlns:amq="http://activemq.apache.org/schema/core"
-       xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
         http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd
-        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
   <context:annotation-config/>
   <context:component-scan base-package="se.inera.logsender"/>
 
-  <amq:broker persistent="false">
-    <amq:transportConnectors>
-      <amq:transportConnector uri="tcp://localhost:61617"/>
-    </amq:transportConnectors>
-  </amq:broker>
-
   <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
     <property name="connectionFactory">
       <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://localhost:61617"/>
+        <property name="brokerURL" value="${logsender.brokerUrl}"/>
       </bean>
     </property>
   </bean>
-
 
   <amq:queue id="queue" physicalName="logging.queue"/>
 
@@ -51,6 +41,13 @@
   <bean id="nonTransactedJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="jmsFactory"/>
     <property name="defaultDestination" ref="queue"/>
-
   </bean>
+
+  <beans profile="dev">
+    <amq:broker persistent="false">
+      <amq:transportConnectors>
+        <amq:transportConnector uri="${logsender.brokerUrl}"/>
+      </amq:transportConnectors>
+    </amq:broker>
+  </beans>
 </beans>
