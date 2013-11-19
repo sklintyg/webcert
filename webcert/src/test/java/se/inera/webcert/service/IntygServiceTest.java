@@ -132,7 +132,7 @@ public class IntygServiceTest {
         when(externalToInternalResponse.readEntity(String.class)).thenReturn("<internalJson>");
         when(moduleRestApi.convertExternalToInternal(any(CertificateContentHolder.class))).thenReturn(
                 externalToInternalResponse);
-        doNothing().when(logservice).logReadOfIntyg(any(String.class));
+        doNothing().when(logservice).logReadOfIntyg(any(GetCertificateForCareResponseType.class));
 
         CertificateContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID);
 
@@ -164,7 +164,7 @@ public class IntygServiceTest {
         when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
                 .thenReturn(intygtjanstErrorResponse);
 
-        doNothing().when(logservice).logReadOfIntyg(any(String.class));
+        doNothing().when(logservice).logReadOfIntyg(any(GetCertificateForCareResponseType.class));
 
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
@@ -178,7 +178,7 @@ public class IntygServiceTest {
                 .thenReturn(intygtjanstResponse);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
 
-        doNothing().when(logservice).logReadOfIntyg(any(String.class));
+        doNothing().when(logservice).logReadOfIntyg(any(GetCertificateForCareResponseType.class));
 
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
@@ -200,7 +200,7 @@ public class IntygServiceTest {
         when(unmarshallResponse.getStatus()).thenReturn(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
         when(moduleRestApi.unmarshall(any(String.class))).thenReturn(unmarshallResponse);
 
-        doNothing().when(logservice).logReadOfIntyg(any(String.class));
+        doNothing().when(logservice).logReadOfIntyg(any(GetCertificateForCareResponseType.class));
 
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
@@ -229,7 +229,7 @@ public class IntygServiceTest {
         when(moduleRestApi.convertExternalToInternal(any(CertificateContentHolder.class))).thenReturn(
                 externalToInternalResponse);
 
-        doNothing().when(logservice).logReadOfIntyg(any(String.class));
+        doNothing().when(logservice).logReadOfIntyg(any(GetCertificateForCareResponseType.class));
 
         intygService.fetchIntygData(CERTIFICATE_ID);
     }

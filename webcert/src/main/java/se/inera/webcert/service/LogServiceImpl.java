@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -37,7 +38,7 @@ public class LogServiceImpl implements LogService {
     private WebCertUserService webCertUserService;
 
     @Override
-    public void logReadOfIntyg(String utlatandeId) {
+    public void logReadOfIntyg() {
         IntygReadMessage logthis = new IntygReadMessage();
         WebCertUser user =  webCertUserService.getWebCertUser();
         logthis.setUserId(user.getHsaId());
@@ -46,6 +47,22 @@ public class LogServiceImpl implements LogService {
 
         //logthis.set(user.getNamn());
         //logthis.set(utlatandeId);
+        logthis.setTimestamp(LocalDateTime.now());
+
+
+        jmsTemplate.send(new MC(logthis));
+    }
+
+    @Override
+    public void logReadOfIntyg(GetCertificateForCareResponseType intyg) {
+        IntygReadMessage logthis = new IntygReadMessage();
+        WebCertUser user =  webCertUserService.getWebCertUser();
+        logthis.setUserId(user.getHsaId());
+        logthis.setEnhetId(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
+        //logthis.setVardgivareId();
+
+        //logthis.set(user.getNamn());
+        logthis.setVardgivareId(intyg.getCertificate().getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
         logthis.setTimestamp(LocalDateTime.now());
 
 

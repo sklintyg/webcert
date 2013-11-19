@@ -84,7 +84,7 @@ public class IntygServiceImpl implements IntygService {
 
         String externalJson = convertToExternalJson(moduleRestApi, intyg);
         
-        logService.logReadOfIntyg(intygId);
+        logService.logReadOfIntyg(intyg);
 
         return convertToInternalJson(moduleRestApi, externalJson, metaData);
     }
