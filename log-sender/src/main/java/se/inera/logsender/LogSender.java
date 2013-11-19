@@ -8,6 +8,7 @@ import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
+import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -112,7 +113,7 @@ public class LogSender {
                         session.commit();
                         return true;
                     } catch (LoggtjanstExecutionException e) {
-                        LOG.warn("Failed to send log entries to loggtjänst, JMS session will be rolled back.");
+                        LOG.warn("Failed to send log entries to loggtjänst, JMS session will be rolled back.", e);
                         session.rollback();
                         return false;
                     }
@@ -192,13 +193,19 @@ public class LogSender {
 
         StoreLogRequestType request = new StoreLogRequestType();
         request.getLog().addAll(logEntries);
-        StoreLogResponseType response = loggTjanstResponder.storeLog(null, request);
-        switch (response.getResultType().getResultCode()) {
-        case OK:
-        case INFO:
-            break;
-        default:
-            throw new LoggtjanstExecutionException();
+
+        try {
+            StoreLogResponseType response = loggTjanstResponder.storeLog(null, request);
+            switch (response.getResultType().getResultCode()) {
+            case OK:
+            case INFO:
+                break;
+            default:
+                throw new LoggtjanstExecutionException();
+            }
+        } catch (WebServiceException e) {
+            throw new LoggtjanstExecutionException(e);
         }
+
     }
 }
