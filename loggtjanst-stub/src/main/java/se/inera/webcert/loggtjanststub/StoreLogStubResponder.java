@@ -28,6 +28,7 @@ public class StoreLogStubResponder implements StoreLogResponderInterface {
 
         ResultType result = new ResultType();
         result.setResultCode(ResultCodeType.OK);
+        result.setResultText("Done");
         response.setResultType(result);
         return response;
     }

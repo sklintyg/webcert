@@ -24,6 +24,7 @@
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
     <webcert.web.baseUrl>http://localhost:9088</webcert.web.baseUrl>
     <webcert.baseUrl>http://localhost:9088/services/</webcert.baseUrl>
+    <logsender.baseUrl>http://localhost:9090/log-sender/</logsender.baseUrl>
     <certificate.baseUrl>http://localhost:8080/inera-certificate/</certificate.baseUrl>
   </properties>
 
@@ -230,6 +231,7 @@
       <properties>
         <webcert.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.baseUrl>
         <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
+        <logsender.baseUrl>http://demo.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
       </properties>
     </profile>
     <profile>
@@ -238,6 +240,7 @@
         <webcert.web.baseUrl>http://utveckling.webcert.intygstjanster.se/</webcert.web.baseUrl>
         <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
         <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
+        <logsender.baseUrl>http://utveckling.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
       </properties>
     </profile>
     <profile>
