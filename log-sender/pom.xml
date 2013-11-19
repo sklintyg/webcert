@@ -33,6 +33,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>log-messages</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>loggtjanst-stub</artifactId>
     </dependency>
     <dependency>
@@ -107,7 +111,7 @@
       <artifactId>activemq-pool</artifactId>
     </dependency>
 
-   <dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

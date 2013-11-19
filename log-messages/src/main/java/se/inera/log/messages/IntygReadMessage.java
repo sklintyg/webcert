@@ -1,4 +1,4 @@
-package se.inera.logsender.messages;
+package se.inera.log.messages;
 
 import java.io.Serializable;
 
