@@ -28,6 +28,8 @@
   <import resource="security/securityContext.xml"/>
   <import resource="classpath:/hsa-services-config.xml"/>
 
+  <import resource="classpath:jms-config.xml"/>
+
   <import resource="classpath:/mail-stub-context.xml"/>
 
   <context:property-placeholder location="file:${user.home}/.${spring.profiles.active}.webcert.se/config.properties"
@@ -86,10 +88,7 @@
                 serviceClass="se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface"
                 address="${sendanswertofk.endpoint.url}">
   </jaxws:client>
-  <jaxws:client id="storeLogClient"
-                serviceClass="se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface"
-                address="${loggtjanst.endpoint.url}">
-  </jaxws:client>
+
 
 
   <!-- In dev mode we bootstrap data -->

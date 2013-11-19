@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:amq="http://activemq.apache.org/schema/core"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+  <bean id="jmsProducerTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="jmsFactory" />
+    <property name="defaultDestination" ref="queue" />
+  </bean>
+
+  <beans profile="test,qa,prod">
+    <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jms/ConnectionFactory" />
+    </bean>
+    <bean id="queue" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jms/Queue" />
+    </bean>
+  </beans>
+
+  <beans profile="dev">
+    <amq:broker start="true">
+    <amq:transportConnectors>
+      <amq:transportConnector uri="tcp://localhost:61617" />
+    </amq:transportConnectors>
+    </amq:broker>
+    
+    <bean id="jmsFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+      <property name="brokerURL" value="tcp://localhost:61617"/>
+    </bean>
+    <bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
+      <constructor-arg value="LOGGNING.QUEUE" />
+    </bean>
+  </beans>
+</beans>

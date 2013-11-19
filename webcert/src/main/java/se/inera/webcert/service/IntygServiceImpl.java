@@ -60,6 +60,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Autowired
+    LogService logService;
+
+    @Autowired
     private GetCertificateForCareResponderInterface certificateService;
 
     @Autowired
@@ -81,6 +84,7 @@ public class IntygServiceImpl implements IntygService {
 
         String externalJson = convertToExternalJson(moduleRestApi, intyg);
         
+        logService.logReadOfIntyg(intygId);
 
         return convertToInternalJson(moduleRestApi, externalJson, metaData);
     }

@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayOutputStream;
 
@@ -25,6 +23,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
@@ -63,8 +63,10 @@ public class IntygServiceTest {
 
     @InjectMocks
     private IntygService intygService = new IntygServiceImpl();
-    
-    
+
+    @Mock
+    private LogService logservice;
+
     private GetCertificateForCareResponseType intygtjanstResponse;
     
     private GetCertificateForCareResponseType intygtjanstErrorResponse;
@@ -81,6 +83,8 @@ public class IntygServiceTest {
     public void setupIntygstjanstResponse() throws Exception {
 
         ClassPathResource response = new ClassPathResource("IntygServiceTest/response-intygstjanst.xml");
+
+
         JAXBContext context = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
         intygtjanstResponse = context.createUnmarshaller()
                 .unmarshal(new StreamSource(response.getInputStream()), GetCertificateForCareResponseType.class)
@@ -128,6 +132,7 @@ public class IntygServiceTest {
         when(externalToInternalResponse.readEntity(String.class)).thenReturn("<internalJson>");
         when(moduleRestApi.convertExternalToInternal(any(CertificateContentHolder.class))).thenReturn(
                 externalToInternalResponse);
+        doNothing().when(logservice).logReadOfIntyg(any(String.class));
 
         CertificateContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID);
 
@@ -158,7 +163,8 @@ public class IntygServiceTest {
         request.setCertificateId(CERTIFICATE_ID);
         when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
                 .thenReturn(intygtjanstErrorResponse);
-        
+
+        doNothing().when(logservice).logReadOfIntyg(any(String.class));
 
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
@@ -171,6 +177,9 @@ public class IntygServiceTest {
         when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
                 .thenReturn(intygtjanstResponse);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
+
+        doNothing().when(logservice).logReadOfIntyg(any(String.class));
+
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
 
@@ -190,6 +199,8 @@ public class IntygServiceTest {
         Response unmarshallResponse = mock(Response.class);
         when(unmarshallResponse.getStatus()).thenReturn(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
         when(moduleRestApi.unmarshall(any(String.class))).thenReturn(unmarshallResponse);
+
+        doNothing().when(logservice).logReadOfIntyg(any(String.class));
 
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
@@ -217,6 +228,8 @@ public class IntygServiceTest {
         when(externalToInternalResponse.getStatus()).thenReturn(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
         when(moduleRestApi.convertExternalToInternal(any(CertificateContentHolder.class))).thenReturn(
                 externalToInternalResponse);
+
+        doNothing().when(logservice).logReadOfIntyg(any(String.class));
 
         intygService.fetchIntygData(CERTIFICATE_ID);
     }

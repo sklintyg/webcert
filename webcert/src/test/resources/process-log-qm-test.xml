@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:amq="http://activemq.apache.org/schema/core" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+        >
+
+    <context:component-scan
+            base-package="se.inera.queue">
+    </context:component-scan>
+
+        <amq:queue id="queue" physicalName="loggning.queue"/>
+
+    <amq:broker persistent="false">
+      <amq:transportConnectors>
+        <amq:transportConnector uri="tcp://localhost:61617" />
+      </amq:transportConnectors>
+    </amq:broker>
+
+    <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+        <property name="connectionFactory">
+            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <property name="brokerURL" value="tcp://localhost:61617" />
+            </bean>
+        </property>
+    </bean>
+    <!--
+    <bean id="receiver" class="se.inera.queue.Receiver"/>
+
+    <bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="jmsFactory"/>
+        <property name="destination" ref="queue"/>
+        <property name="messageListener" ref="receiver"/>
+    </bean>
+    -->
+</beans>
