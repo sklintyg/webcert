@@ -31,14 +31,4 @@
   <import resource="classpath:log-sender-jms-config.xml"/>
 
   <mockito:mock id="storeLogMock" class="se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface" />
-
-  <!--<bean id="jmsTemplate"
-        class="org.springframework.jms.core.JmsTemplate">
-    <property name="connectionFactory">
-      <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://localhost:61617"/>
-      </bean>
-    </property>
-    <property name="defaultDestination" ref="queue"/>
-  </bean>-->
 </beans>
