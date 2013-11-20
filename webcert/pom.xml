@@ -48,11 +48,15 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>mail-stub</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>loggtjanst-stub</artifactId>
-    </dependency>
-    <dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>loggtjanst-stub</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>log-messages</artifactId>
+      </dependency>
+      <dependency>
       <groupId>se.inera.certificate</groupId>
       <artifactId>module-api</artifactId>
     </dependency>
@@ -171,6 +175,18 @@
       <artifactId>xalan</artifactId>
       <version>2.7.1</version>
     </dependency>
+
+
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-jms</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jms_1.1_spec</artifactId>
+          <version>1.1.1</version>
+          <scope>provided</scope>
+      </dependency>
   </dependencies>
 
   <build>
@@ -277,6 +293,31 @@
         <cargo.remote.uri>http://10.250.35.51:8080/manager/text</cargo.remote.uri>
       </properties>
     </profile>
+      <profile>
+          <id>jetty</id>
+          <dependencies>
+              <dependency>
+                  <groupId>org.apache.activemq</groupId>
+                  <artifactId>activemq-broker</artifactId>
+                  <version>5.8.0</version>
+              </dependency>
+              <dependency>
+                  <groupId>org.apache.activemq</groupId>
+                  <artifactId>activemq-kahadb-store</artifactId>
+                  <version>5.8.0</version>
+              </dependency>
+              <dependency>
+                  <groupId>org.apache.activemq</groupId>
+                  <artifactId>activemq-spring</artifactId>
+                  <version>5.8.0</version>
+              </dependency>
+              <dependency>
+                  <groupId>org.apache.geronimo.specs</groupId>
+                  <artifactId>geronimo-jms_1.1_spec</artifactId>
+                  <version>1.1.1</version>
+              </dependency>
+          </dependencies>
+      </profile>
   </profiles>
 
 </project>

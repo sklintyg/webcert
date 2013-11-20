@@ -9,6 +9,7 @@ class UnhandledQAPage extends Page {
     static content = {
         unhandledQATable(required: false) { $("#qaTable") }
         careUnitSelector(required: false) { $("#wc-care-unit-clinic-selector") }
+        unitstatUnhandledQuestionsBadgde(required: false) { $("#stat-unitstat-unhandled-question-count") }
         advancedFilterForm { $("#advanced-filter-form") }
         advancedFilterSelectDoctor { $("#qp-doctorSelector") }
         filterBtn { $("#filter-qa-btn") }

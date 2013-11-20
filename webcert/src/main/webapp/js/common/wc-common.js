@@ -74,18 +74,21 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 				       link :'/web/dashboard#/mycert', 
 				       label:'Mina osignerade intyg',
 				       requires_doctor: false,
+				       statNumberId : "stat-usertstat-unsigned-certs-count",
 				       getStat: function() { return $scope.stat.userStat.unsignedCerts || ""}
 				     },
 				     {
 				       link :'/web/dashboard#/unhandled-qa',
 				       label:'Enhetens frågor och svar',
 				       requires_doctor: false,
+				       statNumberId : "stat-unitstat-unhandled-question-count",
                        getStat: function() { return $scope.stat.unitStat.unhandledQuestions || ""}
 				     },
 				     {
 				       link :'/web/dashboard#/unsigned', 
 				       label:'Enhetens osignerade intyg',
 				       requires_doctor: false,
+				       statNumberId : "stat-unitstat-unsigned-certs-count",
                        getStat: function() { return $scope.stat.unitStat.unsignedCerts || ""}
 				     },
 				     {
@@ -167,7 +170,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 				    						+'<ul class="nav">'
 			    								+'<li ng-class="{active: isActive(menu.link)}" ng-repeat="menu in menuDefs">'
 		    										+'<a ng-href="{{menu.link}}" ng-show="(menu.requires_doctor && isDoctor) || !menu.requires_doctor">{{menu.label}}'
-		    										+'<span ng-if="menu.getStat()>0" class="stat-circle stat-circle-active">{{menu.getStat()}}</span></a>'
+		    										+'<span id="{{menu.statNumberId}}" ng-if="menu.getStat()>0" class="stat-circle stat-circle-active">{{menu.getStat()}}</span></a>'
 		    									+'</li>'
 		            				+'</ul>'
 		            			+'</div><!-- /.nav-collapse -->'

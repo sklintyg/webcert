@@ -1,0 +1,11 @@
+!****> Global Setup... 
+|Import|
+|se.inera.webcert.spec|
+|se.inera.certificate.spec|
+|se.inera.certificate.spec.util|
+|se.inera.certificate.spec.util.jms|
+
+!|Config|
+|property|value|
+|logsender.baseUrl|${logsender.baseUrl}|
+*****!
