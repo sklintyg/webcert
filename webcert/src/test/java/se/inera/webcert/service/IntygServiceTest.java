@@ -1,16 +1,18 @@
 package se.inera.webcert.service;
 
+import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayOutputStream;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-
-import java.io.ByteArrayOutputStream;
-
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -23,15 +25,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
-import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.integration.rest.ModuleRestApi;
 import se.inera.certificate.integration.rest.ModuleRestApiFactory;
@@ -39,6 +36,7 @@ import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.exception.ModuleCallFailedException;
 import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
+import se.inera.webcert.service.exception.IntygstjanstCallFailedException;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.test.NamespacePrefixNameIgnoringListener;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -72,7 +70,6 @@ public class IntygServiceTest {
     private GetCertificateForCareResponseType intygtjanstErrorResponse;
     
     private Utlatande utlatande;
-    
 
     private String intygXml;
     
@@ -114,7 +111,7 @@ public class IntygServiceTest {
         // setup intygstjansten WS mock to return intyg information
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
-        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+        when(getCertificateForCareResponder.getCertificateForCare(any(String.class), eq(request)))
                 .thenReturn(intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
@@ -137,7 +134,7 @@ public class IntygServiceTest {
         CertificateContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID);
 
         // ensure that correct WS call is made to intygstjanst
-        verify(getCertificateForCareResponder).getCertificateForCare(any(AttributedURIType.class), eq(request));
+        verify(getCertificateForCareResponder).getCertificateForCare(any(String.class), eq(request));
 
         // ensure correct module lookup is done with module Rest API factory
         verify(moduleRestApiFactory).getModuleRestService("fk7263");
@@ -155,13 +152,13 @@ public class IntygServiceTest {
         assertEquals("<internalJson>", intygData.getCertificateContent());
     }
 
-    @Test(expected = ExternalWebServiceCallFailedException.class)
+    @Test(expected = IntygstjanstCallFailedException.class)
     public void testFetchIntygWithFailingIntygstjanst() {
 
         // setup intygstjansten WS mock to return error response
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
-        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+        when(getCertificateForCareResponder.getCertificateForCare(any(String.class), eq(request)))
                 .thenReturn(intygtjanstErrorResponse);
 
         doNothing().when(logservice).logReadOfIntyg(any(GetCertificateForCareResponseType.class));
@@ -174,7 +171,7 @@ public class IntygServiceTest {
         // setup intygstjansten WS mock to return success response
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
-        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+        when(getCertificateForCareResponder.getCertificateForCare(any(String.class), eq(request)))
                 .thenReturn(intygtjanstResponse);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
 
@@ -189,7 +186,7 @@ public class IntygServiceTest {
         // setup intygstjansten WS mock to return intyg information
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
-        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+        when(getCertificateForCareResponder.getCertificateForCare(any(String.class), eq(request)))
                 .thenReturn(intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
@@ -211,7 +208,7 @@ public class IntygServiceTest {
         // setup intygstjansten WS mock to return intyg information
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
-        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+        when(getCertificateForCareResponder.getCertificateForCare(any(String.class), eq(request)))
                 .thenReturn(intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
@@ -240,7 +237,7 @@ public class IntygServiceTest {
         // setup intygstjansten WS mock to return intyg information
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
-        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+        when(getCertificateForCareResponder.getCertificateForCare(any(String.class), eq(request)))
                 .thenReturn(intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
@@ -257,7 +254,7 @@ public class IntygServiceTest {
         UtlatandeCommonModelHolder intygData = intygService.fetchIntygCommonModel(CERTIFICATE_ID);
 
         // ensure that correct WS call is made to intygstjanst
-        verify(getCertificateForCareResponder).getCertificateForCare(any(AttributedURIType.class), eq(request));
+        verify(getCertificateForCareResponder).getCertificateForCare(any(String.class), eq(request));
 
         // ensure correct module lookup is done with module Rest API factory
         verify(moduleRestApiFactory).getModuleRestService("fk7263");
@@ -268,13 +265,13 @@ public class IntygServiceTest {
         assertEquals(utlatandeAsString, new CustomObjectMapper().writeValueAsString(intygData.getUtlatande()));
     }
     
-    @Test(expected = ExternalWebServiceCallFailedException.class)
+    @Test(expected = IntygstjanstCallFailedException.class)
     public void testFetchIntygCommonModelWithFailingIntygstjanst() {
 
         // setup intygstjansten WS mock to return error response
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
-        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+        when(getCertificateForCareResponder.getCertificateForCare(any(String.class), eq(request)))
                 .thenReturn(intygtjanstErrorResponse);
         
 
@@ -286,7 +283,7 @@ public class IntygServiceTest {
         // setup intygstjansten WS mock to return success response
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
-        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+        when(getCertificateForCareResponder.getCertificateForCare(any(String.class), eq(request)))
                 .thenReturn(intygtjanstResponse);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
         intygService.fetchIntygCommonModel(CERTIFICATE_ID);
@@ -298,7 +295,7 @@ public class IntygServiceTest {
         // setup intygstjansten WS mock to return intyg information
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
-        when(getCertificateForCareResponder.getCertificateForCare(any(AttributedURIType.class), eq(request)))
+        when(getCertificateForCareResponder.getCertificateForCare(any(String.class), eq(request)))
                 .thenReturn(intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
