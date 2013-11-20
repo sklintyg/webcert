@@ -58,7 +58,7 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
 
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details,
                 credential, new ArrayList<GrantedAuthority>());
-        result.setDetails(userDetails);
+        result.setDetails(details);
 
         return result;
     }
