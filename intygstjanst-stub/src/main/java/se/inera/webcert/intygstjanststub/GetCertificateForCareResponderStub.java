@@ -1,7 +1,6 @@
 package se.inera.webcert.intygstjanststub;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
@@ -19,7 +18,7 @@ public class GetCertificateForCareResponderStub implements GetCertificateForCare
 
 
     @Override
-    public GetCertificateForCareResponseType getCertificateForCare(AttributedURIType logicalAddress, GetCertificateForCareRequestType request) {
+    public GetCertificateForCareResponseType getCertificateForCare(String logicalAddress, GetCertificateForCareRequestType request) {
 
         return intygStore.getAllIntyg().get(request.getCertificateId());
     }

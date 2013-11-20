@@ -1,28 +1,25 @@
 package se.inera.webcert.service;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
-import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.integration.rest.ModuleRestApi;
 import se.inera.certificate.integration.rest.ModuleRestApiFactory;
@@ -34,11 +31,10 @@ import se.inera.certificate.model.Utlatande;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateStatusType;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
+import se.inera.webcert.service.exception.IntygstjanstCallFailedException;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import com.google.common.base.Throwables;
 
 /**
  * @author andreaskaltenbach
@@ -191,14 +187,14 @@ public class IntygServiceImpl implements IntygService {
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(intygsId);
 
-        GetCertificateForCareResponseType response = certificateService.getCertificateForCare(new AttributedURIType(),
+        GetCertificateForCareResponseType response = certificateService.getCertificateForCare("",
                 request);
 
         switch (response.getResult().getResultCode()) {
             case OK:
                 return response;
             default:
-                throw new ExternalWebServiceCallFailedException(response.getResult());
+                throw new IntygstjanstCallFailedException(response.getResult());
         }
     }
     

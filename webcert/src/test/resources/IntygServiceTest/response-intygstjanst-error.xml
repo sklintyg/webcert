@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1"
-                                   xmlns="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
-                                   xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:1"
-                                   xmlns:ns4="urn:riv:insuranceprocess:healthreporting:2">
+<GetCertificateForCareResponse xmlns="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
+                                   xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:1">
   <result>
-    <ns4:resultCode>ERROR</ns4:resultCode>
-    <ns4:errorText>We are screwed!</ns4:errorText>
+    <ns3:resultCode>ERROR</ns3:resultCode>
+    <ns3:resultText>We are screwed!</ns3:resultText>
   </result>
 </GetCertificateForCareResponse>
