@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -14,24 +15,28 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.*;
+
+import se.inera.log.messages.IntygReadMessage;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.web.service.WebCertUserService;
 import se.inera.webcert.web.service.WebCertUserServiceImpl;
 
 import javax.jms.*;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created by pehr on 13/11/13.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-//@RunWith(MockitoJUnitRunner.class)
-@ContextConfiguration(locations = { "/process-log-qm-test.xml" })
-@DirtiesContext
+@RunWith(MockitoJUnitRunner.class)
 public class LogServiceImplTest {
 
-    private JmsTemplate jmsTemplate;
+    @Mock
+    private JmsTemplate template = mock(JmsTemplate.class);
+
 
     @Mock
     protected WebCertUserService webCertUserService = new WebCertUserServiceImpl();
@@ -39,52 +44,56 @@ public class LogServiceImplTest {
     @InjectMocks
     LogServiceImpl logService = new LogServiceImpl();
 
-    @Autowired
-    private ConnectionFactory connectionFactory;
-
-    @Before
-    public void setup() {
-        setConnectionFactory(connectionFactory);
-        org.springframework.test.util.ReflectionTestUtils.setField(logService, "jmsTemplate", this.jmsTemplate);
-    }
-
-    public void setConnectionFactory(ConnectionFactory cf) {
-        this.jmsTemplate = new JmsTemplate(cf);
-    }
 
 
     @Test
-    @Ignore
-    public void testTwo()throws  Exception{
-        final Connection connection = connectionFactory.createConnection();
-        connection.start();
-        final Session session = connection.createSession(false,
-                Session.AUTO_ACKNOWLEDGE);
+    public void serviceSendsDocumentAndIdForCreate() throws JMSException {
+        ArgumentCaptor<MessageCreator> captor = ArgumentCaptor.forClass(MessageCreator.class);
 
-        Destination destination = null; //new ActiveMQQueue("loggning.test.queue");
+        //Certificate certificate = mock(Certificate.class);
+        //when(certificate.getDocument()).thenReturn("The document");
+        //when(certificate.getId()).thenReturn("The id");
 
-      //  when(webCertUserService.getWebCertUser()).thenReturn(createWcUser()) ;
-      //  logService.logReadOfIntyg("TESTINTYG-1");
+        when(webCertUserService.getWebCertUser()).thenReturn(createWcUser()) ;
 
-        /*
-        this.jmsTemplate.send(destination, new MessageCreator() {
-            public Message createMessage(Session session) throws JMSException {
-                TextMessage message = session.createTextMessage("hello queue world");
-                message.setJMSCorrelationID("C12");
-                return message;
-            }
-        });
-          */
-        {
-            final MessageConsumer consumer = session.createConsumer(destination);
-            final TextMessage message = (TextMessage) consumer.receiveNoWait();
-            Assert.assertNotNull(message);
-            String apa =  message.getText();
-            System.out.println("MESSAGE :" + apa);
+        GetCertificateForCareResponseType intyg = mock(GetCertificateForCareResponseType.class);
+        UtlatandeType utlatande = mock(UtlatandeType.class);
+        HosPersonalType persType = mock(HosPersonalType.class);
+        EnhetType enhetTyp = mock(EnhetType.class);
+        VardgivareType vgType = mock(VardgivareType.class);
+        HsaId enhetHsaId = mock(HsaId.class);
+        HsaId vgHsaId = mock(HsaId.class);
 
-            Assert.assertEquals("hello queue world", message.getText());
-        }
+        when(intyg.getCertificate()).thenReturn(utlatande);
+        when(utlatande.getSkapadAv()).thenReturn(persType);
+        when(persType.getEnhet()).thenReturn(enhetTyp);
+        when(enhetTyp.getEnhetsId()).thenReturn(enhetHsaId);
+        when(enhetHsaId.getExtension()).thenReturn("ENHETS ID");
+
+        when(enhetTyp.getVardgivare()).thenReturn(vgType);
+        when(vgType.getVardgivareId()).thenReturn(vgHsaId);
+        when(vgHsaId.getExtension()).thenReturn("VARDGIVARE ID");
+
+        IntygReadMessage logthis = mock(IntygReadMessage.class);
+
+
+
+
+
+
+        ObjectMessage message = mock(ObjectMessage.class);
+        Session session = mock(Session.class);
+        when(session.createObjectMessage(any(IntygReadMessage.class))).thenReturn(message);
+
+        logService.logReadOfIntyg(intyg);
+
+        verify(template, only()).send(captor.capture());
+        captor.getValue().createMessage(session);
+        //verify(message).setStringProperty("action", "created");
+        //verify(message).setStringProperty("certificate-id", "The id");
     }
+
+
 
 
     protected WebCertUser createWcUser(){

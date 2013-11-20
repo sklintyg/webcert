@@ -85,13 +85,11 @@ public class LogServiceImpl implements LogService {
         private final IntygReadMessage logthis;
 
         public MC(IntygReadMessage log) {
-                //this.type = type;
             this.logthis = log;
         }
 
         public Message createMessage(Session session) throws JMSException {
             ObjectMessage message = session.createObjectMessage(logthis);
-            //message.setJMSCorrelationID(type + ':' + certificate.getId());
             return message;
         }
     }

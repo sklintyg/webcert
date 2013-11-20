@@ -6,10 +6,13 @@
 |se.inera.webcert.spec.web.pages.fk7264|
 |se.inera.certificate.spec|
 |se.inera.certificate.spec.util|
+|se.inera.certificate.spec.util.jms|
 
 !|Config|
 |property|value|
+|logsender.baseUrl|${logsender.baseUrl}|
 |geb.env|${geb.env}|
 |geb.build.baseUrl|${webcert.web.baseUrl}|
 |webcert.baseUrl|${webcert.baseUrl}|
 |certificate.baseUrl|${certificate.baseUrl}|
+
