@@ -14,7 +14,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 
   <tx:annotation-driven />
 
-  <jpa:repositories base-package="se.inera.webcert.persistence.fragasvar.repository" />
+  <jpa:repositories base-package="se.inera.webcert.persistence"/>
 
   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
     <property name="entityManagerFactory" ref="entityManagerFactory" />
