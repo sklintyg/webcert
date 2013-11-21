@@ -8,7 +8,7 @@
 
     <createTable tableName="FRAGASVAR">
       <column name="internReferens" type="varchar(255)">
-        <constraints unique="true" nullable="false"/>
+        <constraints unique="true" nullable="false" />
       </column>
       <column name="AMNE" type="varchar(255)">
         <constraints nullable="false" />
@@ -45,7 +45,7 @@
         <constraints nullable="true" />
       </column>
       <column name="SIGNERINGS_DATUM" type="datetime">
-      <constraints nullable="true" />
+        <constraints nullable="true" />
       </column>
       <column name="MEDDELANDE_RUBRIK" type="varchar(255)">
         <constraints nullable="true" />
@@ -57,13 +57,13 @@
       <column name="SVAR_SIGNERINGS_DATUM" type="datetime">
         <constraints nullable="true" />
       </column>
-        <column name="SVAR_SKICKAD_DATUM" type="datetime">
-            <constraints nullable="true" />
-        </column>
-        <column name="SENASTE_HANDELSE" type="datetime">
-            <constraints nullable="true" />
-        </column>
-        <column name="SVARS_TEXT" type="text">
+      <column name="SVAR_SKICKAD_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="SENASTE_HANDELSE" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="SVARS_TEXT" type="text">
         <constraints nullable="true" />
       </column>
 
@@ -111,7 +111,7 @@
       </column>
       <column name="VIDAREBEFORDRAD" type="boolean">
         <constraints nullable="false" />
-      </column>        
+      </column>
     </createTable>
     <!-- Add auto incremented id column to table -->
     <addAutoIncrement columnDataType="int" columnName="internReferens" incrementBy="1" startWith="1" tableName="FRAGASVAR" />
@@ -145,15 +145,62 @@
 
   </changeSet>
   <changeSet id="2" author="mc">
-   <addColumn tableName="FRAGASVAR">
+    <addColumn tableName="FRAGASVAR">
       <column name="VARD_AKTOR_HSAID" type="varchar(255)">
-        <constraints nullable="true"/>
+        <constraints nullable="true" />
       </column>
     </addColumn>
-     <addColumn tableName="FRAGASVAR">
+    <addColumn tableName="FRAGASVAR">
       <column name="VARD_AKTOR_NAMN" type="varchar(255)">
-        <constraints nullable="true"/>
+        <constraints nullable="true" />
       </column>
     </addColumn>
+  </changeSet>
+
+  <changeSet id="3" author="mc">
+    <createTable tableName="INTYG">
+      <column name="INTYGS_ID" type="varchar(64)">
+        <constraints unique="true" nullable="false" />
+      </column>
+      <column name="INTYGS_TYP" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="ENHETS_ID" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="ENHETS_NAMN" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="VARDGIVAR_ID" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="VARDGIVAR_NAMN" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="PATIENT_PERSONNUMMER" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="SENAST_SPARAD_DATUM" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="MODEL" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="STATUS" type="varchar(32)">
+        <constraints nullable="false" />
+      </column>
+      <column name="SKAPAD_AV_HSAID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="SKAPAD_AV_NAMN" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="SENAST_SPARAD_AV_HSAID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="SENAST_SPARAD_AV_NAMN" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
   </changeSet>
 </databaseChangeLog>
