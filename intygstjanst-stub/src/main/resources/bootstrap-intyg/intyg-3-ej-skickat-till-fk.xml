@@ -213,6 +213,7 @@ xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
 
   </gc:certificate>
   <gc:result>
-    <gc:resultCode>OK</gc:resultCode>
+    <resultCode>OK</resultCode>
+    <resultText></resultText>
   </gc:result>
 </gc:GetCertificateForCareResponse>

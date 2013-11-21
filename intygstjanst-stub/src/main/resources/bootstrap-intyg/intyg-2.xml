@@ -221,6 +221,7 @@
 
   </gc:certificate>
   <gc:result>
-    <gc:resultCode>OK</gc:resultCode>
+    <resultCode>OK</resultCode>
+    <resultText></resultText>
   </gc:result>
 </gc:GetCertificateForCareResponse>
