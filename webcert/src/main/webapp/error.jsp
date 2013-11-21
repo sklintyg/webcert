@@ -60,6 +60,7 @@
                     <div id="loggedOut" class="alert alert-info">
                         <spring:message code="info.loggedout.text"/>
                     </div>
+                    <a href="/web/start" class="btn btn-success" id="loginBtn">Logga in</a>
                     <!-- reason: loggedout -->
                 </c:when>
 
@@ -71,7 +72,6 @@
                     <div id="noAuth" class="alert alert-warning">
                         <spring:message code="error.noauth.text"/>
                     </div>
-                    
                     <!-- reason: denied -->
                 </c:when>
 
@@ -108,9 +108,6 @@
                     <!-- reason: generic -->
                 </c:otherwise>
             </c:choose>
-
-            <a href="/web/start" class="btn btn-success" id="loginBtn">Logga in</a>
-
 
             <!--
             Error:
