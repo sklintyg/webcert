@@ -30,7 +30,7 @@
       <property name="brokerURL" value="tcp://localhost:61617"/>
     </bean>
     <bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
-      <constructor-arg value="LOGGNING.QUEUE" />
+      <constructor-arg value="logging.queue" />
     </bean>
   </beans>
 </beans>
