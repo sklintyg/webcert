@@ -43,6 +43,9 @@ public class LogSender {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogSender.class);
 
+    @Value("${loggtjanst.logicalAddress}")
+    private String logicalAddress;
+
     @Value("${logsender.bulkSize}")
     private int bulkSize;
 
@@ -195,7 +198,7 @@ public class LogSender {
         request.getLog().addAll(logEntries);
 
         try {
-            StoreLogResponseType response = loggTjanstResponder.storeLog(null, request);
+            StoreLogResponseType response = loggTjanstResponder.storeLog(logicalAddress, request);
             switch (response.getResultType().getResultCode()) {
             case OK:
             case INFO:
