@@ -48,15 +48,15 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>mail-stub</artifactId>
     </dependency>
-      <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>loggtjanst-stub</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>log-messages</artifactId>
-      </dependency>
-      <dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>loggtjanst-stub</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>log-messages</artifactId>
+    </dependency>
+    <dependency>
       <groupId>se.inera.certificate</groupId>
       <artifactId>module-api</artifactId>
     </dependency>
@@ -176,17 +176,21 @@
       <version>2.7.1</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-client</artifactId>
+    </dependency>
 
-      <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-jms</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>geronimo-jms_1.1_spec</artifactId>
-          <version>1.1.1</version>
-          <scope>provided</scope>
-      </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jms_1.1_spec</artifactId>
+      <version>1.1.1</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -245,79 +249,35 @@
           </systemProperties>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.cargo</groupId>
-        <artifactId>cargo-maven2-plugin</artifactId>
-        <version>1.4.4</version>
-        <configuration>
-          <container>
-            <containerId>tomcat7x</containerId>
-            <type>remote</type>
-          </container>
-          <configuration>
-            <type>runtime</type>
-            <properties>
-              <cargo.remote.username>cargo-deploy</cargo.remote.username>
-              <cargo.remote.uri>${cargo.remote.uri}</cargo.remote.uri>
-            </properties>
-          </configuration>
-          <deployables>
-            <deployable>
-              <type>war</type>
-              <properties>
-                <context>/</context>
-              </properties>
-            </deployable>
-          </deployables>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
   <profiles>
     <profile>
-      <id>demo</id>
-      <properties>
-        <cargo.remote.uri>http://demo.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
-      </properties>
+      <id>jetty</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-broker</artifactId>
+          <version>${activemq.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-kahadb-store</artifactId>
+          <version>${activemq.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-spring</artifactId>
+          <version>${activemq.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jms_1.1_spec</artifactId>
+          <version>1.1.1</version>
+        </dependency>
+      </dependencies>
     </profile>
-    <profile>
-      <id>utveckling</id>
-      <properties>
-        <cargo.remote.uri>http://utveckling.webcert.intygstjanster.se:8080/manager/text</cargo.remote.uri>
-      </properties>
-    </profile>
-    <profile>
-      <id>test</id>
-      <properties>
-        <cargo.remote.uri>http://10.250.35.51:8080/manager/text</cargo.remote.uri>
-      </properties>
-    </profile>
-      <profile>
-          <id>jetty</id>
-          <dependencies>
-              <dependency>
-                  <groupId>org.apache.activemq</groupId>
-                  <artifactId>activemq-broker</artifactId>
-                  <version>5.8.0</version>
-              </dependency>
-              <dependency>
-                  <groupId>org.apache.activemq</groupId>
-                  <artifactId>activemq-kahadb-store</artifactId>
-                  <version>5.8.0</version>
-              </dependency>
-              <dependency>
-                  <groupId>org.apache.activemq</groupId>
-                  <artifactId>activemq-spring</artifactId>
-                  <version>5.8.0</version>
-              </dependency>
-              <dependency>
-                  <groupId>org.apache.geronimo.specs</groupId>
-                  <artifactId>geronimo-jms_1.1_spec</artifactId>
-                  <version>1.1.1</version>
-              </dependency>
-          </dependencies>
-      </profile>
   </profiles>
 
 </project>

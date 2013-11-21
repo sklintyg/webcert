@@ -23,15 +23,6 @@
   <context:annotation-config/>
   <context:component-scan base-package="se.inera.logsender"/>
 
-  <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
-    <property name="connectionFactory">
-      <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="${logsender.brokerUrl}"/>
-      </bean>
-    </property>
-  </bean>
-
-  <amq:queue id="queue" physicalName="logging.queue"/>
 
   <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="jmsFactory"/>
@@ -43,11 +34,29 @@
     <property name="defaultDestination" ref="queue"/>
   </bean>
 
+  <beans profile="test,qa,prod">
+    <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jms/ConnectionFactory"/>
+    </bean>
+    <bean id="queue" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jms/Queue"/>
+    </bean>
+  </beans>
+
   <beans profile="dev">
     <amq:broker persistent="false">
       <amq:transportConnectors>
-        <amq:transportConnector uri="${logsender.brokerUrl}"/>
+        <amq:transportConnector uri="tcp://localhost:61618"/>
       </amq:transportConnectors>
     </amq:broker>
+
+    <bean id="jmsFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+      <property name="connectionFactory">
+        <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+          <property name="brokerURL" value="tcp://localhost:61618"/>
+        </bean>
+      </property>
+    </bean>
+    <amq:queue id="queue" physicalName="logging.queue"/>
   </beans>
 </beans>
