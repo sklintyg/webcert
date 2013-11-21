@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration scan="true" scanPeriod="30 seconds">
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <layout class="ch.qos.logback.classic.PatternLayout">
-      <pattern>%date{ISO8601} [%thread] %-5level %logger{10} - %msg%n
-      </pattern>
-    </layout>
+    <encoder>
+      <pattern>%date{ISO8601} [%thread] %-5level %logger{10} - %msg%n</pattern>
+    </encoder>
   </appender>
 
   <!--Daily rolling file appender -->
@@ -14,10 +13,9 @@
       <FileNamePattern>${catalina.home}/logs/webcert.%d{yyyy-MM-dd}.log</FileNamePattern>
     </rollingPolicy>
 
-    <layout class="ch.qos.logback.classic.PatternLayout">
-      <Pattern>%date{ISO8601} [%thread] %-5level %logger{10} - %msg%n
-      </Pattern>
-    </layout>
+    <encoder>
+      <pattern>%date{ISO8601} [%thread] %-5level %logger{10} - %msg%n</pattern>
+    </encoder>
   </appender>
 
   <logger name="org.springframework" level="error" />
