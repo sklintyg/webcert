@@ -22,6 +22,7 @@
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/favicon.ico"/>
+  <security:http security="none" pattern="/inera-certificate/**"/>
 
   <!-- Logger for SAML messages and events -->
   <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger"/>

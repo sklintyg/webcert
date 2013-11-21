@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 import org.joda.time.LocalDateTime;
@@ -48,6 +49,8 @@ import se.riv.ehr.log.v1.ResultCodeType;
 @ActiveProfiles(profiles = "dev")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LogSenderTest {
+
+    private static final String LOGICAL_ADDRESS = "SE165565594230-1000";
 
     @Autowired
     private StoreLogResponderInterface storeLogMock;
@@ -100,7 +103,7 @@ public class LogSenderTest {
             sendLogMessage(intygReadMessage);
         }
 
-        when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
+        when(storeLogMock.storeLog(eq(LOGICAL_ADDRESS), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
 
         logSender.sendLogEntries();
 
@@ -133,7 +136,7 @@ public class LogSenderTest {
             sendLogMessage(logMessage);
         }
 
-        when(storeLogMock.storeLog(anyString(), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
+        when(storeLogMock.storeLog(eq(LOGICAL_ADDRESS), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
 
         logSender.sendLogEntries();
 
@@ -163,7 +166,7 @@ public class LogSenderTest {
             sendLogMessage(logMessage);
         }
 
-        when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
+        when(storeLogMock.storeLog(eq(LOGICAL_ADDRESS), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.OK)).thenReturn(storeLogResponse(ResultCodeType.ERROR));
 
         logSender.sendLogEntries();
@@ -185,7 +188,7 @@ public class LogSenderTest {
             sendLogMessage(logMessage);
         }
 
-        when(storeLogMock.storeLog(anyString(), any(StoreLogRequestType.class))).thenReturn(
+        when(storeLogMock.storeLog(eq(LOGICAL_ADDRESS), any(StoreLogRequestType.class))).thenReturn(
                 storeLogResponse(ResultCodeType.ERROR));
 
         logSender.sendLogEntries();
