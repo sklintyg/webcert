@@ -203,4 +203,43 @@
       </column>
     </createTable>
   </changeSet>
+  
+  <changeSet id="4" author="np">    
+    <createTable tableName="MIGRERADE_INTYG_FRAN_MEDCERT">
+      <column name="INTYG_ID" type="varchar(255)">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="ENHETS_ID" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="INTYGS_TYP" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="PATIENT_NAMN" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="PATIENT_SSN" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="SKAPAD_DATUM" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="SKICKAD_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="MIGRERAD_DATUM" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="MIGRERAD_FRAN" type="varchar(25)">
+        <constraints nullable="false" />
+      </column>
+      <column name="URSPRUNG" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="INTYGS_DATA" type="blob">
+        <constraints nullable="true" />
+      </column>
+    </createTable>
+  </changeSet>
+    
 </databaseChangeLog>
