@@ -527,6 +527,16 @@
         <artifactId>activemq-pool</artifactId>
         <version>${activemq.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-broker</artifactId>
+        <version>${activemq.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-kahadb-store</artifactId>
+        <version>${activemq.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>junit</groupId>
