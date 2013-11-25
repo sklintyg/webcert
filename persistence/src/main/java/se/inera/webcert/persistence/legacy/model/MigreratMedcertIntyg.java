@@ -9,6 +9,12 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
+/**
+ * Entity for a Medcert certificate migrated into Webcert.
+ * 
+ * @author nikpet
+ *
+ */
 @Entity
 @Table(name = "MIGRERADE_INTYG_FRAN_MEDCERT")
 public class MigreratMedcertIntyg {
