@@ -64,33 +64,31 @@ public class LogServiceImplTest {
         HsaId enhetHsaId = mock(HsaId.class);
         HsaId vgHsaId = mock(HsaId.class);
 
-        when(intyg.getCertificate()).thenReturn(utlatande);
-        when(utlatande.getSkapadAv()).thenReturn(persType);
-        when(persType.getEnhet()).thenReturn(enhetTyp);
-        when(enhetTyp.getEnhetsId()).thenReturn(enhetHsaId);
-        when(enhetHsaId.getExtension()).thenReturn("ENHETS ID");
 
-        when(enhetTyp.getVardgivare()).thenReturn(vgType);
-        when(vgType.getVardgivareId()).thenReturn(vgHsaId);
+
         when(vgHsaId.getExtension()).thenReturn("VARDGIVARE ID");
+        when(vgType.getVardgivareId()).thenReturn(vgHsaId);
+        when(enhetTyp.getVardgivare()).thenReturn(vgType);
+
+        when(enhetHsaId.getExtension()).thenReturn("ENHETS ID");
+        when(enhetTyp.getEnhetsId()).thenReturn(enhetHsaId);
+        when(persType.getEnhet()).thenReturn(enhetTyp);
+        when(utlatande.getSkapadAv()).thenReturn(persType);
+        when(intyg.getCertificate()).thenReturn(utlatande);
 
         IntygReadMessage logthis = mock(IntygReadMessage.class);
 
-
-
-
-
-
         ObjectMessage message = mock(ObjectMessage.class);
         Session session = mock(Session.class);
-        when(session.createObjectMessage(any(IntygReadMessage.class))).thenReturn(message);
+        //when(session.createObjectMessage(any(IntygReadMessage.class))).thenReturn(message);
+
 
         logService.logReadOfIntyg(intyg);
 
         verify(template, only()).send(captor.capture());
         captor.getValue().createMessage(session);
-        //verify(message).setStringProperty("action", "created");
-        //verify(message).setStringProperty("certificate-id", "The id");
+
+        IntygReadMessage msg = (IntygReadMessage)message.getObject();
     }
 
 
