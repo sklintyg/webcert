@@ -22,7 +22,6 @@
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/favicon.ico"/>
-  <security:http security="none" pattern="/inera-certificate/**"/>
 
   <!-- Logger for SAML messages and events -->
   <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger"/>
@@ -58,9 +57,9 @@
         class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
   <!-- =============================================================== -->
-  <!-- Dev profile only supports Fake login                            -->
+  <!-- Dev and demo profile only supports Fake login                   -->
   <!-- =============================================================== -->
-  <beans profile="dev">
+  <beans profile="dev,demo">
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
@@ -111,7 +110,7 @@
     </security:authentication-manager>
   </beans>
 
-  <beans profile="dev,test,qa">
+  <beans profile="dev,demo,test,qa">
     <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>

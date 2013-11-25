@@ -8,7 +8,7 @@
     <property name="defaultDestination" ref="queue" />
   </bean>
 
-  <beans profile="test,qa,prod">
+  <beans profile="demo,test,qa,prod">
     <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/ConnectionFactory" />
     </bean>

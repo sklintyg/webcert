@@ -32,7 +32,7 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
 
-        if (!"dev".equals(profiles) && !"test".equals(profiles) && !"qa".equals(profiles)) {
+        if (!"dev".equals(profiles) && !"demo".equals(profiles) && !"test".equals(profiles) && !"qa".equals(profiles)) {
             return null;
         }
 
