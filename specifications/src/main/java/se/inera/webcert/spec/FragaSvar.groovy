@@ -1,13 +1,10 @@
 package se.inera.webcert.spec
-
-import static groovyx.net.http.ContentType.JSON
-
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import groovyx.net.http.RESTClient
 import org.springframework.core.io.ClassPathResource
 import se.inera.webcert.spec.util.RestClientFixture
 
+import static groovyx.net.http.ContentType.JSON
 /**
  * Created by pehr on 9/23/13.
  */
@@ -50,7 +47,7 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
     }
 
     public void execute() {
-        def restClient = new RESTClient(baseUrl)
+        def restClient = createRestClient(baseUrl)
         def response = restClient.post(
                 path: 'questions',
                 body: questionAnswerJson(),

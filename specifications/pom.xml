@@ -235,6 +235,15 @@
       </properties>
     </profile>
     <profile>
+      <id>test</id>
+      <properties>
+        <webcert.web.baseUrl>https://test.webcert.intygstjanster.se/</webcert.web.baseUrl>
+        <webcert.baseUrl>https://test.webcert.intygstjanster.se/services/</webcert.baseUrl>
+        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
+        <logsender.baseUrl>https://test.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
+      </properties>
+    </profile>
+    <profile>
       <id>chrome</id>
       <properties>
         <geb.env>chrome</geb.env>
@@ -275,7 +284,7 @@
       <properties>
         <geb.env>saucelabssafari</geb.env>
       </properties>
-    </profile> 
+    </profile>
     <profile>
       <id>wiki</id>
       <!--
@@ -310,7 +319,7 @@
           <plugin>
             <groupId>uk.co.javahelp.fitnesse</groupId>
             <artifactId>fitnesse-launcher-maven-plugin</artifactId>
-             <executions>
+            <executions>
               <execution>
                 <goals>
                   <goal>set-up</goal>
@@ -335,7 +344,7 @@
             <groupId>uk.co.javahelp.fitnesse</groupId>
             <artifactId>fitnesse-launcher-maven-plugin</artifactId>
             <configuration>
-            	<suite>IneraWebcert.WebTest.AllSauceLabsBrowsers</suite>
+              <suite>IneraWebcert.WebTest.AllSauceLabsBrowsers</suite>
             </configuration>
             <executions>
               <execution>
