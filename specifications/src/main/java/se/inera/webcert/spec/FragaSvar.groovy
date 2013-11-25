@@ -31,6 +31,7 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
     String lakareId
     String lakareNamn
     String enhetsId
+    String patientId
 
     String status
 
@@ -68,6 +69,7 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
         if (fragaSkickad) fraga.frageSkickadDatum = fragaSkickad
         fraga.intygsReferens.intygsId = intygsId;
         if (intygsTyp) fraga.intygsReferens.intygsTyp = intygsTyp
+        if (patientId) fraga.intygsReferens.patientId.patientIdExtension = patientId
         if (sistaDatumForSvar) fraga.sistaDatumForSvar = sistaDatumForSvar
         if (frageStallare) fraga.frageStallare = frageStallare
         if (status) fraga.status = status

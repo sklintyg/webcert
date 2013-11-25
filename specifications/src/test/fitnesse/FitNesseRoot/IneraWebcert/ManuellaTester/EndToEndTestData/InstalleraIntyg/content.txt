@@ -1,0 +1,5 @@
+!3 Intyg: Installera ett intyg i intygstjänsten för patienten
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhet | typ | id | mall |
+| 19121212-0000 | 2013-04-01 | 2013-04-01 | 2013-04-11 | TST5565594230-106J | IFV1239877878-103F| FK7263 | e2e-intyg-1 | M |
