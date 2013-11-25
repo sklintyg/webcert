@@ -2,13 +2,14 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:amq="http://activemq.apache.org/schema/core"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+       http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd" profile="!demo">
+
   <bean id="jmsProducerTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="jmsFactory" />
     <property name="defaultDestination" ref="queue" />
   </bean>
 
-  <beans profile="demo,test,qa,prod">
+  <beans profile="test,qa,prod">
     <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/ConnectionFactory" />
     </bean>

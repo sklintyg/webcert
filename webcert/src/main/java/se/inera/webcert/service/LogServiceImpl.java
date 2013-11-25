@@ -1,28 +1,23 @@
 package se.inera.webcert.service;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+
 import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.web.service.WebCertUserService;
-import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
-import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
-import se.riv.ehr.log.v1.ActivityType;
-import se.riv.ehr.log.v1.LogType;
-import se.riv.ehr.log.v1.SystemType;
-import se.riv.ehr.log.v1.UserType;
-
-import javax.jms.*;
-import java.io.IOException;
-import java.io.StringWriter;
 
 /**
  * @author andreaskaltenbach
@@ -30,55 +25,35 @@ import java.io.StringWriter;
 @Service
 public class LogServiceImpl implements LogService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogServiceImpl.class);
+
     @Autowired(required = false)
     JmsTemplate jmsTemplate;
-
 
     @Autowired
     private WebCertUserService webCertUserService;
 
-    @Override
-    public void logReadOfIntyg() {
-        IntygReadMessage logthis = new IntygReadMessage();
-        WebCertUser user =  webCertUserService.getWebCertUser();
-        logthis.setUserId(user.getHsaId());
-        //logthis.setEnhetId(user.get);
-        //logthis.setVardgivareId();
-
-        //logthis.set(user.getNamn());
-        //logthis.set(utlatandeId);
-        logthis.setTimestamp(LocalDateTime.now());
-
-
-        jmsTemplate.send(new MC(logthis));
+    @PostConstruct
+    public void checkJmsTemplate() {
+        if (jmsTemplate == null) {
+            LOGGER.error("PDL logging is disabled!");
+        }
     }
 
     @Override
     public void logReadOfIntyg(GetCertificateForCareResponseType intyg) {
-        IntygReadMessage logthis = new IntygReadMessage();
-        WebCertUser user =  webCertUserService.getWebCertUser();
-        logthis.setUserId(user.getHsaId());
-        logthis.setEnhetId(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
-        //logthis.setVardgivareId();
+        if (jmsTemplate != null) {
+            IntygReadMessage logthis = new IntygReadMessage();
+            WebCertUser user = webCertUserService.getWebCertUser();
+            logthis.setUserId(user.getHsaId());
+            logthis.setEnhetId(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
-        //logthis.set(user.getNamn());
-        logthis.setVardgivareId(intyg.getCertificate().getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
-        logthis.setTimestamp(LocalDateTime.now());
+            logthis.setVardgivareId(intyg.getCertificate().getSkapadAv().getEnhet().getVardgivare().getVardgivareId()
+                    .getExtension());
+            logthis.setTimestamp(LocalDateTime.now());
 
-
-        jmsTemplate.send(new MC(logthis));
-    }
-
-    private static CustomObjectMapper jsonMapper = new CustomObjectMapper();
-
-    private static String asJson(Object object) {
-        StringWriter sw = new StringWriter();
-        try {
-            jsonMapper.writeValue(sw, object) ;
-        } catch (IOException e) {
-            e.printStackTrace();
+            jmsTemplate.send(new MC(logthis));
         }
-        return sw.toString();
     }
 
     private static final class MC implements MessageCreator {

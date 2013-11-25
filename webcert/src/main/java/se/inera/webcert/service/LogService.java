@@ -7,6 +7,5 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificat
  */
 public interface LogService {
 
-    void logReadOfIntyg();
     void logReadOfIntyg(GetCertificateForCareResponseType intyg );
 }
