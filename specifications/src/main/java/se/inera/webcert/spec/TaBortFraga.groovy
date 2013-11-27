@@ -1,8 +1,6 @@
 package se.inera.webcert.spec
 
-import groovyx.net.http.RESTClient
 import se.inera.webcert.spec.util.RestClientFixture
-
 /**
  * Created by pehr on 9/23/13.
  */
@@ -12,7 +10,7 @@ public class TaBortFraga extends RestClientFixture {
     String externReferens
 
     public void execute() {
-        def restClient = new RESTClient(baseUrl)
+        def restClient = createRestClient(baseUrl)
 
         if (internReferens)
             restClient.delete(path: "questions/${internReferens}")
