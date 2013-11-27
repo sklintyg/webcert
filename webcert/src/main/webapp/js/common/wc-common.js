@@ -70,28 +70,28 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
             });
           
           $scope.menuDefs = [
-				     {
+/*				     { // Temporarily removed for v0.5
 				       link :'/web/dashboard#/mycert', 
 				       label:'Mina osignerade intyg',
 				       requires_doctor: false,
 				       statNumberId : "stat-usertstat-unsigned-certs-count",
 				       getStat: function() { return $scope.stat.userStat.unsignedCerts || ""}
 				     },
-				     {
-				       link :'/web/dashboard#/unhandled-qa',
-				       label:'Enhetens frågor och svar',
+	*/			     {
+				       link :'/web/dashboard#/index', // v0.5. in v1.0 it is unhandled-qa
+				       label:'Frågor och svar',
 				       requires_doctor: false,
 				       statNumberId : "stat-unitstat-unhandled-question-count",
                        getStat: function() { return $scope.stat.unitStat.unhandledQuestions || ""}
 				     },
-				     {
+/*				     { // Temporarily removed for v0.5
 				       link :'/web/dashboard#/unsigned', 
 				       label:'Enhetens osignerade intyg',
 				       requires_doctor: false,
 				       statNumberId : "stat-unitstat-unsigned-certs-count",
                        getStat: function() { return $scope.stat.unitStat.unsignedCerts || ""}
 				     },
-				     {
+*/				     {
 				       link :'/web/dashboard#/support/about',
 				       label:'Om Webcert',
 				       requires_doctor: false,
@@ -99,7 +99,8 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 				     }
 				    ];
           
-          var writeCertMenuDef = {
+/*        	Temporarily removed for v0.5
+ * 					var writeCertMenuDef = {
 				       link :'/web/dashboard#/index', 
 				       label:'Sök/skriv intyg',
 				       requires_doctor: false,
@@ -112,7 +113,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
           else {
               $scope.menuDefs.splice(3, 0, writeCertMenuDef);
           }
-          
+*/          
           $scope.isActive = function (page) {
           	if (!page) {return false;}
         		
@@ -170,7 +171,8 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 				    						+'<ul class="nav">'
 			    								+'<li ng-class="{active: isActive(menu.link)}" ng-repeat="menu in menuDefs">'
 		    										+'<a ng-href="{{menu.link}}" ng-show="(menu.requires_doctor && isDoctor) || !menu.requires_doctor">{{menu.label}}'
-		    										+'<span id="{{menu.statNumberId}}" ng-if="menu.getStat()>0" class="stat-circle stat-circle-active">{{menu.getStat()}}</span></a>'
+		    										+'<span id="{{menu.statNumberId}}" ng-if="menu.getStat()>0" class="stat-circle stat-circle-active"'
+		    											+'title="Vårdenheten har {{menu.getStat()}} ohanterade frågor och svar.">{{menu.getStat()}}</span></a>'
 		    									+'</li>'
 		            				+'</ul>'
 		            			+'</div><!-- /.nav-collapse -->'

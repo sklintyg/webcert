@@ -3,9 +3,9 @@ var webcertResources = {
     "sv": {
         "webcert.header": "Webcert",
         "webcert.description" : "Välkommen till Webcert.",
-        "dashboard.title" : "Mina osignerade intyg",
-        "dashboard.unanswered.title" : "Enhetens frågor och svar",
-        "dashboard.unsigned.title" : "Enhetens osignerade intyg",
+        "dashboard.title" : "Mina andra enheter",
+        "dashboard.unanswered.title" : "Frågor och svar",
+        "dashboard.unsigned.title" : "Osignerade intyg",
         "dashboard.about.title" : "Om Webcert",
         
         //labels
@@ -21,19 +21,19 @@ var webcertResources = {
         "certificatetypes.rli.typename" : "Läkarintyg utebliven resa (RLI)",
         
         //info messages
-        "info.nounsignedcertsfound" : "Inga osignerade intyg hittades.",
-        "info.nounansweredcertsfound" : "Inga intyg med ohanterade frågor hittades.",
-        "info.noreadytosigncertsfound" : "Inga klarmarkerade intyg hittades.",
-        "info.loadingdata" :"Uppdaterar lista...",
-        "info.nounanswered.qa.for.unit" : "Inga ohanterade frågor & svar för enheten.",
-        "info.query.noresults" : "Sökningen gav inga resultat.",
-        "info.query.error" : "Sökningen kunde inte utföras.",
-        "info.running.query" : "Söker...",
+        "info.nounsignedcertsfound" : "<strong>Inga osignerade intyg hittades.</strong>",
+        "info.nounansweredcertsfound" : "<strong>Inga intyg med ohanterade frågor hittades.</strong>",
+        "info.noreadytosigncertsfound" : "<strong>Inga klarmarkerade intyg hittades.</strong>",
+        "info.loadingdata" :"<strong>Uppdaterar lista...</strong>",
+        "info.nounanswered.qa.for.unit" : "<strong>Inga ohanterade frågor & svar för enheten.</strong>",
+        "info.query.noresults" : "<strong>Sökningen gav inga resultat.</strong>",
+        "info.query.error" : "<strong>Sökningen kunde inte utföras.</strong>",
+        "info.running.query" : "<strong>Söker...</strong>",
         
         //error messages
-        "error.unsignedcerts.couldnotbeloaded" :"Kunde inte hämta osignerade intyg!",
-        "error.unansweredcerts.couldnotbeloaded":"Kunde inte hämta listan med ohanterade frågor och svar!",
-        "error.readytosigncerts.couldnotbeloaded": "Kunde inte hämta intyg klara för signering!"
+        "error.unsignedcerts.couldnotbeloaded" :"<strong>Kunde inte hämta osignerade intyg!</strong>",
+        "error.unansweredcerts.couldnotbeloaded":"<strong>Kunde inte hämta listan med ohanterade frågor och svar!</strong>",
+        "error.readytosigncerts.couldnotbeloaded": "<strong>Kunde inte hämta intyg klara för signering!</strong>"
            
     },
     "en": {
