@@ -5,7 +5,7 @@ import se.inera.certificate.model.Utlatande;
 
 
 /**
- * Wrapper class for holding a common model {@link Utlatande} as well as the status history of the cerificate.
+ * Wrapper class for holding a common model {@link Utlatande} as well as the status history of the certificate.
  * @author marced
  */
 public class UtlatandeCommonModelHolder {
