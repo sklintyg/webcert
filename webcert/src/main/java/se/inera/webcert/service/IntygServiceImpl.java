@@ -63,55 +63,53 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private ModuleRestApiFactory moduleApiFactory;
-    
+
     @Autowired
     private WebCertUserService webCertUserService;
 
     @Override
     public CertificateContentHolder fetchIntygData(String intygId) {
+        CertificateContentHolder external = fetchExternalIntygData(intygId);
+        return convertToInternalJson(external);
+    }
+
+    @Override
+    public CertificateContentHolder fetchExternalIntygData(String intygId) {
 
         GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
 
         verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
-        
+
         CertificateContentMeta metaData = convert(intyg.getMeta());
-        
+
         ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(intyg.getMeta().getCertificateType());
 
         String externalJson = convertToExternalJson(moduleRestApi, intyg);
         
+        CertificateContentHolder holder = new CertificateContentHolder();
+        holder.setCertificateContent(externalJson);
+        holder.setCertificateContentMeta(metaData);
+
         logService.logReadOfIntyg(intyg);
 
-        return convertToInternalJson(moduleRestApi, externalJson, metaData);
+        return holder;
     }
-    
-    
+
     @Override
     public UtlatandeCommonModelHolder fetchIntygCommonModel(String intygId) {
-        //Get JAXB representation
-        GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
-        
-        verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
-        
-        CertificateContentMeta metaData = convert(intyg.getMeta());
-        
-        //Get appropriate restapi..
-        ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(intyg.getMeta().getCertificateType());
-        
-        //..and ask module to convert it to external json representation
-        String externalJson = convertToExternalJson(moduleRestApi, intyg);
+        CertificateContentHolder external = fetchExternalIntygData(intygId);
 
-        //Map it to our common model
+        // Map it to our common model
         CustomObjectMapper objectMapper = new CustomObjectMapper();
-        Utlatande utlatande = null;
+        Utlatande utlatande;
         try {
-            utlatande = objectMapper.readValue(externalJson, Utlatande.class);
-        } catch (IOException  e) {
+            utlatande = objectMapper.readValue(external.getCertificateContent(), Utlatande.class);
+        } catch (IOException e) {
             throw Throwables.propagate(e);
-        }  
-        return new UtlatandeCommonModelHolder(utlatande, metaData);
+        }
+        return new UtlatandeCommonModelHolder(utlatande, external.getCertificateContentMeta());
     }
-    
+
     private CertificateContentMeta convert(CertificateMetaType source) {
 
         CertificateContentMeta metaData = new CertificateContentMeta();
@@ -133,19 +131,16 @@ public class IntygServiceImpl implements IntygService {
         return new CertificateStatus(source.getType().value(), source.getTarget(), source.getTimestamp());
     }
 
-    private CertificateContentHolder convertToInternalJson(ModuleRestApi moduleRestApi, String externalJson,
-            CertificateContentMeta metaData) {
+    private CertificateContentHolder convertToInternalJson(CertificateContentHolder external) {
 
-        CertificateContentHolder holder = new CertificateContentHolder();
-        holder.setCertificateContent(externalJson);
-        holder.setCertificateContentMeta(metaData);
+        ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(external.getCertificateContentMeta().getType());
 
-        Response response = moduleRestApi.convertExternalToInternal(holder);
+        Response response = moduleRestApi.convertExternalToInternal(external);
 
         switch (response.getStatus()) {
         case 200:
             CertificateContentHolder responseHolder = new CertificateContentHolder();
-            responseHolder.setCertificateContentMeta(metaData);
+            responseHolder.setCertificateContentMeta(external.getCertificateContentMeta());
             responseHolder.setCertificateContent(response.readEntity(String.class));
             return responseHolder;
         default:
@@ -187,17 +182,16 @@ public class IntygServiceImpl implements IntygService {
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(intygsId);
 
-        GetCertificateForCareResponseType response = certificateService.getCertificateForCare("",
-                request);
+        GetCertificateForCareResponseType response = certificateService.getCertificateForCare("", request);
 
         switch (response.getResult().getResultCode()) {
-            case OK:
-                return response;
-            default:
-                throw new IntygstjanstCallFailedException(response.getResult());
+        case OK:
+            return response;
+        default:
+            throw new IntygstjanstCallFailedException(response.getResult());
         }
     }
-    
+
     protected void verifyEnhetsAuth(String enhetsId) {
         if (!webCertUserService.isAuthorizedForUnit(enhetsId)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,

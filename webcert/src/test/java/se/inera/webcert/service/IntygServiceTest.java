@@ -11,6 +11,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -137,7 +138,7 @@ public class IntygServiceTest {
         verify(getCertificateForCareResponder).getCertificateForCare(any(String.class), eq(request));
 
         // ensure correct module lookup is done with module Rest API factory
-        verify(moduleRestApiFactory).getModuleRestService("fk7263");
+        verify(moduleRestApiFactory, times(2)).getModuleRestService("fk7263");
 
         // ensure that correct utlatande XML is sent to module to convert from transport to external format
         verify(moduleRestApi).unmarshall(argThat(new UtlatandeXmlMatcher()));

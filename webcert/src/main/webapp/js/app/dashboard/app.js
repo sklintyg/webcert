@@ -4,8 +4,11 @@
 angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'ngCookies', 'modules.messages', 'wc.common', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
 angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', 'http403ResponseInterceptorProvider', function($routeProvider, $httpProvider, http403ResponseInterceptorProvider) {
     $routeProvider.when('/index', {
+      templateUrl : '/views/dashboard/unhandled-qa.html',
+      controller : 'UnhandledQACtrl'
+/*    }).when('/index', { // removed in v0.5
         templateUrl : '/views/dashboard/index.step1.html',
-        controller : 'CreateCertCtrl'
+        controller : 'CreateCertCtrl'*/
     }).when('/edit-patient/index', {
         templateUrl : '/views/dashboard/index.editpatient.html',
         controller : 'CreateCertCtrl'

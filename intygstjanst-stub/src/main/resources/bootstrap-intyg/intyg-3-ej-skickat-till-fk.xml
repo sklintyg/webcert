@@ -14,7 +14,7 @@ xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
     <c:available>true</c:available>
   </gc:meta>
   <gc:certificate>
-    <utlatande-id root="wc-root" extension="intyg-3" />
+    <utlatande-id root="intyg-3" />
     <typAvUtlatande codeSystem="f6fb361a-e31d-48b8-8657-99b63912dd9b" code="fk7263" />
     <kommentar>Prognosen för patienten är ok. Han kommer att kunna återgå till sitt arbete efter genomförd behandling.
     </kommentar>
