@@ -55,7 +55,8 @@
   <div id="wcHeader" wc-header 
 	  is-doctor="<sec:authentication property="principal.lakare"/>" 
 	  user-name="<sec:authentication property="principal.namn"/>"
-	  caregiver-name="<sec:authentication property="principal.vardgivare[0].namn"/>">
+	  caregiver-name="<sec:authentication property="principal.vardgivare[0].namn"/>"
+	  careunit-name="<sec:authentication property="principal.vardgivare[0].vardenheter[0].namn"/>">
 	  
   </div>
   <div class="container-fluid">

@@ -50,6 +50,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
         scope : {
           userName: "@",
           caregiverName: "@",
+          careunitName: "@",
           isDoctor: "@",
           defaultActive: "@"
               
@@ -151,6 +152,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 			                        +'<strong ng-switch-default>Admin</strong>'
 			                        +'</span>'
 			        				+' - <span class="logged-in">{{userName}}</span><br>'
+                                    +'<span class="location">{{caregiverName}} - {{careunitName}}</span><br>'
 			        				+'<a ng-href="">Logga ut</a>'
 	        					+'</div>'
 	            		+'</div>'
