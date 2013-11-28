@@ -78,7 +78,8 @@ public class WebCertUserDetailsServiceTest {
         vardgivare.getVardenheter().add(new Vardenhet("vardcentralen", "Vårdcentralen"));
         List<Vardgivare> vardgivareList = Collections.singletonList(vardgivare);
 
-        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID, ENHET_HSA_ID)).thenReturn(vardgivareList);
+        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID, ENHET_HSA_ID)).thenReturn(
+                vardgivareList);
     }
 
     @Test
@@ -108,6 +109,12 @@ public class WebCertUserDetailsServiceTest {
     @Test(expected = MissingMedarbetaruppdragException.class)
     public void testMissingMedarbetaruppdrag() throws Exception {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
+        userDetailsService.loadUserBySAML(samlCredential);
+    }
+
+    @Test(expected = MissingMedarbetaruppdragException.class)
+    public void testMissingSelectedUnit() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-without-enhet.xml");
         userDetailsService.loadUserBySAML(samlCredential);
     }
 

@@ -29,6 +29,8 @@ public class SakerhetstjanstAssertion {
     private static final String VARDGIVARE_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careProviderHsaId";
     private static final String VARDGIVARE_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careProviderName";
 
+    public static final String MEDARBETARUPPDRAG_TYPE = "urn:sambi:names:attribute:commissionPurpose";
+
     private String titelKod;
     private String titel;
 
@@ -45,10 +47,12 @@ public class SakerhetstjanstAssertion {
     private String vardgivareHsaId;
     private String vardgivareNamn;
 
+    private String medarbetaruppdragType;
+
     public SakerhetstjanstAssertion(Assertion assertion) {
         if (assertion.getAttributeStatements() != null) {
             for (AttributeStatement attributeStatement : assertion.getAttributeStatements()) {
-                extractAttributes(assertion.getAttributeStatements().get(0).getAttributes());
+                extractAttributes(attributeStatement.getAttributes());
             }
         }
     }
@@ -85,6 +89,9 @@ public class SakerhetstjanstAssertion {
                 break;
             case VARDGIVARE_NAMN_ATTRIBUTE:
                 vardgivareNamn = getValue(attribute);
+                break;
+            case MEDARBETARUPPDRAG_TYPE:
+                medarbetaruppdragType = getValue(attribute);
                 break;
             }
         }
@@ -144,5 +151,9 @@ public class SakerhetstjanstAssertion {
 
     public String getVardgivareNamn() {
         return vardgivareNamn;
+    }
+
+    public String getMedarbetaruppdragType() {
+        return medarbetaruppdragType;
     }
 }

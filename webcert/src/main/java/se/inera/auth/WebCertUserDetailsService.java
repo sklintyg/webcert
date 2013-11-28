@@ -2,6 +2,8 @@ package se.inera.auth;
 
 import java.util.List;
 
+import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,11 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(credential.getAuthenticationAssertion());
 
         WebCertUser webCertUser = createWebCertUser(assertion);
+
+        // if user has authenticated with other contract than 'Vård och behandling', we have to reject her
+        if (!VARD_OCH_BEHANDLING.equals(assertion.getMedarbetaruppdragType())) {
+            throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
+        }
 
         List<Vardgivare> authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId(), assertion.getEnhetHsaId());
 
