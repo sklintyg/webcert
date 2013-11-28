@@ -15,7 +15,7 @@
 !3 Givet att det finns en fråga visa och svara på denna.
 
 |script|!-SvaraOchFraga-!|
-|logga på som|5|
+|logga på som|7|
 |obehandladeFragarSidanVisas|
 |valj vardenhet|vardenhet-fit-1|
 |visaAvanceratFilter|
