@@ -31,6 +31,7 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
     String patientId
 
     String status
+    String fkKontakt
 
     Boolean vidarebefordrad
 
@@ -79,6 +80,7 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
         if (enhetsId) fraga.vardperson.enhetsId = enhetsId
         if (vardAktorHsaId) fraga.vardAktorHsaId = vardAktorHsaId
         if (vardAktorNamn) fraga.vardAktorNamn = vardAktorNamn
+        if(fkKontakt) fraga.externaKontakter = [fkKontakt]
 
         JsonOutput.toJson(fraga)
     }

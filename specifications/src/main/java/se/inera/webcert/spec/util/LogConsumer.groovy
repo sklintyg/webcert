@@ -22,17 +22,21 @@ class LogConsumer {
     public void setTimeout(int timeout) {
         this.timeout = timeout
     }
-    
+
     public void clearQueue() {
         Connection conn = null;
         Session session = null;
         MessageConsumer consumer = null;
+        int itemCount = queueDepth()
         try {
             conn = ActiveMQConnectionFixture.getConnection()
             conn.start()
             session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE)
             consumer = session.createConsumer(destination)
-            while(consumer.receiveNoWait() != null) {}
+
+            itemCount.times {
+                consumer.receive(timeout)
+            }
         } finally {
             JMSUtils.closeQuitely(conn, session, consumer)
         }

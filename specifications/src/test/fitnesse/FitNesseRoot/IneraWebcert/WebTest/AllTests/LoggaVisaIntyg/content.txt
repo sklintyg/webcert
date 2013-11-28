@@ -4,7 +4,7 @@
 |set ConnectionFactory url|tcp://localhost:61617|
 
 !|script|ActiveMQDestinationFixture|
-|register queue|LOGGNING.QUEUE|as|queue|
+|register queue|logging.queue|as|queue|
 
 !3 Töm kön
 |script|log consumer|queue|

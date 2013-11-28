@@ -28,5 +28,11 @@
         "postort" : "Sundsvall",
         "telefonnummer" : "060-1818000",
         "vardgivarId" : "Landstinget Norrland"
-    }
+    },
+    "kompletteringar" : [
+        {
+            "falt" : "Fält 4",
+            "text" : "Kompletterings text ipsum lorem ..."
+        }
+    ]
 }
