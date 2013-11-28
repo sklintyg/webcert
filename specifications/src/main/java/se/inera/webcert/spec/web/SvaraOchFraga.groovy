@@ -416,4 +416,37 @@ public class SvaraOchFraga {
         }
     }
 
+    public boolean visasFkRubrik(String internid){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+
+            result = page.fkMeddelandeRubrik(internid).isDisplayed()
+        }
+        return result
+    }
+    public boolean visasFkKontakt(String internid){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+
+            result = page.fkKontakter(internid).isDisplayed()
+        }
+        return result
+    }
+    public boolean visasFkKompletteringar(String internid){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+
+            result = page.fkKompletteringar(internid).isDisplayed()
+        }
+        return result
+    }
 }

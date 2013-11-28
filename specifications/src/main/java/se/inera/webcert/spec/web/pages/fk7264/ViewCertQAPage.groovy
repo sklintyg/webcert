@@ -70,4 +70,14 @@ class ViewCertQAPage extends Page {
     def cancelQuestion() {
         cancelQuestionBtn.click()
     }
+
+    def fkMeddelandeRubrik(String internid) {
+        $("#fkMeddelandeRubrik-${internid}").click()
+    }
+    def fkKompletteringar(String internid) {
+        $("#fkKompletteringar-${internid}").click()
+    }
+    def fkKontakter(String internid) {
+        $("#fkKontakter-${internid}").click()
+    }
 }
