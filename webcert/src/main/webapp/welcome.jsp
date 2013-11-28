@@ -34,47 +34,60 @@
 
     <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon"/>
 
-  <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
-  <style type="text/css">
-    textarea {
-      font-family: Consolas, Lucida Console, monospace;
-      font-size: 0.7em;
-    }
-  </style>
+    <link rel="stylesheet" href="<c:url value="/css/bootstrap/2.3.2/bootstrap.css"/>">
+    <style type="text/css">
+        textarea {
+            font-family: Consolas, Lucida Console, monospace;
+            font-size: 0.7em;
+        }
+    </style>
 
     <script type="text/javascript">
         //Lägg till fler templates i arrayen + i options för att utöka antalet inloggingar
 
         var loginArr = [
-            //Markus Gran Testanvändare
+            //Markus Gran Testanvändare  @ VårdEnhet1A
             {
                 "fornamn" : "Markus",
                 "efternamn" : "Gran",
                 "hsaId" : "TST5565594230-106J",
+                "enhetId" : "IFV1239877878-103F",
                 "lakare" : true
-
             },
-            //Hanna Andersson Testanvändare
+
+            //Markus Gran Testanvändare  @ VårdEnhet2A
             {
-                "fornamn" : "Hanna",
-                "efternamn" : "Andersson",
-                "hsaId" : "TST5565594230-106C",
+                "fornamn" : "Markus",
+                "efternamn" : "Gran",
+                "hsaId" : "TST5565594230-106J",
+                "enhetId" : "IFV1239877878-103H",
+                "lakare" : true
+            },
+            //Markus Gran Testanvändare  @ VårdEnhetA
+            {
+                "fornamn" : "Markus",
+                "efternamn" : "Gran",
+                "hsaId" : "TST5565594230-106J",
+                "enhetId" : "IFV1239877878-103D",
                 "lakare" : true
 
             },
+
             //Läkare med flera enheter&mottagningar
             {
                 "fornamn" : "Eva",
                 "efternamn" : "Holgersson",
                 "hsaId" : "eva",
+                "enhetId" : "centrum-vast",
                 "lakare" : true
 
             },
-            //Admin personal med 1 enheter utan mottagningar
+            //Admin personal med flera enheter&mottagningar
             {
                 "fornamn" : "Adam",
                 "efternamn" : "Admin",
                 "hsaId" : "adam",
+                "enhetId" : "centrum-vast",
                 "lakare" : false
             },
             //Admin personal med 3 enheter och mottagningar
@@ -82,13 +95,23 @@
                 "fornamn" : "Adamo",
                 "efternamn" : "Admin",
                 "hsaId" : "adamo",
+                "enhetId" : "centrum-vast",
                 "lakare" : false
             },
-           
+            //Admin personal med 3 enheter och mottagningar
+            {
+                "fornamn" : "Adamo",
+                "efternamn" : "Admin",
+                "hsaId" : "adamo",
+                "enhetId" : "centrum-ost",
+                "lakare" : false
+            },
+
             {
                 "fornamn" : "Test",
                 "efternamn" : "Testsson",
                 "hsaId" : "fitness1",
+                "enhetId" : "vardenhet-fit-1",
                 "lakare" : false
             },
             //FitNesse Admin personal med 1 enhet
@@ -96,30 +119,32 @@
                 "fornamn" : "fit",
                 "efternamn" : "nesse",
                 "hsaId" : "fitness2",
+                "enhetId" : "vardenhet-fit-2",
                 "lakare" : false
             },
             {
                 "fornamn" : "Han",
                 "efternamn" : "Solo",
                 "hsaId" : "hansolo",
+                "enhetId" : "centrum-norr",
                 "lakare" : false
 
             }
         ];
 
-    function updateJsonInput() {
-      var jsonEl = document.getElementById("userJson");
-      var jsonElView = document.getElementById("userJsonDisplay");
-      var selector = document.getElementById("jsonSelect");
-      //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
-      jsonElView.value = JSON.stringify(loginArr[selector.selectedIndex], undefined, 1);
-      jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 1));
-    }
-  </script>
+        function updateJsonInput() {
+            var jsonEl = document.getElementById("userJson");
+            var jsonElView = document.getElementById("userJsonDisplay");
+            var selector = document.getElementById("jsonSelect");
+            //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
+            jsonElView.value = JSON.stringify(loginArr[selector.selectedIndex], undefined, 1);
+            jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 1));
+        }
+    </script>
 </head>
 <body onLoad="updateJsonInput()">
 <form id="loginForm" action="/fake" method="POST" class="form-inline">
-  <div class="container">
+    <div class="container">
 
         <div id="content-container">
             <div class="content row">
@@ -131,18 +156,20 @@
                     omvandlas
                     till inloggad userContext</p>
 
-                <div class="form-group span4">
+                <div class="form-group span6">
 
                     <h4>Mallar</h4>
-                    <select id="jsonSelect" name="jsonSelect" onChange="updateJsonInput()" size="8" style="width: 100%">
-                        <option value="0" selected>Markus Gran (Läkare)</option>
-                        <option value="1">Hanna Andersson (Läkare)</option>
-                        <option value="2">Eva Holgersson (Läkare)</option>
-                        <option value="3">Adam Admin (Administratör)</option>
-                        <option value="4">Adamo Admin (Administratör flera enheter)</option>
-                        <option value="5">Fitnesse Admin (Administratör)</option>
-                        <option value="6">Fitnesse Admin-1 (1 enhet)</option>
-                        <option value="7">Han Solo (Administratör, 1 enhet)</option>
+                    <select id="jsonSelect" name="jsonSelect" onChange="updateJsonInput()" size="10" style="width: 100%">
+                        <option value="0" selected>Markus Gran (Läkare VårdEnhet1A)</option>
+                        <option value="1" selected>Markus Gran (Läkare VårdEnhet2A)</option>
+                        <option value="2" selected>Markus Gran (Läkare VårdEnhetA)</option>
+                        <option value="3">Eva Holgersson (Läkare Centrum Väst)</option>
+                        <option value="4">Adam Admin (Administratör Centrum Väst)</option>
+                        <option value="5">Adamo Admin (Administratör Centrum Väst)</option>
+                        <option value="6">Adamo Admin (Administratör Centrum Öst)</option>
+                        <option value="7">Fitnesse Admin (Administratör Vardenhet Fitnesse 1)</option>
+                        <option value="8">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
+                        <option value="9">Han Solo (Administratör, Centrum Norr)</option>
                     </select>
                     </p>
 
@@ -151,13 +178,14 @@
 
                 </div>
 
-        <div class="form-group span8">
-          <p>
-          <h4>Inloggningsprofil</h4>
-          <input type="hidden" id="userJson" name="userjson"/>
-          <textarea id="userJsonDisplay" name="userJsonDisplay" class="field" style="height: 200px; width: 50%">
-          </textarea>
-        </div>
+                <div class="form-group span6">
+                    <p>
+                    <h4>Inloggningsprofil</h4>
+                    <input type="hidden" id="userJson" name="userjson"/>
+                    <textarea id="userJsonDisplay" name="userJsonDisplay" class="field"
+                              style="height: 200px; width: 50%">
+                    </textarea>
+                </div>
 
 
             </div>

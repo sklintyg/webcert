@@ -6,6 +6,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.ArrayList;
 
+import static se.inera.auth.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
@@ -56,8 +57,8 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
         SAMLCredential credential = createSamlCredential(token);
         Object details = userDetails.loadUserBySAML(credential);
 
-        ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details,
-                credential, new ArrayList<GrantedAuthority>());
+        ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
+                new ArrayList<GrantedAuthority>());
         result.setDetails(details);
 
         return result;
@@ -77,7 +78,9 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
 
         attributeStatement.getAttributes().add(createAttribute(HSA_ID_ATTRIBUTE, fakeCredentials.getHsaId()));
         attributeStatement.getAttributes().add(createAttribute(FORNAMN_ATTRIBUTE, fakeCredentials.getFornamn()));
-        attributeStatement.getAttributes().add(createAttribute(MELLAN_OCH_EFTERNAMN_ATTRIBUTE, fakeCredentials.getEfternamn()));
+        attributeStatement.getAttributes().add(
+                createAttribute(MELLAN_OCH_EFTERNAMN_ATTRIBUTE, fakeCredentials.getEfternamn()));
+        attributeStatement.getAttributes().add(createAttribute(ENHET_HSA_ID_ATTRIBUTE, fakeCredentials.getEnhetId()));
 
         if (fakeCredentials.isLakare()) {
             attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Läkare"));

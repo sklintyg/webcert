@@ -28,6 +28,7 @@ import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
 import se.inera.auth.WebCertUserDetailsService;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
@@ -38,13 +39,15 @@ import se.inera.webcert.hsa.services.HsaOrganizationsService;
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserDetailsServiceTest {
 
-    public static final String HSA_ID = "TST5565594230-106J";
+    private static final String PERSONAL_HSA_ID = "TST5565594230-106J";
+    private static final String ENHET_HSA_ID = "IFV1239877878-103H";
 
     @InjectMocks
     private WebCertUserDetailsService userDetailsService = new WebCertUserDetailsService();
 
     @Mock
     private HsaOrganizationsService hsaOrganizationsService;
+    private Vardgivare vardgivare;
 
     @BeforeClass
     public static void bootstrapOpenSaml() throws Exception {
@@ -60,17 +63,22 @@ public class WebCertUserDetailsServiceTest {
 
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
-        assertEquals(HSA_ID, webCertUser.getHsaId());
+        assertEquals(PERSONAL_HSA_ID, webCertUser.getHsaId());
         assertEquals("Markus Gran", webCertUser.getNamn());
         assertEquals(1, webCertUser.getVardgivare().size());
         assertEquals("vg", webCertUser.getVardgivare().get(0).getId());
 
-        verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(HSA_ID);
+        assertEquals(vardgivare, webCertUser.getVardgivare().get(0));
+
+        verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID, ENHET_HSA_ID);
     }
 
     private void setupHsaOrganizationService() {
-        List<Vardgivare> vardgivare = Collections.singletonList(new Vardgivare("vg", "Landstinget Ingenmansland"));
-        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(HSA_ID)).thenReturn(vardgivare);
+        vardgivare = new Vardgivare("vg", "Landstinget Ingenmansland");
+        vardgivare.getVardenheter().add(new Vardenhet("vardcentralen", "Vårdcentralen"));
+        List<Vardgivare> vardgivareList = Collections.singletonList(vardgivare);
+
+        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID, ENHET_HSA_ID)).thenReturn(vardgivareList);
     }
 
     @Test
