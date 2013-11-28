@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import se.inera.certificate.integration.json.CustomObjectMapper;
 
 /**
  * @author andreaskaltenbach
@@ -55,7 +55,7 @@ public class WebCertUser implements Serializable {
     @JsonIgnore
     public String getAsJson() {
         try {
-            return new ObjectMapper().writeValueAsString(this);
+            return new CustomObjectMapper().writeValueAsString(this);
         } catch (JsonProcessingException e) {
            throw new RuntimeException(e);
         }
