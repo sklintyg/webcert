@@ -23,7 +23,7 @@ public class SakerhetstjanstAssertion {
     public static final String FORNAMN_ATTRIBUTE = "urn:sambi:names:attribute:givenName";
     public static final String MELLAN_OCH_EFTERNAMN_ATTRIBUTE = "urn:sambi:names:attribute:middleAndSurname";
 
-    private static final String ENHET_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careUnitHsaId";
+    public static final String ENHET_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careUnitHsaId";
     private static final String ENHET_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careUnitName";
 
     private static final String VARDGIVARE_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careProviderHsaId";

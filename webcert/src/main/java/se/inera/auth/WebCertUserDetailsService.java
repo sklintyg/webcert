@@ -34,7 +34,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
         WebCertUser webCertUser = createWebCertUser(assertion);
 
-        List<Vardgivare> authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId());
+        List<Vardgivare> authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId(), assertion.getEnhetHsaId());
 
         // if user does not have access to any vardgivare, we have to reject authentication
         if (authorizedVardgivare.isEmpty()) {

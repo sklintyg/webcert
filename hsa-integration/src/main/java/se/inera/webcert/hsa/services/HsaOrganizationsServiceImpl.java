@@ -46,7 +46,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
     private HSAWebServiceCalls client;
 
     @Override
-    public List<Vardgivare> getAuthorizedEnheterForHosPerson(String hosPersonHsaId) {
+    public List<Vardgivare> getAuthorizedEnheterForHosPerson(String hosPersonHsaId, final String enhetHsaId) {
         List<Vardgivare> vardgivareList = new ArrayList<>();
 
         // Set hos person hsa ID
@@ -61,7 +61,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                 new Predicate<MiuInformationType>() {
                     @Override
                     public boolean apply(MiuInformationType miuInformationType) {
-                        return Medarbetaruppdrag.VARD_OCH_BEHANDLING.equalsIgnoreCase(miuInformationType.getMiuPurpose());
+                        return Medarbetaruppdrag.VARD_OCH_BEHANDLING.equalsIgnoreCase(miuInformationType.getMiuPurpose()) && miuInformationType.getCareUnitHsaIdentity().equals(enhetHsaId);
                     }
                 });
 
@@ -77,7 +77,10 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                 + " vårdgivare");
 
         for (String vardgivareId : vardgivareIdToMiuInformation.keySet()) {
-            vardgivareList.add(convert(vardgivareIdToMiuInformation.get(vardgivareId)));
+            Vardgivare vardgivare = convert(vardgivareIdToMiuInformation.get(vardgivareId));
+            if (vardgivare != null) {
+                vardgivareList.add(vardgivare);
+            }
         }
         return vardgivareList;
     }
@@ -164,9 +167,6 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
         GetHsaUnitResponseType response = client.callGetHsaunit(mottagningsHsaId);
         LOG.debug("Fetching details for mottagning " + mottagningsHsaId);
-
-        // TODO - filter by date
-
         return new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(), response.getEndDate());
     }
 
@@ -215,6 +215,11 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         for (MiuInformationType miuInformationType : miuInformationTypes) {
             vardgivare.getVardenheter().addAll(fetchAllEnheter(vardgivare, miuInformationType));
         }
+
+        if (vardgivare.getVardenheter().isEmpty()) {
+            return null;
+        }
+
         return vardgivare;
     }
 }
