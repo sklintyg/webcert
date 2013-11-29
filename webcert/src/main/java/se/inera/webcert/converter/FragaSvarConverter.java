@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Component;
+
 import se.inera.certificate.model.HosPersonal;
 import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.medcertqa.v1.FkKontaktType;
@@ -20,6 +20,8 @@ import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author andreaskaltenbach
@@ -151,7 +153,7 @@ public class FragaSvarConverter {
      */
     public static IntygsReferens convertToIntygsReferens(Utlatande utlatande) {
         IntygsReferens intygsReferens = new IntygsReferens();
-        intygsReferens.setIntygsId(utlatande.getId().getExtension());
+        intygsReferens.setIntygsId(utlatande.getId().getRoot());
         intygsReferens.setIntygsTyp(utlatande.getTyp().getCode());
         intygsReferens.setPatientId(toCommonId(utlatande.getPatient().getId()));
         intygsReferens.setPatientNamn(utlatande.getPatient().getFullstandigtNamn());
