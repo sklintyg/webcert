@@ -1,10 +1,5 @@
 package se.inera.webcert.service;
 
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayOutputStream;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -14,6 +9,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayOutputStream;
+
+import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
 
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -26,6 +27,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
@@ -34,10 +36,8 @@ import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.integration.rest.ModuleRestApi;
 import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
-import se.inera.certificate.integration.rest.exception.ModuleCallFailedException;
 import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
-import se.inera.webcert.service.exception.IntygstjanstCallFailedException;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.test.NamespacePrefixNameIgnoringListener;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -153,7 +153,7 @@ public class IntygServiceTest {
         assertEquals("<internalJson>", intygData.getCertificateContent());
     }
 
-    @Test(expected = IntygstjanstCallFailedException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testFetchIntygWithFailingIntygstjanst() {
 
         // setup intygstjansten WS mock to return error response
@@ -181,7 +181,7 @@ public class IntygServiceTest {
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
 
-    @Test(expected = ModuleCallFailedException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testFetchIntygWithFailingUnmarshalling() {
 
         // setup intygstjansten WS mock to return intyg information
@@ -203,7 +203,7 @@ public class IntygServiceTest {
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
 
-    @Test(expected = ModuleCallFailedException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testFetchIntygWithFailingExternalToInternalTransformation() {
 
         // setup intygstjansten WS mock to return intyg information
@@ -266,7 +266,7 @@ public class IntygServiceTest {
         assertEquals(utlatandeAsString, new CustomObjectMapper().writeValueAsString(intygData.getUtlatande()));
     }
     
-    @Test(expected = IntygstjanstCallFailedException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testFetchIntygCommonModelWithFailingIntygstjanst() {
 
         // setup intygstjansten WS mock to return error response
@@ -290,7 +290,7 @@ public class IntygServiceTest {
         intygService.fetchIntygCommonModel(CERTIFICATE_ID);
     }
     
-    @Test(expected = ModuleCallFailedException.class)
+    @Test(expected = WebCertServiceException.class)
     public void testFetchIntygCommonModelWithFailingUnmarshalling() {
 
         // setup intygstjansten WS mock to return intyg information

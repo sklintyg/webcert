@@ -1,20 +1,21 @@
 package se.inera.webcert.service;
 
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Throwables;
+import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
@@ -26,15 +27,15 @@ import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.integration.rest.dto.CertificateStatus;
-import se.inera.certificate.integration.rest.exception.ModuleCallFailedException;
 import se.inera.certificate.model.Utlatande;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateStatusType;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
-import se.inera.webcert.service.exception.IntygstjanstCallFailedException;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import com.google.common.base.Throwables;
 
 /**
  * @author andreaskaltenbach
@@ -85,7 +86,7 @@ public class IntygServiceImpl implements IntygService {
         ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(intyg.getMeta().getCertificateType());
 
         String externalJson = convertToExternalJson(moduleRestApi, intyg);
-        
+
         CertificateContentHolder holder = new CertificateContentHolder();
         holder.setCertificateContent(externalJson);
         holder.setCertificateContentMeta(metaData);
@@ -133,7 +134,8 @@ public class IntygServiceImpl implements IntygService {
 
     private CertificateContentHolder convertToInternalJson(CertificateContentHolder external) {
 
-        ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(external.getCertificateContentMeta().getType());
+        ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(external.getCertificateContentMeta()
+                .getType());
 
         Response response = moduleRestApi.convertExternalToInternal(external);
 
@@ -144,9 +146,8 @@ public class IntygServiceImpl implements IntygService {
             responseHolder.setCertificateContent(response.readEntity(String.class));
             return responseHolder;
         default:
-            String message = "Failed to convert intyg to internal JSON.";
-            LOG.error(message);
-            throw new ModuleCallFailedException(message, response);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Failed to convert intyg to internal JSON.");
         }
     }
 
@@ -157,9 +158,8 @@ public class IntygServiceImpl implements IntygService {
             marshaller.marshal(jaxbElement, writer);
             return writer.toString();
         } catch (JAXBException e) {
-            String message = "Failed to marshall intyg coming from intygstjanst";
-            LOG.error(message, e);
-            throw new RuntimeException(message, e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Failed to marshall intyg coming from intygstjanst");
         }
     }
 
@@ -174,7 +174,7 @@ public class IntygServiceImpl implements IntygService {
         default:
             String message = "Failed to convert intyg to external JSON: " + response.readEntity(String.class);
             LOG.error(message);
-            throw new ModuleCallFailedException(message, response);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, message);
         }
     }
 
@@ -187,8 +187,15 @@ public class IntygServiceImpl implements IntygService {
         switch (response.getResult().getResultCode()) {
         case OK:
             return response;
+        case VALIDATION_ERROR:
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "getCertificateForCare WS call:  VALIDATION_ERROR :" + response.getResult().getResultText());
+        case REVOKED:
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED,
+                    "getCertificateForCare WS call: REVOKED :" + response.getResult().getResultText());
         default:
-            throw new IntygstjanstCallFailedException(response.getResult());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
+                    "getCertificateForCare WS call: ERROR :" + response.getResult().getResultText());
         }
     }
 
