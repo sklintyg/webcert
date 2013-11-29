@@ -45,8 +45,6 @@ body.start h1, body.start p {
 .container-fluid {
 	/*overflow:hidden;*/ 
 	padding: 0;
-	height: 100%;
-/*  min-height: 832px;*/
 }
 
 a {
@@ -225,26 +223,26 @@ span.location { font-size: 12px; font-weight: bold; }
 }
 
 .webcert-multicol {
-  background-color: #f2f2f2;
-  height: 100%;
+  background-color: #fff; /*#f2f2f2;*/
   min-height: 832px;
 }
 
 .webcert-col {
 	padding: 20px 20px 0 0;
-	height: 100%;
 	position: relative;
   min-height: 832px;
 }
 
 .webcert-col-primary {
 	background-color: #fff;
-	padding: 20px 0 2000px 30px;
-	height: 100%;
+	padding: 20px 0 20px 30px;
 	min-height: 832px !important;
 }
 
 .webcert-col-secondary {
+	position: relative;
+	background-color: #f2f2f2;
+	padding: 20px 0px 30px 30px;
 }
 
 .webcert-col-single {
@@ -256,7 +254,8 @@ span.location { font-size: 12px; font-weight: bold; }
 	background-repeat: no-repeat;
 	width: 6px;
 	height: 832px;
-	right: -6px;
+	top: 0;
+	left: 0;
 	position:absolute;
 }
 
