@@ -21,6 +21,8 @@
 |listaMedObehandladeFragarVisas|
 |visa fraga|$internReferens1|
 |intyg med fraga svar sidan visas|
+|intyg är rättatmeddelande visas|false|
+|intyg är skickat till FKmeddelande visas|true|
 |Fråga med id|$internReferens1|har frågenamn|Per Persson|
 |Fråga med id|$internReferens2|har svarsnamn|Maria Olsson|
 |stall fraga|Nu ställer fitnesse en fråga|med amne |4|
