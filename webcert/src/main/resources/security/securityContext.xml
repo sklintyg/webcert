@@ -61,6 +61,7 @@
   <!-- =============================================================== -->
   <beans profile="dev,demo">
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
+      <security:logout logout-url="/saml/logout" logout-success-url="/" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
     </security:http>
@@ -74,6 +75,7 @@
   <!-- =============================================================== -->
   <beans profile="test,qa">
     <security:http entry-point-ref="http403ForbiddenEntryPoint" pattern="/api/**">
+      <security:logout logout-url="/saml/logout" logout-success-url="/" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
@@ -96,6 +98,7 @@
   <!-- =============================================================== -->
   <beans profile="prod">
     <security:http entry-point-ref="http403ForbiddenEntryPoint" pattern="/api/**">
+      <security:logout logout-url="/saml/logout" logout-success-url="/" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
