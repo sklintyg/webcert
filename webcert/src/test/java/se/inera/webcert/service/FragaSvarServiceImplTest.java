@@ -53,6 +53,9 @@ import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
 
@@ -212,22 +215,12 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testSaveFragaOK() throws IOException {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
-
-        // create mocked Utlatande from intygstjansten
-        Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
-                "FragaSvarServiceTest/utlatande.json").getFile(), Utlatande.class);
-
-        UtlatandeCommonModelHolder utlatandeCommonModelHolder = new UtlatandeCommonModelHolder();
-        utlatandeCommonModelHolder.setCertificateContent(utlatande);
-        utlatandeCommonModelHolder.setCertificateContentMeta(certificateContentMetaMock);
-
-        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null));
-        when(certificateContentMetaMock.getStatuses()).thenReturn(list);
-        
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
-        
+        UtlatandeCommonModelHolder utlatandeCommonModelHolder = getUtlatandeCommonModelHolder();
         when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
                 utlatandeCommonModelHolder);
+        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null));
+        when(certificateContentMetaMock.getStatuses()).thenReturn(list);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
 
@@ -251,7 +244,7 @@ public class FragaSvarServiceImplTest {
                 any(SendMedicalCertificateQuestionType.class));
 
         assertEquals(Status.PENDING_EXTERNAL_ACTION, capture.getValue().getStatus());
-        assertEquals(utlatande.getSkapadAv().getVardenhet().getId().getExtension(), capture.getValue().getVardperson()
+        assertEquals(utlatandeCommonModelHolder.getUtlatande().getSkapadAv().getVardenhet().getId().getExtension(), capture.getValue().getVardperson()
                 .getEnhetsId());
     }
 
@@ -260,16 +253,9 @@ public class FragaSvarServiceImplTest {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
 
         // create mocked Utlatande from intygstjansten
-        Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
-                "FragaSvarServiceTest/utlatande.json").getFile(), Utlatande.class);
-
-        UtlatandeCommonModelHolder utlatandeCommonModelHolder = new UtlatandeCommonModelHolder();
-        utlatandeCommonModelHolder.setCertificateContent(utlatande);
-        utlatandeCommonModelHolder.setCertificateContentMeta(certificateContentMetaMock);
-        when(certificateContentMetaMock.getStatuses()).thenReturn(null);
-
         when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
-                utlatandeCommonModelHolder);
+                getUtlatandeCommonModelHolder());
+
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
 
@@ -294,18 +280,11 @@ public class FragaSvarServiceImplTest {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
 
         // create mocked Utlatande from intygstjansten
-        Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
-                "FragaSvarServiceTest/utlatande.json").getFile(), Utlatande.class);
-        utlatande.getSkapadAv().getVardenhet().getId().setExtension("no-auth-for-this-unit");
-        UtlatandeCommonModelHolder utlatandeCommonModelHolder = new UtlatandeCommonModelHolder();
-        utlatandeCommonModelHolder.setCertificateContent(utlatande);
-        utlatandeCommonModelHolder.setCertificateContentMeta(certificateContentMetaMock);
+        when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
+                getUtlatandeCommonModelHolder());
 
         List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null));
         when(certificateContentMetaMock.getStatuses()).thenReturn(list);
-
-        when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
-                utlatandeCommonModelHolder);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
 
@@ -316,6 +295,41 @@ public class FragaSvarServiceImplTest {
 
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void testSaveFragaOnRevokedCertificate() throws IOException {
+        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
+
+        // create mocked Utlatande from intygstjansten
+        when(intygService.fetchIntygCommonModel(fraga.getIntygsReferens().getIntygsId())).thenReturn(
+                getUtlatandeCommonModelHolder());
+
+
+        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null), new CertificateStatus("CANCELLED", "FK", null));
+        when(certificateContentMetaMock.getStatuses()).thenReturn(list);
+
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
+    
+        // test call
+        service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
+
+    }
+    @Test(expected = WebCertServiceException.class)
+    public void testSaveSvarOnRevokedCertificate() throws IOException {
+        FragaSvar svar = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
+        svar.setSvarsText("Svar på ogiltigt intyg");
+        when(fragasvarRepository.findOne(1L)).thenReturn(svar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null), new CertificateStatus("CANCELLED", "FK", null));
+        when(certificateContentMetaMock.getStatuses()).thenReturn(list);
+
+        when(intygService.fetchIntygCommonModel(svar.getIntygsReferens().getIntygsId())).thenReturn(
+                getUtlatandeCommonModelHolder());
+        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
+    
+        // test call
+        service.saveSvar(svar.getInternReferens(), svar.getSvarsText());
+
+    }
     @Test
     public void testSetVidareBefordradOK() {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
@@ -337,9 +351,19 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test
-    public void testSaveSvarOK() {
+    public void testSaveSvarOK() throws JsonParseException, JsonMappingException, IOException {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
+       
+
+       
+        when(intygService.fetchIntygCommonModel(fragaSvar.getIntygsReferens().getIntygsId())).thenReturn(
+                getUtlatandeCommonModelHolder());
+   
+        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null));
+        when(certificateContentMetaMock.getStatuses()).thenReturn(list);
+        
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
@@ -366,11 +390,20 @@ public class FragaSvarServiceImplTest {
         assertNotNull(result.getSvarSkickadDatum());
     }
 
+    private UtlatandeCommonModelHolder getUtlatandeCommonModelHolder() {
+        UtlatandeCommonModelHolder utlatandeCommonModelHolder = new UtlatandeCommonModelHolder();
+        utlatandeCommonModelHolder.setCertificateContent(getUtlatande());
+        utlatandeCommonModelHolder.setCertificateContentMeta(certificateContentMetaMock);
+        return utlatandeCommonModelHolder;
+    }
+
     @Test(expected = WebCertServiceException.class)
     public void testSaveSvarWsError() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
 
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(intygService.fetchIntygCommonModel(fragaSvar.getIntygsReferens().getIntygsId())).thenReturn(
+                getUtlatandeCommonModelHolder());
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         when(fragasvarRepository.save(fragaSvar)).thenReturn(fragaSvar);
@@ -389,17 +422,38 @@ public class FragaSvarServiceImplTest {
     public void testSaveSvarWrongStateForAnswering() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
+     
+
+        when(intygService.fetchIntygCommonModel(fragaSvar.getIntygsReferens().getIntygsId())).thenReturn(
+                getUtlatandeCommonModelHolder());
+
+        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null));
+        when(certificateContentMetaMock.getStatuses()).thenReturn(list);
+        
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
 
         service.saveSvar(1L, "svarsText");
     }
 
+    private Utlatande getUtlatande()  {
+     // create mocked Utlatande from intygstjansten
+        try {
+            return new CustomObjectMapper().readValue(new ClassPathResource(
+                    "FragaSvarServiceTest/utlatande.json").getFile(), Utlatande.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test(expected = WebCertServiceException.class)
     public void testSaveSvarForKompletteringAndNotDoctor() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
+        
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(intygService.fetchIntygCommonModel(fragaSvar.getIntygsReferens().getIntygsId())).thenReturn(
+                getUtlatandeCommonModelHolder());
         WebCertUser nonDoctor = webCertUser();
         nonDoctor.setLakare(false);
         when(webCertUserService.getWebCertUser()).thenReturn(nonDoctor);
@@ -412,6 +466,8 @@ public class FragaSvarServiceImplTest {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.setAmne(Amne.PAMINNELSE);
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(intygService.fetchIntygCommonModel(fragaSvar.getIntygsReferens().getIntygsId())).thenReturn(
+                getUtlatandeCommonModelHolder());
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
 
         service.saveSvar(1L, "svarsText");
@@ -421,6 +477,8 @@ public class FragaSvarServiceImplTest {
     public void testSaveSvarNotAuthorizedForunit() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        when(intygService.fetchIntygCommonModel(fragaSvar.getIntygsReferens().getIntygsId())).thenReturn(
+                getUtlatandeCommonModelHolder());
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
 
         service.saveSvar(1L, "svarsText");

@@ -60,9 +60,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static final Object FK_TARGET = "FK";
 
     private static final String SENT_STATUS_TYPE = "SENT";
-
+    private static final String REVOKED_STATUS_TYPE = "CANCELLED";
+    
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT, Amne.OVRIGT);
+
+    
 
     @Autowired
     private MailNotificationService mailNotificationService;
@@ -182,9 +185,20 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     "Could not find FragaSvar with id:" + fragaSvarsId);
         }
 
-        // Is user authorized to save an answer to this question?
-        verifyEnhetsAuth(fragaSvar.getVardperson().getEnhetsId());
+        // Fetch certificate from Intygstjansten
+        UtlatandeCommonModelHolder utlatandeHolder = intygService.fetchIntygCommonModel(fragaSvar.getIntygsReferens().getIntygsId());
+     // Get utfardande vardperson
+        Vardperson vardPerson = FragaSvarConverter.convert(utlatandeHolder.getUtlatande().getSkapadAv());
 
+        // Is user authorized to save an answer to this question?
+        verifyEnhetsAuth(vardPerson.getEnhetsId());
+
+        // Verify that certificate is not revoked
+        if (isRevoked(utlatandeHolder.getCertificateContentMeta().getStatuses())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "FS-XXX: Cannot save Svar when certificate is revoked!");
+        }
+        
         if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "FragaSvar with id "
                     + fragaSvar.getInternReferens().toString() + " has invalid state for saving answer("
@@ -260,6 +274,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-001: Certificate must be sent to FK first before sending question!");
         }
+        
+        // Verify that certificate is not revoked
+        if (isRevoked(utlatandeHolder.getCertificateContentMeta().getStatuses())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "FS-XXX: Cannot save Fraga when certificate is revoked!");
+        }
 
         IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(utlatandeHolder.getUtlatande());
 
@@ -292,6 +312,17 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
         return saved;
 
+    }
+
+    private boolean isRevoked(List<CertificateStatus> statuses) {
+        if (statuses != null) {
+            for (CertificateStatus status : statuses) {
+                if (REVOKED_STATUS_TYPE.equals(status.getType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean isSentToFK(List<CertificateStatus> statuses) {
