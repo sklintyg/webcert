@@ -151,7 +151,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 			                        +'<strong ng-switch-default>Admin</strong>'
 			                        +'</span>'
 			        				+' - <span class="logged-in">{{userName}}</span><br>'
-			        				+'<a ng-href="">Logga ut</a>'
+			        				+'<a ng-href="/saml/logout">Logga ut</a>'
 	        					+'</div>'
 			        			+'<div class="headerbox-avatar pull-right">'
 			        				+'<img src="/img/avatar.png"/>'
