@@ -49,11 +49,18 @@ public class SakerhetstjanstAssertion {
 
     private String medarbetaruppdragType;
 
+    private String authenticationScheme;
+
     public SakerhetstjanstAssertion(Assertion assertion) {
         if (assertion.getAttributeStatements() != null) {
             for (AttributeStatement attributeStatement : assertion.getAttributeStatements()) {
                 extractAttributes(attributeStatement.getAttributes());
             }
+        }
+
+        if (!assertion.getAuthnStatements().isEmpty()) {
+            authenticationScheme = assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef()
+                    .getAuthnContextClassRef();
         }
     }
 
@@ -155,5 +162,9 @@ public class SakerhetstjanstAssertion {
 
     public String getMedarbetaruppdragType() {
         return medarbetaruppdragType;
+    }
+
+    public String getAuthenticationScheme() {
+        return authenticationScheme;
     }
 }

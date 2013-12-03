@@ -134,6 +134,39 @@ public class SvaraOchFraga {
             result == expected
         }
     
+    public boolean intygÄrRättatmeddelandeVisas(boolean expected) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            result = page.certificateRevokedMessage.isDisplayed()
+            
+        }
+        result == expected
+    }
+    public boolean intygÄrSkickatTillFKmeddelandeVisas(boolean expected) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            result = page.certificateIsSentToFKMessage.isDisplayed()
+            
+        }
+        result == expected
+    }
+    public boolean intygÄrSkickatTillIntygstjänstenMeddelandeVisas(boolean expected) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            result = page.certificateIsSentToITMessage.isDisplayed()
+            
+        }
+        result == expected
+    }
     public boolean stallFragaMedAmne(String fraga, String amne){
         def result = false
         Browser.drive {
