@@ -1,0 +1,15 @@
+!3 Givet ett intyg som är rättat skall det ej gå att ställa frågor.
+
+|script|!-SvaraOchFraga-!|
+|logga på som|7|
+|obehandladeFragarSidanVisas|
+|Gå till intygs vy med intygs id|intyg-fit-3-revoked|
+|intyg med fraga svar sidan visas|
+|ny fraga knapp visas|false|
+|intyg är rättatmeddelande visas|true|
+|intyg är skickat till FKmeddelande visas|false|
+|Gå till intygs vy med intygs id|intyg-fit-1|
+|intyg med fraga svar sidan visas|
+|ny fraga knapp visas|true|
+|intyg är rättatmeddelande visas|false|
+|intyg är skickat till FKmeddelande visas|true|

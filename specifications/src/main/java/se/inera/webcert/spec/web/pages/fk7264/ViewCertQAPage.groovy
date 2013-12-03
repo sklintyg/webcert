@@ -9,6 +9,10 @@ class ViewCertQAPage extends Page {
     static content = {
         unhandledQAList(required: false) { $("#unhandledQACol") }
         askQuestionBtn(required: false) { $("#askQuestionBtn") }
+        certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+        certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
+        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
+        
         newQuestionForm { $("#newQuestionForm") }
         newQuestionText { $("#newQuestionText") }
         sendQuestionBtn { $("#sendQuestionBtn") }
