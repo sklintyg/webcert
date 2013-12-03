@@ -17,6 +17,7 @@ public class WebCertUser implements Serializable {
     private String namn;
     private boolean lakare;
     private String forskrivarkod;
+    private String authenticationScheme;
 
     private List<Vardgivare> vardgivare;
 
@@ -51,7 +52,15 @@ public class WebCertUser implements Serializable {
     public void setVardgivare(List<Vardgivare> vardgivare) {
         this.vardgivare = vardgivare;
     }
-    
+
+    public String getAuthenticationScheme() {
+        return authenticationScheme;
+    }
+
+    public void setAuthenticationScheme(String authenticationScheme) {
+        this.authenticationScheme = authenticationScheme;
+    }
+
     @JsonIgnore
     public String getAsJson() {
         try {

@@ -16,10 +16,16 @@ import static se.inera.auth.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeStatement;
+import org.opensaml.saml2.core.AuthnContext;
+import org.opensaml.saml2.core.AuthnContextClassRef;
+import org.opensaml.saml2.core.AuthnStatement;
 import org.opensaml.saml2.core.NameID;
 import org.opensaml.saml2.core.impl.AssertionBuilder;
 import org.opensaml.saml2.core.impl.AttributeBuilder;
 import org.opensaml.saml2.core.impl.AttributeStatementBuilder;
+import org.opensaml.saml2.core.impl.AuthnContextBuilder;
+import org.opensaml.saml2.core.impl.AuthnContextClassRefBuilder;
+import org.opensaml.saml2.core.impl.AuthnStatementBuilder;
 import org.opensaml.saml2.core.impl.NameIDBuilder;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.impl.XSStringBuilder;
@@ -38,6 +44,8 @@ import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
  * @author andreaskaltenbach
  */
 public class FakeAuthenticationProvider implements AuthenticationProvider {
+
+    public static final String FAKE_AUTHENTICATION_CONTEXT_REF = "urn:inera:webcert:fake";
 
     private static DocumentBuilder documentBuilder;
 
@@ -75,6 +83,9 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
         FakeCredentials fakeCredentials = (FakeCredentials) token.getCredentials();
 
         Assertion assertion = new AssertionBuilder().buildObject();
+
+        attachAuthenticationContext(assertion);
+                
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         assertion.getAttributeStatements().add(attributeStatement);
 
@@ -92,6 +103,17 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
         NameID nameId = new NameIDBuilder().buildObject();
         nameId.setValue(token.getCredentials().toString());
         return new SAMLCredential(nameId, assertion, "fake-idp", "webcert");
+    }
+
+    private void attachAuthenticationContext(Assertion assertion) {
+        AuthnStatement authnStatement = new AuthnStatementBuilder().buildObject();
+        AuthnContext authnContext = new AuthnContextBuilder().buildObject();
+        AuthnContextClassRef authnContextClassRef = new AuthnContextClassRefBuilder().buildObject();
+
+        authnContextClassRef.setAuthnContextClassRef(FAKE_AUTHENTICATION_CONTEXT_REF);
+        authnContext.setAuthnContextClassRef(authnContextClassRef);
+        authnStatement.setAuthnContext(authnContext);
+        assertion.getAuthnStatements().add(authnStatement);
     }
 
     private Attribute createAttribute(String name, String value) {
