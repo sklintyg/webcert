@@ -38,6 +38,14 @@
 <link rel="stylesheet" href="<c:url value="/css/bootstrap-responsive-modified.css"/>">
 <link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
 
+<SCRIPT LANGUAGE="VBScript">
+    Function ControlExists(objectID)
+    on error resume next
+    ControlExists = IsObject(CreateObject(objectID))
+    End Function
+</SCRIPT>
+
+
 <script type="text/javascript">
     /**
      Global JS config/constants for this app, to be used by scripts
@@ -96,5 +104,6 @@
   <script type="text/javascript" src="<c:url value="/js/common/wc-common.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/common/wc-common-message-resources.js"/>"></script>
 
+  <script type="text/javascript" src="<c:url value="/siths.jsp"/>"></script>
 </body>
 </html>
