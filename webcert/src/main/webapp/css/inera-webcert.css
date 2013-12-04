@@ -92,6 +92,10 @@ h2 {
 	padding-top: 30px;
 }
 
+h2.less-top-padding { /* useful if h2 is placed immediately after h1 */ 
+	padding-top: 0;
+}
+
 .col-head{
   font-size: 20px;
   color: #008391;
@@ -351,6 +355,10 @@ div.location { font-size: 12px; font-weight: bold; padding: 10px; margin-right: 
 
 a.qa-unit {
 	color: #323232;
+}
+
+.unit-table {
+	margin: 0;
 }
 
 .unit-table button.selected {
