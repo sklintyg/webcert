@@ -6,7 +6,7 @@
     <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading">
       <div ng-show="units.length > 1">
 	      <h2>
-	        Välj enhet <span style="font-size: 12px; color: #999">endast dina medarbetaruppdrag för {{MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn}} visas</span>
+	        Välj enhet <span style="font-size: 12px; color: #999">endast dina medarbetaruppdrag för {{MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn}} - {{MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter[0].namn}} visas</span>
 	      </h2>
 	
 	      <div class="row-fluid">
