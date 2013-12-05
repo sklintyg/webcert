@@ -49,7 +49,8 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
         restrict : "A",
         replace : true,
         scope : {
-          user: "="
+          user: "=",
+          defaultActive: "@"
         },
         controller: function($scope, $element, $attrs) {
           //Expose "now" as a model property for the template to render as todays date
