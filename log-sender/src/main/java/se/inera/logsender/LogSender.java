@@ -93,7 +93,6 @@ public class LogSender {
         if (chunk == 0) {
             LOG.info("Zero messages in logging queue. Nothing will be sent to loggtjänst");
         }
-
         else {
             Boolean reExecute = jmsTemplate.execute(new SessionCallback<Boolean>() {
                 @Override

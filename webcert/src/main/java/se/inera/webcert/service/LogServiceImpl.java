@@ -3,17 +3,16 @@ package se.inera.webcert.service;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -29,6 +28,9 @@ public class LogServiceImpl implements LogService {
 
     @Autowired(required = false)
     JmsTemplate jmsTemplate;
+
+    @Value("${pdlLogging.systemId}")
+    String systemId;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -52,6 +54,8 @@ public class LogServiceImpl implements LogService {
                     .getExtension());
             logthis.setTimestamp(LocalDateTime.now());
 
+            logthis.setSystemId(systemId);
+
             jmsTemplate.send(new MC(logthis));
         }
     }
@@ -64,8 +68,7 @@ public class LogServiceImpl implements LogService {
         }
 
         public Message createMessage(Session session) throws JMSException {
-            ObjectMessage message = session.createObjectMessage(logthis);
-            return message;
+            return session.createObjectMessage(logthis);
         }
     }
 }
