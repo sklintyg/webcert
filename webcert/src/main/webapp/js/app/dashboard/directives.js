@@ -82,7 +82,7 @@ angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location',
 	        },
 	        {
 	        	link :'/web/dashboard#/webcert/about', 
-	          label:'Om webcert'
+	          label:'Om Webcert'
 	        }
         ];
         
@@ -118,7 +118,7 @@ angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location',
 								'</li>'+
 							'</ul>'+
 	    			'</div>'+
-	    			'<div class="span9">'+
+	    			'<div class="span9 about-content">'+
 	      	    '<h2 class="col-head col-head-about">{{currentSubMenuLabel}}</h2>'+
 	     	    	'<div ng-transclude></div>'+
 	    			'</div>'+

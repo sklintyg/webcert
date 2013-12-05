@@ -18,7 +18,7 @@
  */
 @CHARSET "UTF-8";
 
-html,body,container-fluid {
+html,body,.container-fluid {
   font-size: 14px;
 	font-family: "Helvetica Neue", helvetica, arial, sans-serif;
   text-align: left;
@@ -30,15 +30,33 @@ body.start {
 }
 
 body.start > .container-fluid {
+}
+
+.content-container {
 	background-color: #fff;
 	 -ms-box-shadow: 0 -5px 25px #323232;
   -webkit-box-shadow: 0 -5px 25px #323232;
   -moz-box-shadow: 0 -5px 25px #323232;
   box-shadow: 0 -5px 25px #323232;
-  padding: 100px 50px;
+  padding: 50px 100px; 
 }
 
-body.start h1, body.start p {
+.content-footer {
+	padding-top: 20px;
+}
+
+.content-footer, .content-footer a {
+	color: #fff;
+	margin: 0 auto;
+  width: 70%;
+  max-width: 700px;
+}
+
+.content-footer a {
+	text-decoration: underline;
+}
+
+body.start h1, .content-container p {
 	color: #28b4c4;
 }
 
@@ -74,6 +92,10 @@ h2 {
 	padding-top: 30px;
 }
 
+h2.less-top-padding { /* useful if h2 is placed immediately after h1 */ 
+	padding-top: 0;
+}
+
 .col-head{
   font-size: 20px;
   color: #008391;
@@ -82,6 +104,10 @@ h2 {
 
 .col-head-about {
 	padding-top: 0;
+}
+
+.about-content {
+	max-width: 600px;
 }
 
 h3 {
@@ -117,6 +143,15 @@ div.location { font-size: 12px; font-weight: bold; padding: 10px; margin-right: 
 
 .settings:hover {
   background-image: url(../img/settings_hoover.png); 
+}
+
+.bluebox {
+	background-color: #008391;
+	-webkit-border-radius: 8px 8px 8px 8px;
+	-moz-border-radius: 8px 8px 8px 8px;
+	border-radius: 8px 8px 8px 8px;
+	color: #fff;
+	padding: 20px;
 }
 
 .certlist {
@@ -320,6 +355,10 @@ div.location { font-size: 12px; font-weight: bold; padding: 10px; margin-right: 
 
 a.qa-unit {
 	color: #323232;
+}
+
+.unit-table {
+	margin: 0;
 }
 
 .unit-table button.selected {

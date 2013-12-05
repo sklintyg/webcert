@@ -5,8 +5,8 @@
     </h1>
     <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading">
       <div ng-show="units.length > 1">
-	      <h2>
-	        Välj enhet <span style="font-size: 12px; color: #999">endast dina medarbetaruppdrag för {{MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn}} visas</span>
+	      <h2 class="less-top-padding">
+	        Välj enhet
 	      </h2>
 	
 	      <div class="row-fluid">
@@ -15,7 +15,7 @@
       </div>
       
       <div ng-if="activeUnit!=null">
-        <h2 class="col-head">{{selectedUnit.namn}}</h2>
+        <h2 class="col-head" ng-class="{'less-top-padding' : units.length < 2}">{{selectedUnit.namn}}</h2>
 
         <span ng-if="!widgetState.queryMode">Visar alla ohanterade frågor för {{selectedUnit.namn}}<br></span>
         <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
