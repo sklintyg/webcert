@@ -39,21 +39,17 @@ angular.module('wc.common').factory('statService', [ '$http', '$log', '$timeout'
     // Return public API for the service
     return {
         startPolling : _startPolling,
-        stopPolling : _stopPolling,
+        stopPolling : _stopPolling
     }
 } ]);
 
 angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','statService', function($rootScope,$location,statService) {
+
     return {
         restrict : "A",
         replace : true,
         scope : {
-          userName: "@",
-          caregiverName: "@",
-          careunitName: "@",
-          isDoctor: "@",
-          defaultActive: "@"
-              
+          user: "="
         },
         controller: function($scope, $element, $attrs) {
           //Expose "now" as a model property for the template to render as todays date
@@ -128,6 +124,15 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
           	var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
             return page === currentRoute;
           };
+
+            $scope.getLogoutUrl = function () {
+                if ($scope.user.authenticationScheme == "urn:inera:webcert:fake") {
+                    return "/logout";
+                }
+                else {
+                    return "/saml/logout";
+                }
+            }
         },
         template:
         	'<div>'
@@ -145,19 +150,19 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 	        		+'<div class="span6 headerbox-user">'
 		      			+'<div class="row-fluid">'
 			      			+'<div class="span12">'
-			        			+'<div class="headerbox-user-profile pull-right" ng-show="userName.length">'
-			                        +'<span ng-switch="isDoctor">'
+			        			+'<div class="headerbox-user-profile pull-right" ng-show="user.namn.length">'
+			                        +'<span ng-switch="user.lakare">'
 			                        +'<strong ng-switch-when="true">Läkare</strong>'
 			                        +'<strong ng-switch-default>Admin</strong>'
 			                        +'</span>'
-			        				+' - <span class="logged-in">{{userName}}</span><br>'
-			        				+'<a ng-href="/saml/logout">Logga ut</a>'
+			        				+' - <span class="logged-in">{{user.namn}}</span><br>'
+			        				+'<a ng-href="{{getLogoutUrl()}}">Logga ut</a>'
 	        					+'</div>'
 			        			+'<div class="headerbox-avatar pull-right">'
 			        				+'<img src="/img/avatar.png"/>'
 			        			+'</div>'
 				      			+'<div class="pull-right location">'
-				      				+'<span class="">{{caregiverName}} - {{careunitName}}</span><br>'
+				      				+'<span class="">{{user.vardgivare[0].namn}} - {{user.vardgivare[0].vardenheter[0].namn}}</span><br>'
 				      			+'</div>'
 	            		+'</div>'
 	        			+'</div>'

@@ -18,7 +18,6 @@
   <security:http security="none" pattern="/version.jsp"/>
   <security:http security="none" pattern="/index.jsp"/>
   <security:http security="none" pattern="/error.jsp"/>
-  <security:http security="none" pattern="/logout.jsp"/>
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/favicon.ico"/>
@@ -61,7 +60,7 @@
   <!-- =============================================================== -->
   <beans profile="dev,demo">
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
-      <security:logout logout-url="/saml/logout" logout-success-url="/" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
     </security:http>
@@ -75,13 +74,13 @@
   <!-- =============================================================== -->
   <beans profile="test,qa">
     <security:http entry-point-ref="http403ForbiddenEntryPoint" pattern="/api/**">
-      <security:logout logout-url="/saml/logout" logout-success-url="/" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
     </security:http>
     <security:http entry-point-ref="samlEntryPoint">
+      <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
@@ -98,7 +97,6 @@
   <!-- =============================================================== -->
   <beans profile="prod">
     <security:http entry-point-ref="http403ForbiddenEntryPoint" pattern="/api/**">
-      <security:logout logout-url="/saml/logout" logout-success-url="/" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
@@ -285,10 +283,7 @@
     <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderImpl"/>
 
     <!-- Logout handler terminating local session -->
-    <bean id="logoutHandler"
-          class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler">
-      <property name="invalidateHttpSession" value="false"/>
-    </bean>
+    <bean id="logoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
 
     <!-- Override default logout processing filter with the one processing SAML messages -->
     <bean id="samlLogoutFilter" class="org.springframework.security.saml.SAMLLogoutFilter">
@@ -307,7 +302,7 @@
     <!-- Handler for successful logout -->
     <bean id="successLogoutHandler"
           class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
-      <property name="defaultTargetUrl" value="/logout.jsp"/>
+      <property name="defaultTargetUrl" value="/error.jsp?reason=logout"/>
     </bean>
   </beans>
 </beans>
