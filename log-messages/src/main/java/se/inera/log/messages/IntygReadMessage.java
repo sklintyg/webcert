@@ -8,6 +8,6 @@ import java.io.Serializable;
 public class IntygReadMessage extends AbstractLogMessage implements Serializable {
 
     public IntygReadMessage() {
-        super("Läsa", "Vård och behandling", "intyg");
+        super("Läsa", "Vård och behandling", "Intyg");
     }
 }

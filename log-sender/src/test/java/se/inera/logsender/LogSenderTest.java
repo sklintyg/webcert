@@ -6,25 +6,36 @@ import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.custommonkey.xmlunit.DifferenceConstants.NAMESPACE_PREFIX_ID;
+import static org.custommonkey.xmlunit.DifferenceConstants.TEXT_VALUE_ID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
+import org.apache.commons.io.FileUtils;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.Difference;
+import org.custommonkey.xmlunit.DifferenceListener;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
@@ -32,8 +43,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 import se.inera.log.messages.AbstractLogMessage;
+import se.inera.log.messages.Enhet;
 import se.inera.log.messages.IntygReadMessage;
+import se.inera.log.messages.Patient;
+import se.riv.ehr.log.store.storelog.v1.ObjectFactory;
 import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponseType;
@@ -44,10 +60,10 @@ import se.riv.ehr.log.v1.ResultCodeType;
 /**
  * @author andreaskaltenbach
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:test-context.xml")
-@ActiveProfiles(profiles = "dev")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( "classpath:test-context.xml" )
+@ActiveProfiles( profiles = "dev" )
+@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
 public class LogSenderTest {
 
     private static final String LOGICAL_ADDRESS = "SE165565594230-1000";
@@ -56,7 +72,7 @@ public class LogSenderTest {
     private StoreLogResponderInterface storeLogMock;
 
     @Autowired
-    @Qualifier("nonTransactedJmsTemplate")
+    @Qualifier( "nonTransactedJmsTemplate" )
     private JmsTemplate jmsTemplate;
 
     @Autowired
@@ -75,7 +91,7 @@ public class LogSenderTest {
             add(intygReadMessage("2013-01-06T10:00"));
         }
     };
-    
+
     private Collection<String> logIds() {
         Collection<String> logIds = new HashSet<>();
         for (AbstractLogMessage logEntry : logEntries) {
@@ -86,11 +102,16 @@ public class LogSenderTest {
 
     private AbstractLogMessage intygReadMessage(String timestamp) {
         IntygReadMessage intygReadMessage = new IntygReadMessage();
-        intygReadMessage.setEnhetId("enhet1");
         intygReadMessage.setSystemId("webcert");
         intygReadMessage.setTimestamp(new LocalDateTime(timestamp));
         intygReadMessage.setUserId("user1");
-        intygReadMessage.setVardgivareId("vg1");
+
+        Enhet enhet = new Enhet("enhet1", "Enhet 1", "vg1", "Vårdgivare 1");
+        intygReadMessage.setEnhet(enhet);
+
+        Patient patient = new Patient("19121212-1212", "Tolv Tolvasson");
+        intygReadMessage.setPatient(patient);
+
         return intygReadMessage;
     }
 
@@ -125,6 +146,41 @@ public class LogSenderTest {
 
         // ensure that queue is empty
         assertEquals(0, queueSize());
+    }
+
+    @Test
+    public void testLogMessageFormat() throws Exception {
+
+        ArgumentCaptor<StoreLogRequestType> capture = ArgumentCaptor.forClass(StoreLogRequestType.class);
+
+        for (AbstractLogMessage intygReadMessage : logEntries.subList(0, 1)) {
+            sendLogMessage(intygReadMessage);
+        }
+
+        when(storeLogMock.storeLog(eq(LOGICAL_ADDRESS), capture.capture())).thenReturn(storeLogResponse(ResultCodeType.OK));
+
+        logSender.sendLogEntries();
+
+        // ensure that correct XML is sent to loggtjänst
+        StoreLogRequestType request = capture.getValue();
+        compareStoreLogRequest(request);
+    }
+
+    private void compareStoreLogRequest(StoreLogRequestType request) throws Exception {
+        JAXBContext jaxbContext = JAXBContext.newInstance(StoreLogRequestType.class);
+
+        StringWriter stringWriter = new StringWriter();
+        jaxbContext.createMarshaller().marshal(new ObjectFactory().createStoreLogRequest(request), stringWriter);
+
+        String expectation = FileUtils.readFileToString(new ClassPathResource("LogSenderTest/store-log-request.xml").getFile());
+
+        XMLUnit.setIgnoreWhitespace(true);
+        XMLUnit.setNormalizeWhitespace(true);
+
+        Diff diff = XMLUnit.compareXML(expectation, stringWriter.toString());
+
+        diff.overrideDifferenceListener(new NamespacePrefixNameIgnoringListener());
+        assertTrue(diff.toString(), diff.identical());
     }
 
     @Test
@@ -226,5 +282,28 @@ public class LogSenderTest {
                 return session.createObjectMessage(intygReadMessage);
             }
         });
+    }
+
+    private class NamespacePrefixNameIgnoringListener implements DifferenceListener {
+
+        public int differenceFound(Difference difference) {
+
+            switch (difference.getId()) {
+                case NAMESPACE_PREFIX_ID:
+                    // differences in namespace prefix IDs are ok (eg. 'ns1' vs 'ns2'), as long as the namespace URI is the same
+                    return RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL;
+                case TEXT_VALUE_ID:
+                    String nodeName = difference.getTestNodeDetail().getNode().getParentNode().getNodeName();
+                    String nodeValue = difference.getTestNodeDetail().getValue();
+                    if ("LogId".equals(nodeName) && nodeValue.equals(logEntries.get(0).getLogId())) {
+                        return RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL;
+                    }
+                default:
+                    return RETURN_ACCEPT_DIFFERENCE;
+            }
+        }
+
+        public void skippedComparison(Node control, Node test) {
+        }
     }
 }

@@ -70,12 +70,17 @@ public class LogServiceImplTest {
         assertNotNull(intygReadMessage.getLogId());
         assertEquals("Läsa", intygReadMessage.getActivityType());
         assertEquals("Vård och behandling", intygReadMessage.getPurpose());
-        assertEquals("intyg", intygReadMessage.getResourceType());
+        assertEquals("Intyg", intygReadMessage.getResourceType());
 
         assertEquals("HSAID", intygReadMessage.getUserId());
 
-        assertEquals("ENHETS ID", intygReadMessage.getEnhetId());
-        assertEquals("VARDGIVARE ID", intygReadMessage.getVardgivareId());
+        assertEquals("ENHETS ID", intygReadMessage.getEnhet().getEnhetsId());
+        assertEquals("Enhet", intygReadMessage.getEnhet().getEnhetsNamn());
+        assertEquals("VARDGIVARE ID", intygReadMessage.getEnhet().getVardgivareId());
+        assertEquals("Vårdgivare", intygReadMessage.getEnhet().getVardgivareNamn());
+
+        assertEquals("19121212-1212", intygReadMessage.getPatient().getPatientId());
+        assertEquals("Hans Olof van der Test", intygReadMessage.getPatient().getPatientNamn());
 
         assertTrue(intygReadMessage.getTimestamp().minusSeconds(10).isBefore(now()));
         assertTrue(intygReadMessage.getTimestamp().plusSeconds(10).isAfter(now()));

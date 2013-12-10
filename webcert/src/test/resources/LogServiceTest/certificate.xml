@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<gc:GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1" xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
-  xmlns="urn:riv:clinicalprocess:healthcond:certificate:1" xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
+<gc:GetCertificateForCareResponse
+        xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
+        xmlns="urn:riv:clinicalprocess:healthcond:certificate:1">
 
   <gc:meta>
 
   </gc:meta>
   <gc:certificate>
+    <patient>
+      <person-id root="1.2.752.129.2.1.3.1" extension="19121212-1212"/>
+      <fornamn>Hans</fornamn>
+      <fornamn>Olof</fornamn>
+      <efternamn>Test</efternamn>
+      <mellannamn>van</mellannamn>
+      <mellannamn>der</mellannamn>
+    </patient>
 
-     <skapadAv>
-       <enhet>
-         <enhets-id root="1.2.752.129.2.1.4.1" extension="ENHETS ID"/>
-         <enhetsnamn>Enhet</enhetsnamn>
-         <vardgivare>
-           <vardgivare-id root="1.2.752.129.2.1.4.1" extension="VARDGIVARE ID"/>
-           <vardgivarnamn>Vårdgivare</vardgivarnamn>
-         </vardgivare>
-       </enhet>
-     </skapadAv>
+    <skapadAv>
+      <enhet>
+        <enhets-id root="1.2.752.129.2.1.4.1" extension="ENHETS ID"/>
+        <enhetsnamn>Enhet</enhetsnamn>
+        <vardgivare>
+          <vardgivare-id root="1.2.752.129.2.1.4.1" extension="VARDGIVARE ID"/>
+          <vardgivarnamn>Vårdgivare</vardgivarnamn>
+        </vardgivare>
+      </enhet>
+    </skapadAv>
 
   </gc:certificate>
   <gc:result>

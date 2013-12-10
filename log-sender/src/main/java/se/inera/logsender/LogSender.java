@@ -22,6 +22,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.stereotype.Component;
 import se.inera.log.messages.AbstractLogMessage;
+import se.inera.log.messages.Enhet;
+import se.inera.log.messages.Patient;
 import se.inera.logsender.exception.LoggtjanstExecutionException;
 import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
@@ -30,6 +32,7 @@ import se.riv.ehr.log.v1.ActivityType;
 import se.riv.ehr.log.v1.CareProviderType;
 import se.riv.ehr.log.v1.CareUnitType;
 import se.riv.ehr.log.v1.LogType;
+import se.riv.ehr.log.v1.PatientType;
 import se.riv.ehr.log.v1.ResourceType;
 import se.riv.ehr.log.v1.ResourcesType;
 import se.riv.ehr.log.v1.SystemType;
@@ -43,21 +46,21 @@ public class LogSender {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogSender.class);
 
-    @Value("${loggtjanst.logicalAddress}")
+    @Value( "${loggtjanst.logicalAddress}" )
     private String logicalAddress;
 
-    @Value("${logsender.bulkSize}")
+    @Value( "${logsender.bulkSize}" )
     private int bulkSize;
 
     @Autowired
     private StoreLogResponderInterface loggTjanstResponder;
 
     @Autowired
-    @Qualifier("jmsTemplate")
+    @Qualifier( "jmsTemplate" )
     private JmsTemplate jmsTemplate;
 
     @Autowired
-    @Qualifier("nonTransactedJmsTemplate")
+    @Qualifier( "nonTransactedJmsTemplate" )
     private JmsTemplate nonTransactedJmsTemplate;
 
     @Autowired
@@ -92,8 +95,7 @@ public class LogSender {
 
         if (chunk == 0) {
             LOG.info("Zero messages in logging queue. Nothing will be sent to loggtjänst");
-        }
-        else {
+        } else {
             Boolean reExecute = jmsTemplate.execute(new SessionCallback<Boolean>() {
                 @Override
                 public Boolean doInJms(Session session) throws JMSException {
@@ -172,23 +174,41 @@ public class LogSender {
 
         UserType user = new UserType();
         user.setUserId(source.getUserId());
-        CareProviderType careProvider = new CareProviderType();
-        careProvider.setCareProviderId(source.getVardgivareId());
-        user.setCareProvider(careProvider);
-        CareUnitType careUnit = new CareUnitType();
-        careUnit.setCareUnitId(source.getEnhetId());
-        user.setCareUnit(careUnit);
+        user.setCareProvider(careProvider(source.getEnhet()));
+        user.setCareUnit(careUnit(source.getEnhet()));
         logType.setUser(user);
 
         logType.setResources(new ResourcesType());
         ResourceType resource = new ResourceType();
         resource.setResourceType(source.getResourceType());
-        CareProviderType resourceCareProvider = new CareProviderType();
-        resourceCareProvider.setCareProviderId(source.getVardgivareId());
-        resource.setCareProvider(resourceCareProvider);
+        resource.setCareProvider(careProvider(source.getEnhet()));
+
+        resource.setPatient(patient(source.getPatient()));
+
         logType.getResources().getResource().add(resource);
 
         return logType;
+    }
+
+    private PatientType patient(Patient source) {
+        PatientType patient = new PatientType();
+        patient.setPatientId(source.getPatientId().replace("-", ""));
+        patient.setPatientName(source.getPatientNamn());
+        return patient;
+    }
+
+    private CareUnitType careUnit(Enhet source) {
+        CareUnitType careUnit = new CareUnitType();
+        careUnit.setCareUnitId(source.getEnhetsId());
+        careUnit.setCareUnitName(source.getEnhetsNamn());
+        return careUnit;
+    }
+
+    private CareProviderType careProvider(Enhet source) {
+        CareProviderType careProvider = new CareProviderType();
+        careProvider.setCareProviderId(source.getVardgivareId());
+        careProvider.setCareProviderName(source.getVardgivareNamn());
+        return careProvider;
     }
 
     private void sendLogEntriesToLoggtjanst(List<LogType> logEntries) {
@@ -199,11 +219,11 @@ public class LogSender {
         try {
             StoreLogResponseType response = loggTjanstResponder.storeLog(logicalAddress, request);
             switch (response.getResultType().getResultCode()) {
-            case OK:
-            case INFO:
-                break;
-            default:
-                throw new LoggtjanstExecutionException();
+                case OK:
+                case INFO:
+                    break;
+                default:
+                    throw new LoggtjanstExecutionException();
             }
         } catch (WebServiceException e) {
             throw new LoggtjanstExecutionException(e);

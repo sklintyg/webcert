@@ -1,0 +1,37 @@
+<ns2:StoreLogRequest xmlns:ns2="urn:riv:ehr:log:store:StoreLogResponder:1" xmlns="urn:riv:ehr:log:1">
+  <ns2:Log>
+    <LogId>{ignore}</LogId>
+    <System>
+      <SystemId>webcert</SystemId>
+    </System>
+    <Activity>
+      <ActivityType>Läsa</ActivityType>
+      <StartDate>2013-01-01T10:00:00</StartDate>
+      <Purpose>Vård och behandling</Purpose>
+    </Activity>
+    <User>
+      <UserId>user1</UserId>
+      <CareProvider>
+        <CareProviderId>vg1</CareProviderId>
+        <CareProviderName>Vårdgivare 1</CareProviderName>
+      </CareProvider>
+      <CareUnit>
+        <CareUnitId>enhet1</CareUnitId>
+        <CareUnitName>Enhet 1</CareUnitName>
+      </CareUnit>
+    </User>
+    <Resources>
+      <Resource>
+        <ResourceType>Intyg</ResourceType>
+        <Patient>
+          <PatientId>191212121212</PatientId>
+          <PatientName>Tolv Tolvasson</PatientName>
+        </Patient>
+        <CareProvider>
+          <CareProviderId>vg1</CareProviderId>
+          <CareProviderName>Vårdgivare 1</CareProviderName>
+        </CareProvider>
+      </Resource>
+    </Resources>
+  </ns2:Log>
+</ns2:StoreLogRequest>

@@ -23,8 +23,10 @@ public class AbstractLogMessage implements Serializable {
     private String purpose;
 
     private String userId;
-    private String enhetId;
-    private String vardgivareId;
+
+    private Enhet enhet;
+
+    private Patient patient;
 
     private String resourceType;
 
@@ -81,19 +83,19 @@ public class AbstractLogMessage implements Serializable {
         this.userId = userId;
     }
 
-    public String getEnhetId() {
-        return enhetId;
+    public Patient getPatient() {
+        return patient;
     }
 
-    public void setEnhetId(String enhetId) {
-        this.enhetId = enhetId;
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 
-    public String getVardgivareId() {
-        return vardgivareId;
+    public Enhet getEnhet() {
+        return enhet;
     }
 
-    public void setVardgivareId(String vardgivareId) {
-        this.vardgivareId = vardgivareId;
+    public void setEnhet(Enhet enhet) {
+        this.enhet = enhet;
     }
 }
