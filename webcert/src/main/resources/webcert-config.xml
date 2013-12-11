@@ -80,6 +80,10 @@
                 serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface"
                 address="${intygstjanst.getcertificateforcare.endpoint.url}">
   </jaxws:client>
+  <jaxws:client id="listCertificatesForCareResponder"
+                serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderService"
+                address="${intygstjanst.listcertificatesforcare.endpoint.url}">
+  </jaxws:client>
   <jaxws:client id="sendQuestionToFKClient"
                 serviceClass="se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface"
                 address="${sendquestiontofk.endpoint.url}">
