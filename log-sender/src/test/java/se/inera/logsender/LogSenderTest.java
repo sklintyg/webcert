@@ -105,6 +105,7 @@ public class LogSenderTest {
         intygReadMessage.setSystemId("webcert");
         intygReadMessage.setTimestamp(new LocalDateTime(timestamp));
         intygReadMessage.setUserId("user1");
+        intygReadMessage.setUserName("Markus Gran");
 
         Enhet enhet = new Enhet("enhet1", "Enhet 1", "vg1", "Vårdgivare 1");
         intygReadMessage.setEnhet(enhet);

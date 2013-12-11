@@ -174,6 +174,7 @@ public class LogSender {
 
         UserType user = new UserType();
         user.setUserId(source.getUserId());
+        user.setName(source.getUserName());
         user.setCareProvider(careProvider(source.getEnhet()));
         user.setCareUnit(careUnit(source.getEnhet()));
         logType.setUser(user);
@@ -182,6 +183,7 @@ public class LogSender {
         ResourceType resource = new ResourceType();
         resource.setResourceType(source.getResourceType());
         resource.setCareProvider(careProvider(source.getEnhet()));
+        resource.setCareUnit(careUnit(source.getEnhet()));
 
         resource.setPatient(patient(source.getPatient()));
 

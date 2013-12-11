@@ -23,6 +23,7 @@ public class AbstractLogMessage implements Serializable {
     private String purpose;
 
     private String userId;
+    private String userName;
 
     private Enhet enhet;
 
@@ -81,6 +82,14 @@ public class AbstractLogMessage implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Patient getPatient() {

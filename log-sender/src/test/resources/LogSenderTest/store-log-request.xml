@@ -11,6 +11,7 @@
     </Activity>
     <User>
       <UserId>user1</UserId>
+      <Name>Markus Gran</Name>
       <CareProvider>
         <CareProviderId>vg1</CareProviderId>
         <CareProviderName>Vårdgivare 1</CareProviderName>
@@ -31,6 +32,10 @@
           <CareProviderId>vg1</CareProviderId>
           <CareProviderName>Vårdgivare 1</CareProviderName>
         </CareProvider>
+        <CareUnit>
+          <CareUnitId>enhet1</CareUnitId>
+          <CareUnitName>Enhet 1</CareUnitName>
+        </CareUnit>
       </Resource>
     </Resources>
   </ns2:Log>

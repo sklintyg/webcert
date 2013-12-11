@@ -73,6 +73,7 @@ public class LogServiceImplTest {
         assertEquals("Intyg", intygReadMessage.getResourceType());
 
         assertEquals("HSAID", intygReadMessage.getUserId());
+        assertEquals("Markus Gran", intygReadMessage.getUserName());
 
         assertEquals("ENHETS ID", intygReadMessage.getEnhet().getEnhetsId());
         assertEquals("Enhet", intygReadMessage.getEnhet().getEnhetsNamn());
@@ -97,6 +98,7 @@ public class LogServiceImplTest {
     private WebCertUser createWcUser() {
         WebCertUser wcu = new WebCertUser();
         wcu.setHsaId("HSAID");
+        wcu.setNamn("Markus Gran");
         return wcu;
     }
 }

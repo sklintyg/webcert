@@ -55,6 +55,7 @@ public class LogServiceImpl implements LogService {
             IntygReadMessage logthis = new IntygReadMessage();
             WebCertUser user = webCertUserService.getWebCertUser();
             logthis.setUserId(user.getHsaId());
+            logthis.setUserName(user.getNamn());
 
             logthis.setEnhet(enhet(intyg.getCertificate().getSkapadAv().getEnhet()));
             logthis.setPatient(patient(intyg.getCertificate().getPatient()));
