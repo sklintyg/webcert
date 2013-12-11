@@ -1,5 +1,11 @@
 package se.inera.webcert.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
@@ -8,12 +14,8 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +26,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.integration.rest.dto.CertificateStatus;
@@ -52,9 +53,6 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCert
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
@@ -85,14 +83,14 @@ public class FragaSvarServiceImplTest {
     private LocalDateTime JANUARY = new LocalDateTime("2013-01-12T11:22:11");
     private LocalDateTime MAY = new LocalDateTime("2013-05-01T11:11:11");
     private LocalDateTime AUGUST = new LocalDateTime("2013-08-02T11:11:11");
-    private LocalDateTime DECEMBER = new LocalDateTime("2013-12-11T10:22:00");
+    private LocalDateTime DECEMBER_YEAR_9999 = new LocalDateTime("9999-12-11T10:22:00");
 
     @SuppressWarnings("unchecked")
     @Test
     public void testFindByEnhetsIdSorting() {
         List<FragaSvar> unsortedList = new ArrayList<FragaSvar>();
         unsortedList.add(buildFragaSvar(1L, MAY, null));
-        unsortedList.add(buildFragaSvar(2L, DECEMBER, null));
+        unsortedList.add(buildFragaSvar(2L, DECEMBER_YEAR_9999, null));
         unsortedList.add(buildFragaSvar(3L, null, JANUARY));
         unsortedList.add(buildFragaSvar(4L, null, AUGUST));
         when(fragasvarRepository.findByEnhetsId(Mockito.any(List.class))).thenReturn(unsortedList);
@@ -112,7 +110,7 @@ public class FragaSvarServiceImplTest {
     public void testFindByIntygSorting() {
         List<FragaSvar> unsortedList = new ArrayList<FragaSvar>();
         unsortedList.add(buildFragaSvar(1L, MAY, null));
-        unsortedList.add(buildFragaSvar(2L, DECEMBER, null));
+        unsortedList.add(buildFragaSvar(2L, DECEMBER_YEAR_9999, null));
         unsortedList.add(buildFragaSvar(3L, null, JANUARY));
         unsortedList.add(buildFragaSvar(4L, null, AUGUST));
         when(fragasvarRepository.findByIntygsReferensIntygsId((Mockito.any(String.class)))).thenReturn(unsortedList);
@@ -173,7 +171,7 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testGetFragaSvarForIntyg() {
         List<FragaSvar> fragaSvarList = new ArrayList<>();
-        fragaSvarList.add(buildFragaSvar(1L, DECEMBER, DECEMBER));
+        fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
         fragaSvarList.add(buildFragaSvar(2L, new LocalDateTime(), new LocalDateTime()));
         fragaSvarList.add(buildFragaSvar(3L, JANUARY, JANUARY));
 
@@ -192,7 +190,7 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testGetFragaSvarFilteringForIntyg() {
         List<FragaSvar> fragaSvarList = new ArrayList<>();
-        fragaSvarList.add(buildFragaSvar(1L, DECEMBER, DECEMBER));
+        fragaSvarList.add(buildFragaSvar(1L, DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
         fragaSvarList.add(buildFragaSvar(2L, new LocalDateTime(), new LocalDateTime()));
         fragaSvarList.add(buildFragaSvar(3L, JANUARY, JANUARY));
 
