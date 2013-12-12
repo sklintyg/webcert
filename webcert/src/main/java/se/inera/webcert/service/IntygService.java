@@ -1,6 +1,9 @@
 package se.inera.webcert.service;
 
+import java.util.List;
+
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
+import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 
@@ -35,4 +38,12 @@ public interface IntygService {
      * @throws se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException
      */
     UtlatandeCommonModelHolder fetchIntygCommonModel(String intygId);
+
+    /**
+     * Returns all certificates for the given patient within all the given units
+     * @param enhetId list of HSA IDs for the units
+     * @param personnummer the person number
+     * @return list of certificates matching the search criteria
+     */
+    List<CertificateContentMeta> listIntyg(List<String> enhetId, String personnummer);
 }

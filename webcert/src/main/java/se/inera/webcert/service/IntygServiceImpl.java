@@ -1,24 +1,27 @@
 package se.inera.webcert.service;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
@@ -35,13 +38,14 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import com.google.common.base.Throwables;
-
 /**
  * @author andreaskaltenbach
  */
 @Service
 public class IntygServiceImpl implements IntygService {
+
+    @Value("${intygstjanst.logicaladdress}")
+    String logicalAddress;
 
     private static Marshaller marshaller;
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
@@ -60,7 +64,10 @@ public class IntygServiceImpl implements IntygService {
     LogService logService;
 
     @Autowired
-    private GetCertificateForCareResponderInterface certificateService;
+    private GetCertificateForCareResponderInterface getCertificateService;
+
+    @Autowired
+    private ListCertificatesForCareResponderInterface listCertificateService;
 
     @Autowired
     private ModuleRestApiFactory moduleApiFactory;
@@ -111,11 +118,39 @@ public class IntygServiceImpl implements IntygService {
         return new UtlatandeCommonModelHolder(utlatande, external.getCertificateContentMeta());
     }
 
+    @Override
+    public List<CertificateContentMeta> listIntyg(List<String> enhetId, String personnummer) {
+        ListCertificatesForCareType request = new ListCertificatesForCareType();
+        request.setNationalIdentityNumber(personnummer);
+        request.getCareUnit().addAll(enhetId);
+
+        ListCertificatesForCareResponseType response = listCertificateService.listCertificatesForCare(logicalAddress,
+                request);
+
+        switch (response.getResult().getResultCode()) {
+        case OK:
+            return convert(response.getMeta());
+        default:
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
+                    "listCertificatesForCare WS call: ERROR :" + response.getResult().getResultText());
+        }
+    }
+
+    private List<CertificateContentMeta> convert(List<CertificateMetaType> source) {
+        List<CertificateContentMeta> meta = new ArrayList<>();
+        for (CertificateMetaType certificateMetaType : source) {
+            meta.add(convert(certificateMetaType));
+        }
+        return meta;
+    }
+
     private CertificateContentMeta convert(CertificateMetaType source) {
 
         CertificateContentMeta metaData = new CertificateContentMeta();
         metaData.setId(source.getCertificateId());
         metaData.setType(source.getCertificateType());
+        metaData.setFromDate(source.getValidFrom());
+        metaData.setTomDate(source.getValidTo());
         metaData.setStatuses(convertStatus(source.getStatus()));
         return metaData;
     }
@@ -182,7 +217,8 @@ public class IntygServiceImpl implements IntygService {
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(intygsId);
 
-        GetCertificateForCareResponseType response = certificateService.getCertificateForCare("", request);
+        GetCertificateForCareResponseType response = getCertificateService.getCertificateForCare(logicalAddress,
+                request);
 
         switch (response.getResult().getResultCode()) {
         case OK:

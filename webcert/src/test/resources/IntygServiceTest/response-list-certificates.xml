@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ListCertificatesForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1"
+                                 xmlns="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:1"
+                                 xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:1">
+  <meta>
+    <c:certificateId>1</c:certificateId>
+    <c:certificateType>fk7263</c:certificateType>
+    <c:validFrom>2012-01-01</c:validFrom>
+    <c:validTo>2012-02-02</c:validTo>
+    <c:issuerName>Dr. Who</c:issuerName>
+    <c:facilityName>Enhet 1</c:facilityName>
+    <c:signDate>2012-01-01</c:signDate>
+    <c:available>false</c:available>
+    <c:status>
+      <c:target>FK</c:target>
+      <c:type>SENT</c:type>
+      <c:timestamp>2012-01-01T10:00:00</c:timestamp>
+    </c:status>
+  </meta>
+  <meta>
+    <c:certificateId>2</c:certificateId>
+    <c:certificateType>fk7263</c:certificateType>
+    <c:validFrom>2012-01-01</c:validFrom>
+    <c:validTo>2012-02-02</c:validTo>
+    <c:issuerName>Dr. Who</c:issuerName>
+    <c:facilityName>Enhet 1</c:facilityName>
+    <c:signDate>2012-01-01</c:signDate>
+    <c:available>false</c:available>
+    <c:status>
+      <c:target>FK</c:target>
+      <c:type>SENT</c:type>
+      <c:timestamp>2012-01-01T10:00:00</c:timestamp>
+    </c:status>
+  </meta>
+  <result>
+    <ns3:resultCode>OK</ns3:resultCode>
+  </result>
+</ListCertificatesForCareResponse>
