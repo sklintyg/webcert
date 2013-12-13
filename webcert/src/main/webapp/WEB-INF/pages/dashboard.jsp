@@ -80,7 +80,7 @@
   <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/angular.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/angular-cookies.min.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/i18n/angular-locale_sv-se.js"/>"></script>
-  <script type="text/javascript" src='<c:url value="/js/vendor/ui-bootstrap/0.6.0/ui-bootstrap-tpls-0.7.0-SNAPSHOT.js"/>'></script>
+  <script type="text/javascript" src='<c:url value="/js/vendor/ui-bootstrap/0.7.0/ui-bootstrap-tpls-0.7.0.js"/>'></script>
 
   <%-- Application files --%>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/app.js"/>"></script>
