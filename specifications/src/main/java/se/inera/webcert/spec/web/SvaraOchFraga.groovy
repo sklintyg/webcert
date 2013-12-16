@@ -302,8 +302,8 @@ public class SvaraOchFraga {
         }
         return result
     }
-    public boolean TotaltAntalOhanteradeFrågorFörAllaEnheterÄr(String expected) {
-        def result = false
+    public String TotaltAntalOhanteradeFrågorFörAllaEnheterÄr() {
+        def result = ""
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -316,7 +316,7 @@ public class SvaraOchFraga {
             result = page.unitstatUnhandledQuestionsBadgde.text()
            
         }
-        return result == expected
+        return result
     }
     
     
