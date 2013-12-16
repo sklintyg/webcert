@@ -81,7 +81,7 @@
                 address="${intygstjanst.getcertificateforcare.endpoint.url}">
   </jaxws:client>
   <jaxws:client id="listCertificatesForCareResponder"
-                serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderService"
+                serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface"
                 address="${intygstjanst.listcertificatesforcare.endpoint.url}">
   </jaxws:client>
   <jaxws:client id="sendQuestionToFKClient"
