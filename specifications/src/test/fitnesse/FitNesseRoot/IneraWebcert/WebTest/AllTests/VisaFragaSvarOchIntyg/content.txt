@@ -56,19 +56,13 @@
 |intyg fält varperson namn visas| En Läkare |
 |intyg fält varperson enhetsnamn visas| Vardenhet Fitnesse 1 |
 
-|script|Vanta|5|sekund|
-
-|script|log consumer|queue|
-|check|queue depth|1|
-|receive object message|
-|check|userhsaid|fitness1|
-|check|queue depth|0|
 
 !3 Ta bort Frågor:
 |ta bort Fraga|
 |internReferens|
 |$internReferens1|
 |$internReferens2|
+|$internReferens3|
 
 !3 Ta bort frågor från fk stub
 |script|Rensa Fragor Svar Till Fk|
