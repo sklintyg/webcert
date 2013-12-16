@@ -65,6 +65,11 @@ body.start h1, .content-container p {
 	padding: 0;
 }
 
+p {
+	margin: 0;
+	padding: 0 0 10px;
+}
+
 a {
 	color: #28b4c4;
 }
@@ -278,6 +283,7 @@ div.location { font-size: 12px; font-weight: bold; padding: 10px; margin-right: 
 	position: relative;
 	background-color: #f2f2f2;
 	padding: 20px 0px 30px 30px;
+  min-height: 832px !important;
 }
 
 .webcert-col-single {
@@ -734,6 +740,14 @@ input[datepicker-popup] .btn-block {
 
 .alert-info {
 	color: #306E8D; /* WCAG AA compliant */
+}
+
+.modal-header h3 {
+	padding: 0;
+}
+
+.dropdown-menu button.btn-success {
+	padding: 2px 10px;
 }
 
 /**

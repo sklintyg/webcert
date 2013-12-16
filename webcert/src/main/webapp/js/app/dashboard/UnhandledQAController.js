@@ -98,11 +98,11 @@ angular
                             var defaultQuery = {
                                 enhetsId : undefined, // set to chosen enhet
                                 // before submitting query
-                                questionFrom : "",
+                                questionFrom : "default",
                                 questionFromFK : false,
                                 questionFromWC : false,
                                 hsaId : undefined, // läkare
-                                vidarebefordrad : undefined, // 3-state
+                                vidarebefordrad : "default", // 3-state
                                 // boolean
                                 changedFrom : undefined,
                                 changedTo : undefined,
@@ -110,7 +110,7 @@ angular
                                 doctorSelector : $scope.doctorList[0],
                                 replyLatest : undefined
                             }
-
+                            
                             $scope.decorateList = function(list) {
                                 angular.forEach(list, function(qa, key) {
                                     fragaSvarCommonService.decorateSingleItemMeasure(qa);
@@ -153,7 +153,7 @@ angular
                                 dashBoardService.getQAByQueryFetchMore(queryInstance, function(successData) {
                                     $scope.widgetState.fetchingMoreInProgress = false;
                                     $scope.decorateList(successData.results);
-                                    ;
+                                    
                                     for ( var i = 0; i < successData.results.length; i++) {
                                         $scope.qaListQuery.push(successData.results[i]);
                                     }
@@ -188,12 +188,29 @@ angular
                                     $scope.resetSearchForm();
                                 }
                             }
+
+                            // Hack to set value back to "default" after sending a search request or loading from a cookie.
+                            // This works since $apply and therefore this watch isn't called until after the request has already been made
+                            $scope.$watch('qp.vidarebefordrad', function(newVal, oldVal) {
+                            	if(newVal == undefined)
+                            	{
+                            		$scope.qp.vidarebefordrad = "default";
+                            	}
+                            });
+                            
                             $scope.prepareSearchFormForQuery = function(qp, ws) {
 
                                 qp.enhetsId = $scope.activeUnit.id;
                                 $cookieStore.put("enhetsId", qp.enhetsId);
                                 qp.vantarPa = qp.vantarPaSelector.value;
-
+                                
+                                // Hack to make sure "default" value isn't sent to the API, it wants undefined. 
+                                // But angular can't mark radio buttons with "" or undefined values in IE8.
+                                // So we set this to undefined here and the watch above will set it back to reflect the correct radio button choice in UI
+                                if (qp.vidarebefordrad == "default") {
+                                	qp.vidarebefordrad = undefined;
+                                }
+                                
                                 if (qp.doctorSelector) {
                                     qp.hsaId = qp.doctorSelector.hsaId;
                                 }
