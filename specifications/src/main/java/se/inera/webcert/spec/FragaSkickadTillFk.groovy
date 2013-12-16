@@ -25,6 +25,10 @@ class FragaSkickadTillFk extends RestClientFixture implements  GroovyObject {
     public String fraga(){
             fragaJson.fraga.meddelandeText[0]
     }
+    
+    public String internReferens(){
+        fragaJson.vardReferensId[0]
+    }
 
     public void execute() {
         def restClient = new RESTClient(baseUrl)

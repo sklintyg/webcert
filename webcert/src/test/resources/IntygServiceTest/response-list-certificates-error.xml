@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ListCertificatesForCareResponse xmlns="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:1"
+                                 xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:1">
+  <result>
+    <ns3:resultCode>ERROR</ns3:resultCode>
+    <ns3:resultText>Something bad happened</ns3:resultText>
+  </result>
+</ListCertificatesForCareResponse>

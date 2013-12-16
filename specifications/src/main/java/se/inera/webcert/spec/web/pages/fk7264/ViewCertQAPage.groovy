@@ -18,6 +18,29 @@ class ViewCertQAPage extends Page {
         sendQuestionBtn { $("#sendQuestionBtn") }
         cancelQuestionBtn { $("#cancelQuestionBtn") }
         selectSubjectListbox { $("#new-question-topic") }
+
+        field1yes{$("#field1yes")}
+        field1no{$("#field1no")}
+        field2{$("#field2")}
+        field3{$("#field3")}
+        field4{$("#field4")}
+        field4b{$("#field4b")}
+        field5{$("#field5")}
+        field6a{$("#field6a")}
+        field6b{$("#field6b")}
+        field7{$("#field7")}
+        field8a{$("#field8")}
+        field8b{$("#field8b")}
+        field9{$("#field9")}
+        field10{$("#field10")}
+        field11{$("#field11")}
+        field12{$("#field12")}
+        field13{$("#field13")}
+        field17{$("#field17")}
+        field_vardperson_namn{$("#vardperson_namn")}
+        field_vardperson_enhetsnamn{$("#vardperson_enhetsnamn")}
+
+
     }
 
     def addAnswerText(String internid, String answer){
@@ -84,4 +107,21 @@ class ViewCertQAPage extends Page {
     def fkKontakter(String internid) {
         $("#fkKontakter-${internid}").click()
     }
+
+    def qaFragaSkickadDatum(String internid) {
+        $("#qa-skickaddatum-${internid}")
+    }
+
+    def qaFragetext(String internid) {
+        $("#qa-fragetext-${internid}")
+    }
+
+    def qaSvarstext(String internid) {
+        $("#answerText-${internid}")
+
+        //$("qaHandledSvarstext-#${internid}")
+    }
+
+
+
 }

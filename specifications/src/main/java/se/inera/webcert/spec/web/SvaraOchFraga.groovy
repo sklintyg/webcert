@@ -302,8 +302,8 @@ public class SvaraOchFraga {
         }
         return result
     }
-    public boolean TotaltAntalOhanteradeFrågorFörAllaEnheterÄr(String expected) {
-        def result = false
+    public String TotaltAntalOhanteradeFrågorFörAllaEnheterÄr() {
+        def result = ""
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -316,7 +316,7 @@ public class SvaraOchFraga {
             result = page.unitstatUnhandledQuestionsBadgde.text()
            
         }
-        return result == expected
+        return result
     }
     
     
@@ -479,6 +479,321 @@ public class SvaraOchFraga {
             }
 
             result = page.fkKompletteringar(internid).isDisplayed()
+        }
+        return result
+    }
+
+    public boolean fragaMedIdHarText(String internid, String text){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            result = page.qaFragetext(internid).text().contains(text)
+        }
+        return result
+    }
+
+    public boolean fragaMedIdHarSvarstext(String internid, String text){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            result = page.qaSvarstext(internid).getAttribute("value").contains(text)
+        }
+        return result
+    }
+
+    public boolean intygFält1Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            if(visatVarde.equalsIgnoreCase("yes")){
+                waitFor {
+                    page.field1yes.isDisplayed()
+                }
+                result = page.field1yes.text().contains(visatVarde)
+            } else{
+                waitFor {
+                    page.field1no.isDisplayed()
+                }
+                result = page.field1no.text().contains(visatVarde)
+            }
+
+        }
+        return result
+    }
+    public boolean intygFält2Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field2.isDisplayed()
+            }
+            result = page.field2.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält3Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field3.isDisplayed()
+            }
+            result = page.field3.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält4Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field4.isDisplayed()
+            }
+            result = page.field4.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält4bVisas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field4b.isDisplayed()
+            }
+            result = page.field4b.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält5Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field5.isDisplayed()
+            }
+            result = page.field5.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält6aVisas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field6a.isDisplayed()
+            }
+            result = page.field6a.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält6bVisas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field6b.isDisplayed()
+            }
+            result = page.field6b.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält7Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field7.isDisplayed()
+            }
+            result = page.field7.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält8aVisas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field8a.isDisplayed()
+            }
+            result = page.field8a.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält8bVisas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field8b.isDisplayed()
+            }
+            result = page.field8b.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält9Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field9.isDisplayed()
+            }
+            result = page.field9.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält10Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field10.isDisplayed()
+            }
+            result = page.field10.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält11Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field11.isDisplayed()
+            }
+            result = page.field11.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält12Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field12.isDisplayed()
+            }
+            result = page.field12.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFält13Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field13.isDisplayed()
+            }
+            result = page.field13.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+
+    public boolean intygFält17Visas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field17.isDisplayed()
+            }
+            result = page.field17.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFältVarpersonNamnVisas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field_vardperson_namn.isDisplayed()
+            }
+            result = page.field_vardperson_namn.text().contains(visatVarde)
+
+
+        }
+        return result
+    }
+    public boolean intygFältVarpersonEnhetsnamnVisas(String visatVarde){
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.field_vardperson_enhetsnamn.isDisplayed()
+            }
+            result = page.field_vardperson_enhetsnamn.text().contains(visatVarde)
+
+
         }
         return result
     }
