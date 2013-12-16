@@ -1,0 +1,81 @@
+!3 Sätt upp ActiveMQ
+
+!|script|ActiveMQConnectionFixture|
+|set ConnectionFactory url|tcp://localhost:61617|
+
+!|script|ActiveMQDestinationFixture|
+|register queue|logging.queue|as|queue|
+
+!3 Töm kön
+|script|log consumer|queue|
+|clear queue|
+
+#!3 Lägg till ett intyg:
+
+#| Intyg |
+#| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhet | typ | id | mall |
+#| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | läkare1 |vardenhet-fit-1| FK7263 |intyg-fit-1| M |
+ 
+!3 Lägg till en Fråga:
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning |vardAktorHsaId|vardAktorNamn| internReferens? |
+| OVRIGT | FIT-QA-1000 | WC | En fråga från Perra P|intyg-fit-1| eva | Eva Holgersson |vardenhet-fit-1| 2013-01-01 | PENDING_EXTERNAL_ACTION | false | | | Övrig från FK | hsaid | Per Persson | $internReferens1= |
+| OVRIGT | FIT-QA-1001 | FK | En fråga från FK|intyg-fit-1| eva | Eva Holgersson |vardenhet-fit-1| 2013-01-01 | CLOSED | true | Svar från Maria O | 2013-01-01| svarfrån wc | hsaid | Maria Olsson | $internReferens2= |
+| OVRIGT | FIT-QA-1002 | FK | En fråga från FK2|intyg-fit-1| eva | Eva Holgersson |vardenhet-fit-1| 2013-01-01 | PENDING_INTERNAL_ACTION | true | Svar från Maria O | 2013-01-01| svarfrån wc | hsaid | Maria Olsson | $internReferens3= |
+
+
+!3 Givet att det finns en fråga visa den och Kontrollera dess data.
+
+|script|!-SvaraOchFraga-!|
+|logga på som|7|
+|obehandladeFragarSidanVisas|
+|valj vardenhet|vardenhet-fit-1|
+|listaMedObehandladeFragarVisas|
+|visa fraga|$internReferens1|
+|intyg med fraga svar sidan visas|
+|fraga med id| $internReferens3 | har text |En fråga från FK|
+|fraga med id| $internReferens3 | har svarstext |Svar från Maria O|
+|intyg fält1 visas| Nej |
+|intyg fält2 visas| (Diagnoskod enligt ICD-10 (huvuddiagnos): S47) |
+|intyg fält3 visas| Bedömttillstånd |
+|intyg fält4 visas| Funktionstillstånd-Kroppsfunktion |
+|intyg fält4b visas| Min undersökning av patienten |
+|intyg fält5 visas| Funktionstillstånd-Aktivitet |
+|intyg fält6a visas| Kontakt med Arbetsförmedlingen |
+|intyg fält6b visas| Inom sjukvården: Utreds om operation är nödvändig |
+|intyg fält7 visas| Går inte att bedöma |
+|intyg fält8a visas| Dirigent |
+|intyg fält8b visas| Nedsatt med 1/4 |
+|intyg fält9 visas| Arbetsförmåga: Skadan har förvärrats |
+|intyg fält10 visas| Går inte att bedöma |
+|intyg fält11 visas| Nej |
+|intyg fält12 visas| Ja |
+|intyg fält13 visas| Prognosen för patienten är god |
+|intyg fält17 visas| 123456789011 |
+|intyg fält varperson namn visas| En Läkare |
+|intyg fält varperson enhetsnamn visas| Vardenhet Fitnesse 1 |
+
+|script|Vanta|5|sekund|
+
+|script|log consumer|queue|
+|check|queue depth|1|
+|receive object message|
+|check|userhsaid|fitness1|
+|check|queue depth|0|
+
+!3 Ta bort Frågor:
+|ta bort Fraga|
+|internReferens|
+|$internReferens1|
+|$internReferens2|
+
+!3 Ta bort frågor från fk stub
+|script|Rensa Fragor Svar Till Fk|
+|rensa fraga|
+
+#!3 Rensa bort test-intyg
+#
+#|ta bort Intyg|
+#|id|
+#|intyg-fit-1|
