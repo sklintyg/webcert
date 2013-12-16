@@ -13,8 +13,8 @@
 	        <div id="wc-care-unit-clinic-selector" wc-care-unit-clinic-selector></div>
 	      </div>
       </div>
-      
-      <div ng-if="activeUnit!=null">
+
+      <div ng-if="isActiveUnitChosen()">
         <h2 class="col-head" ng-class="{'less-top-padding' : units.length < 2}">{{selectedUnit.namn}}</h2>
 
         <span ng-if="!widgetState.queryMode">Visar alla ohanterade frågor för {{selectedUnit.namn}}<br></span>

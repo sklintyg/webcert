@@ -41,7 +41,16 @@ angular
 
                             $scope.qaListUnhandled = {};
                             $scope.qaListQuery = {};
-                            $scope.activeUnit = {}
+                            $scope.activeUnit = {};
+                            
+                            $scope.isActiveUnitChosen = function() {
+                            	// there is no better crossbrowser way to check activeunit == {} without using libraries like JSON or jquery. The following is using a modified version of jquerys isEmptyObject implementation.
+                              var name;
+                              for(name in $scope.activeUnit) {
+                                  return true;
+                              }
+                              return false;
+                            }                            
                             
                             $scope.$on('select-care-unit', function (event, unit) {
 	                              $log.debug("ActiveUnit is now:" + unit);
