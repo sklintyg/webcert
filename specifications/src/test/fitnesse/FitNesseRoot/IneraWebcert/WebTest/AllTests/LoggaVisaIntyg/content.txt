@@ -46,6 +46,7 @@
 |ta bort Fraga|
 |internReferens|
 |$internReferens1|
+|$internReferens2|
 
 !3 Ta bort frågor från fk stub
 |script|Rensa Fragor Svar Till Fk|
