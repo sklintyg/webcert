@@ -8,9 +8,9 @@
 
   <!--Daily rolling file appender -->
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <File>${catalina.home}/logs/webcert.log</File>
+    <File>${catalina.base}/logs/webcert.log</File>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <FileNamePattern>${catalina.home}/logs/webcert.%d{yyyy-MM-dd}.log</FileNamePattern>
+      <FileNamePattern>${catalina.base}/logs/webcert.%d{yyyy-MM-dd}.log</FileNamePattern>
     </rollingPolicy>
 
     <encoder>
