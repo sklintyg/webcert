@@ -43,7 +43,7 @@
     <slf4j.version>1.6.4</slf4j.version>
     <logback.version>1.0.0</logback.version>
     <inera.certificate.version>0.5-WC</inera.certificate.version>
-    <inera.certificate.proxy.version>1.1-SNAPSHOT</inera.certificate.proxy.version>
+    <inera.certificate.proxy.version>1.0.6</inera.certificate.proxy.version>
     <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
     <aspectj.version>1.7.1</aspectj.version>
     <hibernate.version>4.2.0.Final</hibernate.version>
