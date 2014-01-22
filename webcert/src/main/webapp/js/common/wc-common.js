@@ -97,7 +97,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 	                   getStat: function() { return ""}
 			     };
           
-          if (eval($scope.isDoctor) == true) {
+          if (eval($scope.user.lakare) == true) {
               $scope.menuDefs.splice(0, 0, writeCertMenuDef);
           }
           else {
