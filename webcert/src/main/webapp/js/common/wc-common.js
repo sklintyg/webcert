@@ -68,50 +68,42 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
             });
           
           $scope.menuDefs = [
-/*				     { // Temporarily removed for v0.5
-				       link :'/web/dashboard#/mycert', 
-				       label:'Mina osignerade intyg',
-				       requires_doctor: false,
-				       statNumberId : "stat-usertstat-unsigned-certs-count",
-				       getStat: function() { return $scope.stat.userStat.unsignedCerts || ""}
-				     },
-	*/			     {
-				       link :'/web/dashboard#/index', // v0.5. in v1.0 it is unhandled-qa
+             {
+				       link :'/web/dashboard#/unhandled-qa', 
 				       label:'Frågor och svar',
 				       requires_doctor: false,
 				       statNumberId : "stat-unitstat-unhandled-question-count",
                        getStat: function() { return $scope.stat.unitStat.unhandledQuestions || ""}
 				     },
-/*				     { // Temporarily removed for v0.5
+				     {
 				       link :'/web/dashboard#/unsigned', 
-				       label:'Enhetens osignerade intyg',
+				       label:'Osignerade intyg',
 				       requires_doctor: false,
 				       statNumberId : "stat-unitstat-unsigned-certs-count",
                        getStat: function() { return $scope.stat.unitStat.unsignedCerts || ""}
 				     },
-*/				     {
+				     {
 				       link :'/web/dashboard#/support/about',
 				       label:'Om Webcert',
 				       requires_doctor: false,
                        getStat: function() { return ""}
 				     }
-				    ];
+			    ];
           
-/*        	Temporarily removed for v0.5
- * 					var writeCertMenuDef = {
-				       link :'/web/dashboard#/index', 
-				       label:'Sök/skriv intyg',
-				       requires_doctor: false,
-                       getStat: function() { return ""}
-				     };
+ 					var writeCertMenuDef = {
+			       link :'/web/dashboard#/index', 
+			       label:'Sök/skriv intyg',
+			       requires_doctor: false,
+	                   getStat: function() { return ""}
+			     };
           
           if (eval($scope.isDoctor) == true) {
               $scope.menuDefs.splice(0, 0, writeCertMenuDef);
           }
           else {
-              $scope.menuDefs.splice(3, 0, writeCertMenuDef);
+              $scope.menuDefs.splice(2, 0, writeCertMenuDef);
           }
-*/          
+          
           $scope.isActive = function (page) {
           	if (!page) {return false;}
         		
