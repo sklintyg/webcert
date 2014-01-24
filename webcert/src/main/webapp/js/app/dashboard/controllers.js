@@ -6,18 +6,53 @@
  *  CreateCertCtrl - Controller for logic related to creating a new certificate 
  * 
  */
-angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$window', '$log', '$location', function CreateCertCtrl($scope, $window, $log, $location) {
+angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$rootScope', '$window', '$log', '$location', function CreateCertCtrl($scope, $rootScope, $window, $log, $location) {
 
+	var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
+
+	$scope.widgetState = {
+			doneLoading : false,
+			runningQuery : false,
+      activeErrorMessageKey : null,
+      queryMode : false,
+      currentList : undefined
+	};
+	
+	$scope.personnummer = "";
+	if ($rootScope.personnummer != undefined){
+		$scope.personnummer = $rootScope.personnummer;
+	}
+	
+	$scope.certType = {
+		selected : "default",
+		types : [
+		  {id:"default", name: "Välj intygstyp"},
+			{id:"fk7263", name: "Läkarintyg FK 7263"},
+			{id:"tsbas", name: "Transportstyrelsen Läkarintyg Bas"}
+		]
+	};
+	
+	$scope.widgetState.currentList = [
+	 {type: "fk7263", status: "Signerat", senastSparat:"2014-01-01", sparatAv: "Gunilla Andersson"},
+	 {type: "fk7263", status: "Signerat", senastSparat:"2014-01-01", sparatAv: "Gunilla Andersson"}
+	];
+	
 	$scope.toStep1 = function() {	$location.path("/index"); }
-	$scope.toEditPatient = function() { $location.path("/edit-patient/index"); }
-	$scope.toStep2 = function() {	$location.path("/choose-cert/index"); }
+	$scope.toEditPatient = function() {
+		$rootScope.personnummer = $scope.personnummer;
+		$location.path("/edit-patient/index");
+	}
+	$scope.toStep2 = function() {
+		$rootScope.patientNamn = $scope.patientNamn;
+		$location.path("/choose-cert/index");	
+	}
 	$scope.toStep3 = function() {	$location.path("/choose-unit/index");	}
 	$scope.editCert = function() {
     $log.debug("edit cert");
     var path = "/m/fk7263/webcert/intyg/new/edit#/edit";
     $window.location.href = path;
 	}
-	
+		
   $scope.setActiveUnit = function(unit) {
     $log.debug("ActiveUnit is now:" + unit);
     $scope.activeUnit = unit;

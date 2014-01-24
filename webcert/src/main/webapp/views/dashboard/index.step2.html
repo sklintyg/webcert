@@ -7,37 +7,99 @@
 	    <label class="control-label">Patientuppgifter</label>
 	    <div class="well well-large">
         <div class="control-group">
-	      <h4>Per Persson</h4>
-	      19230408-1234
+	      <h4>{{patientNamn}}</h4>
+	      {{personnummer}}
         </div>
         <button class="btn" ng-click="toStep1()">Byt patient</button>	      
-        <button class="btn" ng-click="toEditPatient()">Ändra patientuppgifter</button>        
+        <button class="btn" ng-click="toEditPatient()">Korrigera namn</button>        
 	    </div>
 	  </div>
     <div class="control-group">
-      <button class="btn btn-success" ng-click="toStep3()">Skriv nytt Läkarintyg FK 7263</button>
+      <label class="control-label">Skriv nytt intyg</label>
+      <select data-ng-model="certType.selected"
+              data-ng-options="type.id as type.name for type in certType.types">                
+      </select>
     </div>
-	  <div class="alert alert-warning">
+    <div class="control-group">
+      <button class="btn btn-success" ng-click="editCert()">Fortsätt</button>
+    </div>
+	  <div class="alert alert-warning" ng-show="false">
 	   Tänk på att...
 	  </div>
 	  
 	  <div class="webcert-col-section">
 	  
-      <h2 class="col-head">Per Perssons tidigare intyg</h2>
+      <h2 class="col-head">{{patientNamn}}s tidigare intyg</h2>
 
-      <div class="control-group">
+      <div class="control-group" ng-hide="true">
         <div class="controls pointer-labels">
-          <label class="checkbox"><input type="radio" name="olderCerts" checked> Visa intyg för Vårdenheter och till mottagare som jag har medarbetaruppdrag på</label>
+          <label class="checkbox"><input type="radio" name="olderCerts"> Visa intyg för Vårdenheter och till mottagare som jag har medarbetaruppdrag på</label>
           <label class="checkbox"><input type="radio" name="olderCerts"> Visa intyg för hela vårdgivaren som jag har medarbetaruppdrag på</label> 
         </div>
       </div>
       <div class="control-group">
-        <div class="controls">
-          <span class="span9 certblock certblock-clickable clearfix">
-            <h3>Läkarintyg FK 7263</h3> <span>2013-05-04</span>
-          </span> <span class="span3 certblock-copy"><button class="btn btn-info span12">Kopiera</button></span>
+        <div class="controls form-inline indent">
+          <input type="checkbox" name="showHiddenCerts"> <label class="checkbox">Visa även borttagna och rättade intyg</label>
         </div>
       </div>
+
+	    <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery" show-content="!widgetState.runningQuery">
+	
+	      <div class="webcert-col-section">
+	
+	        <!-- No results message for unhandled -->
+	        <div id="current-list-noResults-unit" ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && !widgetState.queryMode && widgetState.currentList.length<1"
+	          class="alert alert-info">
+	          <span message key="info.nounanswered.qa.for.unit"></span>
+	        </div>
+	
+	        <!-- No results message for query -->
+	        <div id="current-list-noResults-query" ng-show="widgetState.totalCount<1 && widgetState.queryMode" class="alert alert-info">
+	          <span message key="info.query.noresults"></span>
+	        </div>
+	
+	
+	
+	        <!-- error message -->
+	        <div id="current-list-noResults-error" ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" class="alert alert-error">
+	          <span message key="{{widgetState.activeErrorMessageKey}}"></span>
+	        </div>
+	
+	        <!-- qa table -->
+	        <div class="row-fluid" ng-show="widgetState.currentList.length>0" id="qaTable">
+	          <table class="span12 table table-striped table-qa">
+	            <tr>
+	              <th></th>
+	              <th></th>
+	              <th class="center" title="">Intygstyp</th>
+	              <th title="">Status</th>
+	              <th title="">Ändringsdatum</th>
+	              <th title="">Sparat av</th>
+	            </tr>
+	            <tr ng-repeat="cert in widgetState.currentList">
+	              <td>
+	                <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert.intygsReferens)" id="showqaBtn-{{cert.internReferens}}">Visa</button>
+	              </td>
+                <td>
+                  <button class="btn btn-info" title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert.intygsReferens)" id="showqaBtn-{{cert.internReferens}}">Kopiera</button>
+                </td>
+                <td><span message key="certificatetypes.{{cert.type}}.typename"></span></td>
+	              <td class="unbreakable">{{cert.status}}</td>
+	              <td class="unbreakable">{{cert.senastSparat | date:'shortDate'}}</td>
+	              <td class="unbreakable table-qa-last">{{cert.sparatAv}}</td>
+	            </tr>
+	          </table>
+	        </div>
+	        <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}}</div>
+	        <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
+	          <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()" ng-disabled="widgetState.fetchingMoreInProgress">
+	            <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
+	          </button>
+	          <p></p>
+	        </div>
+	      </div>
+	    </div>
+	    <!-- spinner end -->
 	  
 	  </div>
   </div>
