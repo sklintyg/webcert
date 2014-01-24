@@ -12,12 +12,6 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', 'ht
     }).when('/choose-cert/index', {
         templateUrl : '/views/dashboard/index.step2.html',
         controller : 'CreateCertCtrl'
-    }).when('/choose-unit/index', {
-        templateUrl : '/views/dashboard/index.step3.html',
-        controller : 'CreateCertCtrl'
-    }).when('/mycert', {
-        templateUrl : '/views/dashboard/mycert.html',
-        controller : 'WebCertCtrl'
     }).when('/unhandled-qa', {
         templateUrl : '/views/dashboard/unhandled-qa.html',
         controller : 'UnhandledQACtrl'
