@@ -1,0 +1,20 @@
+<div id="{{dialogId}}" class="modal-header">
+  <button class="close" ng-click="button2click()">×</button>
+  <h3 ng-focus="dialog.focus" tabindex="-1">
+    <span message key="{{titleId}}"></span>
+  </h3>
+</div>
+<div class="modal-body">
+  <p><span ng-if="bodyTextId != undefined" message key="{{bodyTextId}}"></span>{{bodyText}}</p>
+</div>
+<div class="modal-footer">
+  <button id="{{button1id}}" class="btn btn-success" ng-disabled="!dialog.acceptprogressdone" ng-click="button1click()">
+    <img ng-hide="dialog.acceptprogressdone" ng-src="/img/ajax-loader-small-green.gif" /> <span message key="{{button1text}}"></span>
+  </button>
+  <button id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
+    <span message key="{{button2text}}"></span>
+  </button>
+  <button id="{{button3id}}" ng-show="button3Visible" class="btn btn-info" ng-click="button3click()">
+    <span message key="{{button3text}}"></span>
+  </button>
+</div>

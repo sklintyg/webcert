@@ -117,7 +117,7 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
         };
 
         var msgbox = $modal.open({
-            templateUrl : '/views/partials/general-dialog.html',
+            templateUrl : '/views/partials/preference-dialog.html',
             controller : DialogInstanceCtrl,
             resolve : {
                 title : function() {

@@ -6,9 +6,9 @@
  *  CreateCertCtrl - Controller for logic related to creating a new certificate 
  * 
  */
-angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$rootScope', '$window', '$log', '$location', function CreateCertCtrl($scope, $rootScope, $window, $log, $location) {
+angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$rootScope', '$window', '$log', '$location', 'wcDialogService', function CreateCertCtrl($scope, $rootScope, $window, $log, $location, wcDialogService) {
 
-	var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
+	//var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
 
 	$scope.widgetState = {
 			doneLoading : false,
@@ -37,21 +37,47 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
 	 {type: "fk7263", status: "Signerat", senastSparat:"2014-01-01", sparatAv: "Gunilla Andersson"}
 	];
 	
-	$scope.toStep1 = function() {	$location.path("/index"); }
+	$scope.toStep1 = function() {	$location.path("/index"); };
 	$scope.toEditPatient = function() {
 		$rootScope.personnummer = $scope.personnummer;
 		$location.path("/edit-patient/index");
 	}
+
 	$scope.toStep2 = function() {
 		$rootScope.patientNamn = $scope.patientNamn;
 		$location.path("/choose-cert/index");	
 	}
+
 	$scope.toStep3 = function() {	$location.path("/choose-unit/index");	}
+
 	$scope.editCert = function() {
     $log.debug("edit cert");
-    var path = "/m/fk7263/webcert/intyg/new/edit#/edit";
-    $window.location.href = path;
-	}
+
+    if($scope.certType.selected != "fk7263"){
+      $scope.confirmAddressDialog();
+    } else {
+      $window.location.href = "/m/fk7263/webcert/intyg/new/edit#/edit";
+    }
+  }
+
+  $scope.dialog = {
+    acceptprogressdone: true,
+    focus: false
+  }
+
+  $scope.confirmAddressDialog = function() {
+    wcDialogService.showDialog(
+        $scope,
+        {
+          dialogId: "confirm-address-dialog",
+          titleId: "label.confirmaddress",
+          bodyText: "Test",
+          button1click: function() {
+            $log.debug("confirm address");
+          }
+        }
+    );
+  };
 		
   $scope.setActiveUnit = function(unit) {
     $log.debug("ActiveUnit is now:" + unit);
@@ -91,8 +117,7 @@ $scope.createCert = function() {
 $scope.viewCert = function(item) {
   $log.debug("open " + item.id);
   //listCertService.selectedCertificate = item;
-  var path = "/m/" + item.typ.toLowerCase() + "/webcert/intyg/" + item.id + "#/view"
-  $window.location.href = path;
+  $window.location.href = "/m/" + item.typ.toLowerCase() + "/webcert/intyg/" + item.id + "#/view";
 }
 
 } ]);
@@ -127,7 +152,8 @@ angular.module('wcDashBoardApp').controller('ListUnsignedCertCtrl', [ '$scope', 
         "type" : "dashboard_unsigned.json",
         "careUnit" : "",
         "clinic" : []
-    }
+    };
+
     $timeout(function() { // wrap in timeout to simulate latency - remove soon
         dashBoardService.getCertificates(requestConfig, function(data) {
             $scope.widgetState.doneLoading = true;
@@ -155,7 +181,7 @@ angular.module('wcDashBoardApp').controller('UnansweredCertCtrl', [ '$scope', 'd
         pageSize : 2,
         doneLoading : false,
         hasError : false
-    }
+    };
 
     $scope.qaCertList = [];
 
@@ -164,7 +190,7 @@ angular.module('wcDashBoardApp').controller('UnansweredCertCtrl', [ '$scope', 'd
         "type" : "dashboard_unanswered.json",
         "careUnit" : "",
         "clinic" : []
-    }
+    };
     $timeout(function() { // wrap in timeout to simulate latency - remove soon
         dashBoardService.getCertificates(requestConfig, function(data) {
             $scope.widgetState.doneLoading = true;
@@ -212,12 +238,4 @@ angular.module('wcDashBoardApp').controller('ReadyToSignCertCtrl', [ '$scope', '
             }
         });
     }, 500);
-} ]);
-
-/*
- *  AboutWebcertCtrl - Controller for logic related to creating a new certificate 
- * 
- */
-angular.module('wcDashBoardApp').controller('AboutWebcertCtrl', [ '$scope', '$window', function AboutWebcertCtrl($scope, $window) {
-
 } ]);
