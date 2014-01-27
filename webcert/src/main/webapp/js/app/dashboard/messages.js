@@ -18,6 +18,7 @@ var webcertResources = {
         "label.signselectedcerts" :"Signera valda intyg",
 
         "label.confirmaddress": "Återanvänd uppgifter",
+        "label.copycert": "Kopiera intyg",
 
         //certificate types
         "certificatetypes.fk7263.typename" : "Läkarintyg FK7263",

@@ -10,6 +10,8 @@ var commonMessageResources = {
         "common.cancel" : "Avbryt",
         "common.goback" : "Tillbaka",
 
+        "common.copy" : "Kopiera",
+
         // wc-common-directives-resources
         "nav.label.loggedinas" : "Inloggad som:",
 

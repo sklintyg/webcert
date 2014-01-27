@@ -60,6 +60,26 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
     }
   }
 
+  $scope.openIntyg = function(cert){
+
+  }
+
+  $scope.copyIntyg = function(cert){
+    wcDialogService.showDialog(
+        $scope,
+        {
+          dialogId: "copy-dialog",
+          titleId: "label.copycert",
+          bodyText: "<p>När du kopierar detta intyg får du upp ett nytt intyg av samma typ och med samma information som finns i det intyg som du kopierar. Du får möjlighet att redigera informationen innan du signerar det nya intyget.</p><div class='form-inline'><input id='dontShowAgain' type='checkbox' ng-model='dontShowCopyInfo'> <label for='dontShowAgain'>Visa inte denna information igen</label></div>",
+          button1click: function() {
+            $log.debug("copy cert");
+          },
+          button1text: "common.copy",
+          button2text: "common.cancel"
+        }
+    );
+  }
+
   $scope.confirmAddressDialog = function() {
 
     var address = "Repslagaregatan 25,<br>58222, Linköping";

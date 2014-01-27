@@ -65,8 +65,8 @@
 	          <span message key="{{widgetState.activeErrorMessageKey}}"></span>
 	        </div>
 	
-	        <!-- qa table -->
-	        <div class="row-fluid" ng-show="widgetState.currentList.length>0" id="qaTable">
+	        <!-- Previous certs table -->
+	        <div class="row-fluid" ng-show="widgetState.currentList.length>0" id="prevCertTable">
 	          <table class="span12 table table-striped table-qa">
 	            <tr>
 	              <th></th>
@@ -78,10 +78,10 @@
 	            </tr>
 	            <tr ng-repeat="cert in widgetState.currentList">
 	              <td>
-	                <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert.intygsReferens)" id="showqaBtn-{{cert.internReferens}}">Visa</button>
+	                <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert.intygsReferens)" id="showBtn-{{cert.internReferens}}">Visa</button>
 	              </td>
                 <td>
-                  <button class="btn btn-info" title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert.intygsReferens)" id="showqaBtn-{{cert.internReferens}}">Kopiera</button>
+                  <button class="btn btn-info" title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert.intygsReferens)" id="copyBtn-{{cert.internReferens}}">Kopiera</button>
                 </td>
                 <td><span message key="certificatetypes.{{cert.type}}.typename"></span></td>
 	              <td class="unbreakable">{{cert.status}}</td>
