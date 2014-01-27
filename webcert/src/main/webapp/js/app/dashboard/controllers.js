@@ -60,21 +60,26 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
     }
   }
 
-  $scope.dialog = {
-    acceptprogressdone: true,
-    focus: false
-  }
-
   $scope.confirmAddressDialog = function() {
+
+    var address = "Repslagaregatan 25,<br>58222, Linköping";
+    var bodyText = "Patienten har tidigare intyg där adressuppgifter har angivits. Vill du återanvända dessa i det nya intyget?<br><br>Adress: "+address;
+
     wcDialogService.showDialog(
         $scope,
         {
           dialogId: "confirm-address-dialog",
           titleId: "label.confirmaddress",
-          bodyText: "Test",
+          bodyText: bodyText,
           button1click: function() {
-            $log.debug("confirm address");
-          }
+            $log.debug("confirm address yes");
+          },
+          button2click: function() {
+            $log.debug("confirm address no");
+          },
+          button1text: "common.yes",
+          button2text: "common.no",
+          button3text: "common.cancel"
         }
     );
   };
