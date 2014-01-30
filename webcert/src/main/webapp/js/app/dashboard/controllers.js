@@ -28,7 +28,7 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
 		types : [
 		  {id:"default", name: "Välj intygstyp"},
 			{id:"fk7263", name: "Läkarintyg FK 7263"},
-			{id:"tsbas", name: "Transportstyrelsen Läkarintyg Bas"}
+			{id:"ts-bas", name: "Läkarintyg Transportstyrelsen Bas"}
 		]
 	};
 	
@@ -58,7 +58,7 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
     $log.debug("edit cert");
 
     if($scope.certType.selected != "fk7263"){
-      $scope.confirmAddressDialog();
+      $scope.confirmAddressDialog($scope.certType.selected);
     } else {
       $window.location.href = "/m/fk7263/webcert/intyg/new/edit#/edit";
     }
@@ -84,7 +84,7 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
     );
   }
 
-  $scope.confirmAddressDialog = function() {
+  $scope.confirmAddressDialog = function(certType) {
 
     var address = "Repslagaregatan 25,<br>58222, Linköping";
     var bodyText = "Patienten har tidigare intyg där adressuppgifter har angivits. Vill du återanvända dessa i det nya intyget?<br><br>Adress: "+address;
@@ -97,9 +97,11 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
           bodyText: bodyText,
           button1click: function() {
             $log.debug("confirm address yes");
+            $window.location.href = "/m/"+certType+"/webcert/intyg/new/edit#/edit";
           },
           button2click: function() {
             $log.debug("confirm address no");
+            $window.location.href = "/m/"+certType+"/webcert/intyg/new/edit#/edit";
           },
           button1text: "common.yes",
           button2text: "common.no",
@@ -267,4 +269,12 @@ angular.module('wcDashBoardApp').controller('ReadyToSignCertCtrl', [ '$scope', '
             }
         });
     }, 500);
+} ]);
+
+/*
+ *  AboutWebcertCtrl - Controller for logic related to creating a new certificate
+ *
+ */
+angular.module('wcDashBoardApp').controller('AboutWebcertCtrl', [ '$scope', '$window', function AboutWebcertCtrl($scope, $window) {
+
 } ]);

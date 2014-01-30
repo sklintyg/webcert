@@ -5,7 +5,7 @@
         <div class="control-group">
           <label class="control-label">Patientens personnummer</label>
           <input id="pnr" name="pnr" type="text" ng-model="personnummer" wc-validate-person-number placeholder="Exempel: ååååmmdd-nnnn" />
-          <div ng-show="pnrForm.pnr.$dirty && pnrForm.submitted">
+          <div ng-show="pnrForm.pnr.$dirty || pnrForm.submitted">
               <span class="error" ng-show="pnrForm.pnr.$error.pnrValidate">Personnummer måste skrivas på formatet ååååmmdd-nnnn</span>
           </div>
         </div>

@@ -21,7 +21,7 @@
       </select>
     </div>
     <div class="control-group">
-      <button class="btn btn-success" ng-click="editCert()">Fortsätt</button>
+      <button class="btn btn-success" ng-click="editCert()" ng-disabled="certType.selected == 'default'">Fortsätt</button>
     </div>
 	  <div class="alert alert-warning" ng-show="false">
 	   Tänk på att...
