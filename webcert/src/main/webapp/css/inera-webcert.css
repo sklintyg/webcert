@@ -783,3 +783,5 @@ input[datepicker-popup] .btn-block {
 	color: #64ABC0; 
 	margin-top: 20px;
 }
+
+span.error { color: orangered; }

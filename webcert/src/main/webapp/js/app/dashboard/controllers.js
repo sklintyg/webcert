@@ -39,8 +39,12 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
 	
 	$scope.toStep1 = function() {	$location.path("/index"); };
 	$scope.toEditPatient = function() {
-		$rootScope.personnummer = $scope.personnummer;
-		$location.path("/edit-patient/index");
+    if ($scope.pnrForm.$valid) {
+      $rootScope.personnummer = $scope.personnummer;
+      $location.path("/edit-patient/index");
+    } else {
+      $scope.pnrForm.submitted = true;
+    }
 	}
 
 	$scope.toStep2 = function() {
