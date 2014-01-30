@@ -31,6 +31,7 @@
         <!-- entry key="/m/fk7263" value="http://localhost:8088/fk7263" /-->
         <entry key="/m/fk7263" value="LOCAL:/fk7263"/>
         <entry key="/m/rli" value="LOCAL:/rli" />
+        <entry key="/m/ts-bas" value="LOCAL:/ts-bas" />
       </map>
     </property>
   </bean>
