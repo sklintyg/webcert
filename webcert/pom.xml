@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
-<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part
-	of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
-	Inera Certificate Web is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Affero General Public License as published
-	by the Free Software Foundation, either version 3 of the License, or (at
-	your option) any later version. Inera Certificate Web is distributed in the
-	hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-	GNU Affero General Public License for more details. You should have received
-	a copy of the GNU Affero General Public License along with this program.
-	If not, see <http://www.gnu.org/licenses/>. -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part 
+  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web). 
+  Inera Certificate Web is free software: you can redistribute it and/or modify 
+  it under the terms of the GNU Affero General Public License as published 
+  by the Free Software Foundation, either version 3 of the License, or (at 
+  your option) any later version. Inera Certificate Web is distributed in the 
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+  GNU Affero General Public License for more details. You should have received 
+  a copy of the GNU Affero General Public License along with this program. 
+  If not, see <http://www.gnu.org/licenses/>. -->
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>se.inera.webcert</groupId>
@@ -226,12 +227,14 @@
           </webAppConfig>
           <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
           <contextHandlers>
-            <!--
-                        <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-                          <war>${inera.certificates.basedir}/rli/target/rli.war</war>
-                          <contextPath>/rli</contextPath>
-                        </contextHandler>
-            -->
+            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+              <war>${inera.certificates.basedir}/rli/target/rli.war</war>
+              <contextPath>/rli</contextPath>
+            </contextHandler>
+            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+              <war>${inera.certificates.basedir}/ts-bas/target/ts-bas.war</war>
+              <contextPath>/ts-bas</contextPath>
+            </contextHandler>
             <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
               <war>${inera.certificates.basedir}/fk7263/target/fk7263.war</war>
               <contextPath>/fk7263</contextPath>
