@@ -1,39 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-  Copyright (C) 2013 Inera AB (http://www.inera.se)
-
-  This file is part of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
-
-  Inera Certificate Web is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as
-  published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  Inera Certificate Web is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
-
--->
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part 
+  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web). 
+  Inera Certificate Web is free software: you can redistribute it and/or modify 
+  it under the terms of the GNU Affero General Public License as published 
+  by the Free Software Foundation, either version 3 of the License, or (at 
+  your option) any later version. Inera Certificate Web is distributed in the 
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+  GNU Affero General Public License for more details. You should have received 
+  a copy of the GNU Affero General Public License along with this program. 
+  If not, see <http://www.gnu.org/licenses/>. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
     http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
 
-   <cxf:bus>
-     <cxf:features>
-       <cxf:logging/>
-     </cxf:features>
-   </cxf:bus>
+  <cxf:bus>
+    <cxf:features>
+      <cxf:logging />
+    </cxf:features>
+  </cxf:bus>
 
   <context:annotation-config />
+
   <context:component-scan base-package="se.inera.webcert.web.controller.api" />
+
   <jaxrs:server address="/fragasvar">
     <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.web.controller.api.FragaSvarApiController" />
@@ -45,4 +38,17 @@
       <entry key="json" value="application/json" />
     </jaxrs:extensionMappings>
   </jaxrs:server>
+
+  <jaxrs:server address="/intyg">
+    <jaxrs:serviceBeans>
+      <bean class="se.inera.webcert.web.controller.api.IntygApiController" />
+    </jaxrs:serviceBeans>
+    <jaxrs:providers>
+      <ref bean="jacksonJsonProvider" />
+    </jaxrs:providers>
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json" />
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+
 </beans>

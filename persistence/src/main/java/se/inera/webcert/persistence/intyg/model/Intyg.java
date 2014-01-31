@@ -184,7 +184,11 @@ public class Intyg {
     public void setStatus(IntygsStatus status) {
         this.status = status;
     }
-
+    
+    public void setSenastSparadDatum(LocalDateTime senastSparadDatum) {
+        this.senastSparadDatum = senastSparadDatum;
+    }
+    
     public LocalDateTime getSenastSparadDatum() {
         return senastSparadDatum;
     }

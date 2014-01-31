@@ -33,6 +33,8 @@ import se.inera.certificate.integration.rest.dto.CertificateStatus;
 import se.inera.certificate.model.Utlatande;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateStatusType;
+import se.inera.webcert.service.dto.IntygItem;
+import se.inera.webcert.service.dto.IntygStatus;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
@@ -88,7 +90,7 @@ public class IntygServiceImpl implements IntygService {
 
         verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
-        CertificateContentMeta metaData = convert(intyg.getMeta());
+        CertificateContentMeta metaData = convertToCertificateContentMeta(intyg.getMeta());
 
         ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(intyg.getMeta().getCertificateType());
 
@@ -101,6 +103,29 @@ public class IntygServiceImpl implements IntygService {
         logService.logReadOfIntyg(intyg);
 
         return holder;
+    }
+    
+    private CertificateContentMeta convertToCertificateContentMeta(CertificateMetaType source) {
+
+        CertificateContentMeta metaData = new CertificateContentMeta();
+        metaData.setId(source.getCertificateId());
+        metaData.setType(source.getCertificateType());
+        metaData.setFromDate(source.getValidFrom());
+        metaData.setTomDate(source.getValidTo());
+        metaData.setStatuses(convertCertificateStatuses(source.getStatus()));
+        return metaData;
+    }
+    
+    private List<CertificateStatus> convertCertificateStatuses(List<CertificateStatusType> source) {
+        List<CertificateStatus> status = new ArrayList<>();
+        for (CertificateStatusType certificateStatusType : source) {
+            status.add(convertCertificateStatus(certificateStatusType));
+        }
+        return status;
+    }
+
+    private CertificateStatus convertCertificateStatus(CertificateStatusType source) {
+        return new CertificateStatus(source.getType().value(), source.getTarget(), source.getTimestamp());
     }
 
     @Override
@@ -119,7 +144,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public List<CertificateContentMeta> listIntyg(List<String> enhetId, String personnummer) {
+    public List<IntygItem> listIntyg(List<String> enhetId, String personnummer) {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
         request.setNationalIdentityNumber(personnummer);
         request.getCareUnit().addAll(enhetId);
@@ -135,36 +160,39 @@ public class IntygServiceImpl implements IntygService {
                     "listCertificatesForCare WS call: ERROR :" + response.getResult().getResultText());
         }
     }
-
-    private List<CertificateContentMeta> convert(List<CertificateMetaType> source) {
-        List<CertificateContentMeta> meta = new ArrayList<>();
+    
+    private List<IntygItem> convert(List<CertificateMetaType> source) {
+        List<IntygItem> intygItems = new ArrayList<IntygItem>();
         for (CertificateMetaType certificateMetaType : source) {
-            meta.add(convert(certificateMetaType));
+            intygItems.add(convert(certificateMetaType));
         }
-        return meta;
+        return intygItems;
     }
 
-    private CertificateContentMeta convert(CertificateMetaType source) {
+    private IntygItem convert(CertificateMetaType source) {
 
-        CertificateContentMeta metaData = new CertificateContentMeta();
-        metaData.setId(source.getCertificateId());
-        metaData.setType(source.getCertificateType());
-        metaData.setFromDate(source.getValidFrom());
-        metaData.setTomDate(source.getValidTo());
-        metaData.setStatuses(convertStatus(source.getStatus()));
-        return metaData;
+        IntygItem item = new IntygItem();
+        item.setId(source.getCertificateId());
+        item.setType(source.getCertificateType());
+        item.setFromDate(source.getValidFrom());
+        item.setTomDate(source.getValidTo());
+        item.setStatuses(convertStatus(source.getStatus()));
+        item.setSignedBy(source.getIssuerName());
+        item.setSignedDate(source.getSignDate());
+        
+        return item;
     }
 
-    private List<CertificateStatus> convertStatus(List<CertificateStatusType> source) {
-        List<CertificateStatus> status = new ArrayList<>();
+    private List<IntygStatus> convertStatus(List<CertificateStatusType> source) {
+        List<IntygStatus> status = new ArrayList<>();
         for (CertificateStatusType certificateStatusType : source) {
             status.add(convert(certificateStatusType));
         }
         return status;
     }
 
-    private CertificateStatus convert(CertificateStatusType source) {
-        return new CertificateStatus(source.getType().value(), source.getTarget(), source.getTimestamp());
+    private IntygStatus convert(CertificateStatusType source) {
+        return new IntygStatus(source.getType().value(), source.getTarget(), source.getTimestamp());
     }
 
     private CertificateContentHolder convertToInternalJson(CertificateContentHolder external) {
