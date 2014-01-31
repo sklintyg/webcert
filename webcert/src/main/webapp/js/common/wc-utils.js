@@ -244,6 +244,7 @@ angular.module('wc.utils').factory(
 
                 } ]);
 
+// Common module utils
 angular.module('wc.utils').directive("wcField", [function() {
   return {
     restrict : "A",
