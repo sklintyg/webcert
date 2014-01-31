@@ -243,3 +243,23 @@ angular.module('wc.utils').factory(
                     }
 
                 } ]);
+
+angular.module('wc.utils').directive("wcField", [function() {
+  return {
+    restrict : "A",
+    transclude : true,
+    replace : true,
+    scope : {
+      fieldLabel: "@",
+      fieldNumber: "@"
+    },
+    template :
+        '<div class="body-row clearfix">'
+            +'<h4 class="cert-field-number" ng-if="fieldNumber != undefined"><span message key="modules.label.field"></span> {{fieldNumber}}</h4>'
+            +'<h3 class="title"><span message key="{{fieldLabel}}"></span></h3>'
+            +'<span class="text">'
+            +'  <span ng-transclude></span>'
+            +'</span>'
+       +'</div>'
+  }
+} ]);
