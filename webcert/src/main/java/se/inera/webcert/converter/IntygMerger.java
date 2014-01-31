@@ -109,7 +109,7 @@ public final class IntygMerger {
         
         ie.setIntygId(intygItem.getId());
         ie.setIntygType(intygItem.getType());
-        ie.setStatus(findLastStatus(intygItem.getStatuses()));
+        ie.setStatus(findLastStatus(intygItem));
         ie.setSource(IntygSource.IT);
         ie.setLastUpdatedSigned(convertToLocalDateTime(intygItem.getSignedDate()));
         ie.setUpdatedSignedBy(intygItem.getSignedBy());
@@ -125,12 +125,13 @@ public final class IntygMerger {
         
         return localDate.toLocalDateTime(localDate.toDateTimeAtStartOfDay().toLocalTime());
     }
-    
-    
-    private static String findLastStatus(List<IntygStatus> list) {
+        
+    private static String findLastStatus(IntygItem intygItem) {
+        
+        List<IntygStatus> list = intygItem.getStatuses();
         
         if (list == null || list.isEmpty()) {
-            LOG.debug("No statuses found");
+            LOG.debug("No statuses found in Intyg {}", intygItem.getId());
             return "-";
         }
         
