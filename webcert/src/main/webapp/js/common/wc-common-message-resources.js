@@ -12,6 +12,9 @@ var commonMessageResources = {
 
         "common.copy" : "Kopiera",
 
+        // cert status messages
+        "cert.status.sent" : "Skickat",
+
         // wc-common-directives-resources
         "nav.label.loggedinas" : "Inloggad som:",
 

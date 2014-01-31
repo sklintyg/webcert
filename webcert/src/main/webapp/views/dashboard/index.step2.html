@@ -39,7 +39,7 @@
       </div>
       <div class="control-group">
         <div class="controls form-inline indent">
-          <input type="checkbox" name="showHiddenCerts"> <label class="checkbox">Visa även borttagna och rättade intyg</label>
+          <input id="showHiddenCerts" type="checkbox" name="showHiddenCerts" ng-model="widgetState.showHiddenCerts" ng-change="updateCertList()"> <label for="showHiddenCerts" class="checkbox">Visa även borttagna och rättade intyg</label>
         </div>
       </div>
 
@@ -58,8 +58,6 @@
 	          <span message key="info.query.noresults"></span>
 	        </div>
 	
-	
-	
 	        <!-- error message -->
 	        <div id="current-list-noResults-error" ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" class="alert alert-error">
 	          <span message key="{{widgetState.activeErrorMessageKey}}"></span>
@@ -74,19 +72,19 @@
 	              <th class="center" title="">Intygstyp</th>
 	              <th title="">Status</th>
 	              <th title="">Ändringsdatum</th>
-	              <th title="">Sparat av</th>
+	              <th title="">Signerat/Sparat av</th>
 	            </tr>
 	            <tr ng-repeat="cert in widgetState.currentList">
 	              <td>
-	                <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert.intygsReferens)" id="showBtn-{{cert.internReferens}}">Visa</button>
+	                <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert.intygId)" id="showBtn-{{cert.intygId}}">Visa</button>
 	              </td>
                 <td>
-                  <button class="btn btn-info" title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert.intygsReferens)" id="copyBtn-{{cert.internReferens}}">Kopiera</button>
+                  <button class="btn btn-info" title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert.intygId)" id="copyBtn-{{cert.intygId}}">Kopiera</button>
                 </td>
-                <td><span message key="certificatetypes.{{cert.type}}.typename"></span></td>
-	              <td class="unbreakable">{{cert.status}}</td>
-	              <td class="unbreakable">{{cert.senastSparat | date:'shortDate'}}</td>
-	              <td class="unbreakable table-qa-last">{{cert.sparatAv}}</td>
+                <td><span message key="certificatetypes.{{cert.intygType}}.typename"></span></td>
+	              <td class="unbreakable"><span message key="cert.status.{{cert.status}}"></span></td>
+	              <td class="unbreakable">{{cert.lastUpdatedSigned | date:'shortDate'}}</td>
+	              <td class="unbreakable table-qa-last">{{cert.updatedSignedBy}}</td>
 	            </tr>
 	          </table>
 	        </div>
