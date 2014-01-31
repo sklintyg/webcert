@@ -40,6 +40,7 @@ import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.model.Utlatande;
+import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.test.NamespacePrefixNameIgnoringListener;
@@ -350,13 +351,13 @@ public class IntygServiceTest {
         when(listCertificatesForCareResponder.listCertificatesForCare(LOGICAL_ADDRESS, request)).thenReturn(
                 listResponse);
 
-        List<CertificateContentMeta> list = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        List<IntygItem> list = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
 
         verify(listCertificatesForCareResponder).listCertificatesForCare(LOGICAL_ADDRESS, request);
 
         assertEquals(2, list.size());
 
-        CertificateContentMeta meta = list.get(0);
+        IntygItem meta = list.get(0);
 
         assertEquals("1", meta.getId());
         assertEquals("fk7263", meta.getType());

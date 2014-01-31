@@ -81,6 +81,20 @@ public class IntygRepositoryTest {
 
     }
 
+    @Test
+    public void testFindDraftsByPatientPnrAndEnhetsId() {
+        
+        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.SIGNED));
+        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.DRAFT_COMPLETE));
+        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.DRAFT_DISCARDED));
+        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.DRAFT_INCOMPLETE));
+                
+        List<String> enhetIds = Arrays.asList(ENHET_1_ID);
+        List<Intyg> results = intygRepository.findDraftsByPatientPnrAndEnhetsId(enhetIds, PERSON_NUMMER);
+        
+        assertEquals(3, results.size());
+    }
+    
     private boolean exists(Intyg intyg, List<Intyg> result) {
         for (Intyg inResult : result) {
             if (intyg.getIntygsId().equals(inResult.getIntygsId())) {

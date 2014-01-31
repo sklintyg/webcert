@@ -5,6 +5,7 @@ import java.util.List;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.model.Utlatande;
+import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 
 /**
@@ -45,5 +46,5 @@ public interface IntygService {
      * @param personnummer the person number
      * @return list of certificates matching the search criteria
      */
-    List<CertificateContentMeta> listIntyg(List<String> enhetId, String personnummer);
+    List<IntygItem> listIntyg(List<String> enhetId, String personnummer);
 }
