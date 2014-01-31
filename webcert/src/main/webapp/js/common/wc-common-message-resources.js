@@ -37,6 +37,9 @@ var commonMessageResources = {
         "qa.measure.markhandled" : "Markera som hanterad",
         "qa.measure.handled" : "Ingen",
 
+        // Cert module messages. Used by several cert modules.
+        "modules.label.field" : "Fält"
+
     },
     "en" : {
         "common.ok" : "OK",
