@@ -43,23 +43,18 @@
         </div>
       </div>
 
-	    <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery" show-content="!widgetState.runningQuery">
+	    <div wc-spinner label="info.loadingdata" show-spinner="widgetState.doneLoading" show-content="!widgetState.doneLoading">
 	
 	      <div class="webcert-col-section">
 	
-	        <!-- No results message for unhandled -->
-	        <div id="current-list-noResults-unit" ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && !widgetState.queryMode && widgetState.currentList.length<1"
+	        <!-- No certs for person -->
+	        <div id="current-list-noResults-unit" ng-show="!widgetState.activeErrorMessageKey && widgetState.currentList.length<1"
 	          class="alert alert-info">
-	          <span message key="info.nounanswered.qa.for.unit"></span>
+	          <span message key="info.nocertsfound"></span>
 	        </div>
-	
-	        <!-- No results message for query -->
-	        <div id="current-list-noResults-query" ng-show="widgetState.totalCount<1 && widgetState.queryMode" class="alert alert-info">
-	          <span message key="info.query.noresults"></span>
-	        </div>
-	
+
 	        <!-- error message -->
-	        <div id="current-list-noResults-error" ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" class="alert alert-error">
+	        <div id="current-list-noResults-error" ng-show="widgetState.activeErrorMessageKey" class="alert alert-error">
 	          <span message key="{{widgetState.activeErrorMessageKey}}"></span>
 	        </div>
 	
@@ -87,13 +82,6 @@
 	              <td class="unbreakable table-qa-last">{{cert.updatedSignedBy}}</td>
 	            </tr>
 	          </table>
-	        </div>
-	        <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}}</div>
-	        <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
-	          <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()" ng-disabled="widgetState.fetchingMoreInProgress">
-	            <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
-	          </button>
-	          <p></p>
 	        </div>
 	      </div>
 	    </div>

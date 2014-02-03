@@ -10,17 +10,17 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
      * Load certificate list of all certificates for a person
      */
 
-    function _getCertificatesForPerson(requestConfig, callback) {
+    function _getCertificatesForPerson(requestConfig, onSuccess, onError) {
       $log.debug("_getCertificatesForPerson type:" + requestConfig);
       var restPath = '/api/intyg/list/' + requestConfig;
       $http.get(restPath).success(function(data) {
         $log.debug("got data:" + data);
-        callback(data);
+        onSuccess(data);
       }).error(function(data, status, headers, config) {
-            $log.error("error " + status);
-            // Let calling code handle the error of no data response
-            callback(null);
-          });
+        $log.error("error " + status);
+        // Let calling code handle the error of no data response
+        onError(status);
+      });
     }
 
     /*

@@ -6,15 +6,13 @@
  *  CreateCertCtrl - Controller for logic related to creating a new certificate 
  * 
  */
-angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$rootScope', '$window', '$log', '$location', '$filter', 'wcDialogService', 'dashBoardService', function CreateCertCtrl($scope, $rootScope, $window, $log, $location, $filter, wcDialogService, dashBoardService) {
+angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$rootScope', '$window', '$log', '$location', '$filter', '$timeout', 'wcDialogService', 'dashBoardService', function CreateCertCtrl($scope, $rootScope, $window, $log, $location, $filter, $timeout, wcDialogService, dashBoardService) {
 
 	//var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
 
 	$scope.widgetState = {
 			doneLoading : false,
-			runningQuery : false,
       activeErrorMessageKey : null,
-      queryMode : false,
       currentList : undefined,
       showHiddenCerts : false
 	};
@@ -111,7 +109,7 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
   $scope.setActiveUnit = function(unit) {
     $log.debug("ActiveUnit is now:" + unit);
     $scope.activeUnit = unit;
-/*    $scope.widgetState.queryMode = false;
+/*
     $scope.widgetState.queryFormCollapsed = true;
 
     //If we change enhet then we probably don't want the same filter criterias
@@ -137,10 +135,21 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
   if(!$scope.personnummer || $scope.personnummer == '') $scope.personnummer = "19121212-1212";
   // --------------------
 
-  dashBoardService.getCertificatesForPerson($scope.personnummer, function(data) {
-    $scope.widgetState.certListUnhandled = data;
-    $scope.updateCertList();
-  });
+  $scope.widgetState.activeErrorMessageKey = null;
+  $scope.widgetState.doneLoading = true;
+
+  $timeout(function() {
+    dashBoardService.getCertificatesForPerson($scope.personnummer, function(data) {
+      $scope.widgetState.doneLoading = false;
+      $scope.widgetState.certListUnhandled = data;
+      $scope.updateCertList();
+    }, function(errorData) {
+      $scope.widgetState.doneLoading = false;
+      $log.debug("Query Error"+errorData);
+      $scope.widgetState.activeErrorMessageKey = "info.certload.error";
+    });
+
+  }, 500);
 
 } ]);
 
