@@ -158,9 +158,9 @@ span.help {
 }
 
 .cert-body div.body-row {
-	margin: 0 20px 20px 0;
-	background-color: #e5e5e5;
-	border: 1px solid #d8d8d8;
+	margin: 0 20px 25px 0;
+/*	background-color: #e5e5e5;
+	border: 1px solid #d8d8d8;*/
 	-webkit-border-radius: 8px 8px 8px 8px;
 	-moz-border-radius: 8px 8px 8px 8px;
 	border-radius: 8px 8px 8px 8px;	
@@ -177,6 +177,8 @@ span.help {
 
 .cert-body div.body-row-single {
 	padding-left: 20px;
+    background-color: #e5e5e5;
+    border: 1px solid #d8d8d8;
 }
 
 .cert-body .body-row .title {
@@ -185,7 +187,8 @@ span.help {
 	font-size: 16px;
 	font-weight: bold;
 	display: block;
-	padding: 10px 20px;
+	/*padding: 10px 20px;*/
+    padding-bottom: 5px;
   -webkit-border-radius: 8px 8px 0 0;
   -moz-border-radius: 8px 8px 0 0;
   border-radius: 8px 8px 0 0;
@@ -208,6 +211,10 @@ span.help {
 .cert-body .body-row .text {
 	display: block;
 	padding: 20px 40px;
+    background-color: #e5e5e5;
+    -webkit-border-radius: 0 0 8px 8px;
+    -moz-border-radius: 0 0 8px 8px;
+    border-radius: 0 0 8px 8px;
 }
 
 .cert-body .body-row .unfilled {
@@ -219,9 +226,13 @@ span.help {
 
 .body-row h4.cert-field-number {
 	float: right;
-	padding: 10px 20px 0 20px;
+	/*padding: 10px 20px 0 20px;*/
 	color: #008391;
 	font-size: 15px;
+}
+
+.body-row-single h4.cert-field-number {
+    padding: 10px 20px 0 20px;
 }
 
 .body-row h4 {

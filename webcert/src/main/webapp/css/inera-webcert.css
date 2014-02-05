@@ -559,9 +559,10 @@ button.btn-link-minimal {
 	left: -23%;
 }
 
+/*
 input[type="radio"], input[type="checkbox"] {
   margin: 0 0 0;
-}
+}*/
 
 input[datepicker-popup] {
   width: 80px;
