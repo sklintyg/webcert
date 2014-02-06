@@ -175,6 +175,14 @@ span.help {
   vertical-align: text-top;
 }
 
+.body-row .checkbox {
+    padding-left: 20px;
+}
+
+.body-row .checkbox input[type=checkbox] {
+    margin-left: -20px;
+}
+
 .cert-body div.body-row-single {
 	padding-left: 20px;
     background-color: #e5e5e5;
