@@ -34,8 +34,10 @@ var webcertResources = {
         "info.noreadytosigncertsfound" : "<strong>Inga klarmarkerade intyg hittades.</strong>",
         "info.loadingdata" :"<strong>Uppdaterar lista...</strong>",
         "info.nounanswered.qa.for.unit" : "<strong>Inga ohanterade frågor & svar för enheten.</strong>",
+        "info.nocertsfound" : "<strong>Inga intyg hittades.</strong>",
         "info.query.noresults" : "<strong>Sökningen gav inga resultat.</strong>",
         "info.query.error" : "<strong>Sökningen kunde inte utföras.</strong>",
+        "info.certload.error" : "<strong>Kunde inte hämta intyg.</strong>",
         "info.running.query" : "<strong>Söker...</strong>",
         
         //error messages

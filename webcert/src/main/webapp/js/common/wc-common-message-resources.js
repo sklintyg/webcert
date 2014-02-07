@@ -12,6 +12,9 @@ var commonMessageResources = {
 
         "common.copy" : "Kopiera",
 
+        // cert status messages
+        "cert.status.sent" : "Skickat",
+
         // wc-common-directives-resources
         "nav.label.loggedinas" : "Inloggad som:",
 
@@ -38,6 +41,9 @@ var commonMessageResources = {
         "qa.measure.komplettering" : "Komplettera",
         "qa.measure.markhandled" : "Markera som hanterad",
         "qa.measure.handled" : "Ingen",
+
+        // Cert module messages. Used by several cert modules.
+        "modules.label.field" : "Fält"
 
     },
     "en" : {

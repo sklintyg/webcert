@@ -6,16 +6,15 @@
  *  CreateCertCtrl - Controller for logic related to creating a new certificate 
  * 
  */
-angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$rootScope', '$window', '$log', '$location', 'wcDialogService', function CreateCertCtrl($scope, $rootScope, $window, $log, $location, wcDialogService) {
+angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$rootScope', '$window', '$log', '$location', '$filter', '$timeout', 'wcDialogService', 'dashBoardService', function CreateCertCtrl($scope, $rootScope, $window, $log, $location, $filter, $timeout, wcDialogService, dashBoardService) {
 
 	//var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
 
 	$scope.widgetState = {
 			doneLoading : false,
-			runningQuery : false,
       activeErrorMessageKey : null,
-      queryMode : false,
-      currentList : undefined
+      currentList : undefined,
+      showHiddenCerts : false
 	};
 	
 	$scope.personnummer = "";
@@ -31,12 +30,8 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
 			{id:"ts-bas", name: "Läkarintyg Transportstyrelsen Bas"}
 		]
 	};
-	
-	$scope.widgetState.currentList = [
-	 {type: "fk7263", status: "Signerat", senastSparat:"2014-01-01", sparatAv: "Gunilla Andersson"},
-	 {type: "fk7263", status: "Signerat", senastSparat:"2014-01-01", sparatAv: "Gunilla Andersson"}
-	];
-	
+
+  // Navigation functions
 	$scope.toStep1 = function() {	$location.path("/index"); };
 	$scope.toEditPatient = function() {
     if ($scope.pnrForm.$valid) {
@@ -62,11 +57,12 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
     } else {
       $window.location.href = "/m/fk7263/webcert/intyg/new/edit#/edit";
     }
-  }
+  };
 
+  // List interaction functions
   $scope.openIntyg = function(cert){
 
-  }
+  };
 
   $scope.copyIntyg = function(cert){
     wcDialogService.showDialog(
@@ -82,7 +78,7 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
           button2text: "common.cancel"
         }
     );
-  }
+  };
 
   $scope.confirmAddressDialog = function(certType) {
 
@@ -113,7 +109,7 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
   $scope.setActiveUnit = function(unit) {
     $log.debug("ActiveUnit is now:" + unit);
     $scope.activeUnit = unit;
-/*    $scope.widgetState.queryMode = false;
+/*
     $scope.widgetState.queryFormCollapsed = true;
 
     //If we change enhet then we probably don't want the same filter criterias
@@ -129,8 +125,32 @@ angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$root
     $scope.initDoctorList(unit.id);
     $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
  		*/
-  }
-	
+  };
+
+  $scope.updateCertList = function(){
+      $scope.widgetState.currentList = $filter('CertDeletedFilter')($scope.widgetState.certListUnhandled, $scope.widgetState.showHiddenCerts);
+  };
+
+  // TEST --------------
+  if(!$scope.personnummer || $scope.personnummer == '') $scope.personnummer = "19121212-1212";
+  // --------------------
+
+  $scope.widgetState.activeErrorMessageKey = null;
+  $scope.widgetState.doneLoading = true;
+
+  $timeout(function() {
+    dashBoardService.getCertificatesForPerson($scope.personnummer, function(data) {
+      $scope.widgetState.doneLoading = false;
+      $scope.widgetState.certListUnhandled = data;
+      $scope.updateCertList();
+    }, function(errorData) {
+      $scope.widgetState.doneLoading = false;
+      $log.debug("Query Error"+errorData);
+      $scope.widgetState.activeErrorMessageKey = "info.certload.error";
+    });
+
+  }, 500);
+
 } ]);
 
 /*

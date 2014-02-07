@@ -243,3 +243,41 @@ angular.module('wc.utils').factory(
                     }
 
                 } ]);
+
+// Common module utils
+angular.module('wc.utils').directive("wcField", [function() {
+  return {
+    restrict : "A",
+    transclude : true,
+    replace : true,
+    scope : {
+      fieldLabel: "@",
+      fieldNumber: "@",
+      fieldHelpText: "="
+    },
+    template :
+        '<div class="body-row clearfix">'
+            +'<h4 class="cert-field-number" ng-if="fieldNumber != undefined"><span message key="modules.label.field"></span> {{fieldNumber}}</h4>'
+            +'<h3 class="title"><span message key="{{fieldLabel}}"></span><span ng-if="fieldHelpText != undefined" class="help" tooltip-trigger="click" tooltip-html-unsafe="{{fieldHelpText}}">?</span></h3>'
+            +'<span class="text">'
+            +'  <span ng-transclude></span>'
+            +'</span>'
+       +'</div>'
+  }
+} ]);
+
+angular.module('wc.utils').directive("wcFieldSingle", [function() {
+  return {
+    restrict : "A",
+    transclude : true,
+    replace : true,
+    scope : {
+      fieldNumber: "@"
+    },
+    template :
+        '<div class="body-row body-row-single clearfix">'
+            +'<h4 class="cert-field-number" ng-if="fieldNumber != undefined"><span message key="modules.label.field"></span> {{fieldNumber}}</h4>'
+            +'<span ng-transclude></span>'
+        +'</div>'
+  }
+} ]);

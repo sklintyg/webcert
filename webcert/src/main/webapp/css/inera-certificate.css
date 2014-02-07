@@ -1,0 +1,488 @@
+/**
+ * Copyright (C) 2012 Inera AB (http://www.inera.se)
+ *
+ * This file is part of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
+ *
+ * Inera Certificate Web is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * Inera Certificate Web is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+ a.backlink-icon {
+	display: block;
+	width: 24px;
+	height: 24px;
+	background: transparent url(/img/tillbaka.png) center left no-repeat;
+	float: left;
+	margin: 2px 20px 0 0;
+}
+
+a:hover.backlink-icon {
+  background:transparent url(/img/tillbaka_hoover.png) center left no-repeat;
+}
+
+.body-row a {
+	color: #008391;
+}
+
+.header-fix-top {
+	position:fixed;
+	width: 100%;
+	left: 0;
+	top: 0;
+	z-index: 2000;
+}
+
+.header-fix-top-expand {
+  position: relative;
+  top: -20px;
+  right: 30px;
+}
+
+.header-fix-top-expand-wrapper {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: #74777F;
+  text-align: center;
+  -webkit-border-radius: 0 0 5px 5px;
+  -moz-border-radius: 0 0 5px 5px;
+  -ms-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
+}
+
+.header-fix-top-expand-wrapper .btn-link,.header-fix-top-expand-wrapper .btn-link:hover {
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.75);
+}
+
+.header-fix-top h1 {
+	margin: 0 20px 0 0;
+	line-height: 29px;
+}
+
+.header-fix-panel {
+	padding: 20px 0 10px 30px;
+	border-bottom: 1px solid #999;
+	background-color: #fff;
+	-ms-box-shadow: 0 -5px 25px #323232;
+	-webkit-box-shadow: 0 -5px 25px #323232;
+	-moz-box-shadow: 0 -5px 25px #323232;
+	box-shadow: 0 -5px 25px #323232;
+}
+
+/*
+span.help {
+	background-image: url(../img/help.png);
+	width: 27px;
+	height: 27px;
+	display: inline-block;
+}*/
+
+.help {
+  background-color: #008391;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  border-radius: 50%;
+  color: #fff;
+  padding: 1px 5px 1px 5px;
+  margin-left: 10px; 
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.help:hover {
+	background-color: #28b4c4;
+	cursor: pointer;
+}
+
+.counter {
+	font-style: italic;
+	font-size: 11px;
+}
+
+.info-transfer {
+	font-size: 12px;
+	color: #777;
+}
+
+.edit-form {
+  margin-top: 250px; 
+  max-width: 800px
+}
+
+.collapsed {
+  margin-top: 150px;
+}
+
+.alert-block {
+	display: inline-block;
+}
+
+.webcert-multicol .certificate {
+  max-width: 600px;
+}
+
+.certificate {
+	max-width: 800px;
+}
+
+.revoked-certificate {
+  color: #aaaaaa;
+}
+.revoked-certificate div.infobox, .revoked-certificate div.infobox h3, .revoked-certificate div.infobox h4{
+    background-color: #e5e5e5;
+    color: #aaaaaa;
+}
+.revoked-certificate .cert-body .body-row .title, .revoked-certificate .body-row h4.cert-field-number {
+ color: #aaaaaa;
+}
+
+.revoked-certificate .qa-block, .revoked-certificate .qa-block-head {
+ background-color: #f5f5f5;	
+  color: #aaaaaa;
+}
+
+.cert-body {
+    padding-top: 20px;
+}
+
+.cert-body div.body-row {
+	margin: 0 20px 25px 0;
+/*	background-color: #e5e5e5;
+	border: 1px solid #d8d8d8;*/
+	-webkit-border-radius: 8px 8px 8px 8px;
+	-moz-border-radius: 8px 8px 8px 8px;
+	border-radius: 8px 8px 8px 8px;	
+}
+
+.cert-body .alert-info {
+    margin: 0 20px 20px 0;
+}
+
+.body-row label {
+	max-width: 600px;
+  vertical-align: text-top;
+}
+
+.body-row .checkbox {
+    padding-left: 20px;
+}
+
+.body-row .checkbox input[type=checkbox] {
+    margin-left: -20px;
+}
+
+.cert-body div.body-row-single {
+	padding-left: 20px;
+    background-color: #e5e5e5;
+    border: 1px solid #d8d8d8;
+}
+
+.cert-body .body-row .title {
+	margin: 0;
+	color: #008391;
+	font-size: 16px;
+	font-weight: bold;
+	display: block;
+	/*padding: 10px 20px;*/
+    padding-bottom: 5px;
+  -webkit-border-radius: 8px 8px 0 0;
+  -moz-border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid #d8d8d8; 
+}
+
+.cert-body .body-row .title-single {
+  background: none;
+  -webkit-border-radius: 0 0 0 0;
+  -moz-border-radius: 0 0 0 0;
+  border-radius: 0 0 0 0;
+  border: 0;
+  display: inline-block;
+  padding: 10px 10px;
+  vertical-align: middle;
+  margin: 0; 
+}
+
+
+.cert-body .body-row .text {
+	display: block;
+	padding: 20px 40px;
+    background-color: #e5e5e5;
+    -webkit-border-radius: 0 0 8px 8px;
+    -moz-border-radius: 0 0 8px 8px;
+    border-radius: 0 0 8px 8px;
+}
+
+.cert-body .body-row .unfilled {
+  color: #888;
+    -webkit-border-radius: 8px 8px 8px 8px;
+    -moz-border-radius: 8px 8px 8px 8px;
+    border-radius: 8px 8px 8px 8px;
+}
+
+.body-row h4.cert-field-number {
+	float: right;
+	/*padding: 10px 20px 0 20px;*/
+	color: #008391;
+	font-size: 15px;
+}
+
+.body-row-single h4.cert-field-number {
+    padding: 10px 20px 0 20px;
+}
+
+.body-row h4 {
+    font-size: 14px;
+    padding-bottom: 5px;
+}
+
+.body-row .cert-field-blank {
+  color: #008391;
+}
+
+div.infobox {
+    background-color: #008391;
+    -webkit-border-radius: 8px 8px 8px 8px;
+    -moz-border-radius: 8px 8px 8px 8px;
+    border-radius: 8px 8px 8px 8px;
+    color: #fff;
+    padding: 20px;
+    margin-right: 20px;
+}
+
+div.infobox h3 {
+    font-size: 16px;
+    padding: 0;
+    color: #fff;
+}
+
+div.infobox h4 {
+    padding: 10px 0 5px 0;
+    color: #fff;
+    font-size: 14px;
+}
+
+.indent {
+	padding-left: 20px !important;
+}
+
+.block {
+  display: block !important;
+}
+
+.inline-block {
+	display: inline-block !important;
+}
+
+.maxwidth {
+	width: 100% !important;
+}
+
+input[datepicker-popup] {
+	width: 80px;
+}
+
+.qa-column {
+	max-width: 550px;
+	padding-right: 20px;
+}
+
+.panel-container { /* IE8 doesn't understand margin-bottom on elements added by scripting so place this around and use padding instead */
+  padding-bottom: 20px;	
+}
+
+.qa-panel {
+  background-color: #eaeaea;
+  -webkit-border-radius: 8px 8px 8px 8px;
+  -moz-border-radius: 8px 8px 8px 8px;
+  border-radius: 8px 8px 8px 8px;
+  padding: 20px;
+  max-width: 600px;
+}
+
+.qa-panel p, .qa-panel label {
+	margin-bottom: 5px;
+	font-size: 13px;
+}
+
+.qa-panel .control-group {
+	margin: 0;
+}
+
+.qa-panel h3 {
+  font-size: 13px;
+  margin: 0;
+  padding: 0 0 5px 0;
+  font-weight: normal;
+}
+
+.qa-block {
+  background-color: #fff;
+  border: 1px solid #d8d8d8;
+  -webkit-border-radius: 8px 8px 8px 8px;
+  -moz-border-radius: 8px 8px 8px 8px;
+  border-radius: 8px 8px 8px 8px; 
+}
+
+.qa-block-fk {
+  margin-left: 20px;
+}
+
+.qa-block-handled {
+  background-color: #f5f5f5;
+}
+
+.qa-block-head {
+  margin: 0;
+  color: #000;
+  font-size: 13px;
+  display: block;
+  padding: 10px 20px;
+  border-bottom: 1px solid #d8d8d8;
+  -webkit-border-radius: 8px 8px 0 0;
+  -moz-border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0 0;
+}
+
+.qa-block-head h3 {
+  font-size: 13px;
+  margin: 0;
+  font-weight: normal;
+}
+
+.qa-block-body {
+  display: block;
+  padding: 20px 20px;
+}
+
+.qa-sender, .qa-date {
+  font-weight: bold;
+}
+
+.pad10 {
+	padding: 10px;
+}
+
+/* ng-animate animations */
+
+.fade-hide, .fade-show {
+
+  -webkit-transition:all cubic-bezier(0.350, 0.560, 0.650, 0.840) 0.5s;
+  -moz-transition:all cubic-bezier(0.350, 0.560, 0.650, 0.840) 0.5s;
+  -o-transition:all cubic-bezier(0.350, 0.560, 0.650, 0.840) 0.5s;
+  transition:all cubic-bezier(0.350, 0.560, 0.650, 0.840) 0.5s;
+  
+/*  -webkit-transition:all linear 0.5s;
+  -moz-transition:all linear 0.5s;
+  -o-transition:all linear 0.5s;
+  transition:all linear 0.5s;*/
+  position: relative;
+}
+
+.fade-hide {
+  opacity:1;
+  max-width: 800px;
+  left: 0;
+}
+.fade-hide.fade-hide-active {
+  opacity:0;
+  max-width: 500px;
+  left: 100px;
+}
+
+.fade-show {
+	opacity:0;
+	max-width: 500px;
+  left: 100px;
+}
+.fade-show.fade-show-active {
+	opacity:1;
+	max-width: 800px;
+	left: 0;
+}
+
+.collapse-hide, .collapse-show {
+  -webkit-transition:all ease-out 0.5s;
+  -moz-transition:all ease-out 0.5s;
+  -o-transition:all ease-out 0.5s;
+  transition:all ease-out 0.5s;
+  position: relative;
+}
+
+.collapse-hide {
+  opacity:1;
+  max-height: 800px;
+}
+.collapse-hide.collapse-hide-active {
+  opacity:0.5;
+  max-height: 0px;
+}
+
+.collapse-show {
+  opacity:0;
+  max-height: 0px;
+}
+.collapse-show.collapse-show-active {
+  opacity:0.5;
+  max-height: 800px;
+}
+
+.header-wrapper {
+/*	max-height: 110px; does commenting out this break anything? */
+	overflow: hidden;
+}
+
+.menucollapse-hide, .menucollapse-show {
+  -webkit-transition:all ease-out 0.3s;
+  -moz-transition:all ease-out 0.3s;
+  -o-transition:all ease-out 0.3s;
+  transition:all ease-out 0.3s;
+  position: relative;
+  margin-top: 0;
+}
+
+.menucollapse-hide {
+  margin-top: 0;
+}
+
+.menucollapse-hide.menucollapse-hide-active {
+  margin-top: -100px;
+}
+
+.menucollapse-show {
+  margin-top: -100px;
+}
+
+.menucollapse-show.menucollapse-show-active {
+  margin-top: 0;
+}
+
+.table .table-form {
+    background-color: transparent;
+}
+
+.table-form td, .table-form th {
+    padding: 0 5px 5px 0;
+    text-align: left;
+    vertical-align: top;
+}
+
+.table-form-radio td:last-child {
+    width:100%;
+}
+
+input[type=text].small-decimal {
+    width: 20px;
+}

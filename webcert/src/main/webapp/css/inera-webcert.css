@@ -321,9 +321,10 @@ div.location { font-size: 12px; font-weight: bold; padding: 10px; margin-right: 
 	white-space:nowrap;
 }
 
+/* needed?
 .table th:last-child, .table td:last-child {
   text-align: center;
-}
+}*/
 
 .qa-unit {
 	color: #323232;
@@ -498,9 +499,9 @@ body span:hover.qa-unit-selected {
   cursor: auto;
 	background-color: #28b4c4;
 /*  opacity: .5; /* Standards Compliant Browsers */
-  filter: alpha(opacity=50); /* IE 7 and Earlier */
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);*/	
+  /*filter: alpha(opacity=50);*/ /* IE 7 and Earlier */
+/*  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);*/
 } 
 
 .btn-link {
@@ -558,9 +559,10 @@ button.btn-link-minimal {
 	left: -23%;
 }
 
+/*
 input[type="radio"], input[type="checkbox"] {
   margin: 0 0 0;
-}
+}*/
 
 input[datepicker-popup] {
   width: 80px;
