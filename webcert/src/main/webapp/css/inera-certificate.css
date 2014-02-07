@@ -179,6 +179,10 @@ span.help {
     padding-left: 20px;
 }
 
+.body-row .checkbox .checkbox-columns {
+    margin-left: 0px;
+}
+
 .body-row .checkbox input[type=checkbox] {
     margin-left: -20px;
 }
