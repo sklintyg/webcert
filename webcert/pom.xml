@@ -261,32 +261,6 @@
           </systemProperties>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>com.kelveden</groupId>
-        <artifactId>maven-karma-plugin</artifactId>
-        <version>${karma-plugin-version}</version>
-        <executions>
-          <execution>
-            <phase>process-test-classes</phase>
-            <goals>
-              <goal>start</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <autoWatch>false</autoWatch>
-          <browsers>PhantomJS</browsers>
-          <colors>true</colors>
-          <configFile>src/test/resources/karma.conf.js</configFile>
-          <karmaFailureIgnore>false</karmaFailureIgnore>
-          <reporters>dots,junit</reporters>
-          <singleRun>true</singleRun>
-          <skipKarma>false</skipKarma>
-          <skipTests>false</skipTests>
-        </configuration>
-      </plugin>
-
     </plugins>
   </build>
 
@@ -308,6 +282,37 @@
           <version>1.1.1</version>
         </dependency>
       </dependencies>
+    </profile>
+    <profile>
+      <id>karma</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.kelveden</groupId>
+            <artifactId>maven-karma-plugin</artifactId>
+            <version>${karma-plugin-version}</version>
+            <executions>
+              <execution>
+                <phase>process-test-classes</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <autoWatch>false</autoWatch>
+              <browsers>PhantomJS</browsers>
+              <colors>true</colors>
+              <configFile>src/test/resources/karma.conf.js</configFile>
+              <karmaFailureIgnore>false</karmaFailureIgnore>
+              <reporters>dots,junit</reporters>
+              <singleRun>true</singleRun>
+              <skipKarma>false</skipKarma>
+              <skipTests>false</skipTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
