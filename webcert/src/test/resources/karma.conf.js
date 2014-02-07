@@ -24,7 +24,7 @@ module.exports = function (config) {
 
         plugins : [
             'karma-jasmine', 'karma-junit-reporter', 'karma-chrome-launcher', 'karma-firefox-launcher',
-            'karma-ie-launcher', 'karma-opera-launcher', 'karma-phantomjs-launcher'
+            'karma-phantomjs-launcher'
         ],
 
         reporters : ['progress', 'junit']
