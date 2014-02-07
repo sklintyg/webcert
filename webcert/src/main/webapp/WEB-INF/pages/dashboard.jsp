@@ -18,13 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
-<html lang="sv" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="wcDashBoardApp">
+<html lang="sv" id="ng-app" ng-app="wcDashBoardApp">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -47,12 +47,12 @@
 
 
 <script type="text/javascript">
-    /**
-     Global JS config/constants for this app, to be used by scripts
-     **/
-    var MODULE_CONFIG = {
-        USERCONTEXT : <sec:authentication property="principal.asJson" htmlEscape="false"/>
-    }
+  /**
+   Global JS config/constants for this app, to be used by scripts
+   **/
+  var MODULE_CONFIG = {
+    USERCONTEXT : <sec:authentication property="principal.asJson" htmlEscape="false"/>
+  }
 </script>
 
 </head>
@@ -60,8 +60,7 @@
 <body>
 
   <%-- Web-cert top navigation bar --%>
-  <div id="wcHeader" wc-header user="MODULE_CONFIG.USERCONTEXT">
-  </div>
+  <div id="wcHeader" wc-header user="MODULE_CONFIG.USERCONTEXT"></div>
   <div class="container-fluid">
     <%-- No script to show at least something when javascript is off --%>
     <noscript>
@@ -91,6 +90,7 @@
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/filters.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/messages.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives/wcPersonNumber.js"/>"></script>
 
   <%-- Dependencies to common components --%>
   <script type="text/javascript" src="<c:url value="/js/common/wc-utils.js"/>"></script>
