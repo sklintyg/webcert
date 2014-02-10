@@ -44,7 +44,10 @@ public class IntygRepositoryTest {
     private static final String PERSON_NUMMER = "19121212-1212";
 
     private static final String INTYGSTYP_FK7263 = "FK7263";
-
+    
+    private static final String MODEL = "This is the JSON model of this Intyg " +
+    		"with some interesting scandinavian characters like Å, Ä and ö added";
+    
     @Test
     public void testFindOne() {
         Intyg saved = intygRepository.save(buildIntyg(ENHET_1_ID));
@@ -54,6 +57,8 @@ public class IntygRepositoryTest {
         assertThat(read.getPatientPersonnummer(), is(equalTo(saved.getPatientPersonnummer())));
               
         assertThat(read.getEnhetsId(), is(notNullValue()));
+        
+        assertThat(read.getModel(), is(equalTo(MODEL)));
     }
 
     @Test
@@ -104,14 +109,14 @@ public class IntygRepositoryTest {
     }
     
     private Intyg buildIntyg(String enhetsId) {
-        return buildIntyg(enhetsId, IntygsStatus.WORK_IN_PROGRESS, INTYGSTYP_FK7263, PERSON_NUMMER);
+        return buildIntyg(enhetsId, IntygsStatus.WORK_IN_PROGRESS, INTYGSTYP_FK7263, PERSON_NUMMER, MODEL);
     }
 
     private Intyg buildIntyg(String enhetsId, IntygsStatus status) {
-        return buildIntyg(enhetsId, status, INTYGSTYP_FK7263, PERSON_NUMMER);
+        return buildIntyg(enhetsId, status, INTYGSTYP_FK7263, PERSON_NUMMER, MODEL);
     }
 
-    private Intyg buildIntyg(String enhetsId, IntygsStatus status, String type, String personNummer) {
+    private Intyg buildIntyg(String enhetsId, IntygsStatus status, String type, String personNummer, String model) {
         Intyg intyg = new Intyg();
         intyg.setIntygsId(UUID.randomUUID().toString());
         intyg.setIntygsTyp(type);
@@ -124,6 +129,8 @@ public class IntygRepositoryTest {
         intyg.setSkapadAv(vardpersonReferens);
 
         intyg.setStatus(status);
+        
+        intyg.setModel(model);
 
         return intyg;
     }

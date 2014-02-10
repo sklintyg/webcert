@@ -183,7 +183,7 @@
       <column name="SENAST_SPARAD_DATUM" type="datetime">
         <constraints nullable="false" />
       </column>
-      <column name="MODEL" type="varchar(255)">
+      <column name="MODEL" type="blob">
         <constraints nullable="true" />
       </column>
       <column name="STATUS" type="varchar(32)">
