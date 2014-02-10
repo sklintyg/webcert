@@ -179,7 +179,7 @@ span.help {
     padding-left: 20px;
 }
 
-.body-row .checkbox .checkbox-columns {
+.body-row .checkbox-columns {
     margin-left: 0px;
 }
 
@@ -485,6 +485,10 @@ input[datepicker-popup] {
 
 .table-form-radio td:last-child {
     width:100%;
+}
+
+.table-form input[type=radio] {
+    margin-top: 0;
 }
 
 input[type=text].small-decimal {
