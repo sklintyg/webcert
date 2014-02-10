@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part 
-  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web). 
-  Inera Certificate Web is free software: you can redistribute it and/or modify 
-  it under the terms of the GNU Affero General Public License as published 
-  by the Free Software Foundation, either version 3 of the License, or (at 
-  your option) any later version. Inera Certificate Web is distributed in the 
-  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
-  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-  GNU Affero General Public License for more details. You should have received 
-  a copy of the GNU Affero General Public License along with this program. 
+<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part
+  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
+  Inera Certificate Web is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published
+  by the Free Software Foundation, either version 3 of the License, or (at
+  your option) any later version. Inera Certificate Web is distributed in the
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Affero General Public License for more details. You should have received
+  a copy of the GNU Affero General Public License along with this program.
   If not, see <http://www.gnu.org/licenses/>. -->
 <project
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
@@ -25,6 +25,7 @@
   <properties>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
     <inera.certificates.basedir>${project.basedir}/../../inera-certificate-modules</inera.certificates.basedir>
+    <karma-plugin-version>1.6</karma-plugin-version>
   </properties>
   <packaging>war</packaging>
 
@@ -281,6 +282,37 @@
           <version>1.1.1</version>
         </dependency>
       </dependencies>
+    </profile>
+    <profile>
+      <id>karma</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.kelveden</groupId>
+            <artifactId>maven-karma-plugin</artifactId>
+            <version>${karma-plugin-version}</version>
+            <executions>
+              <execution>
+                <phase>process-test-classes</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <autoWatch>false</autoWatch>
+              <browsers>PhantomJS</browsers>
+              <colors>true</colors>
+              <configFile>src/test/resources/karma.conf.js</configFile>
+              <karmaFailureIgnore>false</karmaFailureIgnore>
+              <reporters>dots,junit</reporters>
+              <singleRun>true</singleRun>
+              <skipKarma>false</skipKarma>
+              <skipTests>false</skipTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 

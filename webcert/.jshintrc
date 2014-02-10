@@ -1,0 +1,32 @@
+{
+    "bitwise" : true,
+    "camelcase" : true,
+    "curly" : true,
+    "eqeqeq" : true,
+    "forin" : true,
+    "immed" : true,
+    "latedef" : "nofunc",
+    "newcap" : true,
+    "noarg" : true,
+    "nonew" : true,
+    "quotmark" : "single",
+    "undef" : true,
+    "unused" : true,
+    "strict" : true,
+    "trailing" : true,
+    "browser" : true,
+    "devel" : false,
+
+    "globalstrict" : true,
+    "globals" : {
+        "$" : false,
+        "_" : false,
+        "angular" : false,
+        "describe" : false,
+        "beforeEach" : false,
+        "it" : false,
+        "module" : false,
+        "inject" : false,
+        "expect" : false
+    }
+}

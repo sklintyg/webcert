@@ -1,8 +1,11 @@
 'use strict';
 
+angular.module('dashboard.directives', []);
+
 /* Lakare Dashboard App Module */
-angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'ngCookies', 'modules.messages', 'wc.common', 'dashboard.services', 'wc.utils', 'wc.common.fragasvarmodule' ]);
-angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', 'http403ResponseInterceptorProvider', function($routeProvider, $httpProvider, http403ResponseInterceptorProvider) {
+angular.module('wcDashBoardApp', [ 'ui.bootstrap', 'ngCookies', 'modules.messages', 'wc.common', 'dashboard.services', 'dashboard.directives', 'wc.utils', 'wc.common.fragasvarmodule' ]);
+
+angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', 'http403ResponseInterceptorProvider', function ($routeProvider, $httpProvider, http403ResponseInterceptorProvider) {
     $routeProvider.when('/index', {
         templateUrl : '/views/dashboard/index.step1.html',
         controller : 'CreateCertCtrl'
@@ -53,7 +56,7 @@ angular.module('wcDashBoardApp').constant('datepickerPopupConfig', {
 });
 
 // Inject language resources
-angular.module('wcDashBoardApp').run([ '$rootScope', 'messageService', function($rootScope, messageService) {
+angular.module('wcDashBoardApp').run([ '$rootScope', 'messageService', function ($rootScope, messageService) {
     $rootScope.lang = 'sv';
     $rootScope.DEFAULT_LANG = 'sv';
     $rootScope.MODULE_CONFIG = MODULE_CONFIG;

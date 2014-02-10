@@ -6,7 +6,7 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
         restrict: "A",
         transclude: false,
         replace: true,
-        template: 
+        template:
     	    '<table class="span12 table unit-table">'+
         		'<tr ng-repeat="unit in units">'+
         			'<td><button id="select-active-unit-{{unit.id}}" type="button" ng-click="selectUnit(unit)" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}<span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></button></td>'+
@@ -17,24 +17,24 @@ angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootSc
             $scope.vardenheter = angular.copy($rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter);
 
             $scope.units = []; // aggregated units to present for vardenhet/mottagning choice
-            
+
             angular.forEach($scope.vardenheter, function(vardenhet, key){
               this.push(vardenhet);
-              
+
               angular.forEach(vardenhet.mottagningar, function(mottagning, key){
               	mottagning.namn = vardenhet.namn + ' - ' + mottagning.namn;
               	this.push(mottagning);
               }, $scope.units);
-              
+
             }, $scope.units);
-            
+
             $scope.selectedUnit = null;
 
             $scope.selectUnit = function(unit) {
             	$scope.selectedUnit = unit;
             	$rootScope.$broadcast('select-care-unit', $scope.selectedUnit);
             }
-            
+
             //initial selection
             if($scope.units.length == 1) {
             	$scope.selectUnit(selectFirstUnit($scope.units));
@@ -77,20 +77,20 @@ angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location',
         $scope.today = new Date();
         $scope.menuItems = [
 	        {
-	        	link :'/web/dashboard#/support/about', 
+	        	link :'/web/dashboard#/support/about',
 	          label:'Support'
 	        },
 	        {
-	        	link :'/web/dashboard#/webcert/about', 
+	        	link :'/web/dashboard#/webcert/about',
 	          label:'Om Webcert'
 	        }
         ];
-        
+
         function getSubMenuName(path) {
           var path = path.substring(0, path.lastIndexOf('/'));
-        	return path.substring(path.lastIndexOf('/') + 1); 
+        	return path.substring(path.lastIndexOf('/') + 1);
         }
-        
+
         var currentSubMenuName = getSubMenuName($location.path()) || 'index';
         $scope.currentSubMenuLabel = "";
 
@@ -98,14 +98,14 @@ angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location',
         angular.forEach($scope.menuItems, function(menu, key) {
         	var page = getSubMenuName(menu.link);
         	if(page == currentSubMenuName) {
-        		$scope.currentSubMenuLabel = menu.label; 
+        		$scope.currentSubMenuLabel = menu.label;
         	}
         });
-        
+
         $scope.isActive = function (page) {
         	page = getSubMenuName(page);
           return page === currentSubMenuName;
-        };                 
+        };
       },
       template:
         '<div>'+
@@ -126,45 +126,3 @@ angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location',
         '</div>'
   }
 } ]);
-
-angular.module('wcDashBoardApp').directive("wcValidatePersonNumber", function() {
-  return {
-    // restrict to an attribute type.
-    restrict: 'A',
-
-    // element must have ng-model attribute.
-    require: 'ngModel',
-
-    // scope = the parent scope
-    // elem = the element the directive is on
-    // attr = a dictionary of attributes on the element
-    // ctrl = the controller for ngModel.
-    link: function(scope, elem, attr, ctrl) {
-
-      // create the regex obj.
-      var regex = new RegExp('[0-9]{8}-[0-9]{4}');
-
-      // add a parser that will process each time the value is
-      // parsed into the model when the user updates it.
-      ctrl.$parsers.unshift(function(value) {
-        // test and set the validity after update.
-        var valid = regex.test(value);
-        ctrl.$setValidity('pnrValidate', valid);
-
-        // if it's valid, return the value to the model,
-        // otherwise return undefined.
-        return valid ? value : undefined;
-      });
-
-      // add a formatter that will process each time the value
-      // is updated on the DOM element.
-      ctrl.$formatters.unshift(function(value) {
-        // validate.
-        ctrl.$setValidity('pnrValidate', regex.test(value));
-
-        // return the value or nothing will be written to the DOM.
-        return value;
-      });
-    }
-  };
-});
