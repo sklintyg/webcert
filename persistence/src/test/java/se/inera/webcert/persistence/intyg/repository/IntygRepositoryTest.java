@@ -1,7 +1,10 @@
 package se.inera.webcert.persistence.intyg.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,8 +49,11 @@ public class IntygRepositoryTest {
     public void testFindOne() {
         Intyg saved = intygRepository.save(buildIntyg(ENHET_1_ID));
         Intyg read = intygRepository.findOne(saved.getIntygsId());
-        assertEquals(read.getIntygsId(), saved.getIntygsId());
-        assertEquals(read.getPatientPersonnummer(), saved.getPatientPersonnummer());
+       
+        assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
+        assertThat(read.getPatientPersonnummer(), is(equalTo(saved.getPatientPersonnummer())));
+              
+        assertThat(read.getEnhetsId(), is(notNullValue()));
     }
 
     @Test
@@ -60,10 +66,12 @@ public class IntygRepositoryTest {
         intygRepository.save(buildIntyg(ENHET_2_ID, IntygsStatus.SIGNED));
 
         List<Intyg> result = intygRepository.findUnsignedByEnhetsId(Arrays.asList(ENHET_1_ID, ENHET_3_ID));
-        assertEquals(3, result.size());
-        assertTrue(exists(intyg1, result));
-        assertTrue(exists(intyg2, result));
-        assertTrue(exists(intyg3, result));
+        
+        assertThat(result.size(), is(3));
+        
+        assertThat(intyg1, isIn(result));
+        assertThat(intyg2, isIn(result));
+        assertThat(intyg3, isIn(result));
 
     }
 
@@ -77,7 +85,7 @@ public class IntygRepositoryTest {
         intygRepository.save(buildIntyg(ENHET_2_ID, IntygsStatus.WORK_IN_PROGRESS));
 
         long result = intygRepository.countUnsignedForEnhetsIds(Arrays.asList(ENHET_1_ID, ENHET_2_ID));
-        assertEquals(3, result);
+        assertThat(result, is(3L));
 
     }
 
@@ -92,18 +100,9 @@ public class IntygRepositoryTest {
         List<String> enhetIds = Arrays.asList(ENHET_1_ID);
         List<Intyg> results = intygRepository.findDraftsByPatientPnrAndEnhetsId(enhetIds, PERSON_NUMMER);
         
-        assertEquals(3, results.size());
+        assertThat(results.size(), is(3));
     }
     
-    private boolean exists(Intyg intyg, List<Intyg> result) {
-        for (Intyg inResult : result) {
-            if (intyg.getIntygsId().equals(inResult.getIntygsId())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private Intyg buildIntyg(String enhetsId) {
         return buildIntyg(enhetsId, IntygsStatus.WORK_IN_PROGRESS, INTYGSTYP_FK7263, PERSON_NUMMER);
     }
