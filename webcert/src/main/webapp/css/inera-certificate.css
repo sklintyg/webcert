@@ -487,10 +487,19 @@ input[datepicker-popup] {
     width:100%;
 }
 
-.table-form input[type=radio] {
+.table-form td > input[type=radio] {
     margin-top: 0;
+}
+
+.table-form {
+    margin: 0;
 }
 
 input[type=text].small-decimal {
     width: 20px;
 }
+
+.radio, .checkbox {
+    cursor: pointer;
+}
+
