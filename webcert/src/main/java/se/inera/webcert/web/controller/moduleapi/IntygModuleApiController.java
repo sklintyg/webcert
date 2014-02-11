@@ -13,7 +13,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -26,10 +25,7 @@ import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedEx
 import se.inera.certificate.integration.rest.ModuleRestApi;
 import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
@@ -61,10 +57,7 @@ public class IntygModuleApiController {
     
     @Autowired
     private IntygRepository intygRepository;
-    
-    @Autowired
-    private WebCertUserService userService;
-    
+        
     @Autowired
     private ModuleRestApiFactory moduleApiFactory;
       
@@ -110,29 +103,15 @@ public class IntygModuleApiController {
                         
         LOG.debug("Saving Intyg with id {}", intygId);
         
-        Intyg intyg = intygRepository.findOne(intygId);
+        String draftAsJson = fromBytesToString(bytes);
         
-        if (intyg == null) {
+        DraftValidation draftValidation = draftService.saveAndValidateDraft(intygId, draftAsJson);
+                
+        if (draftValidation == null) {
             LOG.warn("Intyg with id {} was not found", intygId);
             return Response.status(Status.NOT_FOUND).build();
         }
-        
-        String draftAsJson = fromBytesToString(bytes);
-        
-        String intygType = intyg.getIntygsTyp();
-        
-        DraftValidation draftValidation = draftService.validateDraft(intygId, intygType, draftAsJson);
-        
-        IntygsStatus intygStatus = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE : IntygsStatus.DRAFT_INCOMPLETE;
                 
-        intyg.setModel(draftAsJson);
-        intyg.setStatus(intygStatus);
-        
-        VardpersonReferens vardPersonRef = createVardpersonReferens();
-        intyg.setSenastSparadAv(vardPersonRef);
-        
-        intygRepository.save(intyg);
-        
         SaveDraftResponse responseEntity = buildSaveDraftResponse(draftValidation);
         
         return Response.ok().entity(responseEntity).build();
@@ -178,17 +157,6 @@ public class IntygModuleApiController {
         // TODO: Implement
         
         return Response.ok().build();
-    }
-    
-    private VardpersonReferens createVardpersonReferens() {
-        
-        WebCertUser user = userService.getWebCertUser();
-        
-        VardpersonReferens vardPersonRef = new VardpersonReferens();
-        vardPersonRef.setNamn(user.getNamn());
-        vardPersonRef.setHsaId(user.getHsaId());
-        
-        return vardPersonRef;
     }
     
     /**

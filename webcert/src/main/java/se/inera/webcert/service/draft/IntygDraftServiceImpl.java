@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.ModuleRestApiFactory;
@@ -118,8 +119,38 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
+    @Transactional
+    public DraftValidation saveAndValidateDraft(String intygId, String draftAsJson) {
+        
+        LOG.debug("Saving and validating Intyg with id {}", intygId);
+        
+        Intyg intyg = intygRepository.findOne(intygId);
+        
+        if (intyg == null) {
+            LOG.warn("Intyg with id {} was not found", intygId);
+            return null;
+        }
+                
+        String intygType = intyg.getIntygsTyp();
+        
+        DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
+        
+        IntygsStatus intygStatus = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE : IntygsStatus.DRAFT_INCOMPLETE;
+                
+        intyg.setModel(draftAsJson);
+        intyg.setStatus(intygStatus);
+        
+        VardpersonReferens vardPersonRef = createVardperson();
+        intyg.setSenastSparadAv(vardPersonRef);
+        
+        intygRepository.save(intyg);
+        
+        return draftValidation;
+    }
+
+    @Override
     public DraftValidation validateDraft(String intygId, String intygType, String draft) {
-        // TODO Implement call to the validateDraft REST api of a Module.
+        LOG.debug("Validating Intyg with id {} and type {}", intygId, intygType);
         return new DraftValidation();
     }
 
