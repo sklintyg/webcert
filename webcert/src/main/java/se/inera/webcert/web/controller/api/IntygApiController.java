@@ -3,25 +3,27 @@ package se.inera.webcert.web.controller.api;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.webcert.converter.IntygMerger;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.modules.ModuleRestApiFactory;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.IntygService;
+import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.dto.IntygItem;
+import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -45,9 +47,26 @@ public class IntygApiController {
     
     @Autowired
     private IntygRepository intygRepository;
-        
+    
+    @Autowired
+    private ModuleRestApiFactory moduleApiFactory;
+    
+    @Autowired
+    private IntygDraftService intygDraftService;
+            
     public IntygApiController() {
         
+    }
+    
+    @POST
+    @Path("/create")
+    public Response createNewIntyg(CreateNewIntygRequest request) {
+        
+        intygDraftService.createNewDraft(request.getIntygType(), request.getPatientPersonnummer());
+        
+        // TODO: return a redirect to the edit page of the module with the newly generated draft.
+        
+        return null;
     }
     
     /**
