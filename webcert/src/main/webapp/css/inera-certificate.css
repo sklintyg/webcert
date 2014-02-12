@@ -503,3 +503,6 @@ input[type=text].small-decimal {
     cursor: pointer;
 }
 
+.edit-form .alert-error {
+    border: 1px solid #A94442;
+}
