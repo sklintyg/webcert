@@ -790,3 +790,13 @@ input[datepicker-popup] .btn-block {
 	color: #64ABC0; 
 	margin-top: 20px;
 }
+
+/**
+ Form/validation
+**/
+
+span.error { color: orangered; }
+
+.error-icon {
+    padding-right: 10px;
+}

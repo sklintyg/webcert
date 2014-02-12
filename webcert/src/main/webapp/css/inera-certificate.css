@@ -201,10 +201,10 @@ span.help {
 	display: block;
 	/*padding: 10px 20px;*/
     padding-bottom: 5px;
-  -webkit-border-radius: 8px 8px 0 0;
-  -moz-border-radius: 8px 8px 0 0;
-  border-radius: 8px 8px 0 0;
-  border-bottom: 1px solid #d8d8d8; 
+    -webkit-border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px 4px 4px 4px;
+    border-radius: 4px 4px 4px 4px;
+/*  border-bottom: 1px solid #d8d8d8;*/
 }
 
 .cert-body .body-row .title-single {
@@ -221,19 +221,19 @@ span.help {
 
 
 .cert-body .body-row .text {
-	display: block;
-	padding: 20px 40px;
-    background-color: #e5e5e5;
-    -webkit-border-radius: 0 0 8px 8px;
-    -moz-border-radius: 0 0 8px 8px;
-    border-radius: 0 0 8px 8px;
+  display: block;
+  padding: 20px 40px;
+  background-color: #e5e5e5;
+  -webkit-border-radius: 4px 4px 4px 4px;
+  -moz-border-radius: 4px 4px 4px 4px;
+  border-radius: 4px 4px 4px 4px;
 }
 
 .cert-body .body-row .unfilled {
   color: #888;
-    -webkit-border-radius: 8px 8px 8px 8px;
-    -moz-border-radius: 8px 8px 8px 8px;
-    border-radius: 8px 8px 8px 8px;
+  -webkit-border-radius: 4px 4px 4px 4px;
+  -moz-border-radius: 4px 4px 4px 4px;
+  border-radius: 4px 4px 4px 4px;
 }
 
 .body-row h4.cert-field-number {
@@ -258,9 +258,9 @@ span.help {
 
 div.infobox {
     background-color: #008391;
-    -webkit-border-radius: 8px 8px 8px 8px;
-    -moz-border-radius: 8px 8px 8px 8px;
-    border-radius: 8px 8px 8px 8px;
+    -webkit-border-radius: 4px 4px 4px 4px;
+    -moz-border-radius: 4px 4px 4px 4px;
+    border-radius: 4px 4px 4px 4px;
     color: #fff;
     padding: 20px;
     margin-right: 20px;
@@ -505,4 +505,8 @@ input[type=text].small-decimal {
 
 .edit-form .alert-error {
     border: 1px solid #A94442;
+}
+
+.fielderror {
+    border: 2px solid #a94441;
 }
