@@ -235,7 +235,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         dv.setStatus(DraftValidationStatus.INVALID);
         
-        for (DraftValidationMessage drMsg : dr.getMessages()) {
+        for (DraftValidationMessage drMsg : dr.getValidationErrors()) {
             dv.addMessage(new se.inera.webcert.service.draft.dto.DraftValidationMessage(drMsg.getField(), drMsg.getMessage()));
         }
         

@@ -72,7 +72,7 @@ public class IntygDraftServiceImplTest {
         
         this.draftValidationResponse = new DraftValidationResponse();
         draftValidationResponse.setStatus(DraftValidationStatus.INVALID);
-        draftValidationResponse.getMessages().add(new DraftValidationMessage("a.field.somewhere","This is soooo wrong!"));
+        draftValidationResponse.getValidationErrors().add(new DraftValidationMessage("a.field.somewhere","This is soooo wrong!"));
         
     }
     
