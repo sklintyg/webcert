@@ -16,11 +16,10 @@ public class IntygModulesRegistryImpl implements IntygModuleRegistry {
     private Map<String, IntygModule> modulesMap = new HashMap<String, IntygModule>();
     
     public IntygModulesRegistryImpl() {
-        
+        this.initMockRegistry();
     }
 
-    @PostConstruct
-    public void mockRegistry() {
+    public void initMockRegistry() {
         
         IntygModule im = new IntygModule("fk7263", "Läkarintyg FK 7263", "fk7263", 1);
         modulesMap.put(im.getId(), im);

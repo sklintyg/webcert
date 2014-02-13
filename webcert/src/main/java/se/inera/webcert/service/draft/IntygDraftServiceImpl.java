@@ -178,7 +178,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         // TODO: Populate with careUnit and careGiver
 
-        return null;
+        return mr;
     }
 
     @Override
