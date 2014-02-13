@@ -145,9 +145,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         // TODO What happens if this fails? Throw exception?
         Response response = moduleRestService.createModel(moduleRequest);
         
-        CreateNewIntygModuleResponse createModelResponse = response.readEntity(CreateNewIntygModuleResponse.class);
-
-        String modelAsJson = createModelResponse.getContents();
+        String modelAsJson = response.readEntity(String.class);
 
         return modelAsJson;
     }
