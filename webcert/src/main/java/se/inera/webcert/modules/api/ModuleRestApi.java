@@ -37,7 +37,7 @@ public interface ModuleRestApi {
      * @return
      */
     @POST
-    @Path("/validate-draft")
+    @Path("/valid-draft")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     Response validate(String draftAsJson);
