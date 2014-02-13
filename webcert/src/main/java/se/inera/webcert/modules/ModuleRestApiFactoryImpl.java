@@ -15,6 +15,12 @@ import se.inera.webcert.modules.api.ModuleRestApi;
 import se.inera.webcert.modules.registry.IntygModule;
 import se.inera.webcert.modules.registry.IntygModuleRegistry;
 
+/**
+ * Factory for creating a REST client for communicating with a specific module.
+ * 
+ * @author nikpet
+ *
+ */
 @Component
 public class ModuleRestApiFactoryImpl implements ModuleRestApiFactory {
 
@@ -43,6 +49,8 @@ public class ModuleRestApiFactoryImpl implements ModuleRestApiFactory {
      */
     @Override
     public ModuleRestApi getModuleRestService(String moduleName) {
+        
+        LOG.debug("Getting module REST service for module {}", moduleName);
         
         IntygModule intygModule = moduleRegistry.getModule(moduleName);
         
