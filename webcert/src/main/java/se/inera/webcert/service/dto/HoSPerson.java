@@ -1,7 +1,7 @@
-package se.inera.webcert.modules.api.dto;
+package se.inera.webcert.service.dto;
 
 
-public class HoSPersonal {
+public class HoSPerson {
 
     private String hsaId;
     
@@ -11,7 +11,7 @@ public class HoSPersonal {
     
     private String befattning;
         
-    public HoSPersonal() {
+    public HoSPerson() {
 
     }
 

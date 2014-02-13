@@ -9,6 +9,12 @@ public class DraftValidationMessage {
     public DraftValidationMessage() {
         
     }
+    
+    public DraftValidationMessage(String field, String message) {
+        super();
+        this.field = field;
+        this.message = message;
+    }
 
     public String getField() {
         return field;

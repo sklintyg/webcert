@@ -10,9 +10,13 @@ public class DraftValidationResponse {
     private List<DraftValidationMessage> messages = new ArrayList<DraftValidationMessage>();
            
     public DraftValidationResponse() {
-        // TODO Auto-generated constructor stub
-    }
 
+    }
+    
+    public boolean checkIfValidAndEmpty() {
+        return (DraftValidationStatus.VALID.equals(this.status)) && (this.messages.isEmpty());
+    }
+    
     public DraftValidationStatus getStatus() {
         return status;
     }
@@ -28,5 +32,5 @@ public class DraftValidationResponse {
     public void setMessages(List<DraftValidationMessage> messages) {
         this.messages = messages;
     }
-
+    
 }
