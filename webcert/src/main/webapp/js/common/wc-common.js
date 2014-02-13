@@ -1,15 +1,15 @@
 "use strict";
 
 /**
- * Common module used in both WC main application as well as in a certificate's module app pages. 
- * Since this js will be used/loaded from different contextpaths, all templates are inlined. PLEASE keep source 
- * formatting in this file as-is, otherwise the inline templates will be hard to follow. 
+ * Common module used in both WC main application as well as in a certificate's module app pages.
+ * Since this js will be used/loaded from different contextpaths, all templates are inlined. PLEASE keep source
+ * formatting in this file as-is, otherwise the inline templates will be hard to follow.
  */
 angular.module('wc.common', []);
 angular.module('wc.common').factory('statService', [ '$http', '$log', '$timeout', '$rootScope', function($http, $log, $timeout, $rootScope) {
 
     var timeOutPromise = undefined;
-    var msPollingInterval = 10* 1000; 
+    var msPollingInterval = 10* 1000;
     /*
      * get stats from server
      */
@@ -24,7 +24,7 @@ angular.module('wc.common').factory('statService', [ '$http', '$log', '$timeout'
             timeOutPromise = $timeout(_refreshStat, msPollingInterval);
         });
     }
-    
+
     function _startPolling() {
         _refreshStat();
         $log.debug("statService -> Start polling");
@@ -35,7 +35,7 @@ angular.module('wc.common').factory('statService', [ '$http', '$log', '$timeout'
             $log.debug("statService -> Stop polling");
         }
     }
-  
+
     // Return public API for the service
     return {
         startPolling : _startPolling,
@@ -57,26 +57,26 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
           $scope.today = new Date();
           $scope.statService = statService;
           $scope.statService.startPolling();
-          
+
           $scope.stat = {
                   userStat: {},
                   unitStat:{}
                   }
-        
+
           $scope.$on("wc-stat-update", function(event, message){
-              $scope.stat = message;   
+              $scope.stat = message;
             });
-          
+
           $scope.menuDefs = [
              {
-				       link :'/web/dashboard#/unhandled-qa', 
+				       link :'/web/dashboard#/unhandled-qa',
 				       label:'Frågor och svar',
 				       requires_doctor: false,
 				       statNumberId : "stat-unitstat-unhandled-question-count",
                        getStat: function() { return $scope.stat.unitStat.unhandledQuestions || ""}
 				     },
 				     {
-				       link :'/web/dashboard#/unsigned', 
+				       link :'/web/dashboard#/unsigned',
 				       label:'Osignerade intyg',
 				       requires_doctor: false,
 				       statNumberId : "stat-unitstat-unsigned-certs-count",
@@ -89,31 +89,31 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
                        getStat: function() { return ""}
 				     }
 			    ];
-          
+
  					var writeCertMenuDef = {
-			       link :'/web/dashboard#/index', 
+			       link :'/web/dashboard#/create/index',
 			       label:'Sök/skriv intyg',
 			       requires_doctor: false,
 	                   getStat: function() { return ""}
 			     };
-          
+
           if (eval($scope.user.lakare) == true) {
               $scope.menuDefs.splice(0, 0, writeCertMenuDef);
           }
           else {
               $scope.menuDefs.splice(2, 0, writeCertMenuDef);
           }
-          
+
           $scope.isActive = function (page) {
           	if (!page) {return false;}
-        		
+
           	page = page.substr(page.lastIndexOf('/') + 1);
         		if (angular.isString($scope.defaultActive)) {
         			if (page == $scope.defaultActive) {
         				return true;
         			}
           	}
-          	
+
           	var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
             return page === currentRoute;
           };
@@ -183,7 +183,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 		            		+'</div>'
 				    		  +'</div><!-- /navbar-inner -->'
 				    	  +'</div>'
-	          	+'</div>'	
+	          	+'</div>'
 	    			+'</div>'
 	    		+'</div>'
     };

@@ -1,300 +1,304 @@
 'use strict';
 
 /* Controllers */
+var controllers = angular.module('wc.dashboard.controllers', []);
 
-/*
- *  CreateCertCtrl - Controller for logic related to creating a new certificate 
- * 
- */
-angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$rootScope', '$window', '$log', '$location', '$filter', '$timeout', 'wcDialogService', 'dashBoardService', function CreateCertCtrl($scope, $rootScope, $window, $log, $location, $filter, $timeout, wcDialogService, dashBoardService) {
+controllers.controller('InitCertCtrl', ['$scope', '$location', 'CertificateDraft',
+    function ($scope, $location, CertificateDraft) {
+        CertificateDraft.reset();
+        $location.replace(true);
+        $location.path('/create/choose-patient/index');
+    }]);
 
-	//var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
+controllers.controller('ChoosePatientCtrl', ['$scope', '$location', 'CertificateDraft',
+    function ($scope, $location, CertificateDraft) {
+        $scope.personnummer = CertificateDraft.personnummer;
 
-	$scope.widgetState = {
-			doneLoading : false,
-      activeErrorMessageKey : null,
-      currentList : undefined,
-      showHiddenCerts : false
-	};
-	
-	$scope.personnummer = "";
-	if ($rootScope.personnummer != undefined){
-		$scope.personnummer = $rootScope.personnummer;
-	}
-	
-	$scope.certType = {
-		selected : "default",
-		types : [
-		  {id:"default", name: "Välj intygstyp"},
-			{id:"fk7263", name: "Läkarintyg FK 7263"},
-			{id:"ts-bas", name: "Läkarintyg Transportstyrelsen Bas"}
-		]
-	};
+        $scope.lookupPatient = function () {
+            CertificateDraft.getNameAndAddress($scope.personnummer, function () {
+                if (CertificateDraft.name) {
+                    $location.path('/create/choose-cert-type/index');
+                } else {
+                    $location.path('/create/edit-patient-name/index');
+                }
+            });
+        };
+    }]);
 
-  // Navigation functions
-	$scope.toStep1 = function() {	$location.path("/index"); };
-	$scope.toEditPatient = function() {
-    if ($scope.pnrForm.$valid) {
-      $rootScope.personnummer = $scope.personnummer;
-      $location.path("/edit-patient/index");
-    } else {
-      $scope.pnrForm.submitted = true;
-    }
-	}
-
-	$scope.toStep2 = function() {
-		$rootScope.patientNamn = $scope.patientNamn;
-		$location.path("/choose-cert/index");	
-	}
-
-	$scope.toStep3 = function() {	$location.path("/choose-unit/index");	}
-
-	$scope.editCert = function() {
-    $log.debug("edit cert");
-
-    if($scope.certType.selected != "fk7263"){
-      $scope.confirmAddressDialog($scope.certType.selected);
-    } else {
-      $window.location.href = "/m/fk7263/webcert/intyg/new/edit#/edit";
-    }
-  };
-
-  // List interaction functions
-  $scope.openIntyg = function(cert){
-
-  };
-
-  $scope.copyIntyg = function(cert){
-    wcDialogService.showDialog(
-        $scope,
-        {
-          dialogId: "copy-dialog",
-          titleId: "label.copycert",
-          bodyText: "<p>När du kopierar detta intyg får du upp ett nytt intyg av samma typ och med samma information som finns i det intyg som du kopierar. Du får möjlighet att redigera informationen innan du signerar det nya intyget.</p><div class='form-inline'><input id='dontShowAgain' type='checkbox' ng-model='dontShowCopyInfo'> <label for='dontShowAgain'>Visa inte denna information igen</label></div>",
-          button1click: function() {
-            $log.debug("copy cert");
-          },
-          button1text: "common.copy",
-          button2text: "common.cancel"
+controllers.controller('EditPatientNameCtrl', ['$scope', '$location', 'CertificateDraft',
+    function ($scope, $location, CertificateDraft) {
+        if (!CertificateDraft.personnummer) {
+            $location.url('/create/choose-patient/index', true);
         }
-    );
-  };
 
-  $scope.confirmAddressDialog = function(certType) {
+        $scope.personnummer = CertificateDraft.personnummer;
+        $scope.name = CertificateDraft.name;
 
-    var address = "Repslagaregatan 25,<br>58222, Linköping";
-    var bodyText = "Patienten har tidigare intyg där adressuppgifter har angivits. Vill du återanvända dessa i det nya intyget?<br><br>Adress: "+address;
+        $scope.chooseCertType = function () {
+            CertificateDraft.name = $scope.name;
+            $location.path('/create/choose-cert-type/index');
+        };
 
-    wcDialogService.showDialog(
-        $scope,
-        {
-          dialogId: "confirm-address-dialog",
-          titleId: "label.confirmaddress",
-          bodyText: bodyText,
-          button1click: function() {
-            $log.debug("confirm address yes");
-            $window.location.href = "/m/"+certType+"/webcert/intyg/new/edit#/edit";
-          },
-          button2click: function() {
-            $log.debug("confirm address no");
-            $window.location.href = "/m/"+certType+"/webcert/intyg/new/edit#/edit";
-          },
-          button1text: "common.yes",
-          button2text: "common.no",
-          button3text: "common.cancel"
+        $scope.changePatient = function () {
+            $location.path('/create/index');
+        };
+    }]);
+
+controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window', '$location', '$filter', '$log', '$timeout', 'wcDialogService',
+    'dashBoardService', 'CertificateDraft',
+    function ($rootScope, $scope, $window, $location, $filter, $log, $timeout, wcDialogService, dashBoardService, CertificateDraft) {
+        if (!CertificateDraft.personnummer || !CertificateDraft.name) {
+            $location.url('/create/index', true);
         }
-    );
-  };
-		
-  $scope.setActiveUnit = function(unit) {
-    $log.debug("ActiveUnit is now:" + unit);
-    $scope.activeUnit = unit;
-/*
-    $scope.widgetState.queryFormCollapsed = true;
 
-    //If we change enhet then we probably don't want the same filter criterias
-    if($cookieStore.get("enhetsId") && $cookieStore.get("enhetsId")!=unit.id){
-        $scope.resetSearchForm();
-    }
-    $cookieStore.put("enhetsId" ,unit.id);
-    //If we have a query stored, open the advanced filter
-    if($cookieStore.get("query_instance")){
-        $scope.widgetState.queryFormCollapsed = false
-        $scope.doSearch();
-    }
-    $scope.initDoctorList(unit.id);
-    $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, $scope.activeUnit.id);
- 		*/
-  };
-
-  $scope.updateCertList = function(){
-      $scope.widgetState.currentList = $filter('CertDeletedFilter')($scope.widgetState.certListUnhandled, $scope.widgetState.showHiddenCerts);
-  };
-
-  // TEST --------------
-  if(!$scope.personnummer || $scope.personnummer == '') $scope.personnummer = "19121212-1212";
-  // --------------------
-
-  $scope.widgetState.activeErrorMessageKey = null;
-  $scope.widgetState.doneLoading = true;
-
-  $timeout(function() {
-    dashBoardService.getCertificatesForPerson($scope.personnummer, function(data) {
-      $scope.widgetState.doneLoading = false;
-      $scope.widgetState.certListUnhandled = data;
-      $scope.updateCertList();
-    }, function(errorData) {
-      $scope.widgetState.doneLoading = false;
-      $log.debug("Query Error"+errorData);
-      $scope.widgetState.activeErrorMessageKey = "info.certload.error";
-    });
-
-  }, 500);
-
-} ]);
-
-/*
- *  WebCertCtrl - Controller for logic related to displaying the list of a doctors unsigned certificates (mina osignerade intyg) 
- * 
- */
-
-angular.module('wcDashBoardApp').controller('WebCertCtrl', [ '$scope', '$window','$log','$location', function WebCertCtrl($scope, $window, $log, $location) {
-  // Main controller
-
-$scope.createCert = function() {
-	$location.path("/index");
-}
-
-$scope.viewCert = function(item) {
-  $log.debug("open " + item.id);
-  //listCertService.selectedCertificate = item;
-  $window.location.href = "/m/" + item.typ.toLowerCase() + "/webcert/intyg/" + item.id + "#/view";
-}
-
-} ]);
+        $scope.personnummer = CertificateDraft.personnummer;
+        $scope.name = CertificateDraft.name;
+        $scope.intygType = CertificateDraft.intygType;
+        $scope.certTypes = CertificateDraft.getCertTypes();
 
 
-/*
- *  ListUnsignedCertCtrl - Controller for logic related to displaying the list of unsigned certificates 
- * 
- */
-angular.module('wcDashBoardApp').controller('ListUnsignedCertCtrl', [ '$scope', 'dashBoardService', '$log', '$timeout', function ListUnsignedCertCtrl($scope, dashBoardService, $log, $timeout) {
-    $log.debug("ListUnsignedCertCtrl init()");
-    // init state
-    $scope.widgetState = {
-        showMin : 2,
-        showMax : 99,
-        pageSize : 2,
-        doneLoading : false,
-        hasError : false
-    }
+        function _createDraft () {
+            CertificateDraft.vardEnhetHsaId = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].id;
+            CertificateDraft.vardEnhetNamn = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn;
+            CertificateDraft.vardGivareHsaId = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter[0].id;
+            CertificateDraft.vardGivareNamn = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter[0].namn;
 
-    $scope.wipCertList = [];
-
-    $scope.$on("vardenhet", function(event, vardenhet) {
-        // Make new call with careUnit
-    });
-    $scope.$on("mottagning", function(event, mottagning) {
-        // Make new call with clinic
-    });
-
-    // Load list
-    var requestConfig = {
-        "type" : "dashboard_unsigned.json",
-        "careUnit" : "",
-        "clinic" : []
-    };
-
-    $timeout(function() { // wrap in timeout to simulate latency - remove soon
-        dashBoardService.getCertificates(requestConfig, function(data) {
-            $scope.widgetState.doneLoading = true;
-            if (data != null) {
-                $scope.wipCertList = data;
+            if (CertificateDraft.intygType === 'fk7263') {
+                // TODO: Remove this hard coded redirect.
+                $window.location.href = '/m/' + CertificateDraft.intygType + '/webcert/intyg/12345/edit#/edit';
+                CertificateDraft.reset();
             } else {
-                $scope.widgetState.hasError = true;
+                CertificateDraft.createDraft(function (data) {
+                    $window.location.href = '/m/' + CertificateDraft.intygType + '/webcert/intyg/' + data + '/edit#/edit';
+                    CertificateDraft.reset();
+                });
             }
-        });
-    }, 1000);
-} ]);
+        }
+
+        $scope.lookupAddress = function () {
+            CertificateDraft.intygType = $scope.intygType;
+            if (CertificateDraft.address) {
+                var bodyText = 'Patienten har tidigare intyg där adressuppgifter har angivits. Vill du återanvända dessa i det nya intyget?<br>' +
+                    '<br>Adress: ' + CertificateDraft.address;
+
+                wcDialogService.showDialog($scope, {
+                    dialogId : 'confirm-address-dialog',
+                    titleId : 'label.confirmaddress',
+                    bodyText : bodyText,
+
+                    button1click : function () {
+                        $log.debug('confirm address yes');
+                        _createDraft();
+                    },
+                    button2click : function () {
+                        $log.debug('confirm address no');
+                        CertificateDraft.address = null;
+                        _createDraft();
+                    },
+
+                    button1text : 'common.yes',
+                    button2text : 'common.no',
+                    button3text : 'common.cancel'
+                });
+            } else {
+                _createDraft();
+            }
+        };
+
+        $scope.changePatient = function () {
+            $location.path('/create/index');
+        };
+        $scope.editPatientName = function () {
+            $location.path('/create/edit-patient-name/index');
+        };
+        $scope.openIntyg = function (cert) {
+        };
+
+        // List of old certificates.
+
+        $scope.widgetState = {
+            doneLoading : false,
+            activeErrorMessageKey : null,
+            currentList : undefined,
+            showHiddenCerts : false
+        };
+
+        $scope.updateCertList = function () {
+            $scope.widgetState.currentList = $filter('CertDeletedFilter')($scope.widgetState.certListUnhandled, $scope.widgetState.showHiddenCerts);
+        };
+
+        $scope.widgetState.activeErrorMessageKey = null;
+        $scope.widgetState.doneLoading = true;
+
+        $timeout(function () {
+            dashBoardService.getCertificatesForPerson($scope.personnummer, function (data) {
+                $scope.widgetState.doneLoading = false;
+                $scope.widgetState.certListUnhandled = data;
+                $scope.updateCertList();
+            }, function (errorData) {
+                $scope.widgetState.doneLoading = false;
+                $log.debug('Query Error' + errorData);
+                $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
+            });
+        }, 500);
+
+        $scope.copyIntyg = function (cert) {
+            wcDialogService.showDialog($scope, {
+                dialogId : 'copy-dialog',
+                titleId : 'label.copycert',
+                bodyText : '<p>När du kopierar detta intyg får du upp ett nytt intyg av samma typ och med samma information som finns i det intyg som du kopierar. Du får möjlighet att redigera informationen innan du signerar det nya intyget.</p><div class=\'form-inline\'><input id=\'dontShowAgain\' type=\'checkbox\' ng-model=\'dontShowCopyInfo\'> <label for=\'dontShowAgain\'>Visa inte denna information igen</label></div>',
+                button1click : function () {
+                    $log.debug('copy cert');
+                },
+                button1text : 'common.copy',
+                button2text : 'common.cancel'
+            });
+        };
+    }]);
 
 
 /*
- *  UnansweredCertCtrl - Controller for logic related to displaying the list of unanswered questions 
+ *  WebCertCtrl - Controller for logic related to displaying the list of a doctors unsigned certificates (mina osignerade intyg)
+ *
+ */
+
+controllers.controller('WebCertCtrl', [ '$scope', '$window', '$log', '$location',
+    function WebCertCtrl ($scope, $window, $log, $location) {
+
+        // Main controller
+
+        $scope.createCert = function () {
+            $location.path("/create/index");
+        };
+
+        $scope.viewCert = function (item) {
+            $log.debug("open " + item.id);
+            //listCertService.selectedCertificate = item;
+            $window.location.href = "/m/" + item.typ.toLowerCase() + "/webcert/intyg/" + item.id + "#/view";
+        };
+    }]);
+
+
+/*
+ *  ListUnsignedCertCtrl - Controller for logic related to displaying the list of unsigned certificates
+ */
+controllers.controller('ListUnsignedCertCtrl', [ '$scope', 'dashBoardService', '$log', '$timeout',
+    function ($scope, dashBoardService, $log, $timeout) {
+        $log.debug("ListUnsignedCertCtrl init()");
+        // init state
+        $scope.widgetState = {
+            showMin : 2,
+            showMax : 99,
+            pageSize : 2,
+            doneLoading : false,
+            hasError : false
+        }
+
+        $scope.wipCertList = [];
+
+        $scope.$on("vardenhet", function (event, vardenhet) {
+            // Make new call with careUnit
+        });
+        $scope.$on("mottagning", function (event, mottagning) {
+            // Make new call with clinic
+        });
+
+        // Load list
+        var requestConfig = {
+            "type" : "dashboard_unsigned.json",
+            "careUnit" : "",
+            "clinic" : []
+        };
+
+        $timeout(function () { // wrap in timeout to simulate latency - remove soon
+            dashBoardService.getCertificates(requestConfig, function (data) {
+                $scope.widgetState.doneLoading = true;
+                if (data != null) {
+                    $scope.wipCertList = data;
+                } else {
+                    $scope.widgetState.hasError = true;
+                }
+            });
+        }, 1000);
+    }]);
+
+
+/*
+ *  UnansweredCertCtrl - Controller for logic related to displaying the list of unanswered questions
  *  for a certificate on the dashboard.
- * 
  */
-angular.module('wcDashBoardApp').controller('UnansweredCertCtrl', [ '$scope', 'dashBoardService', '$log', '$timeout', function UnansweredCertCtrl($scope, dashBoardService, $log, $timeout) {
-    $log.debug("UnansweredCertCtrl init()");
-    // init state
-    $scope.widgetState = {
-        showMin : 2,
-        showMax : 99,
-        pageSize : 2,
-        doneLoading : false,
-        hasError : false
-    };
+controllers.controller('UnansweredCertCtrl', [ '$scope', 'dashBoardService', '$log', '$timeout',
+    function ($scope, dashBoardService, $log, $timeout) {
+        $log.debug("UnansweredCertCtrl init()");
+        // init state
+        $scope.widgetState = {
+            showMin : 2,
+            showMax : 99,
+            pageSize : 2,
+            doneLoading : false,
+            hasError : false
+        };
 
-    $scope.qaCertList = [];
+        $scope.qaCertList = [];
 
-    // Load list
-    var requestConfig = {
-        "type" : "dashboard_unanswered.json",
-        "careUnit" : "",
-        "clinic" : []
-    };
-    $timeout(function() { // wrap in timeout to simulate latency - remove soon
-        dashBoardService.getCertificates(requestConfig, function(data) {
-            $scope.widgetState.doneLoading = true;
-            if (data != null) {
-                $scope.qaCertList = data;
-            } else {
-                $scope.widgetState.hasError = true;
-            }
-        });
-    }, 500);
-    
-} ]);
+        // Load list
+        var requestConfig = {
+            "type" : "dashboard_unanswered.json",
+            "careUnit" : "",
+            "clinic" : []
+        };
+        $timeout(function () { // wrap in timeout to simulate latency - remove soon
+            dashBoardService.getCertificates(requestConfig, function (data) {
+                $scope.widgetState.doneLoading = true;
+                if (data != null) {
+                    $scope.qaCertList = data;
+                } else {
+                    $scope.widgetState.hasError = true;
+                }
+            });
+        }, 500);
+
+    }]);
 
 /*
- *  ReadyToSignCertCtrl - Controller for logic related to displaying the list of certificates ready to mass-sign on the dashboard 
- *  
- * 
+ *  ReadyToSignCertCtrl - Controller for logic related to displaying the list of certificates ready to mass-sign on the dashboard
  */
-angular.module('wcDashBoardApp').controller('ReadyToSignCertCtrl', [ '$scope', 'dashBoardService', '$log', '$timeout', function ReadyToSignCertCtrl($scope, dashBoardService, $log, $timeout) {
-    $log.debug("ReadyToSignCertCtrl init()");
-    // init state
-    $scope.widgetState = {
-        showMin : 2,
-        showMax : 99,
-        pageSize : 2,
-        doneLoading : false,
-        hasError : false
-    }
+controllers.controller('ReadyToSignCertCtrl', [ '$scope', 'dashBoardService', '$log', '$timeout',
+    function ($scope, dashBoardService, $log, $timeout) {
+        $log.debug("ReadyToSignCertCtrl init()");
+        // init state
+        $scope.widgetState = {
+            showMin : 2,
+            showMax : 99,
+            pageSize : 2,
+            doneLoading : false,
+            hasError : false
+        }
 
-    $scope.signCertList = [];
+        $scope.signCertList = [];
 
-    // Load list
-    var requestConfig = {
-        "type" : "dashboard_readytosign.json",
-        "careUnit" : "",
-        "clinic" : []
-    }
-    $timeout(function() { // wrap in timeout to simulate latency - remove soon
-        dashBoardService.getCertificates(requestConfig, function(data) {
-            $scope.widgetState.doneLoading = true;
-            if (data != null) {
-                $scope.signCertList = data;
-            } else {
-                $scope.widgetState.hasError = true;
-            }
-        });
-    }, 500);
-} ]);
+        // Load list
+        var requestConfig = {
+            "type" : "dashboard_readytosign.json",
+            "careUnit" : "",
+            "clinic" : []
+        }
+        $timeout(function () { // wrap in timeout to simulate latency - remove soon
+            dashBoardService.getCertificates(requestConfig, function (data) {
+                $scope.widgetState.doneLoading = true;
+                if (data != null) {
+                    $scope.signCertList = data;
+                } else {
+                    $scope.widgetState.hasError = true;
+                }
+            });
+        }, 500);
+    }]);
 
 /*
  *  AboutWebcertCtrl - Controller for logic related to creating a new certificate
  *
  */
-angular.module('wcDashBoardApp').controller('AboutWebcertCtrl', [ '$scope', '$window', function AboutWebcertCtrl($scope, $window) {
-
-} ]);
+controllers.controller('AboutWebcertCtrl', [ '$scope', '$window',
+    function AboutWebcertCtrl ($scope, $window) {
+    }]);

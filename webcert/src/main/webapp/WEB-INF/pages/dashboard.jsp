@@ -90,7 +90,6 @@
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/filters.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/messages.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives/wcPersonNumber.js"/>"></script>
 
   <%-- Dependencies to common components --%>
   <script type="text/javascript" src="<c:url value="/js/common/wc-utils.js"/>"></script>

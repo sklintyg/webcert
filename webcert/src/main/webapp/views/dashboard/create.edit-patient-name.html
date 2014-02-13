@@ -1,0 +1,28 @@
+<div class="row-fluid">
+  <div class="span7 webcert-col webcert-col-single">
+    <form name="nameForm" ng-submit="chooseCertType()" novalidate>
+      <a class="backlink" href="#/index"><span message key="common.goback"></span></a>
+
+      <h1>Sök/skriv intyg</h1>
+      <div class="alert alert-warning" ng-show="false">
+        Vi lyckades inte hämta patientens namn från SPAR/NAVET. Eftersom patienten inte har några läkarintyg i Webcert, måste du därför ange patientens namn.
+      </div>
+      <div class="control-group">
+        <label class="control-label">Patientuppgifter</label>
+        <div class="control-group">
+          <div class="well well-large">
+            {{personnummer}}
+            <button class="btn" ng-click="changePatient()">Byt patient</button>
+          </div>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">Ange patientens namn</label>
+        <input type="text" placeholder="" required ng-model="name" />
+      </div>
+      <div class="control-group">
+        <button class="btn btn-success" type="submit" ng-disabled="nameForm.$invalid">Fortsätt</button>
+      </div>
+    </form>
+  </div>
+</div>
