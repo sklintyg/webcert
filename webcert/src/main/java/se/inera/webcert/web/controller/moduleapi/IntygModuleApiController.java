@@ -6,6 +6,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -98,6 +99,8 @@ public class IntygModuleApiController {
      */
     @PUT
     @Path("/draft/{intygId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response saveDraft(@PathParam("intygId") String intygId, byte[] bytes) {
                         

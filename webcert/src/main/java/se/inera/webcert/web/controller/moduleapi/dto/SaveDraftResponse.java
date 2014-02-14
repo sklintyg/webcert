@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SaveDraftResponse {
-    
+
     private DraftValidationStatus status;
-    
-    private List<SaveDraftValidationMessage> messages = new ArrayList<SaveDraftValidationMessage>(); 
-    
+
+    private List<SaveDraftValidationMessage> messages = new ArrayList<SaveDraftValidationMessage>();
+
+    public SaveDraftResponse() {
+
+    }
+
     public SaveDraftResponse(DraftValidationStatus status) {
         this.status = status;
     }
@@ -28,7 +32,7 @@ public class SaveDraftResponse {
     public void getMessage(List<SaveDraftValidationMessage> messages) {
         this.messages = messages;
     }
-    
+
     public void addMessage(String field, String message) {
         messages.add(new SaveDraftValidationMessage(field, message));
     }
