@@ -2,6 +2,7 @@ package se.inera.webcert.web.controller.api;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,7 +23,12 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
+import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
+import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.IntygItem;
+import se.inera.webcert.service.dto.Patient;
+import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -60,15 +66,71 @@ public class IntygApiController {
     
     @POST
     @Path("/create")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response createNewIntyg(CreateNewIntygRequest request) {
         
-        intygDraftService.createNewDraft(request.getIntygType(), request.getPatientPersonnummer());
+        if (!request.isValid()) {
+            LOG.error("Request is invalid: " + request.toString());
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+                
+        String intygType = request.getIntygType();
         
-        // TODO: return a redirect to the edit page of the module with the newly generated draft.
+        LOG.debug("Attempting to create draft of type '{}'", intygType);
         
-        return null;
+        CreateNewDraftRequest serviceRequest = createServiceRequest(request);
+        
+        String idOfCreatedDraft = intygDraftService.createNewDraft(serviceRequest);
+        
+        LOG.debug("Created a new draft of type '{}' with id '{}'", intygType, idOfCreatedDraft);
+        
+        return Response.ok().entity(idOfCreatedDraft).build();
     }
     
+    private CreateNewDraftRequest createServiceRequest(CreateNewIntygRequest req) {
+        
+        CreateNewDraftRequest srvReq = new CreateNewDraftRequest();
+        
+        srvReq.setIntygType(req.getIntygType());
+        
+        Patient pat = new Patient();
+        pat.setPersonNummer(req.getPatientPersonnummer());
+        pat.setForNamn(req.getPatientFornamn());
+        pat.setEfterNamn(req.getPatientEfternamn());
+        srvReq.setPatient(pat);
+        
+        HoSPerson hosp = createHoSPersonFromUser();        
+        srvReq.setHosPerson(hosp);
+        
+        Vardgivare vgiv = new Vardgivare();
+        vgiv.setHsaId(req.getVardGivareHsdId());
+        vgiv.setNamn(req.getVardGivareNamn());
+                        
+        Vardenhet venh = new Vardenhet();
+        venh.setVardgivare(vgiv);
+        venh.setHsaId(req.getVardEnhetHsdId());
+        venh.setNamn(req.getVardEnhetNamn());
+        
+        srvReq.setVardenhet(venh);
+                
+        return srvReq;
+    }
+
+    private HoSPerson createHoSPersonFromUser() {
+        
+        WebCertUser user = webCertUserService.getWebCertUser();
+        
+        HoSPerson hosp = new HoSPerson();
+        hosp.setNamn(user.getNamn());
+        hosp.setHsaId(user.getHsaId());
+        hosp.setForskrivarkod(user.getForskrivarkod());      
+        
+        // TODO The users befattning needs to be supplied
+        
+        return hosp;
+    }
+
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are retrieved from Intygstjänst,
      * drafts are retrieved from Webcerts db. Both types of Intyg are converted and merged into one

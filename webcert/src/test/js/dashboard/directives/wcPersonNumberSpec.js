@@ -3,7 +3,7 @@
 describe('wcPersonNumber', function () {
 	var $scope;
 
-	beforeEach(module('dashboard.directives'));
+	beforeEach(module('wc.dashboard.directives'));
 
 	// Create a form to test the validation directive on.
 	beforeEach(inject(function ($compile, $rootScope) {

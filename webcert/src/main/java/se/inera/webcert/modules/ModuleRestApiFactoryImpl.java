@@ -1,6 +1,7 @@
 package se.inera.webcert.modules;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.slf4j.Logger;
@@ -15,6 +16,12 @@ import se.inera.webcert.modules.api.ModuleRestApi;
 import se.inera.webcert.modules.registry.IntygModule;
 import se.inera.webcert.modules.registry.IntygModuleRegistry;
 
+/**
+ * Factory for creating a REST client for communicating with a specific module.
+ * 
+ * @author nikpet
+ *
+ */
 @Component
 public class ModuleRestApiFactoryImpl implements ModuleRestApiFactory {
 
@@ -44,6 +51,8 @@ public class ModuleRestApiFactoryImpl implements ModuleRestApiFactory {
     @Override
     public ModuleRestApi getModuleRestService(String moduleName) {
         
+        LOG.debug("Getting module REST service for module {}", moduleName);
+        
         IntygModule intygModule = moduleRegistry.getModule(moduleName);
         
         if (intygModule == null) {
@@ -53,7 +62,11 @@ public class ModuleRestApiFactoryImpl implements ModuleRestApiFactory {
         
         String moduleApiUri = composeApiURI(intygModule);
         
-        return JAXRSClientFactory.create(moduleApiUri, ModuleRestApi.class, Collections.singletonList(jacksonJsonProvider));
+        LOG.debug("URI is {}", moduleApiUri);
+        
+        ModuleRestApi client = JAXRSClientFactory.create(moduleApiUri, ModuleRestApi.class, Collections.singletonList(jacksonJsonProvider));
+        
+        return client;
     }
     
     private String composeApiURI(IntygModule intygModule) {
@@ -61,6 +74,7 @@ public class ModuleRestApiFactoryImpl implements ModuleRestApiFactory {
         StringBuilder sb = new StringBuilder();
         sb.append(host).append("/");
         sb.append(intygModule.getUrl());
+        sb.append("/api");
         
         return sb.toString();
     }
