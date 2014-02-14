@@ -165,11 +165,16 @@ services.factory('CertificateDraft', [ '$http', '$log',
                 if (this.personnummer === '19121212-1212' || this.personnummer === '20121212-1212') {
                     this.name = 'Test Testsson';
                     this.address = 'Storgatan 23';
+                } else {
+                    this.name = null;
+                    this.address = null;
+
                 }
                 onSuccess();
             },
 
             getCertTypes : function () {
+                this.intygType = 'default';
                 return [
                     {id : 'default', name : 'Välj intygstyp'},
                     {id : 'fk7263', name : 'Läkarintyg FK 7263'},

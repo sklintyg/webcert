@@ -130,6 +130,30 @@ directives.directive("wcAbout", ['$rootScope', '$location',
     }]);
 
 /**
+ * Directive to keep track of when the user has visited a field in order to show validation messages
+ * only after the user have had the opportunity to enter some information.
+ */
+directives.directive('wcVisited', [
+    function () {
+        return {
+
+            restrict : 'A',
+            require : 'ngModel',
+
+            link : function (scope, element, attrs, ctrl) {
+                ctrl.$visited = false;
+                // TODO: Replace bind with one after updating to Angular 1.2.x.
+                element.bind('blur', function () {
+                    element.addClass('wc-visited');
+                    scope.$apply(function () {
+                        ctrl.$visited = true;
+                    });
+                });
+            }
+        };
+    }]);
+
+/**
  * Directive to check if a value is a valid personnummer or samordningsnummer. The validation follows the specification
  * in SKV 704 and SKV 707. The model holds the number in the format ååååMMdd-nnnn (or ååååMMnn-nnnn in the case of
  * samordningsnummer) but it allows the user to input the number in any of the valid formats.
@@ -188,7 +212,7 @@ directives.directive('wcPersonNumber', [
             restrict : 'A',
             require : 'ngModel',
 
-            link : function (scope, elm, attrs, ctrl) {
+            link : function (scope, element, attrs, ctrl) {
 
                 ctrl.$parsers.unshift(function (viewValue) {
 
