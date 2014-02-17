@@ -56,9 +56,11 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
         $scope.personnummer = CertificateDraft.personnummer;
         $scope.firstname = CertificateDraft.firstname;
         $scope.lastname = CertificateDraft.lastname;
-        $scope.certTypes = CertificateDraft.getCertTypes();
-        $scope.intygType = CertificateDraft.intygType;
 
+        CertificateDraft.getCertTypes(function (types) {
+            $scope.certTypes = types;
+            $scope.intygType = CertificateDraft.intygType;
+        });
 
         function _createDraft () {
             CertificateDraft.vardGivareHsaId = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].id;

@@ -152,13 +152,17 @@ services.factory('CertificateDraft', [ '$http', '$log',
                 onSuccess();
             },
 
-            getCertTypes : function () {
+            getCertTypes : function (onSuccess) {
                 this.intygType = 'default';
-                return [
-                    {id : 'default', name : 'Välj intygstyp'},
-                    {id : 'fk7263', name : 'Läkarintyg FK 7263'},
-                    {id : 'ts-bas', name : 'Läkarintyg Transportstyrelsen Bas'}
-                ];
+
+                var restPath = '/api/intyg/types';
+                $http.get(restPath).success(function (data) {
+                    $log.debug('got data:' + data);
+                    var types = [{id : 'default', label : 'Välj intygstyp'}];
+                    onSuccess(types.concat(data));
+                }).error(function (data, status) {
+                    $log.error('error ' + status);
+                });
             },
 
             createDraft : function (onSuccess) {
