@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.converter.IntygMerger;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.ModuleRestApiFactory;
+import se.inera.webcert.modules.registry.IntygModule;
+import se.inera.webcert.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
@@ -64,6 +66,9 @@ public class IntygApiController {
 
     @Autowired
     private IntygDraftService intygDraftService;
+    
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
 
     public IntygApiController() {
 
@@ -169,6 +174,23 @@ public class IntygApiController {
         return Response.ok(allIntyg).build();
     }
 
+    /**
+     * Returns a list of all deployed modules.
+     * 
+     * @return
+     */
+    @GET
+    @Path("/types")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8)
+    public Response listIntygTypes() {
+        
+        List<IntygModule> allModules = moduleRegistry.listAllModules();
+        
+        LOG.debug("Returning list of {} modules", allModules.size());
+                
+        return Response.ok().entity(allModules).build();
+    }
+    
     private List<String> getEnhetIdsForCurrentUser() {
 
         WebCertUser webCertUser = webCertUserService.getWebCertUser();
