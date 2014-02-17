@@ -6,7 +6,7 @@
       <div class="control-group">
         <label class="control-label">Patientuppgifter</label>
           <div class="control-group">
-            {{name}}<br/>
+            {{firstname}} {{lastname}}<br/>
             {{personnummer}}
           </div>
           <button class="btn" type="button" ng-click="changePatient()">Byt patient</button>
@@ -29,7 +29,7 @@
     </form>
 
     <div class="webcert-col-section">
-      <h2 class="col-head">{{name}}s tidigare intyg</h2>
+      <h2 class="col-head">{{firstname}} {{lastname}}s tidigare intyg</h2>
       <div class="control-group" ng-hide="true">
         <div class="controls pointer-labels">
           <label class="checkbox"><input type="radio" name="olderCerts"> Visa intyg för Vårdenheter och till mottagare som jag har medarbetaruppdrag på</label>

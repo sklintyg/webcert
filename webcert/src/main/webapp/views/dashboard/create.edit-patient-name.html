@@ -13,12 +13,19 @@
 
       <div class="webcert-col-section">
 	      <div class="control-group">
-	        <label for="name" class="control-label">Ange patientens namn</label>
-	        <input id="name" name="name" type="text" ng-model="name" required wc-visited />
-	        <div ng-show="nameForm.name.$invalid && (nameForm.name.$visited || nameForm.submitted)">
-	          <span class="error">Du måste ange ett namn</span>
+	        <label for="firstname" class="control-label">Förnamn</label>
+	        <input id="firstname" name="firstname" type="text" ng-model="firstname" required wc-visited />
+	        <div ng-show="nameForm.firstname.$invalid && (nameForm.firstname.$visited || nameForm.submitted)">
+	          <span class="error">Du måste ange ett förnamn</span>
 	        </div>
 	      </div>
+        <div class="control-group">
+          <label for="lastname" class="control-label">Efternamn</label>
+          <input id="lastname" name="lastname" type="text" ng-model="lastname" required wc-visited />
+          <div ng-show="nameForm.lastname.$invalid && (nameForm.lastname.$visited || nameForm.submitted)">
+            <span class="error">Du måste ange ett efternamn</span>
+          </div>
+        </div>
 	      <div class="control-group">
 	        <button class="btn btn-success" type="submit" ng-disabled="nameForm.$invalid">Fortsätt</button>
 	      </div>

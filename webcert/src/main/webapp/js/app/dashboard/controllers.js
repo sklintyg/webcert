@@ -16,7 +16,7 @@ controllers.controller('ChoosePatientCtrl', ['$scope', '$location', 'Certificate
 
         $scope.lookupPatient = function () {
             CertificateDraft.getNameAndAddress($scope.personnummer, function () {
-                if (CertificateDraft.name) {
+                if (CertificateDraft.firstname && CertificateDraft.lastname) {
                     $location.path('/create/choose-cert-type/index');
                 } else {
                     $location.path('/create/edit-patient-name/index');
@@ -32,10 +32,12 @@ controllers.controller('EditPatientNameCtrl', ['$scope', '$location', 'Certifica
         }
 
         $scope.personnummer = CertificateDraft.personnummer;
-        $scope.name = CertificateDraft.name;
+        $scope.firstname = CertificateDraft.firstname;
+        $scope.lastname = CertificateDraft.lastname;
 
         $scope.chooseCertType = function () {
-            CertificateDraft.name = $scope.name;
+            CertificateDraft.firstname = $scope.firstname;
+            CertificateDraft.lastname = $scope.lastname;
             $location.path('/create/choose-cert-type/index');
         };
 
@@ -47,12 +49,13 @@ controllers.controller('EditPatientNameCtrl', ['$scope', '$location', 'Certifica
 controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window', '$location', '$filter', '$log', '$timeout', 'wcDialogService',
     'dashBoardService', 'CertificateDraft',
     function ($rootScope, $scope, $window, $location, $filter, $log, $timeout, wcDialogService, dashBoardService, CertificateDraft) {
-        if (!CertificateDraft.personnummer || !CertificateDraft.name) {
+        if (!CertificateDraft.personnummer || !CertificateDraft.firstname || !CertificateDraft.lastname) {
             $location.url('/create/index', true);
         }
 
         $scope.personnummer = CertificateDraft.personnummer;
-        $scope.name = CertificateDraft.name;
+        $scope.firstname = CertificateDraft.firstname;
+        $scope.lastname = CertificateDraft.lastname;
         $scope.certTypes = CertificateDraft.getCertTypes();
         $scope.intygType = CertificateDraft.intygType;
 
@@ -124,7 +127,7 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
         };
 
         $scope.updateCertList = function () {
-            $scope.widgetState.currentList = $filter('CertDeletedFilter')($scope.widgetState.certListUnhandled, $scope.widgetState.showHiddenCerts);
+            $scope.widgetState.currentList = $filter('CertDeletedFilter')($scope.widgetState.certListUnhandled, false); // TODO: Use search filter instead of "false"
         };
 
         $scope.widgetState.activeErrorMessageKey = null;

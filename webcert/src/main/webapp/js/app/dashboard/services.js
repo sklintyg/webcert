@@ -126,35 +126,13 @@ services.factory('CertificateDraft', [ '$http', '$log',
             reset : function () {
                 this.personnummer = null;
                 this.intygType = 'default';
-                this.name = null;
+                this.firstname = null;
+                this.lastname = null;
                 this.address = null;
                 this.vardEnhetHsaId = null;
                 this.vardEnhetNamn = null;
                 this.vardGivareHsaId = null;
                 this.vardGivareHsaNamn = null;
-            },
-
-            create : function (onSuccess) {
-                $log.debug('CertificateDraft create');
-
-                var payload = {};
-                payload.patientPersonnummer = this.personnummer;
-                payload.name = this.name;
-                payload.intygType = this.intygType;
-                payload.address = this.address;
-
-                var restPath = '/api/intyg/create';
-                $http.post(restPath, payload).success(function (data) {
-                    $log.debug('got callback data: ' + data);
-
-                    // This services has fulfilled it's task, clear all data.
-                    // TODO: Clear all data on the service.
-
-                    onSuccess(data);
-
-                }).error(function (data, status) {
-                    $log.error('error ' + status);
-                });
             },
 
             getNameAndAddress : function (personnummer, onSuccess) {
@@ -163,12 +141,13 @@ services.factory('CertificateDraft', [ '$http', '$log',
                 this.personnummer = personnummer;
 
                 if (this.personnummer === '19121212-1212' || this.personnummer === '20121212-1212') {
-                    this.name = 'Test Testsson';
-                    this.address = 'Storgatan 23';
+                  this.firstname = 'Test';
+                  this.lastname = 'Testsson';
+                  this.address = 'Storgatan 23';
                 } else {
-                    this.name = null;
-                    this.address = null;
-
+                  this.firstname = null;
+                  this.lastname = null;
+                  this.address = null;
                 }
                 onSuccess();
             },
@@ -187,9 +166,8 @@ services.factory('CertificateDraft', [ '$http', '$log',
 
                 var payload = {};
                 payload.patientPersonnummer = this.personnummer;
-                var nameParts = this.name.split(' ');
-                payload.patientFornamn = (nameParts.length > 0) ? nameParts[0] : null;
-                payload.patientEfternamn = (nameParts.length > 1) ? nameParts[1] : null;
+                payload.patientFornamn = this.firstname;
+                payload.patientEfternamn = this.lastname;
                 payload.intygType = this.intygType;
                 payload.address = this.address;
                 payload.vardEnhetHsaId = this.vardEnhetHsaId;
