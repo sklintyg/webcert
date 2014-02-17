@@ -10,27 +10,37 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Mock implementation of {@link IntygModuleRegistry} using a map that is initialized
+ * at bean creation.
+ * 
+ * @author nikpet
+ *
+ */
 @Component
-public class IntygModulesRegistryImpl implements IntygModuleRegistry {
+public class MockIntygModulesRegistryImpl implements IntygModuleRegistry {
 
     private Map<String, IntygModule> modulesMap = new HashMap<String, IntygModule>();
     
-    public IntygModulesRegistryImpl() {
-        this.initMockRegistry();
+    public MockIntygModulesRegistryImpl() {
+        
     }
 
+    @PostConstruct
     public void initMockRegistry() {
         
-        IntygModule im = new IntygModule("fk7263", "Läkarintyg FK 7263", "fk7263", 1);
+        int sortCount = 1;
+        
+        IntygModule im = new IntygModule("fk7263", "Läkarintyg FK 7263", "fk7263", sortCount++);
         modulesMap.put(im.getId(), im);
         
-        im = new IntygModule("ts-bas", "Transportstyrelsens läkarintyg, bas", "ts-bas", 2);
+        im = new IntygModule("ts-bas", "Transportstyrelsens läkarintyg, bas", "ts-bas", sortCount++);
         modulesMap.put(im.getId(), im);
         
-        im = new IntygModule("ts-diabetes", "Transportstyrelsens läkarintyg, diabetes", "ts-diabetes", 3);
-        modulesMap.put(im.getId(), im);
+        //im = new IntygModule("ts-diabetes", "Transportstyrelsens läkarintyg, diabetes", "ts-diabetes", sortCount++);
+        //modulesMap.put(im.getId(), im);
         
-        im = new IntygModule("ivar", "Intyg vid avbeställd resa", "rli", 4);
+        im = new IntygModule("ivar", "Intyg vid avbeställd resa", "rli", sortCount++);
         modulesMap.put(im.getId(), im);
         
     }
