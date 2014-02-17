@@ -48,6 +48,9 @@ public class IntygRepositoryTest {
     private static final String MODEL = "This is the JSON model of this Intyg " +
     		"with some interesting scandinavian characters like Å, Ä and ö added";
     
+    private static final String PERSON_FORNAMN = "Tolvan";
+    private static final String PERSON_EFTERNAMN = "Tolvansson";
+    
     @Test
     public void testFindOne() {
         Intyg saved = intygRepository.save(buildIntyg(ENHET_1_ID));
@@ -55,7 +58,9 @@ public class IntygRepositoryTest {
        
         assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
         assertThat(read.getPatientPersonnummer(), is(equalTo(saved.getPatientPersonnummer())));
-              
+        assertThat(read.getPatientFornamn(), is(equalTo(saved.getPatientFornamn())));
+        assertThat(read.getPatientEfternamn(), is(equalTo(saved.getPatientEfternamn())));
+        
         assertThat(read.getEnhetsId(), is(notNullValue()));
         
         assertThat(read.getModel(), is(equalTo(MODEL)));
@@ -109,19 +114,21 @@ public class IntygRepositoryTest {
     }
     
     private Intyg buildIntyg(String enhetsId) {
-        return buildIntyg(enhetsId, IntygsStatus.WORK_IN_PROGRESS, INTYGSTYP_FK7263, PERSON_NUMMER, MODEL);
+        return buildIntyg(enhetsId, IntygsStatus.WORK_IN_PROGRESS, INTYGSTYP_FK7263, PERSON_NUMMER, PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL);
     }
 
     private Intyg buildIntyg(String enhetsId, IntygsStatus status) {
-        return buildIntyg(enhetsId, status, INTYGSTYP_FK7263, PERSON_NUMMER, MODEL);
+        return buildIntyg(enhetsId, status, INTYGSTYP_FK7263, PERSON_NUMMER, PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL);
     }
 
-    private Intyg buildIntyg(String enhetsId, IntygsStatus status, String type, String personNummer, String model) {
+    private Intyg buildIntyg(String enhetsId, IntygsStatus status, String type, String personNummer, String personFornamn, String personEfternamn, String model) {
         Intyg intyg = new Intyg();
         intyg.setIntygsId(UUID.randomUUID().toString());
         intyg.setIntygsTyp(type);
         intyg.setEnhetsId(enhetsId);
         intyg.setPatientPersonnummer(personNummer);
+        intyg.setPatientFornamn(personFornamn);
+        intyg.setPatientEfternamn(personEfternamn);
         VardpersonReferens vardpersonReferens = new VardpersonReferens();
         vardpersonReferens.setHsaId(enhetsId);
         vardpersonReferens.setNamn(enhetsId + "-namn");
