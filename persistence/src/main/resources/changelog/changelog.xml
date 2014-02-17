@@ -180,6 +180,12 @@
       <column name="PATIENT_PERSONNUMMER" type="varchar(255)">
         <constraints nullable="false" />
       </column>
+      <column name="PATIENT_FORNAMN" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="PATIENT_EFTERNAMN" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
       <column name="SENAST_SPARAD_DATUM" type="datetime">
         <constraints nullable="false" />
       </column>

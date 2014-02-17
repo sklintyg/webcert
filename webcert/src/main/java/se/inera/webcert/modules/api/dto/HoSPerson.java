@@ -1,7 +1,7 @@
 package se.inera.webcert.modules.api.dto;
 
 
-public class HoSPersonal {
+public class HoSPerson {
 
     private String hsaId;
     
@@ -10,8 +10,10 @@ public class HoSPersonal {
     private String forskrivarkod;
     
     private String befattning;
+    
+    private Vardenhet vardenhet;
         
-    public HoSPersonal() {
+    public HoSPerson() {
 
     }
 
@@ -45,6 +47,14 @@ public class HoSPersonal {
 
     public void setBefattning(String befattning) {
         this.befattning = befattning;
+    }
+
+    public Vardenhet getVardenhet() {
+        return vardenhet;
+    }
+
+    public void setVardenhet(Vardenhet vardenhet) {
+        this.vardenhet = vardenhet;
     }
 
 }

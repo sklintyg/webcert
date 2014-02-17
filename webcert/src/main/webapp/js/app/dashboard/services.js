@@ -192,9 +192,9 @@ services.factory('CertificateDraft', [ '$http', '$log',
                 payload.patientEfternamn = (nameParts.length > 1) ? nameParts[1] : null;
                 payload.intygType = this.intygType;
                 payload.address = this.address;
-                payload.vardEnhetHsdId = this.vardEnhetHsaId;
+                payload.vardEnhetHsaId = this.vardEnhetHsaId;
                 payload.vardEnhetNamn = this.vardEnhetNamn;
-                payload.vardGivareHsdId = this.vardGivareHsaId;
+                payload.vardGivareHsaId = this.vardGivareHsaId;
                 payload.vardGivareNamn = this.vardGivareNamn;
 
                 var restPath = '/api/intyg/create';
