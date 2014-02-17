@@ -50,6 +50,12 @@ public class Intyg {
 
     @Column(name = "PATIENT_PERSONNUMMER")
     private String patientPersonnummer;
+    
+    @Column(name = "PATIENT_FORNAMN")
+    private String patientFornamn;
+    
+    @Column(name = "PATIENT_EFTERNAMN")
+    private String patientEfternamn;
 
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "hsaId", column = @Column(name = "SKAPAD_AV_HSAID")),
@@ -160,6 +166,22 @@ public class Intyg {
 
     public void setPatientPersonnummer(String patientPersonnummer) {
         this.patientPersonnummer = patientPersonnummer;
+    }
+
+    public String getPatientFornamn() {
+        return patientFornamn;
+    }
+
+    public void setPatientFornamn(String patientFornamn) {
+        this.patientFornamn = patientFornamn;
+    }
+
+    public String getPatientEfternamn() {
+        return patientEfternamn;
+    }
+
+    public void setPatientEfternamn(String patientEfternamn) {
+        this.patientEfternamn = patientEfternamn;
     }
 
     public VardpersonReferens getSkapadAv() {

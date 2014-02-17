@@ -17,10 +17,8 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.ModuleRestApiFactory;
 import se.inera.webcert.modules.api.ModuleRestApi;
 import se.inera.webcert.modules.api.dto.CreateNewIntygModuleRequest;
-import se.inera.webcert.modules.api.dto.CreateNewIntygModuleResponse;
 import se.inera.webcert.modules.api.dto.DraftValidationMessage;
 import se.inera.webcert.modules.api.dto.DraftValidationResponse;
-import se.inera.webcert.modules.api.dto.HoSPersonal;
 import se.inera.webcert.modules.api.dto.Patient;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
@@ -91,9 +89,13 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private void persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
 
         Intyg draft = new Intyg();
-
-        draft.setPatientPersonnummer(request.getPatient().getPersonNummer());
-
+        
+        se.inera.webcert.service.dto.Patient patient = request.getPatient();
+        
+        draft.setPatientPersonnummer(patient.getPersonNummer());
+        draft.setPatientFornamn(patient.getForNamn());
+        draft.setPatientEfternamn(patient.getEfterNamn());
+        
         draft.setIntygsId(request.getIntygId());
         draft.setIntygsTyp(request.getIntygType());
 
@@ -169,33 +171,47 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return (StringUtils.isNotBlank(str)) ? str.length() : 0;
     }
 
-    private CreateNewIntygModuleRequest createModuleRequest(CreateNewDraftRequest req) {
+    private CreateNewIntygModuleRequest createModuleRequest(CreateNewDraftRequest draftReq) {
 
-        CreateNewIntygModuleRequest mr = new CreateNewIntygModuleRequest();
-        mr.setCertificateId(req.getIntygId());
+        CreateNewIntygModuleRequest modReq = new CreateNewIntygModuleRequest();
+        modReq.setCertificateId(draftReq.getIntygId());
 
-        se.inera.webcert.service.dto.Patient reqPat = req.getPatient();
+        se.inera.webcert.service.dto.Patient reqPat = draftReq.getPatient();
 
         Patient mrPat = new Patient();
         mrPat.setPersonNummer(reqPat.getPersonNummer());
         mrPat.setForNamn(reqPat.getForNamn());
         mrPat.setEfterNamn(reqPat.getEfterNamn());
         // TODO: Populate with Patients address info
-        mr.setPatientInfo(mrPat);
+        
+        modReq.setPatientInfo(mrPat);
 
-        HoSPerson reqHosp = req.getHosPerson();
+        Vardenhet drVardenhet = draftReq.getVardenhet();
+        
+        Vardgivare drVardgivare = drVardenhet.getVardgivare();
+        
+        se.inera.webcert.modules.api.dto.Vardgivare mrVardgivare = new se.inera.webcert.modules.api.dto.Vardgivare();
+        mrVardgivare.setHsaId(drVardgivare.getHsaId());
+        mrVardgivare.setNamn(drVardgivare.getNamn());
+        
+        se.inera.webcert.modules.api.dto.Vardenhet mrVardenhet = new se.inera.webcert.modules.api.dto.Vardenhet();
+        mrVardenhet.setHsaId(drVardenhet.getHsaId());
+        mrVardenhet.setNamn(drVardenhet.getNamn());
+        mrVardenhet.setVardgivare(mrVardgivare);
+        
+        HoSPerson reqHosp = draftReq.getHosPerson();
 
-        HoSPersonal mrHosp = new HoSPersonal();
+        se.inera.webcert.modules.api.dto.HoSPerson mrHosp = new se.inera.webcert.modules.api.dto.HoSPerson();
         mrHosp.setNamn(reqHosp.getNamn());
         mrHosp.setHsaId(reqHosp.getHsaId());
         mrHosp.setForskrivarkod(reqHosp.getForskrivarkod());
         // TODO: Populate with befattning
-
-        mr.setSkapadAv(mrHosp);
         
-        // TODO: Populate with careUnit and careGiver
-
-        return mr;
+        mrHosp.setVardenhet(mrVardenhet);
+        
+        modReq.setSkapadAv(mrHosp);
+        
+        return modReq;
     }
 
     @Override

@@ -5,7 +5,7 @@ public class CreateNewIntygModuleRequest {
 
     private String certificateId;
 
-    private HoSPersonal skapadAv;
+    private HoSPerson skapadAv;
 
     private Patient patientInfo;
     
@@ -21,11 +21,11 @@ public class CreateNewIntygModuleRequest {
         this.certificateId = certificateId;
     }
 
-    public HoSPersonal getSkapadAv() {
+    public HoSPerson getSkapadAv() {
         return skapadAv;
     }
 
-    public void setSkapadAv(HoSPersonal skapadAv) {
+    public void setSkapadAv(HoSPerson skapadAv) {
         this.skapadAv = skapadAv;
     }
 
