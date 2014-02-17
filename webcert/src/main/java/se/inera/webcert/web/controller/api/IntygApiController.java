@@ -33,6 +33,7 @@ import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
+import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -43,17 +44,12 @@ import se.inera.webcert.web.service.WebCertUserService;
  * @author nikpet
  * 
  */
-public class IntygApiController {
-
-    private static final String UTF_8 = ";charset=utf-8";
+public class IntygApiController extends AbstractApiController {
 
     private static Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
 
     private static List<IntygsStatus> ALL_DRAFT_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
             IntygsStatus.DRAFT_INCOMPLETE, IntygsStatus.DRAFT_DISCARDED);
-
-    @Autowired
-    private WebCertUserService webCertUserService;
 
     @Autowired
     private IntygService intygService;
@@ -127,20 +123,6 @@ public class IntygApiController {
         return srvReq;
     }
 
-    private HoSPerson createHoSPersonFromUser() {
-
-        WebCertUser user = webCertUserService.getWebCertUser();
-
-        HoSPerson hosp = new HoSPerson();
-        hosp.setNamn(user.getNamn());
-        hosp.setHsaId(user.getHsaId());
-        hosp.setForskrivarkod(user.getForskrivarkod());
-
-        // TODO The users befattning needs to be supplied
-
-        return hosp;
-    }
-
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
@@ -151,7 +133,7 @@ public class IntygApiController {
      */
     @GET
     @Path("/list/{personNummer}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response listIntyg(@PathParam("personNummer") String personNummer) {
         
         LOG.debug("Retrieving intyg for person {}", personNummer);
@@ -181,7 +163,7 @@ public class IntygApiController {
      */
     @GET
     @Path("/types")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response listIntygTypes() {
         
         List<IntygModule> allModules = moduleRegistry.listAllModules();
@@ -191,14 +173,4 @@ public class IntygApiController {
         return Response.ok().entity(allModules).build();
     }
     
-    private List<String> getEnhetIdsForCurrentUser() {
-
-        WebCertUser webCertUser = webCertUserService.getWebCertUser();
-        List<String> vardenheterIds = webCertUser.getVardenheterIds();
-        
-        LOG.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), vardenheterIds);
-        
-        return vardenheterIds;
-    }
-
 }
