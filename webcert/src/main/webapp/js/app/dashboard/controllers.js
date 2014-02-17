@@ -114,8 +114,6 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
         $scope.editPatientName = function () {
             $location.path('/create/edit-patient-name/index');
         };
-        $scope.openIntyg = function (cert) {
-        };
 
         // List of old certificates.
 
@@ -145,7 +143,13 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
             });
         }, 500);
 
+        $scope.openIntyg = function (cert) {
+          $window.location.href = '/m/' + cert.intygType + '/webcert/intyg/' + cert.intygId + '/edit#/edit';
+          CertificateDraft.reset();
+        };
+
         $scope.copyIntyg = function (cert) {
+          //CertificateDraft.reset();
             wcDialogService.showDialog($scope, {
                 dialogId : 'copy-dialog',
                 titleId : 'label.copycert',

@@ -69,7 +69,7 @@
               </tr>
               <tr ng-repeat="cert in widgetState.currentList">
                 <td>
-                  <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert.intygId)" id="showBtn-{{cert.intygId}}">Visa</button>
+                  <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert)" id="showBtn-{{cert.intygId}}">Visa</button>
                 </td>
                 <td>
                   <button class="btn btn-info" title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert.intygId)" id="copyBtn-{{cert.intygId}}">
