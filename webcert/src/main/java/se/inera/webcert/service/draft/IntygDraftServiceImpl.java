@@ -68,9 +68,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, moduleRequest);
 
-        persistNewDraft(request, intygJsonModel);
+        String persistedIntygId = persistNewDraft(request, intygJsonModel);
 
-        return request.getIntygId();
+        return persistedIntygId;
     }
 
     private void populateRequestWithIntygId(CreateNewDraftRequest request) {
@@ -86,7 +86,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         LOG.debug("Created id '{}' for the new draft", generatedIntygId);
     }
 
-    private void persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
+    private String persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
 
         Intyg draft = new Intyg();
         
@@ -121,6 +121,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         Intyg savedDraft = intygRepository.save(draft);
 
         LOG.debug("Draft '{}' persisted", savedDraft.getIntygsId());
+        
+        return savedDraft.getIntygsId();
     }
 
     private VardpersonReferens createVardpersonFromHosPerson(HoSPerson hosPerson) {

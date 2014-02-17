@@ -98,19 +98,21 @@ public class IntygRepositoryTest {
         assertThat(result, is(3L));
 
     }
-
+    
     @Test
-    public void testFindDraftsByPatientPnrAndEnhetsId() {
+    public void testFindDraftsByPatientAndEnhetAndStatus() {
         
         intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.SIGNED));
         intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.DRAFT_COMPLETE));
         intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.DRAFT_DISCARDED));
         intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.DRAFT_INCOMPLETE));
                 
-        List<String> enhetIds = Arrays.asList(ENHET_1_ID);
-        List<Intyg> results = intygRepository.findDraftsByPatientPnrAndEnhetsId(enhetIds, PERSON_NUMMER);
+        List<String> enhetsIds = Arrays.asList(ENHET_1_ID);
+        List<IntygsStatus> statuses = Arrays.asList(IntygsStatus.DRAFT_COMPLETE, IntygsStatus.DRAFT_INCOMPLETE);
+        List<Intyg> results = intygRepository.findDraftsByPatientAndEnhetAndStatus(PERSON_NUMMER, enhetsIds, statuses);
         
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(2));
+        
     }
     
     private Intyg buildIntyg(String enhetsId) {

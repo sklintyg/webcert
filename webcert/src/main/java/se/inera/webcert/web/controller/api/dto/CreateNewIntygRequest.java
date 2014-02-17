@@ -12,11 +12,11 @@ public class CreateNewIntygRequest {
 
     private String patientEfternamn;
 
-    private String vardEnhetHsdId;
+    private String vardEnhetHsaId;
 
     private String vardEnhetNamn;
 
-    private String vardGivareHsdId;
+    private String vardGivareHsaId;
 
     private String vardGivareNamn;
 
@@ -73,12 +73,12 @@ public class CreateNewIntygRequest {
         this.patientEfternamn = patientEfternamn;
     }
 
-    public String getVardEnhetHsdId() {
-        return vardEnhetHsdId;
+    public String getVardEnhetHsaId() {
+        return vardEnhetHsaId;
     }
 
-    public void setVardEnhetHsdId(String vardEnhetHsdId) {
-        this.vardEnhetHsdId = vardEnhetHsdId;
+    public void setVardEnhetHsaId(String vardEnhetHsaId) {
+        this.vardEnhetHsaId = vardEnhetHsaId;
     }
 
     public String getVardEnhetNamn() {
@@ -89,12 +89,12 @@ public class CreateNewIntygRequest {
         this.vardEnhetNamn = vardEnhetNamn;
     }
 
-    public String getVardGivareHsdId() {
-        return vardGivareHsdId;
+    public String getVardGivareHsaId() {
+        return vardGivareHsaId;
     }
 
-    public void setVardGivareHsdId(String vardGivareHsdId) {
-        this.vardGivareHsdId = vardGivareHsdId;
+    public void setVardGivareHsaId(String vardGivareHsaId) {
+        this.vardGivareHsaId = vardGivareHsaId;
     }
 
     public String getVardGivareNamn() {

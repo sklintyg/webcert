@@ -30,16 +30,16 @@ public interface IntygRepositoryCustom {
      */
     @Query("SELECT count(i) FROM Intyg i WHERE i.enhetsId IN (:idList) AND i.status <> 'SIGNED'")
     Long countUnsignedForEnhetsIds(@Param("idList") List<String> enhetsIds);
-    
+        
     /**
-     * Returns all {@link Intyg} entities that belongs to a certain patient and a certain careUnit.
+     * Returns all {@link Intyg} entities belonging to a certain patient and belonging to one of several careUnit and having selected statuses.
      * 
-     * @param enhetsId
-     * @param patientPersonnummer
+     * @param patientPnr
+     * @param enhetsIds
+     * @param statuses
      * @return
      */
     @Query("SELECT i from Intyg i WHERE i.patientPersonnummer = :patientPnr AND i.enhetsId IN (:enhetsIds)" +
-    		"AND i.status = 'DRAFT_INCOMPLETE' OR i.status = 'DRAFT_COMPLETE' OR i.status = 'DRAFT_DISCARDED'")
-    List<Intyg> findDraftsByPatientPnrAndEnhetsId(@Param("enhetsIds") List<String> enhetsId, @Param("patientPnr") String patientPersonnummer);
-    
+            "AND i.status IN (:statuses)")
+    List<Intyg> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<IntygsStatus> statuses);
 }

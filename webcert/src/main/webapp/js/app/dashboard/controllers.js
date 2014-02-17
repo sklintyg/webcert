@@ -58,10 +58,10 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
 
 
         function _createDraft () {
-            CertificateDraft.vardEnhetHsaId = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].id;
-            CertificateDraft.vardEnhetNamn = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn;
-            CertificateDraft.vardGivareHsaId = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter[0].id;
-            CertificateDraft.vardGivareNamn = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter[0].namn;
+            CertificateDraft.vardGivareHsaId = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].id;
+            CertificateDraft.vardGivareNamn= $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn;
+            CertificateDraft.vardEnhetHsaId = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter[0].id;
+            CertificateDraft.vardEnhetNamn = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter[0].namn;
 
             if (CertificateDraft.intygType === 'fk7263') {
                 // TODO: Remove this hard coded redirect.
