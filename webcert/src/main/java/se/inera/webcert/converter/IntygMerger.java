@@ -129,7 +129,7 @@ public final class IntygMerger {
         
         if (list == null || list.isEmpty()) {
             LOG.debug("No statuses found in Intyg {}", intygItem.getId());
-            return "-";
+            return "UNKNOWN";
         }
         
         IntygStatus latestStatus = Collections.max(list, intygStatusComparator);

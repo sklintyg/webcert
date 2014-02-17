@@ -18,6 +18,7 @@ var commonMessageResources = {
         "cert.status.draft_complete" : "Utkast, komplett",
         "cert.status.draft_discarded" : "Utkast, borttaget",
         "cert.status.signed" : "Signerat",
+        "cert.status.unknown" : "Okänd",
 
         // wc-common-directives-resources
         "nav.label.loggedinas" : "Inloggad som:",
