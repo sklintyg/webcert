@@ -1,9 +1,7 @@
 <div class="row-fluid">
   <div class="span7 webcert-col webcert-col-single">
-    <form name="certForm" ng-submit="lookupAddress()" novalidate>
-
-      <!--<a class="backlink" href="#start"><span message key="common.goback"></span></a>-->
-
+    <form name="certForm" ng-submit="lookupAddress()" novalidate autocomplete="off">
+      <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
       <h1>Sök/skriv intyg</h1>
       <div class="control-group">
         <label class="control-label">Patientuppgifter</label>
@@ -11,15 +9,14 @@
             {{name}}<br/>
             {{personnummer}}
           </div>
-          <button class="btn" ng-click="changePatient()">Byt patient</button>
-          <button class="btn" ng-click="editPatientName()">Korrigera namn</button>
+          <button class="btn" type="button" ng-click="changePatient()">Byt patient</button>
+          <button class="btn" type="button" ng-click="editPatientName()">Korrigera namn</button>
       </div>
 
       <div class="webcert-col-section">
         <div class="control-group">
-          <label class="control-label">Skriv nytt intyg</label>
-          <select data-ng-model="intygType" data-ng-options="type.id as type.name for type in certTypes" required>
-          </select>
+          <label for="intygType" class="control-label">Skriv nytt intyg</label>
+          <select id="intygType" name="intygType" data-ng-model="intygType" data-ng-options="type.id as type.name for type in certTypes"></select>
         </div>
         <div class="control-group">
           <button class="btn btn-success" type="submit" ng-disabled="intygType == 'default'">Fortsätt</button>
@@ -32,9 +29,7 @@
     </form>
 
     <div class="webcert-col-section">
-
       <h2 class="col-head">{{name}}s tidigare intyg</h2>
-
       <div class="control-group" ng-hide="true">
         <div class="controls pointer-labels">
           <label class="checkbox"><input type="radio" name="olderCerts"> Visa intyg för Vårdenheter och till mottagare som jag har medarbetaruppdrag på</label>
@@ -49,7 +44,6 @@
       </div>
 
       <div wc-spinner label="info.loadingdata" show-spinner="widgetState.doneLoading" show-content="!widgetState.doneLoading">
-
         <div class="webcert-col-section">
 
           <!-- No certs for person -->

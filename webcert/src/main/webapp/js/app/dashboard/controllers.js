@@ -53,8 +53,8 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
 
         $scope.personnummer = CertificateDraft.personnummer;
         $scope.name = CertificateDraft.name;
-        $scope.intygType = CertificateDraft.intygType;
         $scope.certTypes = CertificateDraft.getCertTypes();
+        $scope.intygType = CertificateDraft.intygType;
 
 
         function _createDraft () {
