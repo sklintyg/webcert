@@ -120,7 +120,7 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
             doneLoading : false,
             activeErrorMessageKey : null,
             currentList : undefined,
-            showHiddenCerts : false
+            queryFormCollapsed : true
         };
 
         $scope.updateCertList = function () {

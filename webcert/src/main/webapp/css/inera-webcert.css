@@ -795,3 +795,10 @@ span.error { color: orangered; }
 .error-icon {
     padding-right: 10px;
 }
+
+input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:focus {
+    border-color: #ccc;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}

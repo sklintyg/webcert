@@ -2,31 +2,33 @@
   <div class="span7 webcert-col webcert-col-single">
     <form name="certForm" ng-submit="lookupAddress()" novalidate>
 
-      <a class="backlink" href="#start"><span message key="common.goback"></span></a>
+      <!--<a class="backlink" href="#start"><span message key="common.goback"></span></a>-->
 
       <h1>Sök/skriv intyg</h1>
       <div class="control-group">
         <label class="control-label">Patientuppgifter</label>
-        <div class="well well-large">
           <div class="control-group">
-            <h4>{{name}}</h4>
+            {{name}}<br/>
             {{personnummer}}
           </div>
           <button class="btn" ng-click="changePatient()">Byt patient</button>
           <button class="btn" ng-click="editPatientName()">Korrigera namn</button>
+      </div>
+
+      <div class="webcert-col-section">
+        <div class="control-group">
+          <label class="control-label">Skriv nytt intyg</label>
+          <select data-ng-model="intygType" data-ng-options="type.id as type.name for type in certTypes" required>
+          </select>
+        </div>
+        <div class="control-group">
+          <button class="btn btn-success" type="submit" ng-disabled="intygType == 'default'">Fortsätt</button>
+        </div>
+        <div class="alert alert-warning" ng-show="false">
+          Tänk på att...
         </div>
       </div>
-      <div class="control-group">
-        <label class="control-label">Skriv nytt intyg</label>
-        <select data-ng-model="intygType" data-ng-options="type.id as type.name for type in certTypes" required>
-        </select>
-      </div>
-      <div class="control-group">
-        <button class="btn btn-success" type="submit" ng-disabled="intygType == 'default'">Fortsätt</button>
-      </div>
-      <div class="alert alert-warning" ng-show="false">
-        Tänk på att...
-      </div>
+
     </form>
 
     <div class="webcert-col-section">
@@ -40,10 +42,10 @@
         </div>
       </div>
       <div class="control-group">
-        <div class="controls form-inline indent">
-          <input id="showHiddenCerts" type="checkbox" name="showHiddenCerts" ng-model="widgetState.showHiddenCerts" ng-change="updateCertList()"> <label
-            for="showHiddenCerts" class="checkbox">Visa även borttagna och rättade intyg</label>
-        </div>
+        <span ng-if="!widgetState.queryMode">Visar endast aktuella signerade intyg.<br></span>
+        <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
+          <span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span>
+        </button>
       </div>
 
       <div wc-spinner label="info.loadingdata" show-spinner="widgetState.doneLoading" show-content="!widgetState.doneLoading">
