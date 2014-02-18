@@ -166,9 +166,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         se.inera.webcert.service.dto.Patient reqPat = draftReq.getPatient();
 
         Patient mrPat = new Patient();
-        mrPat.setPersonNummer(reqPat.getPersonNummer());
-        mrPat.setForNamn(reqPat.getForNamn());
-        mrPat.setEfterNamn(reqPat.getEfterNamn());
+        mrPat.setPersonnummer(reqPat.getPersonNummer());
+        mrPat.setFornamn(reqPat.getForNamn());
+        mrPat.setEfternamn(reqPat.getEfterNamn());
         // TODO: Populate with Patients address info
         
         modReq.setPatientInfo(mrPat);
@@ -188,7 +188,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         HoSPerson reqHosp = draftReq.getHosPerson();
 
-        se.inera.webcert.modules.api.dto.HoSPerson mrHosp = new se.inera.webcert.modules.api.dto.HoSPerson();
+        se.inera.webcert.modules.api.dto.HoSPersonal mrHosp = new se.inera.webcert.modules.api.dto.HoSPersonal();
         mrHosp.setNamn(reqHosp.getNamn());
         mrHosp.setHsaId(reqHosp.getHsaId());
         mrHosp.setForskrivarkod(reqHosp.getForskrivarkod());
