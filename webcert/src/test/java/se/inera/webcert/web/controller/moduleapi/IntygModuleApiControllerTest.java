@@ -72,7 +72,7 @@ public class IntygModuleApiControllerTest {
         when(moduleCallResponse.getEntity()).thenReturn("<pdf-file>");
         when(moduleRestApi.pdf(utlatandeHolder)).thenReturn(moduleCallResponse);
 
-        Response response = moduleApiController.getCertificatePdf(CERTIFICATE_ID);
+        Response response = moduleApiController.getSignedIntygAsPdf(CERTIFICATE_ID);
 
         verify(intygService).fetchExternalIntygData(CERTIFICATE_ID);
         verify(moduleRestApiFactory).getModuleRestService(CERTIFICATE_TYPE);
@@ -93,7 +93,7 @@ public class IntygModuleApiControllerTest {
         when(moduleCallResponse.getStatus()).thenReturn(Response.Status.NOT_IMPLEMENTED.getStatusCode());
         when(moduleRestApi.pdf(utlatandeHolder)).thenReturn(moduleCallResponse);
 
-        Response response = moduleApiController.getCertificatePdf(CERTIFICATE_ID);
+        Response response = moduleApiController.getSignedIntygAsPdf(CERTIFICATE_ID);
 
         verify(intygService).fetchExternalIntygData(CERTIFICATE_ID);
         verify(moduleRestApiFactory).getModuleRestService(CERTIFICATE_TYPE);
@@ -109,7 +109,7 @@ public class IntygModuleApiControllerTest {
         when(certificateResponse.getStatus()).thenReturn(Response.Status.FORBIDDEN.getStatusCode());
         when(intygService.fetchExternalIntygData(CERTIFICATE_ID)).thenThrow(ExternalWebServiceCallFailedException.class);
 
-        Response response = moduleApiController.getCertificatePdf(CERTIFICATE_ID);
+        Response response = moduleApiController.getSignedIntygAsPdf(CERTIFICATE_ID);
 
         assertEquals(INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
         assertNull(response.getEntity());
