@@ -247,6 +247,10 @@
               <contextPath>/ts-bas</contextPath>
             </contextHandler>
             <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+              <war>${inera.certificates.basedir}/ts-diabetes/target/ts-diabetes.war</war>
+              <contextPath>/ts-diabetes</contextPath>
+            </contextHandler>
+            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
               <war>${inera.certificates.basedir}/fk7263/target/fk7263.war</war>
               <contextPath>/fk7263</contextPath>
             </contextHandler>
