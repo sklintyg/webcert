@@ -301,6 +301,7 @@ angular.mock.$LogProvider = function() {
 
   this.$get = function () {
     var $log = {
+      debug: function() { $log.debug.logs.push(concat([], arguments, 0)); },
       log: function() { $log.log.logs.push(concat([], arguments, 0)); },
       warn: function() { $log.warn.logs.push(concat([], arguments, 0)); },
       info: function() { $log.info.logs.push(concat([], arguments, 0)); },
@@ -316,6 +317,8 @@ angular.mock.$LogProvider = function() {
      * Reset all of the logging arrays to empty.
      */
     $log.reset = function () {
+
+        $log.debug.logs = [];
       /**
        * @ngdoc property
        * @name ngMock.$log#log.logs
@@ -1451,7 +1454,7 @@ function MockXhr() {
  *
  * This service is just a simple decorator for {@link ng.$timeout $timeout} service
  * that adds a "flush" and "verifyNoPendingTasks" methods.
- */ 
+ */
 
 angular.mock.$TimeoutDecorator = function($delegate, $browser) {
 

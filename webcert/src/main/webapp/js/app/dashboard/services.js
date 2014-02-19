@@ -152,20 +152,21 @@ services.factory('CertificateDraft', [ '$http', '$log',
                 onSuccess();
             },
 
-            getCertTypes : function (onSuccess) {
+            getCertTypes : function (onSuccess, onError) {
                 this.intygType = 'default';
 
                 var restPath = '/api/intyg/types';
                 $http.get(restPath).success(function (data) {
                     $log.debug('got data:' + data);
-                    var types = [{id : 'default', label : 'Välj intygstyp'}];
+                    var types = [{sortValue: 0, id : 'default', label : 'Välj intygstyp'}];
                     onSuccess(types.concat(data));
                 }).error(function (data, status) {
                     $log.error('error ' + status);
+                    onError();
                 });
             },
 
-            createDraft : function (onSuccess) {
+            createDraft : function (onSuccess, onError) {
                 $log.debug('_createDraft');
 
                 var payload = {};
@@ -186,6 +187,7 @@ services.factory('CertificateDraft', [ '$http', '$log',
 
                 }).error(function (data, status) {
                     $log.error('error ' + status);
+                    onError(data);
                 });
             }
         };

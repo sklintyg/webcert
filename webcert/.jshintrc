@@ -27,6 +27,8 @@
         "it" : false,
         "module" : false,
         "inject" : false,
-        "expect" : false
+        "expect" : false,
+        "spyOn" : false,
+        "jasmine" : false
     }
 }
