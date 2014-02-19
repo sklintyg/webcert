@@ -2,11 +2,11 @@ package se.inera.webcert.modules.api.dto;
 
 public class Patient {
 
-    private String forNamn;
+    private String fornamn;
 
-    private String efterNamn;
+    private String efternamn;
 
-    private String personNummer;
+    private String personnummer;
 
     private String postadress;
 
@@ -14,32 +14,28 @@ public class Patient {
 
     private String postort;
 
-    public Patient() {
-
+    public String getFornamn() {
+        return fornamn;
     }
 
-    public String getForNamn() {
-        return forNamn;
+    public void setFornamn(String fornamn) {
+        this.fornamn = fornamn;
     }
 
-    public void setForNamn(String forNamn) {
-        this.forNamn = forNamn;
+    public String getEfternamn() {
+        return efternamn;
     }
 
-    public String getEfterNamn() {
-        return efterNamn;
+    public void setEfternamn(String efternamn) {
+        this.efternamn = efternamn;
     }
 
-    public void setEfterNamn(String efterNamn) {
-        this.efterNamn = efterNamn;
+    public String getPersonnummer() {
+        return personnummer;
     }
 
-    public String getPersonNummer() {
-        return personNummer;
-    }
-
-    public void setPersonNummer(String personNummer) {
-        this.personNummer = personNummer;
+    public void setPersonnummer(String personnummer) {
+        this.personnummer = personnummer;
     }
 
     public String getPostadress() {

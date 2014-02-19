@@ -32,24 +32,24 @@ import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationMessage;
+import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
-import se.inera.webcert.web.service.WebCertUserService;
 
 /**
- * @author andreaskaltenbach
+ * Controller exposing services to be used by modules.
+ * 
+ * @author nikpet
  */
-public class IntygModuleApiController {
-
-    private static final String UTF_8 = "UTF-8";
+public class IntygModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygModuleApiController.class);
-
-    private static final String UTF_8_CHARSET = ";charset=utf-8";
     
     private static final String CONTENT_DISPOSITION = "Content-Disposition";
-
+    
     @Autowired
     private IntygService intygService;
 
@@ -100,7 +100,7 @@ public class IntygModuleApiController {
     @PUT
     @Path("/draft/{intygId}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Transactional
     public Response saveDraft(@PathParam("intygId") String intygId, byte[] bytes) {
                         
@@ -108,7 +108,8 @@ public class IntygModuleApiController {
         
         String draftAsJson = fromBytesToString(bytes);
         
-        DraftValidation draftValidation = draftService.saveAndValidateDraft(intygId, draftAsJson);
+        SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygId, draftAsJson);
+        DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
                 
         if (draftValidation == null) {
             LOG.warn("Intyg with id {} was not found", intygId);
@@ -120,6 +121,18 @@ public class IntygModuleApiController {
         return Response.ok().entity(responseEntity).build();
     }
     
+    private SaveAndValidateDraftRequest createSaveAndValidateDraftRequest(String intygId, String draftAsJson) {
+        SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
+        
+        request.setIntygId(intygId);
+        request.setDraftAsJson(draftAsJson);
+        
+        HoSPerson savedBy = createHoSPersonFromUser();
+        request.setSavedBy(savedBy);
+        
+        return request;
+    }
+
     private SaveDraftResponse buildSaveDraftResponse(DraftValidation draftValidation) {
         
         if (draftValidation.isDraftValid()) {

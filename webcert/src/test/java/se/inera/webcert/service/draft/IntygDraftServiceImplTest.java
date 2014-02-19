@@ -1,8 +1,15 @@
 package se.inera.webcert.service.draft;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import javax.ws.rs.core.Response;
 
-import org.hibernate.ejb.criteria.expression.SearchedCaseExpression.WhenClause;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,24 +17,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
-
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.ModuleRestApiFactory;
 import se.inera.webcert.modules.api.ModuleRestApi;
-import se.inera.webcert.modules.api.dto.CreateNewIntygModuleRequest;
 import se.inera.webcert.modules.api.dto.DraftValidationMessage;
 import se.inera.webcert.modules.api.dto.DraftValidationResponse;
 import se.inera.webcert.modules.api.dto.DraftValidationStatus;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.draft.dto.DraftValidation;
+import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.web.service.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygDraftServiceImplTest {
@@ -42,9 +42,6 @@ public class IntygDraftServiceImplTest {
     private IntygRepository intygRepository;
 
     @Mock
-    private WebCertUserService webCertUserService;
-
-    @Mock
     private ModuleRestApiFactory moduleRestApiFactory;
 
     @InjectMocks
@@ -52,8 +49,8 @@ public class IntygDraftServiceImplTest {
 
     private Intyg intyg;
 
-    private WebCertUser webCertUser;
-
+    private HoSPerson hoSPerson;
+    
     private DraftValidationResponse draftValidationResponse;
 
     public IntygDraftServiceImplTest() {
@@ -67,9 +64,9 @@ public class IntygDraftServiceImplTest {
         intyg.setIntygsTyp(INTYG_TYPE);
         intyg.setModel(INTYG_JSON);
 
-        this.webCertUser = new WebCertUser();
-        webCertUser.setHsaId("AAA");
-        webCertUser.setNamn("Dr Dengroth");
+        this.hoSPerson = new HoSPerson();
+        hoSPerson.setHsaId("AAA");
+        hoSPerson.setNamn("Dr Dengroth");
 
         this.draftValidationResponse = new DraftValidationResponse();
         draftValidationResponse.setStatus(DraftValidationStatus.INVALID);
@@ -83,8 +80,6 @@ public class IntygDraftServiceImplTest {
 
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intyg);
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
-
         ModuleRestApi mockRestApi = mock(ModuleRestApi.class);
         when(moduleRestApiFactory.getModuleRestService(INTYG_TYPE)).thenReturn(mockRestApi);
 
@@ -94,7 +89,9 @@ public class IntygDraftServiceImplTest {
         when(mockModuleResponse.getStatusInfo()).thenReturn(Response.Status.OK);
         when(mockModuleResponse.readEntity(DraftValidationResponse.class)).thenReturn(draftValidationResponse);
 
-        DraftValidation res = draftService.saveAndValidateDraft(INTYG_ID, INTYG_JSON);
+        SaveAndValidateDraftRequest request = buildSaveAndValidatRequest();
+        
+        DraftValidation res = draftService.saveAndValidateDraft(request);
 
         verify(intygRepository).save(any(Intyg.class));
 
@@ -105,21 +102,29 @@ public class IntygDraftServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftWithException() {
-
+    
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intyg);
-
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
-
+    
         ModuleRestApi mockRestApi = mock(ModuleRestApi.class);
         when(moduleRestApiFactory.getModuleRestService(INTYG_TYPE)).thenReturn(mockRestApi);
-
+    
         Response mockModuleResponse = mock(Response.class);
         when(mockRestApi.validate(INTYG_JSON)).thenReturn(mockModuleResponse);
-
+    
         // Oooops! Something failed in the module
         when(mockModuleResponse.getStatusInfo()).thenReturn(Response.Status.INTERNAL_SERVER_ERROR);
+        
+        SaveAndValidateDraftRequest request = buildSaveAndValidatRequest();
+        
+        draftService.saveAndValidateDraft(request);
+    }
 
-        draftService.saveAndValidateDraft(INTYG_ID, INTYG_JSON);
+    private SaveAndValidateDraftRequest buildSaveAndValidatRequest() {
+        SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
+        request.setIntygId(INTYG_ID);
+        request.setDraftAsJson(INTYG_JSON);
+        request.setSavedBy(hoSPerson);
+        return request;
     }
 
 }
