@@ -176,20 +176,22 @@ public class IntygModuleApiController extends AbstractApiController {
     }
     
     /**
-     * Candidate for removal since we do not really know if this is used anywhere.
+     * Delivers a signed intyg
      * 
      * @param intygId
      * @return
      */
-    @Deprecated
     @GET
-    @Path("/{intygId}")
+    @Path("signed/{intygId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getSignedIntyg(@PathParam("intygId") String intygId) {
         
-        CertificateContentHolder fetchIntygData = intygService.fetchIntygData(intygId);
+        LOG.debug("Fetching signed intyg with id '{}' from IT", intygId);
         
-        return Response.ok().build();
+        CertificateContentHolder fetchIntygData = intygService.fetchIntygData(intygId);
+        String certificateAsJson = fetchIntygData.getCertificateContent();
+                
+        return Response.ok().entity(certificateAsJson).build();
     }
 
     /**
