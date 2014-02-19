@@ -37,8 +37,8 @@ public class MockIntygModulesRegistryImpl implements IntygModuleRegistry {
         im = new IntygModule("ts-bas", "Transportstyrelsens läkarintyg, bas", "ts-bas", sortCount++);
         modulesMap.put(im.getId(), im);
         
-        //im = new IntygModule("ts-diabetes", "Transportstyrelsens läkarintyg, diabetes", "ts-diabetes", sortCount++);
-        //modulesMap.put(im.getId(), im);
+        im = new IntygModule("ts-diabetes", "Transportstyrelsens läkarintyg, diabetes", "ts-diabetes", sortCount++);
+        modulesMap.put(im.getId(), im);
         
         im = new IntygModule("ivar", "Intyg vid avbeställd resa", "rli", sortCount++);
         modulesMap.put(im.getId(), im);

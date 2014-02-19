@@ -28,11 +28,13 @@
   <bean id="mapper" class="se.inera.certificate.proxy.mappings.MapperImpl">
     <property name="mappings">
       <map>
-        <!-- entry key="/m/fk7263" value="http://localhost:8088/fk7263" /-->
+        <!--entry key="/m/fk7263" value="http://localhost:8080/fk7263"/-->
         <entry key="/m/fk7263" value="LOCAL:/fk7263"/>
         <entry key="/m/rli" value="LOCAL:/rli" />
         <entry key="/m/ts-bas" value="LOCAL:/ts-bas"/>
         <!--entry key="/m/ts-bas" value="http://localhost:8080/ts-bas"/-->
+        <entry key="/m/ts-diabetes" value="LOCAL:/ts-diabetes"/>
+        <!--entry key="/m/ts-diabetes" value="http://localhost:8080/ts-diabetes"/-->
       </map>
     </property>
   </bean>
