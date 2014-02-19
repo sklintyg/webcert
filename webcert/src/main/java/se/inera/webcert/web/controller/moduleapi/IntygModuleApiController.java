@@ -182,43 +182,43 @@ public class IntygModuleApiController extends AbstractApiController {
      * @return
      */
     @GET
-    @Path("signed/{intygId}")
+    @Path("/signed/{intygId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getSignedIntyg(@PathParam("intygId") String intygId) {
         
         LOG.debug("Fetching signed intyg with id '{}' from IT", intygId);
         
-        CertificateContentHolder fetchIntygData = intygService.fetchIntygData(intygId);
-        String certificateAsJson = fetchIntygData.getCertificateContent();
-                
-        return Response.ok().entity(certificateAsJson).build();
+        CertificateContentHolder fetchedIntygData = intygService.fetchIntygData(intygId);
+                        
+        return Response.ok(fetchedIntygData).build();
     }
 
     /**
-     * Return the certificate identified by the given id as PDF.
+     * Return the signed certificate identified by the given id as PDF.
      * 
      * @param id
      *            - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
-    @Path("/{intygId}/pdf")
+    @Path("/signed/{intygId}/pdf")
     @Produces("application/pdf")
-    public final Response getCertificatePdf(@PathParam(value = "intygId") final String id) {
-        LOG.debug("getCertificatePdf: {}", id);
+    public final Response getSignedIntygAsPdf(@PathParam(value = "intygId") final String id) {
+        LOG.debug("Fetching signed intyg '{}' as PDF", id);
 
         CertificateContentHolder certificateContentHolder;
 
         try {
             certificateContentHolder = intygService.fetchExternalIntygData(id);
         } catch (ExternalWebServiceCallFailedException ex) {
+            LOG.error("Failed to retrieve intyg '{}' from IT", id);
             return Response.status(INTERNAL_SERVER_ERROR).build();
         }
 
         Response pdf = fetchPdf(certificateContentHolder);
 
         if (isNotOk(pdf)) {
-            LOG.error("Failed to get PDF for certificate " + id + " from inera-certificate.");
+            LOG.error("Failed to get PDF for certificate '{}' from inera-certificate.", id);
             return Response.status(pdf.getStatus()).build();
         }
 
@@ -232,6 +232,7 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     private Response fetchPdf(CertificateContentHolder certificateContentHolder) {
+        LOG.debug("Converting intyg data to PDF");
         ModuleRestApi api = moduleApiFactory.getModuleRestService(certificateContentHolder.getCertificateContentMeta()
                 .getType());
         return api.pdf(certificateContentHolder);
