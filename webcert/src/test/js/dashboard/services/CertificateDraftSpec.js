@@ -96,7 +96,7 @@ describe('CertificateDraft', function () {
         it('should create a draft if the payload is correct', function () {
             CertificateDraft.personnummer = '19121212-1212';
             CertificateDraft.firstname = 'Test';
-            CertificateDraft.lastname = 'Testssons';
+            CertificateDraft.lastname = 'Testsson';
             CertificateDraft.intygType = 'fk7263';
             CertificateDraft.address = 'Storgatan 23';
             CertificateDraft.vardEnhetHsaId = '1';
