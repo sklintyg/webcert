@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.ModuleRestApiFactory;
 import se.inera.webcert.modules.api.ModuleRestApi;
 import se.inera.webcert.modules.api.dto.CreateNewIntygModuleRequest;
@@ -27,21 +26,18 @@ import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationStatus;
+import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.web.service.WebCertUserService;
 
 @Service
 public class IntygDraftServiceImpl implements IntygDraftService {
 
     private static Logger LOG = LoggerFactory.getLogger(IntygDraftServiceImpl.class);
-
-    @Autowired
-    private WebCertUserService webCertUserService;
 
     @Autowired
     private IntygRepository intygRepository;
@@ -134,17 +130,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return vardPerson;
     }
 
-    private VardpersonReferens createVardperson() {
-
-        WebCertUser user = webCertUserService.getWebCertUser();
-
-        VardpersonReferens vardPerson = new VardpersonReferens();
-        vardPerson.setNamn(user.getNamn());
-        vardPerson.setHsaId(user.getHsaId());
-
-        return vardPerson;
-    }
-
     private String getPopulatedModelFromIntygModule(String intygType, CreateNewIntygModuleRequest moduleRequest) {
 
         LOG.debug("Calling module '{}' to get populated model", intygType);
@@ -181,9 +166,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         se.inera.webcert.service.dto.Patient reqPat = draftReq.getPatient();
 
         Patient mrPat = new Patient();
-        mrPat.setPersonNummer(reqPat.getPersonNummer());
-        mrPat.setForNamn(reqPat.getForNamn());
-        mrPat.setEfterNamn(reqPat.getEfterNamn());
+        mrPat.setPersonnummer(reqPat.getPersonNummer());
+        mrPat.setFornamn(reqPat.getForNamn());
+        mrPat.setEfternamn(reqPat.getEfterNamn());
         // TODO: Populate with Patients address info
         
         modReq.setPatientInfo(mrPat);
@@ -203,7 +188,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         HoSPerson reqHosp = draftReq.getHosPerson();
 
-        se.inera.webcert.modules.api.dto.HoSPerson mrHosp = new se.inera.webcert.modules.api.dto.HoSPerson();
+        se.inera.webcert.modules.api.dto.HoSPersonal mrHosp = new se.inera.webcert.modules.api.dto.HoSPersonal();
         mrHosp.setNamn(reqHosp.getNamn());
         mrHosp.setHsaId(reqHosp.getHsaId());
         mrHosp.setForskrivarkod(reqHosp.getForskrivarkod());
@@ -218,12 +203,14 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Override
     @Transactional
-    public DraftValidation saveAndValidateDraft(String intygId, String draftAsJson) {
+    public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request) {
 
+        String  intygId = request.getIntygId();
+        
         LOG.debug("Saving and validating Intyg with id '{}'", intygId);
 
         Intyg intyg = intygRepository.findOne(intygId);
-
+        
         if (intyg == null) {
             LOG.warn("Intyg with id '{}' was not found", intygId);
             return null;
@@ -231,6 +218,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String intygType = intyg.getIntygsTyp();
 
+        String draftAsJson = request.getDraftAsJson();
+        
         DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
 
         IntygsStatus intygStatus = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE
@@ -239,8 +228,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         intyg.setModel(draftAsJson);
         intyg.setStatus(intygStatus);
 
-        // TODO This needs to be moved to the controller for SoC
-        VardpersonReferens vardPersonRef = createVardperson();
+        VardpersonReferens vardPersonRef = createVardpersonFromHosPerson(request.getSavedBy());
         intyg.setSenastSparadAv(vardPersonRef);
 
         intygRepository.save(intyg);
