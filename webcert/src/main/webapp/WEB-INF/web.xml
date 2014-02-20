@@ -1,26 +1,17 @@
-<!--
-
-  Copyright (C) 2013 Inera AB (http://www.inera.se)
-
-  This file is part of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
-
-  Inera Certificate Web is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as
-  published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  Inera Certificate Web is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
-
--->
+<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part 
+  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web). 
+  Inera Certificate Web is free software: you can redistribute it and/or modify 
+  it under the terms of the GNU Affero General Public License as published 
+  by the Free Software Foundation, either version 3 of the License, or (at 
+  your option) any later version. Inera Certificate Web is distributed in the 
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+  GNU Affero General Public License for more details. You should have received 
+  a copy of the GNU Affero General Public License along with this program. 
+  If not, see <http://www.gnu.org/licenses/>. -->
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0">
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  version="3.0">
 
   <display-name>Inera WebCert Web Application</display-name>
 
@@ -66,6 +57,15 @@
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
+  <servlet>
+    <servlet-name>medcertlegacyapi</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <init-param>
+      <param-name>config-location</param-name>
+      <param-value>/WEB-INF/medcert-legacy-cxf-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
   <servlet-mapping>
     <servlet-name>web</servlet-name>
     <url-pattern>/web/*</url-pattern>
@@ -81,6 +81,10 @@
   <servlet-mapping>
     <servlet-name>services</servlet-name>
     <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>medcertlegacyapi</servlet-name>
+    <url-pattern>/medcert/*</url-pattern>
   </servlet-mapping>
   <filter>
     <filter-name>springSecurityFilterChain</filter-name>
