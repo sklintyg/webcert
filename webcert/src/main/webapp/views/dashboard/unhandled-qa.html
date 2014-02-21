@@ -8,7 +8,7 @@
 	      <h2 class="less-top-padding">
 	        Välj enhet
 	      </h2>
-	
+
 	      <div class="row-fluid">
 	        <div id="wc-care-unit-clinic-selector" wc-care-unit-clinic-selector></div>
 	      </div>
@@ -53,7 +53,7 @@
                 <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
                   <i class="icon-calendar"></i>
                 </button>
-      
+
                 till <input type="text" id="filter-changedate-to" datepicker-popup ng-model="qp.changedTo" is-open="widgetState.dpToOpen.open" datepicker-options="datepickerConfig"/>
                 <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
                     <i class="icon-calendar"></i>
@@ -131,7 +131,7 @@
                     </button>
                   </td>
                   <td class="center">
-                    <input id="selected" type="checkbox" ng-disabled="qa.updateInProgress" ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" /> 
+                    <input id="selected" type="checkbox" ng-disabled="qa.updateInProgress" ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" />
                     <span ng-if="qa.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
                   </td>
                   <td><span message key="qa.measure.{{qa.measureResKey}}"></span></td>

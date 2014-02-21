@@ -77,9 +77,11 @@
     <div id="view" ng-view></div>
   </div>
 
-  <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/angular.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/angular-cookies.min.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.1.5/i18n/angular-locale_sv-se.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.2.13/angular.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.2.13/angular-cookies.min.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.2.13/angular-route.min.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.2.13/angular-sanitize.min.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/vendor/angular/1.2.13/i18n/angular-locale_sv-se.js"/>"></script>
   <script type="text/javascript" src='<c:url value="/js/vendor/ui-bootstrap/0.7.0/ui-bootstrap-tpls-0.7.0.js"/>'></script>
 
   <%-- Application files --%>
