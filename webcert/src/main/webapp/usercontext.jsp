@@ -23,8 +23,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
-<%-- This resouce should create Javarcrift object representing the user context.
-It can be accessed rom a page loacted in a certificate module to inject the usercontext and make it accessible from scripts. --%>
+<%-- This resouce should create Javascript object representing the user context.
+It can be accessed rom a page located in a certificate module to inject the usercontext and make it accessible from scripts. --%>
     /**
      Global JS config/constants for this app, to be used by scripts
      **/
