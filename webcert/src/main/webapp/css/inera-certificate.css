@@ -187,6 +187,10 @@ span.help {
     margin-left: -20px;
 }
 
+.body-row input[wc-maxlength] {
+    margin: 0;
+}
+
 .cert-body div.body-row-single {
 	padding-left: 20px;
     background-color: #e5e5e5;
