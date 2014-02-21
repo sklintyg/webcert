@@ -121,6 +121,10 @@ h3 {
 	line-height: 20px;
 }
 
+h5.inline-heading {
+    padding: 20px 0 5px 0;
+}
+
 .headerbox {
 	padding: 0 0 0 0;
 }
