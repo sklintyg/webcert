@@ -13,4 +13,20 @@
     <Arg>org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern</Arg>
     <Arg>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</Arg>
   </Call>
+<New id="ConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
+  <Arg>jms/ConnectionFactory</Arg>
+  <Arg>
+    <New class="org.apache.activemq.ActiveMQConnectionFactory">
+       <Arg>vm://localhost?broker.persistent=false</Arg>
+    </New>
+  </Arg>
+</New>
+<New id="Queue" class="org.eclipse.jetty.plus.jndi.Resource">
+  <Arg>jms/Queue</Arg>
+  <Arg>
+    <New class="org.apache.activemq.command.ActiveMQQueue">
+      <Arg>logging.queue</Arg>
+    </New>
+  </Arg>
+</New>
 </Configure>
