@@ -1,4 +1,4 @@
-package se.inera.webcert.spec.web.pages.fk7264
+package se.inera.webcert.spec.web.pages.fk7263
 
 import geb.Page
 
@@ -12,7 +12,7 @@ class ViewCertQAPage extends Page {
         certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
         certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
-        
+
         newQuestionForm { $("#newQuestionForm") }
         newQuestionText { $("#newQuestionText") }
         sendQuestionBtn { $("#sendQuestionBtn") }
@@ -50,14 +50,14 @@ class ViewCertQAPage extends Page {
     def answerBtn(String internid) {
         $("#sendAnswerBtn-${internid}")
     }
-    
+
     def frageStallarNamn(String internid) {
         $("#fraga-vard-aktor-namn-${internid}")
     }
     def besvarareNamn(String internid) {
         $("#svar-vard-aktor-namn-${internid}")
     }
-    
+
     def markAsHandledFkOriginBtn(String internid) {
         $("#markAsHandledFkOriginBtn-${internid}")
     }
@@ -82,7 +82,7 @@ class ViewCertQAPage extends Page {
     def initQuestion(){
         $("#askQuestionBtn").click()
     }
-    
+
     def addQuestionText( String question){
         newQuestionText<< question
     }

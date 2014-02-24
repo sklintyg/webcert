@@ -4,7 +4,7 @@ import geb.Browser
 import se.inera.webcert.spec.web.pages.IndexPage
 import se.inera.webcert.spec.web.pages.UnhandledQAPage
 import se.inera.webcert.spec.web.pages.WelcomePage
-import se.inera.webcert.spec.web.pages.fk7264.ViewCertQAPage
+import se.inera.webcert.spec.web.pages.fk7263.ViewCertQAPage
 //import se.inera.certificate.web.pages.ArchivedPage
 
 public class SvaraOchFraga {
@@ -29,7 +29,7 @@ public class SvaraOchFraga {
             waitFor{
                 at ViewCertQAPage
             }
-            
+
         }
     }
     public void loggaInIndex() {
@@ -44,7 +44,7 @@ public class SvaraOchFraga {
         }
     }
 
-                   
+
     public boolean enhetsvaljareVisas(boolean expected) {
     def result = false
         Browser.drive {
@@ -52,7 +52,7 @@ public class SvaraOchFraga {
                 at UnhandledQAPage
             }
             result = page.careUnitSelector.isDisplayed()
-            
+
         }
         result == expected
     }
@@ -64,7 +64,7 @@ public class SvaraOchFraga {
            }
         }
     }
-    
+
     public boolean listaMedObehandladeFragarVisas() {
         def result = false
         Browser.drive {
@@ -105,7 +105,7 @@ public class SvaraOchFraga {
             }
         }
     }
-    
+
     public boolean svaraPaFragaMedSvar(String internid, String svar) {
         Browser.drive {
             waitFor {
@@ -121,7 +121,7 @@ public class SvaraOchFraga {
             }
         }
     }
-    
+
     public boolean nyFragaKnappVisas(boolean expected) {
         def result = false
             Browser.drive {
@@ -129,11 +129,11 @@ public class SvaraOchFraga {
                     at ViewCertQAPage
                 }
                 result = page.askQuestionBtn.isDisplayed()
-                
+
             }
             result == expected
         }
-    
+
     public boolean intygÄrRättatmeddelandeVisas(boolean expected) {
         def result = false
         Browser.drive {
@@ -141,7 +141,7 @@ public class SvaraOchFraga {
                 at ViewCertQAPage
             }
             result = page.certificateRevokedMessage.isDisplayed()
-            
+
         }
         result == expected
     }
@@ -152,7 +152,7 @@ public class SvaraOchFraga {
                 at ViewCertQAPage
             }
             result = page.certificateIsSentToFKMessage.isDisplayed()
-            
+
         }
         result == expected
     }
@@ -163,7 +163,7 @@ public class SvaraOchFraga {
                 at ViewCertQAPage
             }
             result = page.certificateIsSentToITMessage.isDisplayed()
-            
+
         }
         result == expected
     }
@@ -265,7 +265,7 @@ public class SvaraOchFraga {
         }
         return result
     }
-    
+
     public boolean MarkeraObehandladknappFörFrågaVisas(String internId, boolean expectedVisibility){
         def result = false
         Browser.drive {
@@ -275,14 +275,14 @@ public class SvaraOchFraga {
             waitFor{
                 page.qaHandledPanel(internId).isDisplayed()
             }
-           
+
             result = page.markAsUnhandledBtn(internId).isDisplayed()
 
-           
+
         }
         return result == expectedVisibility
     }
-    
+
     public boolean FrågaMedIdHarFrågenamn(String internId, String namn) {
         def result = false
         Browser.drive {
@@ -292,13 +292,13 @@ public class SvaraOchFraga {
             waitFor{
                 page.qaUnhandledPanel(internId).isDisplayed()
             }
-            
+
             waitFor{
                 page.frageStallarNamn(internId).isDisplayed()
             }
-            
+
             result = page.frageStallarNamn(internId).text().contains(namn)
-           
+
         }
         return result
     }
@@ -308,18 +308,18 @@ public class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            
+
             waitFor{
                 page.unitstatUnhandledQuestionsBadgde.isDisplayed()
             }
-            
+
             result = page.unitstatUnhandledQuestionsBadgde.text()
-           
+
         }
         return result
     }
-    
-    
+
+
     public boolean FrågaMedIdHarSvarsnamn(String internId, String namn) {
         def result = false
         Browser.drive {
@@ -329,13 +329,13 @@ public class SvaraOchFraga {
             waitFor{
                 page.besvarareNamn(internId).isDisplayed()
             }
-            
+
             result = page.besvarareNamn(internId).text().contains(namn)
-           
+
         }
         return result
     }
-    
+
     public void visaAvanceratFilter(){
         Browser.drive {
             waitFor {
@@ -378,13 +378,13 @@ public class SvaraOchFraga {
             waitFor{
                 page.advancedFilterSelectDoctor.isDisplayed()
             }
-            
+
             waitFor{
                 page.advancedFilterSelectDoctor = namn
             }
         }
     }
-    
+
     public void valjSvarSenast(String svarSenast){
         Browser.drive {
             waitFor {

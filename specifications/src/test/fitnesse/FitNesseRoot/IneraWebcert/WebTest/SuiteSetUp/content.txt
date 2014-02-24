@@ -3,7 +3,7 @@
 |se.inera.webcert.spec.util|
 |se.inera.webcert.spec.web|
 |se.inera.webcert.spec.web.pages|
-|se.inera.webcert.spec.web.pages.fk7264|
+|se.inera.webcert.spec.web.pages.fk7263|
 |se.inera.certificate.spec|
 |se.inera.certificate.spec.util|
 |se.inera.certificate.spec.util.jms|
