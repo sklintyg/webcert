@@ -18,6 +18,7 @@ import se.inera.certificate.integration.rest.ModuleRestApi;
 import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.webcert.service.IntygService;
+import se.inera.webcert.service.LogService;
 
 /**
  * @author andreaskaltenbach
@@ -33,31 +34,43 @@ public class IntygModuleApiController {
 
     @Autowired
     private ModuleRestApiFactory moduleApiFactory;
+    
+    @Autowired
+    private LogService logService;
 
     @GET
     @Path("/{intygId}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     public Response intyg(@PathParam("intygId") String intygId) {
-        return Response.ok(intygService.fetchIntygData(intygId)).build();
+        
+        CertificateContentHolder certificateContentHolder = intygService.fetchIntygData(intygId);
+        String patientId = certificateContentHolder.getCertificateContentMeta().getPatientId();
+        
+        logService.logReadOfIntyg(intygId, patientId);
+        
+        return Response.ok().entity(certificateContentHolder).build();
     }
 
     /**
      * Return the certificate identified by the given id as PDF.
      * 
-     * @param id
+     * @param intygId
      *            - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
     @Path("/{intygId}/pdf")
     @Produces("application/pdf")
-    public final Response getCertificatePdf(@PathParam(value = "intygId") final String id) {
-        LOG.debug("getCertificatePdf: {}", id);
+    public final Response getCertificatePdf(@PathParam(value = "intygId") final String intygId) {
+        LOG.debug("getCertificatePdf: {}", intygId);
 
         CertificateContentHolder certificateContentHolder;
 
+        String patientId = null;
+        
         try {
-            certificateContentHolder = intygService.fetchExternalIntygData(id);
+            certificateContentHolder = intygService.fetchExternalIntygData(intygId);
+            patientId = certificateContentHolder.getCertificateContentMeta().getPatientId();
         } catch (ExternalWebServiceCallFailedException ex) {
             return Response.status(INTERNAL_SERVER_ERROR).build();
         }
@@ -65,10 +78,12 @@ public class IntygModuleApiController {
         Response pdf = fetchPdf(certificateContentHolder);
 
         if (isNotOk(pdf)) {
-            LOG.error("Failed to get PDF for certificate " + id + " from inera-certificate.");
+            LOG.error("Failed to get PDF for certificate " + intygId + " from inera-certificate.");
             return Response.status(pdf.getStatus()).build();
         }
 
+        logService.logPrintOfIntyg(intygId, patientId);
+        
         String filenameHeader = pdf.getHeaderString(CONTENT_DISPOSITION); // filename=...
 
         return Response.ok(pdf.getEntity()).header(CONTENT_DISPOSITION, "attachment; " + filenameHeader).build();

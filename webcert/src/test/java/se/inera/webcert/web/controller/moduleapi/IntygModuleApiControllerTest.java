@@ -24,6 +24,7 @@ import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.webcert.service.IntygService;
+import se.inera.webcert.service.LogService;
 
 /**
  * @author andreaskaltenbach
@@ -33,6 +34,7 @@ public class IntygModuleApiControllerTest {
 
     private static final String CERTIFICATE_ID = "123456";
     private static final String CERTIFICATE_TYPE = "fk7263";
+    private static final String PATIENT_ID = "19121212-1212";
 
     private static CertificateContentHolder utlatandeHolder;
 
@@ -44,6 +46,9 @@ public class IntygModuleApiControllerTest {
 
     @Mock
     private ModuleRestApi moduleRestApi;
+    
+    @Mock
+    private LogService logService;
 
     @InjectMocks
     private IntygModuleApiController moduleApiController = new IntygModuleApiController();
@@ -56,6 +61,7 @@ public class IntygModuleApiControllerTest {
         CertificateContentMeta meta = new CertificateContentMeta();
         meta.setId(CERTIFICATE_ID);
         meta.setType(CERTIFICATE_TYPE);
+        meta.setPatientId(PATIENT_ID);
         utlatandeHolder.setCertificateContentMeta(meta);
     }
 
@@ -77,6 +83,7 @@ public class IntygModuleApiControllerTest {
         verify(intygService).fetchExternalIntygData(CERTIFICATE_ID);
         verify(moduleRestApiFactory).getModuleRestService(CERTIFICATE_TYPE);
         verify(moduleRestApi).pdf(utlatandeHolder);
+        verify(logService).logPrintOfIntyg(CERTIFICATE_ID, PATIENT_ID);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals("<pdf-file>", response.getEntity());

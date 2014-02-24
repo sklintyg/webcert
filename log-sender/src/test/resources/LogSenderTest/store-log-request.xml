@@ -6,6 +6,7 @@
     </System>
     <Activity>
       <ActivityType>Läsa</ActivityType>
+      <ActivityLevel>abc123</ActivityLevel>
       <StartDate>2013-01-01T10:00:00</StartDate>
       <Purpose>Vård och behandling</Purpose>
     </Activity>
