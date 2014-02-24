@@ -21,78 +21,91 @@
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
 
-  <context:annotation-config/>
-  <context:component-scan base-package="se.inera.webcert"/>
+  <beans profile="qa,prod">
+    <!-- Config file must be present in qa and prod -->
+    <context:property-placeholder
+      location="file:${webcert.config.file}" order="1" 
+      ignore-resource-not-found="false" ignore-unresolvable="true"/>
+  </beans>
+  <beans profile="dev,test">
+    <!-- Config file could be missing in dev and test -->
+    <context:property-placeholder
+      location="file:${webcert.config.file}" order="1" 
+      ignore-resource-not-found="true" ignore-unresolvable="true"/>
+  </beans>
 
-  <import resource="classpath:repository-context.xml"/>
-  <import resource="security/securityContext.xml"/>
-  <import resource="classpath:/hsa-services-config.xml"/>
+  <beans>
+    <context:property-placeholder
+            location="classpath:default.properties, classpath:default.${spring.profiles.active}.properties, classpath:version.properties" order="2"
+            ignore-resource-not-found="true"/>
 
-  <import resource="classpath:jms-config.xml"/>
-
-  <import resource="classpath:/mail-stub-context.xml"/>
-
-  <context:property-placeholder location="file:${user.home}/.${spring.profiles.active}.webcert.se/config.properties"
-                                order="1" ignore-resource-not-found="true" ignore-unresolvable="true"/>
-  <context:property-placeholder
-          location="classpath:default.${spring.profiles.active}.properties, classpath:version.properties" order="2"
-          ignore-resource-not-found="true"/>
-
-  <context:component-scan base-package="se.inera.webcert.web.service"/>
-  <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-    <property name="defaultEncoding" value="UTF-8"/>
-    <property name="basenames">
-      <list>
-        <value>ui</value>
-        <value>version</value>
-      </list>
-    </property>
-  </bean>
-
-  <!-- Mail configuration -->
-  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host" value="${mail.host}"/>
-    <property name="protocol" value="${mail.protocol}"/>
-    <property name="username" value="${mail.username}"/>
-    <property name="password" value="${mail.password}"/>
-    <property name="defaultEncoding" value="${mail.defaultEncoding}"/>
-    <property name="javaMailProperties">
-      <props>
-        <prop key="mail.smtps.auth">true</prop>
-        <prop key="mail.smtps.starttls.enable">true</prop>
-        <prop key="mail.smtps.debug">true</prop>
-      </props>
-    </property>
-  </bean>
-
-  <bean id="objectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
-
-  <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
-    <property name="mapper">
-      <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
-    </property>
-  </bean>
-
-  <bean class="se.inera.certificate.integration.rest.ModuleRestApiFactory"/>
-
-  <!-- ws clients -->
-  <jaxws:client id="getCertificateForCareResponder"
-                serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface"
-                address="${intygstjanst.getcertificateforcare.endpoint.url}">
-  </jaxws:client>
-  <jaxws:client id="listCertificatesForCareResponder"
-                serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface"
-                address="${intygstjanst.listcertificatesforcare.endpoint.url}">
-  </jaxws:client>
-  <jaxws:client id="sendQuestionToFKClient"
-                serviceClass="se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface"
-                address="${sendquestiontofk.endpoint.url}">
-  </jaxws:client>
-  <jaxws:client id="sendAnswerToFKClient"
-                serviceClass="se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface"
-                address="${sendanswertofk.endpoint.url}">
-  </jaxws:client>
-
+    <context:annotation-config/>
+    <context:component-scan base-package="se.inera.webcert"/>
+  
+    <import resource="classpath:repository-context.xml"/>
+    <import resource="security/securityContext.xml"/>
+    <import resource="classpath:/hsa-services-config.xml"/>
+  
+    <import resource="classpath:jms-config.xml"/>
+  
+    <import resource="classpath:/mail-stub-context.xml"/>
+  
+  
+    <context:component-scan base-package="se.inera.webcert.web.service"/>
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+      <property name="defaultEncoding" value="UTF-8"/>
+      <property name="basenames">
+        <list>
+          <value>ui</value>
+          <value>version</value>
+        </list>
+      </property>
+    </bean>
+  
+    <!-- Mail configuration -->
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+      <property name="host" value="${mail.host}"/>
+      <property name="protocol" value="${mail.protocol}"/>
+      <property name="username" value="${mail.username}"/>
+      <property name="password" value="${mail.password}"/>
+      <property name="defaultEncoding" value="${mail.defaultEncoding}"/>
+      <property name="javaMailProperties">
+        <props>
+          <prop key="mail.smtps.auth">true</prop>
+          <prop key="mail.smtps.starttls.enable">true</prop>
+          <prop key="mail.smtps.debug">true</prop>
+        </props>
+      </property>
+    </bean>
+  
+    <bean id="objectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
+  
+    <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+      <property name="mapper">
+        <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
+      </property>
+    </bean>
+  
+    <bean class="se.inera.certificate.integration.rest.ModuleRestApiFactory"/>
+  
+    <!-- ws clients -->
+    <jaxws:client id="getCertificateForCareResponder"
+                  serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface"
+                  address="${intygstjanst.getcertificateforcare.endpoint.url}">
+    </jaxws:client>
+    <jaxws:client id="listCertificatesForCareResponder"
+                  serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface"
+                  address="${intygstjanst.listcertificatesforcare.endpoint.url}">
+    </jaxws:client>
+    <jaxws:client id="sendQuestionToFKClient"
+                  serviceClass="se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface"
+                  address="${sendquestiontofk.endpoint.url}">
+    </jaxws:client>
+    <jaxws:client id="sendAnswerToFKClient"
+                  serviceClass="se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface"
+                  address="${sendanswertofk.endpoint.url}">
+    </jaxws:client>
+  </beans>
 
   <!-- In dev and demo mode we bootstrap data -->
   <beans profile="dev,demo">

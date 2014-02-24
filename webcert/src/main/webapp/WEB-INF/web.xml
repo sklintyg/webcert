@@ -28,7 +28,15 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath:/webcert-config.xml, /WEB-INF/web-proxy.xml</param-value>
   </context-param>
+  <context-param>
+      <param-name>logbackConfigParameter</param-name>
+      <param-value>webcert.logback.file</param-value>
+  </context-param>
 
+  <!-- Listener for external logback configuration file -->
+  <listener>
+      <listener-class>se.inera.certificate.logging.LogbackConfiguratorContextListener</listener-class>
+  </listener>
   <!-- Start spring context -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -113,4 +121,16 @@
     <error-code>500</error-code>
     <location>/error.jsp?reason=error</location>
   </error-page>
+
+  <resource-ref>
+    <res-ref-name>jms/ConnectionFactory</res-ref-name>
+    <res-type>javax.jms.ConnectionFactory</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  
+  <resource-ref>
+    <res-ref-name>jms/Queue</res-ref-name>
+    <res-type>javax.jms.Queue</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
 </web-app>
