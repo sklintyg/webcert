@@ -167,9 +167,10 @@ public class LogSender {
         logType.setSystem(system);
 
         ActivityType activity = new ActivityType();
-        activity.setActivityType(source.getActivityType());
+        activity.setActivityType(source.getActivityType().getType());
         activity.setStartDate(source.getTimestamp());
-        activity.setPurpose(source.getPurpose());
+        activity.setPurpose(source.getPurpose().getType());
+        activity.setActivityLevel(source.getActivityLevel());
         logType.setActivity(activity);
 
         UserType user = new UserType();

@@ -1,5 +1,7 @@
 package se.inera.webcert.service;
 
+import java.util.Arrays;
+
 import javax.jms.Session;
 import javax.xml.bind.JAXBContext;
 import javax.xml.transform.stream.StreamSource;
@@ -23,7 +25,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+
+import se.inera.log.messages.ActivityPurpose;
+import se.inera.log.messages.ActivityType;
 import se.inera.log.messages.IntygReadMessage;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.web.service.WebCertUserService;
 import se.inera.webcert.web.service.WebCertUserServiceImpl;
@@ -51,9 +58,9 @@ public class LogServiceImplTest {
 
         when(webCertUserService.getWebCertUser()).thenReturn(createWcUser());
 
-        GetCertificateForCareResponseType certificate = certificate();
+        //GetCertificateForCareResponseType certificate = certificate();
 
-        logService.logReadOfIntyg(certificate);
+        logService.logReadOfIntyg("abc123", "19121212-1212");
 
         verify(template, only()).send(messageCreatorCaptor.capture());
 
@@ -68,20 +75,21 @@ public class LogServiceImplTest {
         IntygReadMessage intygReadMessage = intygReadMessageCaptor.getValue();
 
         assertNotNull(intygReadMessage.getLogId());
-        assertEquals("Läsa", intygReadMessage.getActivityType());
-        assertEquals("Vård och behandling", intygReadMessage.getPurpose());
+        assertEquals(ActivityType.READ, intygReadMessage.getActivityType());
+        assertEquals(ActivityPurpose.CARE_TREATMENT, intygReadMessage.getPurpose());
         assertEquals("Intyg", intygReadMessage.getResourceType());
+        assertEquals("abc123", intygReadMessage.getActivityLevel());
 
         assertEquals("HSAID", intygReadMessage.getUserId());
         assertEquals("Markus Gran", intygReadMessage.getUserName());
 
-        assertEquals("ENHETS ID", intygReadMessage.getEnhet().getEnhetsId());
-        assertEquals("Enhet", intygReadMessage.getEnhet().getEnhetsNamn());
-        assertEquals("VARDGIVARE ID", intygReadMessage.getEnhet().getVardgivareId());
-        assertEquals("Vårdgivare", intygReadMessage.getEnhet().getVardgivareNamn());
+        assertEquals("VARDENHET_ID", intygReadMessage.getEnhet().getEnhetsId());
+        assertEquals("Vårdenheten", intygReadMessage.getEnhet().getEnhetsNamn());
+        assertEquals("VARDGIVARE_ID", intygReadMessage.getEnhet().getVardgivareId());
+        assertEquals("Vårdgivaren", intygReadMessage.getEnhet().getVardgivareNamn());
 
         assertEquals("19121212-1212", intygReadMessage.getPatient().getPatientId());
-        assertEquals("Hans Olof van der Test", intygReadMessage.getPatient().getPatientNamn());
+        //assertEquals("Hans Olof van der Test", intygReadMessage.getPatient().getPatientNamn());
 
         assertTrue(intygReadMessage.getTimestamp().minusSeconds(10).isBefore(now()));
         assertTrue(intygReadMessage.getTimestamp().plusSeconds(10).isAfter(now()));
@@ -96,9 +104,16 @@ public class LogServiceImplTest {
     }
 
     private WebCertUser createWcUser() {
+        
+        Vardenhet ve = new Vardenhet("VARDENHET_ID", "Vårdenheten");
+        
+        Vardgivare vg = new Vardgivare("VARDGIVARE_ID", "Vårdgivaren");
+        vg.setVardenheter(Arrays.asList(ve));
+        
         WebCertUser wcu = new WebCertUser();
         wcu.setHsaId("HSAID");
         wcu.setNamn("Markus Gran");
+        wcu.setVardgivare(Arrays.asList(vg));
         return wcu;
     }
 }

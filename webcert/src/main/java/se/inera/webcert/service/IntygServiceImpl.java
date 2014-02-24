@@ -63,9 +63,6 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Autowired
-    LogService logService;
-
-    @Autowired
     private GetCertificateForCareResponderInterface getCertificateService;
 
     @Autowired
@@ -99,8 +96,6 @@ public class IntygServiceImpl implements IntygService {
         CertificateContentHolder holder = new CertificateContentHolder();
         holder.setCertificateContent(externalJson);
         holder.setCertificateContentMeta(metaData);
-
-        logService.logReadOfIntyg(intyg);
 
         return holder;
     }

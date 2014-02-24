@@ -7,7 +7,8 @@ import java.io.Serializable;
  */
 public class IntygReadMessage extends AbstractLogMessage implements Serializable {
 
-    public IntygReadMessage() {
-        super("Läsa", "Vård och behandling", "Intyg");
+    public IntygReadMessage(String intygId) {
+        super(ActivityType.READ, ActivityPurpose.CARE_TREATMENT, "Intyg");
+        setActivityLevel(intygId);
     }
 }
