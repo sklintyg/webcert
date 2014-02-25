@@ -105,10 +105,12 @@ public class LogServiceImpl implements LogService {
 
         List<Vardgivare> allVardgivare = user.getVardgivare();
 
+        // TODO: Here we use the first of the Vardgivare that the user have.
         Vardgivare vardgivare = (allVardgivare.isEmpty()) ? null : allVardgivare.get(0);
 
         if (vardgivare == null) {
-            // TODO throw something
+            LOGGER.error("Can not populate log message, vardgivare is null for user: {}", user.getAsJson());
+            return;
         }
 
         String vardgivareId = vardgivare.getId();
@@ -119,7 +121,8 @@ public class LogServiceImpl implements LogService {
         Vardenhet enhet = (allVardenheterForVardgivare.isEmpty()) ? null : allVardenheterForVardgivare.get(0);
 
         if (enhet == null) {
-            // TODO: throw something
+            LOGGER.error("Can not populate log message, vardenhet is null for user: {}", user.getAsJson());
+            return;
         }
 
         String enhetsId = enhet.getId();
