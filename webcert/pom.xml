@@ -228,6 +228,7 @@
           <webAppConfig>
             <contextPath>/</contextPath>
           </webAppConfig>
+          <jettyXml>${basedir}/src/main/webapp/WEB-INF/jetty.xml</jettyXml>
           <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
           <contextHandlers>
             <!--

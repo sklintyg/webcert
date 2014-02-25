@@ -4,16 +4,28 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <bean id="jmsProducerTemplate" class="org.springframework.jms.core.JmsTemplate">
-    <property name="connectionFactory" ref="jmsFactory" />
-    <property name="defaultDestination" ref="queue" />
-  </bean>
+  <beans profile="dev">
+    <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="jms/ConnectionFactory" />
+    </bean>
+    <bean id="queue" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="jms/Queue" />
+    </bean>
+  </beans>
 
-  <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="java:comp/env/jms/ConnectionFactory" />
-  </bean>
-  <bean id="queue" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="java:comp/env/jms/Queue" />
-  </bean>
+  <beans profile="!dev">
+    <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jms/ConnectionFactory" />
+    </bean>
+    <bean id="queue" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jms/Queue" />
+    </bean>
+  </beans>
 
+  <beans>
+    <bean id="jmsProducerTemplate" class="org.springframework.jms.core.JmsTemplate">
+      <property name="connectionFactory" ref="jmsFactory" />
+      <property name="defaultDestination" ref="queue" />
+    </bean>
+  </beans>
 </beans>
