@@ -14,3 +14,4 @@ rebel.xml
 bin
 target
 activemq-data
+webcert/node_modules/
