@@ -62,17 +62,8 @@ public class LogServiceImpl implements LogService {
         }
         
         IntygReadMessage logMsg = new IntygReadMessage(intygId);
-
-        populateWithCurrentUser(logMsg);
-
-        populateWithVardgivareAndVardenhet(logMsg);
-
-        Patient patient = new Patient(patientId);
-        logMsg.setPatient(patient);
-
-        logMsg.setSystemId(systemId);
-
-        jmsTemplate.send(new MC(logMsg));
+        populateLogMessage(patientId, logMsg);
+        send(logMsg);
     }
 
     @Override
@@ -84,7 +75,12 @@ public class LogServiceImpl implements LogService {
         }
 
         IntygPrintMessage logMsg = new IntygPrintMessage(intygId);
+        populateLogMessage(patientId, logMsg);
+        send(logMsg);
+    }
 
+    private void populateLogMessage(String patientId, AbstractLogMessage logMsg) {
+        
         populateWithCurrentUser(logMsg);
 
         populateWithVardgivareAndVardenhet(logMsg);
@@ -93,10 +89,8 @@ public class LogServiceImpl implements LogService {
         logMsg.setPatient(patient);
 
         logMsg.setSystemId(systemId);
-
-        jmsTemplate.send(new MC(logMsg));
     }
-
+    
     private void populateWithCurrentUser(AbstractLogMessage logMsg) {
         WebCertUser user = webCertUserService.getWebCertUser();
         logMsg.setUserId(user.getHsaId());
@@ -134,6 +128,13 @@ public class LogServiceImpl implements LogService {
         logMsg.setEnhet(new Enhet(enhetsId, enhetsNamn, vardgivareId, vardgivareNamn));
     }
 
+    private void send(AbstractLogMessage logMsg) {
+        
+        LOGGER.debug("Logging {} of Intyg {}", logMsg.getActivityType(), logMsg.getActivityLevel());
+        
+        jmsTemplate.send(new MC(logMsg));
+    }
+    
     private Patient fetchPatientFromIntyg(PatientType source) {
         if (source == null) {
             return null;
