@@ -742,6 +742,11 @@ input[datepicker-popup] .btn-block {
 	color: #306E8D; /* WCAG AA compliant */
 }
 
+.alert-column {
+  margin-right: 30px;
+  max-width: 530px;
+}
+
 .modal-header h3 {
 	padding: 0;
 }
