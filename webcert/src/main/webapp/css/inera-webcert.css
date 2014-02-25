@@ -768,11 +768,11 @@ input[datepicker-popup] .btn-block {
   padding: 0px 6px 0px 6px;
   font-size: 10px;
   font-weight: bold;
-	position: absolute;
-	right: -4px;
-	top: -4px;
-	text-shadow: none;
-	z-index: 3000;
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    text-shadow: none;
+    z-index: 1000;
 }
 
 .stat-circle-active {
