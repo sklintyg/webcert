@@ -21,12 +21,14 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificat
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.PatientType;
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
+import se.inera.log.messages.IntygCreateMessage;
 import se.inera.log.messages.IntygPrintMessage;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.log.messages.Patient;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
@@ -56,11 +58,6 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logReadOfIntyg(String intygId, String patientId) {
         
-        if (jmsTemplate == null) {
-            LOGGER.warn("Can not log read of Intyg since PDL logging is disabled!");
-            return;
-        }
-        
         IntygReadMessage logMsg = new IntygReadMessage(intygId);
         populateLogMessage(patientId, logMsg);
         send(logMsg);
@@ -68,15 +65,28 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logPrintOfIntyg(String intygId, String patientId) {
-
-        if (jmsTemplate == null) {
-            LOGGER.warn("Can not log print of Intyg since PDL logging is disabled!");
-            return;
-        }
-
         IntygPrintMessage logMsg = new IntygPrintMessage(intygId);
         populateLogMessage(patientId, logMsg);
         send(logMsg);
+    }
+
+    @Override
+    public void logCreateOfIntyg(LogRequest logRequest) {
+        IntygCreateMessage logMsg = new IntygCreateMessage(logRequest.getIntygId());
+        populateLogMessage(logRequest, logMsg);
+        send(logMsg);
+    }
+    
+    private void populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg) {
+        
+        populateWithCurrentUser(logMsg);
+
+        populateWithVardgivareAndVardenhet(logMsg);
+        
+        Patient patient = new Patient(logRequest.getPatientId(), logRequest.getPatientName());
+        logMsg.setPatient(patient);
+
+        logMsg.setSystemId(systemId);
     }
 
     private void populateLogMessage(String patientId, AbstractLogMessage logMsg) {
@@ -132,6 +142,11 @@ public class LogServiceImpl implements LogService {
     }
 
     private void send(AbstractLogMessage logMsg) {
+        
+        if (jmsTemplate == null) {
+            LOGGER.warn("Can not log {} of Intyg '{}' since PDL logging is disabled!", logMsg.getActivityType(), logMsg.getActivityLevel());
+            return;
+        }
         
         LOGGER.debug("Logging {} of Intyg {}", logMsg.getActivityType(), logMsg.getActivityLevel());
         

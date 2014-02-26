@@ -33,6 +33,8 @@ import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
@@ -62,9 +64,12 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private IntygDraftService intygDraftService;
-    
+
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private LogService logService;
 
     public IntygApiController() {
 
@@ -91,7 +96,25 @@ public class IntygApiController extends AbstractApiController {
 
         LOG.debug("Created a new draft of type '{}' with id '{}'", intygType, idOfCreatedDraft);
 
+        logCreateOfIntyg(idOfCreatedDraft, request);
+
         return Response.ok().entity(idOfCreatedDraft).build();
+    }
+
+    private void logCreateOfIntyg(String idOfCreatedDraft, CreateNewIntygRequest request) {
+
+        LogRequest logRequest = new LogRequest();
+        logRequest.setIntygId(idOfCreatedDraft);
+        logRequest.setPatientId(request.getPatientPersonnummer());
+
+        StringBuilder patientName = new StringBuilder();
+        patientName.append(request.getPatientFornamn());
+        patientName.append(" ");
+        patientName.append(request.getPatientEfternamn());
+
+        logRequest.setPatientName(patientName.toString());
+        
+        logService.logCreateOfIntyg(logRequest);
     }
 
     private CreateNewDraftRequest createServiceRequest(CreateNewIntygRequest req) {
@@ -135,24 +158,25 @@ public class IntygApiController extends AbstractApiController {
     @Path("/list/{personNummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response listIntyg(@PathParam("personNummer") String personNummer) {
-        
+
         LOG.debug("Retrieving intyg for person {}", personNummer);
-        
+
         List<String> enhetsIds = getEnhetIdsForCurrentUser();
-        
+
         if (enhetsIds.isEmpty()) {
             LOG.error("Current user has no assignments");
             return Response.status(Status.BAD_REQUEST).build();
         }
-        
+
         List<IntygItem> signedIntygList = intygService.listIntyg(enhetsIds, personNummer);
         LOG.debug("Got {} signed intyg", signedIntygList.size());
-        
-        List<Intyg> draftIntygList = intygRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds, ALL_DRAFT_STATUSES);
+
+        List<Intyg> draftIntygList = intygRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds,
+                ALL_DRAFT_STATUSES);
         LOG.debug("Got {} draft intyg", draftIntygList.size());
-        
+
         List<ListIntygEntry> allIntyg = IntygMerger.merge(signedIntygList, draftIntygList);
-        
+
         return Response.ok(allIntyg).build();
     }
 
@@ -165,12 +189,12 @@ public class IntygApiController extends AbstractApiController {
     @Path("/types")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response listIntygTypes() {
-        
+
         List<IntygModule> allModules = moduleRegistry.listAllModules();
-        
+
         LOG.debug("Returning list of {} modules", allModules.size());
-                
+
         return Response.ok().entity(allModules).build();
     }
-    
+
 }
