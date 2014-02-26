@@ -91,6 +91,12 @@ h1 {
 	color: #008391;
 }
 
+h1.backlink-heading {
+  display: inline-block;
+  margin-right: 20px;
+  line-height: 29px;
+}
+
 h2 {
 	font-size: 16px;
 	line-height: 20px;
