@@ -85,9 +85,9 @@ angular.module('wc.utils').provider('http403ResponseInterceptor', function() {
     } ];
 
 });
-/*
- * Generic Dialog services
- */
+/**
+ * wcDialogService - Generic error dialog service
+ **/
 angular.module('wc.utils').factory(
         'wcDialogService',
         [
@@ -244,7 +244,9 @@ angular.module('wc.utils').factory(
 
                 } ]);
 
-// Common module utils
+/**
+ * wcField directive. Used to abstract common layout for full-layout form fields in cert modules
+ */
 angular.module('wc.utils').directive("wcField", [function() {
   return {
     restrict : "A",
@@ -267,6 +269,9 @@ angular.module('wc.utils').directive("wcField", [function() {
   }
 } ]);
 
+/**
+* wcFieldSingle directive. Used to abstract common layout for single-line form fields in cert modules
+*/
 angular.module('wc.utils').directive("wcFieldSingle", [function() {
   return {
     restrict : "A",
@@ -317,4 +322,21 @@ angular.module('wc.utils').directive("wcMaxlength", function($log, $compile) {
       controller.$parsers.unshift(limitLength);
     }
   }
+});
+
+/**
+ * FocusMe directive. Used to set focus to an element via model value
+ */
+angular.module('wc.utils').directive('focusMe', function() {
+  return {
+    scope: { trigger: '=focusMe' },
+    link: function(scope, element) {
+      scope.$watch('trigger', function(value) {
+        if(value === true) {
+          element[0].focus();
+          scope.trigger = false;
+        }
+      });
+    }
+  };
 });
