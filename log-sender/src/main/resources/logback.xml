@@ -9,9 +9,9 @@
 
   <!--Daily rolling file appender -->
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <File>${catalina.home}/logs/log-sender.log</File>
+    <File>${catalina.base}/logs/log-sender.log</File>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <FileNamePattern>${catalina.home}/logs/log-sender.%d{yyyy-MM-dd}.log</FileNamePattern>
+      <FileNamePattern>${catalina.base}/logs/log-sender.%d{yyyy-MM-dd}.log</FileNamePattern>
     </rollingPolicy>
 
     <layout class="ch.qos.logback.classic.PatternLayout">
