@@ -43,6 +43,7 @@ import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.test.NamespacePrefixNameIgnoringListener;
 import se.inera.webcert.web.service.WebCertUserService;
 

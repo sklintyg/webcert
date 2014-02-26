@@ -1,4 +1,4 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.log;
 
 
 /**

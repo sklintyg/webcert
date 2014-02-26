@@ -1,4 +1,4 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.log;
 
 import java.util.Arrays;
 
@@ -32,6 +32,7 @@ import se.inera.log.messages.IntygReadMessage;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.log.LogServiceImpl;
 import se.inera.webcert.web.service.WebCertUserService;
 import se.inera.webcert.web.service.WebCertUserServiceImpl;
 

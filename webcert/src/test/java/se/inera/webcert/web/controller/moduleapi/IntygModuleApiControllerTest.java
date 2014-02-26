@@ -24,7 +24,7 @@ import se.inera.certificate.integration.rest.ModuleRestApiFactory;
 import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.webcert.service.IntygService;
-import se.inera.webcert.service.LogService;
+import se.inera.webcert.service.log.LogService;
 
 /**
  * @author andreaskaltenbach
