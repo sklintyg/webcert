@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.converter.IntygMerger;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.ModuleRestApiFactory;
 import se.inera.webcert.modules.registry.IntygModule;
 import se.inera.webcert.modules.registry.IntygModuleRegistry;
@@ -38,7 +37,6 @@ import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
-import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * Controller for the API that serves WebCert.
@@ -106,13 +104,7 @@ public class IntygApiController extends AbstractApiController {
         LogRequest logRequest = new LogRequest();
         logRequest.setIntygId(idOfCreatedDraft);
         logRequest.setPatientId(request.getPatientPersonnummer());
-
-        StringBuilder patientName = new StringBuilder();
-        patientName.append(request.getPatientFornamn());
-        patientName.append(" ");
-        patientName.append(request.getPatientEfternamn());
-
-        logRequest.setPatientName(patientName.toString());
+        logRequest.setPatientName(request.getPatientFornamn(), request.getPatientEfternamn());
         
         logService.logCreateOfIntyg(logRequest);
     }

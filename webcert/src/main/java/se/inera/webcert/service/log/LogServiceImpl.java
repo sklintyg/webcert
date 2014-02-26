@@ -17,7 +17,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.PatientType;
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
@@ -32,7 +31,9 @@ import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
- * @author andreaskaltenbach
+ * Implementation of service for logging user actions according to PDL requirements.
+ * 
+ * @author nikpet
  */
 @Service
 public class LogServiceImpl implements LogService {
@@ -109,13 +110,18 @@ public class LogServiceImpl implements LogService {
         user.getVardgivare();
     }
 
+    /**
+     * TODO: Change how Vardgivare and Vardenhet is populated to use current vardenhet from 
+     * user object.
+     * 
+     * @param logMsg
+     */
     private void populateWithVardgivareAndVardenhet(AbstractLogMessage logMsg) {
 
         WebCertUser user = webCertUserService.getWebCertUser();
 
         List<Vardgivare> allVardgivare = user.getVardgivare();
-
-        // TODO: Here we use the first of the Vardgivare that the user have.
+        
         Vardgivare vardgivare = (allVardgivare.isEmpty()) ? null : allVardgivare.get(0);
 
         if (vardgivare == null) {

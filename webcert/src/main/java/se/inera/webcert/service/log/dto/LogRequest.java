@@ -12,6 +12,12 @@ public class LogRequest {
         super();
     }
 
+    public void setPatientName(String forName, String surName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(forName).append(" ").append(surName);
+        setPatientName(sb.toString());
+    }
+    
     public String getIntygId() {
         return intygId;
     }
