@@ -70,7 +70,7 @@ public class WebCertUserDetailsServiceTest {
 
         assertEquals(vardgivare, webCertUser.getVardgivare().get(0));
 
-        verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID, ENHET_HSA_ID);
+        verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
     }
 
     private void setupHsaOrganizationService() {
@@ -78,7 +78,7 @@ public class WebCertUserDetailsServiceTest {
         vardgivare.getVardenheter().add(new Vardenhet("vardcentralen", "Vårdcentralen"));
         List<Vardgivare> vardgivareList = Collections.singletonList(vardgivare);
 
-        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID, ENHET_HSA_ID)).thenReturn(
+        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID)).thenReturn(
                 vardgivareList);
     }
 

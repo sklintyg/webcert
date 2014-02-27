@@ -14,5 +14,5 @@ public interface HsaOrganizationsService {
      * @return list of vårdgivare containing authorized enheter and mottagningar. If user is not authorized at all,
      * an empty list will be returned
      */
-    List<Vardgivare> getAuthorizedEnheterForHosPerson(String hosPersonHsaId, String enhetHsaId);
+    List<Vardgivare> getAuthorizedEnheterForHosPerson(String hosPersonHsaId);
 }

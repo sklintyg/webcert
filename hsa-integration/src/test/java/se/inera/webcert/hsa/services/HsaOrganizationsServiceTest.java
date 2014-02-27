@@ -1,12 +1,12 @@
 package se.inera.webcert.hsa.services;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
@@ -17,11 +17,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.stub.HsaServiceStub;
 import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
+
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 
 /**
  * @author andreaskaltenbach
@@ -45,7 +50,7 @@ public class HsaOrganizationsServiceTest {
     @Test
     public void testEmptyResultSet() {
 
-        Collection<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, CENTRUM_NORR);
+        Collection<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
         assertTrue(vardgivare.isEmpty());
     }
 
@@ -53,7 +58,7 @@ public class HsaOrganizationsServiceTest {
     public void testSingleEnhetWithoutMottagningar() {
         addMedarbetaruppdrag(PERSON_HSA_ID, asList(CENTRUM_NORR));
 
-        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, CENTRUM_NORR);
+        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
         assertEquals(1, vardgivare.size());
 
         Vardgivare vg = vardgivare.get(0);
@@ -69,28 +74,47 @@ public class HsaOrganizationsServiceTest {
 
     @Test
     public void testMultipleEnheter() {
+        
+        // Load with 3 MIUs belonging to the same vårdgivare
         addMedarbetaruppdrag(PERSON_HSA_ID, asList(CENTRUM_VAST, CENTRUM_OST, CENTRUM_NORR));
 
-        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, CENTRUM_OST);
+        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
         assertEquals(1, vardgivare.size());
 
         Vardgivare vg = vardgivare.get(0);
-        assertEquals(1, vg.getVardenheter().size());
-
-        Vardenhet centrumOst = vg.getVardenheter().get(0);
+        assertEquals(3, vg.getVardenheter().size());
+        
+        // Assert that mottagningar was loaded for 'centrum-ost'
+        Vardenhet centrumOst = getVardenhetById(CENTRUM_OST, vg.getVardenheter());
         assertEquals(1, centrumOst.getMottagningar().size());
     }
 
+    private Vardenhet getVardenhetById(final String vardenhetId, List<Vardenhet> vardenheter) {
+        
+        Predicate<Vardenhet> pred = new Predicate<Vardenhet>() {
+            public boolean apply(Vardenhet v) {
+                return vardenhetId.equalsIgnoreCase(v.getId());
+            }
+        };
+        
+        Optional<Vardenhet> results = Iterables.tryFind(vardenheter, pred);
+        
+        return (results.isPresent()) ? results.get() : null;
+    }
+    
+    
     @Test
     public void testMultipleVardgivare() throws IOException {
+        
+        // Load with another vardgivare, which gives two vardgivare available
         addVardgivare("HsaOrganizationsServiceTest/landstinget-kings-landing.json");
 
+        // Assign Gunilla one MIU from each vardgivare 
         addMedarbetaruppdrag("Gunilla", asList(CENTRUM_NORR, "red-keep"));
 
-        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, "red-keep");
-        assertEquals(1, vardgivare.size());
-
-        assertEquals("kings-landing", vardgivare.get(0).getId());
+        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+        
+        assertEquals(2, vardgivare.size());
     }
 
     private void addMedarbetaruppdrag(String hsaId, List<String> enhetIds) {
@@ -118,36 +142,13 @@ public class HsaOrganizationsServiceTest {
 
         addVardgivare("HsaOrganizationsServiceTest/landstinget-upp-och-ner.json");
 
+        // Assign Gunilla 5 MIUs where 2 is inactive (finito and futuro)
         addMedarbetaruppdrag(PERSON_HSA_ID, asList("finito", "here-and-now", "futuro", "still-open", "will-shutdown"));
 
-        // login with an inactive enhet 'finito'
-        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, "finito");
-        assertTrue(vardgivareList.isEmpty());
-
-        // login with an active enhet 'here-and-now'
-        vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, "here-and-now");
+        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
         assertEquals(1, vardgivareList.size());
         assertEquals("upp-och-ner", vardgivareList.get(0).getId());
-        assertEquals(1, vardgivareList.get(0).getVardenheter().size());
-        assertEquals("here-and-now", vardgivareList.get(0).getVardenheter().get(0).getId());
-
-        // login with an enhet 'futuro' which will be active in the future
-        vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, "futuro");
-        assertTrue(vardgivareList.isEmpty());
-
-        // login with an active enhet 'still-open' which will be shut down in the future
-        vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, "still-open");
-        assertEquals(1, vardgivareList.size());
-        assertEquals("upp-och-ner", vardgivareList.get(0).getId());
-        assertEquals(1, vardgivareList.get(0).getVardenheter().size());
-        assertEquals("still-open", vardgivareList.get(0).getVardenheter().get(0).getId());
-
-        // login with an active enhet 'will-shutdown' which has been shut down in the past
-        vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, "will-shutdown");
-        assertEquals(1, vardgivareList.size());
-        assertEquals("upp-och-ner", vardgivareList.get(0).getId());
-        assertEquals(1, vardgivareList.get(0).getVardenheter().size());
-        assertEquals("will-shutdown", vardgivareList.get(0).getVardenheter().get(0).getId());
+        assertEquals(3, vardgivareList.get(0).getVardenheter().size());
     }
 
     @Test
@@ -156,7 +157,7 @@ public class HsaOrganizationsServiceTest {
 
         addMedarbetaruppdrag(PERSON_HSA_ID, asList("with-subs"));
 
-        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, "with-subs");
+        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
         assertEquals(1, vardgivareList.size());
 
         Vardgivare vardgivare = vardgivareList.get(0);
@@ -176,7 +177,7 @@ public class HsaOrganizationsServiceTest {
         // user has a different medarbetaruppdrag ändamål 'Animatör' in one enhet
         serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(PERSON_HSA_ID, asList("centrum-ost"), "Animatör"));
 
-        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID, CENTRUM_OST);
+        List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
 
         // no authorized vardgivere should be returned
         assertTrue(vardgivareList.isEmpty());
