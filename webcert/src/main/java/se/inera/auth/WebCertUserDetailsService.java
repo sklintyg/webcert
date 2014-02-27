@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
@@ -49,6 +50,9 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         }
 
         webCertUser.setVardgivare(authorizedVardgivare);
+        
+        setDefaultSelectedVardenhetOnUser(webCertUser, assertion);
+        
         return webCertUser;
     }
 
@@ -58,10 +62,26 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         webcertUser.setNamn(assertion.getFornamn() + " " + assertion.getMellanOchEfternamn());
         webcertUser.setForskrivarkod(assertion.getForskrivarkod());
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
-
+    
         // lakare flag is calculated by checking for lakare profession in title and title code
         webcertUser.setLakare(LAKARE.equals(assertion.getTitel()) || LAKARE_CODE.equals(assertion.getTitelKod()));
-
+        
         return webcertUser;
+    }
+
+    private void setDefaultSelectedVardenhetOnUser(WebCertUser webCertUser, SakerhetstjanstAssertion assertion) {
+        
+        String enhetHsaIdFromAssertion = assertion.getEnhetHsaId();
+        
+        SelectableVardenhet defaultVardenhet = webCertUser.findSelectableVardenhet(enhetHsaIdFromAssertion);
+        
+        if (defaultVardenhet == null) {
+            LOG.error("When logging in user '{}', unit with HSA-id {} could not be found in users MIUs", webCertUser.getHsaId(), enhetHsaIdFromAssertion);
+            throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
+        }
+        
+        LOG.debug("Setting care unit '{}' as default unit on user '{}'", defaultVardenhet.getId(), webCertUser.getHsaId());
+        
+        webCertUser.setValdVardenhet(defaultVardenhet);
     }
 }
