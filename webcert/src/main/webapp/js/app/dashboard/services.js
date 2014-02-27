@@ -192,3 +192,34 @@ services.factory('CertificateDraft', [ '$http', '$log',
             }
         };
     }]);
+
+/**
+ * User service. Provides actions for controlling user context including which vardenhet user is working on.
+ * TODO: Move all user services here
+ */
+services.factory('User', [ '$http', '$log',
+  function ($http, $log) {
+    return {
+
+      /**
+       * setValdVardenhet. Tell server which vardenhet is active in user context
+       * @param vardenhet - complete vardenhet object to send
+       * @param onSuccess - success callback on successful call
+       * @param onError - error callback on connection failure
+       */
+      setValdVardenhet : function (vardenhet, onSuccess, onError) {
+        $log.debug('setValdVardenhet' + vardenhet.namn);
+
+        var payload = vardenhet;
+
+        var restPath = '/api/user/changeunit';
+        $http.post(restPath, payload).success(function (data) {
+          $log.debug('got callback data: ' + data);
+          onSuccess(data);
+        }).error(function (data, status) {
+          $log.error('error ' + status);
+          onError(data);
+        });
+      }
+    };
+  }]);
