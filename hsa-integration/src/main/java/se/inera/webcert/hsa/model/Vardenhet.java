@@ -6,52 +6,37 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author andreaskaltenbach
  */
-public class Vardenhet implements Serializable {
-
-    private String id;
-    private String namn;
+public class Vardenhet extends AbstractVardenhet implements Serializable {
+    
     private String mail;
 
     private LocalDateTime start;
     private LocalDateTime end;
 
-    private List<Mottagning> mottagningar = new ArrayList<>();
+    private List<Mottagning> mottagningar;
 
     public Vardenhet() {
     }
 
     public Vardenhet(String id, String namn) {
-        this.id = id;
-        this.namn = namn;
+        super(id, namn);
     }
 
     public Vardenhet(String id, String namn, LocalDateTime start, LocalDateTime end) {
-        this.id = id;
-        this.namn = namn;
+        super(id, namn);
         this.start = start;
         this.end = end;
     }
-
-    public String getNamn() {
-        return namn;
-    }
-
-    public void setNamn(String namn) {
-        this.namn = namn;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
+    
     public List<Mottagning> getMottagningar() {
+        if (mottagningar == null) {
+            mottagningar = new ArrayList<>();
+        }
         return mottagningar;
     }
 
@@ -66,16 +51,31 @@ public class Vardenhet implements Serializable {
     public void setMail(String mail) {
         this.mail = mail;
     }
-
+    
     public List<String> getHsaIds() {
         List<String> ids = new ArrayList<>();
-        ids.add(id);
-        for (Mottagning mottagning : mottagningar) {
+        ids.add(getId());
+        for (Mottagning mottagning : getMottagningar()) {
             ids.add(mottagning.getId());
         }
         return ids;
     }
-
+    
+    public SelectableVardenhet findSelectableVardenhet(String id) {
+        
+        if (id.equals(getId())) {
+            return this;
+        }
+        
+        for (Mottagning m : getMottagningar()) {
+            if (id.equals(m.getId())) {
+                return m;
+            }
+        }
+        
+        return null;
+    }
+    
     public LocalDateTime getStart() {
         return start;
     }
