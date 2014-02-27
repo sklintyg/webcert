@@ -20,6 +20,8 @@ public class WebCertUser implements Serializable {
     private String authenticationScheme;
 
     private List<Vardgivare> vardgivare;
+    
+    private SelectableVardenhet valdVardenhet;
 
     public String getHsaId() {
         return hsaId;
@@ -46,11 +48,24 @@ public class WebCertUser implements Serializable {
     }
 
     public List<Vardgivare> getVardgivare() {
+        
+        if (vardgivare == null) {
+            vardgivare = new ArrayList<Vardgivare>();
+        }
+        
         return vardgivare;
     }
 
     public void setVardgivare(List<Vardgivare> vardgivare) {
         this.vardgivare = vardgivare;
+    }
+
+    public SelectableVardenhet getValdVardenhet() {
+        return valdVardenhet;
+    }
+
+    public void setValdVardenhet(SelectableVardenhet valdVardenhet) {
+        this.valdVardenhet = valdVardenhet;
     }
 
     public String getAuthenticationScheme() {
@@ -69,15 +84,36 @@ public class WebCertUser implements Serializable {
            throw new RuntimeException(e);
         }
     }
-
+    
+    @JsonIgnore
     public List<String> getVardenheterIds() {
-        List<String> list = new ArrayList<String>();
-        for(Vardgivare v : vardgivare) {
-            list.addAll(v.getHsaIds());
+        SelectableVardenhet selected = getValdVardenhet();
+        
+        if (selected == null) {
+            return new ArrayList<>();
         }
-        return list;
+        
+        return selected.getHsaIds();
     }
-
+    
+    public SelectableVardenhet findSelectableVardenhet(String id) {
+        
+        if (id == null) {
+            return null;
+        }
+                
+        SelectableVardenhet ve = null;
+        
+        for (Vardgivare vg : getVardgivare()) {
+            ve = vg.findVardenhet(id);
+            if (ve != null) {
+                return ve;
+            }
+        }
+                
+        return null;
+    }
+    
     public String getForskrivarkod() {
         return forskrivarkod;
     }

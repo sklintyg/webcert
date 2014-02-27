@@ -1,51 +1,33 @@
 package se.inera.webcert.hsa.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
 /**
  * @author andreaskaltenbach
  */
-public class Mottagning implements Serializable {
+public class Mottagning extends AbstractVardenhet implements Serializable {
 
-    private String id;
-    private String namn;
     private String mail;
 
     private LocalDateTime start;
     private LocalDateTime end;
 
     public Mottagning() {
-
+        super();
     }
 
     public Mottagning(String id, String namn) {
-        this.id = id;
-        this.namn = namn;
+        super(id, namn);
     }
 
     public Mottagning(String id, String namn, LocalDateTime start, LocalDateTime end) {
-        this.id = id;
-        this.namn = namn;
+        super(id, namn);
         this.start = start;
         this.end = end;
-    }
-
-    public String getNamn() {
-        return namn;
-    }
-
-    public void setNamn(String namn) {
-        this.namn = namn;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public LocalDateTime getStart() {
@@ -70,5 +52,12 @@ public class Mottagning implements Serializable {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    @Override
+    public List<String> getHsaIds() {
+        List<String> ids = new ArrayList<>();
+        ids.add(getId());
+        return ids;
     }
 }

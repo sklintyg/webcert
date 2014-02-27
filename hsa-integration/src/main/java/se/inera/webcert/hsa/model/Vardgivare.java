@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author andreaskaltenbach
  */
@@ -12,7 +14,7 @@ public class Vardgivare implements Serializable {
     private String id;
     private String namn;
 
-    private List<Vardenhet> vardenheter = new ArrayList<>();
+    private List<Vardenhet> vardenheter;
 
     public Vardgivare() {
     }
@@ -39,29 +41,56 @@ public class Vardgivare implements Serializable {
     }
 
     public List<Vardenhet> getVardenheter() {
-        return vardenheter;
-    }
-    
-    public List<String> getHsaIds() {
-        List<String> ids = new ArrayList<>();
-        for (Vardenhet vardenhet : vardenheter) {
-            ids.addAll(vardenhet.getHsaIds());
+
+        if (vardenheter == null) {
+            vardenheter = new ArrayList<>();
         }
-        return ids;
+
+        return vardenheter;
     }
 
     public void setVardenheter(List<Vardenhet> vardenheter) {
         this.vardenheter = vardenheter;
     }
 
+    @JsonIgnore
+    public List<String> getHsaIds() {
+        List<String> ids = new ArrayList<>();
+        for (Vardenhet vardenhet : getVardenheter()) {
+            ids.addAll(vardenhet.getHsaIds());
+        }
+        return ids;
+    }
+
+    public SelectableVardenhet findVardenhet(String id) {
+
+        if (id == null) {
+            return null;
+        }
+        
+        SelectableVardenhet sve = null;
+        
+        for (Vardenhet vardenhet : getVardenheter()) {
+            sve = vardenhet.findSelectableVardenhet(id);
+            if (sve != null) {
+                return sve;
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         Vardgivare that = (Vardgivare) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null)
+            return false;
 
         return true;
     }
