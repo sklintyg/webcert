@@ -76,6 +76,8 @@ public class WebCertUserDetailsServiceTest {
     private void setupHsaOrganizationService() {
         vardgivare = new Vardgivare("vg", "Landstinget Ingenmansland");
         vardgivare.getVardenheter().add(new Vardenhet("vardcentralen", "Vårdcentralen"));
+        vardgivare.getVardenheter().add(new Vardenhet("IFV1239877878-103P", "TestVårdEnhet2A VårdEnhet2A"));
+               
         List<Vardgivare> vardgivareList = Collections.singletonList(vardgivare);
 
         when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID)).thenReturn(
