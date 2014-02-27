@@ -2,7 +2,12 @@ package se.inera.webcert.web.controller.api;
 
 import java.util.List;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -12,11 +17,12 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.LakarIdNamn;
 import se.inera.webcert.service.FragaSvarService;
+import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.QueryFragaSvarParameter;
 import se.inera.webcert.web.controller.api.dto.QueryFragaSvarResponse;
-import se.inera.webcert.web.service.WebCertUserService;
 
-public class FragaSvarApiController {
+@Path("/fragasvar")
+public class FragaSvarApiController extends AbstractApiController {
 
     /**
      * Helper service to get current user.
@@ -24,11 +30,8 @@ public class FragaSvarApiController {
     @Autowired
     private FragaSvarService fragaSvarService;
 
-    @Autowired
-    private WebCertUserService webCertUserService;
-
     @GET
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public List<FragaSvar> list() {
         WebCertUser user = webCertUserService.getWebCertUser();
         return fragaSvarService.getFragaSvar(user.getVardenheterIds());
@@ -37,7 +40,7 @@ public class FragaSvarApiController {
     @PUT
     @Path("/query")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response query(final QueryFragaSvarParameter queryParam) {
         QueryFragaSvarResponse result = new QueryFragaSvarResponse();
         result.setTotalCount(fragaSvarService.getFragaSvarByFilterCount(queryParam.getFilter()));
@@ -52,7 +55,7 @@ public class FragaSvarApiController {
     @PUT
     @Path("/query/paging")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response queryNoCount(final QueryFragaSvarParameter queryParam) {
         QueryFragaSvarResponse result = new QueryFragaSvarResponse();
         result.setTotalCount(-1);
@@ -67,7 +70,7 @@ public class FragaSvarApiController {
 
     @GET
     @Path("/mdlist/{enhetsId}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public List<LakarIdNamn> getFragaSvarLakareByEnhet(@PathParam("enhetsId") String enhetsId) {
         return fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
     }

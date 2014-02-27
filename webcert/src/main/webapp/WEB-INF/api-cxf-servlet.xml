@@ -27,21 +27,11 @@
 
   <context:component-scan base-package="se.inera.webcert.web.controller.api" />
 
-  <jaxrs:server address="/fragasvar">
+  <jaxrs:server address="/">
     <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.web.controller.api.FragaSvarApiController" />
-    </jaxrs:serviceBeans>
-    <jaxrs:providers>
-      <ref bean="jacksonJsonProvider" />
-    </jaxrs:providers>
-    <jaxrs:extensionMappings>
-      <entry key="json" value="application/json" />
-    </jaxrs:extensionMappings>
-  </jaxrs:server>
-
-  <jaxrs:server address="/intyg">
-    <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.web.controller.api.IntygApiController" />
+      <bean class="se.inera.webcert.web.controller.api.UserApiController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

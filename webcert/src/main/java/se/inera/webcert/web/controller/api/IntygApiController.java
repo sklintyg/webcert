@@ -44,6 +44,7 @@ import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
  * @author nikpet
  * 
  */
+@Path("/intyg")
 public class IntygApiController extends AbstractApiController {
 
     private static Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
@@ -76,7 +77,7 @@ public class IntygApiController extends AbstractApiController {
     @POST
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createNewIntyg(CreateNewIntygRequest request) {
 
         if (!request.isValid()) {
