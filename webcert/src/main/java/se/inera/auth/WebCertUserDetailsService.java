@@ -4,6 +4,7 @@ import java.util.List;
 
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
+import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
@@ -69,19 +71,31 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         return webcertUser;
     }
 
-    private void setDefaultSelectedVardenhetOnUser(WebCertUser webCertUser, SakerhetstjanstAssertion assertion) {
+    private void setDefaultSelectedVardenhetOnUser(WebCertUser user, SakerhetstjanstAssertion assertion) {
         
-        String enhetHsaIdFromAssertion = assertion.getEnhetHsaId();
+        SelectableVardenhet defaultVardenhet = null;
         
-        SelectableVardenhet defaultVardenhet = webCertUser.findSelectableVardenhet(enhetHsaIdFromAssertion);
+        String medarbetaruppdragHsaId = assertion.getMedarbetaruppdragHsaId();
         
-        if (defaultVardenhet == null) {
-            LOG.error("When logging in user '{}', unit with HSA-id {} could not be found in users MIUs", webCertUser.getHsaId(), enhetHsaIdFromAssertion);
-            throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
+        if (StringUtils.isNotBlank(medarbetaruppdragHsaId)) {
+            defaultVardenhet = user.findSelectableVardenhet(medarbetaruppdragHsaId);
+        } else {
+            LOG.error("Assertion did not contain a medarbetaruppdrag, defaulting to use one of the Vardenheter present in the user");
+            defaultVardenhet = getFirstVardenhetOnFirstVardgivare(user);
         }
         
-        LOG.debug("Setting care unit '{}' as default unit on user '{}'", defaultVardenhet.getId(), webCertUser.getHsaId());
+        if (defaultVardenhet == null) {
+            LOG.error("When logging in user '{}', unit with HSA-id {} could not be found in users MIUs", user.getHsaId(), medarbetaruppdragHsaId);
+            throw new MissingMedarbetaruppdragException(user.getHsaId());
+        }
         
-        webCertUser.setValdVardenhet(defaultVardenhet);
+        LOG.debug("Setting care unit '{}' as default unit on user '{}'", defaultVardenhet.getId(), user.getHsaId());
+        
+        user.setValdVardenhet(defaultVardenhet);
+    }
+    
+    private Vardenhet getFirstVardenhetOnFirstVardgivare(WebCertUser user) {
+        Vardgivare firstVardgivare = user.getVardgivare().get(0);
+        return (firstVardgivare != null) ? firstVardgivare.getVardenheter().get(0) : null;
     }
 }

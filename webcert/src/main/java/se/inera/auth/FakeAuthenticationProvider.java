@@ -10,6 +10,7 @@ import static se.inera.auth.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
+import static se.inera.auth.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_ID;
 import static se.inera.auth.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
 
@@ -95,7 +96,8 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
                 createAttribute(MELLAN_OCH_EFTERNAMN_ATTRIBUTE, fakeCredentials.getEfternamn()));
         attributeStatement.getAttributes().add(createAttribute(ENHET_HSA_ID_ATTRIBUTE, fakeCredentials.getEnhetId()));
         attributeStatement.getAttributes().add(createAttribute(MEDARBETARUPPDRAG_TYPE, Medarbetaruppdrag.VARD_OCH_BEHANDLING));
-
+        attributeStatement.getAttributes().add(createAttribute(MEDARBETARUPPDRAG_ID, fakeCredentials.getEnhetId()));
+        
         if (fakeCredentials.isLakare()) {
             attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Läkare"));
         }

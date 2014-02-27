@@ -30,6 +30,7 @@ public class SakerhetstjanstAssertion {
     private static final String VARDGIVARE_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careProviderName";
 
     public static final String MEDARBETARUPPDRAG_TYPE = "urn:sambi:names:attribute:commissionPurpose";
+    public static final String MEDARBETARUPPDRAG_ID = "urn:sambi:names:attribute:assignmentHsaId";
 
     private String titelKod;
     private String titel;
@@ -47,6 +48,7 @@ public class SakerhetstjanstAssertion {
     private String vardgivareHsaId;
     private String vardgivareNamn;
 
+    private String medarbetaruppdragHsaId;
     private String medarbetaruppdragType;
 
     private String authenticationScheme;
@@ -99,6 +101,9 @@ public class SakerhetstjanstAssertion {
                 break;
             case MEDARBETARUPPDRAG_TYPE:
                 medarbetaruppdragType = getValue(attribute);
+                break;
+            case MEDARBETARUPPDRAG_ID:
+                medarbetaruppdragHsaId = getValue(attribute);
                 break;
             }
         }
@@ -162,6 +167,10 @@ public class SakerhetstjanstAssertion {
 
     public String getMedarbetaruppdragType() {
         return medarbetaruppdragType;
+    }
+
+    public String getMedarbetaruppdragHsaId() {
+        return medarbetaruppdragHsaId;
     }
 
     public String getAuthenticationScheme() {
