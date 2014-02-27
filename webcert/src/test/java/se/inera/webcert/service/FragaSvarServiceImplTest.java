@@ -650,9 +650,13 @@ public class FragaSvarServiceImplTest {
         user.setHsaId("testuser");
         user.setNamn("test userman");
 
+        Vardenhet vardenhet = new Vardenhet("enhet", "Enhet");
+        
         Vardgivare vardgivare = new Vardgivare();
-        vardgivare.getVardenheter().add(new Vardenhet("enhet", "Enhet"));
+        vardgivare.getVardenheter().add(vardenhet);
+        
         user.setVardgivare(Arrays.asList(vardgivare));
+        user.setValdVardenhet(vardenhet);
 
         return user;
     }
