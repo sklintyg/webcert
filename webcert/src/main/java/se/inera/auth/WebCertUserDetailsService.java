@@ -41,7 +41,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
             throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
         }
 
-        List<Vardgivare> authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId(), assertion.getEnhetHsaId());
+        List<Vardgivare> authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId());
 
         // if user does not have access to any vardgivare, we have to reject authentication
         if (authorizedVardgivare.isEmpty()) {
