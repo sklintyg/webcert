@@ -103,3 +103,150 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
 } ]);
 
 
+        /*
+         * Load questions and answers data for
+         */
+        function _getQAByQueryFetchMore (qp, onSuccess, onError) {
+            $log.debug("_getQAByQueryFetchMore");
+            var restPath = '/api/fragasvar/query/paging';
+            $http.put(restPath, qp).success(function (data) {
+                $log.debug("_getQAByQueryFetchMore got data:" + data);
+                onSuccess(data);
+            }).error(function (data, status, headers, config) {
+                $log.error("_getQAByQueryFetchMore error " + status);
+                // Let calling code handle the error of no data response
+                onError(data);
+            });
+
+        }
+
+        function _getDoctorList (enhetsId, onSuccess, onError) {
+            $log.debug("_getDoctorList: " + enhetsId);
+            var restPath = '/api/fragasvar/mdlist/' + enhetsId;
+            $http.get(restPath).success(function (data) {
+                $log.debug("_getDoctorList got data:" + data);
+                onSuccess(data);
+            }).error(function (data, status, headers, config) {
+                $log.error("_getDoctorList error " + status);
+                // Let calling code handle the error of no data response
+                onError(data);
+            });
+
+        }
+
+
+        // Return public API for the service
+        return {
+            getCertificatesForPerson : _getCertificatesForPerson,
+            getCertificates : _getCertificates,
+            getQA : _getQA,
+            getQAByQuery : _getQAByQuery,
+            getQAByQueryFetchMore : _getQAByQueryFetchMore,
+            getDoctorList : _getDoctorList
+        }
+    } ]);
+
+services.factory('CertificateDraft', [ '$http', '$log',
+    function ($http, $log) {
+        return {
+
+            reset : function () {
+                this.personnummer = null;
+                this.intygType = 'default';
+                this.firstname = null;
+                this.lastname = null;
+                this.address = null;
+                this.vardEnhetHsaId = null;
+                this.vardEnhetNamn = null;
+                this.vardGivareHsaId = null;
+                this.vardGivareHsaNamn = null;
+            },
+
+            getNameAndAddress : function (personnummer, onSuccess) {
+                $log.debug('CertificateDraft getNameAndAddress');
+
+                this.personnummer = personnummer;
+
+                if (this.personnummer === '19121212-1212' || this.personnummer === '20121212-1212') {
+                  this.firstname = 'Test';
+                  this.lastname = 'Testsson';
+                  this.address = 'Storgatan 23';
+                } else {
+                  this.firstname = null;
+                  this.lastname = null;
+                  this.address = null;
+                }
+                onSuccess();
+            },
+
+            getCertTypes : function (onSuccess, onError) {
+                this.intygType = 'default';
+
+                var restPath = '/api/intyg/types';
+                $http.get(restPath).success(function (data) {
+                    $log.debug('got data:' + data);
+                    var types = [{sortValue: 0, id : 'default', label : 'Välj intygstyp'}];
+                    onSuccess(types.concat(data));
+                }).error(function (data, status) {
+                    $log.error('error ' + status);
+                    onError();
+                });
+            },
+
+            createDraft : function (onSuccess, onError) {
+                $log.debug('_createDraft');
+
+                var payload = {};
+                payload.patientPersonnummer = this.personnummer;
+                payload.patientFornamn = this.firstname;
+                payload.patientEfternamn = this.lastname;
+                payload.intygType = this.intygType;
+                payload.address = this.address;
+                payload.vardEnhetHsaId = this.vardEnhetHsaId;
+                payload.vardEnhetNamn = this.vardEnhetNamn;
+                payload.vardGivareHsaId = this.vardGivareHsaId;
+                payload.vardGivareNamn = this.vardGivareNamn;
+
+                var restPath = '/api/intyg/create';
+                $http.post(restPath, payload).success(function (data) {
+                    $log.debug('got callback data: ' + data);
+                    onSuccess(data);
+
+                }).error(function (data, status) {
+                    $log.error('error ' + status);
+                    onError(data);
+                });
+            }
+        };
+    }]);
+
+/**
+ * User service. Provides actions for controlling user context including which vardenhet user is working on.
+ * TODO: Move all user services here
+ */
+services.factory('User', [ '$http', '$log',
+  function ($http, $log) {
+    return {
+
+      /**
+       * setValdVardenhet. Tell server which vardenhet is active in user context
+       * @param vardenhet - complete vardenhet object to send
+       * @param onSuccess - success callback on successful call
+       * @param onError - error callback on connection failure
+       */
+      setValdVardenhet : function (vardenhet, onSuccess, onError) {
+        $log.debug('setValdVardenhet' + vardenhet.namn);
+
+        var payload = vardenhet;
+
+        var restPath = '/api/user/changeunit';
+        $http.post(restPath, payload).success(function (data) {
+          $log.debug('got callback data: ' + data);
+          onSuccess(data);
+        }).error(function (data, status) {
+          $log.error('error ' + status);
+          onError(data);
+        });
+      }
+    };
+  }]);

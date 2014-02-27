@@ -43,7 +43,7 @@ angular.module('wc.common').factory('statService', [ '$http', '$log', '$timeout'
     }
 } ]);
 
-angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','statService', function($rootScope,$location,statService) {
+angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','$modal','statService','User', function($rootScope,$location,$modal,statService, User) {
 
     return {
         restrict : "A",
@@ -134,6 +134,68 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
                     return "/saml/logout";
                 }
             }
+
+          $scope.openChangeCareUnitDialog = function() {
+
+              var msgbox = $modal.open({
+                template :
+                    '<div class="modal-header">'+
+                      '<h3>Byte av aktiv vårdenhet</h3>'+
+                    '</div>'+
+                    '<div class="modal-body">'+
+                      '<h4>Välj vårdenhet att logga in på</h4>'+
+                      '<table class="table table-striped table-qa">'+
+                        '<tr>'+
+                          '<th></th>'+
+                          '<th>Ohanterade frågor och svar</th>'+
+                          '<th>Osignerade intyg</th>'+
+                        '</tr>'+
+                        '<tr ng-repeat="enhet in vardgivare.vardenheter">'+
+                          '<td>'+
+                            '<button class="btn btn-link" data-ng-click="selectVardenhet(enhet)">{{enhet.namn}}</a>'+
+                          '</td>'+
+                          '<td>'+
+                            '0'+
+                          '</td>'+
+                          '<td>'+
+                            '0'+
+                          '</td>'+
+                        '</tr>'+
+                        '</table>'+
+                        '<div class="alert alert-error" data-ng-show="error">Tekniskt fel. Kunde inte byta vårdenhet.</div>'+
+                      '</div>',
+                controller : function($scope, $modalInstance, vardgivare) {
+                  $scope.vardgivare = vardgivare;
+                  $scope.error = false;
+
+                  $scope.selectVardenhet = function(enhet) {
+                    $scope.error = false;
+                    User.setValdVardenhet(enhet, function() {
+                      // TODO: update client user context
+                      $modalInstance.close();
+                    }, function() {
+                      // TODO: error handling
+                      $scope.error = true;
+                    });
+
+                  }
+                },
+                resolve : {
+                  vardgivare : function() {
+                    return angular.copy($rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0]);
+                  }
+                }
+              });
+
+              msgbox.result.then(function(result) {
+                if (callback) {
+                  callback(result)
+                }
+              }, function() {
+              });
+
+          }
+
         },
         template:
         	'<div>'
@@ -163,6 +225,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','sta
 			        				+'<img src="/img/avatar.png"/>'
 			        			+'</div>'
 				      			+'<div class="pull-right location">'
+                      +'<button type="button" class="btn" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</button> '
 				      				+'<span class="">{{user.vardgivare[0].namn}} - {{user.vardgivare[0].vardenheter[0].namn}}</span><br>'
 				      			+'</div>'
 	            		+'</div>'
