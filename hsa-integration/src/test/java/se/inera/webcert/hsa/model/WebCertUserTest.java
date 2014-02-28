@@ -1,6 +1,7 @@
 package se.inera.webcert.hsa.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -24,27 +25,34 @@ public class WebCertUserTest {
     }
     
     @Test
-    public void testFindSelectableVardenhetWithNullParam() {
-        SelectableVardenhet res = wcu.findSelectableVardenhet(null);
-        assertNull(res);
+    public void testChangeValdVardenhetWithNullParam() {
+        boolean res = wcu.changeValdVardenhet(null);
+        assertFalse(res);
     }
     
     @Test
-    public void testFindSelectableVardenhetThatIsAVardenhet() {
-        SelectableVardenhet res = wcu.findSelectableVardenhet("VG1VE2");
-        assertNotNull(res);
-        assertEquals("Vardenhet 2", res.getNamn());
+    public void testChangeValdVardenhetThatIsAVardenhet() {
+        boolean res = wcu.changeValdVardenhet("VG1VE2");
+        assertTrue(res);
+        assertEquals("Vardenhet 2", wcu.getValdVardenhet().getNamn());
+        assertEquals("Vardgivare 1", wcu.getValdVardgivare().getNamn());
     }
     
     @Test
-    public void testFindSelectableVardenhetThatIsAMottagning() {
-        SelectableVardenhet res = wcu.findSelectableVardenhet("VG2VE1M1");
-        assertNotNull(res);
-        assertEquals("Mottagning 1", res.getNamn());
+    public void testChangeValdVardenhetThatIsAMottagning() {
+        boolean res = wcu.changeValdVardenhet("VG2VE1M1");
+        assertTrue(res);
+        assertEquals("Mottagning 1", wcu.getValdVardenhet().getNamn());
+        assertEquals("Vardgivare 2", wcu.getValdVardgivare().getNamn());
     }
     
     @Test
     public void testGetVardenheterIdsWithMottagningSelected() {
+        
+        // Set a Vardenhet that has no Mottagningar as selected
+        boolean res = wcu.changeValdVardenhet("VG1VE1");
+        assertTrue(res);
+        
         List<String> ids = wcu.getVardenheterIds();
         assertNotNull(ids);
         assertEquals(1, ids.size());
@@ -54,8 +62,8 @@ public class WebCertUserTest {
     public void testGetVardenheterIdsWithVardenhetSelected() {
         
         // Set the Vardenhet that has a Mottagning attached as selected
-        SelectableVardenhet vardenhet = wcu.findSelectableVardenhet("VG2VE1");
-        wcu.setValdVardenhet(vardenhet);
+        boolean res = wcu.changeValdVardenhet("VG2VE1");
+        assertTrue(res);
         
         List<String> ids = wcu.getVardenheterIds();
         assertNotNull(ids);
@@ -104,6 +112,7 @@ public class WebCertUserTest {
         wcu.setVardgivare(vardgivare);
         
         wcu.setValdVardenhet(vg2ve2m1);
+        wcu.setValdVardgivare(vg2);
         
         return wcu;
     }

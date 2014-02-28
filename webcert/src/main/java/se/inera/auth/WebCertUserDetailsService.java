@@ -1,8 +1,8 @@
 package se.inera.auth;
 
-import java.util.List;
-
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
+
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
-import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -73,29 +73,33 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     private void setDefaultSelectedVardenhetOnUser(WebCertUser user, SakerhetstjanstAssertion assertion) {
         
-        SelectableVardenhet defaultVardenhet = null;
-        
         String medarbetaruppdragHsaId = assertion.getMedarbetaruppdragHsaId();
         
+        boolean changeSuccess = false;
+        
         if (StringUtils.isNotBlank(medarbetaruppdragHsaId)) {
-            defaultVardenhet = user.findSelectableVardenhet(medarbetaruppdragHsaId);
+            changeSuccess = user.changeValdVardenhet(medarbetaruppdragHsaId);
         } else {
             LOG.error("Assertion did not contain a medarbetaruppdrag, defaulting to use one of the Vardenheter present in the user");
-            defaultVardenhet = getFirstVardenhetOnFirstVardgivare(user);
+            changeSuccess = setFirstVardenhetOnFirstVardgivareAsDefault(user);
         }
         
-        if (defaultVardenhet == null) {
+        if (!changeSuccess) {
             LOG.error("When logging in user '{}', unit with HSA-id {} could not be found in users MIUs", user.getHsaId(), medarbetaruppdragHsaId);
             throw new MissingMedarbetaruppdragException(user.getHsaId());
         }
         
-        LOG.debug("Setting care unit '{}' as default unit on user '{}'", defaultVardenhet.getId(), user.getHsaId());
-        
-        user.setValdVardenhet(defaultVardenhet);
+        LOG.debug("Setting care unit '{}' as default unit on user '{}'", user.getValdVardenhet().getId(), user.getHsaId());
     }
     
-    private Vardenhet getFirstVardenhetOnFirstVardgivare(WebCertUser user) {
+    private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
+        
         Vardgivare firstVardgivare = user.getVardgivare().get(0);
-        return (firstVardgivare != null) ? firstVardgivare.getVardenheter().get(0) : null;
+        user.setValdVardgivare(firstVardgivare);
+        
+        Vardenhet firstVardenhet = firstVardgivare.getVardenheter().get(0);
+        user.setValdVardenhet(firstVardenhet);
+        
+        return true;
     }
 }
