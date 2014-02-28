@@ -62,11 +62,11 @@ angular.module('wcDashBoardApp').constant('datepickerPopupConfig', {
 });
 
 // Inject language resources
-angular.module('wcDashBoardApp').run(['$rootScope', 'messageService',
-    function ($rootScope, messageService) {
+angular.module('wcDashBoardApp').run(['$rootScope', 'messageService','User',
+    function ($rootScope, messageService, User) {
         $rootScope.lang = 'sv';
         $rootScope.DEFAULT_LANG = 'sv';
-        $rootScope.MODULE_CONFIG = MODULE_CONFIG;
+        User.setUserContext(MODULE_CONFIG.USERCONTEXT);
         messageService.addResources(webcertResources);
         messageService.addResources(commonMessageResources);
     }]);

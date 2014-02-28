@@ -491,6 +491,8 @@ body span:hover.qa-unit-selected {
   padding: 10px 35px;
 }
 
+.table-links .btn-link { text-align: left; }
+
 .certblock-copy .btn-info {
   padding: 10px 0;
 }

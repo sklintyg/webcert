@@ -47,8 +47,8 @@ controllers.controller('EditPatientNameCtrl', ['$scope', '$location', 'Certifica
     }]);
 
 controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window', '$location', '$filter', '$log', '$timeout', 'wcDialogService',
-    'dashBoardService', 'CertificateDraft',
-    function ($rootScope, $scope, $window, $location, $filter, $log, $timeout, wcDialogService, dashBoardService, CertificateDraft) {
+    'dashBoardService', 'CertificateDraft', 'User',
+    function ($rootScope, $scope, $window, $location, $filter, $log, $timeout, wcDialogService, dashBoardService, CertificateDraft, User) {
         if (!CertificateDraft.personnummer || !CertificateDraft.firstname || !CertificateDraft.lastname) {
             $location.url('/create/index', true);
         }
@@ -63,10 +63,11 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
         });
 
         function _createDraft () {
-            CertificateDraft.vardGivareHsaId = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].id;
-            CertificateDraft.vardGivareNamn= $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn;
-            CertificateDraft.vardEnhetHsaId = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter[0].id;
-            CertificateDraft.vardEnhetNamn = $rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter[0].namn;
+          var valdVardenhet = User.getValdVardenhet();
+            CertificateDraft.vardGivareHsaId = valdVardenhet.id;
+            CertificateDraft.vardGivareNamn= valdVardenhet.namn;
+            CertificateDraft.vardEnhetHsaId = valdVardenhet.id;
+            CertificateDraft.vardEnhetNamn = valdVardenhet.namn;
 
             if (CertificateDraft.intygType === 'fk7263') {
                 // TODO: Remove this hard coded redirect.

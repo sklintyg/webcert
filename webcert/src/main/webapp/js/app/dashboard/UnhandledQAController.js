@@ -52,7 +52,7 @@ angular
                               return false;
                             }                            
                             
-                            $scope.$on('select-care-unit', function (event, unit) {
+                            $scope.$on('qa-filter-select-care-unit', function (event, unit) {
 	                              $log.debug("ActiveUnit is now:" + unit);
 	                              $scope.activeUnit = unit;
 	                              $scope.widgetState.queryMode = false;

@@ -3,8 +3,8 @@
 /* Directives */
 var directives = angular.module('wc.dashboard.directives', []);
 
-directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 'dashBoardService',
-    function ($rootScope, $cookieStore, dashBoardService) {
+directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 'User',
+    function ($rootScope, $cookieStore, User) {
         return {
             restrict : "A",
             transclude : false,
@@ -15,26 +15,24 @@ directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 
                 '</tr>' +
                 '</table>',
             controller : function ($scope) {
-                // init
-                $scope.vardenheter = angular.copy($rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter);
+
+/*                var valdVardenhet = angular.copy(User.getValdVardenhet());
 
                 $scope.units = []; // aggregated units to present for vardenhet/mottagning choice
+                $scope.units.push(valdVardenhet);
 
-                angular.forEach($scope.vardenheter, function (vardenhet, key) {
-                    this.push(vardenhet);
-
-                    angular.forEach(vardenhet.mottagningar, function (mottagning, key) {
-                        mottagning.namn = vardenhet.namn + ' - ' + mottagning.namn;
-                        this.push(mottagning);
-                    }, $scope.units);
-
+                angular.forEach(valdVardenhet.mottagningar, function (mottagning, key) {
+                    mottagning.namn = valdVardenhet.namn + ' - ' + mottagning.namn;
+                    this.push(mottagning);
                 }, $scope.units);
+*/
+              $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
 
                 $scope.selectedUnit = null;
 
                 $scope.selectUnit = function (unit) {
                     $scope.selectedUnit = unit;
-                    $rootScope.$broadcast('select-care-unit', $scope.selectedUnit);
+                    $rootScope.$broadcast('qa-filter-select-care-unit', $scope.selectedUnit);
                 }
 
                 //initial selection

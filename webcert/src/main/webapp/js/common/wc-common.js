@@ -5,8 +5,9 @@
  * Since this js will be used/loaded from different contextpaths, all templates are inlined. PLEASE keep source
  * formatting in this file as-is, otherwise the inline templates will be hard to follow.
  */
-angular.module('wc.common', []);
-angular.module('wc.common').factory('statService', [ '$http', '$log', '$timeout', '$rootScope', function($http, $log, $timeout, $rootScope) {
+var common = angular.module('wc.common', []);
+
+common.factory('statService', [ '$http', '$log', '$timeout', '$rootScope', function($http, $log, $timeout, $rootScope) {
 
     var timeOutPromise = undefined;
     var msPollingInterval = 10* 1000;
@@ -43,13 +44,12 @@ angular.module('wc.common').factory('statService', [ '$http', '$log', '$timeout'
     }
 } ]);
 
-angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','$modal','statService','User', function($rootScope,$location,$modal,statService, User) {
+common.directive("wcHeader", ['$rootScope','$location','$modal','$window','statService','User', function($rootScope,$location,$modal,$window,statService, User) {
 
     return {
         restrict : "A",
         replace : true,
         scope : {
-          user: "=",
           defaultActive: "@"
         },
         controller: function($scope, $element, $attrs) {
@@ -57,6 +57,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','$mo
           $scope.today = new Date();
           $scope.statService = statService;
           $scope.statService.startPolling();
+          $scope.user = User.userContext;
 
           $scope.stat = {
                   userStat: {},
@@ -132,17 +133,17 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','$mo
               var msgbox = $modal.open({
                 template :
                     '<div class="modal-header">'+
-                      '<h3>Byte av aktiv vårdenhet</h3>'+
+                      '<button class="close">×</button>'+
+                      '<h3>Vilken vårdenhet vill du logga in på?</h3>'+
                     '</div>'+
                     '<div class="modal-body">'+
-                      '<h4>Välj vårdenhet att logga in på</h4>'+
-                      '<table class="table table-striped table-qa">'+
+                      '<table class="table table-striped table-qa table-links" ng-repeat="vg in vardgivare">'+
                         '<tr>'+
-                          '<th></th>'+
+                          '<th>{{vg.namn}}</th>'+
                           '<th>Ohanterade frågor och svar</th>'+
                           '<th>Osignerade intyg</th>'+
                         '</tr>'+
-                        '<tr ng-repeat="enhet in vardgivare.vardenheter">'+
+                        '<tr ng-repeat="enhet in vg.vardenheter">'+
                           '<td>'+
                             '<button class="btn btn-link" data-ng-click="selectVardenhet(enhet)">{{enhet.namn}}</a>'+
                           '</td>'+
@@ -163,10 +164,10 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','$mo
                   $scope.selectVardenhet = function(enhet) {
                     $scope.error = false;
                     User.setValdVardenhet(enhet, function() {
-                      // TODO: update client user context
-                      $modalInstance.close();
+                      // We updated the user context on the server. Reload page for changes to show.
+                      $window.location.reload();
                     }, function() {
-                      // TODO: error handling
+                      // TODO: better error handling
                       $scope.error = true;
                     });
 
@@ -174,17 +175,17 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','$mo
                 },
                 resolve : {
                   vardgivare : function() {
-                    return angular.copy($rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0]);
+                    return angular.copy(User.getVardenhetSelectionList());
                   }
                 }
               });
 
-              msgbox.result.then(function(result) {
+              /*msgbox.result.then(function(result) {
                 if (callback) {
                   callback(result)
                 }
               }, function() {
-              });
+              });*/
 
           }
 
@@ -218,7 +219,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','$mo
 			        			+'</div>'
 				      			+'<div class="pull-right location">'
                       +'<button type="button" class="btn" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</button> '
-				      				+'<span class="">{{user.vardgivare[0].namn}} - {{user.vardgivare[0].vardenheter[0].namn}}</span><br>'
+				      				+'<span>Okänt Landsting - {{user.valdVardenhet.namn}}</span><br>'
 				      			+'</div>'
 	            		+'</div>'
 	        			+'</div>'
@@ -253,7 +254,7 @@ angular.module('wc.common').directive("wcHeader", ['$rootScope','$location','$mo
 } ]);
 
 
-angular.module('wc.common').directive("wcSpinner", ['$rootScope', function($rootScope) {
+common.directive("wcSpinner", ['$rootScope', function($rootScope) {
     return {
         restrict : "A",
         transclude : true,
@@ -278,3 +279,124 @@ angular.module('wc.common').directive("wcSpinner", ['$rootScope', function($root
     };
 } ]);
 
+/**
+ * User service. Provides actions for controlling user context including which vardenhet user is working on.
+ * TODO: Move all user services here
+ */
+common.factory('User', [ '$http', '$log',
+  function ($http, $log) {
+    return {
+
+      reset : function () {
+        this.userContext = null;
+      },
+
+      /**
+       * Set user context from api
+       * @param userContext
+       */
+      setUserContext : function(userContext) {
+        this.userContext = userContext;
+
+        // Add vardgivarNamn to valdVardenhet
+        var valdVardenhet = this.getValdVardenhet();
+
+        function addVardgivarNamn(valdVardenhet, userContext) {
+          angular.forEach(userContext.vardgivare, function(vardgivare, key) {
+            angular.forEach(vardgivare.vardenheter, function (vardenhet, key) {
+
+              if(vardenhet.id == valdVardenhet.id) {
+                valdVardenhet.vardgivarNamn = vardgivare.namn;
+              }
+
+              angular.forEach(vardenhet.mottagningar, function (mottagning) {
+                if(mottagning.id == valdVardenhet.id) {
+                  valdVardenhet.vardgivarNamn = vardgivare.namn;
+                }
+              });
+            });
+          }, valdVardenhet);
+        }
+
+        addVardgivarNamn(valdVardenhet, this.userContext);
+        if(valdVardenhet.vardgivarNamn == undefined){
+          valdVardenhet.vardgivarNamn = "Okänd vårdgivare";
+        }
+      },
+
+      /**
+       * returns valdVardenhet from user context
+       * @returns valdVardenhet
+       */
+      getVardenhetSelectionList : function() {
+
+        var ucVardgivare = angular.copy(this.userContext.vardgivare);
+
+        var vardgivareList = [];
+
+        angular.forEach(ucVardgivare, function (vardgivare, key) {
+          this.push({"id":vardgivare.id, "namn": vardgivare.namn, "vardenheter":[]});
+          angular.forEach(vardgivare.vardenheter, function (vardenhet, key) {
+            this.push({"id":vardenhet.id, "namn": vardenhet.namn});
+            angular.forEach(vardenhet.mottagningar, function (mottagning) {
+              mottagning.namn = vardenhet.namn + ' - ' + mottagning.namn;
+              this.push(mottagning);
+            }, vardgivareList[key].vardenheter);
+          }, vardgivareList[key].vardenheter);
+        }, vardgivareList);
+
+        return vardgivareList;
+      },
+
+      /**
+       * Returns a list of the selected vardenhet and all its mottagningar
+       * @returns {*}
+       */
+      getVardenhetFilterList : function(vardenhet){
+        if(!vardenhet){
+          $log.debug("getVardenhetFilterList: parameter vardenhet was omitted");
+          return [];
+        }
+
+        var units = [];
+        units.push(angular.copy(vardenhet));
+
+        angular.forEach(vardenhet.mottagningar, function (mottagning, key) {
+          mottagning.namn = vardenhet.namn + ' - ' + mottagning.namn;
+          this.push(mottagning);
+        }, units);
+
+        return units;
+      },
+
+      /**
+       * returns valdVardenhet from user context
+       * @returns valdVardenhet
+       */
+      getValdVardenhet : function() {
+        return this.userContext.valdVardenhet;
+      },
+
+      /**
+       * setValdVardenhet. Tell server which vardenhet is active in user context
+       * @param vardenhet - complete vardenhet object to send
+       * @param onSuccess - success callback on successful call
+       * @param onError - error callback on connection failure
+       */
+      setValdVardenhet : function (vardenhet, onSuccess, onError) {
+        $log.debug('setValdVardenhet' + vardenhet.namn);
+
+        var payload = vardenhet;
+
+        var restPath = '/api/user/changeunit';
+        $http.post(restPath, payload).success(function (data) {
+          $log.debug('got callback data: ' + data);
+          // TODO: do additional checks and error handling on returned context (data)
+          onSuccess(data);
+        }).error(function (data, status) {
+              $log.error('error ' + status);
+              onError(data);
+            });
+      }
+    };
+  }]);
