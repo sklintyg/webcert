@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.inera.certificate.integration.json.CustomObjectMapper;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import se.inera.certificate.integration.json.CustomObjectMapper;
 
 /**
  * @author andreaskaltenbach
@@ -22,6 +23,8 @@ public class WebCertUser implements Serializable {
     private List<Vardgivare> vardgivare;
     
     private SelectableVardenhet valdVardenhet;
+    
+    private SelectableVardenhet valdVardgivare;
 
     public String getHsaId() {
         return hsaId;
@@ -66,7 +69,7 @@ public class WebCertUser implements Serializable {
 
     public void setValdVardenhet(SelectableVardenhet valdVardenhet) {
         this.valdVardenhet = valdVardenhet;
-    }
+    }   
 
     public String getAuthenticationScheme() {
         return authenticationScheme;
@@ -76,6 +79,14 @@ public class WebCertUser implements Serializable {
         this.authenticationScheme = authenticationScheme;
     }
 
+    public SelectableVardenhet getValdVardgivare() {
+        return valdVardgivare;
+    }
+    
+    public void setValdVardgivare(SelectableVardenhet valdVardgivare) {
+        this.valdVardgivare = valdVardgivare;
+    }
+    
     @JsonIgnore
     public String getAsJson() {
         try {
@@ -96,22 +107,24 @@ public class WebCertUser implements Serializable {
         return selected.getHsaIds();
     }
     
-    public SelectableVardenhet findSelectableVardenhet(String id) {
-        
-        if (id == null) {
-            return null;
+    public boolean changeValdVardenhet(String vardenhetId) {
+    
+        if (vardenhetId == null) {
+            return false;
         }
                 
         SelectableVardenhet ve = null;
         
         for (Vardgivare vg : getVardgivare()) {
-            ve = vg.findVardenhet(id);
+            ve = vg.findVardenhet(vardenhetId);
             if (ve != null) {
-                return ve;
+                setValdVardenhet(ve);
+                setValdVardgivare(vg);
+                return true;
             }
         }
                 
-        return null;
+        return false;
     }
     
     public String getForskrivarkod() {

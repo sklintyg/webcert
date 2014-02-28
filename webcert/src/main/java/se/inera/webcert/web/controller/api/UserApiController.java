@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -49,14 +48,12 @@ public class UserApiController {
         LOG.debug("Attempting to change selected unit for user '{}', currently selected unit is '{}'", user.getHsaId(),
                 user.getValdVardenhet().getId());
         
-        SelectableVardenhet newVardenhet = user.findSelectableVardenhet(request.getId());
+        boolean changeSuccess = user.changeValdVardenhet(request.getId());
 
-        if (newVardenhet == null) {
+        if (!changeSuccess) {
             LOG.error("Unit '{}' is not present in the MIUs for user '{}'", request.getId(), user.getHsaId());
             return Response.status(Status.BAD_REQUEST).entity("Unit change failed").build();
         }
-
-        user.setValdVardenhet(newVardenhet);
 
         LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
 

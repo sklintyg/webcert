@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @author andreaskaltenbach
  */
-public class Vardgivare implements Serializable {
+public class Vardgivare implements SelectableVardenhet, Serializable {
 
     private String id;
     private String namn;

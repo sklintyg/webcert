@@ -6,6 +6,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,6 +70,11 @@ public class WebCertUserDetailsServiceTest {
         assertEquals("vg", webCertUser.getVardgivare().get(0).getId());
 
         assertEquals(vardgivare, webCertUser.getVardgivare().get(0));
+        
+        assertEquals(vardgivare, webCertUser.getValdVardgivare());        
+        
+        assertNotNull(webCertUser.getValdVardenhet());
+        assertEquals("IFV1239877878-103P", webCertUser.getValdVardenhet().getId());
 
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
     }
