@@ -1,38 +1,64 @@
 'use strict';
 
 /* Directives */
-angular.module('wcDashBoardApp').directive("wcCareUnitClinicSelector", ['$rootScope', '$cookieStore', 'dashBoardService', function ($rootScope, $cookieStore, dashBoardService) {
-    return {
-        restrict: "A",
-        transclude: false,
-        replace: true,
-        template: 
-    	    '<table class="span12 table unit-table">'+
-        		'<tr ng-repeat="unit in units">'+
-        			'<td><button id="select-active-unit-{{unit.id}}" type="button" ng-click="selectUnit(unit)" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}<span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></button></td>'+
-        		'</tr>'+
-        	'</table>',
-        controller: function ($scope) {
-            // init
-            $scope.vardenheter = angular.copy($rootScope.MODULE_CONFIG.USERCONTEXT.vardgivare[0].vardenheter);
 
-            $scope.units = []; // aggregated units to present for vardenhet/mottagning choice
-            
-            angular.forEach($scope.vardenheter, function(vardenhet, key){
-              this.push(vardenhet);
-              
-              angular.forEach(vardenhet.mottagningar, function(mottagning, key){
-              	mottagning.namn = vardenhet.namn + ' - ' + mottagning.namn;
-              	this.push(mottagning);
-              }, $scope.units);
-              
-            }, $scope.units);
-            
-            $scope.selectedUnit = null;
+directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 'User',
+    function ($rootScope, $cookieStore, User) {
+        return {
+            restrict : "A",
+            transclude : false,
+            replace : true,
+            template : '<table class="span12 table unit-table">' +
+                '<tr ng-repeat="unit in units">' +
+                '<td><button id="select-active-unit-{{unit.id}}" type="button" ng-click="selectUnit(unit)" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}<span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></button></td>' +
+                '</tr>' +
+                '</table>',
+            controller : function ($scope) {
 
-            $scope.selectUnit = function(unit) {
-            	$scope.selectedUnit = unit;
-            	$rootScope.$broadcast('select-care-unit', $scope.selectedUnit);
+/*                var valdVardenhet = angular.copy(User.getValdVardenhet());
+
+                $scope.units = []; // aggregated units to present for vardenhet/mottagning choice
+                $scope.units.push(valdVardenhet);
+
+                angular.forEach(valdVardenhet.mottagningar, function (mottagning, key) {
+                    mottagning.namn = valdVardenhet.namn + ' - ' + mottagning.namn;
+                    this.push(mottagning);
+                }, $scope.units);
+*/
+              $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
+
+                $scope.selectedUnit = null;
+
+                $scope.selectUnit = function (unit) {
+                    $scope.selectedUnit = unit;
+                    $rootScope.$broadcast('qa-filter-select-care-unit', $scope.selectedUnit);
+                }
+
+                //initial selection
+                if ($scope.units.length == 1) {
+                    $scope.selectUnit(selectFirstUnit($scope.units));
+                } else if ($scope.units.length > 1 && $cookieStore.get("enhetsId")) {
+                    $scope.selectUnit(selectUnitById($scope.units, $cookieStore.get("enhetsId")));
+                }
+
+
+                // Local function getting the first care unit's hsa id in the data struct.
+                function selectFirstUnit (units) {
+                    if (typeof units === "undefined" || units.length == 0) {
+                        return null;
+                    } else {
+                        return units[0];
+                    }
+                }
+
+                function selectUnitById (units, unitName) {
+                    for (var count = 0; count < units.length; count++) {
+                        if (units[count].id == unitName) {
+                            return units[count];
+                        }
+                    }
+                    return selectFirstUnit(units);
+                }
             }
             
             //initial selection

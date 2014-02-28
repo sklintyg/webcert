@@ -202,6 +202,8 @@ div.location { font-size: 12px; font-weight: bold; padding: 10px; margin-right: 
   padding: 7px 15px;
 }
 
+.table-links .btn-link { text-align: left; }
+
 .certblock-copy .btn-info {
   padding: 7px 0;
 }

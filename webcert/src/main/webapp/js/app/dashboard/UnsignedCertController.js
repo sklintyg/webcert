@@ -16,7 +16,7 @@ angular
                         'dashBoardService',
                         'fragaSvarCommonService',
                         'wcDialogService',
-                        function UnsignedCertCtrl($scope, $window, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
+                        function UnsignedCertCtrl($scope, $window, $log) {
                             // init state
                             $scope.widgetState = {
                                 doneLoading : true,
