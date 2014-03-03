@@ -1,6 +1,7 @@
 'use strict';
 
 /* Directives */
+var directives = angular.module('wcDashBoardApp');
 
 directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 'User',
     function ($rootScope, $cookieStore, User) {
@@ -15,18 +16,7 @@ directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 
                 '</table>',
             controller : function ($scope) {
 
-/*                var valdVardenhet = angular.copy(User.getValdVardenhet());
-
-                $scope.units = []; // aggregated units to present for vardenhet/mottagning choice
-                $scope.units.push(valdVardenhet);
-
-                angular.forEach(valdVardenhet.mottagningar, function (mottagning, key) {
-                    mottagning.namn = valdVardenhet.namn + ' - ' + mottagning.namn;
-                    this.push(mottagning);
-                }, $scope.units);
-*/
-              $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
-
+                $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
                 $scope.selectedUnit = null;
 
                 $scope.selectUnit = function (unit) {
@@ -59,38 +49,37 @@ directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 
                     }
                     return selectFirstUnit(units);
                 }
-            }
-            
-            //initial selection
-            if($scope.units.length == 1) {
-            	$scope.selectUnit(selectFirstUnit($scope.units));
-            }else if($scope.units.length > 1 && $cookieStore.get("enhetsId"))   {
-                $scope.selectUnit(selectUnitById($scope.units,$cookieStore.get("enhetsId")) ) ;
-            }
+
+                //initial selection
+                if($scope.units.length == 1) {
+                  $scope.selectUnit(selectFirstUnit($scope.units));
+                }else if($scope.units.length > 1 && $cookieStore.get("enhetsId"))   {
+                    $scope.selectUnit(selectUnitById($scope.units,$cookieStore.get("enhetsId")) ) ;
+                }
 
 
-            // Local function getting the first care unit's hsa id in the data struct.
-            function selectFirstUnit(units) {
-                if (typeof units === "undefined" || units.length == 0) {
-                    return null;
-                } else {
-                    return units[0];
+                // Local function getting the first care unit's hsa id in the data struct.
+                function selectFirstUnit(units) {
+                    if (typeof units === "undefined" || units.length == 0) {
+                        return null;
+                    } else {
+                        return units[0];
+                    }
+                }
+
+                function selectUnitById(units, unitName){
+                    for(var count =0;count<units.length;count++){
+                          if(units[count].id==unitName){
+                              return units[count];
+                          }
+                       }
+                    return selectFirstUnit(units);
                 }
             }
-
-            function selectUnitById(units, unitName){
-                for(var count =0;count<units.length;count++){
-                      if(units[count].id==unitName){
-                          return units[count];
-                      }
-                   }
-                return selectFirstUnit(units);
-            }
-        }
     };
 }]);
 
-angular.module('wcDashBoardApp').directive("wcAbout", ['$rootScope','$location', function($rootScope,$location) {
+directives.directive("wcAbout", ['$rootScope','$location', function($rootScope,$location) {
   return {
       restrict : "A",
       transclude : true,

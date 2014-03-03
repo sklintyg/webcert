@@ -1,12 +1,13 @@
 'use strict';
 
 /* Controllers */
+var controllers = angular.module('wcDashBoardApp');
 
 /*
  *  CreateCertCtrl - Controller for logic related to creating a new certificate 
  * 
  */
-angular.module('wcDashBoardApp').controller('CreateCertCtrl', [ '$scope', '$window', '$log', '$location', function CreateCertCtrl($scope, $window, $log, $location) {
+controllers.controller('CreateCertCtrl', [ '$scope', '$window', '$log', '$location', function CreateCertCtrl($scope, $window, $log, $location) {
 
 	$scope.toStep1 = function() {	$location.path("/index"); }
 	$scope.toEditPatient = function() { $location.path("/edit-patient/index"); }

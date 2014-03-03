@@ -3,8 +3,8 @@
 /*
  * Dashboard Services
  */
-angular.module('dashboard.services', []);
-angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$log', function($http, $log) {
+var services = angular.module('dashboard.services', []);
+services.factory('dashBoardService', [ '$http', '$log', function($http, $log) {
 
     /*
      * Load certificate list of specified type(unsigned, with unanswered
@@ -101,50 +101,6 @@ angular.module('dashboard.services').factory('dashBoardService', [ '$http', '$lo
         getDoctorList : _getDoctorList
     }
 } ]);
-
-
-        /*
-         * Load questions and answers data for
-         */
-        function _getQAByQueryFetchMore (qp, onSuccess, onError) {
-            $log.debug("_getQAByQueryFetchMore");
-            var restPath = '/api/fragasvar/query/paging';
-            $http.put(restPath, qp).success(function (data) {
-                $log.debug("_getQAByQueryFetchMore got data:" + data);
-                onSuccess(data);
-            }).error(function (data, status, headers, config) {
-                $log.error("_getQAByQueryFetchMore error " + status);
-                // Let calling code handle the error of no data response
-                onError(data);
-            });
-
-        }
-
-        function _getDoctorList (enhetsId, onSuccess, onError) {
-            $log.debug("_getDoctorList: " + enhetsId);
-            var restPath = '/api/fragasvar/mdlist/' + enhetsId;
-            $http.get(restPath).success(function (data) {
-                $log.debug("_getDoctorList got data:" + data);
-                onSuccess(data);
-            }).error(function (data, status, headers, config) {
-                $log.error("_getDoctorList error " + status);
-                // Let calling code handle the error of no data response
-                onError(data);
-            });
-
-        }
-
-
-        // Return public API for the service
-        return {
-            getCertificatesForPerson : _getCertificatesForPerson,
-            getCertificates : _getCertificates,
-            getQA : _getQA,
-            getQAByQuery : _getQAByQuery,
-            getQAByQueryFetchMore : _getQAByQueryFetchMore,
-            getDoctorList : _getDoctorList
-        }
-    } ]);
 
 services.factory('CertificateDraft', [ '$http', '$log',
     function ($http, $log) {
