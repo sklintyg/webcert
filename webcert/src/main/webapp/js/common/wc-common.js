@@ -219,7 +219,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','statS
 			        			+'</div>'
 				      			+'<div class="pull-right location">'
                       +'<button type="button" class="btn" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</button> '
-				      				+'<span>Okänt Landsting - {{user.valdVardenhet.namn}}</span><br>'
+				      				+'<span>{{user.valdVardgivare.namn}} - {{user.valdVardenhet.namn}}</span><br>'
 				      			+'</div>'
 	            		+'</div>'
 	        			+'</div>'
@@ -297,31 +297,6 @@ common.factory('User', [ '$http', '$log',
        */
       setUserContext : function(userContext) {
         this.userContext = userContext;
-
-        // Add vardgivarNamn to valdVardenhet
-        var valdVardenhet = this.getValdVardenhet();
-
-        function addVardgivarNamn(valdVardenhet, userContext) {
-          angular.forEach(userContext.vardgivare, function(vardgivare, key) {
-            angular.forEach(vardgivare.vardenheter, function (vardenhet, key) {
-
-              if(vardenhet.id == valdVardenhet.id) {
-                valdVardenhet.vardgivarNamn = vardgivare.namn;
-              }
-
-              angular.forEach(vardenhet.mottagningar, function (mottagning) {
-                if(mottagning.id == valdVardenhet.id) {
-                  valdVardenhet.vardgivarNamn = vardgivare.namn;
-                }
-              });
-            });
-          }, valdVardenhet);
-        }
-
-        addVardgivarNamn(valdVardenhet, this.userContext);
-        if(valdVardenhet.vardgivarNamn == undefined){
-          valdVardenhet.vardgivarNamn = "Okänd vårdgivare";
-        }
       },
 
       /**
