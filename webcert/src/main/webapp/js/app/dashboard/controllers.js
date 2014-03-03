@@ -64,26 +64,23 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
 
         function _createDraft () {
           var valdVardenhet = User.getValdVardenhet();
-            CertificateDraft.vardGivareHsaId = valdVardenhet.id;
-            CertificateDraft.vardGivareNamn= valdVardenhet.namn;
-            CertificateDraft.vardEnhetHsaId = valdVardenhet.id;
-            CertificateDraft.vardEnhetNamn = valdVardenhet.namn;
-
-            if (CertificateDraft.intygType === 'fk7263') {
-                // TODO: Remove this hard coded redirect.
-                $window.location.href = '/m/' + CertificateDraft.intygType + '/webcert/intyg/12345/edit#/edit';
-                CertificateDraft.reset();
-            } else {
-                CertificateDraft.createDraft(function (data) {
-                    $window.location.href = '/m/' + CertificateDraft.intygType + '/webcert/intyg/' + data + '/edit#/edit';
-                    CertificateDraft.reset();
-                });
-            }
+          CertificateDraft.vardGivareHsaId = valdVardenhet.id;
+          CertificateDraft.vardGivareNamn= valdVardenhet.namn;
+          CertificateDraft.vardEnhetHsaId = valdVardenhet.id;
+          CertificateDraft.vardEnhetNamn = valdVardenhet.namn;
+          CertificateDraft.createDraft(function (data) {
+              $window.location.href = '/m/' + CertificateDraft.intygType + '/webcert/intyg/' + data + '/edit#/edit';
+              CertificateDraft.reset();
+          }, function() {
+            // TODO: handle error visually for "failed to create cert"
+          });
         }
 
         $scope.lookupAddress = function () {
             CertificateDraft.intygType = $scope.intygType;
-            if (CertificateDraft.address) {
+
+            // TODO: create a list with which intygTypes wants and address or not. FK7263 does not want an address, so hardcoded for now as it is the only one in the foreseeble future
+            if (CertificateDraft.intygType != "fk7263" && CertificateDraft.address) {
                 var bodyText = 'Patienten har tidigare intyg där adressuppgifter har angivits. Vill du återanvända dessa i det nya intyget?<br>' +
                     '<br>Adress: ' + CertificateDraft.address;
 
@@ -107,7 +104,9 @@ controllers.controller('ChooseCertTypeCtrl', ['$rootScope', '$scope', '$window',
                     button3text : 'common.cancel'
                 });
             } else {
-                _createDraft();
+              // Address is not important
+              CertificateDraft.address = null;
+              _createDraft();
             }
         };
 
