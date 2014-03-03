@@ -1,0 +1,5 @@
+!include -c .IneraWebcert.WebTest.SuiteSetUp
+
+|script|Browser|
+|öppna|
+

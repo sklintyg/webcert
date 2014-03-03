@@ -1,4 +1,5 @@
 package se.inera.webcert.spec
+
 import org.joda.time.LocalDateTime
 import se.inera.certificate.spec.util.jms.ActiveMQConnectionFixture
 import se.inera.certificate.spec.util.jms.JMSUtils
@@ -9,8 +10,8 @@ import javax.jms.Connection
 import javax.jms.Message
 import javax.jms.MessageProducer
 import javax.jms.Session
+
 /**
- *
  * @author andreaskaltenbach
  */
 class LogMessageProducer extends Producer {
@@ -48,16 +49,12 @@ class LogMessageProducer extends Producer {
             Message jmsMessage = session.createObjectMessage(m)
             producer.send(jmsMessage)
             Thread.sleep(5000)
-
         }
-
-
     }
 
     def endTable() {
         JMSUtils.closeQuitely(conn, session, producer)
     }
-
 
     void sendString(String message) {
         Connection conn = null
@@ -73,8 +70,5 @@ class LogMessageProducer extends Producer {
         } finally {
             JMSUtils.closeQuitely(conn, session, producer)
         }
-
     }
-
-
 }

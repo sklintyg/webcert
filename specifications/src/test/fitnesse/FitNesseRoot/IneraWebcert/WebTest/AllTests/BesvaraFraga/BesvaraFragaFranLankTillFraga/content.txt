@@ -1,0 +1,2 @@
+Testet beskriver fallet när en användare besvarar en fråga från försäkringskassan genom att klicka på en länk till en fråga i ett mail eller från ett journalsystem.
+

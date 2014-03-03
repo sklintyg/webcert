@@ -1,12 +1,12 @@
 package se.inera.webcert.spec
 
 import groovy.json.JsonOutput
-import groovyx.net.http.RESTClient
 import se.inera.webcert.hsa.model.Mottagning
 import se.inera.webcert.hsa.model.Vardenhet
 import se.inera.webcert.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
+
 /**
  * @author andreaskaltenbach
  */
@@ -93,20 +93,16 @@ public class Vardgivare extends RestClientFixture {
         }
     }
 
-
     private vardgivareJson() {
         JsonOutput.toJson(vardgivare)
     }
 
     def endTable() {
-        def restClient = new RESTClient(baseUrl)
+        def restClient = createRestClient(baseUrl)
         restClient.post(
                 path: 'hsa-api/vardgivare',
                 body: vardgivareJson(),
                 requestContentType: JSON
         )
-
     }
-
-
 }

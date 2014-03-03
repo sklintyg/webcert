@@ -1,0 +1,24 @@
+Testet beskriver fallet när en användare med flera uppdrag loggar in.
+
+!3 Lägg till fråga
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | internReferens? |
+| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1 | eva | Eva Holgersson | vardenhet-fit-1 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
+| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-2 | eva | Eva Holgersson | vardenhet-fit-2 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens2= |
+
+!3 Givet att man loggar in som en användare med medarbetaruppdrag på endast en enhet, verifiera att enhetsväljaren ej visas
+
+| script | !-SvaraOchFraga-! |
+| logga på som | 7 |
+| obehandlade fragar sidan visas |
+| enhetsvaljare visas |
+| valj vardenhet | vardenhet-fit-1 |
+| lista med obehandlade fragar visas |
+
+!3 Ta bort frågor
+
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |
+

@@ -1,0 +1,38 @@
+Testet beskriver fallet när en användare skickar en ny fråga till försäkringskassan genom att plocka upp ett intyg från en länk till ett intyg i ett mail eller från ett journalsystem.
+
+!3 Givet att det finns ett intyg, verifiera att gå till det intyget
+
+| script | !-SvaraOchFraga-! |
+| logga på som | 7 |
+| obehandlade fragar sidan visas |
+| gå till intygsvy med intygsid | intyg-fit-1 |
+| intyg med fraga svar sidan visas |
+
+!3 Skicka en ny fråga till försäkringskassan
+
+| script | !-SvaraOchFraga-! |
+| ny fraga |
+| ny fraga formular visas |
+| skicka fraga knapp inaktiverad |
+| skicka fraga | En fråga från Fitnesse | med amne | 4 |
+| ny fraga formular visas | false |
+| fraga med text | En fråga från Fitnesse | visas i obehandladlistan |
+
+!3 Kontrollera att det kommit in en fråga till FK (stub)
+
+| Fraga Skickad Till Fk |
+| fraga? |
+| En fråga från Fitnesse |
+
+!3 Ta bort frågor
+
+TODO: Hur ska vi kunna ta bort frågan vi nyss skapade?
+
+#| ta bort fraga |
+#| internReferens |
+#| $internReferens1 |
+
+!3 Ta bort fråga från FK (stub)
+
+| script | !-RensaFragorSvarTillFk-! |
+| rensa fraga |

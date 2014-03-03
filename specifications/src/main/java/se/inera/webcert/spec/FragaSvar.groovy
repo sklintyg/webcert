@@ -1,14 +1,13 @@
 package se.inera.webcert.spec
+
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.springframework.core.io.ClassPathResource
 import se.inera.webcert.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
-/**
- * Created by pehr on 9/23/13.
- */
-public class FragaSvar extends RestClientFixture implements GroovyObject {
+
+public class FragaSvar extends RestClientFixture {
 
     String amne
     String externReferens
@@ -38,16 +37,16 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
     String internReferens
 
     String beskrivning
-    
+
     String vardAktorHsaId
-    
+
     String vardAktorNamn
 
-    public String internReferens() {
+    String internReferens() {
         internReferens
     }
 
-    public void execute() {
+    def execute() {
         def restClient = createRestClient(baseUrl)
         def response = restClient.post(
                 path: 'questions',
@@ -80,7 +79,7 @@ public class FragaSvar extends RestClientFixture implements GroovyObject {
         if (enhetsId) fraga.vardperson.enhetsId = enhetsId
         if (vardAktorHsaId) fraga.vardAktorHsaId = vardAktorHsaId
         if (vardAktorNamn) fraga.vardAktorNamn = vardAktorNamn
-        if(fkKontakt) fraga.externaKontakter = [fkKontakt]
+        if (fkKontakt) fraga.externaKontakter = [fkKontakt]
 
         JsonOutput.toJson(fraga)
     }

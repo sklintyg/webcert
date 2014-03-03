@@ -1,0 +1,31 @@
+Testet beskriver fallet när en användare försöker skriva en fråga på ett rättat intyg.
+
+!3 Lägg till fråga
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | internReferens? |
+| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-3-revoked | eva | Eva Holgersson |vardenhet-fit-1| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
+
+!3 Givet att det finns en fråga, verifiera att det går att visa den frågan
+
+| script | !-SvaraOchFraga-! |
+| logga på som | 7 |
+| obehandlade fragar sidan visas |
+| valj vardenhet | vardenhet-fit-1 |
+| lista med obehandlade fragar visas |
+| visa fraga | $internReferens1 |
+| intyg med fraga svar sidan visas |
+
+!3 Verifiera att det inte går att svara på frågan
+
+| script | !-SvaraOchFraga-! |
+| ny fraga knapp visas | false |
+| intyg är rättat meddelande visas | true |
+| intyg är skickat till fk meddelande visas | false |
+
+!3 Ta bort fråga
+
+| Ta Bort Fraga |
+| internReferens |
+| $internReferens1 |
+

@@ -1,10 +1,8 @@
 package se.inera.webcert.spec
 
-import groovyx.net.http.RESTClient
 import se.inera.webcert.spec.util.RestClientFixture
 
 /**
- *
  * @author andreaskaltenbach
  */
 class Mail extends RestClientFixture {
@@ -12,7 +10,7 @@ class Mail extends RestClientFixture {
     def mail
 
     void execute() {
-        def restClient = new RESTClient(baseUrl)
+        def restClient = createRestClient(baseUrl)
         mail = restClient.get(path: "mail-stub/mails").data[0]
     }
 

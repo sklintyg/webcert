@@ -1,0 +1,12 @@
+Testet beskriver fallet när en användare loggar ut.
+
+!3 Givet att användaren kan logga in och logga ut, verifiera att användaren är utloggad
+
+| script | !-SvaraOchFraga-! |
+| logga på som | 7 |
+| obehandlade fragar sidan visas |
+| logga ut |
+| utloggad sidan visas |
+| gå till obehandlade fragor |
+| access denied visas |
+

@@ -1,0 +1,32 @@
+Testet beskriver fallet när en användare har fått svar på sin fråga utanför systemet och markerar den som hanterad.
+
+!3 Lägg till fråga
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | internReferens? |
+| OVRIGT | | WC | En fråga | intyg-fit-1 | eva | Eva Holgersson | vardenhet-fit-1 | 2013-01-01 | PENDING_EXTERNAL_ACTION | false | | | Övrig från WC | $internReferens1= |
+
+!3 Givet att det finns en fråga, verifiera att det går att markera den som hanterad.
+
+| script | !-SvaraOchFraga-! |
+| logga på som | 7 |
+| obehandlade fragar sidan visas |
+| valj vardenhet | vardenhet-fit-1 |
+| lista med obehandlade fragar visas |
+| visa fraga | $internReferens1 |
+| intyg med fraga svar sidan visas |
+| markera fraga som hanterad | $internReferens1 |
+| ar fraga hanterad | $internReferens1 |
+|markeraFragaSomOhanterad|$internReferens1|
+|arFragaOhanterad|$internReferens1|
+
+!3 Ta bort Frågor:
+|ta bort Fraga|
+|internReferens|
+|$internReferens1|
+
+#!3 Rensa bort test-intyg
+#
+#|ta bort Intyg|
+#|id|
+#|intyg-fit-1|
