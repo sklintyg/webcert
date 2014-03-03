@@ -44,7 +44,7 @@ common.factory('statService', [ '$http', '$log', '$timeout', '$rootScope', funct
     }
 } ]);
 
-common.directive("wcHeader", ['$rootScope','$location','$modal','$window','statService','User', function($rootScope,$location,$modal,$window,statService, User) {
+common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cookieStore','statService','User', function($rootScope,$location,$modal,$window,$cookieStore,statService, User) {
 
     return {
         restrict : "A",
@@ -164,6 +164,8 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','statS
                   $scope.selectVardenhet = function(enhet) {
                     $scope.error = false;
                     User.setValdVardenhet(enhet, function() {
+                      // Remove stored cookie for selected filter. We want to choose a new filter after choosing another unit to work on
+                      $cookieStore.remove("enhetsId");
                       // We updated the user context on the server. Reload page for changes to show.
                       $window.location.reload();
                     }, function() {
