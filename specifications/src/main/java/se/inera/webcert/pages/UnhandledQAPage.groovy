@@ -21,6 +21,8 @@ class UnhandledQAPage extends Page {
         advancedFilterStatus { $("#qp-showStatus") }
         advancedFilterSearchBtn { $("#filter-qa-btn") }
         advancedFilterResetBtn { $("#reset-search-form") }
+
+        logoutLink { $("#logoutLink") }
     }
 
     def selectCareUnit(String careUnit) {
@@ -41,5 +43,9 @@ class UnhandledQAPage extends Page {
 
     def resetAdvancedFilter() {
         advancedFilterResetBtn.click()
+    }
+
+    def logout() {
+        logoutLink.click()
     }
 }

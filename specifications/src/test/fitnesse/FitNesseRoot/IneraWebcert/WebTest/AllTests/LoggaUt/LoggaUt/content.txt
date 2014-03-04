@@ -5,8 +5,10 @@ Testet beskriver fallet när en användare loggar ut.
 | script | !-SvaraOchFraga-! |
 | logga på som | 7 |
 | obehandlade fragar sidan visas |
+
+| script | !-LoggaUt-! |
 | logga ut |
-| utloggad sidan visas |
-| gå till obehandlade fragor |
-| access denied visas |
+| loginsidan visas |
+| gå till startsidan |
+| loginsidan visas |
 

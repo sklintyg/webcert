@@ -22,29 +22,29 @@ class ViewCertQAPage extends Page {
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
 
 
-        field1yes{$("#field1yes")}
-        field1no{$("#field1no")}
-        field2{$("#field2")}
-        field3{$("#field3")}
-        field4{$("#field4")}
-        field4b{$("#field4b")}
-        field5{$("#field5")}
-        field6a{$("#field6a")}
-        field6b{$("#field6b")}
-        field7{$("#field7")}
-        field8a{$("#field8")}
-        field8b{$("#field8b")}
-        field9{$("#field9")}
-        field10{$("#field10")}
-        field11{$("#field11")}
-        field12{$("#field12")}
-        field13{$("#field13")}
-        field17{$("#field17")}
-        field_vardperson_namn{$("#vardperson_namn")}
-        field_vardperson_enhetsnamn{$("#vardperson_enhetsnamn")}
+        field1yes { $("#field1yes") }
+        field1no { $("#field1no") }
+        field2 { $("#field2") }
+        field3 { $("#field3") }
+        field4 { $("#field4") }
+        field4b { $("#field4b") }
+        field5 { $("#field5") }
+        field6a { $("#field6a") }
+        field6b { $("#field6b") }
+        field7 { $("#field7") }
+        field8a { $("#field8") }
+        field8b { $("#field8b") }
+        field9 { $("#field9") }
+        field10 { $("#field10") }
+        field11 { $("#field11") }
+        field12 { $("#field12") }
+        field13 { $("#field13") }
+        field17 { $("#field17") }
+        field_vardperson_namn { $("#vardperson_namn") }
+        field_vardperson_enhetsnamn { $("#vardperson_enhetsnamn") }
     }
 
-    def showNewQuestionForm(){
+    def showNewQuestionForm() {
         newQuestionBtn.click()
     }
 
@@ -56,14 +56,8 @@ class ViewCertQAPage extends Page {
         cancelQuestionBtn.click()
     }
 
-    def qaUnhandledPanel(String text) {
-        $("#unhandledQACol div", text: text)
-    }
-
-
-
-    def addAnswerText(String internid, String answer){
-        $("#answerText-${internid}")<< answer
+    def addAnswerText(String internid, String answer) {
+        $("#answerText-${internid}") << answer
     }
 
     def answerBtn(String internid) {
@@ -73,6 +67,7 @@ class ViewCertQAPage extends Page {
     def frageStallarNamn(String internid) {
         $("#fraga-vard-aktor-namn-${internid}")
     }
+
     def besvarareNamn(String internid) {
         $("#svar-vard-aktor-namn-${internid}")
     }
@@ -80,11 +75,21 @@ class ViewCertQAPage extends Page {
     def markAsHandledFkOriginBtn(String internid) {
         $("#markAsHandledFkOriginBtn-${internid}")
     }
+
     def markAsHandledWcOriginBtn(String id) {
         $("#markAsHandledWcOriginBtn-${id}")
     }
+
     def qaHandledPanel(String internid) {
         $("#qahandled-${internid}")
+    }
+
+    def qaUnhandledPanel(String id) {
+        $("#qaunhandled-${id}")
+    }
+
+    def qaUnhandledPanelWithText(String text) {
+        $("#unhandledQACol div", text: text)
     }
 
     def markAsUnhandledBtn(String internid) {
@@ -95,14 +100,14 @@ class ViewCertQAPage extends Page {
         $("#sendAnswerBtn-${internid}").click()
     }
 
-
-
     def fkMeddelandeRubrik(String internid) {
         $("#fkMeddelandeRubrik-${internid}").click()
     }
+
     def fkKompletteringar(String internid) {
         $("#fkKompletteringar-${internid}").click()
     }
+
     def fkKontakter(String internid) {
         $("#fkKontakter-${internid}").click()
     }
@@ -117,7 +122,5 @@ class ViewCertQAPage extends Page {
 
     def qaSvarstext(String internid) {
         $("#answerText-${internid}")
-
-        //$("qaHandledSvarstext-#${id}")
     }
 }

@@ -1,16 +1,16 @@
 "use strict";
 
 /**
- * Common module used in both WC main application as well as in a certificate's module app pages. 
- * Since this js will be used/loaded from different contextpaths, all templates are inlined. PLEASE keep source 
- * formatting in this file as-is, otherwise the inline templates will be hard to follow. 
+ * Common module used in both WC main application as well as in a certificate's module app pages.
+ * Since this js will be used/loaded from different contextpaths, all templates are inlined. PLEASE keep source
+ * formatting in this file as-is, otherwise the inline templates will be hard to follow.
  */
 var common = angular.module('wc.common', []);
 
 common.factory('statService', [ '$http', '$log', '$timeout', '$rootScope', function($http, $log, $timeout, $rootScope) {
 
     var timeOutPromise = undefined;
-    var msPollingInterval = 10* 1000; 
+    var msPollingInterval = 10* 1000;
     /*
      * get stats from server
      */
@@ -25,7 +25,7 @@ common.factory('statService', [ '$http', '$log', '$timeout', '$rootScope', funct
             timeOutPromise = $timeout(_refreshStat, msPollingInterval);
         });
     }
-    
+
     function _startPolling() {
         _refreshStat();
         $log.debug("statService -> Start polling");
@@ -36,7 +36,7 @@ common.factory('statService', [ '$http', '$log', '$timeout', '$rootScope', funct
             $log.debug("statService -> Stop polling");
         }
     }
-  
+
     // Return public API for the service
     return {
         startPolling : _startPolling,
@@ -63,11 +63,11 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                   userStat: {},
                   unitStat:{}
                   }
-        
+
           $scope.$on("wc-stat-update", function(event, message){
-              $scope.stat = message;   
+              $scope.stat = message;
             });
-          
+
           $scope.menuDefs = [
             {
                link :'/web/dashboard#/index',
@@ -86,14 +86,14 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 
           $scope.isActive = function (page) {
           	if (!page) {return false;}
-        		
+
           	page = page.substr(page.lastIndexOf('/') + 1);
         		if (angular.isString($scope.defaultActive)) {
         			if (page == $scope.defaultActive) {
         				return true;
         			}
           	}
-          	
+
           	var currentRoute = $location.path().substr($location.path().lastIndexOf('/') + 1);
             return page === currentRoute;
           };
@@ -201,7 +201,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 			                        +'<strong ng-switch-default>Admin</strong>'
 			                        +'</span>'
 			        				+' - <span class="logged-in">{{user.userContext.namn}}</span><br>'
-			        				+'<a class="pull-right" ng-href="{{getLogoutUrl()}}">Logga ut</a>'
+			        				+'<a class="pull-right" ng-href="{{getLogoutUrl()}}" id="logoutLink">Logga ut</a>'
 	        					+'</div>'
 	            		+'</div>'
 	        			+'</div>'
@@ -229,7 +229,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 		            		+'</div>'
 				    		  +'</div><!-- /navbar-inner -->'
 				    	  +'</div>'
-	          	+'</div>'	
+	          	+'</div>'
 	    			+'</div>'
 	    		+'</div>'
     };

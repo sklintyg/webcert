@@ -17,16 +17,12 @@ Testet beskriver fallet när en användare har fått svar på sin fråga utanfö
 | intyg med fraga svar sidan visas |
 | markera fraga som hanterad | $internReferens1 |
 | ar fraga hanterad | $internReferens1 |
-|markeraFragaSomOhanterad|$internReferens1|
-|arFragaOhanterad|$internReferens1|
+| markera fraga som ohanterad | $internReferens1 |
+| ar fraga ohanterad | $internReferens1 |
 
-!3 Ta bort Frågor:
-|ta bort Fraga|
-|internReferens|
-|$internReferens1|
+!3 Ta bort fråga
 
-#!3 Rensa bort test-intyg
-#
-#|ta bort Intyg|
-#|id|
-#|intyg-fit-1|
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |
+

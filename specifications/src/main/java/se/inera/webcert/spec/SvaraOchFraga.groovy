@@ -53,7 +53,7 @@ class SvaraOchFraga {
                 at ViewCertQAPage
             }
             waitFor {
-                page.qaUnhandledPanel(text)
+                page.qaUnhandledPanelWithText(text)
             }
         }
     }
