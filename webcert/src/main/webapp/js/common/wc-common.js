@@ -142,6 +142,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                 template :
                     '<div class="modal-header">'+
                       '<button class="close">×</button>'+
+                      '<button class="close"  data-ng-click="close()">×</button>'+
                       '<h3>Vilken vårdenhet vill du logga in på?</h3>'+
                     '</div>'+
                     '<div class="modal-body">'+
@@ -168,6 +169,10 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                 controller : function($scope, $modalInstance, vardgivare) {
                   $scope.vardgivare = vardgivare;
                   $scope.error = false;
+
+                  $scope.close = function() {
+                    $modalInstance.close();
+                  }
 
                   $scope.selectVardenhet = function(enhet) {
                     $scope.error = false;
