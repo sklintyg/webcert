@@ -16,9 +16,11 @@ class ViewCertQAPage extends Page {
 
         unhandledQAList { $("#unhandledQACol") }
 
+        questionIsSentToFkMessage(required: false) {$("#question-is-sent-to-fk-message-text")}
+
         certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
         certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
-
+        certificateIsNotSentToFkMessage(required: false) {$("#certificate-is-not-sent-to-fk-message-text")}
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
 
 

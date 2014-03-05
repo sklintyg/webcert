@@ -15,7 +15,7 @@
 #| Intyg |
 #| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhet | typ | id | mall |
 #| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | läkare1 |vardenhet-fit-1| FK7263 |intyg-fit-1| M |
- 
+
 !3 Lägg till en Fråga:
 
 | Fraga Svar |
@@ -28,10 +28,10 @@
 !3 Givet att det finns en fråga visa den och Kontrollera dess data.
 
 |script|!-SvaraOchFraga-!|
-|logga på som|7|
-|obehandladeFragarSidanVisas|
+|logga in som|7|
+|ohanterade fragor sidan visas|
 |valj vardenhet|vardenhet-fit-1|
-|listaMedObehandladeFragarVisas|
+|lista med ohanterade fragor visas|
 |visa fraga|$internReferens1|
 |intyg med fraga svar sidan visas|
 |fraga med id| $internReferens3 | har text |En fråga från FK|
@@ -66,7 +66,7 @@
 
 !3 Ta bort frågor från fk stub
 |script|Rensa Fragor Svar Till Fk|
-|rensa fraga|
+|rensa fragor|
 
 #!3 Rensa bort test-intyg
 #

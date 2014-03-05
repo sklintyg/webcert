@@ -10,11 +10,11 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 !3 Givet att man loggar in som en användare med medarbetaruppdrag på endast en enhet, verifiera att enhetsväljaren ej visas
 
 | script | !-SvaraOchFraga-! |
-| logga på som | 7 |
-| obehandlade fragar sidan visas |
+| logga in som | 7 |
+| ohanterade fragor sidan visas |
 | enhetsvaljare visas |
 | valj vardenhet | vardenhet-fit-1 |
-| lista med obehandlade fragar visas |
+| lista med ohanterade fragor visas |
 
 !3 Ta bort frågor
 

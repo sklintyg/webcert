@@ -10,10 +10,10 @@ Testet beskriver fallet när en användare med bara ett uppdrag loggar in.
 !3 Givet att man loggar in som en användare med medarbetaruppdrag på endast en enhet, verifiera att enhetsväljaren ej visas
 
 | script | !-SvaraOchFraga-! |
-| logga på som | 8 |
-| obehandlade fragar sidan visas |
+| logga in som | 8 |
+| ohanterade fragor sidan visas |
 | enhetsvaljare visas | false |
-| lista med obehandlade fragar visas |
+| lista med ohanterade fragor visas |
 
 !3 Ta bort frågor
 

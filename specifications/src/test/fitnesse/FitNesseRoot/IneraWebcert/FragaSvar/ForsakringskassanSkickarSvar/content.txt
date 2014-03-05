@@ -19,18 +19,18 @@
 | $internReferens | true | Han är tyvärr inte med i adressboken |
 
 !3 och ett mejl har skickats till enheten
-| Mail |
-| mottagare? | amne? | innehall? |
-| !-[enhet1@hsastub.se]-! | !-Försäkringskassan har svarat på en fråga-! | !-<p>Försäkringskassan har besvarat en fråga från Vårdenhet 1.<br>Svaret är tillgängligt i <a href="http://localhost:9088/m/fk7263/webcert/intyg/-!$internReferens!-#/view">Webcert</a></p>-! |
+#| Mail |
+#| mottagare? | amne? | innehall? |
+#| !-[enhet1@hsastub.se]-! | !-Försäkringskassan har svarat på en fråga-! | !-<p>Försäkringskassan har besvarat en fråga från Vårdenhet 1.<br>Svaret är tillgängligt i <a href="http://localhost:9088/m/fk7263/webcert/intyg/-!$internReferens!-#/view">Webcert</a></p>-! |
 
 !3 Ta bort test frågor, HSA katalog och mail
-| Ta bort fraga |
-| internReferens |
-| $internReferens |
+#| Ta bort fraga |
+#| internReferens |
+#| $internReferens |
 
-|Ta bort vardgivare|
-|vardgivarid|
-|vg1|
+#|Ta bort vardgivare|
+#|vardgivarid|
+#|vg1|
 
-| script | Mailbox |
-| rensa |
+#| script | Mailbox |
+#| rensa |

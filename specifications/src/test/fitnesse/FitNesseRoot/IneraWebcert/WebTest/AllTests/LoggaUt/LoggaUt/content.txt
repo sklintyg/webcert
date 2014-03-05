@@ -1,14 +1,14 @@
-Testet beskriver fallet när en användare loggar ut.
+Testet beskriver fallet när en användare logga ut och försöker nå startsidan igen.
 
 !3 Givet att användaren kan logga in och logga ut, verifiera att användaren är utloggad
 
 | script | !-SvaraOchFraga-! |
-| logga på som | 7 |
-| obehandlade fragar sidan visas |
+| logga in som | 7 |
+| ohanterade fragor sidan visas |
 
 | script | !-LoggaUt-! |
 | logga ut |
-| loginsidan visas |
-| gå till startsidan |
-| loginsidan visas |
+| login sidan visas |
+| ga till startsidan |
+| access denied sidan visas |
 

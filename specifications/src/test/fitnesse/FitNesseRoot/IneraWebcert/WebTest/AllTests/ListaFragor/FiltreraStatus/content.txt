@@ -1,2 +1,0 @@
-Testet beskriver fallet när en användare filtrerar frågor på status.
-

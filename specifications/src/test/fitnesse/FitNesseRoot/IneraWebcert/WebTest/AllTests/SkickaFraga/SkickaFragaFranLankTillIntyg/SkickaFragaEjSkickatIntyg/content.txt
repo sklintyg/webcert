@@ -1,16 +1,15 @@
-Testet beskriver fallet när en användare försöker skriva en fråga på intyg som ej är skickat till FK.
+Testet beskriver fallet när en användare försöker skicka en fråga till försäkringskassan på ett intyg som ej är skickat till försäkringskassan.
 
-!3 Givet att det finns ett intyg, verifiera att gå till det intyget
+!3 Givet att det finns ett intyg, verifiera att det går att visa intygget
 
 | script | !-SvaraOchFraga-! |
-| logga på som | 7 |
-| obehandlade fragar sidan visas |
-| gå till intygsvy med intygsid | intyg-fit-2-ej-skickat-till-fk |
+| logga in som | 7 |
+| ga till intygsvy med intygsid | intyg-fit-2-ej-skickat-till-fk |
 | intyg med fraga svar sidan visas |
 
-!3 Verifiera att det inte går att skicka en fråga
+!3 Verifiera att det inte går att skicka nya frågor till försäkringskassan
 
 | script | !-SvaraOchFraga-! |
 | ny fraga knapp visas | false |
-| intyg är skickat till fk meddelande visas | false |
+| intyg ar skickat till fk meddelande visas | false |
 

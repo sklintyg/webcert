@@ -47,7 +47,19 @@ class SvaraOchFraga {
         }
     }
 
-    def fragaMedTextVisasIObehandladlistan(String text) {
+    boolean fraganArSkickadTillFkMeddelandeVisas(boolean expected = true) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            result = page.questionIsSentToFkMessage.isDisplayed()
+        }
+        result == expected
+    }
+
+
+    def fragaMedTextVisasIListanMedOhanteradeFragor(String text) {
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
@@ -58,17 +70,27 @@ class SvaraOchFraga {
         }
     }
 
-    boolean fragaVisasIBehandladlistan(String id) {
+    boolean fragaVisasIListanMedOhanteradeFragor(String id, boolean expected = true) {
         def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            waitFor {
-                result = page.qaHandledPanel(id).isDisplayed()
-            }
+            result = page.qaUnhandledPanel(id).isDisplayed()
         }
-        result
+        result == expected
+    }
+
+
+    boolean fragaVisasIListanMedHanteradeFragor(String id, boolean expected = true) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            result = page.qaHandledPanel(id).isDisplayed()
+        }
+        result == expected
     }
 
     boolean intygMedFragaSvarSidanVisas() {
@@ -79,7 +101,7 @@ class SvaraOchFraga {
         }
     }
 
-    boolean intygÄrRättatMeddelandeVisas(boolean expected = true) {
+    boolean intygArRattatMeddelandeVisas(boolean expected = true) {
         def result = false
         Browser.drive {
             waitFor {
@@ -90,7 +112,7 @@ class SvaraOchFraga {
         result == expected
     }
 
-    boolean intygÄrSkickatTillFkMeddelandeVisas(boolean expected = true) {
+    boolean intygArSkickatTillFkMeddelandeVisas(boolean expected = true) {
         def result = false
         Browser.drive {
             waitFor {
@@ -102,7 +124,7 @@ class SvaraOchFraga {
         result == expected
     }
 
-    def loggaPåSom(String id) {
+    def loggaInSom(String id) {
         Browser.drive {
             go "/welcome.jsp"
 
@@ -114,7 +136,7 @@ class SvaraOchFraga {
         }
     }
 
-    boolean listaMedObehandladeFragarVisas() {
+    boolean listaMedOhanteradeFragorVisas() {
         def result = false
         Browser.drive {
             waitFor {
@@ -140,7 +162,7 @@ class SvaraOchFraga {
         }
     }
 
-    def nyFraga() {
+    def valjNyFraga() {
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
@@ -172,7 +194,7 @@ class SvaraOchFraga {
         result == expected
     }
 
-    boolean obehandladeFragarSidanVisas() {
+    boolean ohanteradeFragorSidanVisas() {
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -180,17 +202,15 @@ class SvaraOchFraga {
         }
     }
 
-    boolean skickaFragaKnappInaktiverad() {
+    boolean skickaFragaKnappAktiverad(boolean expected = true) {
         def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            waitFor {
-                result = page.sendQuestionBtn.isDisabled()
-            }
+            result = page.sendQuestionBtn.isEnabled()
         }
-        result
+        result == expected
     }
 
     def skickaFragaMedAmne(String fraga, String amne) {
@@ -296,11 +316,18 @@ class SvaraOchFraga {
         return result
     }
 
-
-    public void gåTillIntygsvyMedIntygsid(String id) {
+    def gaTillIntygsvyMedIntygsid(String id) {
         Browser.drive {
-            go "/m/fk7263/webcert/intyg/" + id + "#view"
+            go "/m/fk7263/webcert/intyg/${id}#view"
+            waitFor {
+                at ViewCertQAPage
+            }
+        }
+    }
 
+    def gaTillIntygsvyViaUthoppMedIntygsid(String id) {
+        Browser.drive {
+            go "/medcert/web/user/certificate/${id}/questions"
             waitFor {
                 at ViewCertQAPage
             }

@@ -9,10 +9,10 @@ Testet beskriver fallet när en användare har fått svar på sin fråga utanfö
 !3 Givet att det finns en fråga, verifiera att det går att markera den som hanterad.
 
 | script | !-SvaraOchFraga-! |
-| logga på som | 7 |
-| obehandlade fragar sidan visas |
+| logga in som | 7 |
+| ohanterade fragor sidan visas |
 | valj vardenhet | vardenhet-fit-1 |
-| lista med obehandlade fragar visas |
+| lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
 | markera fraga som hanterad | $internReferens1 |
