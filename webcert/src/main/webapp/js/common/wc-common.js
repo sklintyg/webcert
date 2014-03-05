@@ -360,10 +360,11 @@ common.factory('User', [ '$http', '$log',
           }
         }
 
+        var vardenhetCopy = angular.copy(vardenhet); // Don't modify the original!
         var units = [];
-        units.push(angular.copy(vardenhet));
+        units.push(vardenhetCopy);
 
-        angular.forEach(vardenhet.mottagningar, function (mottagning, key) {
+        angular.forEach(vardenhetCopy.mottagningar, function (mottagning, key) {
           mottagning.namn = vardenhet.namn + ' - ' + mottagning.namn;
           this.push(mottagning);
         }, units);
