@@ -1,0 +1,38 @@
+{
+    "id" : "ostergotland",
+    "namn" : "Landstinget Östergötland",
+    "vardenheter" : [
+        {
+            "id" : "linkoping",
+            "namn" : "Linköpings Universitetssjukhus",
+            "mottagningar" : [
+                {
+                    "id" : "lkpg-ogon",
+                    "namn" : "Ögonmottagningen"
+                },
+                {
+                    "id" : "lkpg-akuten",
+                    "namn" : "Akuten"
+                }
+            ]
+        },
+        {
+            "id" : "norrkoping",
+            "namn" : "Vrinnevisjukhuset i Norrköping",
+            "mottagningar" : [
+                {
+                  "id" : "nkpg-ogon",
+                  "namn" : "Ögonmottagningen"
+                },
+                {
+                  "id" : "nkpg-akuten",
+                  "namn" : "Akuten"
+                }
+            ]
+        },
+        {
+            "id" : "motala",
+            "namn" : "Vårdcentralen i Motala"
+        }
+    ]
+}

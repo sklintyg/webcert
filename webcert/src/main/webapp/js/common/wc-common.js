@@ -290,7 +290,9 @@ common.factory('User', [ '$http', '$log',
         angular.forEach(this.userContext.vardgivare, function (vardgivare, key) {
           totalVardenhetCount += vardgivare.vardenheter.length;
           angular.forEach(vardgivare.vardenheter, function (vardenhet, key) {
-            totalVardenhetCount += vardenhet.mottagningar.length;
+            if(vardenhet.mottagningar){
+              totalVardenhetCount += vardenhet.mottagningar.length;
+            }
           });
         });
 
@@ -307,15 +309,15 @@ common.factory('User', [ '$http', '$log',
 
         var vardgivareList = [];
 
-        angular.forEach(ucVardgivare, function (vardgivare, key) {
+        angular.forEach(ucVardgivare, function (vardgivare, key1) {
           this.push({"id":vardgivare.id, "namn": vardgivare.namn, "vardenheter":[]});
-          angular.forEach(vardgivare.vardenheter, function (vardenhet, key) {
+          angular.forEach(vardgivare.vardenheter, function (vardenhet, key2) {
             this.push({"id":vardenhet.id, "namn": vardenhet.namn});
             angular.forEach(vardenhet.mottagningar, function (mottagning) {
               mottagning.namn = vardenhet.namn + ' - ' + mottagning.namn;
               this.push(mottagning);
-            }, vardgivareList[key].vardenheter);
-          }, vardgivareList[key].vardenheter);
+            }, vardgivareList[key1].vardenheter);
+          }, vardgivareList[key1].vardenheter);
         }, vardgivareList);
 
         return vardgivareList;

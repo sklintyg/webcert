@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
          trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
@@ -27,7 +27,7 @@
 <html lang="sv">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="ROBOTS" content="nofollow, noindex"/>
 
     <title>Webcert test inloggning</title>
@@ -43,10 +43,10 @@
     </style>
 
     <script type="text/javascript">
-        //Lägg till fler templates i arrayen + i options för att utöka antalet inloggingar
+        //LÃ¤gg till fler templates i arrayen + i options fÃ¶r att utÃ¶ka antalet inloggingar
 
         var loginArr = [
-            //Markus Gran Testanvändare  @ VårdEnhet1A
+            //Markus Gran TestanvÃ¤ndare  @ VÃ¥rdEnhet1A
             {
                 "fornamn" : "Markus",
                 "efternamn" : "Gran",
@@ -55,7 +55,7 @@
                 "lakare" : true
             },
 
-            //Markus Gran Testanvändare  @ VårdEnhet2A
+            //Markus Gran TestanvÃ¤ndare  @ VÃ¤rdEnhet2A
             {
                 "fornamn" : "Markus",
                 "efternamn" : "Gran",
@@ -63,7 +63,7 @@
                 "enhetId" : "IFV1239877878-103H",
                 "lakare" : true
             },
-            //Markus Gran Testanvändare  @ VårdEnhetA
+            //Markus Gran TestanvÃ¤ndare  @ VÃ¤rdEnhetA
             {
                 "fornamn" : "Markus",
                 "efternamn" : "Gran",
@@ -73,7 +73,7 @@
 
             },
 
-            //Läkare med flera enheter&mottagningar
+            //LÃ¤kare med flera enheter&mottagningar
             {
                 "fornamn" : "Eva",
                 "efternamn" : "Holgersson",
@@ -81,6 +81,14 @@
                 "enhetId" : "centrum-vast",
                 "lakare" : true
 
+            },
+            //LÃ¤kare med massor av enheter&mottagningar
+            {
+                "fornamn" : "Staffan",
+                "efternamn" : "Stafett",
+                "hsaId" : "staffan",
+                "enhetId" : "linkoping",
+                "lakare" : true
             },
             //Admin personal med flera enheter&mottagningar
             {
@@ -152,7 +160,7 @@
 
                 <h1>Testinloggningar Webcert</h1>
 
-                <p class="well">Templatelista till vänster - Manuella ändringar kan göras i jsonstrukturen - detta
+                <p class="well">Templatelista till vÃ¤nster - Manuella Ã¤ndringar kan gÃ¤ras i jsonstrukturen - detta
                     omvandlas
                     till inloggad userContext</p>
 
@@ -160,16 +168,17 @@
 
                     <h4>Mallar</h4>
                     <select id="jsonSelect" name="jsonSelect" onChange="updateJsonInput()" size="10" style="width: 100%">
-                        <option value="0" selected>Markus Gran (Läkare VårdEnhet1A)</option>
-                        <option value="1" selected>Markus Gran (Läkare VårdEnhet2A)</option>
-                        <option value="2" selected>Markus Gran (Läkare VårdEnhetA)</option>
-                        <option value="3">Eva Holgersson (Läkare Centrum Väst)</option>
-                        <option value="4">Adam Admin (Administratör Centrum Väst)</option>
-                        <option value="5">Adamo Admin (Administratör Centrum Väst)</option>
-                        <option value="6">Adamo Admin (Administratör Centrum Öst)</option>
-                        <option value="7">Fitnesse Admin (Administratör Vardenhet Fitnesse 1)</option>
-                        <option value="8">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
-                        <option value="9">Han Solo (Administratör, Centrum Norr)</option>
+                        <option value="0" selected>Markus Gran (LÃ¤kare VÃ¥rdEnhet1A)</option>
+                        <option value="1" selected>Markus Gran (LÃ¤kare VÃ¥rdEnhet2A)</option>
+                        <option value="2" selected>Markus Gran (LÃ¤kare VÃ¥rdEnhetA)</option>
+                        <option value="3">Eva Holgersson (LÃ¤kare Centrum VÃ¤st)</option>
+                        <option value="4">Staffan Stafett (LÃ¤kare Centrum VÃ¤st, LinkÃ¶ping, NorrkÃ¶ping)</option>
+                        <option value="5">Adam Admin (AdministratÃ¶r Centrum VÃ¤st)</option>
+                        <option value="6">Adamo Admin (AdministratÃ¶r Centrum VÃ¤st)</option>
+                        <option value="7">Adamo Admin (AdministratÃ¶r Centrum VÃ¤st)</option>
+                        <option value="8">Fitnesse Admin (AdministratÃ¶r Vardenhet Fitnesse 1)</option>
+                        <option value="9">Fitnesse Admin-1 (AdministratÃ¶r Vardenhet Fitnesse 2)</option>
+                        <option value="10">Han Solo (AdministratÃ¶r, Centrum Norr)</option>
                     </select>
                     </p>
 
