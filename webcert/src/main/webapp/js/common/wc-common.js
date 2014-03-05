@@ -57,7 +57,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
           $scope.today = new Date();
           $scope.statService = statService;
           $scope.statService.startPolling();
-          $scope.user = User.userContext;
+          $scope.user = User;
 
           $scope.stat = {
                   userStat: {},
@@ -69,50 +69,20 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
             });
           
           $scope.menuDefs = [
-/*				     { // Temporarily removed for v0.5
-				       link :'/web/dashboard#/mycert', 
-				       label:'Mina osignerade intyg',
-				       requires_doctor: false,
-				       statNumberId : "stat-usertstat-unsigned-certs-count",
-				       getStat: function() { return $scope.stat.userStat.unsignedCerts || ""}
-				     },
-	*/			     {
-				       link :'/web/dashboard#/index', // v0.5. in v1.0 it is unhandled-qa
+            {
 				       label:'Frågor och svar',
 				       requires_doctor: false,
 				       statNumberId : "stat-unitstat-unhandled-question-count",
-                       getStat: function() { return $scope.stat.unitStat.unhandledQuestions || ""}
+               getStat: function() { return $scope.stat.unitStat.unhandledQuestions || ""}
 				     },
-/*				     { // Temporarily removed for v0.5
-				       link :'/web/dashboard#/unsigned', 
-				       label:'Enhetens osignerade intyg',
-				       requires_doctor: false,
-				       statNumberId : "stat-unitstat-unsigned-certs-count",
-                       getStat: function() { return $scope.stat.unitStat.unsignedCerts || ""}
-				     },
-*/				     {
+				     {
 				       link :'/web/dashboard#/support/about',
 				       label:'Om Webcert',
 				       requires_doctor: false,
-                       getStat: function() { return ""}
+               getStat: function() { return ""}
 				     }
-				    ];
-          
-/*        	Temporarily removed for v0.5
- * 					var writeCertMenuDef = {
-				       link :'/web/dashboard#/index', 
-				       label:'Sök/skriv intyg',
-				       requires_doctor: false,
-                       getStat: function() { return ""}
-				     };
-          
-          if (eval($scope.isDoctor) == true) {
-              $scope.menuDefs.splice(0, 0, writeCertMenuDef);
-          }
-          else {
-              $scope.menuDefs.splice(3, 0, writeCertMenuDef);
-          }
-*/          
+			    ];
+
           $scope.isActive = function (page) {
           	if (!page) {return false;}
         		
@@ -128,7 +98,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
           };
 
             $scope.getLogoutUrl = function () {
-                if ($scope.user.authenticationScheme == "urn:inera:webcert:fake") {
+                if (User.userContext.authenticationScheme == "urn:inera:webcert:fake") {
                     return "/logout";
                 }
                 else {
@@ -141,14 +111,13 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
               var msgbox = $modal.open({
                 template :
                     '<div class="modal-header">'+
-                      '<button class="close">×</button>'+
                       '<button class="close"  data-ng-click="close()">×</button>'+
                       '<h3>Vilken vårdenhet vill du logga in på?</h3>'+
                     '</div>'+
                     '<div class="modal-body">'+
                       '<table class="table table-striped table-qa table-links" ng-repeat="vg in vardgivare">'+
                         '<tr>'+
-                          '<th>{{vg.namn}}</th>'+
+                          '<th style="width: 50%">{{vg.namn}}</th>'+
                           '<th>Ohanterade frågor och svar</th>'+
                           '<th>Osignerade intyg</th>'+
                         '</tr>'+
@@ -213,7 +182,8 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 		        			+'<div class="span12 headerbox">'
 			        			+'<span class="headerbox-logo pull-left"><a href="/web/start"><img alt="Till startsidan" src="/img/webcert_logo.png"/></a></span>'
 			          		+'<span class="headerbox-date pull-left">'
-			        				+'{{today | date:"shortDate"}}'
+                      +'<span class="location">{{today | date:"shortDate"}} - {{user.userContext.valdVardgivare.namn}} - {{user.userContext.valdVardenhet.namn}}</span><br>'
+                      +'<span class="otherLocations" ng-show="true">Du har <span style="font-weight:bold">{{"MOCK5"}}</span> ohanterade frågor/intyg på annan enhet. <a ng-href="#changedialog" ng-show="user.getTotalVardenhetCount() > 1" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</a></span>'
 			        			+'</span>'
 	        				+'</div>'
         				+'</div>'
@@ -221,21 +191,17 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 	        		+'<div class="span6 headerbox-user">'
 		      			+'<div class="row-fluid">'
 			      			+'<div class="span12">'
-			        			+'<div class="headerbox-user-profile pull-right" ng-show="user.namn.length">'
-			                        +'<span ng-switch="user.lakare">'
+                    +'<div class="headerbox-avatar pull-right">'
+                    +'<img src="/img/avatar.png"/>'
+                    +'</div>'
+			        			+'<div class="headerbox-user-profile pull-right" ng-show="user.userContext.namn.length">'
+			                        +'<span ng-switch="user.userContext.lakare">'
 			                        +'<strong ng-switch-when="true">Läkare</strong>'
 			                        +'<strong ng-switch-default>Admin</strong>'
 			                        +'</span>'
-			        				+' - <span class="logged-in">{{user.namn}}</span><br>'
-			        				+'<a ng-href="{{getLogoutUrl()}}">Logga ut</a>'
+			        				+' - <span class="logged-in">{{user.userContext.namn}}</span><br>'
+			        				+'<a class="pull-right" ng-href="{{getLogoutUrl()}}">Logga ut</a>'
 	        					+'</div>'
-			        			+'<div class="headerbox-avatar pull-right">'
-			        				+'<img src="/img/avatar.png"/>'
-			        			+'</div>'
-				      			+'<div class="pull-right location">'
-                      +'<button type="button" class="btn" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</button> '
-				      				+'<span>{{user.valdVardgivare.namn}} - {{user.valdVardenhet.namn}}</span><br>'
-				      			+'</div>'
 	            		+'</div>'
 	        			+'</div>'
 	        		+'</div>'
@@ -318,6 +284,23 @@ common.factory('User', [ '$http', '$log',
        * returns valdVardenhet from user context
        * @returns valdVardenhet
        */
+      getTotalVardenhetCount: function() {
+
+        var totalVardenhetCount = 0;
+        angular.forEach(this.userContext.vardgivare, function (vardgivare, key) {
+          totalVardenhetCount += vardgivare.vardenheter.length;
+          angular.forEach(vardgivare.vardenheter, function (vardenhet, key) {
+            totalVardenhetCount += vardenhet.mottagningar.length;
+          }, vardgivareList[key].vardenheter);
+        }, vardgivareList);
+
+        return totalVardenhetCount;
+      },
+
+      /**
+       * returns valdVardenhet from user context
+       * @returns valdVardenhet
+       */
       getVardenhetSelectionList : function() {
 
         var ucVardgivare = angular.copy(this.userContext.vardgivare);
@@ -344,8 +327,15 @@ common.factory('User', [ '$http', '$log',
        */
       getVardenhetFilterList : function(vardenhet){
         if(!vardenhet){
-          $log.debug("getVardenhetFilterList: parameter vardenhet was omitted");
-          return [];
+
+          if(this.userContext.valdVardenhet){
+            $log.debug("getVardenhetFilterList: using valdVardenhet");
+            vardenhet = this.userContext.valdVardenhet;
+          }
+          else {
+            $log.debug("getVardenhetFilterList: parameter vardenhet was omitted");
+            return [];
+          }
         }
 
         var units = [];

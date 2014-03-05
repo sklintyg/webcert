@@ -9,10 +9,11 @@ directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 
             restrict : "A",
             transclude : false,
             replace : true,
-            template : '<table class="span12 table unit-table">' +
-                '<tr ng-repeat="unit in units">' +
-                '<td><button id="select-active-unit-{{unit.id}}" type="button" ng-click="selectUnit(unit)" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}<span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></button></td>' +
-                '</tr>' +
+            template :
+                '<table class="span12 table unit-table">' +
+                  '<tr ng-repeat="unit in units">' +
+                    '<td><button id="select-active-unit-{{unit.id}}" type="button" ng-click="selectUnit(unit)" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}<span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></button></td>' +
+                  '</tr>' +
                 '</table>',
             controller : function ($scope) {
 
@@ -30,7 +31,6 @@ directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 
                 } else if ($scope.units.length > 1 && $cookieStore.get("enhetsId")) {
                     $scope.selectUnit(selectUnitById($scope.units, $cookieStore.get("enhetsId")));
                 }
-
 
                 // Local function getting the first care unit's hsa id in the data struct.
                 function selectFirstUnit (units) {
