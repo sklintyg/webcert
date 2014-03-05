@@ -205,7 +205,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 			        			+'<span class="headerbox-logo pull-left"><a href="/web/start"><img alt="Till startsidan" src="/img/webcert_logo.png"/></a></span>'
 			          		+'<span class="headerbox-date pull-left">'
                       +'<span class="location">{{today | date:"shortDate"}} - {{user.userContext.valdVardgivare.namn}} - {{user.userContext.valdVardenhet.namn}}</span><br>'
-                      +'<span class="otherLocations" ng-show="true">Du har <span style="font-weight:bold">{{"MOCK5"}}</span> ohanterade frågor/intyg på annan enhet. <a ng-href="#changedialog" ng-show="user.getTotalVardenhetCount() > 1" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</a></span>'
+                      +'<span class="otherLocations" ng-show="true">Du har <span style="font-weight:bold">{{"MOCK"}}</span> ohanterade frågor/intyg på annan enhet. <a ng-href="#changedialog" ng-show="user.getTotalVardenhetCount() > 1" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</a></span>'
 			        			+'</span>'
 	        				+'</div>'
         				+'</div>'
@@ -313,8 +313,8 @@ common.factory('User', [ '$http', '$log',
           totalVardenhetCount += vardgivare.vardenheter.length;
           angular.forEach(vardgivare.vardenheter, function (vardenhet, key) {
             totalVardenhetCount += vardenhet.mottagningar.length;
-          }, vardgivareList[key].vardenheter);
-        }, vardgivareList);
+          });
+        });
 
         return totalVardenhetCount;
       },
