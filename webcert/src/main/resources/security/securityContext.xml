@@ -12,6 +12,7 @@
 
   <!-- Unsecured pages -->
   <security:http security="none" pattern="/css/**"/>
+  <security:http security="none" pattern="/"/>
   <security:http security="none" pattern="/js/**"/>
   <security:http security="none" pattern="/img/**"/>
   <security:http security="none" pattern="/welcome.jsp"/>
