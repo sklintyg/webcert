@@ -23,7 +23,6 @@ class ViewCertQAPage extends Page {
         certificateIsNotSentToFkMessage(required: false) {$("#certificate-is-not-sent-to-fk-message-text")}
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
 
-
         field1yes { $("#field1yes") }
         field1no { $("#field1no") }
         field2 { $("#field2") }
@@ -64,6 +63,10 @@ class ViewCertQAPage extends Page {
 
     def answerBtn(String internid) {
         $("#sendAnswerBtn-${internid}")
+    }
+
+    def forwardBtn(String internid) {
+        $("#forwardBtn-${internid}")
     }
 
     def frageStallarNamn(String internid) {

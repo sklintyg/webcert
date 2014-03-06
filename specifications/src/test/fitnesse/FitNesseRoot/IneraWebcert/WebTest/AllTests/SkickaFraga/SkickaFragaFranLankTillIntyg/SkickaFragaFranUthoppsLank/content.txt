@@ -1,10 +1,10 @@
-Testet beskriver fallet när en användare skickar en ny fråga till försäkringskassan genom att plocka upp ett intyg via en länk till ett intyg i ett mail eller från ett journalsystem.
+Testet beskriver fallet när en användare skickar en ny fråga till försäkringskassan genom att plocka upp ett intyg via uthoppslänken till Medcert från ett journalsystem.
 
 !3 Givet att det finns ett intyg, verifiera att det går att visa intyget
 
 | script | !-SvaraOchFraga-! |
 | logga in som | 8 |
-| ga till intygsvy med intygsid | intyg-fit-1 |
+| ga till intygsvy via uthopp med intygsid | intyg-fit-1 |
 | intyg med fraga svar sidan visas |
 
 !3 Verifiera att det går att skicka en ny fråga till försäkringskassan
@@ -33,4 +33,3 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 !3 Ta bort de frågor vi har skickat
 
 TODO: Hur ska vi göra det här?
-

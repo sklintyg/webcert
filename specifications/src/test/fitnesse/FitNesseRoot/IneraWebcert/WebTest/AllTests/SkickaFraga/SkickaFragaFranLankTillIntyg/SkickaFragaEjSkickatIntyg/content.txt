@@ -3,7 +3,7 @@ Testet beskriver fallet när en användare försöker skicka en fråga till för
 !3 Givet att det finns ett intyg, verifiera att det går att visa intygget
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 7 |
+| logga in som | 8 |
 | ga till intygsvy med intygsid | intyg-fit-2-ej-skickat-till-fk |
 | intyg med fraga svar sidan visas |
 

@@ -9,7 +9,7 @@ Testet beskriver fallet när en användare har fått svar på sin fråga utanfö
 !3 Givet att det finns en fråga, verifiera att det går att markera den som hanterad.
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 7 |
+| logga in som | 8 |
 | ohanterade fragor sidan visas |
 | valj vardenhet | vardenhet-fit-1 |
 | lista med ohanterade fragor visas |

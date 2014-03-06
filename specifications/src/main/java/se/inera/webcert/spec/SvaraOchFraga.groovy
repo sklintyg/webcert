@@ -76,7 +76,7 @@ class SvaraOchFraga {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.qaUnhandledPanel(id).isDisplayed()
+            result = page.qaUnhandledPanel(id) && page.qaUnhandledPanel(id).isDisplayed()
         }
         result == expected
     }
@@ -88,7 +88,8 @@ class SvaraOchFraga {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.qaHandledPanel(id).isDisplayed()
+            sleep(1000L)
+            result = page.qaHandledPanel(id) && page.qaHandledPanel(id).isDisplayed()
         }
         result == expected
     }
@@ -267,6 +268,15 @@ class SvaraOchFraga {
         }
     }
 
+    def vidarebefordraFraga(String id) {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            page.forwardBtn(id).click()
+        }
+    }
+
     def visaAvanceratFilter() {
         Browser.drive {
             waitFor {
@@ -396,6 +406,17 @@ class SvaraOchFraga {
             }
         }
         return result
+    }
+
+    boolean arFragaVidarebefordrad(String id, boolean expected = true) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            // TODO:
+        }
+
     }
 
     public boolean MarkeraObehandladknappFörFrågaVisas(String internId, boolean expectedVisibility) {

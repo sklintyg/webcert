@@ -27,7 +27,7 @@
 !3 Givet att det finns en fråga visa den och ställ en ny fråga.
 
 |script|!-SvaraOchFraga-!|
-|logga in som|7|
+|logga in som|8|
 |ohanterade fragor sidan visas|
 |valj vardenhet|vardenhet-fit-1|
 |lista med ohanterade fragor visas|

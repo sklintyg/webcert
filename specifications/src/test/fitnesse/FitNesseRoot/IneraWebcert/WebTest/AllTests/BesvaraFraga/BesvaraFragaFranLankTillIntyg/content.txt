@@ -1,4 +1,4 @@
-Testet beskriver fallet när en användare hanterar en fråga från försäkringskassan genom att vidarebefordra den till någon annan.
+Testet beskriver fallet när en användare besvarar en fråga från försäkringskassan genom att plocka upp ett intyg via en länk till ett intyg i ett mail eller från ett journalsystem.
 
 !3 Lägg till fråga
 
@@ -15,14 +15,23 @@ Testet beskriver fallet när en användare hanterar en fråga från försäkring
 | fraga | $internReferens1 | visas i listan med ohanterade fragor |
 | fraga | $internReferens1 | visas i listan med hanterade fragor | false |
 
-!3 Verifiera att det går att vidarebefordra frågan
-
-#| ar fraga vidarebefordrad | false |
+!3 Verifiera att det går att svara på frågan
 
 | script | !-SvaraOchFraga-! |
-| vidarebefordraFraga | $internReferens1 |
-| fraga | $internReferens1 | visas i listan med ohanterade fragor |
-| fraga | $internReferens1 | visas i listan med hanterade fragor | false |
+| svara pa fraga | $internReferens1 | med svar | Här svarar Fitnesse på frågan |
+| fraga | $internReferens1 | visas i listan med ohanterade fragor | false |
+| fraga | $internReferens1 | visas i listan med hanterade fragor |
+
+!3 Verifera att svaret har skickats till försäkringskassan (stub)
+
+| svar skickad till fk |
+| svar? |
+| Här svarar Fitnesse på frågan |
+
+!3 Ta bort svar till försäkringskassan (stub)
+
+| script | !-RensaFragorSvarTillFk-! |
+| rensa svar |
 
 !3 Ta bort fråga
 

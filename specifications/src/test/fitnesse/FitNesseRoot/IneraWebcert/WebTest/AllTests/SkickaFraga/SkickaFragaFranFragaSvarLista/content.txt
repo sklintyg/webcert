@@ -9,7 +9,7 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 7 |
+| logga in som | 8 |
 | ohanterade fragor sidan visas |
 | valj vardenhet | vardenhet-fit-1 |
 | lista med ohanterade fragor visas |
@@ -23,7 +23,7 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 | valj ny fraga |
 | ny fraga formular visas |
 | skicka fraga knapp aktiverad | false |
-| skicka fraga | En fråga från Fitnesse 1 | med amne | 1 |
+| skicka fraga | En fråga från Fitnesse 1 | med amne | Arbetstidsförläggning |
 | fragan ar skickad till fk meddelande visas |
 | ny fraga formular visas | false |
 | fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |

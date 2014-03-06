@@ -1,0 +1,15 @@
+Testet beskriver fallet när en användare försöker skicka en fråga till försäkringskassan på ett rättat intyg.
+
+!3 Givet att det finns ett intyg, verifiera att det går att visa intyget
+
+| script | !-SvaraOchFraga-! |
+| logga in som | 8 |
+| ga till intygsvy med intygsid | intyg-fit-3-revoked |
+| intyg med fraga svar sidan visas |
+
+!3 Verifiera att det inte går att skicka nya frågor till försäkringskassan
+
+| script | !-SvaraOchFraga-! |
+| ny fraga knapp visas | false |
+| intyg ar rattat meddelande visas |
+
