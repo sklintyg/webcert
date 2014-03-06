@@ -22,8 +22,8 @@
         <div class="control-group">
           <button class="btn btn-success" type="submit" ng-disabled="intygType == 'default'">Fortsätt</button>
         </div>
-        <div class="alert alert-warning" ng-show="false">
-          Tänk på att...
+        <div class="alert alert-warning" ng-show="intygType != 'default'">
+        	<span message key='{{"certificatetypes."+ intygType +".helptext"}}'/>
         </div>
       </div>
 
