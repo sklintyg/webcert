@@ -70,6 +70,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
           
           $scope.menuDefs = [
             {
+               link :'/web/dashboard#/index',
 				       label:'Frågor och svar',
 				       requires_doctor: false,
 				       statNumberId : "stat-unitstat-unhandled-question-count",
