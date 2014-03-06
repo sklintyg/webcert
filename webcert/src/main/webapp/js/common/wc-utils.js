@@ -247,7 +247,7 @@ angular.module('wc.utils').factory(
 /**
  * wcField directive. Used to abstract common layout for full-layout form fields in cert modules
  */
-angular.module('wc.utils').directive("wcField", [function() {
+angular.module('wc.utils').directive("wcField", [ 'messageService', function(messageService) {
   return {
     restrict : "A",
     transclude : true,
@@ -255,17 +255,42 @@ angular.module('wc.utils').directive("wcField", [function() {
     scope : {
       fieldLabel: "@",
       fieldNumber: "@",
-      fieldHelpText: "=",
+      fieldHelpText: "@",
       fieldHasErrors: "="
+    },
+    controller : function($scope) {
+    	 $scope.getMessage = function (key) {
+             return messageService.getProperty(key);
+         };
     },
     template :
         '<div class="body-row clearfix">'
             +'<h4 class="cert-field-number" ng-if="fieldNumber != undefined"><span message key="modules.label.field"></span> {{fieldNumber}}</h4>'
-            +'<h3 class="title"><span message key="{{fieldLabel}}"></span><span ng-if="fieldHelpText != undefined" class="help" tooltip-trigger="click" tooltip-html-unsafe="{{fieldHelpText}}">?</span></h3>'
+            +'<h3 class="title"><span message key="{{fieldLabel}}"></span><span ng-if="fieldHelpText != undefined" class="help" tooltip-trigger="click" tooltip-html-unsafe="{{getMessage(fieldHelpText)}}" tooltip-placement="bottom">?</span></h3>'
             +'<span class="text" ng-class="{fielderror: fieldHasErrors}">'
             +'  <span ng-transclude></span>'
             +'</span>'
        +'</div>'
+  }
+} ]);
+
+/**
+ * Enable tooltips for other components than wcFields
+ */
+angular.module('wc.utils').directive("wcEnableTooltip", [ 'messageService', function(messageService) {
+  return {
+    restrict : "A",
+    transclude : true,
+    scope : {
+      fieldHelpText: "@",
+    },
+    controller : function($scope) {
+    	 $scope.getMessage = function (key) {
+             return messageService.getProperty(key);
+         };
+    },
+    template :
+        '<span class="help" tooltip-trigger="click" tooltip-html-unsafe="{{getMessage(fieldHelpText)}}" tooltip-placement="bottom">?</span>'
   }
 } ]);
 

@@ -406,6 +406,12 @@ UI-bootstrap
   padding: 0;
 }
 
+/* tooltip */
+.tooltip {
+	text-align:left;
+	z-index:400;
+}
+
 .modal-footer {
   text-align:left;
 }
