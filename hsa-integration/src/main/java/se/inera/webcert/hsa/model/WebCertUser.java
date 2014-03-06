@@ -97,7 +97,8 @@ public class WebCertUser implements Serializable {
     }
     
     @JsonIgnore
-    public List<String> getVardenheterIds() {
+    public List<String> getIdsOfSelectedVardenhet() {
+        
         SelectableVardenhet selected = getValdVardenhet();
         
         if (selected == null) {
@@ -105,6 +106,20 @@ public class WebCertUser implements Serializable {
         }
         
         return selected.getHsaIds();
+    }
+    
+    @JsonIgnore
+    public List<String> getIdsOfAllVardenheter() {
+        
+        List<Vardgivare> allVardgivare = getVardgivare();
+                
+        List<String> allIds = new ArrayList<String>();
+        
+        for (Vardgivare vardgivare : allVardgivare) {
+            allIds.addAll(vardgivare.getHsaIds());
+        }
+        
+        return allIds;    
     }
     
     public boolean changeValdVardenhet(String vardenhetId) {

@@ -34,7 +34,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public List<FragaSvar> list() {
         WebCertUser user = webCertUserService.getWebCertUser();
-        return fragaSvarService.getFragaSvar(user.getVardenheterIds());
+        return fragaSvarService.getFragaSvar(user.getIdsOfSelectedVardenhet());
     }
 
     @PUT

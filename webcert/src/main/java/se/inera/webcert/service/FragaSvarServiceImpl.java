@@ -3,8 +3,10 @@ package se.inera.webcert.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 
@@ -151,7 +153,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
 
         WebCertUser user = webCertUserService.getWebCertUser();
-        List<String> hsaEnhetIds = user.getVardenheterIds();
+        List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
 
         // Filter questions to that current user only sees questions issued to units with active employment role
         Iterator<FragaSvar> iterator = fragaSvarList.iterator();
@@ -428,5 +430,20 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Override
     public long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds) {
         return fragaSvarRepository.countUnhandledForEnhetsIds(vardenheterIds);
+    }
+    
+    public Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds) {
+        
+        Map<String, Long> resultsMap = new HashMap<String, Long>();
+        
+        List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIds(vardenheterIds);
+        
+        for (Object[] resArr : results) {
+            String id = (String) resArr[0]; 
+            Long nbr = (Long) resArr[1];
+            resultsMap.put(id, nbr);
+        }
+        
+        return resultsMap;
     }
 }

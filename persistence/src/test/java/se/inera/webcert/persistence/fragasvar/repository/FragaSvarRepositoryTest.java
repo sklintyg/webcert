@@ -2,6 +2,7 @@ package se.inera.webcert.persistence.fragasvar.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -121,6 +122,24 @@ public class FragaSvarRepositoryTest {
     }
     
     @Test
+    public void testcountUnhandledByEnhet() {
+
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID,Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.CLOSED));
+        
+
+        List<Object[]> res = fragasvarRepository.countUnhandledGroupedByEnhetIds(Arrays.asList(ENHET_1_ID,ENHET_2_ID));
+        assertNotNull(res);
+        assertEquals(2, res.size());
+    }
+    
+    @Test
     public void testFindByIntygsReferens() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
         saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk", "Sven Persson",
@@ -176,7 +195,6 @@ public class FragaSvarRepositoryTest {
         return f;
     }
 
-
     @Test
     public void testFindByExternReferens() {
         FragaSvar saved = buildFragaSvarFraga("Enhet-1-id", Status.PENDING_EXTERNAL_ACTION);
@@ -187,6 +205,7 @@ public class FragaSvarRepositoryTest {
         assertEquals(read.getInternReferens(), saved.getInternReferens());
 
     }
+    
     @Test
     public void testFragaSenasteHandelse() {
         FragaSvar saved = buildFragaSvarFraga("Enhet-1-id", Status.PENDING_EXTERNAL_ACTION);

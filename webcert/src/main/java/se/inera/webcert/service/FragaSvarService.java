@@ -1,6 +1,7 @@
 package se.inera.webcert.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.LocalDateTime;
 
@@ -82,5 +83,12 @@ public interface FragaSvarService {
      * Returns a count of unhandled {@link FragaSvar} entities that matches the supplied hsa unit id's vardenheterIds
      */
     long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds);
-
+    
+    /**
+     * Returns a {@link Map} containing the nbr of unhandled {@link FragaSvar} FragaSvar with the HSA id of the care unit as key.
+     * 
+     * @param vardenheterIds
+     * @return
+     */
+    Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds);
 }

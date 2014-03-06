@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -644,7 +645,24 @@ public class FragaSvarServiceImplTest {
         assertEquals(enhetsId, capture.getValue());
         assertEquals(4, result.size());
     }
-
+    
+    @Test
+    public void testGetNbrOfUnhandledFragaSvarForCareUnits() {
+        
+        List<Object[]> queryResult = new ArrayList<Object[]>();
+        queryResult.add(new Object[] { "HSA1", 2L });
+        queryResult.add(new Object[] { "HSA2", 4L });
+        
+        when(fragasvarRepository.countUnhandledGroupedByEnhetIds(Mockito.anyListOf(String.class))).thenReturn(queryResult);
+                
+        Map<String, Long> res = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList("HSA1","HSA2")); 
+        
+        verify(fragasvarRepository).countUnhandledGroupedByEnhetIds(Mockito.anyListOf(String.class));
+        
+        assertNotNull(res);
+        assertEquals(2, res.size());
+    }
+    
     private WebCertUser webCertUser() {
         WebCertUser user = new WebCertUser();
         user.setHsaId("testuser");

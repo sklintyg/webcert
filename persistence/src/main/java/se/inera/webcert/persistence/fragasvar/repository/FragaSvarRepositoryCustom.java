@@ -31,6 +31,16 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
     Long countUnhandledForEnhetsIds(@Param("idList") List<String> enhetsIds);
     
     /**
+     * Should return a list that contains an array with enhets id and the number of unhandled {@link FragaSvar} entities for that enhet.
+     * 
+     * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities.
+     * 
+     * @return A list that contains an array with enhets id and the number of unhandled for that enhet.
+     */
+    @Query("SELECT DISTINCT fs.vardperson.enhetsId, count(fs.vardperson.enhetsId) FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED' GROUP BY fs.vardperson.enhetsId")
+    List<Object[]> countUnhandledGroupedByEnhetIds(@Param("idList") List<String> enhetsIds);
+    
+    /**
      * Returns a list of all unique hsaId and name (of vardperson who signed the certificate the FragaSvar is linked to) where matches the supplied id.
      *
      * @param enhetsid
