@@ -3,7 +3,6 @@ package se.inera.webcert.hsa.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public class WebCertUserTest {
         boolean res = wcu.changeValdVardenhet("VG1VE1");
         assertTrue(res);
         
-        List<String> ids = wcu.getVardenheterIds();
+        List<String> ids = wcu.getIdsOfSelectedVardenhet();
         assertNotNull(ids);
         assertEquals(1, ids.size());
     }
@@ -65,9 +64,17 @@ public class WebCertUserTest {
         boolean res = wcu.changeValdVardenhet("VG2VE1");
         assertTrue(res);
         
-        List<String> ids = wcu.getVardenheterIds();
+        List<String> ids = wcu.getIdsOfSelectedVardenhet();
         assertNotNull(ids);
         assertEquals(2, ids.size());
+    }
+    
+    @Test
+    public void testGetIdsOfAllVardenheter() {
+        
+        List<String> ids = wcu.getIdsOfAllVardenheter();
+        assertNotNull(ids);
+        assertEquals(5, ids.size());
     }
     
     @Before

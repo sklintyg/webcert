@@ -1,0 +1,42 @@
+{
+	
+	"fragaSvarValdEnhet" : "2",
+	"fragaSvarAndraEnheter" : "14",
+	"vardgivare" : [{
+		"namn" : "Vardgivaren",
+		"hsaId" : "VG1",
+		"fragaSvar" : "0",
+		"intyg" : "0",
+		"vardenheter" : [{
+			"namn" : "Vardenhet 1",
+			"hsaId" : "VE1",
+			"fragaSvar" : "2",
+			"intyg" : "0"	
+		},{
+			"namn" : "Vardenhet 1 - Mottagning 11",
+			"hsaId" : "VE1M1",
+			"fragaSvar" : "3",
+			"intyg" : "0"
+		},{
+			"namn" : "Vardenhet 1 - Mottagning 12",
+			"hsaId" : "VE1M2",
+			"fragaSvar" : "3",
+			"intyg" : "0"
+		},{
+			"namn" : "Vardenhet 2",
+			"hsaId" : "VE2",
+			"fragaSvar" : "2",
+			"intyg" : "0"
+		},{
+			"namn" : "Vardenhet 2 - Mottagning 21",
+			"hsaId" : "VE2M1",
+			"fragaSvar" : "2",
+			"intyg" : "0"
+		},{
+			"namn" : "Vardenhet 2 - Mottagning 22",
+			"hsaId" : "VE2M2",
+			"fragaSvar" : "4",
+			"intyg" : "0"
+		}]
+	}]
+}
