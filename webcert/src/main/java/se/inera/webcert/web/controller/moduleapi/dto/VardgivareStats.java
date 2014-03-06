@@ -7,45 +7,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"namn", "hsaId", "fragaSvar", "intyg"})
+@JsonPropertyOrder({"namn", "id", "vardenheter"})
 public class VardgivareStats {
-    
-    @JsonProperty("fragaSvar")
-    private long totalOhanteradeFragaSvar;
-    
-    @JsonProperty("intyg")
-    private long totalOsigneradeIntyg;
-    
+            
     @JsonProperty("namn")
     private String namn;
     
-    @JsonProperty("hsaId")
+    @JsonProperty("id")
     private String hsaId;
     
     private List<VardenhetStats> vardenheter = new ArrayList<VardenhetStats>();
     
-    public VardgivareStats(@JsonProperty("namn") String namn, @JsonProperty("hsaId") String hsaId) {
+    public VardgivareStats(@JsonProperty("namn") String namn, @JsonProperty("id") String hsaId) {
         super();
         this.namn = namn;
         this.hsaId = hsaId;
     }
-
-    public long getTotalOhanteradeFragaSvar() {
-        return totalOhanteradeFragaSvar;
-    }
-
-    public void setTotalOhanteradeFragaSvar(long totalOhanteradeFragaSvar) {
-        this.totalOhanteradeFragaSvar = totalOhanteradeFragaSvar;
-    }
-
-    public long getTotalOsigneradeIntyg() {
-        return totalOsigneradeIntyg;
-    }
-
-    public void setTotalOsigneradeIntyg(long totalOsigneradeIntyg) {
-        this.totalOsigneradeIntyg = totalOsigneradeIntyg;
-    }
-
+    
     public String getNamn() {
         return namn;
     }
@@ -73,7 +51,7 @@ public class VardgivareStats {
     @Override
     @JsonIgnore
     public String toString() {
-        return "VardgivareStats [totalOhanteradeFragaSvar=" + totalOhanteradeFragaSvar + ", totalOsigneradeIntyg="
-                + totalOsigneradeIntyg + ", namn=" + namn + ", hsaId=" + hsaId + ", vardenheter=" + vardenheter + "]";
+        return "VardgivareStats [namn=" + namn + ", hsaId=" + hsaId + ", vardenheter=" + vardenheter + "]";
     }
+    
 }

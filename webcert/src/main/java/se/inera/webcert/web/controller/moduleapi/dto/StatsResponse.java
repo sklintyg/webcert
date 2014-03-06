@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"ohanteradePaValdEnhet", "ohanteradePaAndraEnheter", "vardgivare"})
+@JsonPropertyOrder({"fragaSvarValdEnhet", "fragaSvarAndraEnheter", "vardgivare"})
 public class StatsResponse {
     
     @JsonProperty("fragaSvarAndraEnheter")
