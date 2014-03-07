@@ -285,7 +285,8 @@ button.btn-link-minimal {
 }
 
 .table-qa input[type="radio"], .table-qa input[type="checkbox"],
-.qa-panel input[type="radio"], .qa-panel input[type="checkbox"] {
+.qa-panel input[type="radio"], .qa-panel input[type="checkbox"],
+.qa-filter input[type="radio"], .qa-filter input[type="checkbox"]{
   margin: 0 0 0;
 }
 
