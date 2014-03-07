@@ -55,14 +55,10 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
         controller: function($scope, $element, $attrs) {
           //Expose "now" as a model property for the template to render as todays date
           $scope.today = new Date();
+          $scope.user = User;
           $scope.statService = statService;
           $scope.statService.startPolling();
-          $scope.user = User;
-
-          $scope.stat = {
-                  userStat: {},
-                  unitStat:{}
-                  }
+          $scope.stat = {fragaSvarValdEnhet:0,fragaSvarAndraEnheter:0,vardgivare:[]};
 
           $scope.$on("wc-stat-update", function(event, message){
               $scope.stat = message;
@@ -74,7 +70,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 				       label:'Frågor och svar',
 				       requires_doctor: false,
 				       statNumberId : "stat-unitstat-unhandled-question-count",
-                       getStat: function() { return $scope.stat.unitStat.unhandledQuestions || ""}
+               getStat: function() { return $scope.stat.fragaSvarValdEnhet || ""}
 				     },
 				     {
 				       link :'/web/dashboard#/unsigned',
@@ -185,16 +181,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                   }
                 }
               });
-
-              /*msgbox.result.then(function(result) {
-                if (callback) {
-                  callback(result)
-                }
-              }, function() {
-              });*/
-
           }
-
         },
         template:
         	'<div>'
@@ -205,7 +192,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 			        			+'<span class="headerbox-logo pull-left"><a href="/web/start"><img alt="Till startsidan" src="/img/webcert_logo.png"/></a></span>'
 			          		+'<span class="headerbox-date pull-left">'
                       +'<span class="location">{{today | date:"shortDate"}} - {{user.userContext.valdVardgivare.namn}} - {{user.userContext.valdVardenhet.namn}}</span><br>'
-                      +'<span class="otherLocations" ng-show="true">Du har <span style="font-weight:bold">{{"MOCK"}}</span> ohanterade frågor/intyg på annan enhet. <a ng-href="#changedialog" ng-show="user.getTotalVardenhetCount() > 1" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</a></span>'
+                      +'<span class="otherLocations" ng-show="stat.fragaSvarAndraEnheter > 0">Du har <span style="font-weight:bold">{{stat.fragaSvarAndraEnheter}}</span> ohanterade frågor/svar på annan enhet.</span> <a class="otherLocations" ng-href="#changedialog" ng-show="user.getTotalVardenhetCount() > 1" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</a>'
 			        			+'</span>'
 	        				+'</div>'
         				+'</div>'
@@ -284,7 +271,6 @@ common.directive("wcSpinner", ['$rootScope', function($rootScope) {
 
 /**
  * User service. Provides actions for controlling user context including which vardenhet user is working on.
- * TODO: Move all user services here
  */
 common.factory('User', [ '$http', '$log',
   function ($http, $log) {
