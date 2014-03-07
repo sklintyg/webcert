@@ -159,21 +159,28 @@ angular
                                 queryInstance.startFrom = queryInstance.startFrom + queryInstance.pageSize;
                                 $scope.widgetState.lastQuery = queryInstance;
 
+                                // Hack to make sure "default" value isn't sent to the API, it wants undefined.
+                                // But angular can't mark radio buttons with "" or undefined values in IE8.
+                                // So we set this to undefined here and the watch above will set it back to reflect the correct radio button choice in UI
+                                if (queryInstance.filter.vidarebefordrad == "default") {
+                                  queryInstance.filter.vidarebefordrad = undefined;
+                                }
+
                                 dashBoardService.getQAByQueryFetchMore(queryInstance, function(successData) {
-                                    $scope.widgetState.fetchingMoreInProgress = false;
-                                    $scope.decorateList(successData.results);
-                                    
-                                    for ( var i = 0; i < successData.results.length; i++) {
-                                        $scope.qaListQuery.push(successData.results[i]);
-                                    }
+                                      $scope.widgetState.fetchingMoreInProgress = false;
+                                      $scope.decorateList(successData.results);
 
-                                    $scope.widgetState.currentList = $scope.qaListQuery;
-                                }, function(errorData) {
-                                    $scope.widgetState.fetchingMoreInProgress = false;
-                                    $log.debug("Query Error");
-                                    $scope.widgetState.activeErrorMessageKey = "info.query.error";
-                                });
+                                      for ( var i = 0; i < successData.results.length; i++) {
+                                          $scope.qaListQuery.push(successData.results[i]);
+                                      }
 
+                                      $scope.widgetState.currentList = $scope.qaListQuery;
+                                  }, function(errorData) {
+                                      $scope.widgetState.fetchingMoreInProgress = false;
+                                      $log.debug("Query Error");
+                                      $scope.widgetState.activeErrorMessageKey = "info.query.error";
+                                  }
+                                );
                             }
                             $scope.resetSearchForm = function() {
                                 $cookieStore.remove("query_instance");
