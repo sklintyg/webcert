@@ -24,9 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
+
+import se.inera.ifv.hsaws.v3.HsaWsFault;
 import se.inera.ifv.hsaws.v3.HsaWsResponderInterface;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitListResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetMiuForPersonType;
@@ -159,6 +163,17 @@ public class HSAWebServiceCalls {
             return response;
         } catch (Throwable ex) {
             log.error("Failed to call getCareUnitList", ex);
+            Throwables.propagate(ex);
+            return null;
+        }
+    }
+    
+    public GetHsaPersonResponseType callGetHsaPerson(GetHsaPersonType parameters) {
+        try {
+            GetHsaPersonResponseType response = serverInterface.getHsaPerson(logicalAddressHeader, messageId, parameters);
+            return response;
+        } catch (Throwable ex) {
+            log.error("Failed to call callGetHsaPerson", ex);
             Throwables.propagate(ex);
             return null;
         }
