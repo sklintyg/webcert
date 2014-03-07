@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.moduleapi;
+package se.inera.webcert.web.controller.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,15 +18,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by magnus on 2014-03-06.
+ * Controller managing module wiring
  */
-@Component
-public class ModuleController extends AbstractApiController {
+@Path("/modules")
+public class ModuleApiController extends AbstractApiController {
+
     @Autowired
     private List<ModuleEntryPoint> moduleEntryPoints;
 
+    /**
+     * Serving module configuration for Angular bootstrapping
+     * @return a JSON object
+     */
     @GET
-    @Path("/modulesMap")
+    @Path("/map")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getModulesMap() {
 

@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.moduleapi;
+package se.inera.webcert.web.controller.api;
 
 import org.springframework.stereotype.Component;
 import se.inera.certificate.modules.support.ModuleEntryPoint;
@@ -12,7 +12,7 @@ public class ModuleEntryPointDummy implements ModuleEntryPoint {
 
     @Override
     public String getModuleName() {
-        return null;
+        return "module1";
     }
 
     @Override
@@ -22,6 +22,6 @@ public class ModuleEntryPointDummy implements ModuleEntryPoint {
 
     @Override
     public String getModuleScriptPath() {
-        return null;
+        return "/js/module1";
     }
 }
