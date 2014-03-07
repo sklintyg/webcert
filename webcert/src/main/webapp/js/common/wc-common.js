@@ -123,10 +123,10 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                             '<button class="btn btn-link" data-ng-click="selectVardenhet(enhet)">{{enhet.namn}}</a>'+
                           '</td>'+
                           '<td>'+
-                            '0'+
+                            '{{enhet.fragaSvar}}'+
                           '</td>'+
                           '<td>'+
-                            '0'+
+                            '{{enhet.intyg}}'+
                           '</td>'+
                         '</tr>'+
                         '</table>'+
@@ -156,7 +156,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                 },
                 resolve : {
                   vardgivare : function() {
-                    return angular.copy(User.getVardenhetSelectionList());
+                    return angular.copy($scope.stat.vardgivare);
                   }
                 }
               });
