@@ -1,4 +1,13 @@
 {
     "hsaId": "eva",
+	"forNamn": "Eva",
+	"efterNamn": "Holgersson",
+	"specialiseringar": [{
+		"kod": "100",
+		"namn": "Kirurgi"
+	},{
+		"kod": "200",
+		"namn": "Ortopedi"
+	}],
     "enhetIds":["centrum-vast"]
 }

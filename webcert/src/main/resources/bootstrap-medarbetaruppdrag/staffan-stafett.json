@@ -1,4 +1,13 @@
 {
     "hsaId": "staffan",
+	"forNamn": "Staffan",
+	"efterNamn": "Stafett",
+	"specialiseringar": [{
+		"kod": "100",
+		"namn": "Kirurgi"
+	},{
+		"kod": "200",
+		"namn": "Ortopedi"
+	}],
     "enhetIds":["centrum-vast","linkoping","norrkoping","motala"]
 }

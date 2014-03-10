@@ -1,8 +1,10 @@
 package se.inera.webcert.hsa.stub;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
@@ -17,6 +19,8 @@ public class HsaServiceStub {
 
     private List<Vardgivare> vardgivare = new ArrayList<>();
     private List<Medarbetaruppdrag> medarbetaruppdrag = new ArrayList<>();
+    
+    private Map<String, HsaPerson> personMap = new HashMap<String, HsaPerson>();
 
     public Vardenhet getVardenhet(String hsaIdentity) {
 
@@ -69,5 +73,13 @@ public class HsaServiceStub {
             }
         }
         return null;
+    }
+    
+    public HsaPerson getHsaPerson(String hsaId) {
+        return personMap.get(hsaId);
+    }
+    
+    public void addHsaPerson(HsaPerson person) {
+        personMap.put(person.getHsaId(), person);
     }
 }

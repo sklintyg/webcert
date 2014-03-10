@@ -1,4 +1,13 @@
 {
     "hsaId": "TST5565594230-106J",
+	"forNamn": "Markus",
+	"efterNamn": "Gran",
+	"specialiseringar": [{
+		"kod": "100",
+		"namn": "Kirurgi"
+	},{
+		"kod": "200",
+		"namn": "Ortopedi"
+	}],
     "enhetIds":["IFV1239877878-103F", "IFV1239877878-103H", "IFV1239877878-103D"]
 }

@@ -1,4 +1,6 @@
 {
     "hsaId": "adamo",
+	"forNamn": "Adamo",
+	"efterNamn": "Admin",    
     "enhetIds":["centrum-vast", "centrum-ost"]
 }

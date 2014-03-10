@@ -16,6 +16,9 @@ import se.inera.ifv.hsawsresponder.v3.GetCareUnitMembersResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHospPersonResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHospPersonType;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityCodes;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
@@ -36,6 +39,7 @@ import se.inera.ifv.hsawsresponder.v3.PingType;
 import se.inera.ifv.hsawsresponder.v3.VpwGetPublicUnitsResponseType;
 import se.inera.ifv.hsawsresponder.v3.VpwGetPublicUnitsType;
 import se.inera.webcert.hsa.model.Mottagning;
+import se.inera.webcert.hsa.model.Specialisering;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 
@@ -229,7 +233,31 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
     @Override
     public GetHsaPersonResponseType getHsaPerson(AttributedURIType logicalAddress, AttributedURIType id,
             GetHsaPersonType parameters) throws HsaWsFault {
-        return null;
+        
+        String hsaId = parameters.getHsaIdentity();
+        
+        HsaPerson hsaPerson = hsaService.getHsaPerson(hsaId);
+        
+        GetHsaPersonHsaUserType user = new GetHsaPersonHsaUserType();
+        user.setSn(hsaPerson.getEfterNamn());
+        user.setGivenName(hsaPerson.getForNamn());
+        user.setHsaIdentity(hsaPerson.getHsaId());
+        
+        SpecialityCodes userSpecCodes = new SpecialityCodes();
+        SpecialityNames userSpecNames = new SpecialityNames();
+        
+        for (Specialisering spec : hsaPerson.getSpecialiseringar()) {
+            userSpecCodes.getSpecialityCode().add(spec.getKod());
+            userSpecNames.getSpecialityName().add(spec.getNamn());
+        }
+                
+        user.setSpecialityCodes(userSpecCodes);
+        user.setSpecialityNames(userSpecNames);
+        
+        GetHsaPersonResponseType response = new GetHsaPersonResponseType();
+        response.getUserInformations().getUserInformation().add(user);
+        
+        return response;
     }
 
     @Override

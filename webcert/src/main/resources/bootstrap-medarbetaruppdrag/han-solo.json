@@ -1,4 +1,6 @@
 {
     "hsaId": "hansolo",
+	"forNamn": "Han",
+	"efterNamn": "Solo",
     "enhetIds":["centrum-norr"]
 }
