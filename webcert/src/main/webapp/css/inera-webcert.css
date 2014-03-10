@@ -425,6 +425,7 @@ UI-bootstrap
 
 .tooltip-inner {
   max-width: 300px;
+  text-align: left;
 }
 
 /* datepicker */
