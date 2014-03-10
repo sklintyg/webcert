@@ -165,18 +165,18 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
         template:
         	'<div>'
         		+'<div class="row-fluid header">'
-	        		+'<div class="span6">'
+	        		+'<div class="span8">'
 	        			+'<div class="row-fluid">'
 		        			+'<div class="span12 headerbox">'
 			        			+'<span class="headerbox-logo pull-left"><a href="/web/start"><img alt="Till startsidan" src="/img/webcert_logo.png"/></a></span>'
 			          		+'<span class="headerbox-date pull-left">'
                       +'<span class="location">{{today | date:"shortDate"}} - {{user.userContext.valdVardgivare.namn}} - {{user.userContext.valdVardenhet.namn}}</span><br>'
-                      +'<span class="otherLocations" ng-show="stat.fragaSvarAndraEnheter > 0">Du har <span style="font-weight:bold">{{stat.fragaSvarAndraEnheter}}</span> ohanterade frågor/svar på annan enhet.</span> <a class="otherLocations" ng-href="#changedialog" ng-show="user.getTotalVardenhetCount() > 1" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</a>'
+                      +'<span class="otherLocations" ng-show="stat.fragaSvarAndraEnheter > 0">Du har <span style="font-weight:bold">{{stat.fragaSvarAndraEnheter}}</span> ohanterade frågor/svar på annan enhet.</span> <a class="otherLocations" ng-href="#changedialog" ng-show="user.userContext.totaltAntalVardenheter > 1" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</a>'
 			        			+'</span>'
 	        				+'</div>'
         				+'</div>'
         			+'</div>'
-	        		+'<div class="span6 headerbox-user">'
+	        		+'<div class="span4 headerbox-user">'
 		      			+'<div class="row-fluid">'
 			      			+'<div class="span12">'
                     +'<div class="headerbox-avatar pull-right">'
@@ -265,25 +265,6 @@ common.factory('User', [ '$http', '$log',
        */
       setUserContext : function(userContext) {
         this.userContext = userContext;
-      },
-
-      /**
-       * returns valdVardenhet from user context
-       * @returns valdVardenhet
-       */
-      getTotalVardenhetCount: function() {
-
-        var totalVardenhetCount = 0;
-        angular.forEach(this.userContext.vardgivare, function (vardgivare, key) {
-          totalVardenhetCount += vardgivare.vardenheter.length;
-          angular.forEach(vardgivare.vardenheter, function (vardenhet, key) {
-            if(vardenhet.mottagningar){
-              totalVardenhetCount += vardenhet.mottagningar.length;
-            }
-          });
-        });
-
-        return totalVardenhetCount;
       },
 
       /**

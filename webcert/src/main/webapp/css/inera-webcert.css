@@ -411,6 +411,24 @@ UI-bootstrap
   text-align:left;
 }
 
+/* tooltip */
+.tooltip {
+  text-align:left;
+  z-index:400;
+  font-weight: normal;
+  white-space: normal;
+}
+
+.tooltip.in {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+.tooltip-inner {
+  max-width: 300px;
+  text-align: left;
+}
+
 /* datepicker */
 input[datepicker-popup] .btn-block {
 	padding: 0;
@@ -482,6 +500,26 @@ span.error { color: orangered; }
 .error-icon {
     padding-right: 10px;
 }
+input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:focus {
+    border-color: #ccc;
+    outline: 0;
+    outline: thin dotted \9;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+}
+
+/*
+ Responsive fixes
+*/
+
+@media (max-width: 979px) {
+  span.headerbox-date {
+    padding: 10px 0 0 30px;
+    width: 100%;
+  }
+}
+
 /**
  Webcert elements
  **/
