@@ -77,6 +77,19 @@ public class WebCertUserTest {
         assertEquals(5, ids.size());
     }
     
+    @Test
+    public void testGetTotaltAntalVardenheter() {
+        int res = wcu.getTotaltAntalVardenheter();
+        assertEquals(5, res);
+    }
+    
+    @Test
+    public void testGetTotaltAntalVardenheterWithNoVardgivare() {
+        wcu.getVardgivare().clear();
+        int res = wcu.getTotaltAntalVardenheter();
+        assertEquals(0, res);
+    }
+    
     @Before
     public void setup() {
         this.wcu = createWebCertUser();

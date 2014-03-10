@@ -122,6 +122,10 @@ public class WebCertUser implements Serializable {
         return allIds;    
     }
     
+    public int getTotaltAntalVardenheter() {
+        return getIdsOfAllVardenheter().size();
+    }
+    
     public boolean changeValdVardenhet(String vardenhetId) {
     
         if (vardenhetId == null) {
