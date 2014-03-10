@@ -19,13 +19,17 @@ import se.inera.webcert.hsa.model.Specialisering;
  * 
  */
 @Service
-public class HsaPersonServiceImpl {
+public class HsaPersonServiceImpl implements HsaPersonService {
 
     private static final Logger LOG = LoggerFactory.getLogger(HsaPersonServiceImpl.class);
 
     @Autowired
     private HSAWebServiceCalls client;
 
+    /* (non-Javadoc)
+     * @see se.inera.webcert.hsa.services.HsaPersonService#getSpecialitiesForHsaPerson(java.lang.String)
+     */
+    @Override
     public List<Specialisering> getSpecialitiesForHsaPerson(String personHsaId) {
         
         LOG.debug("Getting specialities for person '{}'", personHsaId);
@@ -43,6 +47,10 @@ public class HsaPersonServiceImpl {
         return userSpecialities;
     }
 
+    /* (non-Javadoc)
+     * @see se.inera.webcert.hsa.services.HsaPersonService#getHsaPersonInfo(java.lang.String)
+     */
+    @Override
     public List<GetHsaPersonHsaUserType> getHsaPersonInfo(String personHsaId) {
         
         LOG.debug("Getting info from HSA for person '{}'", personHsaId);

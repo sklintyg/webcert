@@ -1,6 +1,8 @@
 package se.inera.webcert.security;
 
 import javax.xml.transform.stream.StreamSource;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,10 +31,12 @@ import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
 import se.inera.auth.WebCertUserDetailsService;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.webcert.hsa.model.Specialisering;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
+import se.inera.webcert.hsa.services.HsaPersonService;
 
 /**
  * @author andreaskaltenbach
@@ -48,6 +52,10 @@ public class WebCertUserDetailsServiceTest {
 
     @Mock
     private HsaOrganizationsService hsaOrganizationsService;
+    
+    @Mock
+    private HsaPersonService hsaPersonService; 
+    
     private Vardgivare vardgivare;
 
     @BeforeClass
@@ -75,8 +83,11 @@ public class WebCertUserDetailsServiceTest {
         
         assertNotNull(webCertUser.getValdVardenhet());
         assertEquals("IFV1239877878-103P", webCertUser.getValdVardenhet().getId());
+        
+        assertEquals(2, webCertUser.getSpecialiseringar().size());
 
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
+        verify(hsaPersonService).getSpecialitiesForHsaPerson(PERSONAL_HSA_ID);
     }
 
     private void setupHsaOrganizationService() {
@@ -88,6 +99,12 @@ public class WebCertUserDetailsServiceTest {
 
         when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID)).thenReturn(
                 vardgivareList);
+        
+        List<Specialisering> specList = new ArrayList<Specialisering>();
+        specList.add(new Specialisering("100", "Kirurgi"));
+        specList.add(new Specialisering("200", "Ortopedi"));
+        
+        when(hsaPersonService.getSpecialitiesForHsaPerson(PERSONAL_HSA_ID)).thenReturn(specList );
     }
 
     @Test

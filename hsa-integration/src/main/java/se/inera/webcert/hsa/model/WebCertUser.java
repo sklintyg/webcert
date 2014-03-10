@@ -22,6 +22,8 @@ public class WebCertUser implements Serializable {
 
     private List<Vardgivare> vardgivare;
     
+    private List<Specialisering> specialiseringar;
+    
     private SelectableVardenhet valdVardenhet;
     
     private SelectableVardenhet valdVardgivare;
@@ -63,6 +65,14 @@ public class WebCertUser implements Serializable {
         this.vardgivare = vardgivare;
     }
 
+    public List<Specialisering> getSpecialiseringar() {
+        return specialiseringar;
+    }
+
+    public void setSpecialiseringar(List<Specialisering> specialiseringar) {
+        this.specialiseringar = specialiseringar;
+    }
+
     public SelectableVardenhet getValdVardenhet() {
         return valdVardenhet;
     }
@@ -87,6 +97,14 @@ public class WebCertUser implements Serializable {
         this.valdVardgivare = valdVardgivare;
     }
     
+    public String getForskrivarkod() {
+        return forskrivarkod;
+    }
+
+    public void setForskrivarkod(String forskrivarkod) {
+        this.forskrivarkod = forskrivarkod;
+    }
+
     @JsonIgnore
     public String getAsJson() {
         try {
@@ -144,13 +162,5 @@ public class WebCertUser implements Serializable {
         }
                 
         return false;
-    }
-    
-    public String getForskrivarkod() {
-        return forskrivarkod;
-    }
-
-    public void setForskrivarkod(String forskrivarkod) {
-        this.forskrivarkod = forskrivarkod;
     }
 }

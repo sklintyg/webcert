@@ -13,10 +13,12 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.webcert.hsa.model.Specialisering;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
+import se.inera.webcert.hsa.services.HsaPersonService;
 
 /**
  * @author andreaskaltenbach
@@ -30,6 +32,9 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
+    
+    @Autowired
+    private HsaPersonService hsaPersonService;
 
     @Override
     public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
@@ -68,6 +73,9 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         // lakare flag is calculated by checking for lakare profession in title and title code
         webcertUser.setLakare(LAKARE.equals(assertion.getTitel()) || LAKARE_CODE.equals(assertion.getTitelKod()));
         
+        List<Specialisering> specialities = hsaPersonService.getSpecialitiesForHsaPerson(assertion.getHsaId());
+        webcertUser.setSpecialiseringar(specialities);
+                
         return webcertUser;
     }
 
