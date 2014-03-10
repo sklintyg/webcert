@@ -406,14 +406,25 @@ UI-bootstrap
   padding: 0;
 }
 
-/* tooltip */
-.tooltip {
-	text-align:left;
-	z-index:400;
-}
-
 .modal-footer {
   text-align:left;
+}
+
+/* tooltip */
+.tooltip {
+  text-align:left;
+  z-index:400;
+  font-weight: normal;
+  white-space: normal;
+}
+
+.tooltip.in {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+.tooltip-inner {
+  max-width: 300px;
 }
 
 /* datepicker */
