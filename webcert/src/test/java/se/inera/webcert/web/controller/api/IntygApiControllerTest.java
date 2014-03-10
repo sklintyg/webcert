@@ -57,7 +57,7 @@ public class IntygApiControllerTest {
         WebCertUser user = mock(WebCertUser.class);
 
         when(webCertUserService.getWebCertUser()).thenReturn(user);
-        when(user.getVardenheterIds()).thenReturn(ENHET_IDS);
+        when(user.getIdsOfSelectedVardenhet()).thenReturn(ENHET_IDS);
 
         when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(intygSigned);
 

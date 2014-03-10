@@ -38,7 +38,7 @@ public abstract class AbstractApiController {
     protected List<String> getEnhetIdsForCurrentUser() {
 
         WebCertUser webCertUser = webCertUserService.getWebCertUser();
-        List<String> vardenheterIds = webCertUser.getVardenheterIds();
+        List<String> vardenheterIds = webCertUser.getIdsOfSelectedVardenhet();
         
         LOG.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), vardenheterIds);
         
