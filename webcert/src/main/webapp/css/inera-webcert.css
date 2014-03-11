@@ -170,6 +170,11 @@ div.headerbox-user-profile { padding-right: 20px; font-size: 13px; line-height: 
 	font-weight: bold;
 }
 
+.control-group {
+  margin: 0;
+  padding: 0 0 10px 0;
+}
+
 .buttonbar .btn { margin: 5px 5px 0 0; }
 
 .btn {
@@ -679,8 +684,16 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
 
 .webcert-col-section {
   border-top: 1px solid #CCC;
-  margin-top: 20px;
-  padding-top: 12px;
+  /*margin-top: 20px;
+  padding-top: 12px;*/
+}
+
+.webcert-bottom-padding-section {
+  padding-bottom: 10px;
+}
+
+.qa-table-section {
+  padding-top: 20px;
 }
 
 .table-qa {
