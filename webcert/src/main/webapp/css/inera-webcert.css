@@ -138,11 +138,15 @@ h5.inline-heading {
 .headerbox {
 	padding: 0 0 0 0;
 }
-span.headerbox-logo { padding: 3px 20px 0 30px;  border-right: 1px solid #595c66; display: block;}
-span.headerbox-date { padding-left: 20px; line-height: 17px; display: block;}
-div.headerbox-user { font-size: 13px; line-height: 16px; }
-div.headerbox-avatar { padding-right: 10px; }
-div.headerbox-user-profile { padding-right: 20px; font-size: 13px; line-height: 18px; text-align: left; }
+span.headerbox-logo { padding: 3px 20px 0 30px;  border-right: 1px solid #595c66; display: block; margin-top: 10px;}
+span.headerbox-date { padding: 10px 0 0 30px; line-height: 17px; display: block;}
+div.headerbox-user { font-size: 13px; line-height: 16px; padding: 10px 30px 0 0; }
+div.headerbox-avatar {
+  padding-right: 30px;
+  background: url("../img/avatar.png") no-repeat 100% 50%;
+  height: 34px;
+}
+div.headerbox-user-profile { padding-right: 44px; font-size: 13px; line-height: 18px; text-align: left; }
 .header span.location { font-size: 14px; font-weight: bold;}
 .header .otherLocations { font-size: 12px; }
 .logout-button {
@@ -521,12 +525,13 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
  Responsive fixes
 */
 
+/*
 @media (max-width: 979px) {
   span.headerbox-date {
     padding: 10px 0 0 30px;
     width: 100%;
   }
-}
+}*/
 
 /**
  Webcert elements
@@ -640,7 +645,7 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
 
 .header {
   background-color: #212633;
-  padding: 15px 0;
+  padding: 5px 20px 15px 0; /* don't change this setup. it's needed for IE8 flow on smaller screens to work */
   color: #fff;
 }
 
