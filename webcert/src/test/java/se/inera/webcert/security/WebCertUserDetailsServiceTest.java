@@ -1,17 +1,17 @@
 package se.inera.webcert.security;
 
-import javax.xml.transform.stream.StreamSource;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.cxf.helpers.XMLUtils;
 import org.junit.BeforeClass;
@@ -29,9 +29,9 @@ import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
+
 import se.inera.auth.WebCertUserDetailsService;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
-import se.inera.webcert.hsa.model.Specialisering;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -100,11 +100,9 @@ public class WebCertUserDetailsServiceTest {
         when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID)).thenReturn(
                 vardgivareList);
         
-        List<Specialisering> specList = new ArrayList<Specialisering>();
-        specList.add(new Specialisering("100", "Kirurgi"));
-        specList.add(new Specialisering("200", "Ortopedi"));
+        List<String> specList = Arrays.asList("Kirurgi","Ortopedi");
         
-        when(hsaPersonService.getSpecialitiesForHsaPerson(PERSONAL_HSA_ID)).thenReturn(specList );
+        when(hsaPersonService.getSpecialitiesForHsaPerson(PERSONAL_HSA_ID)).thenReturn(specList);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package se.inera.webcert.hsa.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-import se.inera.webcert.hsa.model.Specialisering;
 
 /**
  * @author nikpet
@@ -30,7 +30,7 @@ public class HsaPersonServiceImpl implements HsaPersonService {
      * @see se.inera.webcert.hsa.services.HsaPersonService#getSpecialitiesForHsaPerson(java.lang.String)
      */
     @Override
-    public List<Specialisering> getSpecialitiesForHsaPerson(String personHsaId) {
+    public List<String> getSpecialitiesForHsaPerson(String personHsaId) {
         
         LOG.debug("Getting specialities for person '{}'", personHsaId);
         
@@ -40,7 +40,7 @@ public class HsaPersonServiceImpl implements HsaPersonService {
             return new ArrayList<>();
         }
 
-        List<Specialisering> userSpecialities = extractSpecialitiesFromUsers(personHsaInfos);
+        List<String> userSpecialities = extractSpecialitiesFromUsers(personHsaInfos);
         
         LOG.debug("Person '{}' has {} specialities", personHsaId, userSpecialities.size());
         
@@ -72,31 +72,17 @@ public class HsaPersonServiceImpl implements HsaPersonService {
         return hsaUserTypeList;
     }
 
-    private List<Specialisering> extractSpecialitiesFromUsers(List<GetHsaPersonHsaUserType> userTypeList) {
+    private List<String> extractSpecialitiesFromUsers(List<GetHsaPersonHsaUserType> userTypeList) {
 
-        List<Specialisering> specialities = new ArrayList<Specialisering>();
+        List<String> specialities = new ArrayList<String>();
 
         for (GetHsaPersonHsaUserType userType : userTypeList) {
-            collectSpecialities(userType, specialities);
+            List<String> userSpecNames = userType.getSpecialityNames().getSpecialityName();
+            specialities.addAll(userSpecNames);
         }        
                 
+        Collections.sort(specialities);
+        
         return specialities;
-    }
-
-    private void collectSpecialities(GetHsaPersonHsaUserType userType, List<Specialisering> specialities) {
-
-        List<String> userSpecCodes = userType.getSpecialityCodes().getSpecialityCode();
-        List<String> userSpecNames = userType.getSpecialityNames().getSpecialityName();
-
-        int maxLength = userSpecCodes.size();
-
-        // TODO: This assumes that both lists are equally long. What if not?
-
-        Specialisering spec;
-
-        for (int i = 0; i < maxLength; i++) {
-            spec = new Specialisering(userSpecCodes.get(i), userSpecNames.get(i));
-            specialities.add(spec);
-        }
     }
 }

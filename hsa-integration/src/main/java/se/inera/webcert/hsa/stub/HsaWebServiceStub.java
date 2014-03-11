@@ -40,7 +40,6 @@ import se.inera.ifv.hsawsresponder.v3.PingType;
 import se.inera.ifv.hsawsresponder.v3.VpwGetPublicUnitsResponseType;
 import se.inera.ifv.hsawsresponder.v3.VpwGetPublicUnitsType;
 import se.inera.webcert.hsa.model.Mottagning;
-import se.inera.webcert.hsa.model.Specialisering;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 
@@ -247,7 +246,7 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         SpecialityCodes userSpecCodes = new SpecialityCodes();
         SpecialityNames userSpecNames = new SpecialityNames();
         
-        for (Specialisering spec : hsaPerson.getSpecialiseringar()) {
+        for (HsaSpecialicering spec : hsaPerson.getSpecialiseringar()) {
             userSpecCodes.getSpecialityCode().add(spec.getKod());
             userSpecNames.getSpecialityName().add(spec.getNamn());
         }

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -104,26 +105,27 @@ public class WebCertUserTest {
         wcu.setForskrivarkod("Forskrivarkod");
         wcu.setAuthenticationScheme("AuthScheme");
         wcu.setLakare(true);
+        wcu.setSpecialiseringar(Arrays.asList("Kirurgi","Ortopedi"));
         
         List<Vardgivare> vardgivare = new ArrayList<Vardgivare>();
         
-        Vardgivare vg1 = buildVardgivare("VG1","Vardgivare 1");
+        Vardgivare vg1 = new Vardgivare("VG1","Vardgivare 1");
         
-        Vardenhet vg1ve1 = buildVardenhet("VG1VE1", "Vardenhet 1");
+        Vardenhet vg1ve1 = new Vardenhet("VG1VE1", "Vardenhet 1");
         vg1.getVardenheter().add(vg1ve1);
         
-        Vardenhet vg1ve2 = buildVardenhet("VG1VE2", "Vardenhet 2");
+        Vardenhet vg1ve2 = new Vardenhet("VG1VE2", "Vardenhet 2");
         vg1.getVardenheter().add(vg1ve2);
         
-        Vardgivare vg2 = buildVardgivare("VG2","Vardgivare 2");
+        Vardgivare vg2 = new Vardgivare("VG2","Vardgivare 2");
         
-        Vardenhet vg2ve1 = buildVardenhet("VG2VE1", "Vardenhet 3");
+        Vardenhet vg2ve1 = new Vardenhet("VG2VE1", "Vardenhet 3");
         vg2.getVardenheter().add(vg2ve1);
         
-        Vardenhet vg2ve2 = buildVardenhet("VG2VE2", "Vardenhet 4");
+        Vardenhet vg2ve2 =  new Vardenhet("VG2VE2", "Vardenhet 4");
         vg2.getVardenheter().add(vg2ve2);
         
-        Mottagning vg2ve2m1 = buildMottagning("VG2VE1M1", "Mottagning 1");
+        Mottagning vg2ve2m1 = new Mottagning("VG2VE1M1", "Mottagning 1");
         vg2ve1.getMottagningar().add(vg2ve2m1);
         
         vardgivare.add(vg1);        
@@ -136,26 +138,4 @@ public class WebCertUserTest {
         
         return wcu;
     }
-    
-    private Mottagning buildMottagning(String id, String namn) {
-        Mottagning m = new Mottagning();
-        m.setId(id);
-        m.setNamn(namn);
-        return m;
-    }
-    
-    private Vardenhet buildVardenhet(String id, String namn) {
-        Vardenhet vg1ve1 = new Vardenhet();
-        vg1ve1.setId(id);
-        vg1ve1.setNamn(namn);
-        return vg1ve1;
-    }
-
-    private Vardgivare buildVardgivare(String id, String namn) {
-        Vardgivare vg1 = new Vardgivare();
-        vg1.setId(id);
-        vg1.setNamn(namn);
-        return vg1;
-    }
-    
 }

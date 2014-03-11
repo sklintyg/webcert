@@ -1,25 +1,19 @@
-package se.inera.webcert.hsa.model;
+package se.inera.webcert.hsa.stub;
 
-public class Specialisering {
-
+public class HsaSpecialicering {
+    
     private String kod;
     
     private String namn;
+
+    public HsaSpecialicering() {
+        
+    }
     
-    public Specialisering() {
-        super();
-    }
-
-    public Specialisering(String kod, String namn) {
-        super();
-        this.kod = kod;
-        this.namn = namn;
-    }
-
     public String getKod() {
         return kod;
     }
-    
+
     public void setKod(String kod) {
         this.kod = kod;
     }

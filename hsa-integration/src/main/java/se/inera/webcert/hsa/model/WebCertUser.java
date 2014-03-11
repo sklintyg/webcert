@@ -22,7 +22,7 @@ public class WebCertUser implements Serializable {
 
     private List<Vardgivare> vardgivare;
     
-    private List<Specialisering> specialiseringar;
+    private List<String> specialiseringar;
     
     private SelectableVardenhet valdVardenhet;
     
@@ -65,11 +65,11 @@ public class WebCertUser implements Serializable {
         this.vardgivare = vardgivare;
     }
 
-    public List<Specialisering> getSpecialiseringar() {
+    public List<String> getSpecialiseringar() {
         return specialiseringar;
     }
 
-    public void setSpecialiseringar(List<Specialisering> specialiseringar) {
+    public void setSpecialiseringar(List<String> specialiseringar) {
         this.specialiseringar = specialiseringar;
     }
 

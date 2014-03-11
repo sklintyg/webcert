@@ -16,8 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityCodes;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
@@ -25,7 +23,6 @@ import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType.UserInformations;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-import se.inera.webcert.hsa.model.Specialisering;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HsaPersonServiceTest {
@@ -77,7 +74,7 @@ public class HsaPersonServiceTest {
     @Test
     public void testGetSpecialitiesForHsaPersonWithValidPerson() {
 
-        List<Specialisering> res = hsaPersonService.getSpecialitiesForHsaPerson(VALID_HSA_ID);
+        List<String> res = hsaPersonService.getSpecialitiesForHsaPerson(VALID_HSA_ID);
 
         assertNotNull(res);
         assertFalse(res.isEmpty());

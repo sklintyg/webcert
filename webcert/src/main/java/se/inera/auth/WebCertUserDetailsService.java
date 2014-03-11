@@ -13,7 +13,6 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
-import se.inera.webcert.hsa.model.Specialisering;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -73,7 +72,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         // lakare flag is calculated by checking for lakare profession in title and title code
         webcertUser.setLakare(LAKARE.equals(assertion.getTitel()) || LAKARE_CODE.equals(assertion.getTitelKod()));
         
-        List<Specialisering> specialities = hsaPersonService.getSpecialitiesForHsaPerson(assertion.getHsaId());
+        List<String> specialities = hsaPersonService.getSpecialitiesForHsaPerson(assertion.getHsaId());
         webcertUser.setSpecialiseringar(specialities);
                 
         return webcertUser;

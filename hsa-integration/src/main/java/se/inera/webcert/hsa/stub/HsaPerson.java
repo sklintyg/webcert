@@ -3,8 +3,6 @@ package se.inera.webcert.hsa.stub;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.inera.webcert.hsa.model.Specialisering;
-
 public class HsaPerson {
     
     private String hsaId;
@@ -13,7 +11,7 @@ public class HsaPerson {
     
     private String efterNamn;
     
-    private List<Specialisering> specialiseringar = new ArrayList<Specialisering>();
+    private List<HsaSpecialicering> specialiseringar = new ArrayList<HsaSpecialicering>();
     
     private List<String> enhetIds = new ArrayList<String>();
     
@@ -52,11 +50,11 @@ public class HsaPerson {
         this.efterNamn = efterNamn;
     }
 
-    public List<Specialisering> getSpecialiseringar() {
+    public List<HsaSpecialicering> getSpecialiseringar() {
         return specialiseringar;
     }
 
-    public void setSpecialiseringar(List<Specialisering> specialiseringar) {
+    public void setSpecialiseringar(List<HsaSpecialicering> specialiseringar) {
         this.specialiseringar = specialiseringar;
     }
 
