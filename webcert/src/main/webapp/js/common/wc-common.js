@@ -114,9 +114,8 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                     '<div class="modal-body">'+
                       '<table class="table table-striped table-qa table-links" ng-repeat="vg in vardgivare">'+
                         '<tr>'+
-                          '<th style="width: 50%">{{vg.namn}}</th>'+
+                          '<th style="width: 75%">{{vg.namn}}</th>'+
                           '<th>Ohanterade frågor och svar</th>'+
-                          '<th>Osignerade intyg</th>'+
                         '</tr>'+
                         '<tr ng-repeat="enhet in vg.vardenheter">'+
                           '<td>'+
@@ -124,9 +123,6 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                           '</td>'+
                           '<td>'+
                             '{{enhet.fragaSvar}}'+
-                          '</td>'+
-                          '<td>'+
-                            '{{enhet.intyg}}'+
                           '</td>'+
                         '</tr>'+
                         '</table>'+
