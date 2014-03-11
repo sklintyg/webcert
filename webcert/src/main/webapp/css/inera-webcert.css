@@ -312,6 +312,8 @@ button.btn-link-minimal {
   margin: 0 0 0;
 }
 
+form { margin: 0; }
+
 input[datepicker-popup] {
   width: 80px;
 }
