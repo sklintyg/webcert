@@ -6,24 +6,9 @@ angular.module('wcDashBoardApp').config([ '$routeProvider', '$httpProvider', 'ht
     $routeProvider.when('/index', {
       templateUrl : '/views/dashboard/unhandled-qa.html',
       controller : 'UnhandledQACtrl'
-/*    }).when('/index', { // removed in v0.5
-        templateUrl : '/views/dashboard/index.step1.html',
-        controller : 'CreateCertCtrl'*/
-    }).when('/edit-patient/index', {
-        templateUrl : '/views/dashboard/index.editpatient.html',
-        controller : 'CreateCertCtrl'
-    }).when('/choose-cert/index', {
-        templateUrl : '/views/dashboard/index.step2.html',
-        controller : 'CreateCertCtrl'
     }).when('/unhandled-qa', {
         templateUrl : '/views/dashboard/unhandled-qa.html',
         controller : 'UnhandledQACtrl'
-    }).when('/unsigned', {
-        templateUrl : '/views/dashboard/unsigned.html',
-        controller : 'UnsignedCertCtrl'
-    }).when('/view', {
-        templateUrl : '/views/dashboard/view-cert.html',
-        controller : 'ViewCertCtrl'
     }).when('/support/about', {
         templateUrl : '/views/dashboard/about.support.html',
         controller : 'AboutWebcertCtrl'

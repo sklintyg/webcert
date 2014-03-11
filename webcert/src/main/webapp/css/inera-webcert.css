@@ -439,13 +439,16 @@ input[datepicker-popup] .btn-block {
   padding-right: 22px;
 }
 
-
 .alert-warning {
   color: #8A6D3B; /* WCAG AA compliant */
 }
 
 .alert-danger, .alert-error {
   color: #A94442; /* WCAG AA compliant */
+}
+
+.alert .close {
+  right: -13px;
 }
 
 .alert-info {

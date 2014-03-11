@@ -87,7 +87,6 @@
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/app.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/controllers.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/UnhandledQAController.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/UnsignedCertController.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/services.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/filters.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives.js"/>"></script>
