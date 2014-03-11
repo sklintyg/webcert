@@ -67,15 +67,6 @@
                   <select id="qp-showStatus" ng-model="qp.vantarPaSelector" ng-options="s.label for s in statusList"></select>
                 </div>
               </div>
-<!--            <div class="control-group"> commented out until needed
-              <label class="control-label">Svar senast</label>
-              <div class="controls">
-                <input type="text" id="filter-reply-by" datepicker-popup ng-model="qp.replyLatest" is-open="widgetState.dpAnswerOpen.open" datepicker-options="datepickerConfig"/>
-                <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpAnswerOpen)">
-                  <i class="icon-calendar"></i>
-                </button>
-              </div>
-            </div>-->
               <div>
                 <button id="filter-qa-btn" class="btn" ng-click="doSearch()">Sök</button>
                 <button class="btn" ng-click="resetSearchForm()" id="reset-search-form">Återställ sökformuläret</button>
