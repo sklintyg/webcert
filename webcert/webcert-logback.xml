@@ -1,20 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration scan="true" scanPeriod="30 seconds">
+
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%date{ISO8601} [%thread] %-5level %logger{10} - %msg%n</pattern>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
+        <param name="Pattern"
+          value="%date{ISO8601} [%thread] %-5level %logger{10} [%user %session] - %msg%n" />
+      </layout>
     </encoder>
   </appender>
 
   <!--Daily rolling file appender -->
-  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <appender name="FILE"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
     <File>${catalina.base}/logs/webcert.log</File>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <FileNamePattern>${catalina.base}/logs/webcert.%d{yyyy-MM-dd}.log</FileNamePattern>
+      <FileNamePattern>${catalina.base}/logs/webcert.%d{yyyy-MM-dd}.log
+      </FileNamePattern>
     </rollingPolicy>
-
-    <encoder>
-      <pattern>%date{ISO8601} [%thread] %-5level %logger{10} - %msg%n</pattern>
+    
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
+        <param name="Pattern"
+          value="%date{ISO8601} [%thread] %-5level %logger{10} [%user %session] - %msg%n" />
+      </layout>
     </encoder>
   </appender>
 
