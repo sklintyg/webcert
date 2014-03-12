@@ -85,6 +85,8 @@
         <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
       </property>
     </bean>
+    
+    <bean id="webcertRestExceptionHandler" class="se.inera.webcert.web.controller.WebcertRestExceptionHandler" />
   
     <bean class="se.inera.certificate.integration.rest.ModuleRestApiFactory"/>
   

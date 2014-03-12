@@ -1,5 +1,11 @@
 package se.inera.webcert.service.exception;
 
+/**
+ * Runtime exception used to signal internal errors.
+ * 
+ * @author nikpet
+ *
+ */
 public class WebCertServiceException extends RuntimeException {
 
     private WebCertServiceErrorCodeEnum errorCode;
