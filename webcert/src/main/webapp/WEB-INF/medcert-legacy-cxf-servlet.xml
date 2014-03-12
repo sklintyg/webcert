@@ -23,13 +23,11 @@
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
-      <ref bean="moduleRestExceptionHandler" />
+      <ref bean="webcertRestExceptionHandler" />
     </jaxrs:providers>
     <jaxrs:extensionMappings>
       <entry key="json" value="application/json" />
     </jaxrs:extensionMappings>
   </jaxrs:server>
   
-  <bean id="moduleRestExceptionHandler"
-    class="se.inera.webcert.web.controller.moduleapi.ModuleRestExceptionHandler" />
 </beans>
