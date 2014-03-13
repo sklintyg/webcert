@@ -56,8 +56,8 @@ body.start > .container-fluid {
 	text-decoration: underline;
 }
 
-body.start h1, .content-container p {
-	color: #28b4c4;
+body.start h1, .content-container p, body.start li {
+  color: #28b4c4;
 }
 
 .container-fluid {
@@ -461,6 +461,7 @@ input[datepicker-popup] .btn-block {
 
 .alert-info {
 	color: #306E8D; /* WCAG AA compliant */
+  border: 1px solid #9cd7e3;
 }
 
 .alert-column {
