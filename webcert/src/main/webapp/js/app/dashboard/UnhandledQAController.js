@@ -26,8 +26,13 @@ angular
                                 queryStartFrom : 0,
                                 queryPageSize : 10,
                                 totalCount : 0,
+
                                 currentList : undefined,
                                 queryFormCollapsed : true,
+                                form : {
+                                  questionFrom : "default",
+                                  vidarebefordrad : "default"
+                                },
                                 dpFromOpen : {
                                     open : false
                                 },
@@ -107,11 +112,10 @@ angular
                             var defaultQuery = {
                                 enhetsId : undefined, // set to chosen enhet
                                 // before submitting query
-                                questionFrom : "default",
                                 questionFromFK : false,
                                 questionFromWC : false,
                                 hsaId : undefined, // läkare
-                                vidarebefordrad : "default", // 3-state
+                                vidarebefordrad : undefined, // 3-state
                                 // boolean
                                 changedFrom : undefined,
                                 changedTo : undefined,
@@ -188,11 +192,30 @@ angular
                                 $scope.qp = angular.copy(defaultQuery);
                                 $scope.qp.vantarPaSelector = $scope.statusList[1];
                                 $scope.qp.doctorSelector = $scope.doctorList[0];
+                                $scope.widgetState.form.questionFrom = "default";
+                                $scope.widgetState.form.vidarebefordrad = "default";
                             }
 
                             $scope.reloadSearchForm = function() {
                                 if ($cookieStore.get("query_instance")) {
                                     $scope.qp = $cookieStore.get("query_instance").filter
+
+                                    if($scope.qp.questionFromFK == false && $scope.qp.questionFromWC == false) {
+                                      $scope.widgetState.form.questionFrom = "default";
+                                    }
+                                    else if($scope.qp.questionFromFK) {
+                                        $scope.widgetState.form.questionFrom = "FK";
+                                    }
+                                    else {
+                                        $scope.widgetState.form.questionFrom = "WC";
+                                    }
+
+                                    if($scope.qp.vidarebefordrad == undefined) {
+                                      $scope.widgetState.form.vidarebefordrad = "default";
+                                    }
+                                    else{
+                                      $scope.widgetState.form.vidarebefordrad = $scope.qp.vidarebefordrad;
+                                    }
 
                                     if ($scope.qp.vantarPaSelector) {
                                         $scope.qp.vantarPaSelector = selectVantarPaByValue($cookieStore.get("query_instance").filter.vantarPaSelector.value);
@@ -205,27 +228,29 @@ angular
                                 }
                             }
 
-                            // Hack to set value back to "default" after sending a search request or loading from a cookie.
-                            // This works since $apply and therefore this watch isn't called until after the request has already been made
-                            $scope.$watch('qp.vidarebefordrad', function(newVal, oldVal) {
-                            	if(newVal == undefined)
-                            	{
-                            		$scope.qp.vidarebefordrad = "default";
-                            	}
+                            // Watches to set back radio button when values are updated from cookie
+/*                            $scope.$watch('qp.questionFromFK', function(newVal, oldVal) {
+                              if(newVal == undefined) {
+                                $scope.widgetState.form.questionFrom = "default";
+                                return;
+                              }
+                              $scope.widgetState.form.questionFrom = newVal ? "FK" : "WC";
                             });
-                            
+/*
+                            $scope.$watch('qp.vidarebefordrad', function(newVal, oldVal) {
+                            	if(newVal == undefined) {
+                            		$scope.widgetState.form.vidarebefordrad = "default";
+                            	}
+                              else{
+                                $scope.widgetState.form.vidarebefordrad = newVal;
+                              }
+                            });
+*/
                             $scope.prepareSearchFormForQuery = function(qp, ws) {
 
                                 qp.enhetsId = $scope.activeUnit.id;
                                 $cookieStore.put("enhetsId", qp.enhetsId);
                                 qp.vantarPa = qp.vantarPaSelector.value;
-                                
-                                // Hack to make sure "default" value isn't sent to the API, it wants undefined. 
-                                // But angular can't mark radio buttons with "" or undefined values in IE8.
-                                // So we set this to undefined here and the watch above will set it back to reflect the correct radio button choice in UI
-                                if (qp.vidarebefordrad == "default") {
-                                	qp.vidarebefordrad = undefined;
-                                }
                                 
                                 if (qp.doctorSelector) {
                                     qp.hsaId = qp.doctorSelector.hsaId;
@@ -243,15 +268,21 @@ angular
                                     qp.replyLatest = $filter('date')(qp.replyLatest, 'yyyy-MM-dd');
                                 }
 
-                                if (qp.questionFrom == "FK") {
+                                if ($scope.widgetState.form.questionFrom == "FK") {
                                     qp.questionFromFK = true;
                                     qp.questionFromWC = false;
-                                } else if (qp.questionFrom == "WC") {
+                                } else if ($scope.widgetState.form.questionFrom == "WC") {
                                     qp.questionFromFK = false;
                                     qp.questionFromWC = true;
                                 } else {
                                     qp.questionFromFK = false;
                                     qp.questionFromWC = false;
+                                }
+                                if($scope.widgetState.form.vidarebefordrad == "default") {
+                                  qp.vidarebefordrad = undefined;
+                                }
+                                else{
+                                  qp.vidarebefordrad = $scope.widgetState.form.vidarebefordrad;
                                 }
 
                                 var queryInstance = {};
