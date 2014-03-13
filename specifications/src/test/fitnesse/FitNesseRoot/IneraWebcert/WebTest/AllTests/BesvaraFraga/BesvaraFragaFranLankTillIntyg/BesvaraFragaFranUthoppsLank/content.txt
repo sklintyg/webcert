@@ -38,3 +38,4 @@ Testet beskriver fallet när en användare besvarar en fråga från försäkring
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
+

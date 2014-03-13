@@ -240,6 +240,7 @@ class SvaraOchFraga {
             waitFor {
                 page.sendAnswer(id)
             }
+            sleep(1000L)
         }
     }
 
