@@ -67,12 +67,20 @@ directives.directive("wcAbout", ['$rootScope', '$location',
                 $scope.today = new Date();
                 $scope.menuItems = [
                     {
-                        link : '/web/dashboard#/support/about',
-                        label : 'Support'
+                        link :'/web/dashboard#/support/about',
+                        label:'Support / kontaktinformation'
                     },
                     {
-                        link : '/web/dashboard#/webcert/about',
-                        label : 'Om Webcert'
+                        link :'/web/dashboard#/certificates/about',
+                        label:'Intyg som stöds i Webcert'
+                    },
+                    {
+                        link :'/web/dashboard#/faq/about',
+                        label:'Vanliga frågor'
+                    },
+                    {
+                        link :'/web/dashboard#/cookies/about',
+                        label:'Om kakor (cookies)'
                     }
                 ];
 
