@@ -77,7 +77,7 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
         // Only ask about toggle if not already set AND not skipFlag cookie is
         // set
         if (!qa.vidarebefordrad && !_isSkipVidareBefodradCookieSet()) {
-            _showVidarebefordradPreferenceDialog("markforward", "Det verkar som att du har informerat den som ska ta hand om frågan. Vill du markera frågan som vidarebefordrad?", function() { // yes
+            _showVidarebefordradPreferenceDialog("markforward", "Det verkar som att du har informerat den som ska hantera ärendet. Vill du markera ärendet som vidarebefordrat?", function() { // yes
                 $log.debug("yes");
                 qa.vidarebefordrad = true;
                 if (onYesCallback) {
