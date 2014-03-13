@@ -12,7 +12,7 @@ directives.directive('wcCareUnitClinicSelector', ['$rootScope', '$cookieStore', 
             template :
                 '<table class="span12 table unit-table">' +
                   '<tr ng-repeat="unit in units">' +
-                    '<td><button id="select-active-unit-{{unit.id}}" type="button" ng-click="selectUnit(unit)" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}<span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span></button></td>' +
+                    '<td><button id="select-active-unit-{{unit.id}}" type="button" ng-click="selectUnit(unit)" class="qa-unit" ng-class="{selected : selectedUnit == unit}">{{unit.namn}}<span class="qa-circle" ng-class="{\'qa-circle-active\': getItemCountForUnitId(unit)>0}" title="Det totala antalet ej hanterade frågor och svar som finns registrerade. Det kan finnas frågor och svar som gäller men som inte visas här. För säkerhets skull bör du kontrollera övriga vårdenheter och mottagningar också.">{{getItemCountForUnitId(unit)}}</span></button></td>' +
                   '</tr>' +
                 '</table>',
             controller : function ($scope) {
