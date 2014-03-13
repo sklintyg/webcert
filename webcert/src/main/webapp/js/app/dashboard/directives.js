@@ -93,14 +93,22 @@ directives.directive("wcAbout", ['$rootScope','$location', function($rootScope,$
         $scope.menuItems = [
 	        {
 	        	link :'/web/dashboard#/support/about', 
-	          label:'Support'
+	            label:'Support / kontaktinformation'
 	        },
+            {
+                link :'/web/dashboard#/certificates/about',
+                label:'Intyg som stöds i Webcert'
+            },
 	        {
-	        	link :'/web/dashboard#/webcert/about', 
-	          label:'Om Webcert'
-	        }
+	        	link :'/web/dashboard#/faq/about',
+	            label:'Vanliga frågor'
+            },
+            {
+                link :'/web/dashboard#/cookies/about',
+                label:'Om kakor (cookies)'
+            }
         ];
-        
+
         function getSubMenuName(path) {
           var path = path.substring(0, path.lastIndexOf('/'));
         	return path.substring(path.lastIndexOf('/') + 1); 
