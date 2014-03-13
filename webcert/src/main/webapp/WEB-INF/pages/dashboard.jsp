@@ -76,28 +76,7 @@
     <div id="view" ng-view></div>
   </div>
 
-  <script type="text/javascript" src="<c:url value="/webjars/angularjs/1.1.5/angular.min.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/webjars/angularjs/1.1.5/angular-cookies.min.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/webjars/angularjs/1.1.5/i18n/angular-locale_sv-se.js"/>"></script>
-  <script type="text/javascript" src='<c:url value="/js/vendor/ui-bootstrap/0.7.0/ui-bootstrap-tpls-0.7.0.js"/>'></script>
-
-  <%-- Application files --%>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/app.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/controllers.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/UnhandledQAController.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/UnsignedCertController.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/services.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/filters.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/directives.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/app/dashboard/messages.js"/>"></script>
-
-  <%-- Dependencies to common components --%>
-  <script type="text/javascript" src="<c:url value="/js/common/wc-utils.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/common/wc-common-fragasvar-module.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/common/wc-message-module.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/common/wc-common.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/common/wc-common-message-resources.js"/>"></script>
-
+  <script data-main="/js/main" src="<c:url value="/webjars/requirejs/2.1.10/require.min.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/siths.jsp"/>"></script>
 </body>
 </html>

@@ -1,0 +1,9 @@
+<table class="span12 table unit-table">
+  <tr ng-repeat="unit in units">
+    <td>
+      <button id="select-active-unit-{{unit.id}}" type="button" ng-click="selectUnit(unit)" class="qa-unit" ng-class="{selected : selectedUnit == unit}">
+        {{unit.namn}}<span class="qa-circle" ng-class="{'qa-circle-active': getItemCountForUnitId(unit)>0}" title="Ohanterade frågor och svar">{{getItemCountForUnitId(unit)}}</span>
+      </button>
+    </td>
+  </tr>
+</table>
