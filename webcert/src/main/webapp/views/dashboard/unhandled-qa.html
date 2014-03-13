@@ -18,9 +18,9 @@
         <h2 class="col-head" ng-class="{'less-top-padding' : units.length < 2}">{{selectedUnit.namn}}</h2>
 
         <div class="webcert-bottom-padding-section">
-          <span ng-if="!widgetState.queryMode">Visar alla ohanterade frågor för {{selectedUnit.namn}}<br></span>
+          <span ng-if="!widgetState.queryMode">Här visas alla ej hanterade frågor.<br></span>
           <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
-            <span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span>
+            <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
           </button>
           <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed" class="qa-filter-panel form-horizontal form-inline" style="background-color: #f5f5f5;">
             <div class="qa-filter">
@@ -99,14 +99,12 @@
               <span message key="info.query.noresults"></span>
             </div>
 
-
-
             <!-- error message -->
             <div id="current-list-noResults-error" ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" class="alert alert-error">
               <span message key="{{widgetState.activeErrorMessageKey}}"></span>
             </div>
 
-            <div id="query-count" ng-show="widgetState.queryMode && widgetState.totalCount>0">Sökresultat - {{widgetState.totalCount}} träffar för {{selectedUnit.namn}}</div>
+            <div id="query-count" ng-show="widgetState.queryMode && widgetState.totalCount>0">Sökresultat - {{widgetState.totalCount}} träffar</div>
 
             <!-- qa table -->
             <div class="row-fluid qa-table-section" ng-show="widgetState.currentList.length>0" id="qaTable">
@@ -114,19 +112,19 @@
                 <tr>
                   <th></th>
                   <th></th>
-                  <th class="center" title="Här kan du markera om frågan/svaret är vidarebefordrat till den som ska ta hand om frågan/svaret">Vidarebefordrad</th>
-                  <th title="Vilken åtgärd frågan/svaret kräver för att inte längre räknas som ohanterad">Åtgärd</th>
-                  <th title="Läkare som har signerat intyget">Läkare</th>
-                  <th title="Personnumret på patienten som läkarintyget berör">Patient</th>
-                  <th title="Det datum då något senast hände med frågan/svaret. Ex: när frågan skickades eller när ett svar inkom">Ändringsdatum</th>
+                  <th class="center" title="Markera om frågan eller svaret är vidarebefordrat till den som ska hantera ärendet.">Vidarebefordrad</th>
+                  <th title="Åtgärd som krävs för att fråga-svar ska anses som hanterad.">Åtgärd</th>
+                  <th title="Läkare som har signerat intyget.">Läkare</th>
+                  <th title="Berörd patients personnummer.">Patient</th>
+                  <th title="Datum för senaste händelse. Exempelvis när fråga skickades eller när svar inkom.">Ändringsdatum</th>
                   <!--th title="Eventuellt datum som vårdenheten måste inkomma med svar till Försäkringskassan">Svar senast</th-->
                 </tr>
                 <tr ng-repeat="qa in widgetState.currentList">
                   <td>
-                    <button class="btn btn-info" title="Visa intyget och frågan/svaret" ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
+                    <button class="btn btn-info" title="Visar intyget och fråga-svar." ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa</button>
                   </td>
                   <td>
-                    <button class="btn" ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-secondary' : qa.vidarebefordrad}" title="Skicka ett mejl med direktlänk till denna fråga för att till exempel meddela ansvarig läkare att åtgärd behöver vidtas."
+                    <button class="btn" ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-secondary' : qa.vidarebefordrad}" title="Skicka ett mejl med en länk till intyget för att informera den som ska hantera ärendet."
                       ng-click="openMailDialog(qa)">
                       <img ng-if="!qa.vidarebefordrad" src="/img/mail.png">
                       <img ng-if="qa.vidarebefordrad" src="/img/mail_dark.png">
@@ -143,7 +141,7 @@
                   <!--td class="unbreakable table-qa-last">{{qa.sistaDatumForSvar}}</td-->
               </table>
             </div>
-            <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}}</div>
+            <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av {{widgetState.totalCount}}</div>
             <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
               <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()" ng-disabled="widgetState.fetchingMoreInProgress">
                 <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
