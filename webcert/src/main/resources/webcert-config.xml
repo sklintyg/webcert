@@ -49,6 +49,8 @@
     <import resource="classpath:jms-config.xml"/>
   
     <import resource="classpath:/mail-stub-context.xml"/>
+
+    <import resource="classpath*:module-config.xml" />
   
   
     <context:component-scan base-package="se.inera.webcert.web.service"/>

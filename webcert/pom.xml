@@ -67,6 +67,11 @@
       <artifactId>module-support</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>se.inera.certificate.modules</groupId>
+      <artifactId>ts-bas</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
 
     <dependency>
       <groupId>se.inera.certificate.proxy</groupId>
@@ -275,24 +280,24 @@
             <contextPath>/</contextPath>
           </webAppConfig>
           <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
-          <contextHandlers>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>${inera.certificates.basedir}/rli/target/rli.war</war>
-              <contextPath>/rli</contextPath>
-            </contextHandler>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>${inera.certificates.basedir}/ts-bas/target/ts-bas.war</war>
-              <contextPath>/ts-bas</contextPath>
-            </contextHandler>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>${inera.certificates.basedir}/ts-diabetes/target/ts-diabetes.war</war>
-              <contextPath>/ts-diabetes</contextPath>
-            </contextHandler>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>${inera.certificates.basedir}/fk7263/target/fk7263.war</war>
-              <contextPath>/fk7263</contextPath>
-            </contextHandler>
-          </contextHandlers>
+          <!--<contextHandlers>-->
+            <!--<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">-->
+              <!--<war>${inera.certificates.basedir}/rli/target/rli.war</war>-->
+              <!--<contextPath>/rli</contextPath>-->
+            <!--</contextHandler>-->
+            <!--<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">-->
+              <!--<war>${inera.certificates.basedir}/ts-bas/target/ts-bas.war</war>-->
+              <!--<contextPath>/ts-bas</contextPath>-->
+            <!--</contextHandler>-->
+            <!--<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">-->
+              <!--<war>${inera.certificates.basedir}/ts-diabetes/target/ts-diabetes.war</war>-->
+              <!--<contextPath>/ts-diabetes</contextPath>-->
+            <!--</contextHandler>-->
+            <!--<contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">-->
+              <!--<war>${inera.certificates.basedir}/fk7263/target/fk7263.war</war>-->
+              <!--<contextPath>/fk7263</contextPath>-->
+            <!--</contextHandler>-->
+          <!--</contextHandlers>-->
           <systemProperties>
             <systemProperty>
               <name>spring.profiles.active</name>
