@@ -51,7 +51,17 @@
 	      </div>
 	      <div class="span6">
 	        <h1>Välkommen till Webcert</h1>
-	        <p>Du måste logga in med SITHS-kort.</p>
+	        <p>Webcert är en tjänst för elektroniska läkarintyg. I tjänsten kan du skriva intyg samt kommunicera med Försäkringskassan kring läkarintyg FK 7263.</p>
+            <p>För närvarande stödjer tjänsten följande intyg:</p>
+            <ul>
+                <li>Läkarintyg för sjukskrivning (FK 7263)</li>
+                <!--li>Intyg vid avbeställd resa</li>
+                <li>Läkarintyg Transportstyrelsen Bas</li>
+                <li>Läkarintyg Transportstyrelsen Diabetes</li-->
+            </ul>
+            <p>
+                Tjänsten kräver inloggning med SITHS-kort eller e-legitimation, samt medarbetaruppdrag med behörigheten Hälso- och sjukvårdspersonal.
+            </p>
 	        <p><a href="/web/start" class="btn btn-success" id="loginBtn">Logga in</a></p>
 	      </div>
 	    </div>

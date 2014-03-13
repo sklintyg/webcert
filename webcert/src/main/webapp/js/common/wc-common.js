@@ -130,13 +130,13 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                 template :
                     '<div class="modal-header">'+
                       '<button class="close"  data-ng-click="close()">×</button>'+
-                      '<h3>Vilken vårdenhet vill du logga in på?</h3>'+
+                      '<h3>Välj vårdenhet att logga in i</h3>'+
                     '</div>'+
                     '<div class="modal-body">'+
                       '<table class="table table-striped table-qa table-links" ng-repeat="vg in vardgivare">'+
                         '<tr>'+
                           '<th style="width: 50%">{{vg.namn}}</th>'+
-                          '<th>Ohanterade frågor och svar</th>'+
+                          '<th>Ej hanterade frågor och svar</th>'+
                           '<th>Osignerade intyg</th>'+
                         '</tr>'+
                         '<tr ng-repeat="enhet in vg.vardenheter">'+
@@ -191,14 +191,14 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
                   +'<span class="headerbox-logo pull-left"><a href="/web/start"><img alt="Till startsidan" src="/img/webcert_logo.png"/></a></span>'
                   +'<span class="headerbox-date pull-left">'
                     +'<span class="location">{{today | date:"shortDate"}} - {{user.userContext.valdVardgivare.namn}} - {{user.userContext.valdVardenhet.namn}}</span><br>'
-                    +'<span class="otherLocations" ng-show="stat.fragaSvarAndraEnheter > 0">Du har <span style="font-weight:bold">{{stat.fragaSvarAndraEnheter}}</span> ohanterade frågor/svar på annan enhet.</span> <a class="otherLocations" ng-href="#changedialog" ng-show="user.userContext.totaltAntalVardenheter > 1" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</a>'
+                    +'<span class="otherLocations" ng-show="stat.fragaSvarAndraEnheter > 0"><span style="font-weight:bold">{{stat.fragaSvarAndraEnheter}}</span> ej hanterade frågor/svar på andra vårdenheter.</span> <a class="otherLocations" ng-href="#changedialog" ng-show="user.userContext.totaltAntalVardenheter > 1" data-ng-click="openChangeCareUnitDialog()">Byt vårdenhet</a>'
                   +'</span>'
                 +'</div>'
                 +'<div class="headerbox-user pull-right">'
                   +'<div class="headerbox-user-profile headerbox-avatar" ng-show="user.userContext.namn.length">'
                             +'<span ng-switch="user.userContext.lakare">'
                             +'<strong ng-switch-when="true">Läkare</strong>'
-                            +'<strong ng-switch-default>Admin</strong>'
+                            +'<strong ng-switch-default>Vårdadministratör</strong>'
                             +'</span>'
                     +' - <span class="logged-in">{{user.userContext.namn}}</span><br>'
                     +'<a class="pull-right" ng-href="{{getLogoutUrl()}}" id="logoutLink">Logga ut</a>'
@@ -221,7 +221,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 			    								+'<li ng-class="{active: isActive(menu.link)}" ng-repeat="menu in menuDefs">'
 		    										+'<a ng-href="{{menu.link}}" ng-show="(menu.requires_doctor && isDoctor) || !menu.requires_doctor">{{menu.label}}'
 		    										+'<span id="{{menu.statNumberId}}" ng-if="menu.getStat()>0" class="stat-circle stat-circle-active"'
-		    											+'title="Vårdenheten har {{menu.getStat()}} ohanterade frågor och svar.">{{menu.getStat()}}</span></a>'
+		    											+'title="Vårdenheten har {{menu.getStat()}} ej hanterade frågor och svar.">{{menu.getStat()}}</span></a>'
 		    									+'</li>'
 		            				+'</ul>'
 		            			+'</div><!-- /.nav-collapse -->'
