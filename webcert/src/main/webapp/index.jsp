@@ -51,7 +51,7 @@
 	      </div>
 	      <div class="span6">
 	        <h1>Välkommen till Webcert</h1>
-	        <p>Webcert är en tjänst för elektroniska läkarintyg. I tjänsten kan du skriva intyg samt kommunicera med Försäkringskassan kring läkarintyg FK 7263.</p>
+	        <p>Webcert är en tjänst för elektroniska läkarintyg. I tjänsten kan du kommunicera med Försäkringskassan kring läkarintyg FK 7263.</p>
             <p>För närvarande stödjer tjänsten följande intyg:</p>
             <ul>
                 <li>Läkarintyg för sjukskrivning (FK 7263)</li>
