@@ -74,7 +74,7 @@ angular
 	
 	                              //If we have a query stored, open the advanced filter
 	                              if($cookieStore.get("query_instance")){
-	                                  $scope.widgetState.queryFormCollapsed = false
+	                                  $scope.widgetState.queryFormCollapsed = false;
 	                                  $scope.doSearch();
 	                              }
 	                          });
@@ -228,24 +228,6 @@ angular
                                 }
                             }
 
-                            // Watches to set back radio button when values are updated from cookie
-/*                            $scope.$watch('qp.questionFromFK', function(newVal, oldVal) {
-                              if(newVal == undefined) {
-                                $scope.widgetState.form.questionFrom = "default";
-                                return;
-                              }
-                              $scope.widgetState.form.questionFrom = newVal ? "FK" : "WC";
-                            });
-/*
-                            $scope.$watch('qp.vidarebefordrad', function(newVal, oldVal) {
-                            	if(newVal == undefined) {
-                            		$scope.widgetState.form.vidarebefordrad = "default";
-                            	}
-                              else{
-                                $scope.widgetState.form.vidarebefordrad = newVal;
-                              }
-                            });
-*/
                             $scope.prepareSearchFormForQuery = function(qp, ws) {
 
                                 qp.enhetsId = $scope.activeUnit.id;
