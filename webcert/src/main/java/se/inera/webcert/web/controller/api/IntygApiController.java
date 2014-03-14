@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.converter.IntygMerger;
-import se.inera.webcert.modules.ModuleRestApiFactory;
 import se.inera.webcert.modules.registry.IntygModule;
 import se.inera.webcert.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
@@ -57,9 +56,6 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private IntygRepository intygRepository;
-
-    @Autowired
-    private ModuleRestApiFactory moduleApiFactory;
 
     @Autowired
     private IntygDraftService intygDraftService;
