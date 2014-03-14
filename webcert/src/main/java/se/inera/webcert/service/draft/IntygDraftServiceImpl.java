@@ -199,6 +199,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         if (intyg == null) {
             LOG.warn("Intyg with id '{}' was not found", intygId);
+            // TODO Throw exception perhaps?
             return null;
         }
 
