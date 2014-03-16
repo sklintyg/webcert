@@ -6,7 +6,9 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 
 public interface IntygModuleRegistry {
 
-    public abstract ModuleApi getModule(String name);
+    public abstract ModuleApi getModuleApi(String id);
+
+    public abstract IntygModule getIntygModule(String id);
 
     public abstract List<IntygModule> listAllModules();
 

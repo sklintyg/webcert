@@ -146,7 +146,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         String modelAsJson = null;
         
-        ModuleApi moduleApi = moduleRegistry.getModule(intygType);
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
         
         try {
             InternalModelResponse draftResponse = moduleApi.createNewInternal(draftRequest);
@@ -232,7 +232,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         LOG.debug("Validating Intyg with id {} and type {}", intygId, intygType);
 
-        ModuleApi moduleApi = moduleRegistry.getModule(intygType);
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
 
         try {
             InternalModelHolder intHolder = new InternalModelHolder(draftAsJson);

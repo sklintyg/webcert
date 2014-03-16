@@ -8,10 +8,11 @@ public class IntygModule implements Comparable<IntygModule> {
         
     private String description;
     
-    public IntygModule(String id, String label) {
+    public IntygModule(String id, String label, String description) {
         super();
         this.id = id;
         this.label = label;
+        this.description = description;
     }
 
     public String getId() {
@@ -24,10 +25,6 @@ public class IntygModule implements Comparable<IntygModule> {
         
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String desc) {
-        this.description = desc;
     }
     
     @Override

@@ -46,7 +46,7 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
         IntygModule module;
 
         for (ModuleEntryPoint entryPoint : moduleEntryPoints) {
-            module = new IntygModule(entryPoint.getModuleName(), entryPoint.getModuleName());
+            module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(), entryPoint.getModuleDescription());
             moduleList.add(module);
         }
 
@@ -59,8 +59,17 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
     }
 
     @Override
-    public ModuleApi getModule(String name) {
-        return moduleApiMap.get(name);
+    public ModuleApi getModuleApi(String id) {
+        return moduleApiMap.get(id);
     }
 
+    @Override
+    public IntygModule getIntygModule(String id) {
+        for (IntygModule m : moduleList) {
+            if (m.getId().equals(id)) {
+                return m;
+            }
+        }
+        return null;
+    }
 }

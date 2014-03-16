@@ -84,7 +84,7 @@ public class IntygDraftServiceImplTest {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intyg);
         
         ModuleApi mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModule(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", "This is soooo wrong!");
         
@@ -108,7 +108,7 @@ public class IntygDraftServiceImplTest {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intyg);
     
         ModuleApi mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModule(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
     
         // Oooops! Something failed in the module
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenThrow(ModuleException.class);
