@@ -318,11 +318,6 @@
       </dependency>
       <dependency>
         <groupId>se.inera.certificate</groupId>
-        <artifactId>module-api</artifactId>
-        <version>${inera.certificate.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>se.inera.certificate</groupId>
         <artifactId>schemas</artifactId>
         <version>${inera.certificate.version}</version>
       </dependency>

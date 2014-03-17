@@ -40,10 +40,6 @@
       <artifactId>loggtjanst-stub</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.certificate</groupId>
-      <artifactId>module-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
