@@ -27,11 +27,6 @@
       <artifactId>joda-time</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-xc</artifactId>
-      <version>1.9.12</version>
-    </dependency>
-    <dependency>
       <groupId>se.inera.certificate</groupId>
       <artifactId>integration-util</artifactId>
     </dependency>
