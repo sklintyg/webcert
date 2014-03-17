@@ -227,7 +227,7 @@ public class IntygModuleApiController extends AbstractApiController {
                     
             String intygType = intygAsExternal.getMetaData().getType();
             
-            ModuleApi moduleApi = moduleRegistry.getModule(intygType);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             
             PdfResponse pdfResponse = moduleApi.pdf(new ExternalModelHolder(intygAsExternal.getContents()));
             

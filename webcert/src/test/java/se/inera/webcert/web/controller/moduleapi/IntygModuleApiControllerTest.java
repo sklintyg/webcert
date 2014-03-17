@@ -86,7 +86,7 @@ public class IntygModuleApiControllerTest {
 
         when(intygService.fetchExternalIntygData(CERTIFICATE_ID)).thenReturn(utlatandeHolder);
         
-        when(moduleRegistry.getModule(CERTIFICATE_TYPE)).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenReturn(moduleApi);
         
         PdfResponse pdfResponse = new PdfResponse(PDF_DATA, PDF_NAME);
         when(moduleApi.pdf(any(ExternalModelHolder.class))).thenReturn(pdfResponse);
@@ -94,7 +94,7 @@ public class IntygModuleApiControllerTest {
         Response response = moduleApiController.getSignedIntygAsPdf(CERTIFICATE_ID);
 
         verify(intygService).fetchExternalIntygData(CERTIFICATE_ID);
-        verify(moduleRegistry).getModule(CERTIFICATE_TYPE);
+        verify(moduleRegistry).getModuleApi(CERTIFICATE_TYPE);
         verify(moduleApi).pdf(any(ExternalModelHolder.class));
         verify(logService).logPrintOfIntyg(CERTIFICATE_ID, PATIENT_ID);
 

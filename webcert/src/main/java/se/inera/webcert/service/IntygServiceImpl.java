@@ -93,7 +93,7 @@ public class IntygServiceImpl implements IntygService {
 
         try {
 
-            ModuleApi moduleApi = moduleRegistry.getModule(metaData.getType());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(metaData.getType());
 
             ExternalModelHolder extHolder = new ExternalModelHolder(intygAsExternal.getContents());
             InternalModelResponse internalModelReponse = moduleApi.convertExternalToInternal(extHolder);
@@ -117,7 +117,7 @@ public class IntygServiceImpl implements IntygService {
 
             String intygType = metaData.getType();
 
-            ModuleApi moduleApi = moduleRegistry.getModule(intygType);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
                         
             String xml = marshal(intyg.getCertificate());
             ExternalModelResponse unmarshallResponse = moduleApi.unmarshall(new TransportModelHolder(xml));

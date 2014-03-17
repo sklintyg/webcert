@@ -161,7 +161,7 @@ public class IntygServiceTest {
                 intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
-        when(moduleRegistry.getModule(CERTIFICATE_TYPE)).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenReturn(moduleApi);
 
         ExternalModelResponse unmarshallResponse = new ExternalModelResponse("<external-json/>", utlatande);
         // setup module API behavior for conversion from transport to external
@@ -177,7 +177,7 @@ public class IntygServiceTest {
         verify(getCertificateForCareResponder).getCertificateForCare(LOGICAL_ADDRESS, request);
 
         // ensure correct module lookup is done with module registry
-        verify(moduleRegistry, times(2)).getModule("fk7263");
+        verify(moduleRegistry, times(2)).getModuleApi("fk7263");
 
         // ensure that correct utlatande XML is sent to module to convert from transport to external format
         //verify(moduleApi).unmarshall(argThat(new UtlatandeXmlMatcher()));
@@ -227,7 +227,7 @@ public class IntygServiceTest {
                 intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
-        when(moduleRegistry.getModule(CERTIFICATE_TYPE)).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenReturn(moduleApi);
 
         when(moduleApi.unmarshall(any(TransportModelHolder.class))).thenThrow(ModuleException.class);
 
@@ -245,7 +245,7 @@ public class IntygServiceTest {
                 intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
-        when(moduleRegistry.getModule(CERTIFICATE_TYPE)).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenReturn(moduleApi);
 
         // setup module API behaviour for conversion from transport to external
         ExternalModelResponse unmarshallResponse = new ExternalModelResponse("<external-json/>", utlatande);
@@ -268,7 +268,7 @@ public class IntygServiceTest {
                 intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
-        when(moduleRegistry.getModule(CERTIFICATE_TYPE)).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenReturn(moduleApi);
 
         // setup module API behaviour for conversion from transport to external
         ExternalModelResponse unmarshallResponse = new ExternalModelResponse("<external-json/>", utlatande);
@@ -280,7 +280,7 @@ public class IntygServiceTest {
         verify(getCertificateForCareResponder).getCertificateForCare(LOGICAL_ADDRESS, request);
 
         // ensure correct module lookup is done with module Rest API factory
-        verify(moduleRegistry).getModule("fk7263");
+        verify(moduleRegistry).getIntygModule("fk7263");
 
         // ensure that correct utlatande XML is sent to module to convert from transport to external format
         //verify(moduleApi).unmarshall(argThat(new UtlatandeXmlMatcher()));
@@ -322,7 +322,7 @@ public class IntygServiceTest {
                 intygtjanstResponse);
 
         // setup module Rest API factory to return a mocked module Rest API
-        when(moduleRegistry.getModule(CERTIFICATE_TYPE)).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenReturn(moduleApi);
 
         // setup module API behaviour for conversion from transport to external
         when(moduleApi.unmarshall(any(TransportModelHolder.class))).thenThrow(ModuleException.class);
