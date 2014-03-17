@@ -1,11 +1,5 @@
 package se.inera.webcert.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
@@ -14,8 +8,12 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,9 +24,8 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
-import se.inera.certificate.integration.rest.dto.CertificateStatus;
 import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.common.MinimalUtlatande;
@@ -54,9 +51,11 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCert
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygMetadata;
 import se.inera.webcert.service.dto.IntygStatus;
-import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {

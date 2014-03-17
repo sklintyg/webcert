@@ -58,10 +58,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>log-messages</artifactId>
     </dependency>
-    <dependency>
+<!--     <dependency>
       <groupId>se.inera.certificate</groupId>
       <artifactId>module-api</artifactId>
-    </dependency>
+    </dependency> -->
     <dependency>
       <groupId>se.inera.certificate.modules</groupId>
       <artifactId>module-support</artifactId>

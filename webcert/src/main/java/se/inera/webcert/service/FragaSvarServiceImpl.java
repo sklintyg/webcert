@@ -39,7 +39,6 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCert
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygStatus;
-import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;

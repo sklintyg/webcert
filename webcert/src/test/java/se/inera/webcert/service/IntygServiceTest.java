@@ -1,20 +1,17 @@
 package se.inera.webcert.service;
 
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
 
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -22,12 +19,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
@@ -36,10 +33,6 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertifica
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.integration.rest.ModuleRestApi;
-import se.inera.certificate.integration.rest.ModuleRestApiFactory;
-import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
-import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.common.MinimalUtlatande;
 import se.inera.certificate.modules.support.api.ModuleApi;

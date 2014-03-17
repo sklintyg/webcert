@@ -1,18 +1,15 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.any;
+
+import java.io.IOException;
+
+import javax.ws.rs.core.Response;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,17 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.sun.xml.bind.v2.schemagen.xmlschema.Any;
-
-import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
-import se.inera.certificate.integration.rest.ModuleRestApi;
-import se.inera.certificate.integration.rest.ModuleRestApiFactory;
-import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
-import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
-import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.dto.IntygContentHolder;

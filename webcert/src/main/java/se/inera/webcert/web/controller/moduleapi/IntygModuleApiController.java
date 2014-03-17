@@ -1,8 +1,5 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.OK;
-
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -22,10 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
-import se.inera.certificate.integration.rest.ModuleRestApi;
-import se.inera.certificate.integration.rest.ModuleRestApiFactory;
-import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.PdfResponse;

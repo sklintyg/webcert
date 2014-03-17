@@ -1,21 +1,21 @@
 package se.inera.webcert.service;
 
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Throwables;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
@@ -25,11 +25,6 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertifica
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.integration.rest.ModuleRestApi;
-import se.inera.certificate.integration.rest.ModuleRestApiFactory;
-import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
-import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
-import se.inera.certificate.integration.rest.dto.CertificateStatus;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.common.MinimalUtlatande;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -49,6 +44,8 @@ import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import com.google.common.base.Throwables;
 
 /**
  * @author andreaskaltenbach
@@ -140,18 +137,6 @@ public class IntygServiceImpl implements IntygService {
         metaData.setStatuses(convertStatus(source.getStatus()));
 
         return metaData;
-    }
-
-    private List<CertificateStatus> convertCertificateStatuses(List<CertificateStatusType> source) {
-        List<CertificateStatus> status = new ArrayList<>();
-        for (CertificateStatusType certificateStatusType : source) {
-            status.add(convertCertificateStatus(certificateStatusType));
-        }
-        return status;
-    }
-
-    private CertificateStatus convertCertificateStatus(CertificateStatusType source) {
-        return new CertificateStatus(source.getType().value(), source.getTarget(), source.getTimestamp());
     }
 
     @Override
