@@ -28,6 +28,10 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath:/log-sender-config.xml</param-value>
   </context-param>
+  <context-param>
+    <param-name>logbackConfigParameter</param-name>
+    <param-value>logsender.logback.file</param-value>
+  </context-param>
 
   <servlet>
     <servlet-name>ws</servlet-name>
@@ -40,6 +44,10 @@
       <url-pattern>/*</url-pattern>
     </servlet-mapping>
 
+  <!-- Listener for external logback configuration file -->
+  <listener>
+    <listener-class>se.inera.certificate.logging.LogbackConfiguratorContextListener</listener-class>
+  </listener>
   <!-- Start spring context -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
