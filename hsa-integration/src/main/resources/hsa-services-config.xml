@@ -52,9 +52,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
         </sec:keyManagers>
         <sec:trustManagers>
           <sec:keyStore
-                  file="${ws.truststore.file}"
-                  password="${ws.truststore.password}"
-                  type="${ws.truststore.type}"/>
+                  file="${hsa.ws.truststore.file}"
+                  password="${hsa.ws.truststore.password}"
+                  type="${hsa.ws.truststore.type}"/>
         </sec:trustManagers>
 
         <sec:cipherSuitesFilter>

@@ -147,14 +147,14 @@
 
     <!-- Central storage of cryptographic keys -->
     <bean id="keyManager" class="org.springframework.security.saml.key.JKSKeyManager">
-      <constructor-arg value="${saml.keystore.file}"/>
-      <constructor-arg type="java.lang.String" value="${saml.keystore.password}"/>
+      <constructor-arg value="${sakerhetstjanst.saml.keystore.file}"/>
+      <constructor-arg type="java.lang.String" value="${sakerhetstjanst.saml.keystore.password}"/>
       <constructor-arg>
         <map>
-          <entry key="${saml.keystore.alias}" value="${saml.keystore.password}"/>
+          <entry key="${sakerhetstjanst.saml.keystore.alias}" value="${sakerhetstjanst.saml.keystore.password}"/>
         </map>
       </constructor-arg>
-      <constructor-arg type="java.lang.String" value="${saml.keystore.alias}"/>
+      <constructor-arg type="java.lang.String" value="${sakerhetstjanst.saml.keystore.alias}"/>
     </bean>
 
     <!-- Entry point to initialize authentication, default values taken from properties file -->
@@ -175,8 +175,8 @@
     <bean id="metadataGeneratorFilter" class="org.springframework.security.saml.metadata.MetadataGeneratorFilter">
       <constructor-arg>
         <bean class="org.springframework.security.saml.metadata.MetadataGenerator">
-          <property name="entityId" value="${saml.entityId}"/>
-          <property name="entityBaseURL" value="${saml.entityBaseUrl}"/>
+          <property name="entityId" value="${sakerhetstjanst.saml.entityId}"/>
+          <property name="entityBaseURL" value="${sakerhetstjanst.saml.entityBaseUrl}"/>
           <property name="signMetadata" value="false"/>
           <property name="includeDiscovery" value="false"/>
           <property name="bindingsSSO" value="POST"/>
@@ -200,7 +200,7 @@
               </bean>
             </constructor-arg>
             <constructor-arg ref="httpClient"/>
-            <constructor-arg value="${saml.idp.metadata.url}"/>
+            <constructor-arg value="${sakerhetstjanst.saml.idp.metadata.url}"/>
             <property name="parserPool" ref="parserPool"/>
           </bean>
         </list>
@@ -258,7 +258,7 @@
 
     <!-- SAML 2.0 WebSSO Assertion Consumer -->
     <bean id="webSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerImpl">
-      <property name="responseSkew" value="${saml.responseSkew}"/>
+      <property name="responseSkew" value="${sakerhetstjanst.saml.responseSkew}"/>
     </bean>
 
     <!-- SAML 2.0 Holder-of-Key WebSSO Assertion Consumer -->
