@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.integration.rest.dto.CertificateStatus;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
@@ -38,6 +37,8 @@ import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalC
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
+import se.inera.webcert.service.dto.IntygContentHolder;
+import se.inera.webcert.service.dto.IntygStatus;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
@@ -186,15 +187,15 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Fetch certificate from Intygstjansten
-        UtlatandeCommonModelHolder utlatandeHolder = intygService.fetchIntygCommonModel(fragaSvar.getIntygsReferens().getIntygsId());
-     // Get utfardande vardperson
-        Vardperson vardPerson = FragaSvarConverter.convert(utlatandeHolder.getUtlatande().getSkapadAv());
+        IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(fragaSvar.getIntygsReferens().getIntygsId());
+        // Get utfardande vardperson
+        Vardperson vardPerson = FragaSvarConverter.convert(externalIntygData.getExternalModel().getSkapadAv());
 
         // Is user authorized to save an answer to this question?
         verifyEnhetsAuth(vardPerson.getEnhetsId());
 
         // Verify that certificate is not revoked
-        if (isRevoked(utlatandeHolder.getCertificateContentMeta().getStatuses())) {
+        if (isRevoked(externalIntygData.getMetaData().getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-XXX: Cannot save Svar when certificate is revoked!");
         }
@@ -261,27 +262,27 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Fetch from Intygstjansten
-        UtlatandeCommonModelHolder utlatandeHolder = intygService.fetchIntygCommonModel(intygId);
+        IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(intygId);
 
         // Get utfardande vardperson
-        Vardperson vardPerson = FragaSvarConverter.convert(utlatandeHolder.getUtlatande().getSkapadAv());
+        Vardperson vardPerson = FragaSvarConverter.convert(externalIntygData.getExternalModel().getSkapadAv());
 
         // Is user authorized to save an answer to this question?
         verifyEnhetsAuth(vardPerson.getEnhetsId());
 
         // Verksamhetsregel FS-001 (Is the certificate sent to FK)
-        if (!isSentToFK(utlatandeHolder.getCertificateContentMeta().getStatuses())) {
+        if (!isSentToFK(externalIntygData.getMetaData().getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-001: Certificate must be sent to FK first before sending question!");
         }
         
         // Verify that certificate is not revoked
-        if (isRevoked(utlatandeHolder.getCertificateContentMeta().getStatuses())) {
+        if (isRevoked(externalIntygData.getMetaData().getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-XXX: Cannot save Fraga when certificate is revoked!");
         }
 
-        IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(utlatandeHolder.getUtlatande());
+        IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(externalIntygData.getExternalModel());
 
         FragaSvar fraga = new FragaSvar();
         fraga.setFrageStallare(FRAGE_STALLARE_WEBCERT);
@@ -314,9 +315,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     }
 
-    private boolean isRevoked(List<CertificateStatus> statuses) {
+    private boolean isRevoked(List<IntygStatus> statuses) {
         if (statuses != null) {
-            for (CertificateStatus status : statuses) {
+            for (IntygStatus status : statuses) {
                 if (REVOKED_STATUS_TYPE.equals(status.getType())) {
                     return true;
                 }
@@ -325,9 +326,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return false;
     }
 
-    private boolean isSentToFK(List<CertificateStatus> statuses) {
+    private boolean isSentToFK(List<IntygStatus> statuses) {
         if (statuses != null) {
-            for (CertificateStatus status : statuses) {
+            for (IntygStatus status : statuses) {
                 if (FK_TARGET.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
                     return true;
                 }

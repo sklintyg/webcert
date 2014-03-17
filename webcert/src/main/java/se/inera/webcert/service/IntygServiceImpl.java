@@ -31,9 +31,19 @@ import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
 import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
 import se.inera.certificate.integration.rest.dto.CertificateStatus;
 import se.inera.certificate.model.Utlatande;
+import se.inera.certificate.model.common.MinimalUtlatande;
+import se.inera.certificate.modules.support.api.ModuleApi;
+import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.TransportModelHolder;
+import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
 import se.inera.ifv.insuranceprocess.certificate.v1.CertificateStatusType;
+import se.inera.webcert.modules.registry.IntygModuleRegistry;
+import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygItem;
+import se.inera.webcert.service.dto.IntygMetadata;
 import se.inera.webcert.service.dto.IntygStatus;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
@@ -69,48 +79,69 @@ public class IntygServiceImpl implements IntygService {
     private ListCertificatesForCareResponderInterface listCertificateService;
 
     @Autowired
-    private ModuleRestApiFactory moduleApiFactory;
+    private IntygModuleRegistry moduleRegistry;
 
     @Autowired
     private WebCertUserService webCertUserService;
 
     @Override
-    public CertificateContentHolder fetchIntygData(String intygId) {
-        CertificateContentHolder external = fetchExternalIntygData(intygId);
-        return convertToInternalJson(external);
+    public IntygContentHolder fetchIntygData(String intygId) {
+
+        IntygContentHolder intygAsExternal = fetchExternalIntygData(intygId);
+
+        IntygMetadata metaData = intygAsExternal.getMetaData();
+
+        try {
+
+            ModuleApi moduleApi = moduleRegistry.getModule(metaData.getType());
+
+            ExternalModelHolder extHolder = new ExternalModelHolder(intygAsExternal.getContents());
+            InternalModelResponse internalModelReponse = moduleApi.convertExternalToInternal(extHolder);
+
+            return new IntygContentHolder(internalModelReponse.getInternalModel(), metaData);
+
+        } catch (ModuleException me) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
     }
 
     @Override
-    public CertificateContentHolder fetchExternalIntygData(String intygId) {
+    public IntygContentHolder fetchExternalIntygData(String intygId) {
+        try {
+            
+            GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
 
-        GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
+            verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
-        verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
+            IntygMetadata metaData = convertToCertificateContentMeta(intyg.getMeta());
 
-        CertificateContentMeta metaData = convertToCertificateContentMeta(intyg.getMeta());
+            String intygType = metaData.getType();
 
-        ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(intyg.getMeta().getCertificateType());
-
-        String externalJson = convertToExternalJson(moduleRestApi, intyg);
-
-        CertificateContentHolder holder = new CertificateContentHolder();
-        holder.setCertificateContent(externalJson);
-        holder.setCertificateContentMeta(metaData);
-
-        return holder;
+            ModuleApi moduleApi = moduleRegistry.getModule(intygType);
+                        
+            String xml = marshal(intyg.getCertificate());
+            ExternalModelResponse unmarshallResponse = moduleApi.unmarshall(new TransportModelHolder(xml));
+            
+            return new IntygContentHolder(unmarshallResponse.getExternalModelJson(), unmarshallResponse.getExternalModel(), metaData);
+            
+        } catch (ModuleException me) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
     }
-    
-    private CertificateContentMeta convertToCertificateContentMeta(CertificateMetaType source) {
 
-        CertificateContentMeta metaData = new CertificateContentMeta();
+    private IntygMetadata convertToCertificateContentMeta(CertificateMetaType source) {
+
+        IntygMetadata metaData = new IntygMetadata();
         metaData.setId(source.getCertificateId());
         metaData.setType(source.getCertificateType());
         metaData.setFromDate(source.getValidFrom());
         metaData.setTomDate(source.getValidTo());
-        metaData.setStatuses(convertCertificateStatuses(source.getStatus()));
+
+        metaData.setStatuses(convertStatus(source.getStatus()));
+
         return metaData;
     }
-    
+
     private List<CertificateStatus> convertCertificateStatuses(List<CertificateStatusType> source) {
         List<CertificateStatus> status = new ArrayList<>();
         for (CertificateStatusType certificateStatusType : source) {
@@ -125,17 +156,18 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public UtlatandeCommonModelHolder fetchIntygCommonModel(String intygId) {
-        CertificateContentHolder external = fetchExternalIntygData(intygId);
+        
+        IntygContentHolder intygAsExternal = fetchExternalIntygData(intygId);
 
         // Map it to our common model
         CustomObjectMapper objectMapper = new CustomObjectMapper();
         Utlatande utlatande;
         try {
-            utlatande = objectMapper.readValue(external.getCertificateContent(), Utlatande.class);
+            utlatande = objectMapper.readValue(intygAsExternal.getContents(), MinimalUtlatande.class);
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
-        return new UtlatandeCommonModelHolder(utlatande, external.getCertificateContentMeta());
+        return new UtlatandeCommonModelHolder(utlatande, intygAsExternal.getMetaData());
     }
 
     @Override
@@ -155,7 +187,7 @@ public class IntygServiceImpl implements IntygService {
                     "listCertificatesForCare WS call: ERROR :" + response.getResult().getResultText());
         }
     }
-    
+
     private List<IntygItem> convert(List<CertificateMetaType> source) {
         List<IntygItem> intygItems = new ArrayList<IntygItem>();
         for (CertificateMetaType certificateMetaType : source) {
@@ -174,7 +206,7 @@ public class IntygServiceImpl implements IntygService {
         item.setStatuses(convertStatus(source.getStatus()));
         item.setSignedBy(source.getIssuerName());
         item.setSignedDate(source.getSignDate());
-        
+
         return item;
     }
 
@@ -190,49 +222,15 @@ public class IntygServiceImpl implements IntygService {
         return new IntygStatus(source.getType().value(), source.getTarget(), source.getTimestamp());
     }
 
-    private CertificateContentHolder convertToInternalJson(CertificateContentHolder external) {
-
-        ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(external.getCertificateContentMeta()
-                .getType());
-
-        Response response = moduleRestApi.convertExternalToInternal(external);
-
-        switch (response.getStatus()) {
-        case 200:
-            CertificateContentHolder responseHolder = new CertificateContentHolder();
-            responseHolder.setCertificateContentMeta(external.getCertificateContentMeta());
-            responseHolder.setCertificateContent(response.readEntity(String.class));
-            return responseHolder;
-        default:
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Failed to convert intyg to internal JSON.");
-        }
-    }
-
-    private String marshal(GetCertificateForCareResponseType intyg) {
+    private String marshal(UtlatandeType utlatandeTyp) {
         StringWriter writer = new StringWriter();
         try {
-            JAXBElement<UtlatandeType> jaxbElement = new ObjectFactory().createUtlatande(intyg.getCertificate());
+            JAXBElement<UtlatandeType> jaxbElement = new ObjectFactory().createUtlatande(utlatandeTyp);
             marshaller.marshal(jaxbElement, writer);
             return writer.toString();
         } catch (JAXBException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "Failed to marshall intyg coming from intygstjanst");
-        }
-    }
-
-    private String convertToExternalJson(ModuleRestApi moduleRestApi, GetCertificateForCareResponseType intyg) {
-
-        String xml = marshal(intyg);
-        Response response = moduleRestApi.unmarshall(xml);
-
-        switch (response.getStatus()) {
-        case 200:
-            return response.readEntity(String.class);
-        default:
-            String message = "Failed to convert intyg to external JSON: " + response.readEntity(String.class);
-            LOG.error(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, message);
         }
     }
 
