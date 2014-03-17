@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class HttpClientFactory {
 
-    @Value("${saml.truststore.file}")
+    @Value("${sakerhetstjanst.saml.truststore.file}")
     private org.springframework.core.io.Resource trustStoreFile;
 
-    @Value("${saml.truststore.password}")
+    @Value("${sakerhetstjanst.saml.truststore.password}")
     private String trustStorePassword;
 
     public HttpClient createInstance() {

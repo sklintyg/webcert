@@ -18,9 +18,23 @@
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
-  <context:property-placeholder location="file:${user.home}/.${spring.profiles.active}.logsender.se/config.properties"
-                                order="1" ignore-resource-not-found="true" ignore-unresolvable="true"/>
-  <context:property-placeholder
-          location="classpath:default.${spring.profiles.active}.properties" order="2"
-          ignore-resource-not-found="true"/>
+  <beans profile="qa,prod">
+    <!-- Config file must be present in qa and prod -->
+    <context:property-placeholder
+      location="file:${credentials.file}, file:${logsender.config.file}" order="1" 
+      ignore-resource-not-found="false" ignore-unresolvable="true"/>
+  </beans>
+  <beans profile="dev,test">
+    <!-- Config file could be missing in dev and test -->
+    <context:property-placeholder
+      location="file:${credentials.file}, file:${logsender.config.file}" order="1" 
+      ignore-resource-not-found="true" ignore-unresolvable="true"/>
+  </beans>
+
+  <beans>
+    <context:property-placeholder
+            location="classpath:default.properties, classpath:default.${spring.profiles.active}.properties" order="2"
+            ignore-resource-not-found="true"/>
+  </beans>
+
 </beans>
