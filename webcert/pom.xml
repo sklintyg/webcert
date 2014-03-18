@@ -278,6 +278,10 @@
               <value>${project.build.directory}/catalina.base</value>
             </systemProperty>
             <systemProperty>
+              <name>credentials.file</name>
+              <value>${project.basedir}/credentials.properties</value>
+            </systemProperty>
+            <systemProperty>
               <name>webcert.config.file</name>
               <value>${project.basedir}/config.properties</value>
             </systemProperty>
