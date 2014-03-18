@@ -58,7 +58,7 @@ define([
                 payload.patientFornamn = this.firstname;
                 payload.patientEfternamn = this.lastname;
                 payload.intygType = this.intygType;
-                payload.address = this.address;
+                payload.postadress = this.address;
                 payload.vardEnhetHsaId = this.vardEnhetHsaId;
                 payload.vardEnhetNamn = this.vardEnhetNamn;
                 payload.vardGivareHsaId = this.vardGivareHsaId;

@@ -5,8 +5,8 @@ define([
     /*
      * Controller for logic related to listing questions and answers
      */
-    return ['$scope', '$window', '$log', '$timeout', '$filter', '$cookieStore', 'dashBoardService', 'fragaSvarCommonService', 'wcDialogService',
-        function ($scope, $window, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
+    return ['$scope', '$window', '$location', '$log', '$timeout', '$filter', '$cookieStore', 'dashBoardService', 'fragaSvarCommonService', 'wcDialogService',
+        function ($scope, $window, $location, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
 
             // init state
             $scope.widgetState = {
@@ -351,7 +351,7 @@ define([
 
             $scope.openIntyg = function (intygsReferens) {
                 $log.debug('open intyg ' + intygsReferens.intygsId);
-                $window.location.href = '/m/' + intygsReferens.intygsTyp.toLowerCase() + '/webcert/intyg/' + intygsReferens.intygsId;
+                $location.url('/' + intygsReferens.intygsTyp.toLowerCase() + "/view/" + intygsReferens.intygsId, true);
             };
 
             // Handle vidarebefordra dialog

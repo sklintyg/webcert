@@ -76,7 +76,7 @@
     <div id="view" ng-view></div>
   </div>
 
-  <script data-main="/js/main" src="<c:url value="/webjars/requirejs/2.1.10/require.min.js"/>"></script>
+  <script data-main="/js/main" src="<c:url value="/web/webjars/requirejs/2.1.10/require.min.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/siths.jsp"/>"></script>
 </body>
 </html>

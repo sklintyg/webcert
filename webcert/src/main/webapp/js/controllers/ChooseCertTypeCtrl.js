@@ -24,7 +24,7 @@ define([
                 CertificateDraft.vardEnhetHsaId = valdVardenhet.id;
                 CertificateDraft.vardEnhetNamn = valdVardenhet.namn;
                 CertificateDraft.createDraft(function (data) {
-                    $window.location.href = '/m/' + CertificateDraft.intygType + '/webcert/intyg/' + data + '/edit#/edit';
+                    $location.url('/' + CertificateDraft.intygType + '/edit/' + data, true);
                     CertificateDraft.reset();
                 }, function () {
                     // TODO: handle error visually for "failed to create cert"
@@ -101,7 +101,7 @@ define([
             }, 500);
 
             $scope.openIntyg = function (cert) {
-                $window.location.href = '/m/' + cert.intygType + '/webcert/intyg/' + cert.intygId + '/edit#/edit';
+                $location.path('/' + cert.intygType + '/edit');
                 CertificateDraft.reset();
             };
 

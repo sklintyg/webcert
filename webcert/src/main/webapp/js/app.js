@@ -16,48 +16,23 @@ define([
     var app = angular.module('wcDashBoardApp', ['ui.bootstrap', 'ngCookies',
         controllers, directives, filters, services, wcCommon, wcCommonFragaSvarModule, wcMessageModule, wcUtils]);
 
-    app.config(['$routeProvider', '$httpProvider', 'http403ResponseInterceptorProvider',
-        function ($routeProvider, $httpProvider, http403ResponseInterceptorProvider) {
-            $routeProvider.
+    app.config(['$routeProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$provide', '$httpProvider', 'http403ResponseInterceptorProvider',
+        function ($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $httpProvider, http403ResponseInterceptorProvider) {
 
-                when('/create/index', {
-                    // Route to initialize the create flow, template will be ignored.
-                    templateUrl : '/views/dashboard/create.choose-patient.html',
-                    controller : 'InitCertCtrl'}).
-                when('/create/choose-patient/index', {
-                    templateUrl : '/views/dashboard/create.choose-patient.html',
-                    controller : 'ChoosePatientCtrl'}).
-                when('/create/edit-patient-name/index', {
-                    templateUrl : '/views/dashboard/create.edit-patient-name.html',
-                    controller : 'EditPatientNameCtrl'}).
-                when('/create/choose-cert-type/index', {
-                    templateUrl : '/views/dashboard/create.choose-cert-type.html',
-                    controller : 'ChooseCertTypeCtrl'}).
-
-                when('/unhandled-qa', {
-                    templateUrl : '/views/dashboard/unhandled-qa.html',
-                    controller : 'UnhandledQACtrl'}).
-                when('/unsigned', {
-                    templateUrl : '/views/dashboard/unsigned.html',
-                    controller : 'UnsignedCertCtrl'}).
-                when('/view', {
-                    templateUrl : '/views/dashboard/view-cert.html',
-                    controller : 'ViewCertCtrl'}).
-                when('/support/about', {
-                    templateUrl : '/views/dashboard/about.support.html',
-                    controller : 'AboutWebcertCtrl'}).
-                when('/webcert/about', {
-                    templateUrl : '/views/dashboard/about.webcert.html',
-                    controller : 'AboutWebcertCtrl'}).
-
-                otherwise({
-                    redirectTo : '/create/index'});
+            app.register = {
+                controller : $controllerProvider.register,
+                directive : $compileProvider.directive,
+                filter : $httpProvider.register,
+                factory : $provide.factory,
+                service : $provide.service,
+                $routeProvider : $routeProvider
+            };
 
             // Add cache buster interceptor
             $httpProvider.interceptors.push('httpRequestInterceptorCacheBuster');
 
             // Configure 403 interceptor provider
-            http403ResponseInterceptorProvider.setRedirectUrl("/error.jsp?reason=denied");
+            http403ResponseInterceptorProvider.setRedirectUrl('/error.jsp?reason=denied');
             $httpProvider.responseInterceptors.push('http403ResponseInterceptor');
         }]);
 
@@ -84,5 +59,38 @@ define([
             messageService.addResources(commonMessages);
         }]);
 
+    require(['text!/api/modules/map'], function (modules) {
+
+        var modulesMap = JSON.parse(modules);
+
+        var modulesUrls = [];
+        for (var artifactId in modulesMap) {
+            modulesUrls.push("../webjars/" + artifactId + modulesMap[artifactId]);
+        }
+
+        require(modulesUrls, function () {
+            var modules = arguments;
+
+            angular.element().ready(function () {
+                angular.resumeBootstrap([app.name].concat(Array.prototype.slice.call(modules, 0)));
+            });
+        });
+        /*
+
+
+
+         var modulesMap = JSON.parse(modules);
+         console.log(modulesMap);
+         for (var artifactId in modulesMap) {
+         var moduleUrl = '../web/webjars/' + artifactId + modulesMap[artifactId];
+         require([moduleUrl], function (module) {
+         messageService.addResources(module.messages);
+         module.init(app.register, '/webjars/' + artifactId);
+         console.log('module ' + artifactId + ' loaded');
+         });
+         }
+         console.log('portal loaded');
+         */
+    });
     return app;
 });

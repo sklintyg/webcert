@@ -1,11 +1,13 @@
 require.config({
     paths : {
-        angular : '../webjars/angularjs/1.1.5/angular',
-        angularCookies : '../webjars/angularjs/1.1.5/angular-cookies',
-        angularSwedish : '../webjars/angularjs/1.1.5/i18n/angular-locale_sv-se',
-        angularUiBootstrap : '../webjars/angular-ui-bootstrap/0.7.0/ui-bootstrap-tpls',
+        angular : '../web/webjars/angularjs/1.1.5/angular',
+        angularCookies : '../web/webjars/angularjs/1.1.5/angular-cookies',
+        angularSwedish : '../web/webjars/angularjs/1.1.5/i18n/angular-locale_sv-se',
+        angularUiBootstrap : '../web/webjars/angular-ui-bootstrap/0.7.0/ui-bootstrap-tpls',
 
-        text : '../webjars/requirejs-text/2.0.10/text'
+        text : '../web/webjars/requirejs-text/2.0.10/text',
+
+        'ts-bas' : '../web/webjars/ts-bas'
     },
     shim : {
         'angular' : {'exports' : 'angular'},
@@ -24,13 +26,11 @@ window.name = 'NG_DEFER_BOOTSTRAP!';
 require([
     'app',
     'angular',
+    'routes',
     'angularCookies',
     'angularSwedish',
     'angularUiBootstrap'
 ], function (app, angular) {
     'use strict';
 
-    angular.element().ready(function () {
-        angular.resumeBootstrap([app.name]);
-    });
 });
