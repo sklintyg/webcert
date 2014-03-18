@@ -15,3 +15,6 @@ bin
 target
 activemq-data
 webcert/node_modules/
+webcert/src/main/webapp/js/coverage/
+webcert/src/test/js/coverage/
+webcert/src/test/coverage/
