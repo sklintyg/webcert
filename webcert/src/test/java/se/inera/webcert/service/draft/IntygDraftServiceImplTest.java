@@ -8,11 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,16 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.certificate.integration.rest.ModuleRestApi;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.modules.api.dto.DraftValidationMessage;
-import se.inera.webcert.modules.api.dto.DraftValidationResponse;
-import se.inera.webcert.modules.api.dto.DraftValidationStatus;
 import se.inera.webcert.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
@@ -84,7 +76,7 @@ public class IntygDraftServiceImplTest {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intyg);
         
         ModuleApi mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModule(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", "This is soooo wrong!");
         
@@ -108,7 +100,7 @@ public class IntygDraftServiceImplTest {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intyg);
     
         ModuleApi mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModule(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
     
         // Oooops! Something failed in the module
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenThrow(ModuleException.class);

@@ -1,11 +1,5 @@
 package se.inera.webcert.service.draft;
 
-import java.text.MessageFormat;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status.Family;
-import javax.ws.rs.core.Response.StatusType;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
@@ -24,9 +16,6 @@ import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.modules.api.ModuleRestApi;
-import se.inera.webcert.modules.api.dto.DraftValidationMessage;
-import se.inera.webcert.modules.api.dto.DraftValidationResponse;
 import se.inera.webcert.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
@@ -146,7 +135,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         String modelAsJson = null;
         
-        ModuleApi moduleApi = moduleRegistry.getModule(intygType);
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
         
         try {
             InternalModelResponse draftResponse = moduleApi.createNewInternal(draftRequest);
@@ -232,7 +221,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         LOG.debug("Validating Intyg with id {} and type {}", intygId, intygType);
 
-        ModuleApi moduleApi = moduleRegistry.getModule(intygType);
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
 
         try {
             InternalModelHolder intHolder = new InternalModelHolder(draftAsJson);

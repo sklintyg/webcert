@@ -1,21 +1,18 @@
 package se.inera.webcert.web.controller.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import se.inera.certificate.modules.support.ModuleEntryPoint;
-import se.inera.webcert.web.controller.AbstractApiController;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.webcert.modules.registry.IntygModule;
+import se.inera.webcert.modules.registry.IntygModuleRegistry;
+import se.inera.webcert.web.controller.AbstractApiController;
 
 /**
  * Controller managing module wiring
@@ -24,7 +21,7 @@ import java.util.Map;
 public class ModuleApiController extends AbstractApiController {
 
     @Autowired
-    private List<ModuleEntryPoint> moduleEntryPoints;
+    private IntygModuleRegistry moduleRegistry;
 
     /**
      * Serving module configuration for Angular bootstrapping
@@ -34,12 +31,7 @@ public class ModuleApiController extends AbstractApiController {
     @Path("/map")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getModulesMap() {
-
-        Map<String, String> modules = new HashMap();
-        for (ModuleEntryPoint entryPoint : moduleEntryPoints) {
-            modules.put(entryPoint.getModuleName(), entryPoint.getModuleScriptPath());
-        }
-
+        List<IntygModule> modules = moduleRegistry.listAllModules();
         return Response.ok(modules).build();
     }
 }

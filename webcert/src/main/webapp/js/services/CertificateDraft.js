@@ -37,13 +37,18 @@ define([
             getCertTypes : function (onSuccess, onError) {
                 this.intygType = 'default';
 
-                var restPath = '/api/intyg/types';
+                var restPath = '/api/modules/map';
                 $http.get(restPath).success(function (data) {
-                    $log.debug('got data:' + data);
+                    $log.debug('got data:', data);
+                    var sortValue = 0;
                     var types = [
-                        {sortValue : 0, id : 'default', label : 'Välj intygstyp'}
+                        {sortValue : sortValue++, id : 'default', label : 'Välj intygstyp'}
                     ];
-                    onSuccess(types.concat(data));
+                    for (var i in data) {
+                        var m = data[i];
+                        types.push({sortValue : sortValue++, id : m.id, label : m.label})
+                    }
+                    onSuccess(types);
                 }).error(function (data, status) {
                     $log.error('error ' + status);
                     onError();

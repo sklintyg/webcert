@@ -87,9 +87,7 @@
         <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
       </property>
     </bean>
-  
-    <bean class="se.inera.certificate.integration.rest.ModuleRestApiFactory"/>
-  
+    
     <!-- ws clients -->
     <jaxws:client id="getCertificateForCareResponder"
                   serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface"
