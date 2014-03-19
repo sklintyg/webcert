@@ -257,13 +257,17 @@ angular.module('wc.utils').directive("wcField", [ 'messageService', function(mes
       fieldNumber: "@",
       fieldHelpText: "@",
       fieldHasErrors: "=",
-      fieldTooltipPlacement: "@?" // top,bottom,left,right
+      fieldTooltipPlacement: "@"
     },
     controller : function($scope) {
 
         if($scope.fieldTooltipPlacement == undefined){
-            $scope.fieldTooltipPlacement = "right";
+            $scope.placement = "right";
         }
+        else {
+            $scope.placement = $scope.fieldTooltipPlacement;
+        }
+
 
         $scope.getMessage = function (key) {
             return messageService.getProperty(key);
@@ -274,7 +278,7 @@ angular.module('wc.utils').directive("wcField", [ 'messageService', function(mes
             +'<h4 class="cert-field-number" ng-if="fieldNumber != undefined"><span message key="modules.label.field"></span> {{fieldNumber}}</h4>'
             +'<h3 class="title"><span message key="{{fieldLabel}}"></span>' +
                 '<span ng-if="fieldHelpText != undefined" class="help" ' +
-                'tooltip-trigger="click" tooltip-html-unsafe="{{getMessage(fieldHelpText)}}" tooltip-placement="{{fieldTooltipPlacement}}">?</span></h3>'
+                'tooltip-trigger="mouseenter" tooltip-html-unsafe="{{getMessage(fieldHelpText)}}" tooltip-placement="{{placement}}">?</span></h3>'
             +'<span class="text" ng-class="{fielderror: fieldHasErrors}">'
             +'  <span ng-transclude></span>'
             +'</span>'
