@@ -67,7 +67,7 @@ define([
         var modulesUrls = [];
         for (var artifactId in modulesMap) {
             console.log(artifactId);
-            modulesUrls.push("../webjars/" + modulesMap[artifactId].id + "/webcert/js/module");
+            modulesUrls.push('../webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
         }
 
         require(modulesUrls, function () {
@@ -77,22 +77,6 @@ define([
                 angular.resumeBootstrap([app.name].concat(Array.prototype.slice.call(modules, 0)));
             });
         });
-        /*
-
-
-
-         var modulesMap = JSON.parse(modules);
-         console.log(modulesMap);
-         for (var artifactId in modulesMap) {
-         var moduleUrl = '../web/webjars/' + artifactId + modulesMap[artifactId];
-         require([moduleUrl], function (module) {
-         messageService.addResources(module.messages);
-         module.init(app.register, '/webjars/' + artifactId);
-         console.log('module ' + artifactId + ' loaded');
-         });
-         }
-         console.log('portal loaded');
-         */
     });
     return app;
 });
