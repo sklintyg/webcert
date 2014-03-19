@@ -72,7 +72,11 @@
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.jvnet.jaxb2_commons</groupId>
+      <artifactId>jaxb2-basics-runtime</artifactId>
+      <version>0.6.4</version>
+    </dependency>
     <!-- Test dep -->
 
     <dependency>
@@ -88,11 +92,6 @@
       <artifactId>spring-test</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.jvnet.jaxb2_commons</groupId>
-      <artifactId>jaxb2-basics</artifactId>
-      <version>0.6.4</version>
-    </dependency>
   </dependencies>
 
   <build>

@@ -1,12 +1,12 @@
 package se.inera.webcert.service;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.stub.HsaServiceStub;
 import se.inera.webcert.mailstub.MailStore;
@@ -46,7 +48,7 @@ public class MailNotificationServiceTest {
 
     @PostConstruct
     public void setupTestlandVardgivare() throws IOException {
-        Vardgivare vardgivare = new ObjectMapper().readValue(new ClassPathResource(
+        Vardgivare vardgivare = new CustomObjectMapper().readValue(new ClassPathResource(
                 "MailNotificationServiceTest/landstinget-testland.json").getFile(), Vardgivare.class);
         hsaStub.getVardgivare().add(vardgivare);
     }
