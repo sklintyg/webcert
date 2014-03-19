@@ -8,11 +8,14 @@ public class IntygModule implements Comparable<IntygModule> {
         
     private String description;
     
-    public IntygModule(String id, String label, String description) {
+    private String scriptPath;
+    
+    public IntygModule(String id, String label, String description, String scriptPath) {
         super();
         this.id = id;
         this.label = label;
         this.description = description;
+        this.scriptPath = scriptPath;
     }
 
     public String getId() {
@@ -27,6 +30,10 @@ public class IntygModule implements Comparable<IntygModule> {
         return description;
     }
     
+    public String getScriptPath() {
+        return scriptPath;
+    }
+
     @Override
     public int compareTo(IntygModule o) {
         return getLabel().compareTo(o.getLabel());

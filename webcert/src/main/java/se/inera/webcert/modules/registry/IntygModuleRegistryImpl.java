@@ -29,28 +29,20 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
     private List<IntygModule> moduleList = new ArrayList<IntygModule>();
 
     @PostConstruct
-    public void init() {
-        initModuleApiMap(moduleEntryPoints);
-        initModulesList(moduleEntryPoints);
-        LOG.info("Module registry loaded with {} modules", moduleEntryPoints.size());
-    }
-        
-    private void initModuleApiMap(List<ModuleEntryPoint> moduleEntryPoints) {
-        for (ModuleEntryPoint entryPoint : moduleEntryPoints) {
-            moduleApiMap.put(entryPoint.getModuleName(), entryPoint.getModuleApi());
-        }
-    }
-
-    private void initModulesList(List<ModuleEntryPoint> moduleEntryPoints) {
+    private void initModulesList() {
 
         IntygModule module;
 
         for (ModuleEntryPoint entryPoint : moduleEntryPoints) {
-            module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(), entryPoint.getModuleDescription());
+            moduleApiMap.put(entryPoint.getModuleName(), entryPoint.getModuleApi());
+            module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(),
+                    entryPoint.getModuleDescription(), entryPoint.getModuleScriptPath());
             moduleList.add(module);
         }
 
         Collections.sort(moduleList);
+
+        LOG.info("Module registry loaded with {} modules", moduleApiMap.size());
     }
 
     @Override
