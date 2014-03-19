@@ -62,11 +62,9 @@ define([
     require(['text!/api/modules/map'], function (modules) {
 
         var modulesMap = JSON.parse(modules);
-        console.log(modulesMap);
 
         var modulesUrls = [];
         for (var artifactId in modulesMap) {
-            console.log(artifactId);
             modulesUrls.push('../webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
         }
 

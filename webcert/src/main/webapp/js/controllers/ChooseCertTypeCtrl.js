@@ -101,7 +101,7 @@ define([
             }, 500);
 
             $scope.openIntyg = function (cert) {
-                $location.path('/' + cert.intygType + '/edit');
+                $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
                 CertificateDraft.reset();
             };
 
