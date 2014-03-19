@@ -438,7 +438,7 @@ UI-bootstrap
 /* tooltip */
 .tooltip {
   text-align:left;
-  z-index:400;
+  z-index: 600;
   font-weight: normal;
   white-space: normal;
 }
@@ -449,7 +449,7 @@ UI-bootstrap
 }
 
 .tooltip-inner {
-  max-width: 300px;
+  max-width: 450px;
   text-align: left;
 }
 
