@@ -34,7 +34,7 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
         IntygModule module;
 
         for (ModuleEntryPoint entryPoint : moduleEntryPoints) {
-            moduleApiMap.put(entryPoint.getModuleName(), entryPoint.getModuleApi());
+            moduleApiMap.put(entryPoint.getModuleId(), entryPoint.getModuleApi());
             module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(),
                     entryPoint.getModuleDescription(), entryPoint.getModuleScriptPath());
             moduleList.add(module);
