@@ -59,27 +59,15 @@ define([
                 $log.debug('_createDraft');
 
                 var payload = {};
+                payload.patientPersonnummer = this.personnummer;
+                payload.patientFornamn = this.firstname;
+                payload.patientEfternamn = this.lastname;
                 payload.intygType = this.intygType;
-
-                payload.patient = {};
-                payload.patient.personNummer = this.personnummer;
-                payload.patient.forNamn = this.firstname;
-                payload.patient.efterNamn = this.lastname;
-                payload.patient.postAdress = this.address;
-                payload.patient.postNummer = '12345';
-                payload.patient.postort = 'Göteborg';
-
-                payload.vardenhet = {};
-                payload.vardenhet.hsaId = this.vardEnhetHsaId;
-                payload.vardenhet.namn = this.vardEnhetNamn;
-                payload.vardenhet.postaddress = 'Storgatan 1';
-                payload.vardenhet.postnummer = '12345';
-                payload.vardenhet.postort = 'Göteborg';
-                payload.vardenhet.telefonnummer = '031-123456';
-
-                payload.vardenhet.vardgivare = {};
-                payload.vardenhet.vardgivare.hsaId = this.vardGivareHsaId;
-                payload.vardenhet.vardgivare.namn = this.vardGivareNamn;
+                payload.postadress = this.address;
+                payload.vardEnhetHsaId = this.vardEnhetHsaId;
+                payload.vardEnhetNamn = this.vardEnhetNamn;
+                payload.vardGivareHsaId = this.vardGivareHsaId;
+                payload.vardGivareNamn = this.vardGivareNamn;
 
                 var restPath = '/api/intyg/create';
                 $http.post(restPath, payload).success(function (data) {
