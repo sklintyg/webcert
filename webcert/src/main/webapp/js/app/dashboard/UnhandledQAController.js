@@ -16,7 +16,7 @@ angular
                         'dashBoardService',
                         'fragaSvarCommonService',
                         'wcDialogService',
-                        function UnhandledCertCtrl($scope, $window, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
+                        function UnhandledQACtrl($scope, $window, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
 
                             // init state
                             $scope.widgetState = {
