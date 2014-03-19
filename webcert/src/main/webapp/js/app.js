@@ -65,7 +65,7 @@ define([
 
         var modulesUrls = [];
         for (var artifactId in modulesMap) {
-            modulesUrls.push('../webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
+            modulesUrls.push('../web/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
         }
 
         require(modulesUrls, function () {
