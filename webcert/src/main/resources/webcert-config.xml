@@ -89,9 +89,7 @@
     </bean>
     
     <bean id="webcertRestExceptionHandler" class="se.inera.webcert.web.controller.WebcertRestExceptionHandler" />
-  
-    <bean class="se.inera.certificate.integration.rest.ModuleRestApiFactory"/>
-  
+    
     <!-- ws clients -->
     <jaxws:client id="getCertificateForCareResponder"
                   serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface"
