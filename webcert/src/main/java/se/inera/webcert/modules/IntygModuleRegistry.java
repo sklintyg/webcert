@@ -1,4 +1,4 @@
-package se.inera.webcert.modules.registry;
+package se.inera.webcert.modules;
 
 import java.util.List;
 

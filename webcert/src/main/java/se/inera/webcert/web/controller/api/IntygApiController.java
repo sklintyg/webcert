@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.converter.IntygMerger;
-import se.inera.webcert.modules.registry.IntygModule;
-import se.inera.webcert.modules.registry.IntygModuleRegistry;
+import se.inera.webcert.modules.IntygModule;
+import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;

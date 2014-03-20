@@ -41,7 +41,7 @@ import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.TransportModelHolder;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.modules.registry.IntygModuleRegistry;
+import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;

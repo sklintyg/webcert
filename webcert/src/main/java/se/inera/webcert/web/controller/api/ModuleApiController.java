@@ -10,8 +10,8 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.modules.registry.IntygModule;
-import se.inera.webcert.modules.registry.IntygModuleRegistry;
+import se.inera.webcert.modules.IntygModule;
+import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.web.controller.AbstractApiController;
 
 /**

@@ -1,4 +1,4 @@
-package se.inera.webcert.modules.registry;
+package se.inera.webcert.modules;
 
 public class IntygModule implements Comparable<IntygModule> {
 
