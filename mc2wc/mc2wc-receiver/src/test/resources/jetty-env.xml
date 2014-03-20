@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<!-- 
+  Jetty env configuration file, configures resources that satisfies 
+  <env-entry>, <resource-env-ref> and <resource-ref> linkages in web.xml.
+-->
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+  <!-- New id="DataSource" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>jdbc/intyg</Arg>
+    <Arg>
+      <New class="com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource">
+        <Set name="Url">jdbc:mysql://localhost:3306/testintyg</Set>
+        <Set name="User">inera</Set>
+        <Set name="Password">inera</Set>
+      </New>
+    </Arg>
+  </New -->
+</Configure>

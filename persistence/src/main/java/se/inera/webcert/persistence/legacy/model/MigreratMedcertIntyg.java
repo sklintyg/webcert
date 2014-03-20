@@ -1,19 +1,14 @@
 package se.inera.webcert.persistence.legacy.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
+import javax.persistence.*;
+
 /**
  * Entity for a Medcert certificate migrated into Webcert.
- * 
- * @author nikpet
  *
+ * @author nikpet
  */
 @Entity
 @Table(name = "MIGRERADE_INTYG_FRAN_MEDCERT")
@@ -22,51 +17,54 @@ public class MigreratMedcertIntyg {
     @Id
     @Column(name = "INTYG_ID", nullable = false)
     private String intygsId;
-    
+
     @Column(name = "ENHETS_ID", nullable = false)
     private String enhetsId;
-    
+
     @Column(name = "INTYGS_TYP")
     private String intygsTyp;
-    
+
     @Column(name = "URSPRUNG")
     private String ursprung;
-    
+
     @Column(name = "PATIENT_NAMN", nullable = false)
     private String patientNamn;
-    
+
     @Column(name = "PATIENT_SSN", nullable = false)
     private String patientPersonnummer;
-    
+
     @Column(name = "SKAPAD_DATUM", nullable = false)
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime skapad;
-    
+
     @Column(name = "SKICKAD_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime skickad;
-    
+
     @Column(name = "MIGRERAD_DATUM", nullable = false)
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime migrerad;
-        
+
     @Column(name = "MIGRERAD_FRAN", nullable = false)
     private String migreradFran;
-    
+
     @Column(name = "INTYGS_DATA")
     private byte[] intygsData;
-    
+
+    @Column(name = "STATUS")
+    private String status;
+
     public MigreratMedcertIntyg() {
-        
+
     }
 
     @PrePersist
-    void onPrePersist(){
+    void onPrePersist() {
         if (getMigrerad() == null) {
             setMigrerad(LocalDateTime.now());
         }
     }
-    
+
     public String getIntygsId() {
         return intygsId;
     }
@@ -155,4 +153,11 @@ public class MigreratMedcertIntyg {
         this.intygsData = intygsData;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

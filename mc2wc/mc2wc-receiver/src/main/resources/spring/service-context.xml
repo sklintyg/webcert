@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <description>Service context</description>
+
+  <bean id="migrationService" class="se.inera.certificate.mc2wc.service.MigrationServiceImpl" />
+
+  <bean id="fragaSvarConverter" class="se.inera.certificate.mc2wc.converter.FragaSvarConverterImpl" />
+
+  <bean id="medcertIntygConverter" class="se.inera.certificate.mc2wc.converter.MedcertIntygConverterImpl" />
+
+</beans>

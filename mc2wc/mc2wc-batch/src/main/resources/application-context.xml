@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns="http://www.springframework.org/schema/beans"
+
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+  <context:property-placeholder
+      location="classpath:/env/default.properties, classpath:/env/default.${spring.profiles.active}.properties"
+      ignore-resource-not-found="true" order="1" />
+
+  <import resource="spring/batch-infrastructure-context.xml" />
+  <import resource="spring/persistence-context.xml" />
+  <import resource="spring/rest-client-context.xml" />
+  <import resource="spring/beans-context.xml" />
+  <import resource="spring/migration-job-context.xml" />
+
+  <context:annotation-config />
+
+  <security:http auto-config="true">
+    <security:intercept-url pattern="/se/inera/certificate/mc2wc/batch/writer" access="ROLE_USER" />
+    <security:http-basic />
+  </security:http>
+
+  <security:authentication-manager>
+    <security:authentication-provider>
+      <security:user-service>
+        <security:user name="medcert" password="webcert" authorities="ROLE_USER" />
+      </security:user-service>
+    </security:authentication-provider>
+  </security:authentication-manager>
+
+</beans>

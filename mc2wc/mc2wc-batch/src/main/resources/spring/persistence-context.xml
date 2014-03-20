@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <import resource="classpath:env/test-persistence-config.xml" />
+
+  <bean id="migrationStepItemReader"
+        class="org.springframework.batch.item.database.JpaPagingItemReader">
+    <property name="entityManagerFactory" ref="medcertEntityManagerFactory" />
+    <property name="queryString" value="select c from Certificate c" />
+    <property name="pageSize" value="25" />
+  </bean>
+
+  <bean id="medcertTransactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="medcertDataSource" />
+  </bean>
+
+</beans>

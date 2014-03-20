@@ -1,0 +1,16 @@
+<dataset>
+  <USERS ID="1" USERNAME="kalle" ENABLED="true" FIRSTNAME="Kalle" LASTNAME="Anka" />
+  <USERS ID="2" USERNAME="grodan" ENABLED="true" FIRSTNAME="Grodan" LASTNAME="Boll" />
+  <USERS ID="3" USERNAME="kajsa" ENABLED="true" FIRSTNAME="Kajsa" LASTNAME="Varg" />
+
+
+  <AUTHORITIES ID="1" USER_ID="1" AUTHORITY="ROLE_USER" />
+  <AUTHORITIES ID="2" USER_ID="2" AUTHORITY="ROLE_USER" />
+  <AUTHORITIES ID="3" USER_ID="3" AUTHORITY="ROLE_USER" />
+
+
+  <CARE_GIVER ID="1" HSA_ID="SE12334556-3344" EMAIL="test@com" NAME="Midgård" />
+  <CARE_UNIT ID="1" HSA_ID="SE124124-12424" EMAIL="unit@test.com" NAME="Vattnadal" CARE_GIVER_ID="1" />
+
+  <USERS_CARE_UNIT users_ID="3" careUnits_ID="1" />
+</dataset>

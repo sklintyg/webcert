@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cxf="http://cxf.apache.org/core"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xmlns:sec="http://cxf.apache.org/configuration/security"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
+
+  <cxf:bus>
+    <cxf:features>
+      <cxf:logging />
+    </cxf:features>
+  </cxf:bus>
+
+  <bean id="jaxbProvider" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
+    <property name="schemaLocations">
+      <list>
+        <value>classpath:schema/mc2wc-schema.xsd</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="exceptionMapper" class="se.inera.certificate.mc2wc.exception.CertificateMigrationResponseExceptionMapper" />
+
+  <jaxrs:client id="migrationMessageReceiverService"
+                address="${migration.service.url}" serviceClass="se.inera.certificate.mc2wc.rest.MigrationReceiver">
+    <jaxrs:providers>
+      <ref bean="exceptionMapper" />
+      <ref bean="jaxbProvider" />
+    </jaxrs:providers>
+  </jaxrs:client>
+
+  <http:conduit name="*.http-conduit">
+    <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive" />
+    <http:authorization>
+      <sec:UserName>mc2wc-sender</sec:UserName>
+      <sec:Password>medcert</sec:Password>
+      <sec:AuthorizationType>Basic</sec:AuthorizationType>
+    </http:authorization>
+  </http:conduit>
+
+</beans>

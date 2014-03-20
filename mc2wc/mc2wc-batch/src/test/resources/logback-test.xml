@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+      </Pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.springframework.core.env.PropertySourcesPropertyResolver"
+          level="WARN" />
+
+  <logger name="org.apache.cxf" level="DEBUG" />
+
+  <logger name="se.inera.certificate.mc2wc" level="DEBUG" />
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+
+</configuration>

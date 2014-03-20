@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
   <changeSet id="1" author="me">
-  <!--  initial creation of tables -->
+    <!--  initial creation of tables -->
 
 
     <createTable tableName="FRAGASVAR">
@@ -114,7 +115,8 @@
       </column>
     </createTable>
     <!-- Add auto incremented id column to table -->
-    <addAutoIncrement columnDataType="int" columnName="internReferens" incrementBy="1" startWith="1" tableName="FRAGASVAR" />
+    <addAutoIncrement columnDataType="int" columnName="internReferens" incrementBy="1" startWith="1"
+                      tableName="FRAGASVAR" />
 
 
     <createTable tableName="KOMPLETTERING">
@@ -203,11 +205,11 @@
       </column>
     </createTable>
   </changeSet>
-  
-  <changeSet id="4" author="np">    
+
+  <changeSet id="4" author="np">
     <createTable tableName="MIGRERADE_INTYG_FRAN_MEDCERT">
       <column name="INTYG_ID" type="varchar(255)">
-        <constraints primaryKey="true" nullable="false"/>
+        <constraints primaryKey="true" nullable="false" />
       </column>
       <column name="ENHETS_ID" type="varchar(255)">
         <constraints nullable="false" />
@@ -241,5 +243,13 @@
       </column>
     </createTable>
   </changeSet>
-    
+
+  <changeSet id="5" author="jk">
+    <addColumn tableName="MIGRERADE_INTYG_FRAN_MEDCERT">
+      <column name="STATUS" type="varchar(32)">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:tns="urn:inera:certificates:mc2wc:1" xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="urn:inera:certificates:mc2wc:1" elementFormDefault="qualified">
+
+  <complexType name="certificateType">
+    <sequence>
+      <element name="certificateId" type="string" />
+      <element name="certificateType" type="string" />
+      <element name="careUnitId" type="string" />
+      <element name="patient" type="tns:patientType" />
+      <element name="sent" type="dateTime" maxOccurs="1" minOccurs="0" />
+      <element name="created" type="dateTime" />
+      <element name="origin" type="string" />
+      <element name="migratedFrom" type="string" />
+      <element name="contents" type="base64Binary" />
+      <element name="status" type="tns:statusType" minOccurs="1" />
+    </sequence>
+  </complexType>
+
+  <complexType name="migrationMessageType">
+    <sequence>
+      <element name="certificateId" type="string"></element>
+      <element name="certificate" type="tns:certificateType"
+               maxOccurs="1" minOccurs="0">
+      </element>
+      <element name="questions" type="tns:questionType"
+               maxOccurs="unbounded" minOccurs="0">
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="questionType">
+    <sequence>
+      <element name="certificateId" type="string"></element>
+      <element name="certificateType" type="string"></element>
+      <element name="certificateSigned" type="dateTime" maxOccurs="1" minOccurs="0"></element>
+      <element name="externalReference" type="string" maxOccurs="1" minOccurs="0"></element>
+      <element name="patient" type="tns:patientType"></element>
+      <element name="carePerson" type="tns:carePersonType"></element>
+      <element name="subject" type="tns:questionSubjectType"></element>
+      <element name="caption" type="string" maxOccurs="1" minOccurs="0"></element>
+      <element name="sent" type="dateTime" maxOccurs="1" minOccurs="0"></element>
+      <element name="signed" type="dateTime" maxOccurs="1" minOccurs="0"></element>
+      <element name="originator" type="tns:questionOriginatorType">
+      </element>
+      <element name="status" type="tns:statusType"></element>
+      <element name="questionText" type="string"></element>
+      <element name="questionLastAnswerDate" type="date" maxOccurs="1" minOccurs="0"></element>
+      <element name="answer" type="tns:answerType" maxOccurs="1"
+               minOccurs="0">
+      </element>
+      <element name="supplement" type="tns:supplementType"
+               maxOccurs="unbounded" minOccurs="0">
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="careGiverType">
+    <sequence>
+      <element name="id" type="string"></element>
+      <element name="name" type="string"></element>
+    </sequence>
+  </complexType>
+
+  <complexType name="careUnitType">
+    <sequence>
+      <element name="id" type="string"></element>
+      <element name="name" type="string"></element>
+      <element name="workplaceCode" type="string" maxOccurs="1" minOccurs="0"></element>
+      <element name="phone" type="string" maxOccurs="1" minOccurs="0"></element>
+      <element name="email" type="string" maxOccurs="1" minOccurs="0"></element>
+      <element name="postalAddress" type="string" maxOccurs="1" minOccurs="0"></element>
+      <element name="postalNumber" type="string" maxOccurs="1" minOccurs="0"></element>
+      <element name="postalCity" type="string" maxOccurs="1" minOccurs="0"></element>
+      <element name="careGiver" type="tns:careGiverType"
+               maxOccurs="1" minOccurs="1"></element>
+    </sequence>
+  </complexType>
+
+  <complexType name="carePersonType">
+    <sequence>
+      <element name="personId" type="string"></element>
+      <element name="fullName" type="string"></element>
+      <element name="prescriptionCode" type="string" maxOccurs="1" minOccurs="0"></element>
+      <element name="careUnit" type="tns:careUnitType"
+               maxOccurs="1" minOccurs="1"></element>
+    </sequence>
+  </complexType>
+
+  <element name="migrationMessage" type="tns:migrationMessageType"></element>
+
+  <complexType name="migrationReplyType">
+    <sequence>
+      <element name="result" type="tns:migrationResultType"
+               maxOccurs="1" minOccurs="1"></element>
+      <element name="message" type="string" maxOccurs="1"
+               minOccurs="0"></element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="migrationResultType">
+    <restriction base="string">
+      <enumeration value="OK"></enumeration>
+      <enumeration value="DUPLICATE"></enumeration>
+      <enumeration value="ERROR"></enumeration>
+    </restriction>
+  </simpleType>
+
+  <element name="migrationReply" type="tns:migrationReplyType"></element>
+
+  <complexType name="patientType">
+    <sequence>
+      <element name="personId" type="string"></element>
+      <element name="fullName" type="string"></element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="certificateOriginatorType">
+    <restriction base="string">
+      <enumeration value="APPLICATION"></enumeration>
+      <enumeration value="QUESTION_CARE"></enumeration>
+      <enumeration value="QUESTION_FK"></enumeration>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="questionSubjectType">
+    <restriction base="string">
+      <enumeration value="WORK_PROLONGING"></enumeration>
+      <enumeration value="MEETING"></enumeration>
+      <enumeration value="KOMPLEMENTING"></enumeration>
+      <enumeration value="MAKULERING"></enumeration>
+      <enumeration value="CONTACT"></enumeration>
+      <enumeration value="REMINDER"></enumeration>
+      <enumeration value="OTHER"></enumeration>
+    </restriction>
+  </simpleType>
+
+  <complexType name="supplementType">
+    <sequence>
+      <element name="field" type="string"></element>
+      <element name="text" type="string"></element>
+    </sequence>
+  </complexType>
+
+  <simpleType name="questionOriginatorType">
+    <restriction base="string">
+      <enumeration value="FK"></enumeration>
+      <enumeration value="CARE"></enumeration>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="statusType">
+    <restriction base="string">
+      <enumeration value="CREATED"></enumeration>
+      <enumeration value="EDITED"></enumeration>
+      <enumeration value="PRINTED"></enumeration>
+      <enumeration value="SENT"></enumeration>
+      <enumeration value="SIGNED"></enumeration>
+      <enumeration value="SIGNED_AND_SENT"></enumeration>
+      <enumeration value="SENT_HANDLED"></enumeration>
+      <enumeration value="SENT_UNHANDLED"></enumeration>
+    </restriction>
+  </simpleType>
+
+
+  <complexType name="answerType">
+    <sequence>
+      <element name="text" type="string"></element>
+      <element name="signed" type="dateTime" maxOccurs="1" minOccurs="0"></element>
+      <element name="sent" type="dateTime" maxOccurs="1" minOccurs="0"></element>
+      <element name="status" type="tns:statusType"></element>
+    </sequence>
+  </complexType>
+
+  <element name="pingRequest" type="tns:pingRequestType" />
+
+  <element name="pingResponse" type="tns:pingResponseType" />
+
+  <complexType name="pingRequestType">
+  </complexType>
+  <complexType name="pingResponseType">
+  </complexType>
+</schema>
