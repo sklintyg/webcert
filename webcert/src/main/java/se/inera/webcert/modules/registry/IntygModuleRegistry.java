@@ -2,9 +2,13 @@ package se.inera.webcert.modules.registry;
 
 import java.util.List;
 
+import se.inera.certificate.modules.support.api.ModuleApi;
+
 public interface IntygModuleRegistry {
 
-    public abstract IntygModule getModule(String name);
+    public abstract ModuleApi getModuleApi(String id);
+
+    public abstract IntygModule getIntygModule(String id);
 
     public abstract List<IntygModule> listAllModules();
 

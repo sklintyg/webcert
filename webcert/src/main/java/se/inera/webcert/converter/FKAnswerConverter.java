@@ -1,9 +1,7 @@
 package se.inera.webcert.converter;
 
 import se.inera.webcert.converter.util.ConvertToFKTypes;
-import se.inera.webcert.medcertqa.v1.Amnetyp;
 import se.inera.webcert.medcertqa.v1.KompletteringType;
-import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;

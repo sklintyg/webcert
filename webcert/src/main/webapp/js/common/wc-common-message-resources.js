@@ -1,6 +1,8 @@
+define([
+], function () {
 'use strict';
 
-var commonMessageResources = {
+    return {
     "sv" : {
 
         "common.yes" : "Ja",
@@ -56,3 +58,4 @@ var commonMessageResources = {
         "common.cancel" : "Cancel"
     }
 };
+});

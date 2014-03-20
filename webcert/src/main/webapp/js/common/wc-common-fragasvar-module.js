@@ -1,10 +1,17 @@
+define([
+    'angular'
+], function (angular) {
+    'use strict';
+
+    var moduleName = 'wc.common.fragasvarmodule';
+
 /**
  * Common Fragasvar Module - Common services and controllers related to
  * FragaSvar functionality to be used in webcert and modules handling Fraga/svar
  * related to certificates. (As of this time, only fk7263 module)
  */
-angular.module('wc.common.fragasvarmodule', []);
-angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ '$http', '$log', '$modal', '$window', function($http, $log, $modal, $window) {
+    var fragasvarmodule = angular.module(moduleName, []);
+    fragasvarmodule.factory('fragaSvarCommonService', [ '$http', '$log', '$modal', '$window', function ($http, $log, $modal, $window) {
 
     /*
      * Toggle vidarebefordrad state of a fragasvar entity with given id
@@ -155,3 +162,6 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
         decorateSingleItemMeasure : _decorateSingleItemMeasure
     }
 } ]);
+
+    return moduleName;
+});

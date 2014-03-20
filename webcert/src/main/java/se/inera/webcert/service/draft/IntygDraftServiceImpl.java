@@ -1,11 +1,5 @@
 package se.inera.webcert.service.draft;
 
-import java.text.MessageFormat;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status.Family;
-import javax.ws.rs.core.Response.StatusType;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,12 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.modules.ModuleRestApiFactory;
-import se.inera.webcert.modules.api.ModuleRestApi;
-import se.inera.webcert.modules.api.dto.CreateNewIntygModuleRequest;
-import se.inera.webcert.modules.api.dto.DraftValidationMessage;
-import se.inera.webcert.modules.api.dto.DraftValidationResponse;
-import se.inera.webcert.modules.api.dto.Patient;
+import se.inera.certificate.modules.support.api.ModuleApi;
+import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.certificate.modules.support.api.dto.HoSPersonal;
+import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.certificate.modules.support.api.dto.ValidationMessage;
+import se.inera.certificate.modules.support.api.dto.ValidationStatus;
+import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
@@ -29,6 +27,7 @@ import se.inera.webcert.service.draft.dto.DraftValidationStatus;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
@@ -43,7 +42,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private IntygRepository intygRepository;
 
     @Autowired
-    private ModuleRestApiFactory moduleApiFactory;
+    private IntygModuleRegistry moduleRegistry;
 
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
@@ -60,9 +59,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String intygType = request.getIntygType();
 
-        CreateNewIntygModuleRequest moduleRequest = createModuleRequest(request);
+        CreateNewDraftHolder draftRequest = createModuleRequest(request);
 
-        String intygJsonModel = getPopulatedModelFromIntygModule(intygType, moduleRequest);
+        String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
 
         String persistedIntygId = persistNewDraft(request, intygJsonModel);
 
@@ -85,13 +84,13 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private String persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
 
         Intyg draft = new Intyg();
-        
+
         se.inera.webcert.service.dto.Patient patient = request.getPatient();
-        
+
         draft.setPatientPersonnummer(patient.getPersonNummer());
         draft.setPatientFornamn(patient.getForNamn());
         draft.setPatientEfternamn(patient.getEfterNamn());
-        
+
         draft.setIntygsId(request.getIntygId());
         draft.setIntygsTyp(request.getIntygType());
 
@@ -117,7 +116,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         Intyg savedDraft = intygRepository.save(draft);
 
         LOG.debug("Draft '{}' persisted", savedDraft.getIntygsId());
-        
+
         return savedDraft.getIntygsId();
     }
 
@@ -130,24 +129,20 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return vardPerson;
     }
 
-    private String getPopulatedModelFromIntygModule(String intygType, CreateNewIntygModuleRequest moduleRequest) {
+    private String getPopulatedModelFromIntygModule(String intygType, CreateNewDraftHolder draftRequest) {
 
         LOG.debug("Calling module '{}' to get populated model", intygType);
-
-        ModuleRestApi moduleRestService = moduleApiFactory.getModuleRestService(intygType);
-
-        Response response = moduleRestService.createModel(moduleRequest);
-
-        StatusType callStatus = response.getStatusInfo();
-
-        if (!callStatus.getFamily().equals(Family.SUCCESSFUL)) {
-            String msg = MessageFormat.format("Call to /create in module {0} failed with HTTP code {1}!", intygType,
-                    callStatus.getStatusCode());
-            LOG.error(msg);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, msg);
+        
+        String modelAsJson = null;
+        
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+        
+        try {
+            InternalModelResponse draftResponse = moduleApi.createNewInternal(draftRequest);
+            modelAsJson = draftResponse.getInternalModel();
+        } catch (ModuleException me) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
-
-        String modelAsJson = response.readEntity(String.class);
 
         LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(modelAsJson), intygType);
 
@@ -158,68 +153,49 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return (StringUtils.isNotBlank(str)) ? str.length() : 0;
     }
 
-    private CreateNewIntygModuleRequest createModuleRequest(CreateNewDraftRequest draftReq) {
+    private CreateNewDraftHolder createModuleRequest(CreateNewDraftRequest request) {
 
-        CreateNewIntygModuleRequest modReq = new CreateNewIntygModuleRequest();
-        modReq.setCertificateId(draftReq.getIntygId());
+        Vardgivare reqVardgivare = request.getVardenhet().getVardgivare();
+        se.inera.certificate.modules.support.api.dto.Vardgivare vardgivare = new se.inera.certificate.modules.support.api.dto.Vardgivare(
+                reqVardgivare.getHsaId(), reqVardgivare.getNamn());
 
-        se.inera.webcert.service.dto.Patient reqPat = draftReq.getPatient();
+        Vardenhet reqVardenhet = request.getVardenhet();
+        se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(
+                reqVardenhet.getHsaId(), reqVardenhet.getNamn(), reqVardenhet.getPostadress(),
+                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), vardgivare);
 
-        Patient mrPat = new Patient();
-        mrPat.setPersonnummer(reqPat.getPersonNummer());
-        mrPat.setFornamn(reqPat.getForNamn());
-        mrPat.setEfternamn(reqPat.getEfterNamn());
-        // TODO: Populate with Patients address info
-        
-        modReq.setPatientInfo(mrPat);
+        HoSPerson reqHosPerson = request.getHosPerson();
+        HoSPersonal hosPerson = new HoSPersonal(reqHosPerson.getHsaId(), reqHosPerson.getNamn(),
+                reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), vardenhet);
 
-        Vardenhet drVardenhet = draftReq.getVardenhet();
-        
-        Vardgivare drVardgivare = drVardenhet.getVardgivare();
-        
-        se.inera.webcert.modules.api.dto.Vardgivare mrVardgivare = new se.inera.webcert.modules.api.dto.Vardgivare();
-        mrVardgivare.setHsaId(drVardgivare.getHsaId());
-        mrVardgivare.setNamn(drVardgivare.getNamn());
-        
-        se.inera.webcert.modules.api.dto.Vardenhet mrVardenhet = new se.inera.webcert.modules.api.dto.Vardenhet();
-        mrVardenhet.setHsaId(drVardenhet.getHsaId());
-        mrVardenhet.setNamn(drVardenhet.getNamn());
-        mrVardenhet.setVardgivare(mrVardgivare);
-        
-        HoSPerson reqHosp = draftReq.getHosPerson();
+        Patient reqPatient = request.getPatient();
 
-        se.inera.webcert.modules.api.dto.HoSPersonal mrHosp = new se.inera.webcert.modules.api.dto.HoSPersonal();
-        mrHosp.setNamn(reqHosp.getNamn());
-        mrHosp.setHsaId(reqHosp.getHsaId());
-        mrHosp.setForskrivarkod(reqHosp.getForskrivarkod());
-        // TODO: Populate with befattning
+        se.inera.certificate.modules.support.api.dto.Patient patient = new se.inera.certificate.modules.support.api.dto.Patient(reqPatient.getForNamn(), 
+                reqPatient.getEfterNamn(), reqPatient.getPersonNummer(), reqPatient.getPostAdress(), reqPatient.getPostNummer(), reqPatient.getPostOrt());
         
-        mrHosp.setVardenhet(mrVardenhet);
-        
-        modReq.setSkapadAv(mrHosp);
-        
-        return modReq;
+        return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }
 
     @Override
     @Transactional
     public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request) {
 
-        String  intygId = request.getIntygId();
-        
+        String intygId = request.getIntygId();
+
         LOG.debug("Saving and validating Intyg with id '{}'", intygId);
 
         Intyg intyg = intygRepository.findOne(intygId);
-        
+
         if (intyg == null) {
             LOG.warn("Intyg with id '{}' was not found", intygId);
+            // TODO Throw exception perhaps?
             return null;
         }
 
         String intygType = intyg.getIntygsTyp();
 
         String draftAsJson = request.getDraftAsJson();
-        
+
         DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
 
         IntygsStatus intygStatus = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE
@@ -232,7 +208,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         intyg.setSenastSparadAv(vardPersonRef);
 
         intygRepository.save(intyg);
-        
+
         LOG.debug("Intyg '{}' updated", intygId);
 
         return draftValidation;
@@ -240,47 +216,47 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Override
     public DraftValidation validateDraft(String intygId, String intygType, String draftAsJson) {
+        
+        DraftValidation draftValidation = null;
+        
         LOG.debug("Validating Intyg with id {} and type {}", intygId, intygType);
 
-        ModuleRestApi moduleRestService = moduleApiFactory.getModuleRestService(intygType);
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
 
-        Response response = moduleRestService.validate(draftAsJson);
+        try {
+            InternalModelHolder intHolder = new InternalModelHolder(draftAsJson);
+            ValidateDraftResponse validateDraftResponse = moduleApi.validateDraft(intHolder);
 
-        StatusType callStatus = response.getStatusInfo();
-
-        if (!callStatus.getFamily().equals(Family.SUCCESSFUL)) {
-            String msg = MessageFormat.format(
-                    "Call to /valid-draft for intyg {0} in module {1} failed with HTTP code {2}!", intygId,
-                    intygType, callStatus.getStatusCode());
-            LOG.error(msg);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, msg);
+            draftValidation = convertToDraftValidation(validateDraftResponse);
+            
+        } catch (ModuleException me) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
-
-        DraftValidationResponse draftValidationResponse = response.readEntity(DraftValidationResponse.class);
-
-        DraftValidation draftValidation = convertToDraftValidation(draftValidationResponse);
 
         return draftValidation;
     }
 
-    private DraftValidation convertToDraftValidation(DraftValidationResponse dr) {
-        DraftValidation dv = new DraftValidation();
-
-        if (dr.checkIfValidAndEmpty()) {
+    private DraftValidation convertToDraftValidation(ValidateDraftResponse dr) {
+        
+        DraftValidation draftValidation = new DraftValidation();
+        
+        ValidationStatus validationStatus = dr.getStatus();
+        
+        if (ValidationStatus.VALID.equals(validationStatus)) {
             LOG.debug("Validation is OK");
-            return dv;
+            return draftValidation;
         }
 
-        dv.setStatus(DraftValidationStatus.INVALID);
+        draftValidation.setStatus(DraftValidationStatus.INVALID);
 
-        for (DraftValidationMessage drMsg : dr.getValidationErrors()) {
-            dv.addMessage(new se.inera.webcert.service.draft.dto.DraftValidationMessage(drMsg.getField(), drMsg
+        for (ValidationMessage validationMsg : dr.getValidationErrors()) {
+            draftValidation.addMessage(new se.inera.webcert.service.draft.dto.DraftValidationMessage(validationMsg.getField(), validationMsg
                     .getMessage()));
         }
 
-        LOG.debug("Validation failed with {} validation messages", dv.getMessages().size());
+        LOG.debug("Validation failed with {} validation messages", draftValidation.getMessages().size());
 
-        return dv;
+        return draftValidation;
     }
 
 }

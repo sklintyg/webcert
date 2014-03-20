@@ -5,7 +5,7 @@
 <html>
 <head>
   <title>Application Version</title>
-  <link rel="stylesheet" type="text/css" href="css/bootstrap/2.3.2/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/2.3.2/css/bootstrap.min.css">
 </head>
 <body>
 <div style="padding-left:20px">

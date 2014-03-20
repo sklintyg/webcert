@@ -1,16 +1,15 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.NOT_IMPLEMENTED;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
+import javax.ws.rs.core.Response;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,12 +17,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
-import se.inera.certificate.integration.rest.ModuleRestApi;
-import se.inera.certificate.integration.rest.ModuleRestApiFactory;
-import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
-import se.inera.certificate.integration.rest.dto.CertificateContentMeta;
+
+import se.inera.certificate.modules.support.api.ModuleApi;
+import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.PdfResponse;
+import se.inera.webcert.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.service.IntygService;
+import se.inera.webcert.service.dto.IntygContentHolder;
+import se.inera.webcert.service.dto.IntygMetadata;
 import se.inera.webcert.service.log.LogService;
 
 /**
@@ -35,17 +36,22 @@ public class IntygModuleApiControllerTest {
     private static final String CERTIFICATE_ID = "123456";
     private static final String CERTIFICATE_TYPE = "fk7263";
     private static final String PATIENT_ID = "19121212-1212";
-
-    private static CertificateContentHolder utlatandeHolder;
+    
+    private static final byte[] PDF_DATA = "<pdf-data>".getBytes();
+    private static final String PDF_NAME = "the-file.pdf";
+    
+    private static final String CONTENT_DISPOSITION = "Content-Disposition";
+    
+    private static IntygContentHolder utlatandeHolder;
 
     @Mock
-    private IntygService intygService = mock(IntygService.class);
+    private IntygService intygService;
 
     @Mock
-    private ModuleRestApiFactory moduleRestApiFactory;
-
+    private IntygModuleRegistry moduleRegistry;
+    
     @Mock
-    private ModuleRestApi moduleRestApi;
+    private ModuleApi moduleApi;
     
     @Mock
     private LogService logService;
@@ -56,69 +62,34 @@ public class IntygModuleApiControllerTest {
     @BeforeClass
     public static void setupCertificateData() throws IOException {
 
-        utlatandeHolder = new CertificateContentHolder();
-
-        CertificateContentMeta meta = new CertificateContentMeta();
+        IntygMetadata meta = new IntygMetadata();
         meta.setId(CERTIFICATE_ID);
         meta.setType(CERTIFICATE_TYPE);
         meta.setPatientId(PATIENT_ID);
-        utlatandeHolder.setCertificateContentMeta(meta);
+        
+        utlatandeHolder = new IntygContentHolder("<json>", meta);
     }
 
     @Test
-    public void testGetCertificatePdf() throws IOException {
+    public void testGetCertificatePdf() throws Exception {
 
         when(intygService.fetchExternalIntygData(CERTIFICATE_ID)).thenReturn(utlatandeHolder);
-        when(moduleRestApiFactory.getModuleRestService(CERTIFICATE_TYPE)).thenReturn(moduleRestApi);
-
-        // Mimic the module API to which the PDF generation is delegated to.
-        // We return an HTTP 200 together with some mock PDF data.
-        Response moduleCallResponse = mock(Response.class);
-        when(moduleCallResponse.getStatus()).thenReturn(Response.Status.OK.getStatusCode());
-        when(moduleCallResponse.getEntity()).thenReturn("<pdf-file>");
-        when(moduleRestApi.pdf(utlatandeHolder)).thenReturn(moduleCallResponse);
+        
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenReturn(moduleApi);
+        
+        PdfResponse pdfResponse = new PdfResponse(PDF_DATA, PDF_NAME);
+        when(moduleApi.pdf(any(ExternalModelHolder.class))).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getSignedIntygAsPdf(CERTIFICATE_ID);
 
         verify(intygService).fetchExternalIntygData(CERTIFICATE_ID);
-        verify(moduleRestApiFactory).getModuleRestService(CERTIFICATE_TYPE);
-        verify(moduleRestApi).pdf(utlatandeHolder);
+        verify(moduleRegistry).getModuleApi(CERTIFICATE_TYPE);
+        verify(moduleApi).pdf(any(ExternalModelHolder.class));
         verify(logService).logPrintOfIntyg(CERTIFICATE_ID, PATIENT_ID);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
-        assertEquals("<pdf-file>", response.getEntity());
+        assertEquals(PDF_DATA, response.getEntity());
+        assertNotNull(response.getHeaders().get(CONTENT_DISPOSITION));
     }
 
-    @Test
-    public void testGetCertificatePdfWithFailingModule() throws IOException {
-        when(intygService.fetchExternalIntygData(CERTIFICATE_ID)).thenReturn(utlatandeHolder);
-        when(moduleRestApiFactory.getModuleRestService(CERTIFICATE_TYPE)).thenReturn(moduleRestApi);
-
-        // Mimic the module API to which the PDF generation is delegated to.
-        // We return an HTTP 501.
-        Response moduleCallResponse = mock(Response.class);
-        when(moduleCallResponse.getStatus()).thenReturn(Response.Status.NOT_IMPLEMENTED.getStatusCode());
-        when(moduleRestApi.pdf(utlatandeHolder)).thenReturn(moduleCallResponse);
-
-        Response response = moduleApiController.getSignedIntygAsPdf(CERTIFICATE_ID);
-
-        verify(intygService).fetchExternalIntygData(CERTIFICATE_ID);
-        verify(moduleRestApiFactory).getModuleRestService(CERTIFICATE_TYPE);
-        verify(moduleRestApi).pdf(utlatandeHolder);
-
-        assertEquals(NOT_IMPLEMENTED.getStatusCode(), response.getStatus());
-        assertNull(response.getEntity());
-    }
-
-    @Test
-    public void testGetCertificatePdfWithFailingIntygstjanst() {
-        Response certificateResponse = mock(Response.class);
-        when(certificateResponse.getStatus()).thenReturn(Response.Status.FORBIDDEN.getStatusCode());
-        when(intygService.fetchExternalIntygData(CERTIFICATE_ID)).thenThrow(ExternalWebServiceCallFailedException.class);
-
-        Response response = moduleApiController.getSignedIntygAsPdf(CERTIFICATE_ID);
-
-        assertEquals(INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-        assertNull(response.getEntity());
-    }
 }

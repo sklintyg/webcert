@@ -2,22 +2,20 @@ package se.inera.webcert.modules.registry;
 
 public class IntygModule implements Comparable<IntygModule> {
 
-    private Integer sortValue = 0;
-    
     private String id;
     
     private String label;
-    
-    private String url;
-    
+        
     private String description;
     
-    public IntygModule(String id, String label, String url, Integer sortValue) {
+    private String scriptPath;
+    
+    public IntygModule(String id, String label, String description, String scriptPath) {
         super();
         this.id = id;
         this.label = label;
-        this.url = url;
-        this.sortValue = sortValue;
+        this.description = description;
+        this.scriptPath = scriptPath;
     }
 
     public String getId() {
@@ -27,26 +25,18 @@ public class IntygModule implements Comparable<IntygModule> {
     public String getLabel() {
         return label;
     }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public Integer getSortValue() {
-        return sortValue;
-    }
-    
+        
     public String getDescription() {
         return description;
     }
-
-    public void setDescription(String desc) {
-        this.description = desc;
-    }
     
+    public String getScriptPath() {
+        return scriptPath;
+    }
+
     @Override
     public int compareTo(IntygModule o) {
-        return getSortValue().compareTo(o.getSortValue());
+        return getLabel().compareTo(o.getLabel());
     }
 
 }

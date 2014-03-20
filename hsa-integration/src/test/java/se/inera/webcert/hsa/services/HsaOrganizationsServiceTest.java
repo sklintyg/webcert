@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +17,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -122,7 +122,7 @@ public class HsaOrganizationsServiceTest {
     }
 
     private void addVardgivare(String file) throws IOException {
-        Vardgivare vardgivare = new ObjectMapper().readValue(new ClassPathResource(file).getFile(), Vardgivare.class);
+        Vardgivare vardgivare = new CustomObjectMapper().readValue(new ClassPathResource(file).getFile(), Vardgivare.class);
         serviceStub.getVardgivare().add(vardgivare);
     }
 

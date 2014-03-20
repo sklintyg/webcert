@@ -1,8 +1,5 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.OK;
-
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -22,10 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException;
-import se.inera.certificate.integration.rest.ModuleRestApi;
-import se.inera.certificate.integration.rest.ModuleRestApiFactory;
-import se.inera.certificate.integration.rest.dto.CertificateContentHolder;
+import se.inera.certificate.modules.support.api.ModuleApi;
+import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.PdfResponse;
+import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.IntygService;
@@ -34,6 +32,9 @@ import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationMessage;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.dto.IntygContentHolder;
+import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
@@ -61,7 +62,7 @@ public class IntygModuleApiController extends AbstractApiController {
     private IntygRepository intygRepository;
         
     @Autowired
-    private ModuleRestApiFactory moduleApiFactory;
+    private IntygModuleRegistry moduleRegistry;
     
     @Autowired
     private LogService logService;
@@ -192,12 +193,12 @@ public class IntygModuleApiController extends AbstractApiController {
         
         LOG.debug("Fetching signed intyg with id '{}' from IT", intygId);
         
-        CertificateContentHolder certificateContentHolder = intygService.fetchIntygData(intygId);
-        String patientId = certificateContentHolder.getCertificateContentMeta().getPatientId();
+        IntygContentHolder intygAsExternal = intygService.fetchIntygData(intygId);
+        String patientId = intygAsExternal.getMetaData().getPatientId();
         
         logService.logReadOfIntyg(intygId, patientId);
         
-        return Response.ok().entity(certificateContentHolder).build();
+        return Response.ok().entity(intygAsExternal).build();
     }
 
     /**
@@ -211,42 +212,32 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signed/{intygId}/pdf")
     @Produces("application/pdf")
     public final Response getSignedIntygAsPdf(@PathParam(value = "intygId") final String intygId) {
-        LOG.debug("Fetching signed intyg '{}' as PDF", intygId);
-
-        CertificateContentHolder certificateContentHolder;
-
-        String patientId = null;
         
         try {
-            certificateContentHolder = intygService.fetchExternalIntygData(intygId);
-            patientId = certificateContentHolder.getCertificateContentMeta().getPatientId();
-        } catch (ExternalWebServiceCallFailedException ex) {
-            LOG.error("Failed to retrieve intyg '{}' from IT", intygId);
-            return Response.status(INTERNAL_SERVER_ERROR).build();
+            LOG.debug("Fetching signed intyg '{}' as PDF", intygId);
+
+            IntygContentHolder intygAsExternal = intygService.fetchExternalIntygData(intygId);
+                    
+            String intygType = intygAsExternal.getMetaData().getType();
+            
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            
+            PdfResponse pdfResponse = moduleApi.pdf(new ExternalModelHolder(intygAsExternal.getContents()));
+            
+            String patientId = intygAsExternal.getMetaData().getPatientId();
+            logService.logPrintOfIntyg(intygId, patientId);
+
+            return Response.ok(pdfResponse.getPdfData()).header(CONTENT_DISPOSITION, buildPdfHeader(pdfResponse.getFilename())).build();
+            
+        } catch (ModuleException me) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
-
-        Response pdf = fetchPdf(certificateContentHolder);
-
-        if (isNotOk(pdf)) {
-            LOG.error("Failed to get PDF for certificate '{}' from inera-certificate.", intygId);
-            return Response.status(pdf.getStatus()).build();
-        }
-
-        logService.logPrintOfIntyg(intygId, patientId);
-        
-        String filenameHeader = pdf.getHeaderString(CONTENT_DISPOSITION); // filename=...
-
-        return Response.ok(pdf.getEntity()).header(CONTENT_DISPOSITION, "attachment; " + filenameHeader).build();
     }
-
-    private boolean isNotOk(Response response) {
-        return response.getStatus() != OK.getStatusCode();
+    
+    private String buildPdfHeader(String pdfFileName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("attachment; filename=\"").append(pdfFileName).append("\"");
+        return sb.toString();
     }
-
-    private Response fetchPdf(CertificateContentHolder certificateContentHolder) {
-        LOG.debug("Converting intyg data to PDF");
-        ModuleRestApi api = moduleApiFactory.getModuleRestService(certificateContentHolder.getCertificateContentMeta()
-                .getType());
-        return api.pdf(certificateContentHolder);
-    }
+    
 }

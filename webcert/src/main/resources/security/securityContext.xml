@@ -11,6 +11,9 @@
   <context:component-scan base-package="org.springframework.security.saml"/>
 
   <!-- Unsecured pages -->
+  <security:http security="none" pattern="/webjars/**"/>
+  <security:http security="none" pattern="/web/webjars/**"/>
+  <security:http security="none" pattern="/api/modules/map"/>
   <security:http security="none" pattern="/css/**"/>
   <security:http security="none" pattern="/js/**"/>
   <security:http security="none" pattern="/img/**"/>

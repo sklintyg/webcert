@@ -1,10 +1,10 @@
-'use strict';
+define([
+    'angular',
+    'app'
+], function (angular, app) {
+    'use strict';
 
-angular.module('wcDashBoardApp', ['ui.bootstrap', 'ngCookies', 'modules.messages', 'wc.common', 'wc.dashboard.controllers', 'wc.dashboard.services',
-    'wc.dashboard.directives', 'wc.utils', 'wc.common.fragasvarmodule']);
-
-angular.module('wcDashBoardApp').config(['$routeProvider', '$httpProvider', 'http403ResponseInterceptorProvider',
-    function ($routeProvider, $httpProvider, http403ResponseInterceptorProvider) {
+    app.config(['$routeProvider', function ($routeProvider) {
         $routeProvider.
 
             when('/create/index', {
@@ -45,34 +45,7 @@ angular.module('wcDashBoardApp').config(['$routeProvider', '$httpProvider', 'htt
 
             otherwise({
                 redirectTo : '/create/index'});
-
-        // Add cache buster interceptor
-        $httpProvider.interceptors.push('httpRequestInterceptorCacheBuster');
-
-        // Configure 403 interceptor provider
-        http403ResponseInterceptorProvider.setRedirectUrl("/error.jsp?reason=denied");
-        $httpProvider.responseInterceptors.push('http403ResponseInterceptor');
     }]);
 
-// Global config of default date picker config (individual attributes can be
-// overridden per directive usage)
-angular.module('wcDashBoardApp').constant('datepickerPopupConfig', {
-    dateFormat : 'yyyy-MM-dd',
-    closeOnDateSelection : true,
-    appendToBody : false,
-    showWeeks : true,
-    closeText : 'OK',
-    currentText : 'Idag',
-    toggleWeeksText : 'Visa Veckor',
-    clearText : 'Rensa'
+    return null;
 });
-
-// Inject language resources
-angular.module('wcDashBoardApp').run(['$rootScope', 'messageService','User',
-    function ($rootScope, messageService, User) {
-        $rootScope.lang = 'sv';
-        $rootScope.DEFAULT_LANG = 'sv';
-        User.setUserContext(MODULE_CONFIG.USERCONTEXT);
-        messageService.addResources(webcertResources);
-        messageService.addResources(commonMessageResources);
-    }]);

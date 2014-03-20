@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part
-  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
-  Inera Certificate Web is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published
-  by the Free Software Foundation, either version 3 of the License, or (at
-  your option) any later version. Inera Certificate Web is distributed in the
-  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU Affero General Public License for more details. You should have received
-  a copy of the GNU Affero General Public License along with this program.
+<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part 
+  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web). 
+  Inera Certificate Web is free software: you can redistribute it and/or modify 
+  it under the terms of the GNU Affero General Public License as published 
+  by the Free Software Foundation, either version 3 of the License, or (at 
+  your option) any later version. Inera Certificate Web is distributed in the 
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+  GNU Affero General Public License for more details. You should have received 
+  a copy of the GNU Affero General Public License along with this program. 
   If not, see <http://www.gnu.org/licenses/>. -->
 <project
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
@@ -59,13 +59,16 @@
       <artifactId>log-messages</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.certificate</groupId>
-      <artifactId>module-api</artifactId>
+      <groupId>se.inera.certificate.modules</groupId>
+      <artifactId>module-support</artifactId>
+      <version>1.2-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>se.inera.certificate.proxy</groupId>
-      <artifactId>reverse-proxy</artifactId>
+      <groupId>se.inera.certificate.modules</groupId>
+      <artifactId>ts-bas</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -82,6 +85,33 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>angularjs</artifactId>
+      <version>1.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>angular-ui-bootstrap</artifactId>
+      <version>0.7.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap</artifactId>
+      <version>2.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>requirejs</artifactId>
+      <version>2.1.10</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>requirejs-text</artifactId>
+      <version>2.0.10-1</version>
+    </dependency>
+
     <dependency>
       <groupId>se.inera.certificate</groupId>
       <artifactId>logback-util</artifactId>
@@ -122,7 +152,14 @@
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
-      <version>${cxf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -148,7 +185,10 @@
       <groupId>org.aspectj</groupId>
       <artifactId>aspectjweaver</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework.security.extensions</groupId>
       <artifactId>spring-security-saml2-core</artifactId>
@@ -211,7 +251,6 @@
       <version>1.1.1</version>
       <scope>provided</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -242,24 +281,6 @@
             <contextPath>/</contextPath>
           </webAppConfig>
           <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
-          <contextHandlers>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>${inera.certificates.basedir}/rli/target/rli.war</war>
-              <contextPath>/rli</contextPath>
-            </contextHandler>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>${inera.certificates.basedir}/ts-bas/target/ts-bas.war</war>
-              <contextPath>/ts-bas</contextPath>
-            </contextHandler>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>${inera.certificates.basedir}/ts-diabetes/target/ts-diabetes.war</war>
-              <contextPath>/ts-diabetes</contextPath>
-            </contextHandler>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>${inera.certificates.basedir}/fk7263/target/fk7263.war</war>
-              <contextPath>/fk7263</contextPath>
-            </contextHandler>
-          </contextHandlers>
           <systemProperties>
             <systemProperty>
               <name>spring.profiles.active</name>

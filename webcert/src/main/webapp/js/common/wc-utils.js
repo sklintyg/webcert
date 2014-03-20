@@ -1,4 +1,10 @@
+define([
+    'angular'
+], function (angular) {
 'use strict';
+
+    var moduleName = 'wc.utils';
+
 /**
  * Common util components and services for cross cutting concerns in the app.
  * 
@@ -15,8 +21,8 @@
  * $httpProvider.interceptors.push('httpRequestInterceptorCacheBuster'); })
  * 
  */
-angular.module('wc.utils', []);
-angular.module('wc.utils').factory('httpRequestInterceptorCacheBuster', function($q) {
+    var utils = angular.module(moduleName, []);
+    utils.factory('httpRequestInterceptorCacheBuster', function ($q) {
     return {
         request : function(config) {
             // Don't mess with view loading, ok if cached..
@@ -42,7 +48,7 @@ angular.module('wc.utils').factory('httpRequestInterceptorCacheBuster', function
  * 
  * http403ResponseInterceptorProvider.setRedirectUrl("/web/403-error.jsp");
  */
-angular.module('wc.utils').provider('http403ResponseInterceptor', function() {
+    utils.provider('http403ResponseInterceptor', function () {
 
     /**
      * Object that holds config and default values.
@@ -56,7 +62,7 @@ angular.module('wc.utils').provider('http403ResponseInterceptor', function() {
      */
     this.setRedirectUrl = function(url) {
         this.config.redirectUrl = url;
-    }
+        };
 
     /**
      * Mandatory provider $get function. here we can inject the dependencies the
@@ -80,6 +86,7 @@ angular.module('wc.utils').provider('http403ResponseInterceptor', function() {
                 return $q.reject(response);
             });
         }
+
         return interceptorImpl;
 
     } ];
@@ -88,7 +95,7 @@ angular.module('wc.utils').provider('http403ResponseInterceptor', function() {
 /**
  * wcDialogService - Generic error dialog service
  **/
-angular.module('wc.utils').factory(
+    utils.factory(
         'wcDialogService',
         [
                 '$http',
@@ -99,8 +106,7 @@ angular.module('wc.utils').factory(
                     function _showErrorMessageDialog(message, callback) {
 
                         var msgbox = $modal.open({
-                            template : 
-                                ' <div class="modal-header">' 
+                        template : ' <div class="modal-header">'
                                 + '<h3>Tekniskt fel</h3>' 
                                 + '</div>' 
                                 + '<div class="modal-body">' 
@@ -191,7 +197,8 @@ angular.module('wc.utils').factory(
                         if($scope.button3visible != undefined){
                           $scope.button3click = function(result) {
                             if(button3click) button3click();
-                            $modalInstance.dismiss('button3 dismiss') };
+                                $modalInstance.dismiss('button3 dismiss')
+                            };
                         } else {
                           $scope.button3visible = false;
                         }
@@ -209,21 +216,51 @@ angular.module('wc.utils').factory(
                         templateUrl: '/views/partials/common-dialog.html',
                         controller: DialogInstanceCtrl,
                         resolve: {
-                          dialogId: function() { return angular.copy(options.dialogId); },
-                          titleId: function() { return angular.copy(options.titleId); },
-                          bodyTextId: function() { return angular.copy(options.bodyTextId); },
-                          bodyText: function() { return angular.copy(options.bodyText); },
-                          button1id: function() { return angular.copy(options.button1id); },
-                          button2id: function() { return angular.copy(options.button2id); },
-                          button3id: function() { return angular.copy(options.button3id); },
-                          button1click: function() { return options.button1click; },
-                          button2click: function() { return options.button2click; },
-                          button3click: function() { return options.button3click; },
-                          button1text: function() { return angular.copy(options.button1text); },
-                          button2text: function() { return angular.copy(options.button2text); },
-                          button3text: function() { return angular.copy(options.button3text); },
-                          button3visible: function() { return angular.copy(options.button3visible); },
-                          autoClose: function() { return angular.copy(options.autoClose); }
+                            dialogId : function () {
+                                return angular.copy(options.dialogId);
+                            },
+                            titleId : function () {
+                                return angular.copy(options.titleId);
+                            },
+                            bodyTextId : function () {
+                                return angular.copy(options.bodyTextId);
+                            },
+                            bodyText : function () {
+                                return angular.copy(options.bodyText);
+                            },
+                            button1id : function () {
+                                return angular.copy(options.button1id);
+                            },
+                            button2id : function () {
+                                return angular.copy(options.button2id);
+                            },
+                            button3id : function () {
+                                return angular.copy(options.button3id);
+                            },
+                            button1click : function () {
+                                return options.button1click;
+                            },
+                            button2click : function () {
+                                return options.button2click;
+                            },
+                            button3click : function () {
+                                return options.button3click;
+                            },
+                            button1text : function () {
+                                return angular.copy(options.button1text);
+                            },
+                            button2text : function () {
+                                return angular.copy(options.button2text);
+                            },
+                            button3text : function () {
+                                return angular.copy(options.button3text);
+                            },
+                            button3visible : function () {
+                                return angular.copy(options.button3visible);
+                            },
+                            autoClose : function () {
+                                return angular.copy(options.autoClose);
+                        }
                         }
                       });
 
@@ -231,7 +268,8 @@ angular.module('wc.utils').factory(
                         if (options.callback) {
                           options.callback(result)
                         }
-                      }, function() {});
+                    }, function () {
+                    });
 
                       return msgbox;
                     }
@@ -247,7 +285,7 @@ angular.module('wc.utils').factory(
 /**
  * wcField directive. Used to abstract common layout for full-layout form fields in cert modules
  */
-angular.module('wc.utils').directive("wcField", [ 'messageService', function(messageService) {
+    utils.directive("wcField", [function () {
   return {
     restrict : "A",
     transclude : true,
@@ -309,7 +347,7 @@ angular.module('wc.utils').directive("wcEnableTooltip", [ 'messageService', func
 /**
 * wcFieldSingle directive. Used to abstract common layout for single-line form fields in cert modules
 */
-angular.module('wc.utils').directive("wcFieldSingle", [function() {
+    utils.directive("wcFieldSingle", [function () {
   return {
     restrict : "A",
     transclude : true,
@@ -317,8 +355,7 @@ angular.module('wc.utils').directive("wcFieldSingle", [function() {
     scope : {
       fieldNumber: "@"
     },
-    template :
-        '<div class="body-row body-row-single clearfix">'
+            template : '<div class="body-row body-row-single clearfix">'
             +'<h4 class="cert-field-number" ng-if="fieldNumber != undefined"><span message key="modules.label.field"></span> {{fieldNumber}}</h4>'
             +'<span ng-transclude></span>'
        +'</div>'
@@ -334,7 +371,7 @@ angular.module('wc.utils').directive("wcFieldSingle", [function() {
  *  ng-model (for mapping model)
  *  maxlength (for setting maxlength)
  */
-angular.module('wc.utils').directive("wcMaxlength", function($log, $compile) {
+    utils.directive("wcMaxlength", function ($log, $compile) {
   return {
     restrict : "A",
     require: "ngModel",
@@ -355,6 +392,7 @@ angular.module('wc.utils').directive("wcMaxlength", function($log, $compile) {
         scope["charsRemaining"+element[0].name] = attrs.maxlength - text.length;
         return text;
       }
+
       controller.$formatters.unshift(limitLength);
       controller.$parsers.unshift(limitLength);
     }
@@ -364,7 +402,7 @@ angular.module('wc.utils').directive("wcMaxlength", function($log, $compile) {
 /**
  * FocusMe directive. Used to set focus to an element via model value
  */
-angular.module('wc.utils').directive('focusMe', function() {
+    utils.directive('focusMe', function () {
   return {
     scope: { trigger: '=focusMe' },
     link: function(scope, element) {
@@ -376,4 +414,7 @@ angular.module('wc.utils').directive('focusMe', function() {
       });
     }
   };
+});
+
+    return moduleName;
 });

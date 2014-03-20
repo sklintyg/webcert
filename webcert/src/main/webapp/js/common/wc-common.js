@@ -1,11 +1,16 @@
-"use strict";
+define([
+    'angular'
+], function (angular) {
+    'use strict';
+
+    var moduleName = 'wc.common';
 
 /**
  * Common module used in both WC main application as well as in a certificate's module app pages.
  * Since this js will be used/loaded from different contextpaths, all templates are inlined. PLEASE keep source
  * formatting in this file as-is, otherwise the inline templates will be hard to follow.
  */
-var common = angular.module('wc.common', []);
+    var common = angular.module(moduleName, []);
 
 common.factory('statService', [ '$http', '$log', '$timeout', '$rootScope', function($http, $log, $timeout, $rootScope) {
 
@@ -30,6 +35,7 @@ common.factory('statService', [ '$http', '$log', '$timeout', '$rootScope', funct
         _refreshStat();
         $log.debug("statService -> Start polling");
     }
+
     function _stopPolling() {
         if (timeOutPromise) {
             $timeout.cancel(timeOutPromise);
@@ -83,15 +89,19 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
 				       link :'/web/dashboard#/support/about',
 				       label:'Om Webcert',
 				       requires_doctor: false,
-                       getStat: function() { return ""}
+                        getStat : function () {
+                            return ""
 				     }
+                    }
 			    ];
 
  					var writeCertMenuDef = {
 			       link :'/web/dashboard#/create/index',
 			       label:'Sök/skriv intyg',
 			       requires_doctor: false,
-	                   getStat: function() { return ""}
+                    getStat : function () {
+                        return ""
+                    }
 			     };
 
           if (eval(User.userContext.lakare) == true) {
@@ -102,7 +112,9 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
           }
 
           $scope.isActive = function (page) {
-          	if (!page) {return false;}
+                    if (!page) {
+                        return false;
+                    }
 
           	page = page.substr(page.lastIndexOf('/') + 1);
         		if (angular.isString($scope.defaultActive)) {
@@ -127,8 +139,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
           $scope.openChangeCareUnitDialog = function() {
 
               var msgbox = $modal.open({
-                template :
-                    '<div class="modal-header">'+
+                        template : '<div class="modal-header">' +
                       '<button class="close"  data-ng-click="close()">×</button>'+
                       '<h3>Välj vårdenhet att logga in i</h3>'+
                     '</div>'+
@@ -183,8 +194,7 @@ common.directive("wcHeader", ['$rootScope','$location','$modal','$window','$cook
               });
           }
         },
-        template:
-        	'<div>'
+            template : '<div>'
         		+'<div class="row-fluid header">'
 	        		+'<div class="span12">'
                 +'<div class="headerbox">'
@@ -245,8 +255,7 @@ common.directive("wcSpinner", ['$rootScope', function($rootScope) {
           showSpinner: "=",
           showContent: "="
         },
-        template :
-            '<div>'
+            template : '<div>'
            +'  <div ng-show="showSpinner" class="wc-spinner">'
            +'    <img aria-labelledby="loading-message" src="/img/ajax-loader.gif"/>'
            +'    <p id="loading-message">'
@@ -363,3 +372,7 @@ common.factory('User', [ '$http', '$log',
       }
     };
   }]);
+
+
+    return moduleName;
+});
