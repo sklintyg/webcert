@@ -23,6 +23,8 @@
   <properties>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
     <inera.certificates.basedir>${project.basedir}/../../inera-certificate-modules</inera.certificates.basedir>
+    <intygstjanst.getcertificateforcare.endpoint.url>http://localhost:8080/inera-certificate/get-certificate-for-care/v1.0</intygstjanst.getcertificateforcare.endpoint.url>
+    <intygstjanst.listcertificatesforcare.endpoint.url>http://localhost:8080/inera-certificate/list-certificates-for-care/v1.0</intygstjanst.listcertificatesforcare.endpoint.url>
   </properties>
   <packaging>war</packaging>
 
@@ -219,102 +221,123 @@
         </excludes>
       </resource>
     </resources>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.1.1.v20140108</version>
-        <configuration>
-          <webAppConfig>
-            <contextPath>/</contextPath>
-          </webAppConfig>
-          <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
-          <contextHandlers>
-            <!--
-                        <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-                          <war>${inera.certificates.basedir}/rli/target/rli.war</war>
-                          <contextPath>/rli</contextPath>
-                        </contextHandler>
-            -->
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>${inera.certificates.basedir}/fk7263/target/fk7263.war</war>
-              <contextPath>/fk7263</contextPath>
-            </contextHandler>
-          </contextHandlers>
-          <systemProperties>
-            <systemProperty>
-              <name>spring.profiles.active</name>
-              <value>${system.mode}</value>
-            </systemProperty>
-            <systemProperty>
-              <name>jetty.port</name>
-              <value>9088</value>
-            </systemProperty>
-            <systemProperty>
-              <name>java.awt.headless</name>
-              <value>true</value>
-            </systemProperty>
-            <systemProperty>
-              <name>catalina.base</name>
-              <value>${project.build.directory}/catalina.base</value>
-            </systemProperty>
-            <systemProperty>
-              <name>credentials.file</name>
-              <value>${project.basedir}/credentials.properties</value>
-            </systemProperty>
-            <systemProperty>
-              <name>webcert.config.file</name>
-              <value>${project.basedir}/config.properties</value>
-            </systemProperty>
-            <systemProperty>
-              <name>webcert.logback.file</name>
-              <value>${project.basedir}/webcert-logback.xml</value>
-            </systemProperty>
-            <systemProperty>
-              <name>fk7263.logback.file</name>
-              <value>classpath:fk7263-logback.xml</value>
-            </systemProperty>
-          </systemProperties>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-            <version>5.8.0</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-            <version>5.8.0</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <version>1.1.1</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
   </build>
 
   <profiles>
     <profile>
+      <id>intygstjanst-stub</id>
+      <properties>
+        <intygstjanst.getcertificateforcare.endpoint.url>http://localhost:9088/services/get-certificate-for-care-stub</intygstjanst.getcertificateforcare.endpoint.url>
+        <intygstjanst.listcertificatesforcare.endpoint.url>http://localhost:9088/services/list-certificates-for-care-stub</intygstjanst.listcertificatesforcare.endpoint.url>
+      </properties>
+    </profile>
+    <profile>
       <id>jetty</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.activemq</groupId>
-          <artifactId>activemq-broker</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.activemq</groupId>
-          <artifactId>activemq-kahadb-store</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>geronimo-jms_1.1_spec</artifactId>
-          <version>1.1.1</version>
-        </dependency>
-      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.8</version>
+            <executions>
+              <execution>
+                <id>copy</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>se.inera.certificate.modules</groupId>
+                      <artifactId>fk7263</artifactId>
+                      <version>${project.version}</version>
+                      <type>war</type>
+                      <outputDirectory>${project.build.directory}/fk7263.war</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-maven-plugin</artifactId>
+            <version>9.1.1.v20140108</version>
+            <configuration>
+              <webAppConfig>
+                <contextPath>/</contextPath>
+              </webAppConfig>
+              <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+              <contextHandlers>
+                <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+                  <war>${project.build.directory}/fk7263.war</war>
+                  <contextPath>/fk7263</contextPath>
+                </contextHandler>
+              </contextHandlers>
+              <systemProperties>
+                <systemProperty>
+                  <name>spring.profiles.active</name>
+                  <value>${system.mode}</value>
+                </systemProperty>
+                <systemProperty>
+                  <name>jetty.port</name>
+                  <value>9088</value>
+                </systemProperty>
+                <systemProperty>
+                  <name>java.awt.headless</name>
+                  <value>true</value>
+                </systemProperty>
+                <systemProperty>
+                  <name>catalina.base</name>
+                  <value>${project.build.directory}/catalina.base</value>
+                </systemProperty>
+                <systemProperty>
+                  <name>credentials.file</name>
+                  <value>${project.basedir}/credentials.properties</value>
+                </systemProperty>
+                <systemProperty>
+                  <name>webcert.config.file</name>
+                  <value>${project.basedir}/config.properties</value>
+                </systemProperty>
+                <systemProperty>
+                  <name>webcert.logback.file</name>
+                  <value>${project.basedir}/webcert-logback.xml</value>
+                </systemProperty>
+                <systemProperty>
+                  <name>fk7263.logback.file</name>
+                  <value>classpath:fk7263-logback.xml</value>
+                </systemProperty>
+                <systemProperty>
+                  <name>intygstjanst.getcertificateforcare.endpoint.url</name>
+                  <value>${intygstjanst.getcertificateforcare.endpoint.url}</value>
+                </systemProperty>
+                <systemProperty>
+                  <name>intygstjanst.listcertificatesforcare.endpoint.url</name>
+                  <value>${intygstjanst.listcertificatesforcare.endpoint.url}</value>
+                </systemProperty>
+              </systemProperties>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-broker</artifactId>
+                <version>5.8.0</version>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-kahadb-store</artifactId>
+                <version>5.8.0</version>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jms_1.1_spec</artifactId>
+                <version>1.1.1</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
