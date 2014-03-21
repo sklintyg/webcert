@@ -7,7 +7,9 @@ require.config({
 
         text : '../web/webjars/requirejs-text/2.0.10/text',
 
-        'ts-bas' : '../web/webjars/ts-bas'
+        'ts-bas' : '../web/webjars/ts-bas',
+       	'ts-diabetes' : '../web/webjars/ts-diabetes'
+        	
     },
     shim : {
         'angular' : {'exports' : 'angular'},
