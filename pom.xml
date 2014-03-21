@@ -32,7 +32,9 @@
     <module>specifications</module>
     <module>hsa-integration</module>
     <module>persistence</module>
+    <!--
     <module>mc2wc</module>
+      -->
   </modules>
 
   <properties>
