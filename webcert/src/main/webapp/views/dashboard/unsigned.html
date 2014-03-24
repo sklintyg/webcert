@@ -1,133 +1,177 @@
 <div id="wcHeader" wc-header></div>
 <div class="container-fluid">
-<div class="row-fluid" id="unsigned">
-  <div class="span12 webcert-col webcert-col-single">
-    <h1>
-      <span message key="dashboard.unsigned.title"></span>
-    </h1>
-    <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading" show-content="widgetState.doneLoading">
-      <div ng-show="units.length > 1">
-	      <h2>
-	        Välj enhet <span style="font-size: 12px; color: #999">endast dina medarbetaruppdrag för {{MODULE_CONFIG.USERCONTEXT.vardgivare[0].namn}} visas</span>
-	      </h2>
-	
-	      <div class="row-fluid">
-	        <div id="wc-care-unit-clinic-selector" wc-care-unit-clinic-selector></div>
-	      </div>
-      </div>
-      
-      <div ng-if="activeUnit!=null">
-        <h2 class="col-head">{{selectedUnit.namn}}</h2>
+    <div class="row-fluid" id="unsigned">
+        <div class="span12 webcert-col webcert-col-single">
+            <h1>
+                <span message key="dashboard.unsigned.title"></span>
+            </h1>
 
-        <span ng-if="!widgetState.queryMode">Visar alla osignerade intyg för {{selectedUnit.namn}}<br></span>
-        <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
-          <span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span>
-        </button>
-        <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed" class="qa-filter-panel form-horizontal form-inline" style="background-color: #f5f5f5;">
-          <div class="qa-filter">
-            <div class="control-group">
-              <label class="control-label">Sparat av</label>
-              <div class="controls">
-                <select id="qp-doctorSelector" ng-model="qp.doctorSelector" ng-options="s.name for s in doctorList" ng-disabled="widgetState.loadingDoctors"></select>
-              </div>
-            </div>
+            <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading"
+                 show-content="widgetState.doneLoading">
 
-            <div class="control-group">
-              <label class="control-label">Intyg som är</label>
-              <div class="controls">
-                <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio" ng-model="qp.vidarebefordrad" checked> <label for="vidarebefordradAlla">Alla</label> <input
-                  id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="true" ng-model="qp.vidarebefordrad"> <label for="vidarebefordradJa">Vidarebefordrade</label> <input
-                  id="vidarebefordradNej" name="vidarebefordrad" type="radio" value="false" ng-model="qp.vidarebefordrad"> <label for="vidarebefordradNej">Ej vidarebefordrade</label>
-              </div>
-            </div>
-            <div class="control-group">
-              <label class="control-label">Senast sparat</label>
-              <div class="controls">
-                Från <input type="text" id="filter-changedate-from" datepicker-popup ng-model="qp.changedFrom" is-open="widgetState.dpFromOpen.open"  datepicker-options="datepickerConfig"/>
-                <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
-                  <i class="icon-calendar"></i>
-                </button>
-      
-                till <input type="text" id="filter-changedate-to" datepicker-popup ng-model="qp.changedTo" is-open="widgetState.dpToOpen.open" datepicker-options="datepickerConfig"/>
-                <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
-                    <i class="icon-calendar"></i>
-                </button>
-              </div>
-            </div>
-            <div>
-              <button id="filter-qa-btn" class="btn" ng-click="doSearch()">Sök</button>
-              <button class="btn" ng-click="resetSearchForm()">Återställ sökformuläret</button>
-            </div>
-          </div>
-        </div>
+                <div ng-if="isActiveUnitChosen()">
+                    <h2 class="col-head">{{selectedUnit.namn}}</h2>
 
-        <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery" show-content="!widgetState.runningQuery">
-
-          <div class="webcert-col-section">
-
-            <!-- No results message for unhandled -->
-            <div id="current-list-noResults-unit" ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && !widgetState.queryMode && widgetState.currentList.length<1"
-              class="alert alert-info">
-              <span message key="info.nounanswered.qa.for.unit"></span>
-            </div>
-
-            <!-- No results message for query -->
-            <div id="current-list-noResults-query" ng-show="widgetState.totalCount<1 && widgetState.queryMode" class="alert alert-info">
-              <span message key="info.query.noresults"></span>
-            </div>
-
-
-
-            <!-- error message -->
-            <div id="current-list-noResults-error" ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" class="alert alert-error">
-              <span message key="{{widgetState.activeErrorMessageKey}}"></span>
-            </div>
-
-            <div id="query-count" ng-show="widgetState.queryMode && widgetState.totalCount>0">Sökresultat - {{widgetState.totalCount}} träffar för {{selectedUnit.namn}}</div>
-
-            <!-- qa table -->
-            <div class="row-fluid" ng-show="widgetState.currentList.length>0" id="qaTable">
-              <table class="span12 table table-striped table-qa">
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th class="center" title="Markerar om intyget är vidarebefordrat till den som ska skriva intyget">Vidarebefordrad</th>
-                  <th title="Personnumret på patienten som läkarintyget berör">Patient</th>
-                  <th title="Datum då intyget senast sparades">Senast sparat</th>
-                  <th title="Läkare som senast sparade intyget">Sparat av</th>
-                </tr>
-                <tr ng-repeat="cert in widgetState.currentList">
-                  <td>
-                    <button class="btn btn-info" title="Visa intyget och frågan/svaret" ng-click="openIntyg(cert.intygsReferens)" id="showqaBtn-{{cert.internReferens}}">Visa</button>
-                  </td>
-                  <td>
-                    <button class="btn btn-info" title="Skicka e-post med en länk till detta intyg för att informera den som ska hantera frågan/svaret"
-                      ng-click="openMailDialog(cert)">
-                      <img src="/img/mail.png">
+                    <span ng-if="!widgetState.queryMode">Här visas alla ej signerade intyg.<br></span>
+                    <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
+                            ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed"
+                            ng-switch="widgetState.queryFormCollapsed">
+                        <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
                     </button>
-                  </td>
-                  <td class="center"><input id="selected" type="checkbox" ng-disabled="cert.updateInProgress" ng-model="cert.vidarebefordrad" ng-change="onVidareBefordradChange(cert)" /> 
-                    <span ng-if="cert.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
-                  </td>
-                  <td class="unbreakable">{{cert.intygsReferens.patientId.patientIdExtension}}</td>
-                  <td class="unbreakable">{{cert.senastSparat | date:'shortDate'}}</td>
-                  <td class="unbreakable table-qa-last">{{cert.sparatAv}}</td>
-                </tr>
-              </table>
-            </div>
-            <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}}</div>
-            <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
-              <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()" ng-disabled="widgetState.fetchingMoreInProgress">
-                <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta fler träffar
-              </button>
-              <p></p>
-            </div>
-          </div>
-        </div>
-        <!-- spinner end -->
-      </div>
-    </div>
-  </div>
+                    <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed"
+                         class="qa-filter-panel form-horizontal form-inline" style="background-color: #f5f5f5;">
+                        <div class="qa-filter">
+                            <div class="control-group">
+                                <label class="control-label">Sparat av</label>
 
-</div>
+                                <div class="controls">
+                                    <select id="qp-doctorSelector" ng-model="qp.doctorSelector"
+                                            ng-options="s.name for s in doctorList"
+                                            ng-disabled="widgetState.loadingDoctors"></select>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">Intyg som är</label>
+
+                                <div class="controls">
+                                    <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio"
+                                           ng-model="qp.vidarebefordrad" checked> <label
+                                        for="vidarebefordradAlla">Alla</label> <input
+                                        id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="true"
+                                        ng-model="qp.vidarebefordrad"> <label
+                                        for="vidarebefordradJa">Vidarebefordrade</label> <input
+                                        id="vidarebefordradNej" name="vidarebefordrad" type="radio" value="false"
+                                        ng-model="qp.vidarebefordrad"> <label for="vidarebefordradNej">Ej
+                                    vidarebefordrade</label>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">Senast sparat</label>
+
+                                <div class="controls">
+                                    Från <input type="text" id="filter-changedate-from" datepicker-popup
+                                                ng-model="qp.changedFrom" is-open="widgetState.dpFromOpen.open"
+                                                datepicker-options="datepickerConfig"/>
+                                    <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
+                                        <i class="icon-calendar"></i>
+                                    </button>
+
+                                    till <input type="text" id="filter-changedate-to" datepicker-popup
+                                                ng-model="qp.changedTo" is-open="widgetState.dpToOpen.open"
+                                                datepicker-options="datepickerConfig"/>
+                                    <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
+                                        <i class="icon-calendar"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <button id="filter-qa-btn" class="btn" ng-click="doSearch()">Sök</button>
+                                <button class="btn" ng-click="resetSearchForm()">Återställ sökformuläret</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery"
+                         show-content="!widgetState.runningQuery">
+
+                        <div class="webcert-col-section">
+
+                            <!-- No results message for unhandled -->
+                            <div id="current-list-noResults-unit"
+                                 ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && !widgetState.queryMode && widgetState.currentList.length<1"
+                                 class="alert alert-info">
+                                <span message key="info.nounanswered.qa.for.unit"></span>
+                            </div>
+
+                            <!-- No results message for query -->
+                            <div id="current-list-noResults-query"
+                                 ng-show="widgetState.totalCount<1 && widgetState.queryMode" class="alert alert-info">
+                                <span message key="info.query.noresults"></span>
+                            </div>
+
+
+                            <!-- error message -->
+                            <div id="current-list-noResults-error"
+                                 ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey"
+                                 class="alert alert-error">
+                                <span message key="{{widgetState.activeErrorMessageKey}}"></span>
+                            </div>
+
+                            <div id="query-count" ng-show="widgetState.queryMode && widgetState.totalCount>0">
+                                Sökresultat - {{widgetState.totalCount}} träffar för {{selectedUnit.namn}}
+                            </div>
+
+                            <!-- unsigned cert table -->
+                            <div class="row-fluid qa-table-section" ng-show="widgetState.currentList.length>0"
+                                 id="qaTable">
+                                <table class="span12 table table-striped table-qa">
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="center"
+                                            title="Markera om intyget är vidarebefordrat till den som ska signera det.">
+                                            Vidarebefordrad
+                                        </th>
+                                        <th title="Indikerar intygets status, komplett eller ej komplett.">Status
+                                        </th>
+                                        <th title="Person som senast sparade intyget.">Sparat av</th>
+                                        <th title="Berörd patients personnummer.">Patient</th>
+                                        <th title="Datum då intyget senast sparades.">
+                                            Senast sparat
+                                        </th>
+                                        <th title="Typ av intyg">Intygstyp</th>
+                                    </tr>
+                                    <tr ng-repeat="cert in widgetState.currentList">
+                                        <td>
+                                            <button class="btn btn-info" title="Visar intyget"
+                                                    ng-click="openIntyg(qa.intygsReferens)"
+                                                    id="showqaBtn-{{qa.internReferens}}">Visa
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button class="btn"
+                                                    ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-secondary' : qa.vidarebefordrad}"
+                                                    title="Skicka ett mejl med en länk till intyget för att informera den som ska signera det."
+                                                    ng-click="openMailDialog(qa)">
+                                                <img ng-if="!qa.vidarebefordrad" src="/img/mail.png">
+                                                <img ng-if="qa.vidarebefordrad" src="/img/mail_dark.png">
+                                            </button>
+                                        </td>
+                                        <td class="center">
+                                            <input id="selected" type="checkbox" ng-disabled="cert.updateInProgress"
+                                                   ng-model="cert.vidarebefordrad"
+                                                   ng-change="onVidareBefordradChange(cert)"/>
+                                            <span ng-if="cert.updateInProgress"> <img
+                                                    src="/img/ajax-loader-kit-16x16.gif"></span>
+                                        </td>
+                                        <td><span message key="cert.measure.{{cert.measureResKey}}"></span></td>
+                                        <td>{{cert.vardperson.namn}}</td>
+                                        <td class="unbreakable">{{cert.intygsReferens.patientId.patientIdExtension}}</td>
+                                        <td class="unbreakable table-qa-last">{{cert.senasteHandelseDatum |
+                                            date:'shortDate'}}
+                                        </td>
+                                        <td class="unbreakable table-qa-last">{{cert.typ}}</td>
+                                </table>
+                            </div>
+                            <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar
+                                träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av
+                                {{widgetState.totalCount}}
+                            </div>
+                            <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
+                                <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()"
+                                        ng-disabled="widgetState.fetchingMoreInProgress">
+                                    <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
+                                    fler träffar
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- spinner end -->
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
