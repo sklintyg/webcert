@@ -8,28 +8,28 @@ import org.springframework.data.repository.query.Param;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
-public interface IntygRepositoryCustom {
+public interface IntygRepositoryCustom extends IntygFilteredRepositoryCustom {
     /**
      * Should return a list of {@link Intyg} entities in the repository that has an enhetsId matching one of the
-     * supplied list of id's. Is also discards any entity with {@link IntygsStatus.SIGNED}. The result is NOT ordered.
+     * supplied list of id's. Is also discards any entity with a {@link IntygsStatus} not in the list. The result is NOT ordered.
      *
      * @param enhetsIds
      * @return A list of {@link Intyg} matching the search criteria. If no entities are found, this method returns
      *         an empty list.
      */
-    @Query("SELECT i FROM Intyg i WHERE i.enhetsId IN (:idList) AND i.status <> 'SIGNED'")
-    List<Intyg> findUnsignedByEnhetsId(@Param("idList") List<String> enhetsIds);
+    @Query("SELECT i from Intyg i WHERE i.enhetsId IN (:enhetsIds) AND i.status IN (:statuses)")
+    List<Intyg> findByEnhetsIdsAndStatuses(@Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<IntygsStatus> statuses);
 
     /**
      * Should return a count of {@link Intyg} entities in the repository that has an enhetsId matching one of the
-     * supplied list of id's. Is also discards any entity with {@link IntygsStatus.SIGNED}.
+     * supplied list of id's. Is also discards any entity with a {@link IntygsStatus} not in the list.
      *
      * @param enhetsIds List of hsa unit id's that should match the counted intyg entities
      * 
      * @return A count of {@link Intyg} matching the search criteria.
      */
-    @Query("SELECT count(i) FROM Intyg i WHERE i.enhetsId IN (:idList) AND i.status <> 'SIGNED'")
-    Long countUnsignedForEnhetsIds(@Param("idList") List<String> enhetsIds);
+    @Query("SELECT count(i) FROM Intyg i WHERE i.enhetsId IN (:enhetsIds) AND i.status IN (:statuses)")
+    long countByEnhetsIdsAndStatuses(@Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<IntygsStatus> statuses);
         
     /**
      * Returns all {@link Intyg} entities belonging to a certain patient and belonging to one of several careUnit and having selected statuses.
@@ -42,4 +42,5 @@ public interface IntygRepositoryCustom {
     @Query("SELECT i from Intyg i WHERE i.patientPersonnummer = :patientPnr AND i.enhetsId IN (:enhetsIds)" +
             "AND i.status IN (:statuses)")
     List<Intyg> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<IntygsStatus> statuses);
+    
 }

@@ -82,7 +82,9 @@ public class Intyg {
 
     @PrePersist
     void onPrePersist() {
-        senastSparadDatum = new LocalDateTime();
+        if (senastSparadDatum == null) {
+            senastSparadDatum = new LocalDateTime();
+        }
     }
 
     @PreUpdate

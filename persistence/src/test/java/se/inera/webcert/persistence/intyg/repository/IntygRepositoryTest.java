@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
+import se.inera.webcert.persistence.intyg.repository.util.IntygTestUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -36,24 +35,10 @@ public class IntygRepositoryTest {
 
     @PersistenceContext
     private EntityManager em;
-
-    private static String ENHET_1_ID = "ENHET_1_ID";
-    private static String ENHET_2_ID = "ENHET_2_ID";
-    private static String ENHET_3_ID = "ENHET_3_ID";
-
-    private static final String PERSON_NUMMER = "19121212-1212";
-
-    private static final String INTYGSTYP_FK7263 = "FK7263";
-    
-    private static final String MODEL = "This is the JSON model of this Intyg " +
-    		"with some interesting scandinavian characters like Å, Ä and ö added";
-    
-    private static final String PERSON_FORNAMN = "Tolvan";
-    private static final String PERSON_EFTERNAMN = "Tolvansson";
     
     @Test
     public void testFindOne() {
-        Intyg saved = intygRepository.save(buildIntyg(ENHET_1_ID));
+        Intyg saved = intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID));
         Intyg read = intygRepository.findOne(saved.getIntygsId());
        
         assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
@@ -63,19 +48,20 @@ public class IntygRepositoryTest {
         
         assertThat(read.getEnhetsId(), is(notNullValue()));
         
-        assertThat(read.getModel(), is(equalTo(MODEL)));
+        assertThat(read.getModel(), is(equalTo(IntygTestUtil.MODEL)));
     }
 
     @Test
     public void testFindByEnhetsIdDontReturnSigned() {
 
-        Intyg intyg1 = intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.WORK_IN_PROGRESS));
-        Intyg intyg2 = intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.WORK_IN_PROGRESS));
-        Intyg intyg3 = intygRepository.save(buildIntyg(ENHET_3_ID, IntygsStatus.WORK_IN_PROGRESS));
-        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.SIGNED));
-        intygRepository.save(buildIntyg(ENHET_2_ID, IntygsStatus.SIGNED));
+        Intyg intyg1 = intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.DRAFT_COMPLETE));
+        Intyg intyg2 = intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.DRAFT_COMPLETE));
+        Intyg intyg3 = intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_3_ID, IntygsStatus.DRAFT_COMPLETE));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.SIGNED));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_2_ID, IntygsStatus.SIGNED));
 
-        List<Intyg> result = intygRepository.findUnsignedByEnhetsId(Arrays.asList(ENHET_1_ID, ENHET_3_ID));
+        List<Intyg> result = intygRepository.findByEnhetsIdsAndStatuses(Arrays.asList(IntygTestUtil.ENHET_1_ID, IntygTestUtil.ENHET_3_ID),
+                Arrays.asList(IntygsStatus.DRAFT_COMPLETE));
         
         assertThat(result.size(), is(3));
         
@@ -88,60 +74,30 @@ public class IntygRepositoryTest {
     @Test
     public void testCountUnsignedByEnhetsId() {
 
-        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.WORK_IN_PROGRESS));
-        intygRepository.save(buildIntyg(ENHET_2_ID, IntygsStatus.WORK_IN_PROGRESS));
-        intygRepository.save(buildIntyg(ENHET_3_ID, IntygsStatus.SIGNED));
-        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.SIGNED));
-        intygRepository.save(buildIntyg(ENHET_2_ID, IntygsStatus.WORK_IN_PROGRESS));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.DRAFT_INCOMPLETE));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_2_ID, IntygsStatus.DRAFT_COMPLETE));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_3_ID, IntygsStatus.SIGNED));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.SIGNED));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_2_ID, IntygsStatus.DRAFT_COMPLETE));
 
-        long result = intygRepository.countUnsignedForEnhetsIds(Arrays.asList(ENHET_1_ID, ENHET_2_ID));
-        assertThat(result, is(3L));
+        long result = intygRepository.countByEnhetsIdsAndStatuses(Arrays.asList(IntygTestUtil.ENHET_1_ID, IntygTestUtil.ENHET_2_ID), Arrays.asList(IntygsStatus.SIGNED));
+        assertThat(result, is(1L));
 
     }
     
     @Test
     public void testFindDraftsByPatientAndEnhetAndStatus() {
         
-        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.SIGNED));
-        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.DRAFT_COMPLETE));
-        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.DRAFT_DISCARDED));
-        intygRepository.save(buildIntyg(ENHET_1_ID, IntygsStatus.DRAFT_INCOMPLETE));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.SIGNED));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.DRAFT_COMPLETE));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_2_ID, IntygsStatus.DRAFT_COMPLETE));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.DRAFT_INCOMPLETE));
                 
-        List<String> enhetsIds = Arrays.asList(ENHET_1_ID);
+        List<String> enhetsIds = Arrays.asList(IntygTestUtil.ENHET_1_ID);
         List<IntygsStatus> statuses = Arrays.asList(IntygsStatus.DRAFT_COMPLETE, IntygsStatus.DRAFT_INCOMPLETE);
-        List<Intyg> results = intygRepository.findDraftsByPatientAndEnhetAndStatus(PERSON_NUMMER, enhetsIds, statuses);
+        List<Intyg> results = intygRepository.findDraftsByPatientAndEnhetAndStatus(IntygTestUtil.PERSON_NUMMER, enhetsIds, statuses);
         
         assertThat(results.size(), is(2));
         
     }
-    
-    private Intyg buildIntyg(String enhetsId) {
-        return buildIntyg(enhetsId, IntygsStatus.WORK_IN_PROGRESS, INTYGSTYP_FK7263, PERSON_NUMMER, PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL);
-    }
-
-    private Intyg buildIntyg(String enhetsId, IntygsStatus status) {
-        return buildIntyg(enhetsId, status, INTYGSTYP_FK7263, PERSON_NUMMER, PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL);
-    }
-
-    private Intyg buildIntyg(String enhetsId, IntygsStatus status, String type, String personNummer, String personFornamn, String personEfternamn, String model) {
-        Intyg intyg = new Intyg();
-        intyg.setIntygsId(UUID.randomUUID().toString());
-        intyg.setIntygsTyp(type);
-        intyg.setEnhetsId(enhetsId);
-        intyg.setPatientPersonnummer(personNummer);
-        intyg.setPatientFornamn(personFornamn);
-        intyg.setPatientEfternamn(personEfternamn);
-        VardpersonReferens vardpersonReferens = new VardpersonReferens();
-        vardpersonReferens.setHsaId(enhetsId);
-        vardpersonReferens.setNamn(enhetsId + "-namn");
-        intyg.setSenastSparadAv(vardpersonReferens);
-        intyg.setSkapadAv(vardpersonReferens);
-
-        intyg.setStatus(status);
-        
-        intyg.setModel(model);
-
-        return intyg;
-    }
-
 }

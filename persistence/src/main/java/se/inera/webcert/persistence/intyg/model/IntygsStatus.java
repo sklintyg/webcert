@@ -7,8 +7,6 @@ package se.inera.webcert.persistence.intyg.model;
  */
 public enum IntygsStatus {
     DRAFT_INCOMPLETE,
-    DRAFT_COMPLETE,
-    DRAFT_DISCARDED,
-    WORK_IN_PROGRESS, 
+    DRAFT_COMPLETE, 
     SIGNED
 }
