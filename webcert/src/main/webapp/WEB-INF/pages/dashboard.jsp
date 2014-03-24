@@ -61,24 +61,20 @@
 
 <body>
 
-  <%-- Web-cert top navigation bar --%>
-  <div id="wcHeader" wc-header></div>
-  <div class="container-fluid">
-    <%-- No script to show at least something when javascript is off --%>
-    <noscript>
-      <h1>
-        <span><spring:message code="error.noscript.title" /></span>
-      </h1>
-      <div class="alert alert-error">
-        <spring:message code="error.noscript.text" />
-      </div>
-    </noscript>
-
     <%-- ng-view that holds dynamic content managed by angular app --%>
     <div id="view" ng-view></div>
-  </div>
 
-  <script data-main="/js/main" src="<c:url value="/web/webjars/requirejs/2.1.10/require.min.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/siths.jsp"/>"></script>
+    <%-- No script to show at least something when javascript is off --%>
+    <noscript>
+        <h1>
+          <span><spring:message code="error.noscript.title" /></span>
+        </h1>
+        <div class="alert alert-error">
+          <spring:message code="error.noscript.text" />
+        </div>
+    </noscript>
+
+    <script data-main="/js/main" src="<c:url value="/web/webjars/requirejs/2.1.10/require.min.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/siths.jsp"/>"></script>
 </body>
 </html>

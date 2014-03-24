@@ -285,7 +285,7 @@ define([
 /**
  * wcField directive. Used to abstract common layout for full-layout form fields in cert modules
  */
-    utils.directive("wcField", [function () {
+    utils.directive("wcField", ['messageService', function(messageService) {
   return {
     restrict : "A",
     transclude : true,
@@ -327,7 +327,7 @@ define([
 /**
  * Enable tooltips for other components than wcFields
  */
-angular.module('wc.utils').directive("wcEnableTooltip", [ 'messageService', function(messageService) {
+utils.directive("wcEnableTooltip", [ 'messageService', function(messageService) {
   return {
     restrict : "A",
     transclude : true,
