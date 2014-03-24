@@ -1,7 +1,7 @@
 !3 Givet ett intyg som är rättat skall det ej gå att ställa frågor.
 
 |script|!-SvaraOchFraga-!|
-|logga på som|7|
+|logga på som|fitnesse-admin1|
 |obehandladeFragarSidanVisas|
 |Gå till intygs vy med intygs id|intyg-fit-3-revoked|
 |intyg med fraga svar sidan visas|

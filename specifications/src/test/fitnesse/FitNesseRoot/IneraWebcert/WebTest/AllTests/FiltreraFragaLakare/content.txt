@@ -17,7 +17,7 @@
 !3 Givet ovanstående frågor verifiera att filtrering respekterar vald läkare
 
 |script|!-SvaraOchFraga-!|
-|logga på som|7|
+|logga på som|fitnesse-admin1|
 |obehandladeFragarSidanVisas|
 |valj vardenhet|vardenhet-fit-1|
 |check|Totalt antal ohanterade frågor för alla enheter är|4|

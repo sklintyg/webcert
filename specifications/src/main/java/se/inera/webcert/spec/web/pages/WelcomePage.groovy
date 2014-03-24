@@ -8,11 +8,11 @@ class WelcomePage extends Page {
 
     static content = {
         userSelect { $("#jsonSelect") }
-        //certificateType { $("#certType") }
         sendCertificateBtn { $("#loginBtn") }
     }
 
-    def startLogin() {
+    def loginAs(String id) {
+        userSelect = $("#${id}").value();
         sendCertificateBtn.click()
     }
 }

@@ -16,9 +16,7 @@ public class SvaraOchFraga {
             waitFor{
                 at WelcomePage
             }
-            page.userSelect=id
-
-            page.startLogin()
+            page.loginAs(id)
         }
     }
 

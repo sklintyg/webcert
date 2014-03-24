@@ -46,6 +46,87 @@
         //Lägg till fler templates i arrayen + i options för att utöka antalet inloggingar
 
         var loginArr = [
+            // Läkare, Vård och Behandling Webcert Enhet 1 (Webcert Vårdgivare 1)
+            {
+                "fornamn": "Jan",
+                "efternamn": "Nilsson",
+                "hsaId": "IFV1239877878-1049",
+                "enhetId": "IFV1239877878-1042",
+                "lakare": true
+            },
+
+            // Läkare, Statistik Webcert Enhet 1 (Webcert Vårdgivare 1) (Kan inte logga in)
+            {
+                "fornamn": "Åsa",
+                "efternamn": "Andersson",
+                "hsaId": "IFV1239877878-104B",
+                "enhetId": "IFV1239877878-1042",
+                "lakare": true
+            },
+
+            // Läkare, Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
+            {
+                "fornamn": "Åsa",
+                "efternamn": "Andersson",
+                "hsaId": "IFV1239877878-104B",
+                "enhetId": "IFV1239877878-1046",
+                "lakare": true
+            },
+
+            // Läkare, Vård och Behandling Webcert Enhet 3 (Webcert Vårdgivare 2)
+            {
+                "fornamn": "Åsa",
+                "efternamn": "Andersson",
+                "hsaId": "IFV1239877878-104B",
+                "enhetId": "IFV1239877878-104D",
+                "lakare": true
+            },
+
+            // Läkare, Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
+            {
+                "fornamn": "Lars",
+                "efternamn": "Andersson",
+                "hsaId": "IFV1239877878-104K",
+                "enhetId": "IFV1239877878-1046",
+                "lakare": true
+            },
+
+            // Läkare, Vård och Behandling Webcert Enhet 3 (Webcert Vårdgivare 2)
+            {
+                "fornamn": "Lars",
+                "efternamn": "Andersson",
+                "hsaId": "IFV1239877878-104K",
+                "enhetId": "IFV1239877878-104D",
+                "lakare": true
+            },
+
+            // Statistik Webcert Enhet 3 (Webcert Vårdgivare 2)
+            {
+                "fornamn": "Anna",
+                "efternamn": "Persson",
+                "hsaId": "IFV1239877878-104L",
+                "enhetId": "IFV1239877878-104D",
+                "lakare": false
+            },
+
+            // AT Läkare Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
+            {
+                "fornamn": "Anders",
+                "efternamn": "Larsson",
+                "hsaId": "IFV1239877878-104M",
+                "enhetId": "IFV1239877878-1046",
+                "lakare": true
+            },
+
+            // Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
+            {
+                "fornamn": "Lena",
+                "efternamn": "Karlsson",
+                "hsaId": "IFV1239877878-104N",
+                "enhetId": "IFV1239877878-1046",
+                "lakare": false
+            },
+
             //Markus Gran Testanvändare  @ VårdEnhet1A
             {
                 "fornamn" : "Markus",
@@ -168,17 +249,27 @@
 
                     <h4>Mallar</h4>
                     <select id="jsonSelect" name="jsonSelect" onChange="updateJsonInput()" size="10" style="width: 100%">
-                        <option value="0" selected>Markus Gran (Läkare VårdEnhet1A)</option>
-                        <option value="1" selected>Markus Gran (Läkare VårdEnhet2A)</option>
-                        <option value="2" selected>Markus Gran (Läkare VårdEnhetA)</option>
-                        <option value="3">Eva Holgersson (Läkare Centrum Väst)</option>
-                        <option value="4">Staffan Stafett (Läkare Centrum Väst, Linköping, Norrköping)</option>
-                        <option value="5">Adam Admin (Administratör Centrum Väst)</option>
-                        <option value="6">Adamo Admin (Administratör Centrum Väst)</option>
-                        <option value="7">Adamo Admin (Administratör Centrum Väst)</option>
-                        <option value="8">Fitnesse Admin (Administratör Vardenhet Fitnesse 1)</option>
-                        <option value="9">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
-                        <option value="10">Han Solo (Administratör, Centrum Norr)</option>
+                        <option value="0" selected>Jan Nilsson - WebCert Enhet 1 (Läkare)(Vård och Behandling + Admin)</option>
+                        <option value="1">Åsa Andersson - WebCert Enhet 1 (Läkare)(Vård och Behandling)</option>
+                        <option value="2">Åsa Andersson - WebCert Enhet 2 + 2UE (Läkare)(Vård och Behandling)</option>
+                        <option value="3">Åsa Andersson - WebCert Enhet 3 (Läkare)(Admin)</option>
+                        <option value="4">Lars Andersson - WebCert Enhet 2 + 2UE (Läkare)(Vård och Behandling)</option>
+                        <option value="4">Lars Andersson - WebCert Enhet 3 (Läkare)(Vård och Behandling)</option>
+                        <option value="5">Anna Persson - WebCert Enhet 3 (Statistik)</option>
+                        <option value="6">Anders Larsson WebCert Enhet 2 + 2UE (AT Läkare)(Vård och Behandling)</option>
+                        <option value="7">Lena Karlsson - WebCert Enhet 2 + 2UE (Vård och Behandling)</option>
+
+                        <option value="8">Markus Gran (Läkare VårdEnhet1A)</option>
+                        <option value="9">Markus Gran (Läkare VårdEnhet2A)</option>
+                        <option value="10">Markus Gran (Läkare VårdEnhetA)</option>
+                        <option value="11">Eva Holgersson (Läkare Centrum Väst)</option>
+                        <option value="12">Staffan Stafett (Läkare Centrum Väst, Linköping, Norrköping)</option>
+                        <option value="13">Adam Admin (Administratör Centrum Väst)</option>
+                        <option value="14">Adamo Admin (Administratör Centrum Väst)</option>
+                        <option value="15">Adamo Admin (Administratör Centrum Väst)</option>
+                        <option value="16" id="fitnesse-admin1">Fitnesse Admin (Administratör Vardenhet Fitnesse 1)</option>
+                        <option value="17" id="fitnesse-admin2">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
+                        <option value="18">Han Solo (Administratör, Centrum Norr)</option>
                     </select>
                     </p>
 

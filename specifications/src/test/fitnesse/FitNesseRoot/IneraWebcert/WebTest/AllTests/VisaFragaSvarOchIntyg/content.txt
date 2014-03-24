@@ -28,7 +28,7 @@
 !3 Givet att det finns en fråga visa den och Kontrollera dess data.
 
 |script|!-SvaraOchFraga-!|
-|logga på som|7|
+|logga på som|fitnesse-admin1|
 |obehandladeFragarSidanVisas|
 |valj vardenhet|vardenhet-fit-1|
 |listaMedObehandladeFragarVisas|
