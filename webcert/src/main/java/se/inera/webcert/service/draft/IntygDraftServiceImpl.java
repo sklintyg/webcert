@@ -162,7 +162,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         Vardenhet reqVardenhet = request.getVardenhet();
         se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(
                 reqVardenhet.getHsaId(), reqVardenhet.getNamn(), reqVardenhet.getPostadress(),
-                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), vardgivare);
+                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(), vardgivare);
 
         HoSPerson reqHosPerson = request.getHosPerson();
         HoSPersonal hosPerson = new HoSPersonal(reqHosPerson.getHsaId(), reqHosPerson.getNamn(),

@@ -14,6 +14,8 @@ public class Vardenhet {
     
     private String telefonnummer;
     
+    private String epost;
+    
     private Vardgivare vardgivare;
     
     public Vardenhet() {
@@ -74,6 +76,14 @@ public class Vardenhet {
 
     public void setVardgivare(Vardgivare vardgivare) {
         this.vardgivare = vardgivare;
+    }
+
+    public String getEpost() {
+        return epost;
+    }
+
+    public void setEpost(String epost) {
+        this.epost = epost;
     }
 
 }
