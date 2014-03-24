@@ -82,7 +82,7 @@ define([
                     "params" : "="
                 },
                 replace : true,
-                template : "<span ng-bind-html-unsafe='resultValue'></span>",
+                template: "<span ng-bind-html='resultValue'></span>",
                 link : function (scope, element, attr) {
                     var result;
                     // observe changes to interpolated attribute

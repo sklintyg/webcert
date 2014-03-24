@@ -1,6 +1,7 @@
 define([
     'angular',
     'angularRoute',
+    'angularSanitize',
     'controllers',
     'directives',
     'filters',
@@ -11,10 +12,10 @@ define([
     'common/wc-common-message-resources',
     'common/wc-message-module',
     'common/wc-utils'
-], function (angular, angularRoute, controllers, directives, filters, messages, services, wcCommon, wcCommonFragaSvarModule, commonMessages, wcMessageModule, wcUtils) {
+], function (angular, angularRoute, angularSanitize, controllers, directives, filters, messages, services, wcCommon, wcCommonFragaSvarModule, commonMessages, wcMessageModule, wcUtils) {
     'use strict';
 
-    var app = angular.module('wcDashBoardApp', ['ui.bootstrap', 'ngCookies', 'ngRoute',
+    var app = angular.module('wcDashBoardApp', ['ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize',
         controllers, directives, filters, services, wcCommon, wcCommonFragaSvarModule, wcMessageModule, wcUtils]);
 
     app.config(['$routeProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$provide', '$httpProvider', 'http403ResponseInterceptorProvider',
