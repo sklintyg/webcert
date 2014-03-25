@@ -4,11 +4,11 @@
   <groupId>se.inera.webcert</groupId>
   <artifactId>webcert-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.5-RC2-SNAPSHOT</version>
+  <version>0.5-RC2</version>
   <name>Inera Webcert</name>
   <scm>
     <connection>scm:git:https://code.google.com/p/inera-webcert/</connection>
-    <tag>HEAD</tag>
+    <tag>webcert-0.5-RC2</tag>
   </scm>
   <distributionManagement>
     <repository>
