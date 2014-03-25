@@ -22,15 +22,12 @@ define([
             }
 
             /*
-             * Load certificate list of specified type(unsigned, with unanswered
-             * questions and ready to mass sign) TODO: add optionally
-             * careWard +
+             * Load unsigned certificate list for valdVardenhet
              */
-
-            function _getCertificates (requestConfig, callback) {
-                $log.debug('_getCertificates type:' + requestConfig.type);
-                // var restPath = '/api/certificates/' + dataType;
-                var restPath = '/jsonmocks/' + requestConfig.type;
+            function _getUnsignedCertificates(callback) {
+                $log.debug('_getUnsignedCertificates:');
+                //var restPath = '/api/intyg/unsigned/'; // release version
+                var restPath = '/jsonmocks/intyg_unsigned.json'; // mocked version
                 $http.get(restPath).success(function (data) {
                     $log.debug('got data:' + data);
                     callback(data);
@@ -38,6 +35,22 @@ define([
                     $log.error('error ' + status);
                     // Let calling code handle the error of no data response
                     callback(null);
+                });
+            }
+
+            /*
+             * Load more unsigned certificates by query
+             */
+            function _getUnsignedCertificatesByQueryFetchMore (query, onSuccess, onError) {
+                $log.debug('_getUnsignedCertificatesByQueryFetchMore');
+                var restPath = '/api/intyg/unsigned';
+                $http.put(restPath, query).success(function (data) {
+                    $log.debug('_getUnsignedCertificatesByQueryFetchMore got data:' + data);
+                    onSuccess(data);
+                }).error(function (data, status) {
+                    $log.error('_getUnsignedCertificatesByQueryFetchMore error ' + status);
+                    // Let calling code handle the error of no data response
+                    onError(data);
                 });
             }
 
@@ -107,7 +120,8 @@ define([
             // Return public API for the service
             return {
                 getCertificatesForPerson : _getCertificatesForPerson,
-                getCertificates : _getCertificates,
+                getUnsignedCertificates : _getUnsignedCertificates,
+                getUnsignedCertificatesByQueryFetchMore : _getUnsignedCertificatesByQueryFetchMore,
                 getQA : _getQA,
                 getQAByQuery : _getQAByQuery,
                 getQAByQueryFetchMore : _getQAByQueryFetchMore,
