@@ -86,12 +86,4 @@ public class Vardenhet {
         this.vardgivare = vardgivare;
     }
 
-    public String getEpost() {
-        return epost;
-    }
-
-    public void setEpost(String epost) {
-        this.epost = epost;
-    }
-
 }
