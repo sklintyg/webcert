@@ -5,6 +5,8 @@ import org.joda.time.LocalDateTime;
 public class ListIntygEntry {
 
     private String intygId;
+    
+    private String patientId;
 
     private IntygSource source;
 
@@ -16,7 +18,7 @@ public class ListIntygEntry {
 
     private String updatedSignedBy;
     
-    private boolean discarded;
+    private boolean forwarded;
 
     public ListIntygEntry() {
 
@@ -28,6 +30,14 @@ public class ListIntygEntry {
 
     public void setIntygId(String intygId) {
         this.intygId = intygId;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public IntygSource getSource() {
@@ -70,18 +80,12 @@ public class ListIntygEntry {
         this.updatedSignedBy = updatedSignedBy;
     }
 
-    public boolean isDiscarded() {
-        return discarded;
+    public boolean isForwarded() {
+        return forwarded;
     }
 
-    public void setDiscarded(boolean discarded) {
-        this.discarded = discarded;
-    }
-
-    @Override
-    public String toString() {
-        return "ListIntygEntry [intygId=" + intygId + ", source=" + source + ", intygType=" + intygType + ", status="
-                + status + ", lastUpdatedSigned=" + lastUpdatedSigned + ", updatedSignedBy=" + updatedSignedBy + "]";
+    public void setForwarded(boolean forwarded) {
+        this.forwarded = forwarded;
     }
 
 }

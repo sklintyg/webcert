@@ -8,20 +8,29 @@ import org.joda.time.LocalDateTime;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 public class IntygFilter {
-
+    
     private String unitHsaId;
 
     private String savedByHsaId;
 
-    private Boolean vidarebefordrad;
+    private Boolean forwarded;
 
-    private LocalDateTime changedFrom;
-    private LocalDateTime changedTo;
+    private LocalDateTime savedFrom;
+    
+    private LocalDateTime savedTo;
 
     private List<IntygsStatus> statusList = new ArrayList<>();
 
+    private Integer startFrom;
+    
+    private Integer pageSize;
+    
     public IntygFilter(String unitHsaId) {
         this.unitHsaId = unitHsaId;
+    }
+    
+    public boolean hasPageSizeAndStartFrom() {
+        return (pageSize != null && startFrom != null);
     }
     
     public String getUnitHsaId() {
@@ -39,29 +48,29 @@ public class IntygFilter {
     public void setSavedByHsaId(String savedByHsaId) {
         this.savedByHsaId = savedByHsaId;
     }
-
-    public Boolean getVidarebefordrad() {
-        return vidarebefordrad;
+    
+    public Boolean getForwarded() {
+        return forwarded;
     }
 
-    public void setVidarebefordrad(Boolean vidarebefordrad) {
-        this.vidarebefordrad = vidarebefordrad;
+    public void setForwarded(Boolean forwarded) {
+        this.forwarded = forwarded;
     }
 
-    public LocalDateTime getChangedFrom() {
-        return changedFrom;
+    public LocalDateTime getSavedFrom() {
+        return savedFrom;
     }
 
-    public void setChangedFrom(LocalDateTime changedFrom) {
-        this.changedFrom = changedFrom;
+    public void setSavedFrom(LocalDateTime savedFrom) {
+        this.savedFrom = savedFrom;
     }
 
-    public LocalDateTime getChangedTo() {
-        return changedTo;
+    public LocalDateTime getSavedTo() {
+        return savedTo;
     }
 
-    public void setChangedTo(LocalDateTime changedTo) {
-        this.changedTo = changedTo;
+    public void setSavedTo(LocalDateTime savedTo) {
+        this.savedTo = savedTo;
     }
 
     public List<IntygsStatus> getStatusList() {
@@ -70,6 +79,22 @@ public class IntygFilter {
 
     public void setStatusList(List<IntygsStatus> statusList) {
         this.statusList = statusList;
+    }
+
+    public Integer getStartFrom() {
+        return startFrom;
+    }
+
+    public void setStartFrom(Integer startFrom) {
+        this.startFrom = startFrom;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
     }
 
 }

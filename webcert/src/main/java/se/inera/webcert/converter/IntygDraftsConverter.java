@@ -17,9 +17,9 @@ import se.inera.webcert.service.dto.IntygStatus;
 import se.inera.webcert.web.controller.api.dto.IntygSource;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 
-public final class IntygMerger {
+public final class IntygDraftsConverter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IntygMerger.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
     
     private static Comparator<ListIntygEntry> intygEntryDateComparator = new Comparator<ListIntygEntry>() {
 
@@ -39,7 +39,7 @@ public final class IntygMerger {
         
     };
     
-    private IntygMerger() {
+    private IntygDraftsConverter() {
 
     }
 
@@ -53,6 +53,23 @@ public final class IntygMerger {
         addDraftIntyg(allIntyg, draftIntygList);
 
         // sort according to signedUpdate date and then reverse so that last is on top.
+        Collections.sort(allIntyg, intygEntryDateComparator);
+        Collections.reverse(allIntyg);
+        
+        return allIntyg;
+    }
+    
+    public static List<ListIntygEntry> convertIntygToListEntries(List<Intyg> draftIntygList) {
+        
+        List<ListIntygEntry> allIntyg = new ArrayList<ListIntygEntry>();
+        
+        ListIntygEntry intygEntry;
+        
+        for (Intyg cert : draftIntygList) {
+            intygEntry = convert(cert);
+            allIntyg.add(intygEntry);
+        }
+        
         Collections.sort(allIntyg, intygEntryDateComparator);
         Collections.reverse(allIntyg);
         
@@ -89,13 +106,10 @@ public final class IntygMerger {
         ie.setSource(IntygSource.WC);
         ie.setUpdatedSignedBy(intyg.getSenastSparadAv().getNamn());
         ie.setLastUpdatedSigned(intyg.getSenastSparadDatum());
+        ie.setPatientId(intyg.getPatientPersonnummer());
         
         IntygsStatus intygsStatus = intyg.getStatus();
         ie.setStatus(intygsStatus.toString());
-        
-        if (IntygsStatus.DRAFT_DISCARDED.equals(intygsStatus)) {
-            ie.setDiscarded(true);
-        }
         
         return ie;
     }

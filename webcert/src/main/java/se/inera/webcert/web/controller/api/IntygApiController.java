@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -17,11 +18,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.converter.IntygMerger;
+import se.inera.webcert.converter.IntygDraftsConverter;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.IntygModule;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.repository.IntygFilter;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
@@ -36,6 +39,8 @@ import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
+import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
+import se.inera.webcert.web.controller.api.dto.QueryIntygResponse;
 
 /**
  * Controller for the API that serves WebCert.
@@ -48,9 +53,13 @@ public class IntygApiController extends AbstractApiController {
 
     private static Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
 
-    private static List<IntygsStatus> ALL_DRAFT_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
-            IntygsStatus.DRAFT_INCOMPLETE, IntygsStatus.DRAFT_DISCARDED);
-
+    private static List<IntygsStatus> ALL_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
+            IntygsStatus.DRAFT_INCOMPLETE);
+    
+    private static List<IntygsStatus> COMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE);
+    
+    private static List<IntygsStatus> INCOMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_INCOMPLETE);
+    
     @Autowired
     private IntygService intygService;
 
@@ -161,12 +170,74 @@ public class IntygApiController extends AbstractApiController {
         LOG.debug("Got {} signed intyg", signedIntygList.size());
 
         List<Intyg> draftIntygList = intygRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds,
-                ALL_DRAFT_STATUSES);
+                ALL_DRAFTS);
         LOG.debug("Got {} draft intyg", draftIntygList.size());
 
-        List<ListIntygEntry> allIntyg = IntygMerger.merge(signedIntygList, draftIntygList);
+        List<ListIntygEntry> allIntyg = IntygDraftsConverter.merge(signedIntygList, draftIntygList);
 
         return Response.ok(allIntyg).build();
+    }
+
+    @GET
+    @Path("/unsigned")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getUnsignedIntygForUnit() {
+        
+        WebCertUser user = webCertUserService.getWebCertUser();
+        String selectedUnitHsaId = user.getValdVardenhet().getId();
+        
+        IntygFilter filter = new IntygFilter(selectedUnitHsaId);
+        filter.setStatusList(ALL_DRAFTS);
+        filter.setPageSize(10);
+        filter.setStartFrom(0);
+        
+        QueryIntygResponse response = performIntygFilterQuery(selectedUnitHsaId, filter);
+                
+        return Response.ok(response).build();
+    }
+
+    @PUT
+    @Path("/unsigned")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response filterUnsignedIntygForUnit(QueryIntygParameter filterDto) {
+        
+        WebCertUser user = webCertUserService.getWebCertUser();
+        String selectedUnitHsaId = user.getValdVardenhet().getId();
+        
+        IntygFilter filter = new IntygFilter(selectedUnitHsaId);
+        
+        if (Boolean.FALSE.equals(filterDto.getComplete())) {
+            filter.setStatusList(INCOMPLETE_DRAFTS);
+        } else if (Boolean.TRUE.equals(filterDto.getComplete())) {
+            filter.setStatusList(COMPLETE_DRAFTS);
+        } else {
+            filter.setStatusList(ALL_DRAFTS);
+        }
+        
+        filter.setSavedFrom(filterDto.getSavedFrom());
+        filter.setSavedTo(filterDto.getSavedTo());
+        filter.setSavedByHsaId(filterDto.getSavedBy());
+        filter.setForwarded(filterDto.getForwarded());
+        filter.setPageSize(filterDto.getPageSize());
+        filter.setStartFrom(filterDto.getStartFrom());
+        
+        QueryIntygResponse queryResponse = performIntygFilterQuery(selectedUnitHsaId, filter);
+                        
+        return Response.ok(queryResponse).build();
+    }
+    
+    private QueryIntygResponse performIntygFilterQuery(String selectedUnitHsaId, IntygFilter filter) {
+        
+        List<Intyg> intygList = intygRepository.filterIntyg(filter);
+                
+        List<ListIntygEntry> listIntygEntries = IntygDraftsConverter.convertIntygToListEntries(intygList);
+        
+        int totalCountOfFilteredIntyg = intygRepository.countFilterIntyg(filter);
+        
+        QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
+        response.setTotalCount(totalCountOfFilteredIntyg);
+        return response;
     }
 
     /**

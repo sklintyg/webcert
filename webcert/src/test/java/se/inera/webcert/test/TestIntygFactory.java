@@ -67,19 +67,26 @@ public final class TestIntygFactory {
     }
     
     public static Intyg createIntyg(String id, LocalDateTime lastUpdated) {
+        return createIntyg(id, lastUpdated, "A Type", "A Person", "HSA1234", IntygsStatus.DRAFT_COMPLETE, "19121212-1212");
+    }
+    
+    public static Intyg createIntyg(String id, LocalDateTime lastUpdated, String type, String modifiedBy, String modifiedByHsaId, IntygsStatus status, String patientId) {
         
         VardpersonReferens vp = new VardpersonReferens();
-        vp.setNamn("A Person");
-        vp.setHsaId("ABC1234");
+        vp.setNamn(modifiedBy);
+        vp.setHsaId(modifiedByHsaId);
         
         Intyg it = new Intyg();
         
         it.setIntygsId(id);
         it.setSenastSparadAv(vp);
         it.setSkapadAv(vp);
-        it.setIntygsTyp("Type 1");
-        it.setStatus(IntygsStatus.DRAFT_COMPLETE);
+        it.setIntygsTyp(type);
+        it.setStatus(status);
         it.setSenastSparadDatum(lastUpdated);
+        it.setPatientFornamn("Tolvan");
+        it.setPatientEfternamn("Tolvsson");
+        it.setPatientPersonnummer(patientId);
         
         return it;
     }

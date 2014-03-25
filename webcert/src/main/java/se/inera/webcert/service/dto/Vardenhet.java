@@ -70,6 +70,14 @@ public class Vardenhet {
         this.telefonnummer = telefonnummer;
     }
 
+    public String getEpost() {
+        return epost;
+    }
+
+    public void setEpost(String epost) {
+        this.epost = epost;
+    }
+
     public Vardgivare getVardgivare() {
         return vardgivare;
     }
