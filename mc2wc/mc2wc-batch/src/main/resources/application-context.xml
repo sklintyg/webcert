@@ -3,21 +3,16 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns="http://www.springframework.org/schema/beans"
-
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-  <context:property-placeholder
-      location="classpath:/env/default.properties, classpath:/env/default.${spring.profiles.active}.properties"
-      ignore-resource-not-found="true" order="1" />
-
-  <import resource="spring/batch-infrastructure-context.xml" />
-  <import resource="spring/persistence-context.xml" />
-  <import resource="spring/rest-client-context.xml" />
-  <import resource="spring/beans-context.xml" />
-  <import resource="spring/migration-job-context.xml" />
+  <import resource="classpath:/spring/batch-infrastructure-context.xml" />
+  <import resource="classpath:/spring/beans-context.xml" />
+  <import resource="classpath:/spring/persistence-context.xml" />
+  <import resource="classpath:/spring/rest-client-context.xml" />
+  <import resource="classpath:/spring/migration-job-context.xml" />
 
   <context:annotation-config />
 
@@ -33,5 +28,25 @@
       </security:user-service>
     </security:authentication-provider>
   </security:authentication-manager>
+
+  <context:property-placeholder
+      location="file:${mc2wc-batch.config.file}"
+      ignore-resource-not-found="true" ignore-unresolvable="true" order="0" />
+
+  <beans profile="dev">
+    <context:property-placeholder
+        location="classpath:/env/default.properties, classpath:/env/default.dev.properties"
+        ignore-resource-not-found="true" ignore-unresolvable="true" order="1" />
+  </beans>
+  <beans profile="test">
+    <context:property-placeholder
+        location="classpath:/env/default.properties, classpath:/env/default.test.properties"
+        ignore-resource-not-found="true" ignore-unresolvable="true" order="1" />
+  </beans>
+  <beans profile="prod">
+    <context:property-placeholder
+        location="classpath:/env/default.properties, classpath:/env/default.prod.properties"
+        ignore-resource-not-found="true" ignore-unresolvable="true" order="1" />
+  </beans>
 
 </beans>

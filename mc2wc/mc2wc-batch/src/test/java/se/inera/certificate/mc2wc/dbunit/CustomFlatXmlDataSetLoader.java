@@ -15,10 +15,6 @@ import java.io.InputStream;
  */
 public class CustomFlatXmlDataSetLoader extends AbstractDataSetLoader {
 
-    public CustomFlatXmlDataSetLoader() {
-
-    }
-
     @Override
     protected IDataSet createDataSet(Resource resource) throws Exception {
 

@@ -8,6 +8,9 @@
 <body>
 ${status}
 <br>
-${readCount}
+CertificateWriteCount: ${certificateWriteCount}<br>
+QuestionWriteCount: ${questionWriteCount}<br>
+AnswerWriteCount: ${answerWriteCount}<br>
+
 </body>
 </html>

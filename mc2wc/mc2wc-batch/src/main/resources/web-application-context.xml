@@ -13,7 +13,7 @@
 
   <context:property-placeholder
       location="classpath:/env/default.properties, classpath:/env/default.${spring.profiles.active}.properties"
-      ignore-resource-not-found="true" order="1" />
+      ignore-resource-not-found="true" order="2" />
 
 
   <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">

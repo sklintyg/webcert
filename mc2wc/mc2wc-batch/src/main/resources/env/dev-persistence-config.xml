@@ -10,11 +10,9 @@
 
   <context:annotation-config />
 
-  <!--
-    <jdbc:initialize-database data-source="medcertDataSource">
-      <jdbc:script location="classpath:/db/create_medcert_db_h2.sql" />
-    </jdbc:initialize-database>
-  -->
+  <jdbc:initialize-database data-source="medcertDataSource">
+    <jdbc:script location="classpath:/db/create_medcert_db_h2.sql" />
+  </jdbc:initialize-database>
 
   <jdbc:embedded-database id="medcertDataSource" type="H2" />
 

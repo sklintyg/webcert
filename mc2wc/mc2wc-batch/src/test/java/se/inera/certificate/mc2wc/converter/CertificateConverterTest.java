@@ -3,7 +3,6 @@ package se.inera.certificate.mc2wc.converter;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
 import se.inera.certificate.mc2wc.jpa.model.Certificate;
 import se.inera.certificate.mc2wc.message.MigrationMessage;
@@ -14,7 +13,6 @@ import javax.persistence.TypedQuery;
 
 import static org.junit.Assert.*;
 
-@ContextConfiguration(locations = {"/spring/beans-context.xml"})
 @DatabaseSetup({"/data/certificate_dataset_25.xml"})
 public class CertificateConverterTest extends AbstractDbUnitSpringTest {
 
@@ -30,17 +28,13 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
     @Autowired
     private MigrationMessageConverter converter;
 
-    public CertificateConverterTest() {
-
-    }
-
     @Test
     public void convertCertificate010() {
 
         Certificate certificate = getCertificateById(CERT_WITH_ALL);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, true);
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
         assertNotNull(migrationMessage);
         assertNotNull(migrationMessage.getCertificate());
         assertEquals(1, migrationMessage.getQuestions().size());
@@ -52,7 +46,7 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
         Certificate certificate = getCertificateById(CERT_WITH_NOTHING);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, true);
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
         assertNotNull(migrationMessage);
         assertNull(migrationMessage.getCertificate());
         assertTrue(migrationMessage.getQuestions().isEmpty());
@@ -64,7 +58,7 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
         Certificate certificate = getCertificateById(CERT_WITH_JUST_CONTENT);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, true);
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
         assertNotNull(migrationMessage);
         assertNotNull(migrationMessage.getCertificate());
         assertTrue(migrationMessage.getQuestions().isEmpty());
@@ -76,7 +70,7 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
         Certificate certificate = getCertificateById(CERT_WITH_JUST_QUESTION);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, true);
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
         assertNotNull(migrationMessage);
         assertNull(migrationMessage.getCertificate());
         assertEquals(1, migrationMessage.getQuestions().size());
@@ -88,7 +82,7 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
         Certificate certificate = getCertificateById(CERT_WITH_QUESTIONS_ANSWERS);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, true);
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
         assertNotNull(migrationMessage);
         assertNotNull(migrationMessage.getCertificate());
         assertEquals(4, migrationMessage.getQuestions().size());

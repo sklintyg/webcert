@@ -10,10 +10,11 @@
   GNU Affero General Public License for more details. You should have received
   a copy of the GNU Affero General Public License along with this program.
   If not, see <http://www.gnu.org/licenses/>. -->
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context" xmlns:jaxws="http://cxf.apache.org/jaxws"
-       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xmlns:sec="http://cxf.apache.org/configuration/security"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
@@ -24,36 +25,36 @@
   <beans profile="qa,prod">
     <!-- Config file must be present in qa and prod -->
     <context:property-placeholder
-      location="file:${credentials.file}, file:${webcert.config.file}" order="1" 
-      ignore-resource-not-found="false" ignore-unresolvable="true"/>
+        location="file:${credentials.file}, file:${webcert.config.file}" order="1"
+        ignore-resource-not-found="false" ignore-unresolvable="true" />
   </beans>
   <beans profile="dev,test">
     <!-- Config file could be missing in dev and test -->
     <context:property-placeholder
-      location="file:${credentials.file}, file:${webcert.config.file}" order="1" 
-      ignore-resource-not-found="true" ignore-unresolvable="true"/>
+        location="file:${credentials.file}, file:${webcert.config.file}" order="1"
+        ignore-resource-not-found="true" ignore-unresolvable="true" />
   </beans>
 
   <beans>
     <context:property-placeholder
-            location="classpath:default.properties, classpath:default.${spring.profiles.active}.properties, classpath:version.properties" order="2"
-            ignore-resource-not-found="true"/>
+        location="classpath:default.properties, classpath:default.${spring.profiles.active}.properties, classpath:version.properties"
+        order="2"
+        ignore-resource-not-found="true" />
 
-    <context:annotation-config/>
-    <context:component-scan base-package="se.inera.webcert"/>
-  
-    <import resource="classpath:repository-context.xml"/>
-    <import resource="security/securityContext.xml"/>
-    <import resource="classpath:/hsa-services-config.xml"/>
-  
-    <import resource="classpath:jms-config.xml"/>
-  
-    <import resource="classpath:/mail-stub-context.xml"/>
-  
-  
-    <context:component-scan base-package="se.inera.webcert.web.service"/>
+    <context:annotation-config />
+    <context:component-scan base-package="se.inera.webcert" />
+
+    <import resource="classpath:repository-context.xml" />
+    <import resource="security/securityContext.xml" />
+    <import resource="classpath:/hsa-services-config.xml" />
+
+    <import resource="classpath:jms-config.xml" />
+
+    <import resource="classpath:/mail-stub-context.xml" />
+
+    <context:component-scan base-package="se.inera.webcert.web.service" />
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-      <property name="defaultEncoding" value="UTF-8"/>
+      <property name="defaultEncoding" value="UTF-8" />
       <property name="basenames">
         <list>
           <value>ui</value>
@@ -61,14 +62,14 @@
         </list>
       </property>
     </bean>
-  
+
     <!-- Mail configuration -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-      <property name="host" value="${mail.host}"/>
-      <property name="protocol" value="${mail.protocol}"/>
-      <property name="username" value="${mail.username}"/>
-      <property name="password" value="${mail.password}"/>
-      <property name="defaultEncoding" value="${mail.defaultEncoding}"/>
+      <property name="host" value="${mail.host}" />
+      <property name="protocol" value="${mail.protocol}" />
+      <property name="username" value="${mail.username}" />
+      <property name="password" value="${mail.password}" />
+      <property name="defaultEncoding" value="${mail.defaultEncoding}" />
       <property name="javaMailProperties">
         <props>
           <prop key="mail.smtps.auth">true</prop>
@@ -77,19 +78,19 @@
         </props>
       </property>
     </bean>
-  
-    <bean id="objectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
-  
+
+    <bean id="objectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper" />
+
     <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
       <property name="mapper">
-        <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
+        <bean class="se.inera.certificate.integration.json.CustomObjectMapper" />
       </property>
     </bean>
-    
+
     <bean id="webcertRestExceptionHandler" class="se.inera.webcert.web.controller.WebcertRestExceptionHandler" />
-  
-    <bean class="se.inera.certificate.integration.rest.ModuleRestApiFactory"/>
-  
+
+    <bean class="se.inera.certificate.integration.rest.ModuleRestApiFactory" />
+
     <!-- ws clients -->
     <jaxws:client id="getCertificateForCareResponder"
                   serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface"
@@ -111,21 +112,22 @@
 
   <!-- In dev and demo mode we bootstrap data -->
   <beans profile="dev,demo">
-    <bean id="FragaSvarBootstrapBean" class="se.inera.webcert.service.util.FragaSvarBootstrapBean"/>
+    <bean id="FragaSvarBootstrapBean" class="se.inera.webcert.service.util.FragaSvarBootstrapBean" />
   </beans>
 
   <beans profile="test,qa,prod">
     <http:conduit
-            name="{urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCare:1:rivtabp21}GetCertificateForCareResponderInterfacePort.http-conduit">
-      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive"/>
+        name="{urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCare:1:rivtabp21}GetCertificateForCareResponderInterfacePort.http-conduit">
+      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive" />
       <http:tlsClientParameters disableCNCheck="true">
 
         <sec:keyManagers keyPassword="${ntjp.ws.key.manager.password}">
           <sec:keyStore file="${ntjp.ws.certificate.file}" password="${ntjp.ws.certificate.password}"
-                        type="${ntjp.ws.certificate.type}"/>
+                        type="${ntjp.ws.certificate.type}" />
         </sec:keyManagers>
         <sec:trustManagers>
-          <sec:keyStore file="${ntjp.ws.truststore.file}" password="${ntjp.ws.truststore.password}" type="${ntjp.ws.truststore.type}"/>
+          <sec:keyStore file="${ntjp.ws.truststore.file}" password="${ntjp.ws.truststore.password}"
+                        type="${ntjp.ws.truststore.type}" />
         </sec:trustManagers>
 
         <sec:cipherSuitesFilter>
@@ -141,16 +143,17 @@
       </http:tlsClientParameters>
     </http:conduit>
     <http:conduit
-            name="{urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCare:1:rivtabp21}ListCertificatesForCareResponderInterfacePort.http-conduit">
-      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive"/>
+        name="{urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCare:1:rivtabp21}ListCertificatesForCareResponderInterfacePort.http-conduit">
+      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive" />
       <http:tlsClientParameters disableCNCheck="true">
 
         <sec:keyManagers keyPassword="${ntjp.ws.key.manager.password}">
           <sec:keyStore file="${ntjp.ws.certificate.file}" password="${ntjp.ws.certificate.password}"
-                        type="${ntjp.ws.certificate.type}"/>
+                        type="${ntjp.ws.certificate.type}" />
         </sec:keyManagers>
         <sec:trustManagers>
-          <sec:keyStore file="${ntjp.ws.truststore.file}" password="${ntjp.ws.truststore.password}" type="${ntjp.ws.truststore.type}"/>
+          <sec:keyStore file="${ntjp.ws.truststore.file}" password="${ntjp.ws.truststore.password}"
+                        type="${ntjp.ws.truststore.type}" />
         </sec:trustManagers>
 
         <sec:cipherSuitesFilter>
@@ -169,15 +172,16 @@
 
   <beans profile="qa,prod">
     <http:conduit
-            name="{urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestion:1:rivtabp20}SendMedicalCertificateQuestionResponderInterfacePort.http-conduit">
-      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive"/>
+        name="{urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestion:1:rivtabp20}SendMedicalCertificateQuestionResponderInterfacePort.http-conduit">
+      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive" />
       <http:tlsClientParameters disableCNCheck="true">
         <sec:keyManagers keyPassword="${ntjp.ws.key.manager.password}">
           <sec:keyStore file="${ntjp.ws.certificate.file}" password="${ntjp.ws.certificate.password}"
-                        type="${ntjp.ws.certificate.type}"/>
+                        type="${ntjp.ws.certificate.type}" />
         </sec:keyManagers>
         <sec:trustManagers>
-          <sec:keyStore file="${ntjp.ws.truststore.file}" password="${ntjp.ws.truststore.password}" type="${ntjp.ws.truststore.type}"/>
+          <sec:keyStore file="${ntjp.ws.truststore.file}" password="${ntjp.ws.truststore.password}"
+                        type="${ntjp.ws.truststore.type}" />
         </sec:trustManagers>
 
         <sec:cipherSuitesFilter>
@@ -193,15 +197,16 @@
       </http:tlsClientParameters>
     </http:conduit>
     <http:conduit
-            name="{urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateAnswer:1:rivtabp20}SendMedicalCertificateAnswerResponderInterfacePort.http-conduit">
-      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive"/>
+        name="{urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateAnswer:1:rivtabp20}SendMedicalCertificateAnswerResponderInterfacePort.http-conduit">
+      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive" />
       <http:tlsClientParameters disableCNCheck="true">
         <sec:keyManagers keyPassword="${ntjp.ws.key.manager.password}">
           <sec:keyStore file="${ntjp.ws.certificate.file}" password="${ntjp.ws.certificate.password}"
-                        type="${ntjp.ws.certificate.type}"/>
+                        type="${ntjp.ws.certificate.type}" />
         </sec:keyManagers>
         <sec:trustManagers>
-          <sec:keyStore file="${ntjp.ws.truststore.file}" password="${ntjp.ws.truststore.password}" type="${ntjp.ws.truststore.type}"/>
+          <sec:keyStore file="${ntjp.ws.truststore.file}" password="${ntjp.ws.truststore.password}"
+                        type="${ntjp.ws.truststore.type}" />
         </sec:trustManagers>
 
         <sec:cipherSuitesFilter>

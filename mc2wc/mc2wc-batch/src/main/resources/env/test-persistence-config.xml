@@ -10,7 +10,7 @@
   <context:annotation-config />
 
   <bean id="medcertDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="java:comp/env/jdbc/medcert" />
+    <property name="jndiName" value="${medcert.datasource.name}" />
   </bean>
 
   <bean id="medcertEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -18,7 +18,7 @@
     <property name="persistenceUnitName" value="jpa.migration.medcert" />
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-        <property name="database" value="MYSQL" />
+        <property name="database" value="${medcert.database.type}" />
       </bean>
     </property>
     <property name="jpaProperties">

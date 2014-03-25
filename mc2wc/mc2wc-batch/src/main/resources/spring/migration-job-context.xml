@@ -5,12 +5,9 @@
           http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <batch:job id="migrationJob" job-repository="migrationJobRepository">
+  <batch:job id="migrationJob" job-repository="migrationJobRepository" restartable="true">
     <batch:step id="certificateMigrationStep">
       <batch:tasklet transaction-manager="medcertTransactionManager">
-        <batch:listeners>
-          <batch:listener ref="certificateMigrationListener" />
-        </batch:listeners>
         <batch:chunk reader="migrationStepItemReader"
                      processor="migrationMessageCompositeProcessor" writer="restServiceItemWriter"
                      commit-interval="5">
@@ -19,8 +16,8 @@
     </batch:step>
   </batch:job>
 
-  <bean id="migrationMessageCompositeProcessor" class="org.springframework.batch.item.support.CompositeItemProcessor"
-        scope="step">
+
+  <bean id="migrationMessageCompositeProcessor" class="org.springframework.batch.item.support.CompositeItemProcessor">
     <property name="delegates">
       <list>
         <ref bean="certificateConverterProcessor" />
@@ -29,8 +26,13 @@
     </property>
   </bean>
 
-  <bean id="certificateMigrationListener"
-        class="se.inera.certificate.mc2wc.batch.listener.CertificateMigrationListener" scope="step" />
+  <bean id="migrationStepItemReader"
+        class="org.springframework.batch.item.database.JpaPagingItemReader">
+    <property name="entityManagerFactory" ref="medcertEntityManagerFactory" />
+    <property name="queryString" value="select c from Certificate c order by c.createdAt" />
+    <property name="pageSize" value="25" />
+  </bean>
+
   <bean id="certificateConverterProcessor"
         class="se.inera.certificate.mc2wc.batch.processors.CertificateConverterProcessor" scope="step" />
   <bean id="migrationMessageValidationProcessor"

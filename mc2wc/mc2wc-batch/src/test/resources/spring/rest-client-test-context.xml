@@ -2,22 +2,30 @@
 <beans xmlns:jaxrs="http://cxf.apache.org/jaxrs"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:util="http://www.springframework.org/schema/util"
        xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="
-          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
-          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
   <context:annotation-config />
 
-  <context:property-placeholder properties-ref="restServiceTestProperties" />
+  <!-- <bean id="jaxbProvider" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
+     <property name="schemaLocations">
+       <list>
+         <value>classpath:schema/mc2wc-schema.xsd</value>
+       </list>
+     </property>
+   </bean>-->
 
-  <util:properties id="restServiceTestProperties">
-    <prop key="migration.service.url">http://localhost:8881/migration/service</prop>
-  </util:properties>
+  <!--<bean id="exceptionMapper" class="se.inera.certificate.mc2wc.exception.CertificateMigrationResponseExceptionMapper" />-->
 
+  <!--
+    <context:property-placeholder properties-ref="restServiceTestProperties" ignore-unresolvable="true" />
+
+    <util:properties id="restServiceTestProperties">
+      <prop key="migration.service.url">http://localhost:8881/migration/service</prop>
+    </util:properties>
+  -->
   <bean id="mockMigrationRecieverBean"
         class="se.inera.certificate.mc2wc.batch.writer.MockMigrationRecieverBean" />
 

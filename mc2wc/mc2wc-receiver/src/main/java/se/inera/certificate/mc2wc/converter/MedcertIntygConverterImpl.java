@@ -1,14 +1,11 @@
 package se.inera.certificate.mc2wc.converter;
 
+import org.joda.time.LocalDateTime;
 import se.inera.certificate.mc2wc.message.CertificateType;
 import se.inera.certificate.mc2wc.message.PatientType;
 import se.inera.webcert.persistence.legacy.model.MigreratMedcertIntyg;
 
 public class MedcertIntygConverterImpl implements MedcertIntygConverter {
-
-    public MedcertIntygConverterImpl() {
-        // TODO Auto-generated constructor stub
-    }
 
     @Override
     public MigreratMedcertIntyg toMigreratMedcertIntyg(CertificateType cert) {
@@ -31,6 +28,7 @@ public class MedcertIntygConverterImpl implements MedcertIntygConverter {
 
         mmCert.setIntygsData(cert.getContents());
         mmCert.setStatus(cert.getStatus().value());
+        mmCert.setMigrerad(new LocalDateTime());
 
         return mmCert;
     }

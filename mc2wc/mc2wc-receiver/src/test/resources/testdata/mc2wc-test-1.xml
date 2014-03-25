@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <migrationMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:inera:certificates:mc2wc:1"
-                  xsi:schemaLocation="urn:inera:certificates:mc2wc:1 mc2wc-schema.xsd ">
+                  xsi:schemaLocation="urn:inera:certificates:mc2wc:1 mc2wc-schema.xsd">
+  <certificateId>certificateId</certificateId>
   <certificate>
     <certificateId>certificateId</certificateId>
     <certificateType>certificateType</certificateType>
@@ -14,6 +15,7 @@
     <origin>origin</origin>
     <migratedFrom>migratedFrom</migratedFrom>
     <contents>MA==</contents>
+    <status>SENT</status>
   </certificate>
   <questions>
     <certificateId>certificateId</certificateId>
@@ -29,9 +31,9 @@
       <fullName>fullName</fullName>
       <prescriptionCode>prescriptionCode</prescriptionCode>
       <careUnit>
-        <workplaceCode>workplaceCode</workplaceCode>
         <id>id</id>
         <name>name</name>
+        <workplaceCode>workplaceCode</workplaceCode>
         <phone>phone</phone>
         <email>email</email>
         <postalAddress>postalAddress</postalAddress>

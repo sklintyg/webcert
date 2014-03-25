@@ -12,7 +12,6 @@ import java.util.Set;
 
 public class MigrationMessageConverterImpl implements MigrationMessageConverter {
 
-    private static final String migratedFrom = "Landsting X";
     private static final String INTYGS_TYP = "FK7263";
     private static Logger log = LoggerFactory.getLogger(MigrationMessageConverter.class);
 
@@ -24,7 +23,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
      * boolean)
      */
     @Override
-    public MigrationMessage toMigrationMessage(Certificate mcCert, boolean migrateCert) {
+    public MigrationMessage toMigrationMessage(Certificate mcCert, String sender) {
 
         log.debug("Processing Certificate {}", mcCert.getId());
 
@@ -32,7 +31,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         msg.setCertificateId(mcCert.getId());
 
         if (shouldCertBeMigrated(mcCert)) {
-            CertificateType wcCert = toWCCertificate(mcCert);
+            CertificateType wcCert = toWCCertificate(mcCert, sender);
             msg.setCertificate(wcCert);
         }
 
@@ -41,6 +40,9 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         log.debug("Certificate {} has {} questions", mcCert.getId(), questions.size());
 
         for (Question mcQuestion : questions) {
+            if (mcQuestion.getState() == State.CREATED || mcQuestion.getSubject() == null || mcQuestion.getText() == null) {
+                continue;
+            }
             QuestionType wcQuestionAnswer = toWCQuestionAnswer(mcCert.getId(), mcQuestion);
             msg.getQuestions().add(wcQuestionAnswer);
         }
@@ -52,7 +54,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         return (cert.getDocument() != null && cert.getDocument().length > 0);
     }
 
-    private CertificateType toWCCertificate(Certificate mcCert) {
+    private CertificateType toWCCertificate(Certificate mcCert, String sender) {
 
         log.debug("Converting the contents of Certificate {}", mcCert.getId());
 
@@ -74,7 +76,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         wcPatient.setPersonId(mcCert.getPatientSsn());
         wcCert.setPatient(wcPatient);
 
-        wcCert.setMigratedFrom(migratedFrom);
+        wcCert.setMigratedFrom(sender);
 
         return wcCert;
     }

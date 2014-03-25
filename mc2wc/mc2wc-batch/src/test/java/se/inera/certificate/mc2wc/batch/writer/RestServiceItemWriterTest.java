@@ -1,31 +1,56 @@
 package se.inera.certificate.mc2wc.batch.writer;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.inera.certificate.mc2wc.exception.CertificateMigrationException;
 import se.inera.certificate.mc2wc.exception.FatalCertificateMigrationException;
 import se.inera.certificate.mc2wc.message.MigrationMessage;
+import se.inera.certificate.mc2wc.message.MigrationReply;
+import se.inera.certificate.mc2wc.message.MigrationResultType;
+import se.inera.certificate.mc2wc.rest.MigrationReceiver;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.util.Arrays;
 import java.util.List;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/spring/rest-client-test-context.xml",
-        "classpath:/spring/rest-client-context.xml", "classpath:/spring/beans-context.xml"})
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class RestServiceItemWriterTest {
 
-    @Autowired
+
     private RestServiceItemWriter writer;
 
-    public RestServiceItemWriterTest() {
+    @Mock
+    private StepExecution stepExecution;
+    @Mock
+    private JobExecution jobExecution;
+    @Mock
+    private ExecutionContext executionContext;
+    @Mock
+    private JobParameters jobParameters;
+    @Mock
+    private MigrationReceiver migrationReceiver;
 
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+
+        when(jobExecution.getExecutionContext()).thenReturn(executionContext);
+        when(jobExecution.getJobParameters()).thenReturn(jobParameters);
+        when(stepExecution.getJobExecution()).thenReturn(jobExecution);
+
+        writer = new RestServiceItemWriter();
+
+        writer.setStepExecution(stepExecution);
+        writer.setMigrationReceiver(migrationReceiver);
     }
 
     @Test
@@ -35,32 +60,57 @@ public class RestServiceItemWriterTest {
 
         List<MigrationMessage> messages = Arrays.asList(message);
 
+        MigrationReply reply = new MigrationReply();
+        reply.setResult(MigrationResultType.OK);
+
+        when(executionContext.getLong(RestServiceItemWriter.CERTIFICATE_WRITE_COUNT, 0)).thenReturn(5l);
+        when(migrationReceiver.receive(message)).thenReturn(reply);
+
         writer.write(messages);
+
+        verify(executionContext).putLong(RestServiceItemWriter.CERTIFICATE_WRITE_COUNT, 6l);
     }
 
-    @Ignore
+    @Test
+    public void testDuplicate() throws Exception {
+
+        MigrationMessage message = getMigrationMessageFromTemplate();
+
+        List<MigrationMessage> messages = Arrays.asList(message);
+
+        MigrationReply reply = new MigrationReply();
+        reply.setResult(MigrationResultType.DUPLICATE);
+
+        when(executionContext.getLong(RestServiceItemWriter.CERTIFICATE_WRITE_COUNT, 0)).thenReturn(5l);
+        when(executionContext.getLong(RestServiceItemWriter.DUPLICATE_COUNT, 0)).thenReturn(2l);
+        when(migrationReceiver.receive(message)).thenReturn(reply);
+
+        writer.write(messages);
+
+        verify(executionContext).putLong(RestServiceItemWriter.CERTIFICATE_WRITE_COUNT, 5l);
+        verify(executionContext).putLong(RestServiceItemWriter.DUPLICATE_COUNT, 3l);
+    }
+
     @Test(expected = FatalCertificateMigrationException.class)
-    public void serverReturnsServerError() throws Exception {
+    public void testDuplicateOverLimit() throws Exception {
 
         MigrationMessage message = getMigrationMessageFromTemplate();
-        message.getCertificate().setCertificateId(MockMigrationRecieverBean.HTTP_500);
 
         List<MigrationMessage> messages = Arrays.asList(message);
 
-        writer.write(messages);
-    }
+        MigrationReply reply = new MigrationReply();
+        reply.setResult(MigrationResultType.DUPLICATE);
 
-    @Ignore
-    @Test(expected = CertificateMigrationException.class)
-    public void serverReturnsBadRequest() throws Exception {
-
-        MigrationMessage message = getMigrationMessageFromTemplate();
-        message.getCertificate().setCertificateId(MockMigrationRecieverBean.HTTP_400);
-
-        List<MigrationMessage> messages = Arrays.asList(message);
+        when(executionContext.getLong(RestServiceItemWriter.CERTIFICATE_WRITE_COUNT, 0)).thenReturn(5l);
+        when(executionContext.getLong(RestServiceItemWriter.DUPLICATE_COUNT, 0)).thenReturn(100l);
+        when(migrationReceiver.receive(message)).thenReturn(reply);
 
         writer.write(messages);
+
+
     }
+
+
 
     public MigrationMessage getMigrationMessageFromTemplate() throws Exception {
 

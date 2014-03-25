@@ -15,6 +15,7 @@
     <origin>origin</origin>
     <migratedFrom>migratedFrom</migratedFrom>
     <contents>MA==</contents>
+    <status>SENT</status>
   </certificate>
   <questions>
     <certificateId>certificateId</certificateId>

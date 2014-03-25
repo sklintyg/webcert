@@ -7,11 +7,10 @@
 <h1>We are done!</h1>
 ${status}<br>
 
-ReadCount: ${readCount}<br>
-ReadError: ${readError}<br>
-SkipCount: ${skipCount}<br>
-WriteCount: ${writeCount}<br>
-WriteError: ${writeError}<br>
+CertificateWriteCount: ${certificateWriteCount}<br>
+QuestionWriteCount: ${questionWriteCount}<br>
+AnswerWriteCount: ${answerWriteCount}<br>
+
 
 <p>
     <a href="<%= request.getContextPath() %>/d/home">Home</a>

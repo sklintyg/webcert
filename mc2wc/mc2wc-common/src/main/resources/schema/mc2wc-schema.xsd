@@ -37,7 +37,7 @@
       <element name="externalReference" type="string" maxOccurs="1" minOccurs="0"></element>
       <element name="patient" type="tns:patientType"></element>
       <element name="carePerson" type="tns:carePersonType"></element>
-      <element name="subject" type="tns:questionSubjectType"></element>
+      <element name="subject" type="tns:questionSubjectType" minOccurs="0"></element>
       <element name="caption" type="string" maxOccurs="1" minOccurs="0"></element>
       <element name="sent" type="dateTime" maxOccurs="1" minOccurs="0"></element>
       <element name="signed" type="dateTime" maxOccurs="1" minOccurs="0"></element>

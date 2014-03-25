@@ -30,6 +30,17 @@
     <property name="taskExecutor" ref="executor" />
   </bean>
 
+  <bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry">
+  </bean>
+
+  <bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
+    <property name="jobExplorer" ref="jobExplorer" />
+    <property name="jobLauncher" ref="migrationJobLauncher" />
+    <property name="jobRegistry" ref="jobRegistry" />
+    <property name="jobRepository" ref="migrationJobRepository" />
+
+  </bean>
+
   <bean id="batchTransactionManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
     <property name="dataSource" ref="batchDataSource" />

@@ -5,6 +5,6 @@ import se.inera.certificate.mc2wc.message.MigrationMessage;
 
 public interface MigrationMessageConverter {
 
-    public abstract MigrationMessage toMigrationMessage(Certificate mcCert, boolean migrateCert);
+    public abstract MigrationMessage toMigrationMessage(Certificate mcCert, String sender);
 
 }

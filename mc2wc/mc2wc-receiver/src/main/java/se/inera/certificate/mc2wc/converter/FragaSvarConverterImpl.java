@@ -142,12 +142,13 @@ public class FragaSvarConverterImpl implements FragaSvarConverter {
             return Status.ANSWERED;
         }
 
-
         return null;
     }
 
     private Amne toAmne(QuestionSubjectType questionSubject) {
-
+        if (questionSubject == null) {
+            return Amne.OVRIGT;
+        }
         switch (questionSubject) {
             case CONTACT:
                 return Amne.KONTAKT;
