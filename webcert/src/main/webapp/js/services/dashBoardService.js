@@ -24,17 +24,17 @@ define([
             /*
              * Load unsigned certificate list for valdVardenhet
              */
-            function _getUnsignedCertificates(callback) {
+            function _getUnsignedCertificates(onSuccess, onError) {
                 $log.debug('_getUnsignedCertificates:');
                 //var restPath = '/api/intyg/unsigned/'; // release version
                 var restPath = '/jsonmocks/intyg_unsigned.json'; // mocked version
                 $http.get(restPath).success(function (data) {
                     $log.debug('got data:' + data);
-                    callback(data);
+                    onSuccess(data);
                 }).error(function (data, status) {
                     $log.error('error ' + status);
                     // Let calling code handle the error of no data response
-                    callback(null);
+                    onError(null);
                 });
             }
 
@@ -43,8 +43,13 @@ define([
              */
             function _getUnsignedCertificatesByQueryFetchMore (query, onSuccess, onError) {
                 $log.debug('_getUnsignedCertificatesByQueryFetchMore');
-                var restPath = '/api/intyg/unsigned';
-                $http.put(restPath, query).success(function (data) {
+                //var restPath = '/api/intyg/unsigned';
+                //$http.put(restPath, query).success(function (data) {
+
+                /////////////// MOCKED ////////////////
+                var restPath = '/jsonmocks/intyg_unsigned_fetchmore.json'; // mocked version
+                $http.get(restPath).success(function (data) {
+                /////////////// MOCKED ////////////////
                     $log.debug('_getUnsignedCertificatesByQueryFetchMore got data:' + data);
                     onSuccess(data);
                 }).error(function (data, status) {

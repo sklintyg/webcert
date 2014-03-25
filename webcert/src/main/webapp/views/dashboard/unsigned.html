@@ -10,13 +10,14 @@
                  show-content="widgetState.doneLoading">
 
                 <div>
-                    <h2 class="col-head less-top-padding">{{valdVardenhet.namn}}</h2>
+                    <h2 class="col-head less-top-padding">{{widgetState.valdVardenhet.namn}}</h2>
 
                     <!-- span ng-if="!widgetState.searchedYet">Här visas alla ej signerade intyg.<br></span-->
                     <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
                             ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed"
                             ng-switch="widgetState.queryFormCollapsed">
-                        <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
+                        <span ng-switch-when="true">Visa sökfilter</span><span
+                            ng-switch-when="false">Dölj sökfilter</span>
                     </button>
                     <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed"
                          class="qa-filter-panel form-horizontal form-inline" style="background-color: #f5f5f5;">
@@ -25,9 +26,9 @@
                                 <label class="control-label">Sparat av</label>
 
                                 <div class="controls">
-                                    <select id="qp-doctorSelector" ng-model="qp.doctorSelector"
-                                            ng-options="s.name for s in doctorList"
-                                            ng-disabled="widgetState.loadingDoctors"></select>
+                                    <select id="uc-savedBy" ng-model="filterForm.lastFilterQuery.filter.savedBy"
+                                            ng-options="s.label for s in filterForm.savedByList"
+                                            ng-disabled="widgetState.loadingSavedByList"></select>
                                 </div>
                             </div>
 
@@ -35,14 +36,14 @@
                                 <label class="control-label">Intyg som är</label>
 
                                 <div class="controls">
-                                    <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio"
-                                           ng-model="qp.vidarebefordrad" checked> <label
-                                        for="vidarebefordradAlla">Alla</label> <input
-                                        id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="true"
-                                        ng-model="qp.vidarebefordrad"> <label
-                                        for="vidarebefordradJa">Vidarebefordrade</label> <input
-                                        id="vidarebefordradNej" name="vidarebefordrad" type="radio" value="false"
-                                        ng-model="qp.vidarebefordrad"> <label for="vidarebefordradNej">Ej
+                                    <input id="forwardedAll" name="forwarded" type="radio"
+                                           ng-model="filterForm.forwarded" value="default"> <label
+                                        for="forwardedAll">Båda</label> <input
+                                        id="forwarded" name="forwarded" type="radio" value="true"
+                                        ng-model="filterForm.forwarded"> <label
+                                        for="forwarded">Vidarebefordrade</label> <input
+                                        id="forwardedNot" name="forwarded" type="radio" value="false"
+                                        ng-model="filterForm.forwarded"> <label for="forwardedNot">Ej
                                     vidarebefordrade</label>
                                 </div>
                             </div>
@@ -51,23 +52,38 @@
 
                                 <div class="controls">
                                     Från <input type="text" id="filter-changedate-from" datepicker-popup
-                                                ng-model="qp.changedFrom" is-open="widgetState.dpFromOpen.open"
+                                                ng-model="filterForm.lastFilterQuery.savedFrom" is-open="widgetState.savedFromOpen.open"
                                                 datepicker-options="datepickerConfig"/>
-                                    <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
+                                    <button class="btn" ng-click="toggleDatePickerInstance(widgetState.savedFromOpen)">
                                         <i class="icon-calendar"></i>
                                     </button>
 
                                     till <input type="text" id="filter-changedate-to" datepicker-popup
-                                                ng-model="qp.changedTo" is-open="widgetState.dpToOpen.open"
+                                                ng-model="filterForm.lastFilterQuery.savedTo" is-open="widgetState.savedToOpen.open"
                                                 datepicker-options="datepickerConfig"/>
-                                    <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
+                                    <button class="btn" ng-click="toggleDatePickerInstance(widgetState.savedToOpen)">
                                         <i class="icon-calendar"></i>
                                     </button>
                                 </div>
                             </div>
+                            <div class="control-group">
+                                <label class="control-label">Visa endast</label>
+
+                                <div class="controls">
+                                    <input id="completeAll" name="complete" type="radio"
+                                           ng-model="filterForm.complete" value="default"> <label
+                                        for="completeAll">Båda</label> <input
+                                        id="completeYes" name="complete" type="radio" value="true"
+                                        ng-model="filterForm.complete"> <label
+                                        for="completeYes">Kompletta utkast</label> <input
+                                        id="completeNo" name="complete" type="radio" value="false"
+                                        ng-model="filterForm.complete"> <label for="completeNo">Ej
+                                    kompletta utkast</label>
+                                </div>
+                            </div>
                             <div>
-                                <button id="filter-qa-btn" class="btn" ng-click="doSearch()">Sök</button>
-                                <button class="btn" ng-click="resetSearchForm()">Återställ sökformuläret</button>
+                                <button id="uc-filter-btn" class="btn" ng-click="filterDrafts()">Sök</button>
+                                <button class="btn" ng-click="resetFilter()">Återställ sökformuläret</button>
                             </div>
                         </div>
                     </div>
@@ -124,8 +140,8 @@
                                     <tr ng-repeat="cert in widgetState.currentList">
                                         <td>
                                             <button class="btn btn-info" title="Visar intyget"
-                                                    ng-click="openIntyg(cert.intygsReferens)"
-                                                    id="showqaBtn-{{cert.internReferens}}"> Visa
+                                                    ng-click="openIntyg(cert.intygId)"
+                                                    id="showqaBtn-{{cert.intygId}}"> Visa
                                             </button>
                                         </td>
                                         <td>
@@ -145,19 +161,19 @@
                                                     src="/img/ajax-loader-kit-16x16.gif"></span>
                                         </td>
                                         <td><span message key="cert.status.{{cert.status}}"></span></td>
-                                        <td>{{cert.vardperson.namn}}</td>
-                                        <td class="unbreakable">{{cert.intygsReferens.patientId.patientIdExtension}}</td>
-                                        <td class="unbreakable table-qa-last">{{cert.senasteHandelseDatum |
+                                        <td>{{cert.updatedSignedBy}}</td>
+                                        <td class="unbreakable">{{cert.patient}}</td>
+                                        <td class="unbreakable">{{cert.lastUpdatedSigned |
                                             date:'shortDate'}}
                                         </td>
-                                        <td class="unbreakable table-qa-last">{{cert.typ}}</td>
+                                        <td class="unbreakable table-qa-last">{{cert.intygType}}</td>
                                 </table>
                             </div>
                             <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
                                 träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av
                                 {{widgetState.totalCount}}
                             </div>
-                            <div ng-show="((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
+                            <div ng-show="((filterForm.lastFilterQuery.startFrom + filterForm.lastFilterQuery.pageSize) < widgetState.totalCount)">
                                 <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()"
                                         ng-disabled="widgetState.fetchingMoreInProgress">
                                     <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta

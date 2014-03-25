@@ -1,54 +1,95 @@
-[{
-    "typ": "fk7263",
-    "id": "1aaaaaaaaaaa1",
-    "lastsaved": "2011-01-26T00:00:00.000",
-    "patientid": "19121212-1212"
-},
 {
-    "typ": "rli",
-    "id": "2bbbbbb",
-    "lastsaved": "2012-03-21T00:00:00.000",
-    "patientid": "19700505-1110"
-},
-{
-    "typ": "fk7263",
-    "id": "3cccccc",
-    "lastsaved": "2014-06-06T00:00:00.000",
-    "patientid": "19121212-1212"
-},
-{
-    "typ": "fk7263",
-    "id": "5cccccc",
-    "lastsaved": "2015-01-06T00:00:00.000",
-    "patientid": "19441212-1212"
-},
-{
-    "typ": "fk7263",
-    "id": "6cccccc",
-    "lastsaved": "2010-12-06T00:00:00.000",
-    "patientid": "19431212-1212"
-},
-{
-    "typ": "fk7263",
-    "id": "7cccccc",
-    "lastsaved": "2002-09-05T00:00:00.000",
-    "patientid": "20021212-1211"
-},
-{
-    "typ": "fk7263",
-    "id": "8cccccc",
-    "lastsaved": "2004-01-06T00:00:00.000",
-    "patientid": "19451212-1212"
-},
-{
-    "typ": "rli",
-    "id": "9cccccc",
-    "lastsaved": "2010-12-06T00:00:00.000",
-    "patientid": "19461212-1212"
-},
-{
-    "typ": "fk7263",
-    "id": "10cccccc",
-    "lastsaved": "2007-09-05T00:00:00.000",
-    "patientid": "20021212-1211"
-}]
+    "totalCount": 11,
+    "results": [
+        {
+            "intygId": "intyg-4-revoked",
+            "intygType": "fk7263",
+            "status": "SENT",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "Ewa Revoker"
+        },
+        {
+            "intygId": "intyg-3",
+            "intygType": "fk7263",
+            "status": "UNKNOWN",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "En Läkare"
+        },
+        {
+            "intygId": "intyg-2",
+            "intygType": "fk7263",
+            "status": "SENT",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "En Läkare"
+        },
+        {
+            "intygId": "intyg-1",
+            "intygType": "fk7263",
+            "status": "SENT",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "En Läkare"
+        },
+        {
+            "intygId": "intyg-5-revoked",
+            "intygType": "fk7263",
+            "status": "SENT",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "Ewa Revoker"
+        },
+        {
+            "intygId": "intyg-6",
+            "intygType": "fk7263",
+            "status": "UNKNOWN",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "En Läkare"
+        },
+        {
+            "intygId": "intyg-7",
+            "intygType": "fk7263",
+            "status": "SENT",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "En Läkare"
+        },
+        {
+            "intygId": "intyg-8",
+            "intygType": "fk7263",
+            "status": "SENT",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "En Läkare"
+        },
+        {
+            "intygId": "intyg-9-revoked",
+            "intygType": "fk7263",
+            "status": "SENT",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "Ewa Revoker"
+        },
+        {
+            "intygId": "intyg-10",
+            "intygType": "fk7263",
+            "status": "UNKNOWN",
+            "patient" : "19121212-1212",
+            "lastUpdatedSigned": "2013-01-01T00:00:00.000",
+            "forwarded" : "true",
+            "updatedSignedBy": "En Läkare"
+        }
+    ]
+}
