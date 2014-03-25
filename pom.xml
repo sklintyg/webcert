@@ -5,7 +5,7 @@
   <groupId>se.inera.webcert</groupId>
   <artifactId>webcert-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.5-RC2-SNAPSHOT</version>
+  <version>0.5-RC3-SNAPSHOT</version>
   <name>Inera Webcert</name>
   <scm>
     <connection>scm:git:https://code.google.com/p/inera-webcert/</connection>
@@ -79,6 +79,17 @@
             <source>1.7</source>
             <target>1.7</target>
           </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.4.2</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.scm</groupId>
+              <artifactId>maven-scm-provider-gitexe</artifactId>
+              <version>1.9</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <artifactId>maven-site-plugin</artifactId>
