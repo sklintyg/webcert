@@ -35,7 +35,7 @@ define([
             complete: undefined, // 3-state, undefined, true, false
             savedFrom: undefined,
             savedTo: undefined,
-            savedBy: defaultFilterFormData.savedByList[0] // selected doctor hasId
+            savedBy: defaultFilterFormData.savedByList[0].value // selected doctor hasId
         };
 
         // Default query instance sent to search filter API
