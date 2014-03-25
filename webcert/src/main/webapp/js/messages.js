@@ -8,11 +8,11 @@ define([
             "webcert.description" : "Välkommen till Webcert.",
             "dashboard.title" : "Mina andra enheter",
             "dashboard.unanswered.title" : "Frågor och svar",
-            "dashboard.unsigned.title" : "Osignerade intyg",
+            "dashboard.unsigned.title" : "Ej signerade intyg",
             "dashboard.about.title" : "Om Webcert",
             
             //labels
-            "label.unsignedcerts" : "Osignerade intyg",
+            "label.unsignedcerts" : "Ej signerade intyg",
             "label.unansweredcerts": "Intyg med ej hanterad fråga",
             "label.readytosigncerts": "Intyg färdiga att signera (massignering)",
             "label.showallcerts" : "Visa alla intyg",
@@ -41,7 +41,7 @@ define([
 
 
             //info messages
-            "info.nounsignedcertsfound" : "<strong>Inga osignerade intyg hittades.</strong>",
+            "info.nounsignedcertsfound" : "<strong>Inga ej signerade intyg hittades.</strong>",
             "info.nounansweredcertsfound" : "<strong>Inga intyg med ohanterade frågor hittades.</strong>",
             "info.noreadytosigncertsfound" : "<strong>Inga klarmarkerade intyg hittades.</strong>",
             "info.loadingdata" :"<strong>Uppdaterar lista...</strong>",
@@ -53,9 +53,9 @@ define([
             "info.running.query" : "<strong>Söker...</strong>",
             
             //error messages
-            "error.unsignedcerts.couldnotbeloaded" :"<strong>Kunde inte hämta osignerade intyg!</strong>",
-            "error.unansweredcerts.couldnotbeloaded":"<strong>Kunde inte hämta listan med ej hanterade frågor och svar!</strong>",
-            "error.readytosigncerts.couldnotbeloaded": "<strong>Kunde inte hämta intyg klara för signering!</strong>"
+            "error.unsignedcerts.couldnotbeloaded" :"<strong>Kunde inte hämta ej signerade intyg.</strong>",
+            "error.unansweredcerts.couldnotbeloaded":"<strong>Kunde inte hämta listan med ej hanterade frågor och svar.</strong>",
+            "error.readytosigncerts.couldnotbeloaded": "<strong>Kunde inte hämta intyg klara för signering.</strong>"
         },
         'en' : {
             'webcert.header' : 'Webcert Application (en)'

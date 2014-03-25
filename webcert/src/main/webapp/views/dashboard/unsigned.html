@@ -9,10 +9,10 @@
             <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading"
                  show-content="widgetState.doneLoading">
 
-                <div ng-if="isActiveUnitChosen()">
-                    <h2 class="col-head">{{selectedUnit.namn}}</h2>
+                <div>
+                    <h2 class="col-head less-top-padding">{{valdVardenhet.namn}}</h2>
 
-                    <span ng-if="!widgetState.queryMode">Här visas alla ej signerade intyg.<br></span>
+                    <!-- span ng-if="!widgetState.searchedYet">Här visas alla ej signerade intyg.<br></span-->
                     <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
                             ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed"
                             ng-switch="widgetState.queryFormCollapsed">
@@ -79,17 +79,16 @@
 
                             <!-- No results message for unhandled -->
                             <div id="current-list-noResults-unit"
-                                 ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && !widgetState.queryMode && widgetState.currentList.length<1"
+                                 ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1"
                                  class="alert alert-info">
-                                <span message key="info.nounanswered.qa.for.unit"></span>
+                                <span message key="info.nounsigned.certs.for.unit"></span>
                             </div>
 
                             <!-- No results message for query -->
                             <div id="current-list-noResults-query"
-                                 ng-show="widgetState.totalCount<1 && widgetState.queryMode" class="alert alert-info">
+                                 ng-show="widgetState.totalCount < 1" class="alert alert-info">
                                 <span message key="info.query.noresults"></span>
                             </div>
-
 
                             <!-- error message -->
                             <div id="current-list-noResults-error"
@@ -98,13 +97,13 @@
                                 <span message key="{{widgetState.activeErrorMessageKey}}"></span>
                             </div>
 
-                            <div id="query-count" ng-show="widgetState.queryMode && widgetState.totalCount>0">
-                                Sökresultat - {{widgetState.totalCount}} träffar för {{selectedUnit.namn}}
+                            <div id="query-count" ng-show="widgetState.totalCount>0">
+                                Sökresultat - {{widgetState.totalCount}} träffar
                             </div>
 
                             <!-- unsigned cert table -->
                             <div class="row-fluid qa-table-section" ng-show="widgetState.currentList.length>0"
-                                 id="qaTable">
+                                 id="unsignedCertTable">
                                 <table class="span12 table table-striped table-qa">
                                     <tr>
                                         <th></th>
@@ -125,17 +124,17 @@
                                     <tr ng-repeat="cert in widgetState.currentList">
                                         <td>
                                             <button class="btn btn-info" title="Visar intyget"
-                                                    ng-click="openIntyg(qa.intygsReferens)"
-                                                    id="showqaBtn-{{qa.internReferens}}">Visa
+                                                    ng-click="openIntyg(cert.intygsReferens)"
+                                                    id="showqaBtn-{{cert.internReferens}}"> Visa
                                             </button>
                                         </td>
                                         <td>
                                             <button class="btn"
-                                                    ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-secondary' : qa.vidarebefordrad}"
+                                                    ng-class="{'btn-info': !cert.vidarebefordrad, 'btn-secondary' : cert.vidarebefordrad}"
                                                     title="Skicka ett mejl med en länk till intyget för att informera den som ska signera det."
-                                                    ng-click="openMailDialog(qa)">
-                                                <img ng-if="!qa.vidarebefordrad" src="/img/mail.png">
-                                                <img ng-if="qa.vidarebefordrad" src="/img/mail_dark.png">
+                                                    ng-click="openMailDialog(cert)">
+                                                <img ng-if="!cert.vidarebefordrad" src="/img/mail.png">
+                                                <img ng-if="cert.vidarebefordrad" src="/img/mail_dark.png">
                                             </button>
                                         </td>
                                         <td class="center">
@@ -145,7 +144,7 @@
                                             <span ng-if="cert.updateInProgress"> <img
                                                     src="/img/ajax-loader-kit-16x16.gif"></span>
                                         </td>
-                                        <td><span message key="cert.measure.{{cert.measureResKey}}"></span></td>
+                                        <td><span message key="cert.status.{{cert.status}}"></span></td>
                                         <td>{{cert.vardperson.namn}}</td>
                                         <td class="unbreakable">{{cert.intygsReferens.patientId.patientIdExtension}}</td>
                                         <td class="unbreakable table-qa-last">{{cert.senasteHandelseDatum |
@@ -154,11 +153,11 @@
                                         <td class="unbreakable table-qa-last">{{cert.typ}}</td>
                                 </table>
                             </div>
-                            <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar
+                            <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
                                 träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av
                                 {{widgetState.totalCount}}
                             </div>
-                            <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
+                            <div ng-show="((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
                                 <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()"
                                         ng-disabled="widgetState.fetchingMoreInProgress">
                                     <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
