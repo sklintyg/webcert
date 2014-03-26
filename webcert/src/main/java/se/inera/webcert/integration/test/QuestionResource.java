@@ -63,4 +63,12 @@ public class QuestionResource {
         fragasvarRepository.delete(id);
         return Response.ok().build();
     }
+
+    @DELETE
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteAllQuestions() {
+        fragasvarRepository.deleteAllInBatch();
+        return Response.ok().build();
+    }
 }
