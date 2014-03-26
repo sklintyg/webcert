@@ -1,5 +1,8 @@
 require.config({
     paths : {
+
+        webjars : '../web/webjars',
+
         angular : '../web/webjars/angularjs/1.2.14/angular',
         angularCookies : '../web/webjars/angularjs/1.2.14/angular-cookies',
         angularRoute : '../web/webjars/angularjs/1.2.14/angular-route.min',

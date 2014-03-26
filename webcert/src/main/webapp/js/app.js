@@ -7,11 +7,11 @@ define([
     'filters',
     'messages',
     'services',
-    'common/wc-common',
-    'common/wc-common-fragasvar-module',
-    'common/wc-common-message-resources',
-    'common/wc-message-module',
-    'common/wc-utils'
+    'webjars/common/js/wc-common',
+    'webjars/common/js/wc-common-fragasvar-module',
+    'webjars/common/js/wc-common-message-resources',
+    'webjars/common/js/wc-message-module',
+    'webjars/common/js/wc-utils'
 ], function (angular, angularRoute, angularSanitize, controllers, directives, filters, messages, services, wcCommon, wcCommonFragaSvarModule, commonMessages, wcMessageModule, wcUtils) {
     'use strict';
 

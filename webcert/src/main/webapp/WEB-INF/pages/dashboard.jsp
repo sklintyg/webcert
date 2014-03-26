@@ -35,9 +35,9 @@
 <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
 <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/2.3.2/css/bootstrap.min.css"/>">
-<link rel="stylesheet" href="<c:url value="/css/bootstrap-responsive-modified.css"/>">
-<link rel="stylesheet" href="<c:url value="/css/inera-webcert.css"/>">
-<link rel="stylesheet" href="<c:url value="/css/inera-certificate.css"/>">
+<link rel="stylesheet" href="<c:url value="/web/webjars/common/css/bootstrap-responsive-modified.css"/>">
+<link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-webcert.css"/>">
+<link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-certificate.css"/>">
 <link rel="stylesheet" href="<c:url value="/web/webjars/ts-bas/webcert/css/ts-bas.css"/>">
 
 <SCRIPT LANGUAGE="VBScript">
