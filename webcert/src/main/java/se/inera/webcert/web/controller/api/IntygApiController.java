@@ -264,7 +264,7 @@ public class IntygApiController extends AbstractApiController {
      * @return a list of {@link se.inera.webcert.service.dto.Lakare} objects.
      */
     @GET
-    @Path("/lakare")
+    @Path("/unsigned/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getIntygLakareByEnhet() {
         
