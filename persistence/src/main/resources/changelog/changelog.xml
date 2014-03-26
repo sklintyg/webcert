@@ -138,9 +138,10 @@
         <constraints nullable="false" />
       </column>
     </createTable>
-    <!--<addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="KOMPLETTERING" 
+    
+    <addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="KOMPLETTERING" 
       constraintName="KOMPLETTERING_FRAGASVAR_FK" referencedColumnNames="internReferens" 
-      referencedTableName="FRAGASVAR" /> -->
+      referencedTableName="FRAGASVAR" />
 
     <createTable tableName="EXTERNA_KONTAKTER">
       <column name="FRAGASVAR_ID" type="varchar(255)">
@@ -150,9 +151,10 @@
         <constraints nullable="false" />
       </column>
     </createTable>
-    <!--<addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="EXTERNA_KONTAKTER" 
+    
+    <addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="EXTERNA_KONTAKTER" 
       constraintName="EXTERNA_KONTAKTER_FRAGASVAR_FK" referencedColumnNames="internReferens" 
-      referencedTableName="FRAGASVAR" /> -->
+      referencedTableName="FRAGASVAR" />
 
   </changeSet>
 
@@ -190,6 +192,9 @@
       </column>
       <column name="INTYGS_DATA" type="blob">
         <constraints nullable="true" />
+      </column>
+      <column name="STATUS" type="varchar(32)">
+        <constraints nullable="false" />
       </column>
     </createTable>
   </changeSet>
