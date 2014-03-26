@@ -244,6 +244,9 @@
       <column name="SENAST_SPARAD_AV_NAMN" type="varchar(255)">
         <constraints nullable="false" />
       </column>
+      <column name="VIDAREBEFORDRAD" type="boolean">
+        <constraints nullable="false" />
+      </column>
     </createTable>
   </changeSet>
 

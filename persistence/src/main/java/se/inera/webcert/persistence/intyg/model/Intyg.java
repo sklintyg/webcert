@@ -79,6 +79,9 @@ public class Intyg {
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
     private IntygsStatus status;
+    
+    @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
+    private Boolean vidarebefordrad = Boolean.FALSE;
 
     @PrePersist
     void onPrePersist() {
@@ -218,6 +221,14 @@ public class Intyg {
         this.status = status;
     }
     
+    public Boolean getVidarebefordrad() {
+        return vidarebefordrad;
+    }
+
+    public void setVidarebefordrad(Boolean vidarebefordrad) {
+        this.vidarebefordrad = vidarebefordrad;
+    }
+
     public void setSenastSparadDatum(LocalDateTime senastSparadDatum) {
         this.senastSparadDatum = senastSparadDatum;
     }
