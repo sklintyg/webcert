@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
   <changeSet id="1" author="me">
-    <!--  initial creation of tables -->
-
+    <!-- initial creation of tables -->
 
     <createTable tableName="FRAGASVAR">
       <column name="internReferens" type="varchar(255)">
@@ -26,10 +25,10 @@
       <column name="FRAGE_STALLARE" type="varchar(255)">
         <constraints nullable="true" />
       </column>
+
       <column name="FRAGE_TEXT" type="text">
         <constraints nullable="true" />
       </column>
-
       <column name="INTYGS_ID" type="varchar(255)">
         <constraints nullable="true" />
       </column>
@@ -45,6 +44,7 @@
       <column name="PATIENT_ID_EXTENSION" type="varchar(255)">
         <constraints nullable="true" />
       </column>
+
       <column name="SIGNERINGS_DATUM" type="datetime">
         <constraints nullable="true" />
       </column>
@@ -54,7 +54,6 @@
       <column name="SISTA_DATUM_FOR_SVAR" type="date">
         <constraints nullable="true" />
       </column>
-
       <column name="SVAR_SIGNERINGS_DATUM" type="datetime">
         <constraints nullable="true" />
       </column>
@@ -64,10 +63,10 @@
       <column name="SENASTE_HANDELSE" type="datetime">
         <constraints nullable="true" />
       </column>
+
       <column name="SVARS_TEXT" type="text">
         <constraints nullable="true" />
       </column>
-
       <column name="ARBETSPLATS_KOD" type="varchar(255)">
         <constraints nullable="true" />
       </column>
@@ -83,6 +82,7 @@
       <column name="FORSKRIVAR_KOD" type="varchar(255)">
         <constraints nullable="true" />
       </column>
+
       <column name="HSAID" type="varchar(255)">
         <constraints nullable="true" />
       </column>
@@ -101,6 +101,7 @@
       <column name="TELEFONNUMMER" type="varchar(255)">
         <constraints nullable="true" />
       </column>
+
       <column name="VARDGIVAR_ID" type="varchar(255)">
         <constraints nullable="true" />
       </column>
@@ -113,11 +114,18 @@
       <column name="VIDAREBEFORDRAD" type="boolean">
         <constraints nullable="false" />
       </column>
-    </createTable>
-    <!-- Add auto incremented id column to table -->
-    <addAutoIncrement columnDataType="int" columnName="internReferens" incrementBy="1" startWith="1"
-                      tableName="FRAGASVAR" />
+      <column name="VARD_AKTOR_HSAID" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="VARD_AKTOR_NAMN" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
 
+    </createTable>
+
+    <!-- Add auto incremented id column to table -->
+    <addAutoIncrement columnDataType="int" columnName="internReferens"
+      incrementBy="1" startWith="1" tableName="FRAGASVAR" />
 
     <createTable tableName="KOMPLETTERING">
       <column name="FRAGASVAR_ID" type="varchar(255)">
@@ -130,9 +138,9 @@
         <constraints nullable="false" />
       </column>
     </createTable>
-    <!--<addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="KOMPLETTERING" constraintName="KOMPLETTERING_FRAGASVAR_FK" referencedColumnNames="internReferens"
-      referencedTableName="FRAGASVAR" />  -->
-
+    <!--<addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="KOMPLETTERING" 
+      constraintName="KOMPLETTERING_FRAGASVAR_FK" referencedColumnNames="internReferens" 
+      referencedTableName="FRAGASVAR" /> -->
 
     <createTable tableName="EXTERNA_KONTAKTER">
       <column name="FRAGASVAR_ID" type="varchar(255)">
@@ -142,71 +150,13 @@
         <constraints nullable="false" />
       </column>
     </createTable>
-    <!--<addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="EXTERNA_KONTAKTER" constraintName="EXTERNA_KONTAKTER_FRAGASVAR_FK" referencedColumnNames="internReferens"
-      referencedTableName="FRAGASVAR" />-->
+    <!--<addForeignKeyConstraint baseColumnNames="FRAGASVAR_ID" baseTableName="EXTERNA_KONTAKTER" 
+      constraintName="EXTERNA_KONTAKTER_FRAGASVAR_FK" referencedColumnNames="internReferens" 
+      referencedTableName="FRAGASVAR" /> -->
 
   </changeSet>
-  <changeSet id="2" author="mc">
-    <addColumn tableName="FRAGASVAR">
-      <column name="VARD_AKTOR_HSAID" type="varchar(255)">
-        <constraints nullable="true" />
-      </column>
-    </addColumn>
-    <addColumn tableName="FRAGASVAR">
-      <column name="VARD_AKTOR_NAMN" type="varchar(255)">
-        <constraints nullable="true" />
-      </column>
-    </addColumn>
-  </changeSet>
 
-  <changeSet id="3" author="mc">
-    <createTable tableName="INTYG">
-      <column name="INTYGS_ID" type="varchar(64)">
-        <constraints unique="true" nullable="false" />
-      </column>
-      <column name="INTYGS_TYP" type="varchar(255)">
-        <constraints nullable="false" />
-      </column>
-      <column name="ENHETS_ID" type="varchar(255)">
-        <constraints nullable="true" />
-      </column>
-      <column name="ENHETS_NAMN" type="varchar(255)">
-        <constraints nullable="true" />
-      </column>
-      <column name="VARDGIVAR_ID" type="varchar(255)">
-        <constraints nullable="true" />
-      </column>
-      <column name="VARDGIVAR_NAMN" type="varchar(255)">
-        <constraints nullable="true" />
-      </column>
-      <column name="PATIENT_PERSONNUMMER" type="varchar(255)">
-        <constraints nullable="false" />
-      </column>
-      <column name="SENAST_SPARAD_DATUM" type="datetime">
-        <constraints nullable="false" />
-      </column>
-      <column name="MODEL" type="varchar(255)">
-        <constraints nullable="true" />
-      </column>
-      <column name="STATUS" type="varchar(32)">
-        <constraints nullable="false" />
-      </column>
-      <column name="SKAPAD_AV_HSAID" type="varchar(255)">
-        <constraints nullable="false" />
-      </column>
-      <column name="SKAPAD_AV_NAMN" type="varchar(255)">
-        <constraints nullable="false" />
-      </column>
-      <column name="SENAST_SPARAD_AV_HSAID" type="varchar(255)">
-        <constraints nullable="false" />
-      </column>
-      <column name="SENAST_SPARAD_AV_NAMN" type="varchar(255)">
-        <constraints nullable="false" />
-      </column>
-    </createTable>
-  </changeSet>
-
-  <changeSet id="4" author="np">
+  <changeSet id="2" author="np">
     <createTable tableName="MIGRERADE_INTYG_FRAN_MEDCERT">
       <column name="INTYG_ID" type="varchar(255)">
         <constraints primaryKey="true" nullable="false" />
@@ -241,15 +191,10 @@
       <column name="INTYGS_DATA" type="blob">
         <constraints nullable="true" />
       </column>
-    </createTable>
-  </changeSet>
-
-  <changeSet id="5" author="jk">
-    <addColumn tableName="MIGRERADE_INTYG_FRAN_MEDCERT">
       <column name="STATUS" type="varchar(32)">
         <constraints nullable="false" />
       </column>
-    </addColumn>
+    </createTable>
   </changeSet>
 
 </databaseChangeLog>
