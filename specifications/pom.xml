@@ -215,8 +215,8 @@
       <id>demo</id>
       <properties>
         <webcert.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
         <logsender.baseUrl>http://demo.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
@@ -224,8 +224,8 @@
       <properties>
         <webcert.web.baseUrl>http://utveckling.webcert.intygstjanster.se/</webcert.web.baseUrl>
         <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
         <logsender.baseUrl>http://utveckling.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
@@ -233,8 +233,17 @@
       <properties>
         <webcert.web.baseUrl>https://test.webcert.intygstjanster.se/</webcert.web.baseUrl>
         <webcert.baseUrl>https://test.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
         <logsender.baseUrl>https://test.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
+      <id>ssh-tunnel-server</id>
+      <properties>
+        <webcert.web.baseUrl>http://localhost:28080/</webcert.web.baseUrl>
+        <webcert.baseUrl>http://localhost:28080/services/</webcert.baseUrl>
+        <logsender.baseUrl>http://localhost:28080/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>http://localhost:18080/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
@@ -352,29 +361,6 @@
             </executions>
           </plugin>
         </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>selenium-server</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>exec-maven-plugin</artifactId>
-              <configuration>
-                <mainClass>org.openqa.grid.selenium.GridLauncher</mainClass>
-                <arguments>
-                  <argument>-timeout</argument>
-                  <argument>600</argument>
-                </arguments>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
       </build>
     </profile>
   </profiles>
