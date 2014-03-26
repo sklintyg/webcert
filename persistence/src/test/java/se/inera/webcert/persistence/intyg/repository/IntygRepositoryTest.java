@@ -100,4 +100,20 @@ public class IntygRepositoryTest {
         assertThat(results.size(), is(2));
         
     }
+    
+    @Test
+    public void testFindDistinctIntygHsaIdByEnhet() {
+        
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygTestUtil.HOS_PERSON2_ID, IntygTestUtil.HOS_PERSON2_NAMN, IntygsStatus.SIGNED, "2014-03-01"));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_2_ID, IntygTestUtil.HOS_PERSON3_ID, IntygTestUtil.HOS_PERSON3_NAMN, IntygsStatus.DRAFT_COMPLETE, "2014-03-01"));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygTestUtil.HOS_PERSON1_ID, IntygTestUtil.HOS_PERSON1_NAMN, IntygsStatus.DRAFT_INCOMPLETE, "2014-03-01"));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_2_ID, IntygTestUtil.HOS_PERSON1_ID, IntygTestUtil.HOS_PERSON1_NAMN, IntygsStatus.SIGNED, "2014-03-02"));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygTestUtil.HOS_PERSON2_ID, IntygTestUtil.HOS_PERSON2_NAMN, IntygsStatus.DRAFT_COMPLETE, "2014-03-02"));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_2_ID, IntygTestUtil.HOS_PERSON3_ID, IntygTestUtil.HOS_PERSON3_NAMN, IntygsStatus.DRAFT_INCOMPLETE, "2014-03-02"));
+        
+        List<IntygsStatus> statuses = Arrays.asList(IntygsStatus.DRAFT_COMPLETE, IntygsStatus.DRAFT_INCOMPLETE);
+        List<Object[]> res = intygRepository.findDistinctLakareFromIntygEnhetAndStatuses(IntygTestUtil.ENHET_1_ID, statuses);
+        
+        assertThat(res.size(), is(2));
+    }
 }

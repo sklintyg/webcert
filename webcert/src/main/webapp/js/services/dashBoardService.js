@@ -26,8 +26,8 @@ define([
              */
             function _getUnsignedCertificates(onSuccess, onError) {
                 $log.debug('_getUnsignedCertificates:');
-                //var restPath = '/api/intyg/unsigned/'; // release version
-                var restPath = '/jsonmocks/intyg_unsigned.json'; // mocked version
+                var restPath = '/api/intyg/unsigned/'; // release version
+                //var restPath = '/jsonmocks/intyg_unsigned.json'; // mocked version
                 $http.get(restPath).success(function (data) {
                     $log.debug('got data:' + data);
                     onSuccess(data);
@@ -43,12 +43,12 @@ define([
              */
             function _getUnsignedCertificatesByQueryFetchMore (query, onSuccess, onError) {
                 $log.debug('_getUnsignedCertificatesByQueryFetchMore');
-                //var restPath = '/api/intyg/unsigned';
-                //$http.put(restPath, query).success(function (data) {
+                var restPath = '/api/intyg/unsigned';
+                $http.put(restPath, query).success(function (data) {
 
                 /////////////// MOCKED ////////////////
-                var restPath = '/jsonmocks/intyg_unsigned_fetchmore.json'; // mocked version
-                $http.get(restPath).success(function (data) {
+                //var restPath = '/jsonmocks/intyg_unsigned_fetchmore.json'; // mocked version
+                //$http.get(restPath).success(function (data) {
                 /////////////// MOCKED ////////////////
                     $log.debug('_getUnsignedCertificatesByQueryFetchMore got data:' + data);
                     onSuccess(data);
