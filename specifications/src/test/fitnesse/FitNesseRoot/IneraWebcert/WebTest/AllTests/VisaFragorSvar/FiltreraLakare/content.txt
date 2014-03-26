@@ -12,7 +12,7 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 !3 Givet att det finns frågor, verifiera att filtreringen på läkare fungerar
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 8 |
+| logga in som | fitnesse-admin1 |
 | ohanterade fragor sidan visas |
 | valj vardenhet | vardenhet-fit-1 |
 | visa avancerat filter |
@@ -53,4 +53,3 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 | $internReferens2 |
 | $internReferens3 |
 | $internReferens4 |
-

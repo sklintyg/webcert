@@ -11,7 +11,11 @@ class WelcomePage extends Page {
         loginBtn { $("#loginBtn") }
     }
 
-    def startLogin() {
+    def loginAs(String id) {
+        System.err.println($("${id}"))
+        System.err.println($("#${id}"))
+        System.err.println($("#${id}").value())
+        userSelect = $("#${id}").value();
         loginBtn.click()
     }
 }

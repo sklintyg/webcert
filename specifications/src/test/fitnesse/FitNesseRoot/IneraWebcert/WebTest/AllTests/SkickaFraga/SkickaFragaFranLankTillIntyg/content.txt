@@ -3,7 +3,7 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 !3 Givet att det finns ett intyg, verifiera att det går att visa intyget
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 8 |
+| logga in som | fitnesse-admin1 |
 | ga till intygsvy med intygsid | intyg-fit-1 |
 | intyg med fraga svar sidan visas |
 
@@ -33,4 +33,3 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 !3 Ta bort de frågor vi har skickat
 
 TODO: Hur ska vi göra det här?
-

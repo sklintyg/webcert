@@ -1,5 +1,4 @@
 
-
 !3 Lägg till fråga
 
 | Fraga Svar |
@@ -11,7 +10,7 @@
 !3 Givet att det finns en fråga, verifiera att det går att visa den frågan
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 8 |
+| logga in som | fitnesse-admin1 |
 | ohanterade fragor sidan visas |
 | valj vardenhet | vardenhet-fit-1 |
 | lista med ohanterade fragor visas |

@@ -3,7 +3,7 @@ Testet beskriver fallet när en användare logga ut och försöker nå startsida
 !3 Givet att användaren kan logga in och logga ut, verifiera att användaren är utloggad
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 8 |
+| logga in som | fitnesse-admin1 |
 | ohanterade fragor sidan visas |
 
 | script | !-LoggaUt-! |
@@ -11,4 +11,3 @@ Testet beskriver fallet när en användare logga ut och försöker nå startsida
 | login sidan visas |
 | ga till startsidan |
 | access denied sidan visas |
-

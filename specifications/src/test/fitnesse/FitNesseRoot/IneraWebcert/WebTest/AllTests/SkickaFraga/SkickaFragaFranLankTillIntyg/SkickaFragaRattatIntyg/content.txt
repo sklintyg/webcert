@@ -3,7 +3,7 @@ Testet beskriver fallet när en användare försöker skicka en fråga till för
 !3 Givet att det finns ett intyg, verifiera att det går att visa intyget
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 8 |
+| logga in som | fitnesse-admin1 |
 | ga till intygsvy med intygsid | intyg-fit-3-revoked |
 | intyg med fraga svar sidan visas |
 
@@ -12,4 +12,3 @@ Testet beskriver fallet när en användare försöker skicka en fråga till för
 | script | !-SvaraOchFraga-! |
 | ny fraga knapp visas | false |
 | intyg ar rattat meddelande visas |
-

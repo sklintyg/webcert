@@ -10,7 +10,7 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 !3 Givet att man loggar in som en användare med medarbetaruppdrag på endast en enhet, verifiera att enhetsväljaren ej visas
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 8 |
+| logga in som | fitnesse-admin1 |
 | ohanterade fragor sidan visas |
 | enhetsvaljare visas |
 | valj vardenhet | vardenhet-fit-1 |
@@ -21,4 +21,3 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
-

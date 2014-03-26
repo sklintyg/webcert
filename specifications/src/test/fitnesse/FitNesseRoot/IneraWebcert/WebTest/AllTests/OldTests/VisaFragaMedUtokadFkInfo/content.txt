@@ -3,7 +3,7 @@
 #| Intyg |
 #| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhet | typ | id | mall |
 #| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | läkare1 |vardenhet-fit-1| FK7263 |intyg-fit-1| M |
-
+ 
 !3 Lägg till en Fråga:
 
 | Fraga Svar |
@@ -14,7 +14,7 @@
 !3 Givet att det finns en fråga visa denna.
 
 |script|!-SvaraOchFraga-!|
-|logga in som|8|
+|logga in som|fitnesse-admin1|
 |ohanterade fragor sidan visas|
 |valj vardenhet|vardenhet-fit-1|
 |lista med ohanterade fragor visas|

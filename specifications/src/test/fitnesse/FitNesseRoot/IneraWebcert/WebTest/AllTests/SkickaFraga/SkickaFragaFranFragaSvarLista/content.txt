@@ -9,7 +9,7 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 8 |
+| logga in som | fitnesse-admin1 |
 | ohanterade fragor sidan visas |
 | valj vardenhet | vardenhet-fit-1 |
 | lista med ohanterade fragor visas |
@@ -64,4 +64,3 @@ TODO: Hur ska vi göra det här?
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
-

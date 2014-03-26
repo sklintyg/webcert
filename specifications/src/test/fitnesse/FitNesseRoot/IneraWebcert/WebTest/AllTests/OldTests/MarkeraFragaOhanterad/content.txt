@@ -15,7 +15,7 @@
 !3 Givet att det finns en obehandlad fråga - markera den som besvarad.
 
 |script|!-SvaraOchFraga-!|
-|logga in som|8|
+|logga in som|fitnesse-admin1|
 |ohanterade fragor sidan visas|
 |valj vardenhet|vardenhet-fit-1|
 |lista med ohanterade fragor visas|
@@ -30,7 +30,7 @@
 !3 Givet att det på samma intyg finns en hanterad & besvarad fråga från FK skall det inte gå att markera denna som ohanterad.
 
 |script|!-SvaraOchFraga-!|
-|logga in som|8|
+|logga in som|fitnesse-admin1|
 |ohanterade fragor sidan visas|
 |valj vardenhet|vardenhet-fit-1|
 |lista med ohanterade fragor visas|

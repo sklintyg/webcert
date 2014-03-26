@@ -2,8 +2,8 @@ package se.inera.webcert.spec
 
 import se.inera.webcert.pages.IndexPage
 import se.inera.webcert.pages.UnhandledQAPage
-import se.inera.webcert.pages.WelcomePage
 import se.inera.webcert.pages.fk7263.ViewCertQAPage
+import se.inera.webcert.pages.WelcomePage
 
 class SvaraOchFraga {
 
@@ -132,8 +132,7 @@ class SvaraOchFraga {
             waitFor {
                 at WelcomePage
             }
-            page.userSelect = id
-            page.startLogin()
+            page.loginAs(id)
         }
     }
 
@@ -464,7 +463,6 @@ class SvaraOchFraga {
         }
         return result
     }
-
 
     public boolean FrågaMedIdHarSvarsnamn(String internId, String namn) {
         def result = false

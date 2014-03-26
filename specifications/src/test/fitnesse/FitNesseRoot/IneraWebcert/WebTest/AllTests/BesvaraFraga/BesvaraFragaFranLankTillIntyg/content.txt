@@ -9,7 +9,7 @@ Testet beskriver fallet när en användare besvarar en fråga från försäkring
 !3 Givet att det finns ett intyg, verifiera att det går att visa intyget och att frågan visas på intyget
 
 | script | !-SvaraOchFraga-! |
-| logga in som | 8 |
+| logga in som | fitnesse-admin1 |
 | ga till intygsvy med intygsid | intyg-fit-1 |
 | intyg med fraga svar sidan visas |
 | fraga | $internReferens1 | visas i listan med ohanterade fragor |
@@ -38,4 +38,3 @@ Testet beskriver fallet när en användare besvarar en fråga från försäkring
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
-

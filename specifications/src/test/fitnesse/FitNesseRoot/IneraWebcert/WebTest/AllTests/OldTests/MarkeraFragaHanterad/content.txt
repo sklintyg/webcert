@@ -14,7 +14,7 @@
 !3 Givet att det finns en fråga visa och svara på denna.
 
 |script|!-SvaraOchFraga-!|
-|logga in som|8|
+|logga på som|fitnesse-admin1|
 |ohanterade fragor sidan visas|
 |valj vardenhet|vardenhet-fit-1|
 |lista med ohanterade fragor visas|
