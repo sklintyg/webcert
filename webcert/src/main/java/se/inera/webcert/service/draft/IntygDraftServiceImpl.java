@@ -281,4 +281,19 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return lakareList;
     }
 
+    @Override
+    public Intyg setForwardOnDraft(String intygsId, Boolean forwarded) {
+
+        Intyg intyg = intygRepository.findOne(intygsId);
+        
+        if (intyg == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "Could not find Intyg with id: " + intygsId);
+        }
+        
+        intyg.setVidarebefordrad(forwarded);
+        
+        return intygRepository.save(intyg);
+    }
+
 }

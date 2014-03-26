@@ -275,4 +275,24 @@ public class IntygApiController extends AbstractApiController {
                 
         return Response.ok().entity(lakareWithDraftsByEnhet).build();
     }
+    
+    /**
+     * Sets the forwarded flag on an Intyg.
+     * 
+     * @param intygsId Id of the Intyg
+     * @param forwarded True or False
+     * @return
+     */
+    @PUT
+    @Path("/forward/{intygsId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response setForwardOnIntyg(@PathParam("intygsId") String intygsId, Boolean forwarded) {
+        
+        Intyg updatedIntyg = intygDraftService.setForwardOnDraft(intygsId, forwarded);
+        
+        LOG.debug("Set forward to {} on intyg '{}'", updatedIntyg.getVidarebefordrad(), updatedIntyg.getIntygsId());
+        
+        return Response.ok().build();
+    }
 }
