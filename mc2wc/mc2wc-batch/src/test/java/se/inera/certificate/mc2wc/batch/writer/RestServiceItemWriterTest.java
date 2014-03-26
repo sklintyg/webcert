@@ -106,10 +106,7 @@ public class RestServiceItemWriterTest {
         when(migrationReceiver.receive(message)).thenReturn(reply);
 
         writer.write(messages);
-
-
     }
-
 
 
     public MigrationMessage getMigrationMessageFromTemplate() throws Exception {

@@ -4,7 +4,7 @@
   <parent>
     <groupId>se.inera.webcert</groupId>
     <artifactId>mc2wc-parent</artifactId>
-    <version>0.5-RC2-SNAPSHOT</version>
+    <version>0.5-RC3-SNAPSHOT</version>
   </parent>
   <artifactId>mc2wc-batch</artifactId>
   <packaging>war</packaging>
