@@ -59,6 +59,19 @@ define([
                 });
             }
 
+            function _getCertificateSavedByList(onSuccess, onError) {
+                $log.debug('_getCertificateSavedByList');
+                var restPath = '/api/intyg/unsigned/lakare/';
+                $http.get(restPath).success(function (data) {
+                    $log.debug('_getCertificateSavedByList got data:' + data);
+                    onSuccess(data);
+                }).error(function (data, status) {
+                    $log.error('_getCertificateSavedByList error ' + status);
+                    // Let calling code handle the error of no data response
+                    onError(data);
+                });
+            }
+
             /*
              * Load questions and answers data for
              */
@@ -106,7 +119,6 @@ define([
                     // Let calling code handle the error of no data response
                     onError(data);
                 });
-
             }
 
             function _getDoctorList (enhetsId, onSuccess, onError) {
@@ -127,6 +139,7 @@ define([
                 getCertificatesForPerson : _getCertificatesForPerson,
                 getUnsignedCertificates : _getUnsignedCertificates,
                 getUnsignedCertificatesByQueryFetchMore : _getUnsignedCertificatesByQueryFetchMore,
+                getCertificateSavedByList : _getCertificateSavedByList,
                 getQA : _getQA,
                 getQAByQuery : _getQAByQuery,
                 getQAByQueryFetchMore : _getQAByQueryFetchMore,

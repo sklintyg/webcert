@@ -10,6 +10,26 @@ define([
         // Constant settings
         var PAGE_SIZE = 10;
 
+        // Default API filter states
+        var defaultSavedByChoice = {
+            name: 'Visa alla',
+            hsaId: undefined
+        };
+
+        // Default query instance sent to search filter API
+        var defaultFilterQuery = {
+            enhetsId: User.getValdVardenhet().id,
+            startFrom: 0,
+            pageSize: PAGE_SIZE,
+            filter: {
+                forwarded: undefined, // 3-state, undefined, true, false
+                complete: undefined, // 3-state, undefined, true, false
+                savedFrom: undefined,
+                savedTo: undefined,
+                savedBy: defaultSavedByChoice.hsaId // selected doctor hasId
+            }
+        };
+
         // Default view filter form widget states
         var defaultFilterFormData = {
             forwarded: "default",
@@ -20,34 +40,12 @@ define([
             savedToOpen: {
                 open: false
             },
-            savedByList: [ // doctor names select items
-                {
-                    label: 'Visa alla',
-                    value: 'ALLA'
-                }
-            ],
-            lastFilterQuery: {}
+            savedByList: [],
+            lastFilterQuery: defaultFilterQuery
         };
-
-        // Default API filter states
-        var defaultFilter = {
-            forwarded: undefined, // 3-state, undefined, true, false
-            complete: undefined, // 3-state, undefined, true, false
-            savedFrom: undefined,
-            savedTo: undefined,
-            savedBy: defaultFilterFormData.savedByList[0].value // selected doctor hasId
-        };
-
-        // Default query instance sent to search filter API
-        var defaultFilterQuery = {
-            enhetsId: User.getValdVardenhet().id,
-            startFrom: 0,
-            pageSize: PAGE_SIZE,
-            filter: defaultFilter
-        };
-        defaultFilterFormData.lastFilterQuery = defaultFilterQuery;
 
         // Exposed page state variables
+        resetFilterState(); // Initializes $scope.filterForm from defaultFilterFormData
         $scope.widgetState = {
 
             // User context
@@ -74,7 +72,7 @@ define([
         /**
          *  Load initial data
          */
-        resetFilterState();
+        loadFilterForm();
         $scope.widgetState.doneLoading = false;
 
         dashBoardService.getUnsignedCertificates(function (data) {
@@ -96,8 +94,51 @@ define([
         /**
          * Private functions
          */
+        function loadFilterForm() {
+
+            resetFilterState();
+            loadSavedByList($scope.widgetState.valdVardenhet);
+
+            // Use saved choice if cookie has saved a filter
+            var storedFilter = $cookieStore.get('unsignedCertFilter');
+            if (storedFilter && storedFilter.filter.savedBy) {
+                $scope.filterForm.lastFilterQuery.savedBy = selectSavedByHsaId(storedFilter.filter.savedBy.hsaId);
+            } else {
+                $scope.filterForm.lastFilterQuery.savedBy = $scope.filterForm.savedByList[0];
+            }
+        }
+
+        function selectSavedByHsaId(hsaId) {
+            for (var count = 0; count < $scope.filterForm.savedByList.length; count++) {
+                if ($scope.filterForm.savedByList[count].hsaId === hsaId) {
+                    return $scope.filterForm.savedByList[count];
+                }
+            }
+            return $scope.filterForm.savedByList[0];
+        }
+
         function resetFilterState() {
             $scope.filterForm = angular.copy(defaultFilterFormData);
+        }
+
+        function loadSavedByList() {
+
+            $scope.widgetState.loadingSavedByList = true;
+
+            dashBoardService.getCertificateSavedByList(function (list) {
+                $scope.widgetState.loadingSavedByList = false;
+                $scope.filterForm.savedByList = list;
+                if (list && (list.length > 0)) {
+                    $scope.filterForm.savedByList.unshift(defaultSavedByChoice);
+                }
+            }, function () {
+                $scope.widgetState.loadingSavedByList = false;
+                $scope.filterForm.savedByList = [];
+                $scope.filterForm.savedByList.push({
+                    hsaId: undefined,
+                    name: '<Kunde inte hämta lista>'
+                });
+            });
         }
 
         /**
@@ -110,26 +151,22 @@ define([
             var filterQuery = angular.copy(defaultFilterQuery);
             $scope.filterForm.lastFilterQuery = filterQuery;
             $cookieStore.put('enhetsId', filterQuery.enhetsId);
-            $cookieStore.put('query_instance', filterQuery);
+            $cookieStore.put('unsignedCertFilter', filterQuery);
 
             dashBoardService.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
-
                 $scope.widgetState.runningQuery = false;
                 $scope.widgetState.currentList = successData.results;
                 $scope.widgetState.totalCount = successData.totalCount;
-
             }, function () {
-
                 $scope.widgetState.runningQuery = false;
                 $log.debug('Query Error');
                 // TODO: real errorhandling
                 $scope.widgetState.activeErrorMessageKey = 'info.query.error';
-
             });
         };
 
         $scope.resetFilter = function () {
-            $cookieStore.remove('query_instance');
+            $cookieStore.remove('unsignedCertFilter');
             resetFilterState();
         };
 
@@ -152,7 +189,7 @@ define([
             });
         };
 
-        $scope.openIntyg = function(cert) {
+        $scope.openIntyg = function (cert) {
             $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
         };
 

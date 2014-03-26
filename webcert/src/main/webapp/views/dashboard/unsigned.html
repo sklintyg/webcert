@@ -27,7 +27,7 @@
 
                                 <div class="controls">
                                     <select id="uc-savedBy" ng-model="filterForm.lastFilterQuery.filter.savedBy"
-                                            ng-options="s.value as s.label for s in filterForm.savedByList"
+                                            ng-options="s.hsaId as s.name for s in filterForm.savedByList"
                                             ng-disabled="widgetState.loadingSavedByList"></select>
                                 </div>
                             </div>
