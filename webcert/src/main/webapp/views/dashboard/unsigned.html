@@ -140,8 +140,8 @@
                                     <tr ng-repeat="cert in widgetState.currentList">
                                         <td>
                                             <button class="btn btn-info" title="Visar intyget"
-                                                    ng-click="openIntyg(cert.intygId)"
-                                                    id="showqaBtn-{{cert.intygId}}"> Visa
+                                                    ng-click="openIntyg(cert)"
+                                                    id="showBtn-{{cert.intygId}}"> Visa
                                             </button>
                                         </td>
                                         <td>
@@ -162,11 +162,11 @@
                                         </td>
                                         <td><span message key="cert.status.{{cert.status}}"></span></td>
                                         <td>{{cert.updatedSignedBy}}</td>
-                                        <td class="unbreakable">{{cert.patient}}</td>
+                                        <td class="unbreakable">{{cert.patientId}}</td>
                                         <td class="unbreakable">{{cert.lastUpdatedSigned |
                                             date:'shortDate'}}
                                         </td>
-                                        <td class="unbreakable table-qa-last">{{cert.intygType}}</td>
+                                        <td class="unbreakable table-qa-last"><span message key="certificatetypes.{{cert.intygType}}.typename"></span></td>
                                 </table>
                             </div>
                             <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar

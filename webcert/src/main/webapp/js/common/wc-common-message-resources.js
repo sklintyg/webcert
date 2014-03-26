@@ -18,7 +18,6 @@ define([
         "cert.status.sent" : "Skickat",
         "cert.status.draft_incomplete" : "Utkast, ej komplett",
         "cert.status.draft_complete" : "Utkast, komplett",
-        "cert.status.draft_discarded" : "Utkast, borttaget",
         "cert.status.signed" : "Signerat",
         "cert.status.unknown" : "Okänd",
 

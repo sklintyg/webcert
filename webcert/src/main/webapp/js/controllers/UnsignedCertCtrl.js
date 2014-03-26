@@ -5,7 +5,7 @@ define([
     /*
      * Controller for logic related to listing unsigned certs
      */
-    return ['$scope', '$window', '$log', '$cookieStore', 'User', 'dashBoardService', function ($scope, $window, $log, $cookieStore, User, dashBoardService) {
+    return ['$scope', '$window', '$log', '$location', '$cookieStore', 'User', 'dashBoardService', function ($scope, $window, $log, $location, $cookieStore, User, dashBoardService) {
 
         // Constant settings
         var PAGE_SIZE = 10;
@@ -151,5 +151,10 @@ define([
                 $scope.widgetState.activeErrorMessageKey = 'info.query.error';
             });
         };
+
+        $scope.openIntyg = function(cert) {
+            $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
+        };
+
     }];
 });
