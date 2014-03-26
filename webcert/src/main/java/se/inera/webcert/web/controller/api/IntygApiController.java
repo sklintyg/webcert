@@ -31,6 +31,7 @@ import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.IntygItem;
+import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
@@ -256,5 +257,22 @@ public class IntygApiController extends AbstractApiController {
 
         return Response.ok().entity(allModules).build();
     }
-
+    
+    /**
+     * Returns a list of doctors that have one or more unsigned intyg.
+     * 
+     * @return a list of {@link se.inera.webcert.service.dto.Lakare} objects.
+     */
+    @GET
+    @Path("/lakare")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getIntygLakareByEnhet() {
+        
+        WebCertUser user = webCertUserService.getWebCertUser();
+        String selectedUnitHsaId = user.getValdVardenhet().getId();
+        
+        List<Lakare> lakareWithDraftsByEnhet = intygDraftService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
+                
+        return Response.ok().entity(lakareWithDraftsByEnhet).build();
+    }
 }

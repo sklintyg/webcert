@@ -1,5 +1,9 @@
 package se.inera.webcert.service.draft;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +31,7 @@ import se.inera.webcert.service.draft.dto.DraftValidationStatus;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
@@ -35,7 +40,10 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 
 @Service
 public class IntygDraftServiceImpl implements IntygDraftService {
-
+    
+    private static final List<IntygsStatus> ALL_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
+            IntygsStatus.DRAFT_INCOMPLETE);
+    
     private static Logger LOG = LoggerFactory.getLogger(IntygDraftServiceImpl.class);
 
     @Autowired
@@ -257,6 +265,20 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         LOG.debug("Validation failed with {} validation messages", draftValidation.getMessages().size());
 
         return draftValidation;
+    }
+
+    @Override
+    public List<Lakare> getLakareWithDraftsByEnhet(String enhetsId) {
+        
+        List<Lakare> lakareList = new ArrayList<>();
+        
+        List<Object[]> result = intygRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFTS);
+        
+        for (Object[] lakareArr : result) {
+            lakareList.add(new Lakare((String) lakareArr[0], (String) lakareArr[1]));
+        }
+        
+        return lakareList;
     }
 
 }

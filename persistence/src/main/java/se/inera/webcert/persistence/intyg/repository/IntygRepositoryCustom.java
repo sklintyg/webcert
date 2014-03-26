@@ -43,4 +43,14 @@ public interface IntygRepositoryCustom extends IntygFilteredRepositoryCustom {
             "AND i.status IN (:statuses)")
     List<Intyg> findDraftsByPatientAndEnhetAndStatus(@Param("patientPnr") String patientPnr, @Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<IntygsStatus> statuses);
     
+    /**
+     * Returns a list of all unique hsaId and name (of vardperson who edited the certificate) which matches the supplied enhetsId.
+     *
+     * @param enhetsid
+     * @return A list of Object[] where the first [0] value is the HsaId and the second [1] is the name
+     */
+    @Query("SELECT DISTINCT i.senastSparadAv.hsaId, i.senastSparadAv.namn FROM Intyg i " +
+    		"WHERE i.enhetsId = :enhetsid AND i.status IN (:statuses) " +
+    		"ORDER BY i.senastSparadAv.namn ASC")
+    List<Object[]> findDistinctLakareFromIntygEnhetAndStatuses(@Param("enhetsid") String enhetsid, @Param("statuses") List<IntygsStatus> statuses);
 }
