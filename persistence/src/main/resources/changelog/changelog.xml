@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
   <changeSet id="1" author="me">
     <!-- initial creation of tables -->
 
     <createTable tableName="FRAGASVAR">
-      <column name="internReferens" type="varchar(255)">
-        <constraints unique="true" nullable="false" />
+      <column name="internReferens" type="bigint">
+      <constraints unique="true" nullable="false" />
       </column>
       <column name="AMNE" type="varchar(255)">
         <constraints nullable="false" />
@@ -124,12 +124,12 @@
     </createTable>
 
     <!-- Add auto incremented id column to table -->
-    <addAutoIncrement columnDataType="int" columnName="internReferens"
+    <addAutoIncrement columnDataType="bigint" columnName="internReferens"
       incrementBy="1" startWith="1" tableName="FRAGASVAR" />
 
     <createTable tableName="KOMPLETTERING">
-      <column name="FRAGASVAR_ID" type="varchar(255)">
-        <constraints nullable="false" />
+      <column name="FRAGASVAR_ID" type="bigint">
+      <constraints nullable="false" />
       </column>
       <column name="FALT" type="varchar(255)">
         <constraints nullable="false" />
@@ -144,8 +144,8 @@
       referencedTableName="FRAGASVAR" />
 
     <createTable tableName="EXTERNA_KONTAKTER">
-      <column name="FRAGASVAR_ID" type="varchar(255)">
-        <constraints nullable="false" />
+      <column name="FRAGASVAR_ID" type="bigint">
+      <constraints nullable="false" />
       </column>
       <column name="KONTAKT" type="varchar(255)">
         <constraints nullable="false" />
