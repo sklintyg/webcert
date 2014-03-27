@@ -27,7 +27,7 @@
 
                                 <div class="controls">
                                     <select id="uc-savedBy" ng-model="filterForm.lastFilterQuery.filter.savedBy"
-                                            ng-options="s.hsaId as s.name for s in filterForm.savedByList"
+                                            ng-options="s.hsaId as s.name for s in widgetState.savedByList"
                                             ng-disabled="widgetState.loadingSavedByList"></select>
                                 </div>
                             </div>
@@ -52,16 +52,16 @@
 
                                 <div class="controls">
                                     Från <input type="text" id="filter-changedate-from" datepicker-popup
-                                                ng-model="filterForm.lastFilterQuery.savedFrom" is-open="widgetState.savedFromOpen.open"
+                                                ng-model="filterForm.lastFilterQuery.filter.savedFrom" is-open="filterForm.savedFromOpen.open"
                                                 datepicker-options="datepickerConfig"/>
-                                    <button class="btn" ng-click="toggleDatePickerInstance(widgetState.savedFromOpen)">
+                                    <button class="btn" ng-click="toggleDatePickerInstance(filterForm.savedFromOpen)">
                                         <i class="icon-calendar"></i>
                                     </button>
 
                                     till <input type="text" id="filter-changedate-to" datepicker-popup
-                                                ng-model="filterForm.lastFilterQuery.savedTo" is-open="widgetState.savedToOpen.open"
+                                                ng-model="filterForm.lastFilterQuery.filter.savedTo" is-open="filterForm.savedToOpen.open"
                                                 datepicker-options="datepickerConfig"/>
-                                    <button class="btn" ng-click="toggleDatePickerInstance(widgetState.savedToOpen)">
+                                    <button class="btn" ng-click="toggleDatePickerInstance(filterForm.savedToOpen)">
                                         <i class="icon-calendar"></i>
                                     </button>
                                 </div>

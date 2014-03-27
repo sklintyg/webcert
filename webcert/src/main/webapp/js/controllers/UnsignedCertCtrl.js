@@ -5,7 +5,7 @@ define([
     /*
      * Controller for logic related to listing unsigned certs
      */
-    return ['$scope', '$window', '$log', '$location', '$cookieStore', 'User', 'dashBoardService', function ($scope, $window, $log, $location, $cookieStore, User, dashBoardService) {
+    return ['$scope', '$window', '$log', '$location', '$cookieStore', '$timeout', 'User', 'dashBoardService', function ($scope, $window, $log, $location, $cookieStore, $timeout, User, dashBoardService) {
 
         // Constant settings
         var PAGE_SIZE = 10;
@@ -40,7 +40,6 @@ define([
             savedToOpen: {
                 open: false
             },
-            savedByList: [],
             lastFilterQuery: defaultFilterQuery
         };
 
@@ -63,6 +62,7 @@ define([
             // Search states
             queryFormCollapsed: true,
             searchedYet: false,
+            savedByList: [],
 
             // List data
             totalCount: 0,
@@ -102,19 +102,17 @@ define([
             // Use saved choice if cookie has saved a filter
             var storedFilter = $cookieStore.get('unsignedCertFilter');
             if (storedFilter && storedFilter.filter.savedBy) {
-                $scope.filterForm.lastFilterQuery.savedBy = selectSavedByHsaId(storedFilter.filter.savedBy.hsaId);
-            } else {
-                $scope.filterForm.lastFilterQuery.savedBy = $scope.filterForm.savedByList[0];
+                $scope.filterForm.lastFilterQuery.filter.savedBy = selectSavedByHsaId(storedFilter.filter.savedBy.hsaId);
             }
         }
 
         function selectSavedByHsaId(hsaId) {
-            for (var count = 0; count < $scope.filterForm.savedByList.length; count++) {
-                if ($scope.filterForm.savedByList[count].hsaId === hsaId) {
-                    return $scope.filterForm.savedByList[count];
+            for (var count = 0; count < $scope.widgetState.savedByList.length; count++) {
+                if ($scope.widgetState.savedByList[count].hsaId === hsaId) {
+                    return $scope.widgetState.savedByList[count];
                 }
             }
-            return $scope.filterForm.savedByList[0];
+            return $scope.widgetState.savedByList[0];
         }
 
         function resetFilterState() {
@@ -127,18 +125,27 @@ define([
 
             dashBoardService.getCertificateSavedByList(function (list) {
                 $scope.widgetState.loadingSavedByList = false;
-                $scope.filterForm.savedByList = list;
+                $scope.widgetState.savedByList = list;
                 if (list && (list.length > 0)) {
-                    $scope.filterForm.savedByList.unshift(defaultSavedByChoice);
+                    $scope.widgetState.savedByList.unshift(defaultSavedByChoice);
                 }
             }, function () {
                 $scope.widgetState.loadingSavedByList = false;
-                $scope.filterForm.savedByList = [];
-                $scope.filterForm.savedByList.push({
+                $scope.widgetState.savedByList = [];
+                $scope.widgetState.savedByList.push({
                     hsaId: undefined,
                     name: '<Kunde inte hämta lista>'
                 });
             });
+        }
+
+        function convertFormFilterToPayload(filterQuery) {
+            var converted = angular.copy(filterQuery);
+
+            converted.filter.forwarded = $scope.filterForm.forwarded !== "default" ? $scope.filterForm.forwarded : undefined;
+            converted.filter.complete = $scope.filterForm.complete !== "default" ? $scope.filterForm.complete : undefined;
+
+            return converted;
         }
 
         /**
@@ -148,8 +155,7 @@ define([
 
             $log.debug('filterDrafts');
             $scope.widgetState.activeErrorMessageKey = null;
-            var filterQuery = angular.copy(defaultFilterQuery);
-            $scope.filterForm.lastFilterQuery = filterQuery;
+            var filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
             $cookieStore.put('enhetsId', filterQuery.enhetsId);
             $cookieStore.put('unsignedCertFilter', filterQuery);
 
@@ -175,9 +181,10 @@ define([
             $log.debug('fetchMore');
             $scope.widgetState.activeErrorMessageKey = null;
             $scope.filterForm.lastFilterQuery.startFrom += PAGE_SIZE;
+            var filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
             $scope.widgetState.fetchingMoreInProgress = true;
 
-            dashBoardService.getUnsignedCertificatesByQueryFetchMore($scope.filterForm.lastFilterQuery, function (successData) {
+            dashBoardService.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
                 $scope.widgetState.fetchingMoreInProgress = false;
                 for (var i = 0; i < successData.results.length; i++) {
                     $scope.widgetState.currentList.push(successData.results[i]);
@@ -191,6 +198,12 @@ define([
 
         $scope.openIntyg = function (cert) {
             $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
+        };
+
+        $scope.toggleDatePickerInstance = function(instance) {
+            $timeout(function() {
+                instance.open = !instance.open;
+            });
         };
 
     }];
