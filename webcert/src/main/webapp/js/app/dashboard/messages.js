@@ -40,7 +40,7 @@ var webcertResources = {
            
     },
     "en": {
-        "webcert.header": "Webcert Application (en)",
+        "webcert.header": "Webcert Application (en)"
     }
 };
 
