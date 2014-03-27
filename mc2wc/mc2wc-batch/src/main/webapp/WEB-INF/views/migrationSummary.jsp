@@ -11,6 +11,9 @@ CertificateWriteCount: ${certificateWriteCount}<br>
 QuestionWriteCount: ${questionWriteCount}<br>
 AnswerWriteCount: ${answerWriteCount}<br>
 
+<p>
+    <a href="<%= request.getContextPath() %>/d//statistics">Compare contents</a>
+</p>
 
 <p>
     <a href="<%= request.getContextPath() %>/d/home">Home</a>

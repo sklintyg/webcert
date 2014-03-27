@@ -1,9 +1,6 @@
 package se.inera.certificate.mc2wc.rest;
 
-import se.inera.certificate.mc2wc.message.MigrationMessage;
-import se.inera.certificate.mc2wc.message.MigrationReply;
-import se.inera.certificate.mc2wc.message.PingRequest;
-import se.inera.certificate.mc2wc.message.PingResponse;
+import se.inera.certificate.mc2wc.message.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -24,4 +21,10 @@ public interface MigrationReceiver {
     @Consumes("application/xml")
     @Produces("application/xml")
     public PingResponse ping(PingRequest request);
+
+    @POST
+    @Path("/statistics")
+    @Consumes("application/xml")
+    @Produces("application/xml")
+    public StatisticsResponse getStatistics(StatisticsRequest request);
 }

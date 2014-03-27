@@ -46,6 +46,11 @@ public class MockMigrationRecieverBean implements MigrationReceiver {
         return new PingResponse();
     }
 
+    @Override
+    public StatisticsResponse getStatistics(StatisticsRequest request) {
+        return new StatisticsResponse();
+    }
+
     public List<MigrationMessage> getMessages() {
         return messages;
     }

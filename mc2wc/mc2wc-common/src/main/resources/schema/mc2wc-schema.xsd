@@ -180,4 +180,23 @@
   </complexType>
   <complexType name="pingResponseType">
   </complexType>
+
+  <element name="statisticsRequest" type="tns:statisticsRequestType" />
+  <element name="statisticsResponse" type="tns:statisticsResponseType" />
+
+  <complexType name="statisticsRequestType">
+    <sequence>
+      <element name="sender" type="string" />
+      <element name="careGiverId" type="string" maxOccurs="unbounded" />
+    </sequence>
+  </complexType>
+
+  <complexType name="statisticsResponseType">
+    <sequence>
+      <element name="certificateCount" type="long" />
+      <element name="questionCount" type="long" />
+      <element name="answerCount" type="long" />
+    </sequence>
+  </complexType>
+
 </schema>

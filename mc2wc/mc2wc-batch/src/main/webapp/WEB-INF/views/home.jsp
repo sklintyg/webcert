@@ -15,12 +15,14 @@
 </p>
 
 <p>
+    <a href="<%= request.getContextPath() %>/d/statistics">Compare contents</a>
+</p>
+
+<p>
 
 <form action="<%= request.getContextPath() %>/d/startMigration" method="POST">
     <label for="dryRun">Test run, to validate contents of Medcert database</label>
-    <input id="dryRun" type="checkbox" name="dryRun" value="true" checked>
-    <label for="sender">Sender</label>
-    <input id="sender" type="text" name="sender">
+    <input id="dryRun" type="checkbox" name="dryRun" value="true" checked><br>
     <input type="submit" value="Start batch"/>
 </form>
 </p>

@@ -89,7 +89,7 @@ public class JobController {
     }
 
     @RequestMapping("/startMigration")
-    public String runMigrationJob(@RequestParam("dryRun") boolean dryRun, @RequestParam("sender") String sender, Model model) throws Exception {
+    public String runMigrationJob(@RequestParam(value = "dryRun", required = false, defaultValue = "false") boolean dryRun, Model model) throws Exception {
 
         Set<JobExecution> executions = jobExplorer.findRunningJobExecutions(MIGRATION_JOB);
 
@@ -98,7 +98,7 @@ public class JobController {
             if (dryRun) {
                 builder.addString("dryRun", "true");
             }
-            builder.addString("sender", sender);
+            builder.addLong("millis", System.currentTimeMillis(), true);
 
             jobLauncher.run(migrationJob, builder.toJobParameters());
         }
