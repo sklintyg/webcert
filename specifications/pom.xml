@@ -238,6 +238,15 @@
       </properties>
     </profile>
     <profile>
+      <id>nmt</id>
+      <properties>
+        <webcert.web.baseUrl>https://webcert.inera.nordicmedtest.se:21443/</webcert.web.baseUrl>
+        <webcert.baseUrl>https://webcert.inera.nordicmedtest.se:21443/services/</webcert.baseUrl>
+        <logsender.baseUrl>https://webcert.inera.nordicmedtest.se:21443/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://intygstjanst.inera.nordicmedtest.se:23443/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
       <id>ssh-tunnel-server</id>
       <properties>
         <webcert.web.baseUrl>http://localhost:28080/</webcert.web.baseUrl>
