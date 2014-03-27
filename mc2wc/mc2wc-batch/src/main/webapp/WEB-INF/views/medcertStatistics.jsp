@@ -15,23 +15,24 @@
     </tr>
     </thead>
     <tr>
-        <td>Certificates</td>
+        <td>Intyg</td>
         <td>${certificateCountMedcert}</td>
         <td>${certificateCountWebcert}</td>
     </tr>
     <tr>
-        <td>Questions</td>
+        <td>Frågor</td>
         <td>${questionCountMedcert}</td>
         <td>${questionCountWebcert}</td>
     </tr>
     <tr>
-        <td>Answers</td>
+        <td>Svar</td>
         <td>${answerCountMedcert}</td>
         <td>${answerCountWebcert}</td>
     </tr>
 </table>
+
 <p>
-    <a href="<%= request.getContextPath() %>/d/home">Home</a>
+    <a href="<%= request.getContextPath() %>/d/home">Tillbaka till startsidan</a>
 </p>
 </body>
 </html>

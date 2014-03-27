@@ -5,20 +5,19 @@
 <%@ taglib prefix="spring-form" uri="http://www.springframework.org/tags/form" %>
 <html>
 <head>
-    <title>Job executions</title>
+    <title>Lista tidigare körningar</title>
 </head>
 <body>
-<h1>Stored executions</h1>
+<h1>Lista tidigare körningar</h1>
 <table>
     <thead>
-    <td>Execution Id</td>
     <td>Status</td>
-    <td>Start</td>
-    <td>End</td>
-    <td>Certificate count</td>
-    <td>Question count</td>
-    <td>Answer count</td>
-    <td>Restart job</td>
+    <td>Startade</td>
+    <td>Slutade</td>
+    <td>Antal migrerade intyg</td>
+    <td>Antal migrerade frågor</td>
+    <td>Antal migrerade svar</td>
+    <td>Starta om job</td>
     </thead>
     <c:forEach items="${jobExecutions}" var="execution">
         <tr>
@@ -38,8 +37,9 @@
     </c:forEach>
 </table>
 
+
 <p>
-    <a href="<%= request.getContextPath() %>/d/home">Home</a>
+    <a href="<%= request.getContextPath() %>/d/home">Tillbaka till startsidan</a>
 </p>
 </body>
 </html>

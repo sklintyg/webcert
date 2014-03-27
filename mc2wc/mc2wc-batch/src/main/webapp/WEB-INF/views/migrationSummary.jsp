@@ -1,22 +1,23 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Migration finished</title>
+    <title>Migrering avslutad</title>
 </head>
 <body>
-<h1>We are done!</h1>
+<h1>Migrering avslutad</h1>
 ${status}<br>
 
-CertificateWriteCount: ${certificateWriteCount}<br>
-QuestionWriteCount: ${questionWriteCount}<br>
-AnswerWriteCount: ${answerWriteCount}<br>
+Antal migrerade intyg: ${certificateWriteCount}<br>
+Antal migrerade frågor: ${questionWriteCount}<br>
+Antal migrerade svar: ${answerWriteCount}<br>
+
 
 <p>
-    <a href="<%= request.getContextPath() %>/d//statistics">Compare contents</a>
+    <a href="<%= request.getContextPath() %>/d/statistics">Jämför innehåll mellan Mecert och Webcert</a>
 </p>
 
 <p>
-    <a href="<%= request.getContextPath() %>/d/home">Home</a>
+    <a href="<%= request.getContextPath() %>/d/home">Tillbaka till startsidan</a>
 </p>
 </body>
 </html>

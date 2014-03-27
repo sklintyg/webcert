@@ -1,7 +1,5 @@
 package se.inera.certificate.mc2wc.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.certificate.mc2wc.converter.FragaSvarConverter;
 import se.inera.certificate.mc2wc.converter.MedcertIntygConverter;
@@ -17,8 +15,6 @@ import java.util.List;
 
 public class MigrationServiceImpl implements MigrationService {
 
-    private static Logger logger = LoggerFactory.getLogger(MigrationService.class);
-
     @Autowired
     private FragaSvarRepository fragaSvarRepository;
 
@@ -31,14 +27,8 @@ public class MigrationServiceImpl implements MigrationService {
     @Autowired
     private FragaSvarConverter fragaSvarConverter;
 
-    public MigrationServiceImpl() {
-
-    }
-
     @Override
     public MigrationResultType processMigrationMessage(MigrationMessage message) {
-
-        logger.debug("Migrating message");
 
         List<QuestionType> questions = message.getQuestions();
 

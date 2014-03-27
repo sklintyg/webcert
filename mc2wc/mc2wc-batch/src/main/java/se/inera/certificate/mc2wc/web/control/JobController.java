@@ -72,16 +72,8 @@ public class JobController {
 
         try {
             Long newId = jobOperator.restart(executionId);
-
-        } catch (JobInstanceAlreadyCompleteException e) {
-            logger.error("Could not restart job with id: {}", executionId, e);
-        } catch (NoSuchJobExecutionException e) {
-            logger.error("Could not restart job with id: {}", executionId, e);
-        } catch (NoSuchJobException e) {
-            logger.error("Could not restart job with id: {}", executionId, e);
-        } catch (JobRestartException e) {
-            logger.error("Could not restart job with id: {}", executionId, e);
-        } catch (JobParametersInvalidException e) {
+            logger.info("Restarting job with id {}, new id {}", executionId, newId);
+        } catch (JobInstanceAlreadyCompleteException | NoSuchJobExecutionException | NoSuchJobException | JobRestartException | JobParametersInvalidException e) {
             logger.error("Could not restart job with id: {}", executionId, e);
         }
 
@@ -89,7 +81,7 @@ public class JobController {
     }
 
     @RequestMapping("/startMigration")
-    public String runMigrationJob(@RequestParam(value = "dryRun", required = false, defaultValue = "false") boolean dryRun, Model model) throws Exception {
+    public String runMigrationJob(@RequestParam(value = "dryRun", required = false, defaultValue = "false") boolean dryRun) throws Exception {
 
         Set<JobExecution> executions = jobExplorer.findRunningJobExecutions(MIGRATION_JOB);
 
