@@ -5,7 +5,7 @@ define([
     /*
      * Controller for logic related to listing unsigned certs
      */
-    return ['$scope', '$window', '$log', '$location', '$cookieStore', '$timeout', 'User', 'dashBoardService', function ($scope, $window, $log, $location, $cookieStore, $timeout, User, dashBoardService) {
+    return ['$scope', '$window', '$log', '$location', '$cookieStore', '$timeout', 'User', 'unsignedCertificateService', 'wcDialogService', function ($scope, $window, $log, $location, $cookieStore, $timeout, User, unsignedCertificateService, wcDialogService) {
 
         // Constant settings
         var PAGE_SIZE = 10;
@@ -75,7 +75,7 @@ define([
         loadFilterForm();
         $scope.widgetState.doneLoading = false;
 
-        dashBoardService.getUnsignedCertificates(function (data) {
+        unsignedCertificateService.getUnsignedCertificates(function (data) {
 
                 $scope.widgetState.doneLoading = true;
                 $scope.widgetState.activeErrorMessageKey = null;
@@ -85,7 +85,7 @@ define([
             }, function () {
 
                 $log.debug('Query Error');
-                // TODO: real errorhandling
+                $scope.widgetState.doneLoading = true;
                 $scope.widgetState.activeErrorMessageKey = 'info.query.error';
 
             }
@@ -123,7 +123,7 @@ define([
 
             $scope.widgetState.loadingSavedByList = true;
 
-            dashBoardService.getCertificateSavedByList(function (list) {
+            unsignedCertificateService.getCertificateSavedByList(function (list) {
                 $scope.widgetState.loadingSavedByList = false;
                 $scope.widgetState.savedByList = list;
                 if (list && (list.length > 0)) {
@@ -140,11 +140,15 @@ define([
         }
 
         function convertFormFilterToPayload(filterQuery) {
-            var converted = angular.copy(filterQuery);
-
-            converted.filter.forwarded = $scope.filterForm.forwarded !== "default" ? $scope.filterForm.forwarded : undefined;
-            converted.filter.complete = $scope.filterForm.complete !== "default" ? $scope.filterForm.complete : undefined;
-
+            var filterQuery = angular.copy(filterQuery);
+            var converted = filterQuery.filter;
+            converted.enhetsId = filterQuery.enhetsId;
+            converted.startFrom = filterQuery.startFrom;
+            converted.pageSize = filterQuery.pageSize;
+            converted.forwarded = $scope.filterForm.forwarded !== "default" ? $scope.filterForm.forwarded : undefined;
+            converted.complete = $scope.filterForm.complete !== "default" ? $scope.filterForm.complete : undefined;
+            converted.savedFrom = $filter('date')(converted.savedFrom, 'yyyy-MM-dd');
+            converted.savedTo = $filter('date')(converted.savedTo, 'yyyy-MM-dd');
             return converted;
         }
 
@@ -155,11 +159,13 @@ define([
 
             $log.debug('filterDrafts');
             $scope.widgetState.activeErrorMessageKey = null;
-            var filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
+            var filterQuery = $scope.filterForm.lastFilterQuery;
             $cookieStore.put('enhetsId', filterQuery.enhetsId);
-            $cookieStore.put('unsignedCertFilter', filterQuery);
+            $cookieStore.put('unsignedCertFilter', $scope.filterForm.lastFilterQuery);
+            filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
 
-            dashBoardService.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
+            $scope.widgetState.runningQuery = true;
+            unsignedCertificateService.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
                 $scope.widgetState.runningQuery = false;
                 $scope.widgetState.currentList = successData.results;
                 $scope.widgetState.totalCount = successData.totalCount;
@@ -184,7 +190,7 @@ define([
             var filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
             $scope.widgetState.fetchingMoreInProgress = true;
 
-            dashBoardService.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
+            unsignedCertificateService.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
                 $scope.widgetState.fetchingMoreInProgress = false;
                 for (var i = 0; i < successData.results.length; i++) {
                     $scope.widgetState.currentList.push(successData.results[i]);
@@ -204,6 +210,29 @@ define([
             $timeout(function() {
                 instance.open = !instance.open;
             });
+        };
+
+        // Handle forwarding
+        $scope.openMailDialog = function(cert) {
+            $timeout(function() {
+                unsignedCertificateService.handleForwardedToggle(cert, $scope.onForwardedChange);
+            }, 1000);
+            // Launch mail client
+            $window.location = unsignedCertificateService.buildMailToLink(cert);
+        };
+
+        $scope.onForwardedChange = function(cert) {
+            cert.updateInProgress = true;
+            unsignedCertificateService.setForwardedState(cert.intygId, cert.forwarded, function(result) {
+                    cert.updateInProgress = false;
+
+                    if (result !== null) {
+                        cert.forwarded = result.forwarded;
+                    } else {
+                        cert.forwarded = !cert.forwarded;
+                        wcDialogService.showErrorMessageDialog('Kunde inte markera/avmarkera frågan som vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. Annars kan du kontakta supporten.');
+                    }
+                });
         };
 
     }];

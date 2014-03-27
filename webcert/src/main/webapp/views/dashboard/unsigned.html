@@ -52,14 +52,16 @@
 
                                 <div class="controls">
                                     Från <input type="text" id="filter-changedate-from" datepicker-popup
-                                                ng-model="filterForm.lastFilterQuery.filter.savedFrom" is-open="filterForm.savedFromOpen.open"
+                                                ng-model="filterForm.lastFilterQuery.filter.savedFrom"
+                                                is-open="filterForm.savedFromOpen.open"
                                                 datepicker-options="datepickerConfig"/>
                                     <button class="btn" ng-click="toggleDatePickerInstance(filterForm.savedFromOpen)">
                                         <i class="icon-calendar"></i>
                                     </button>
 
                                     till <input type="text" id="filter-changedate-to" datepicker-popup
-                                                ng-model="filterForm.lastFilterQuery.filter.savedTo" is-open="filterForm.savedToOpen.open"
+                                                ng-model="filterForm.lastFilterQuery.filter.savedTo"
+                                                is-open="filterForm.savedToOpen.open"
                                                 datepicker-options="datepickerConfig"/>
                                     <button class="btn" ng-click="toggleDatePickerInstance(filterForm.savedToOpen)">
                                         <i class="icon-calendar"></i>
@@ -146,17 +148,17 @@
                                         </td>
                                         <td>
                                             <button class="btn"
-                                                    ng-class="{'btn-info': !cert.vidarebefordrad, 'btn-secondary' : cert.vidarebefordrad}"
+                                                    ng-class="{'btn-info': !cert.forwarded, 'btn-secondary' : cert.forwarded}"
                                                     title="Skicka ett mejl med en länk till intyget för att informera den som ska signera det."
                                                     ng-click="openMailDialog(cert)">
-                                                <img ng-if="!cert.vidarebefordrad" src="/img/mail.png">
-                                                <img ng-if="cert.vidarebefordrad" src="/img/mail_dark.png">
+                                                <img ng-if="!cert.forwarded" src="/img/mail.png">
+                                                <img ng-if="cert.forwarded" src="/img/mail_dark.png">
                                             </button>
                                         </td>
                                         <td class="center">
                                             <input id="selected" type="checkbox" ng-disabled="cert.updateInProgress"
-                                                   ng-model="cert.vidarebefordrad"
-                                                   ng-change="onVidareBefordradChange(cert)"/>
+                                                   ng-model="cert.forwarded"
+                                                   ng-change="onForwardedChange(cert)"/>
                                             <span ng-if="cert.updateInProgress"> <img
                                                     src="/img/ajax-loader-kit-16x16.gif"></span>
                                         </td>
@@ -166,7 +168,9 @@
                                         <td class="unbreakable">{{cert.lastUpdatedSigned |
                                             date:'shortDate'}}
                                         </td>
-                                        <td class="unbreakable table-qa-last"><span message key="certificatetypes.{{cert.intygType}}.typename"></span></td>
+                                        <td class="unbreakable table-qa-last"><span message
+                                                                                    key="certificatetypes.{{cert.intygType}}.typename"></span>
+                                        </td>
                                 </table>
                             </div>
                             <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
