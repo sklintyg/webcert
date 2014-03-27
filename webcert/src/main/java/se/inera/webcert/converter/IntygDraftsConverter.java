@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,19 +121,10 @@ public final class IntygDraftsConverter {
         ie.setIntygType(intygItem.getType());
         ie.setStatus(findLastStatus(intygItem));
         ie.setSource(IntygSource.IT);
-        ie.setLastUpdatedSigned(convertToLocalDateTime(intygItem.getSignedDate()));
+        ie.setLastUpdatedSigned(intygItem.getSignedDate());
         ie.setUpdatedSignedBy(intygItem.getSignedBy());
                 
         return ie;
-    }
-
-    private static LocalDateTime convertToLocalDateTime(LocalDate localDate) {
-        
-        if (localDate == null) {
-            return null;
-        }
-        
-        return localDate.toLocalDateTime(localDate.toDateTimeAtStartOfDay().toLocalTime());
     }
         
     private static String findLastStatus(IntygItem intygItem) {

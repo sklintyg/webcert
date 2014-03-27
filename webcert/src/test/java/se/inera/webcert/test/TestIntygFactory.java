@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import se.inera.webcert.persistence.intyg.model.Intyg;
@@ -29,13 +28,13 @@ public final class TestIntygFactory {
         
         List<IntygItem> list = new ArrayList<IntygItem>();
         
-        list.add(createIntygItem("3", LocalDate.parse("2014-01-02")));
-        list.add(createIntygItem("4", LocalDate.parse("2014-01-03")));
+        list.add(createIntygItem("3", LocalDateTime.parse("2014-01-02T10:11:23")));
+        list.add(createIntygItem("4", LocalDateTime.parse("2014-01-03T12:12:18")));
         
         return list;
     }
     
-    public static IntygItem createIntygItem(String id, LocalDate signedDate) {
+    public static IntygItem createIntygItem(String id, LocalDateTime signedDate) {
         
         IntygItem it = new IntygItem();
         
@@ -44,12 +43,10 @@ public final class TestIntygFactory {
         it.setSignedDate(signedDate);
         it.setType("Type 1");
         
-        
-        LocalDateTime statusDate = signedDate.toLocalDateTime(signedDate.toDateTimeAtStartOfDay().toLocalTime()); 
-        
-        IntygStatus is1 = new IntygStatus("RECEIVED","FK", statusDate);
-        IntygStatus is2 = new IntygStatus("SENT","MI", statusDate.minusSeconds(15));
-        IntygStatus is3 = new IntygStatus("SIGNED","WC", statusDate.minusHours(2));
+                
+        IntygStatus is1 = new IntygStatus("RECEIVED","FK", signedDate);
+        IntygStatus is2 = new IntygStatus("SENT","MI", signedDate.minusSeconds(15));
+        IntygStatus is3 = new IntygStatus("SIGNED","WC", signedDate.minusHours(2));
         
         it.setStatuses(Arrays.asList(is1, is2, is3));
         

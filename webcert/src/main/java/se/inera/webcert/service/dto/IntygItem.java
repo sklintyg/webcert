@@ -3,6 +3,7 @@ package se.inera.webcert.service.dto;
 import java.util.List;
 
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 public class IntygItem {
     
@@ -16,7 +17,7 @@ public class IntygItem {
     
     private List<IntygStatus> statuses;
     
-    private LocalDate signedDate;
+    private LocalDateTime signedDate;
     
     private String signedBy;
         
@@ -64,11 +65,11 @@ public class IntygItem {
         this.statuses = status;
     }
 
-    public LocalDate getSignedDate() {
+    public LocalDateTime getSignedDate() {
         return signedDate;
     }
 
-    public void setSignedDate(LocalDate signedDate) {
+    public void setSignedDate(LocalDateTime signedDate) {
         this.signedDate = signedDate;
     }
 

@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ListCertificatesForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1"
-                                 xmlns="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:1"
-                                 xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:1">
+<ListCertificatesForCareResponse
+  xmlns="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareResponder:1"
+  xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:1">
   <meta>
-    <c:certificateId>1</c:certificateId>
-    <c:certificateType>fk7263</c:certificateType>
-    <c:validFrom>2012-01-01</c:validFrom>
-    <c:validTo>2012-02-02</c:validTo>
-    <c:issuerName>Dr. Who</c:issuerName>
-    <c:facilityName>Enhet 1</c:facilityName>
-    <c:signDate>2012-01-01</c:signDate>
-    <c:available>false</c:available>
-    <c:status>
-      <c:target>FK</c:target>
-      <c:type>SENT</c:type>
-      <c:timestamp>2012-01-01T10:00:00</c:timestamp>
-    </c:status>
+    <ns3:certificateId>1</ns3:certificateId>
+    <ns3:certificateType>fk7263</ns3:certificateType>
+    <ns3:validFrom>2012-01-01</ns3:validFrom>
+    <ns3:validTo>2012-02-02</ns3:validTo>
+    <ns3:issuerName>Dr. Who</ns3:issuerName>
+    <ns3:facilityName>Enhet 1</ns3:facilityName>
+    <ns3:signDate>2012-01-01</ns3:signDate>
+    <ns3:available>false</ns3:available>
+    <ns3:status>
+      <ns3:target>FK</ns3:target>
+      <ns3:type>SENT</ns3:type>
+      <ns3:timestamp>2012-01-01T10:00:00</ns3:timestamp>
+    </ns3:status>
   </meta>
   <meta>
-    <c:certificateId>2</c:certificateId>
-    <c:certificateType>fk7263</c:certificateType>
-    <c:validFrom>2012-01-01</c:validFrom>
-    <c:validTo>2012-02-02</c:validTo>
-    <c:issuerName>Dr. Who</c:issuerName>
-    <c:facilityName>Enhet 1</c:facilityName>
-    <c:signDate>2012-01-01</c:signDate>
-    <c:available>false</c:available>
-    <c:status>
-      <c:target>FK</c:target>
-      <c:type>SENT</c:type>
-      <c:timestamp>2012-01-01T10:00:00</c:timestamp>
-    </c:status>
+    <ns3:certificateId>2</ns3:certificateId>
+    <ns3:certificateType>fk7263</ns3:certificateType>
+    <ns3:validFrom>2012-01-01</ns3:validFrom>
+    <ns3:validTo>2012-02-02</ns3:validTo>
+    <ns3:issuerName>Dr. Who</ns3:issuerName>
+    <ns3:facilityName>Enhet 1</ns3:facilityName>
+    <ns3:signDate>2012-01-01</ns3:signDate>
+    <ns3:available>false</ns3:available>
+    <ns3:status>
+      <ns3:target>FK</ns3:target>
+      <ns3:type>SENT</ns3:type>
+      <ns3:timestamp>2012-01-01T10:00:00</ns3:timestamp>
+    </ns3:status>
   </meta>
   <result>
     <ns3:resultCode>OK</ns3:resultCode>
