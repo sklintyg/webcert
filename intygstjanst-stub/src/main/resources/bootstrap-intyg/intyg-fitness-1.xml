@@ -2,19 +2,19 @@
 <gc:GetCertificateForCareResponse xmlns:c="urn:riv:insuranceprocess:certificate:1" xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareResponder:1"
   xmlns="urn:riv:clinicalprocess:healthcond:certificate:1" xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
   <gc:meta>
-    <c:certificateId>intyg-fit-1</c:certificateId>
-    <c:certificateType>fk7263</c:certificateType>
-    <c:validFrom>2013-01-01</c:validFrom>
-    <c:validTo>2013-03-15</c:validTo>
-    <c:issuerName>En Läkare</c:issuerName>
-    <c:facilityName>Kir mott</c:facilityName>
-    <c:signDate>2013-01-01</c:signDate>
-    <c:available>true</c:available>
-    <c:status>
-      <c:target>FK</c:target>
-      <c:type>SENT</c:type>
-      <c:timestamp>2011-01-28T00:00:00</c:timestamp>
-    </c:status>
+    <certificateId>intyg-fit-1</certificateId>
+    <certificateType>fk7263</certificateType>
+    <validFrom>2013-01-01</validFrom>
+    <validTo>2013-03-15</validTo>
+    <issuerName>En Läkare</issuerName>
+    <facilityName>Kir mott</facilityName>
+    <signDate>2013-01-01</signDate>
+    <available>true</available>
+    <status>
+      <target>FK</target>
+      <type>SENT</type>
+      <timestamp>2011-01-28T00:00:00</timestamp>
+    </status>
   </gc:meta>
   <gc:certificate>
     <utlatande-id root="intyg-fit-1" />

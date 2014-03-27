@@ -3,29 +3,29 @@
   xmlns="urn:riv:clinicalprocess:healthcond:certificate:1" xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
 
   <gc:meta>
-    <c:certificateId>intyg-4-revoked</c:certificateId>
-    <c:certificateType>fk7263</c:certificateType>
-    <c:validFrom>2013-01-01</c:validFrom>
-    <c:validTo>2013-03-15</c:validTo>
-    <c:issuerName>Ewa Revoker</c:issuerName>
-    <c:facilityName>Kir mott</c:facilityName>
-    <c:signDate>2013-01-01</c:signDate>
-    <c:available>false</c:available>
-    <c:status>
-      <c:target>MI</c:target>
-      <c:type>RECEIVED</c:type>
-      <c:timestamp>2011-01-26T00:00:00</c:timestamp>
-    </c:status>
-    <c:status>
-      <c:target>FK</c:target>
-      <c:type>SENT</c:type>
-      <c:timestamp>2011-01-28T00:00:00</c:timestamp>
-    </c:status>
-    <c:status>
-      <c:target>WC</c:target>
-      <c:type>CANCELLED</c:type>
-      <c:timestamp>2011-01-27T14:02:49</c:timestamp>
-    </c:status>
+    <certificateId>intyg-4-revoked</certificateId>
+    <certificateType>fk7263</certificateType>
+    <validFrom>2013-01-01</validFrom>
+    <validTo>2013-03-15</validTo>
+    <issuerName>Ewa Revoker</issuerName>
+    <facilityName>Kir mott</facilityName>
+    <signDate>2013-01-01</signDate>
+    <available>false</available>
+    <status>
+      <target>MI</target>
+      <type>RECEIVED</type>
+      <timestamp>2011-01-26T00:00:00</timestamp>
+    </status>
+    <status>
+      <target>FK</target>
+      <type>SENT</type>
+      <timestamp>2011-01-28T00:00:00</timestamp>
+    </status>
+    <status>
+      <target>WC</target>
+      <type>CANCELLED</type>
+      <timestamp>2011-01-27T14:02:49</timestamp>
+    </status>
   </gc:meta>
   <gc:certificate>
     <utlatande-id root="intyg-4-revoked"/>
