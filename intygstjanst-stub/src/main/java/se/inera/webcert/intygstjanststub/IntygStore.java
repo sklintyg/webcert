@@ -3,15 +3,15 @@ package se.inera.webcert.intygstjanststub;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
 /**

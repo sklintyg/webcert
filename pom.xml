@@ -43,7 +43,7 @@
     <cxf.version>2.7.4</cxf.version>
     <slf4j.version>1.6.4</slf4j.version>
     <logback.version>1.0.0</logback.version>
-    <inera.certificate.version>1.2-RC1</inera.certificate.version>
+    <inera.certificate.version>1.2-RC2-SNAPSHOT</inera.certificate.version>
     <inera.certificate.proxy.version>1.2-RC1</inera.certificate.proxy.version>
     <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
     <aspectj.version>1.7.1</aspectj.version>

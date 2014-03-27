@@ -4,14 +4,14 @@ xmlns:gc="urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCareRe
 xmlns="urn:riv:clinicalprocess:healthcond:certificate:1"
 xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
   <gc:meta>
-    <c:certificateId>intyg-3</c:certificateId>
-    <c:certificateType>fk7263</c:certificateType>
-    <c:validFrom>2013-01-01</c:validFrom>
-    <c:validTo>2013-03-15</c:validTo>
-    <c:issuerName>En LÃ¤kare</c:issuerName>
-    <c:facilityName>Kir mott</c:facilityName>
-    <c:signDate>2013-01-01</c:signDate>
-    <c:available>true</c:available>
+    <certificateId>intyg-3</certificateId>
+    <certificateType>fk7263</certificateType>
+    <validFrom>2013-01-01</validFrom>
+    <validTo>2013-03-15</validTo>
+    <issuerName>En Läkare</issuerName>
+    <facilityName>Kir mott</facilityName>
+    <signDate>2013-01-01</signDate>
+    <available>true</available>
   </gc:meta>
   <gc:certificate>
     <utlatande-id root="intyg-3" />
@@ -39,7 +39,7 @@ xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
 
     <skapadAv>
       <personal-id root="1.2.752.129.2.1.4.1" extension="Personal HSA-ID" />
-      <fullstandigtNamn>En LÃ¤kare</fullstandigtNamn>
+      <fullstandigtNamn>En Läkare</fullstandigtNamn>
       <enhet>
         <enhets-id root="1.2.752.129.2.1.4.1" extension="dialys" />
         <arbetsplatskod root="1.2.752.29.4.71" extension="123456789011" />

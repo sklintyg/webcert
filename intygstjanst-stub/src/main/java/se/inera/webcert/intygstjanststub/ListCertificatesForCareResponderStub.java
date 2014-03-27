@@ -1,11 +1,13 @@
 package se.inera.webcert.intygstjanststub;
 
-import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-import se.inera.ifv.insuranceprocess.certificate.v1.CertificateMetaType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
+
+import com.google.common.collect.Lists;
 
 /**
  * @author andreaskaltenbach
