@@ -13,7 +13,8 @@ require.config({
         text : '../web/webjars/requirejs-text/2.0.10/text',
 
         'ts-bas' : '../web/webjars/ts-bas',
-       	'ts-diabetes' : '../web/webjars/ts-diabetes'
+       	'ts-diabetes' : '../web/webjars/ts-diabetes',
+       	'fk7263' : '../web/webjars/fk7263'
         	
     },
     shim : {
