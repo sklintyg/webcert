@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -118,7 +119,11 @@ public class HsaOrganizationsServiceTest {
     }
 
     private void addMedarbetaruppdrag(String hsaId, List<String> enhetIds) {
-        serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(hsaId, enhetIds));
+        List<Medarbetaruppdrag.Uppdrag> uppdrag = new ArrayList<>();
+        for (String enhet : enhetIds) {
+            uppdrag.add(new Medarbetaruppdrag.Uppdrag(enhet));
+        }
+        serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(hsaId, uppdrag));
     }
 
     private void addVardgivare(String file) throws IOException {
@@ -175,7 +180,7 @@ public class HsaOrganizationsServiceTest {
     public void testUppdragFiltering() {
 
         // user has a different medarbetaruppdrag ändamål 'Animatör' in one enhet
-        serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(PERSON_HSA_ID, asList("centrum-ost"), "Animatör"));
+        serviceStub.getMedarbetaruppdrag().add(new Medarbetaruppdrag(PERSON_HSA_ID, asList(new Medarbetaruppdrag.Uppdrag("centrum-ost", "Animatör"))));
 
         List<Vardgivare> vardgivareList = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
 

@@ -1,4 +1,17 @@
 {
     "hsaId": "staffan",
-    "enhetIds":["centrum-vast","linkoping","norrkoping","motala"]
+    "uppdrag":[
+    	{
+    		"enhet": "centrum-vast"
+    	},
+    	{
+    		"enhet": "linkoping"
+    	},
+    	{
+    		"enhet": "norrkoping"
+    	},
+    	{
+    		"enhet": "motala"
+    	}
+    ]
 }

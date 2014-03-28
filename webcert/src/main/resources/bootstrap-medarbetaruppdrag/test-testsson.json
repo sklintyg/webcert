@@ -1,4 +1,8 @@
 {
     "hsaId": "fitness1",
-    "enhetIds":["vardenhet-fit-1"]
+    "uppdrag":[
+    	{
+    		"enhet": "vardenhet-fit-1"
+    	}
+    ]
 }

@@ -55,7 +55,7 @@
                 "lakare": true
             },
 
-            // Läkare, Statistik Webcert Enhet 1 (Webcert Vårdgivare 1) (Kan inte logga in)
+            // Läkare, Vård och Behandling Webcert Enhet 1 (Webcert Vårdgivare 1)
             {
                 "fornamn": "Åsa",
                 "efternamn": "Andersson",
@@ -69,11 +69,11 @@
                 "fornamn": "Åsa",
                 "efternamn": "Andersson",
                 "hsaId": "IFV1239877878-104B",
-                "enhetId": "IFV1239877878-1046",
+                "enhetId": "IFV1239877878-1045",
                 "lakare": true
             },
 
-            // Läkare, Vård och Behandling Webcert Enhet 3 (Webcert Vårdgivare 2)
+            // Läkare, Statistik Webcert Enhet 3 (Webcert Vårdgivare 2) (Kan inte logga in)
             {
                 "fornamn": "Åsa",
                 "efternamn": "Andersson",
@@ -87,7 +87,7 @@
                 "fornamn": "Lars",
                 "efternamn": "Andersson",
                 "hsaId": "IFV1239877878-104K",
-                "enhetId": "IFV1239877878-1046",
+                "enhetId": "IFV1239877878-1045",
                 "lakare": true
             },
 
@@ -114,7 +114,7 @@
                 "fornamn": "Anders",
                 "efternamn": "Larsson",
                 "hsaId": "IFV1239877878-104M",
-                "enhetId": "IFV1239877878-1046",
+                "enhetId": "IFV1239877878-1045",
                 "lakare": true
             },
 
@@ -123,7 +123,7 @@
                 "fornamn": "Lena",
                 "efternamn": "Karlsson",
                 "hsaId": "IFV1239877878-104N",
-                "enhetId": "IFV1239877878-1046",
+                "enhetId": "IFV1239877878-1045",
                 "lakare": false
             },
 

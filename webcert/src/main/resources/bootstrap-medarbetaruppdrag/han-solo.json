@@ -1,4 +1,8 @@
 {
     "hsaId": "hansolo",
-    "enhetIds":["centrum-norr"]
+    "uppdrag":[
+    	{
+    		"enhet": "centrum-norr"
+    	}
+    ]
 }

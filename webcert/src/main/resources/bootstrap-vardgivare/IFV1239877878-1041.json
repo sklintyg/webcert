@@ -1,0 +1,10 @@
+{
+    "id" : "IFV1239877878-1041",
+    "namn" : "Vårdgivare 1",
+    "vardenheter" : [
+        {
+            "id" : "IFV1239877878-1042",
+            "namn" : "Enhet 1"
+        }
+    ]
+}

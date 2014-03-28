@@ -1,4 +1,8 @@
 {
     "hsaId": "adam",
-    "enhetIds":["centrum-vast"]
+    "uppdrag":[
+    	{
+    		"enhet": "centrum-vast"
+    	}
+    ]
 }

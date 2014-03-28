@@ -1,5 +1,7 @@
 package se.inera.webcert.hsa.stub;
 
+import static java.util.Arrays.asList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,21 +12,15 @@ public class Medarbetaruppdrag {
     public static final String VARD_OCH_BEHANDLING = "Vård och behandling";
 
     private String hsaId;
-    private List<String> enhetIds;
+    private List<Uppdrag> uppdrag;
 
-    private String andamal = VARD_OCH_BEHANDLING;
 
     public Medarbetaruppdrag() {
     }
 
-    public Medarbetaruppdrag(String hsaId, List<String> enhetIds) {
-        this(hsaId, enhetIds, VARD_OCH_BEHANDLING);
-    }
-
-    public Medarbetaruppdrag(String hsaId, List<String> enhetIds, String andamal) {
+    public Medarbetaruppdrag(String hsaId, List<Uppdrag> uppdrag) {
         this.hsaId = hsaId;
-        this.enhetIds = enhetIds;
-        this.andamal = andamal;
+        this.uppdrag = uppdrag;
     }
 
     public String getHsaId() {
@@ -35,19 +31,43 @@ public class Medarbetaruppdrag {
         this.hsaId = hsaId;
     }
 
-    public List<String> getEnhetIds() {
-        return enhetIds;
+    public List<Uppdrag> getUppdrag() {
+        return uppdrag;
     }
 
-    public void setEnhetIds(List<String> enhetIds) {
-        this.enhetIds = enhetIds;
+    public void setUppdrag(List<Uppdrag> uppdrag) {
+        this.uppdrag = uppdrag;
     }
 
-    public String getAndamal() {
-        return andamal;
-    }
-
-    public void setAndamal(String andamal) {
-        this.andamal = andamal;
+    public static class Uppdrag {
+        private String enhet;
+        private List<String> andamal;
+        public Uppdrag() {
+            enhet = "";
+            andamal = asList(VARD_OCH_BEHANDLING);
+        }
+        public Uppdrag(String enhet) {
+            this(enhet, VARD_OCH_BEHANDLING);
+        }
+        public Uppdrag(String enhet, String andamal) {
+            this.enhet = enhet;
+            this.andamal = asList(andamal);
+        }
+        public Uppdrag(String enhet, List<String> andamal) {
+            this.enhet = enhet;
+            this.andamal = andamal;
+        }
+        public String getEnhet() {
+            return enhet;
+        }
+        public void setEnhet(String enhet) {
+            this.enhet = enhet;
+        }
+        public List<String> getAndamal() {
+            return andamal;
+        }
+        public void setAndamal(List<String> andamal) {
+            this.andamal = andamal;
+        }
     }
 }

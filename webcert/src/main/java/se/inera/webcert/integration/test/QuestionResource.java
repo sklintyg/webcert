@@ -1,5 +1,9 @@
 package se.inera.webcert.integration.test;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -11,7 +15,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
@@ -21,6 +29,17 @@ import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
  */
 @Transactional
 public class QuestionResource {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    private TransactionTemplate transactionTemplate;
+    
+    @Autowired
+    public void setTxManager(PlatformTransactionManager txManager) {
+        this.transactionTemplate = new TransactionTemplate(txManager); 
+    }
+
 
     @Autowired
     private FragaSvarRepository fragasvarRepository;
@@ -68,7 +87,15 @@ public class QuestionResource {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAllQuestions() {
-        fragasvarRepository.deleteAllInBatch();
-        return Response.ok().build();
+        return transactionTemplate.execute(new TransactionCallback<Response>() {
+            public Response doInTransaction(TransactionStatus status) {
+                @SuppressWarnings("unchecked")
+                List<FragaSvar> fragorOchSvar = entityManager.createQuery("SELECT f FROM FragaSvar f").getResultList();
+                for (FragaSvar fragaSvar : fragorOchSvar) {
+                    entityManager.remove(fragaSvar);
+                }
+                return Response.ok().build();
+            }
+        });
     }
 }
