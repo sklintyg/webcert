@@ -7,18 +7,6 @@
           http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <jdbc:initialize-database data-source="batchDataSource" ignore-failures="ALL">
-  <jdbc:script
-        location="classpath:/org/springframework/batch/core/schema-h2.sql" />
-  </jdbc:initialize-database>
-
-  <bean id="batchDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-    <property name="driverClassName" value="org.h2.Driver" />
-    <property name="url" value="jdbc:h2:file:${mc2wc-batch.database.path}" />
-    <property name="username" value="sa" />
-    <property name="password" value="" />
-  </bean>
-
   <bean id="executor" class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
 
   <batch:job-repository id="migrationJobRepository"
@@ -48,5 +36,28 @@
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
     <property name="dataSource" ref="batchDataSource" />
   </bean>
+
+  <beans profile="dev">
+    <jdbc:initialize-database data-source="batchDataSource" ignore-failures="ALL">
+      <jdbc:script
+          location="classpath:/org/springframework/batch/core/schema-h2.sql" />
+    </jdbc:initialize-database>
+
+    <jdbc:embedded-database id="batchDataSource" type="H2" />
+  </beans>
+
+  <beans profile="!dev">
+    <jdbc:initialize-database data-source="batchDataSource" ignore-failures="ALL">
+      <jdbc:script
+          location="classpath:/org/springframework/batch/core/schema-h2.sql" />
+    </jdbc:initialize-database>
+
+    <bean id="batchDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+      <property name="driverClassName" value="org.h2.Driver" />
+      <property name="url" value="jdbc:h2:file:${mc2wc-batch.database.path}" />
+      <property name="username" value="sa" />
+      <property name="password" value="" />
+    </bean>
+  </beans>
 
 </beans>

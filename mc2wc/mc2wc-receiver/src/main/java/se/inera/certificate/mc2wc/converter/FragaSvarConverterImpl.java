@@ -9,9 +9,6 @@ import java.util.Set;
 
 public class FragaSvarConverterImpl implements FragaSvarConverter {
 
-    public FragaSvarConverterImpl() {
-    }
-
     @Override
     public FragaSvar toFragaSvar(QuestionType qa) {
 

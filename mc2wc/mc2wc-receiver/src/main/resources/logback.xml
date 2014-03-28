@@ -8,7 +8,26 @@
     </layout>
   </appender>
 
-  <logger name="se.inera.certificate.migration" level="INFO" />
+  <appender name="FILE"
+            class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <File>${catalina.base}/logs/mc2wc-receiver.log</File>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <FileNamePattern>${catalina.base}/logs/mc2wc-receiver.%d{yyyy-MM-dd}.log
+      </FileNamePattern>
+    </rollingPolicy>
+
+    <encoder>
+      <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+      </Pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.springframework.core.env.PropertySourcesPropertyResolver"
+          level="WARN" />
+
+  <logger name="se.inera.certificate.mc2wc" level="INFO">
+    <appender-ref ref="FILE" />
+  </logger>
 
   <root level="WARN">
     <appender-ref ref="STDOUT" />

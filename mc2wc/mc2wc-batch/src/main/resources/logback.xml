@@ -8,8 +8,14 @@
     </layout>
   </appender>
 
-  <appender name="FILEOUT" class="ch.qos.logback.core.FileAppender">
-    <file>${catalina.base}/logs/mc2wc-batch.log</file>
+  <appender name="FILE"
+            class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <File>${catalina.base}/logs/mc2wc-batch.log</File>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <FileNamePattern>${catalina.base}/logs/mc2wc-batch.%d{yyyy-MM-dd}.log
+      </FileNamePattern>
+    </rollingPolicy>
+
     <encoder>
       <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
       </Pattern>
@@ -22,7 +28,7 @@
   <logger name="org.apache.cxf" level="ERROR" />
 
   <logger name="se.inera.certificate.mc2wc" level="INFO">
-    <appender-ref ref="FILEOUT" />
+    <appender-ref ref="FILE" />
   </logger>
 
   <root level="INFO">
