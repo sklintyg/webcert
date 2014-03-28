@@ -64,7 +64,7 @@ public final class IntygDraftsConverter {
         ListIntygEntry intygEntry;
         
         for (Intyg cert : draftIntygList) {
-            intygEntry = convert(cert);
+            intygEntry = convertIntygToListIntygEntry(cert);
             allIntyg.add(intygEntry);
         }
         
@@ -89,13 +89,13 @@ public final class IntygDraftsConverter {
         ListIntygEntry intygEntry;
 
         for (Intyg intyg : draftIntygList) {
-            intygEntry = convert(intyg);
+            intygEntry = convertIntygToListIntygEntry(intyg);
             allIntyg.add(intygEntry);
         }
 
     }
 
-    private static ListIntygEntry convert(Intyg intyg) {
+    public static ListIntygEntry convertIntygToListIntygEntry(Intyg intyg) {
 
         ListIntygEntry ie = new ListIntygEntry();
 

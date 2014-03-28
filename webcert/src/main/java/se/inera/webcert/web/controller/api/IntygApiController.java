@@ -293,6 +293,8 @@ public class IntygApiController extends AbstractApiController {
         
         LOG.debug("Set forward to {} on intyg '{}'", updatedIntyg.getVidarebefordrad(), updatedIntyg.getIntygsId());
         
-        return Response.ok().build();
+        ListIntygEntry intygEntry = IntygDraftsConverter.convertIntygToListIntygEntry(updatedIntyg);
+        
+        return Response.ok(intygEntry).build();
     }
 }
