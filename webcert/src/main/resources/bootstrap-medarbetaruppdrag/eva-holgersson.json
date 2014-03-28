@@ -3,6 +3,9 @@
     "uppdrag":[
     	{
     		"enhet": "centrum-vast"
+    	},
+    	{
+    		"enhet": "linkoping"
     	}
     ]
 }
