@@ -6,7 +6,7 @@ define([
 ], function () {
     'use strict';
 
-    return ['$http', '$log', function ($http, $log) {
+    return ['$http', '$log', '$window', '$modal', function ($http, $log, $window, $modal) {
 
         /*
          * Load unsigned certificate list for valdVardenhet
@@ -64,7 +64,7 @@ define([
          */
         function _setForwardedState(id, isForwarded, callback) {
             $log.debug("_setForwardedState");
-            var restPath = '/moduleapi/fragasvar/' + id + "/setDispatchState";
+            var restPath = '/api/intyg/forward/' + id;
             $http.put(restPath, isForwarded.toString()).success(function (data) {
                 $log.debug("_setForwardedState data:" + data);
                 callback(data);
@@ -75,12 +75,12 @@ define([
             });
         }
 
-        function _buildMailToLink(qa) {
+        function _buildMailToLink(cert) {
             var baseURL = $window.location.protocol + "//" + $window.location.hostname + ($window.location.port ? ':' + $window.location.port : '');
-            var url = baseURL + "/m/fk7263/webcert/intyg/" + qa.intygsReferens.intygsId + "#/view";
+            var url = baseURL + "/web/dashboard#/"+ cert.intygType + "/edit/" + cert.intygId;
             var recipient = "";
-            var subject = "Du har blivit tilldelad ett Fråga&Svar ärende i Webcert";
-            var body = "Klicka länken för att gå till ärendet:\n" + url;
+            var subject = "Du har blivit tilldelad ett ej signerat intyg i Webcert";
+            var body = "Klicka länken för att gå till intyget:\n" + url;
             var link = "mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
             $log.debug(link);
             return link;
