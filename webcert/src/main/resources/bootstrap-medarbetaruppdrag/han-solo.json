@@ -2,5 +2,9 @@
     "hsaId": "hansolo",
 	"forNamn": "Han",
 	"efterNamn": "Solo",
-    "enhetIds":["centrum-norr"]
+    "uppdrag":[
+    	{
+    		"enhet": "centrum-norr"
+    	}
+    ]
 }

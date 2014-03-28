@@ -52,8 +52,10 @@ public class BootstrapBean {
     }
 
     private void addMedarbetaruppdrag(Resource res) throws IOException {
+        LOG.debug("Loading medarbetaruppdrag from " + res.getFilename());
         Medarbetaruppdrag medarbetaruppdrag = objectMapper.readValue(res.getFile(), Medarbetaruppdrag.class);
         hsaServiceStub.getMedarbetaruppdrag().add(medarbetaruppdrag);
+        LOG.debug("Loaded medarbetaruppdrag for " + medarbetaruppdrag.getHsaId());
     }
     
     private void addPerson(Resource res) throws IOException {
@@ -64,5 +66,6 @@ public class BootstrapBean {
     private void addVardgivare(Resource res) throws IOException {
         Vardgivare vardgivare = objectMapper.readValue(res.getFile(), Vardgivare.class);
         hsaServiceStub.getVardgivare().add(vardgivare);
+        LOG.debug("Loaded vardgivare " + vardgivare.getId());
     }
 }

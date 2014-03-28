@@ -9,5 +9,18 @@
 		"kod": "200",
 		"namn": "Ortopedi"
 	}],
-    "enhetIds":["centrum-vast","linkoping","norrkoping","motala"]
+    "uppdrag":[
+    	{
+    		"enhet": "centrum-vast"
+    	},
+    	{
+    		"enhet": "linkoping"
+    	},
+    	{
+    		"enhet": "norrkoping"
+    	},
+    	{
+    		"enhet": "motala"
+    	}
+    ]
 }

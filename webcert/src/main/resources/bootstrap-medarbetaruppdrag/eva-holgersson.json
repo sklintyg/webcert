@@ -9,5 +9,9 @@
 		"kod": "200",
 		"namn": "Ortopedi"
 	}],
-    "enhetIds":["centrum-vast"]
+    "uppdrag":[
+    	{
+    		"enhet": "centrum-vast"
+    	}
+    ]
 }

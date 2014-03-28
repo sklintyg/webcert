@@ -2,5 +2,9 @@
     "hsaId": "adam",
     "forNamn": "Adam",
 	"efterNamn": "Admin",
-    "enhetIds":["centrum-vast"]
+    "uppdrag":[
+    	{
+    		"enhet": "centrum-vast"
+    	}
+    ]
 }

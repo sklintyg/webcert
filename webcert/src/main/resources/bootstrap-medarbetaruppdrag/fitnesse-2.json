@@ -2,5 +2,9 @@
     "hsaId": "fitness2",
 	"forNamn": "Fit",
 	"efterNamn": "Nesse",
-    "enhetIds":["vardenhet-fit-2"]
+    "uppdrag":[
+    	{
+    		"enhet": "vardenhet-fit-2"
+    	}
+    ]
 }

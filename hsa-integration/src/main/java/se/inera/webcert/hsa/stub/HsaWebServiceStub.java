@@ -105,15 +105,19 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
 
         for (Vardgivare vardgivare : hsaService.getVardgivare()) {
             for (Vardenhet enhet : vardgivare.getVardenheter()) {
-                if (medarbetaruppdrag.getEnhetIds().contains(enhet.getId())) {
-                    MiuInformationType miuInfo = new MiuInformationType();
-                    miuInfo.setHsaIdentity(medarbetaruppdrag.getHsaId());
-                    miuInfo.setMiuPurpose(medarbetaruppdrag.getAndamal());
-                    miuInfo.setCareUnitHsaIdentity(enhet.getId());
-                    miuInfo.setCareUnitName(enhet.getNamn());
-                    miuInfo.setCareGiver(vardgivare.getId());
-                    miuInfo.setCareGiverName(vardgivare.getNamn());
-                    informationTypes.add(miuInfo);
+                for (Medarbetaruppdrag.Uppdrag uppdrag : medarbetaruppdrag.getUppdrag()) {
+                    if (uppdrag.getEnhet().equals(enhet.getId())) {
+                        for (String andamal : uppdrag.getAndamal()) {
+                            MiuInformationType miuInfo = new MiuInformationType();
+                            miuInfo.setHsaIdentity(medarbetaruppdrag.getHsaId());
+                            miuInfo.setMiuPurpose(andamal);
+                            miuInfo.setCareUnitHsaIdentity(enhet.getId());
+                            miuInfo.setCareUnitName(enhet.getNamn());
+                            miuInfo.setCareGiver(vardgivare.getId());
+                            miuInfo.setCareGiverName(vardgivare.getNamn());
+                            informationTypes.add(miuInfo);
+                        }
+                    }
                 }
             }
         }

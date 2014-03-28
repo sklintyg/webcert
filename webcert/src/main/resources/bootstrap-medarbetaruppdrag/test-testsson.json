@@ -9,5 +9,9 @@
 		"kod": "200",
 		"namn": "Ortopedi"
 	}],
-    "enhetIds":["vardenhet-fit-1"]
+    "uppdrag":[
+    	{
+    		"enhet": "vardenhet-fit-1"
+    	}
+    ]
 }

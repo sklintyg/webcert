@@ -1,0 +1,24 @@
+{
+    "id" : "IFV1239877878-1043",
+    "namn" : "Vårdgivare 2",
+    "vardenheter" : [
+        {
+            "id" : "IFV1239877878-1045",
+            "namn" : "Enhet 2",
+            "mottagningar" : [
+                {
+                    "id" : "IFV1239877878-1046",
+                    "namn" : "Underenhet1"
+                },
+                {
+                    "id" : "IFV1239877878-104C",
+                    "namn" : "Underenhet2"
+                }
+            ]
+        },
+        {
+            "id" : "IFV1239877878-104D",
+            "namn" : "Enhet 3"
+        }
+    ]
+}
