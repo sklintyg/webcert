@@ -74,7 +74,7 @@ public class WebCertUserDetailsServiceTest {
         assertEquals(vardgivare, webCertUser.getValdVardgivare());        
         
         assertNotNull(webCertUser.getValdVardenhet());
-        assertEquals("IFV1239877878-103P", webCertUser.getValdVardenhet().getId());
+        assertEquals(ENHET_HSA_ID, webCertUser.getValdVardenhet().getId());
 
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
     }
@@ -82,7 +82,7 @@ public class WebCertUserDetailsServiceTest {
     private void setupHsaOrganizationService() {
         vardgivare = new Vardgivare("vg", "Landstinget Ingenmansland");
         vardgivare.getVardenheter().add(new Vardenhet("vardcentralen", "Vårdcentralen"));
-        vardgivare.getVardenheter().add(new Vardenhet("IFV1239877878-103P", "TestVårdEnhet2A VårdEnhet2A"));
+        vardgivare.getVardenheter().add(new Vardenhet(ENHET_HSA_ID, "TestVårdEnhet2A VårdEnhet2A"));
                
         List<Vardgivare> vardgivareList = Collections.singletonList(vardgivare);
 
