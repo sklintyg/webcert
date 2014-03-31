@@ -4,7 +4,8 @@
     "vardenheter" : [
         {
             "id" : "IFV1239877878-1042",
-            "namn" : "Enhet 1"
+            "namn" : "Enhet 1",
+            "mail" : "enhet1@webcert.invalid.se"
         }
     ]
 }

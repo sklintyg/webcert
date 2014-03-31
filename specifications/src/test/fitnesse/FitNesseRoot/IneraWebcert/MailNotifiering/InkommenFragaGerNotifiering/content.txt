@@ -4,23 +4,21 @@
 |personnr|utfärdat|giltigtFrån|giltigtTill|utfärdarId|enhetsId|typ|id|mall|
 |19121212-1212|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|fitnesse-intyg-1|M|
 
-!3 Och det finns ingen fråga med extern referens 'FK-1234'.
-|Fragor och svar|
-|externReferens|finns?|
-|FK-1234|false|
-
-!3 Om Försäkringskassan skickar en ny fråga
+!3 Om Försäkringskassan skickar en fråga
 
 |Fk skickar fraga|
 |amne|externReferens|frageText|intygsId|vardpersonal|vardenhet|resultat?|
 |OVRIGT|FK-1234|Fungerar detta?|fitnesse-intyg-1|IFV1239877878-104B|IFV1239877878-1042|OK|
 
-!3 så ska det finnas en fråga med extern referens 'FK-1234' från Försäkringskassan som behöver svaras på
-|Fragor och svar|
-|externReferens|finns?|fraga?|internId?|
-|FK-1234|true|Fungerar detta?|$id=|
 
-!3 Ta bort test-intyg, frågor och mail
+!3 så ska ett mejl ha skickats till enheten
+
+|Mail|
+|mottagare?|amne?|innehall?|
+|!-[enhet1@webcert.invalid.se]-!|!-Inkommen fråga från Försäkringskassan-!|=~/Försäkringskassan har skickat en ny fråga till Enhet 1/|
+
+
+!3 Ta bort intyg, frågor och mail
 
 |ta bort Intyg|
 |id|
