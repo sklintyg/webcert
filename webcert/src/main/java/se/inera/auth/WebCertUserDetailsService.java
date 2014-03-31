@@ -80,7 +80,8 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     private void setDefaultSelectedVardenhetOnUser(WebCertUser user, SakerhetstjanstAssertion assertion) {
         
-        String medarbetaruppdragHsaId = assertion.getMedarbetaruppdragHsaId();
+        // Get HSA id for the selected MIU
+        String medarbetaruppdragHsaId = assertion.getEnhetHsaId();
         
         boolean changeSuccess = false;
         
