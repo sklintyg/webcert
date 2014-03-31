@@ -1,39 +1,44 @@
 {
 	
-	"fragaSvarValdEnhet" : "2",
-	"fragaSvarAndraEnheter" : "14",
+	"fragaSvarValdEnhet" : "8",
+	"fragaSvarAndraEnheter" : "3",
 	"vardgivare" : [{
 		"namn" : "Vardgivaren",
 		"id" : "VG1",
 		"vardenheter" : [{
-			"namn" : "Vardenhet 1",
+			"namn" : "Vardenhet1",
 			"id" : "VE1",
 			"fragaSvar" : "2",
 			"intyg" : "0"	
 		},{
-			"namn" : "Vardenhet 1 - Mottagning 11",
+			"namn" : "Vardenhet1 - Mottagning1",
 			"id" : "VE1M1",
 			"fragaSvar" : "3",
 			"intyg" : "0"
 		},{
-			"namn" : "Vardenhet 1 - Mottagning 12",
+			"namn" : "Vardenhet1 - Mottagning2",
 			"id" : "VE1M2",
 			"fragaSvar" : "3",
 			"intyg" : "0"
 		},{
-			"namn" : "Vardenhet 2",
+			"namn" : "Vardenhet2",
 			"id" : "VE2",
 			"fragaSvar" : "2",
 			"intyg" : "0"
 		},{
-			"namn" : "Vardenhet 2 - Mottagning 21",
+			"namn" : "Vardenhet2 - Mottagning3",
 			"id" : "VE2M1",
-			"fragaSvar" : "2",
+			"fragaSvar" : "0",
 			"intyg" : "0"
 		},{
-			"namn" : "Vardenhet 2 - Mottagning 22",
-			"id" : "VE2M2",
-			"fragaSvar" : "4",
+			"namn" : "Vardenhet3",
+			"id" : "VE3",
+			"fragaSvar" : "1",
+			"intyg" : "0"
+		},{
+			"namn" : "Vardenhet4",
+			"id" : "VE4",
+			"fragaSvar" : "0",
 			"intyg" : "0"
 		}]
 	}]
