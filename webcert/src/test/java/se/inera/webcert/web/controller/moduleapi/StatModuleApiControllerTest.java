@@ -3,8 +3,6 @@ package se.inera.webcert.web.controller.moduleapi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyListOf;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.CoreMatchers.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
