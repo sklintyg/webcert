@@ -106,7 +106,7 @@ common.directive("wcHeader", ['$rootScope', '$location', '$modal', '$window', '$
                     return "/logout";
                 }
                 else {
-                    return "/saml/logout";
+                    return "/saml/logout/";
                 }
             }
 
