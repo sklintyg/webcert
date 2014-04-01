@@ -4,16 +4,18 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | internReferens? |
-| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1 | eva | Eva Holgersson | vardenhet-fit-1 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
-| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-2 | eva | Eva Holgersson | vardenhet-fit-2 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens2= |
+| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1 | eva | Eva Holgersson | IFV1239877878-1045 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
+| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-2 | eva | Eva Holgersson | IFV1239877878-1046 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens2= |
 
 !3 Givet att man loggar in som en användare med medarbetaruppdrag på endast en enhet, verifiera att enhetsväljaren ej visas
 
 | script | !-SvaraOchFraga-! |
-| logga in som | fitnesse-admin1 |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | ohanterade fragor sidan visas |
 | enhetsvaljare visas |
-| valj vardenhet | vardenhet-fit-1 |
+| valj vardenhet | IFV1239877878-1045 |
+| lista med ohanterade fragor visas |
+| valj vardenhet | IFV1239877878-1046 |
 | lista med ohanterade fragor visas |
 
 !3 Ta bort frågor

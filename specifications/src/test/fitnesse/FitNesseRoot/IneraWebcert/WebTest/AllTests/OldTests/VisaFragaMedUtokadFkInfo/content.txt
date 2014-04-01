@@ -2,21 +2,20 @@
 
 #| Intyg |
 #| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhet | typ | id | mall |
-#| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | läkare1 |vardenhet-fit-1| FK7263 |intyg-fit-1| M |
+#| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | läkare1 |IFV1239877878-1042| FK7263 |intyg-fit-1| M |
  
 !3 Lägg till en Fråga:
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | patientId | beskrivning | meddelandeRubrik | fkKontakt | internReferens? |
-| OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-1| eva | Eva Holgersson |vardenhet-fit-1| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | FK Rubrik | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens1= |
+| OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-1| eva | Eva Holgersson |IFV1239877878-1042| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | FK Rubrik | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens1= |
 
 
 !3 Givet att det finns en fråga visa denna.
 
 |script|!-SvaraOchFraga-!|
-|logga in som|fitnesse-admin1|
+|logga in som|IFV1239877878-104B_IFV1239877878-1042|
 |ohanterade fragor sidan visas|
-|valj vardenhet|vardenhet-fit-1|
 |lista med ohanterade fragor visas|
 |visa fraga|$internReferens1|
 |intyg med fraga svar sidan visas|

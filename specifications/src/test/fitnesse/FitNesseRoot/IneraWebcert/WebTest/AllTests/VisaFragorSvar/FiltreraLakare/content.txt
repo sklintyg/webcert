@@ -4,44 +4,40 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
-| OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-1| adam | Adam Adamsson |vardenhet-fit-1| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
-| OVRIGT | FIT-QA-1001 | FK | En andra fråga |intyg-fit-1| carl| Carl Persson |vardenhet-fit-1| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens2= |
-| OVRIGT | FIT-QA-1002 | FK | En tredjefråga |intyg-fit-1| johan| Johan Nilsson |vardenhet-fit-1| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens3= |
-| OVRIGT | FIT-QA-1002 | FK | En fjärde fråga |intyg-fit-1| marcus | Marcus Johansson | mottagning-fit-1| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens4= |
+| OVRIGT | FIT-QA-1001 | FK | En fråga |intyg-fit-1| IFV1239877878-104B| Åsa Andersson |IFV1239877878-1045| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens2= |
+| OVRIGT | FIT-QA-1002 | FK | En andra fråga |intyg-fit-1| IFV1239877878-104K| Lars Andersson |IFV1239877878-1045| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens3= |
+| OVRIGT | FIT-QA-1000 | FK | En tredje fråga |intyg-fit-1| IFV1239877878-1049 | Jan Nilsson |IFV1239877878-1042| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
 
 !3 Givet att det finns frågor, verifiera att filtreringen på läkare fungerar
 
 | script | !-SvaraOchFraga-! |
-| logga in som | fitnesse-admin1 |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | ohanterade fragor sidan visas |
-| valj vardenhet | vardenhet-fit-1 |
+| valj vardenhet | IFV1239877878-1045 |
 | visa avancerat filter |
-| valj lakare med namn | Carl Persson |
+| valj lakare med namn | Åsa Andersson |
 | filtrera fragor och svar |
 | visas fraga | $internReferens2 |
 | doljs fraga| $internReferens1 |
 | doljs fraga| $internReferens3 |
-| doljs fraga| $internReferens4 |
 
 !4 Byt läkare och gör om filtreringen
 
 | script | !-SvaraOchFraga-! |
-| valj lakare med namn | Johan Nilsson |
+| valj lakare med namn | Lars Andersson |
 | filtrera fragor och svar |
 | visas fraga | $internReferens3 |
 | doljs fraga| $internReferens1 |
 | doljs fraga| $internReferens2 |
-| doljs fraga| $internReferens4 |
 
 !4 Byt enhet, välj läkare som bara finns på den enheten och gör om filtreringen
 
 | script | !-SvaraOchFraga-! |
-| valj vardenhet | mottagning-fit-1 |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 | visa avancerat filter |
-| valj lakare med namn | Marcus Johansson |
+| valj lakare med namn | Jan Nilsson |
 | filtrera fragor och svar |
-| visas fraga | $internReferens4 |
-| doljs fraga | $internReferens1 |
+| visas fraga | $internReferens1 |
 | doljs fraga | $internReferens2 |
 | doljs fraga | $internReferens3 |
 
@@ -52,4 +48,3 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 | $internReferens1 |
 | $internReferens2 |
 | $internReferens3 |
-| $internReferens4 |
