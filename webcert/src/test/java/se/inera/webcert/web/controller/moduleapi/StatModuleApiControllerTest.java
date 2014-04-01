@@ -30,6 +30,7 @@ import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.FragaSvarService;
+import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -44,6 +45,9 @@ public class StatModuleApiControllerTest {
     @Mock
     private FragaSvarService fragaSvarService;
     
+    @Mock
+    private IntygDraftService intygDraftService;
+    
     @Captor
     private ArgumentCaptor<List<String>> listCaptor;
     
@@ -52,7 +56,9 @@ public class StatModuleApiControllerTest {
 
     private WebCertUser mockUser;
     
-    private Map<String, Long> statsMap;
+    private Map<String, Long> fragaSvarStatsMap;
+    
+    private Map<String, Long> intygStatsMap;
     
     private Vardgivare vg;
     
@@ -61,14 +67,20 @@ public class StatModuleApiControllerTest {
     @Before
     public void setupDataAndExpectations() {
         
-        statsMap = new HashMap<String, Long>(); 
+        fragaSvarStatsMap = new HashMap<String, Long>(); 
         
-        statsMap.put("VE1", new Long(2L));
-        statsMap.put("VE1M1", new Long(3L));
-        statsMap.put("VE1M2", new Long(3L));
-        statsMap.put("VE2", new Long(2L));
-        statsMap.put("VE3", new Long(1L));
+        fragaSvarStatsMap.put("VE1", new Long(2L));
+        fragaSvarStatsMap.put("VE1M1", new Long(3L));
+        fragaSvarStatsMap.put("VE1M2", new Long(3L));
+        fragaSvarStatsMap.put("VE2", new Long(2L));
+        fragaSvarStatsMap.put("VE3", new Long(1L));
+        
+        intygStatsMap = new HashMap<String, Long>(); 
                 
+        intygStatsMap.put("VE1M1", new Long(1L));
+        intygStatsMap.put("VE1M2", new Long(2L));
+        intygStatsMap.put("VE2", new Long(2L));
+                        
         mockUser = new WebCertUser();
         
         ve1 = new Vardenhet("VE1", "Vardenhet1");
@@ -96,17 +108,11 @@ public class StatModuleApiControllerTest {
   
         mockUser.setValdVardenhet(ve2);
         
-        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(statsMap);
+        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
                 
         Response response = statController.getStatistics();
-        
-        Mockito.verify(webCertUserService).getWebCertUser();
                 
-        Mockito.verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture());
-                
-        List<String> listArgs = listCaptor.getValue();
-        assertEquals(7, listArgs.size());
-        
         assertNotNull(response);
         assertEquals(OK, response.getStatus());
         
@@ -115,6 +121,9 @@ public class StatModuleApiControllerTest {
         
         assertEquals(2, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
         assertEquals(9, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
+        
+        assertEquals(2, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
+        assertEquals(3, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
     }
     
     @Test
@@ -122,17 +131,11 @@ public class StatModuleApiControllerTest {
   
         mockUser.setValdVardenhet(ve3);
         
-        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(statsMap);
+        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
                 
         Response response = statController.getStatistics();
-        
-        Mockito.verify(webCertUserService).getWebCertUser();
                 
-        Mockito.verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture());
-                
-        List<String> listArgs = listCaptor.getValue();
-        assertEquals(7, listArgs.size());
-        
         assertNotNull(response);
         assertEquals(OK, response.getStatus());
         
@@ -141,6 +144,9 @@ public class StatModuleApiControllerTest {
         
         assertEquals(1, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
         assertEquals(10, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
+        
+        assertEquals(0, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
+        assertEquals(5, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
     }
     
     @Test
@@ -148,7 +154,8 @@ public class StatModuleApiControllerTest {
   
         mockUser.setValdVardenhet(ve4);
         
-        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(statsMap);
+        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
                 
         Response response = statController.getStatistics();
         
@@ -174,7 +181,8 @@ public class StatModuleApiControllerTest {
   
         mockUser.setValdVardenhet(ve1);
         
-        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(statsMap);
+        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
                 
         Response response = statController.getStatistics();
         
@@ -193,6 +201,9 @@ public class StatModuleApiControllerTest {
         
         assertEquals(8, statsResponse.getTotalNbrOfUnhandledFragaSvarOnSelected());
         assertEquals(3, statsResponse.getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected());
+        
+        assertEquals(3, statsResponse.getTotalNbrOfUnsignedDraftsOnSelected());
+        assertEquals(2, statsResponse.getTotalNbrOfUnsignedDraftsOnOtherThanSelected());
         
         StatsResponse refStatsResponse = getReference("StatModuleApiControllerTest/reference.json");
         assertEquals(refStatsResponse.toString(), statsResponse.toString());

@@ -12,6 +12,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,17 +73,22 @@ public class IntygRepositoryTest {
     }
 
     @Test
-    public void testCountUnsignedByEnhetsId() {
+    public void testCountIntygWithStatusesGroupedByEnhetsId() {
 
         intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.DRAFT_INCOMPLETE));
         intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_2_ID, IntygsStatus.DRAFT_COMPLETE));
-        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_3_ID, IntygsStatus.SIGNED));
-        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.SIGNED));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_3_ID, IntygsStatus.DRAFT_COMPLETE));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.DRAFT_COMPLETE));
         intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_2_ID, IntygsStatus.DRAFT_COMPLETE));
-
-        long result = intygRepository.countByEnhetsIdsAndStatuses(Arrays.asList(IntygTestUtil.ENHET_1_ID, IntygTestUtil.ENHET_2_ID), Arrays.asList(IntygsStatus.SIGNED));
-        assertThat(result, is(1L));
-
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID, IntygsStatus.DRAFT_INCOMPLETE));
+        intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_3_ID, IntygsStatus.SIGNED));
+        
+        List<Object[]> result = intygRepository.countIntygWithStatusesGroupedByEnhetsId(Arrays.asList(IntygTestUtil.ENHET_1_ID), Arrays.asList(IntygsStatus.DRAFT_COMPLETE, IntygsStatus.DRAFT_INCOMPLETE));
+        assertThat(result.size(), is(1));
+        
+        Object[] resObjs = result.get(0);
+        assertThat((String) resObjs[0], equalTo(IntygTestUtil.ENHET_1_ID));
+        assertThat((Long) resObjs[1], equalTo(3L));
     }
     
     @Test

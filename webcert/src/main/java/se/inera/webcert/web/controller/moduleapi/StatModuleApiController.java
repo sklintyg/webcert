@@ -20,15 +20,16 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.FragaSvarService;
 import se.inera.webcert.service.IntygService;
+import se.inera.webcert.service.draft.IntygDraftService;
+import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.VardenhetStats;
 import se.inera.webcert.web.controller.moduleapi.dto.VardgivareStats;
-import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * @author marced
  */
-public class StatModuleApiController {
+public class StatModuleApiController extends AbstractApiController {
 
     private static final String SEPARATOR = " - ";
 
@@ -39,112 +40,115 @@ public class StatModuleApiController {
     private FragaSvarService fragaSvarService;
 
     @Autowired
-    private WebCertUserService webCertUserService;
+    private IntygDraftService intygDraftService;
 
     @GET
     @Path("/")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getStatistics() {
-        
+
         StatsResponse statsResponse = new StatsResponse();
-        
+
         WebCertUser user = webCertUserService.getWebCertUser();
         List<String> allUnitIds = user.getIdsOfAllVardenheter();
-        
-        Map<String, Long> fragaSvarStats = fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(allUnitIds); 
-                       
-        populateStatsResponseWithStats(statsResponse, user.getVardgivare(), fragaSvarStats);
-        
+
+        Map<String, Long> fragaSvarStatsMap = fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(allUnitIds);
+
+        Map<String, Long> intygStatsMap = intygDraftService.getNbrOfUnsignedDraftsByCareUnits(allUnitIds);
+
         List<String> unitIdsOfSelected = user.getIdsOfSelectedVardenhet();
-        
-        long fragaSvarOnOtherUnitThanTheSelected = calcTotalOfUnhandledFragaSvarOnOtherUnitThanTheSelected(unitIdsOfSelected, allUnitIds, fragaSvarStats);
-        statsResponse.setTotalNbrOfUnhandledFragaSvarOnOtherThanSelected(fragaSvarOnOtherUnitThanTheSelected);
-        
-        long fragaSvarOnSelected = calcTotalOfUnhandledFragaSvarOnSelected(unitIdsOfSelected, fragaSvarStats);
-        statsResponse.setTotalNbrOfUnhandledFragaSvarOnSelected(fragaSvarOnSelected);
-        
-        return Response.ok(statsResponse).build();
-    }
-
-    private long calcTotalOfUnhandledFragaSvarOnSelected(List<String> allUnitIds, Map<String, Long> fragaSvarStats) {
-        
-        long sum = 0;
-                
-        for (String unitId : allUnitIds) {
-            sum += getSafeStatValueFromMap(unitId, fragaSvarStats);
-        }
-        
-        return sum;
-    }
-
-    private long calcTotalOfUnhandledFragaSvarOnOtherUnitThanTheSelected(List<String> unitIdsOfSelected, List<String> allUnitIds,
-            Map<String, Long> fragaSvarStats) {
-        
-        long sum = 0;
         
         @SuppressWarnings("unchecked")
         List<String> unitIdsOfNotSelected = (List<String>) CollectionUtils.subtract(allUnitIds, unitIdsOfSelected);
-        
-        for (String unitId : unitIdsOfNotSelected) {
-            sum += getSafeStatValueFromMap(unitId, fragaSvarStats);
-        }
                 
+        long fragaSvarOnOtherUnitThanTheSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected,
+                fragaSvarStatsMap);
+        statsResponse.setTotalNbrOfUnhandledFragaSvarOnOtherThanSelected(fragaSvarOnOtherUnitThanTheSelected);
+
+        long fragaSvarOnSelected = calcSumFromSelectedUnits(unitIdsOfSelected, fragaSvarStatsMap);
+        statsResponse.setTotalNbrOfUnhandledFragaSvarOnSelected(fragaSvarOnSelected);
+
+        long unsignedDraftsOnOtherThanSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected,
+                intygStatsMap);
+        statsResponse.setTotalNbrOfUnsignedDraftsOnOtherThanSelected(unsignedDraftsOnOtherThanSelected);
+
+        long unsignedDraftsOnSelected = calcSumFromSelectedUnits(unitIdsOfSelected, intygStatsMap);
+        statsResponse.setTotalNbrOfUnsignedDraftsOnSelected(unsignedDraftsOnSelected);
+        
+        populateStatsResponseWithVardgivarStats(statsResponse, user.getVardgivare(), intygStatsMap, fragaSvarStatsMap);
+
+        return Response.ok(statsResponse).build();
+    }
+
+    private long calcSumFromSelectedUnits(List<String> unitIdsList, Map<String, Long> statsMap) {
+
+        long sum = 0;
+
+        for (String unitId : unitIdsList) {
+            sum += getSafeStatValueFromMap(unitId, statsMap);
+        }
+
         return sum;
     }
 
-    private void populateStatsResponseWithStats(StatsResponse statsResponse, List<Vardgivare> vardgivare, Map<String, Long> fragaSvarStats) {
-        
+    private void populateStatsResponseWithVardgivarStats(StatsResponse statsResponse, List<Vardgivare> vardgivare,
+            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+
         VardgivareStats vgStats;
-        
-        for(Vardgivare vg : vardgivare) {
+
+        for (Vardgivare vg : vardgivare) {
             vgStats = new VardgivareStats(vg.getNamn(), vg.getId());
-            vgStats.getVardenheter().addAll(createAndPopulateVardenheterWithStats(vg.getVardenheter(), fragaSvarStats));
+            vgStats.getVardenheter().addAll(
+                    createAndPopulateVardenheterWithStats(vg.getVardenheter(), intygStats, fragaSvarStats));
             statsResponse.getVardgivare().add(vgStats);
         }
     }
 
-    private List<VardenhetStats> createAndPopulateVardenheterWithStats(List<Vardenhet> vardenheter,  Map<String, Long> fragaSvarStats) {
-        
+    private List<VardenhetStats> createAndPopulateVardenheterWithStats(List<Vardenhet> vardenheter,
+            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+
         List<VardenhetStats> veStatsList = new ArrayList<VardenhetStats>();
-        
+
         VardenhetStats veStats;
-        
-        for(Vardenhet ve : vardenheter) {
+
+        for (Vardenhet ve : vardenheter) {
             String veNamn = ve.getNamn();
-            
+
             veStats = new VardenhetStats(veNamn, ve.getId());
             veStats.setOhanteradeFragaSvar(getSafeStatValueFromMap(ve.getId(), fragaSvarStats));
+            veStats.setOsigneradeIntyg(getSafeStatValueFromMap(ve.getId(), intygStats));
             veStatsList.add(veStats);
-            
-            addStatsForMottagningar(ve, veStatsList, fragaSvarStats);
+
+            addStatsForMottagningar(ve, veStatsList, intygStats, fragaSvarStats);
         }
-        
+
         return veStatsList;
     }
-    
+
     private void addStatsForMottagningar(Vardenhet vardenhet, List<VardenhetStats> veStatsList,
-            Map<String, Long> fragaSvarStats) {
-        
+            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+
         List<Mottagning> mottagningar = vardenhet.getMottagningar();
-        
+
         if (mottagningar == null || mottagningar.isEmpty()) {
             return;
         }
-        
+
         VardenhetStats moStats;
-        
+
         for (Mottagning mo : mottagningar) {
-            String moNamn = StringUtils.join(new Object[] {vardenhet.getNamn(), mo.getNamn()}, SEPARATOR);
-            moStats = new VardenhetStats(moNamn , mo.getId());
+            String moNamn = StringUtils.join(new Object[] { vardenhet.getNamn(), mo.getNamn() }, SEPARATOR);
+            moStats = new VardenhetStats(moNamn, mo.getId());
             moStats.setOhanteradeFragaSvar(getSafeStatValueFromMap(mo.getId(), fragaSvarStats));
+            moStats.setOsigneradeIntyg(getSafeStatValueFromMap(mo.getId(), intygStats));
             veStatsList.add(moStats);
         }
-        
+
     }
-    
+
     private static long getSafeStatValueFromMap(String id, Map<String, Long> statsMap) {
         Long statValue = statsMap.get(id);
         return (statValue != null) ? statValue.longValue() : 0L;
     }
-    
+
 }

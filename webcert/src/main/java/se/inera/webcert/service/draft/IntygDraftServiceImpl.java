@@ -2,7 +2,9 @@ package se.inera.webcert.service.draft;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -294,6 +296,19 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         intyg.setVidarebefordrad(forwarded);
         
         return intygRepository.save(intyg);
+    }
+    
+    public Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds) {
+        
+        Map<String, Long> resultsMap = new HashMap<String, Long>();
+        
+        List<Object[]> countResults = intygRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFTS);
+        
+        for (Object[] resultArr : countResults) {
+            resultsMap.put((String) resultArr[0], (Long) resultArr[1]);
+        }
+        
+        return resultsMap;
     }
 
 }

@@ -28,8 +28,8 @@ public interface IntygRepositoryCustom extends IntygFilteredRepositoryCustom {
      * 
      * @return A count of {@link Intyg} matching the search criteria.
      */
-    @Query("SELECT count(i) FROM Intyg i WHERE i.enhetsId IN (:enhetsIds) AND i.status IN (:statuses)")
-    long countByEnhetsIdsAndStatuses(@Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<IntygsStatus> statuses);
+    @Query("SELECT i.enhetsId, count(i) FROM Intyg i WHERE i.enhetsId IN (:enhetsIds) AND i.status IN (:statuses) GROUP BY i.enhetsId")
+    List<Object[]> countIntygWithStatusesGroupedByEnhetsId(@Param("enhetsIds") List<String> enhetsIds, @Param("statuses") List<IntygsStatus> statuses);
         
     /**
      * Returns all {@link Intyg} entities belonging to a certain patient and belonging to one of several careUnit and having selected statuses.

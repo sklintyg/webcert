@@ -3,11 +3,10 @@ package se.inera.webcert.web.controller.moduleapi.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"fragaSvarValdEnhet", "fragaSvarAndraEnheter", "vardgivare"})
+@JsonPropertyOrder({"fragaSvarValdEnhet", "fragaSvarAndraEnheter", "intygAndraEnheter", "intygValdEnhet", "vardgivare"})
 public class StatsResponse {
     
     @JsonProperty("fragaSvarAndraEnheter")
@@ -15,6 +14,12 @@ public class StatsResponse {
     
     @JsonProperty("fragaSvarValdEnhet")
     private long totalNbrOfUnhandledFragaSvarOnSelected = 0;
+    
+    @JsonProperty("intygAndraEnheter")
+    private long totalNbrOfUnsignedDraftsOnOtherThanSelected = 0;
+    
+    @JsonProperty("intygValdEnhet")
+    private long totalNbrOfUnsignedDraftsOnSelected = 0;
     
     @JsonProperty("vardgivare")
     private List<VardgivareStats> vardgivare = new ArrayList<VardgivareStats>();
@@ -39,6 +44,22 @@ public class StatsResponse {
         this.totalNbrOfUnhandledFragaSvarOnSelected = totalNbrOfUnhandledFragaSvarOnSelected;
     }
 
+    public long getTotalNbrOfUnsignedDraftsOnOtherThanSelected() {
+        return totalNbrOfUnsignedDraftsOnOtherThanSelected;
+    }
+
+    public void setTotalNbrOfUnsignedDraftsOnOtherThanSelected(long totalNbrOfUnsignedDraftsOnOtherThanSelected) {
+        this.totalNbrOfUnsignedDraftsOnOtherThanSelected = totalNbrOfUnsignedDraftsOnOtherThanSelected;
+    }
+
+    public long getTotalNbrOfUnsignedDraftsOnSelected() {
+        return totalNbrOfUnsignedDraftsOnSelected;
+    }
+
+    public void setTotalNbrOfUnsignedDraftsOnSelected(long totalNbrOfUnsignedDraftsOnSelected) {
+        this.totalNbrOfUnsignedDraftsOnSelected = totalNbrOfUnsignedDraftsOnSelected;
+    }
+
     public List<VardgivareStats> getVardgivare() {
         return vardgivare;
     }
@@ -48,11 +69,12 @@ public class StatsResponse {
     }
 
     @Override
-    @JsonIgnore
     public String toString() {
         return "StatsResponse [totalNbrOfUnhandledFragaSvarOnOtherThanSelected="
                 + totalNbrOfUnhandledFragaSvarOnOtherThanSelected + ", totalNbrOfUnhandledFragaSvarOnSelected="
-                + totalNbrOfUnhandledFragaSvarOnSelected + ", vardgivare=" + vardgivare + "]";
+                + totalNbrOfUnhandledFragaSvarOnSelected + ", totalNbrOfUnsignedDraftsOnOtherThanSelected="
+                + totalNbrOfUnsignedDraftsOnOtherThanSelected + ", totalNbrOfUnsignedDraftsOnSelected="
+                + totalNbrOfUnsignedDraftsOnSelected + ", vardgivare=" + vardgivare + "]";
     }
     
 }
