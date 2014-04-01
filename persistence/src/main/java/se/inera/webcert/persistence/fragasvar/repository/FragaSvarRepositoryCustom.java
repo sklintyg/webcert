@@ -66,4 +66,18 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
      */
     FragaSvar findByExternReferens(String externReferens);
 
+    /**
+     * Should return a {@link FragaSvar} matching the search criteria.
+     * @param frageText
+     * @return
+     */
+    List<FragaSvar> findByFrageTextLike(String frageText);
+
+    /**
+     * Should return a {@link FragaSvar} matching the search criteria.
+     * @param svarsText
+     * @return
+     */
+    List<FragaSvar> findBySvarsTextLike(String svarsText);
+
 }

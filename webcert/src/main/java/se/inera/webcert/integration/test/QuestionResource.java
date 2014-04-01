@@ -76,6 +76,32 @@ public class QuestionResource {
     }
 
     @DELETE
+    @Path("/frageText/{frageText}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteQuestionsByFrageText(@PathParam("frageText") String frageText) {
+        List<FragaSvar> fragorOchSvar = fragasvarRepository.findByFrageTextLike(frageText);
+        if (fragorOchSvar != null) {
+            for (FragaSvar fragaSvar : fragorOchSvar) {
+                fragasvarRepository.delete(fragaSvar);
+            }
+        }
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/svarsText/{svarsText}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteQuestionsBySvarsText(@PathParam("svarsText") String svarsText) {
+        List<FragaSvar> fragorOchSvar = fragasvarRepository.findBySvarsTextLike(svarsText);
+        if (fragorOchSvar != null) {
+            for (FragaSvar fragaSvar : fragorOchSvar) {
+                fragasvarRepository.delete(fragaSvar);
+            }
+        }
+        return Response.ok().build();
+    }
+
+    @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteQuestion(@PathParam("id") Long id) {
