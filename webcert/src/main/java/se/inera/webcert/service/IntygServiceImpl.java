@@ -88,7 +88,8 @@ public class IntygServiceImpl implements IntygService {
 
         verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
-        CertificateContentMeta metaData = convert(intyg.getMeta());
+        String patientId = intyg.getCertificate().getPatient().getPersonId().getExtension();
+        CertificateContentMeta metaData = convert(patientId, intyg.getMeta());
 
         ModuleRestApi moduleRestApi = moduleApiFactory.getModuleRestService(intyg.getMeta().getCertificateType());
 
@@ -127,24 +128,25 @@ public class IntygServiceImpl implements IntygService {
 
         switch (response.getResult().getResultCode()) {
         case OK:
-            return convert(response.getMeta());
+            return convert(personnummer, response.getMeta());
         default:
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                     "listCertificatesForCare WS call: ERROR :" + response.getResult().getResultText());
         }
     }
 
-    private List<CertificateContentMeta> convert(List<CertificateMetaType> source) {
+    private List<CertificateContentMeta> convert(String patientId, List<CertificateMetaType> source) {
         List<CertificateContentMeta> meta = new ArrayList<>();
         for (CertificateMetaType certificateMetaType : source) {
-            meta.add(convert(certificateMetaType));
+            meta.add(convert(patientId, certificateMetaType));
         }
         return meta;
     }
 
-    private CertificateContentMeta convert(CertificateMetaType source) {
+    private CertificateContentMeta convert(String patientId, CertificateMetaType source) {
 
         CertificateContentMeta metaData = new CertificateContentMeta();
+        metaData.setPatientId(patientId);
         metaData.setId(source.getCertificateId());
         metaData.setType(source.getCertificateType());
         metaData.setFromDate(source.getValidFrom());
