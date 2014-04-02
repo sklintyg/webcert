@@ -110,7 +110,8 @@ public class IntygServiceImpl implements IntygService {
 
             verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
-            IntygMetadata metaData = convertToCertificateContentMeta(intyg.getMeta());
+            String patientId = intyg.getCertificate().getPatient().getPersonId().getExtension();
+            IntygMetadata metaData = convertToCertificateContentMeta(patientId, intyg.getMeta());
 
             String intygType = metaData.getType();
 
@@ -126,9 +127,10 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    private IntygMetadata convertToCertificateContentMeta(CertificateMetaType source) {
+    private IntygMetadata convertToCertificateContentMeta(String patientId, CertificateMetaType source) {
 
         IntygMetadata metaData = new IntygMetadata();
+        metaData.setPatientId(patientId);
         metaData.setId(source.getCertificateId());
         metaData.setType(source.getCertificateType());
         metaData.setFromDate(source.getValidFrom());
