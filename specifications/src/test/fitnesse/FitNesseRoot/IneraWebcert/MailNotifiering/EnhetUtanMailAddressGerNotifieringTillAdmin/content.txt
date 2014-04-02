@@ -15,7 +15,7 @@
 
 |Mail|
 |mottagare?|amne?|innehall?|
-|!-[admin@webcert.se]-!|!-Fråga/svar Webcert: Enhet utan mailadress eller koppling-!|=~/enhet som ej har en mailadress satt.*IFV1239877878-104D.*Enhet 3/|
+|!-[admin@webcert.se]-!|!-Fråga/svar Webcert: Enhet utan mailadress eller koppling-!|=~/enhet som ej har en mailadress satt.*IFV1239877878-104D.*WebCert-Enhet3/|
 
 !3 Ta bort intyg, frågor och mail
 
