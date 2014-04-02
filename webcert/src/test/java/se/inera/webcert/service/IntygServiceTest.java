@@ -51,7 +51,7 @@ import se.inera.webcert.web.service.WebCertUserService;
 @RunWith( MockitoJUnitRunner.class )
 public class IntygServiceTest {
 
-    private static final String CERTIFICATE_ID = "<id>";
+    private static final String CERTIFICATE_ID = "123";
     private static final String CERTIFICATE_TYPE = "fk7263";
 
     private static final String LOGICAL_ADDRESS = "<logicalAddress>";
@@ -183,6 +183,8 @@ public class IntygServiceTest {
         assertEquals("fk7263", captor.getValue().getCertificateContentMeta().getType());
 
         assertEquals("<internalJson>", intygData.getCertificateContent());
+        assertEquals("19121212-1212", intygData.getCertificateContentMeta().getPatientId());
+        assertEquals(CERTIFICATE_ID, intygData.getCertificateContentMeta().getId());
     }
 
     @Test( expected = WebCertServiceException.class )
