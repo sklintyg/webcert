@@ -1,10 +1,11 @@
 {
     "id" : "IFV1239877878-1041",
-    "namn" : "Vårdgivare 1",
+    "namn" : "WebCert-Vårdgivare1",
     "vardenheter" : [
         {
             "id" : "IFV1239877878-1042",
-            "namn" : "Enhet 1"
+            "namn" : "WebCert-Enhet1",
+            "mail" : "enhet1@webcert.invalid.se"
         }
     ]
 }

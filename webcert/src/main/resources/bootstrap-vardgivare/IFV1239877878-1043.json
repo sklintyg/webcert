@@ -1,24 +1,27 @@
 {
     "id" : "IFV1239877878-1043",
-    "namn" : "Vårdgivare 2",
+    "namn" : "WebCert-Vårdgivare2",
     "vardenheter" : [
         {
             "id" : "IFV1239877878-1045",
-            "namn" : "Enhet 2",
+            "namn" : "WebCert-Enhet2",
+            "mail" : "enhet1@webcert.invalid.se",
             "mottagningar" : [
                 {
                     "id" : "IFV1239877878-1046",
-                    "namn" : "Underenhet1"
+                    "namn" : "WebCert-Underenhet1",
+                    "mail" : "underenhet1@webcert.invalid.se"
                 },
                 {
                     "id" : "IFV1239877878-104C",
-                    "namn" : "Underenhet2"
+                    "namn" : "WebCert-Underenhet2",
+                    "mail" : "underenhet2@webcert.invalid.se"
                 }
             ]
         },
         {
             "id" : "IFV1239877878-104D",
-            "namn" : "Enhet 3"
+            "namn" : "WebCert-Enhet3"
         }
     ]
 }
