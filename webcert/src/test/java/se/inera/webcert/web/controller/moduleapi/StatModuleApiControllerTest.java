@@ -3,8 +3,6 @@ package se.inera.webcert.web.controller.moduleapi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyListOf;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.CoreMatchers.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -69,17 +67,17 @@ public class StatModuleApiControllerTest {
         
         fragaSvarStatsMap = new HashMap<String, Long>(); 
         
-        fragaSvarStatsMap.put("VE1", new Long(2L));
-        fragaSvarStatsMap.put("VE1M1", new Long(3L));
-        fragaSvarStatsMap.put("VE1M2", new Long(3L));
-        fragaSvarStatsMap.put("VE2", new Long(2L));
-        fragaSvarStatsMap.put("VE3", new Long(1L));
+        fragaSvarStatsMap.put("VE1", 2L);
+        fragaSvarStatsMap.put("VE1M1", 3L);
+        fragaSvarStatsMap.put("VE1M2", 3L);
+        fragaSvarStatsMap.put("VE2", 2L);
+        fragaSvarStatsMap.put("VE3", 1L);
         
         intygStatsMap = new HashMap<String, Long>(); 
                 
-        intygStatsMap.put("VE1M1", new Long(1L));
-        intygStatsMap.put("VE1M2", new Long(2L));
-        intygStatsMap.put("VE2", new Long(2L));
+        intygStatsMap.put("VE1M1", 1L);
+        intygStatsMap.put("VE1M2", 2L);
+        intygStatsMap.put("VE2", 2L);
                         
         mockUser = new WebCertUser();
         

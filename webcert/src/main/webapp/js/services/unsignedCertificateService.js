@@ -95,12 +95,7 @@ define([
         }
 
         function _isSkipForwardedCookieSet() {
-            if (document.cookie && document.cookie.indexOf('WCDontAskForForwardedToggle=1') != -1) {
-                return true;
-            } else {
-                return false;
-            }
-
+            return document.cookie && document.cookie.indexOf('WCDontAskForForwardedToggle=1') != -1;
         }
 
         function _handleForwardedToggle(qa, onYesCallback) {

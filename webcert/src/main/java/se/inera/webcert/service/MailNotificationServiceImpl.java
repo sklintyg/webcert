@@ -109,15 +109,15 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         message.setSubject("Fråga/svar Webcert: Enhet utan mailadress eller koppling");
 
-        StringBuffer body = new StringBuffer();
+        StringBuilder body = new StringBuilder();
         body.append("<p>En fråga eller ett svar är mottaget av Webcert. ");
         body.append("Detta för en enhet som ej har en mailadress satt eller så är enheten ej kopplad till en överliggande vårdenhet.</p>");
         body.append("<p>Vårdenhetens id är <b>");
-        body.append(unit.getHsaIdentity() + "</b> och namn är <b>");
-        body.append(unit.getName() + "</b>.");
+        body.append(unit.getHsaIdentity()).append("</b> och namn är <b>");
+        body.append(unit.getName()).append("</b>.");
 
         body.append("<br>");
-        body.append("<a href=\"" + intygsUrl(fragaSvar) + "\">Länk till frågan</a>");
+        body.append("<a href=\"").append(intygsUrl(fragaSvar)).append("\">Länk till frågan</a>");
 
         body.append("</p>");
         message.setText(body.toString());

@@ -13,9 +13,7 @@ public class LogRequest {
     }
 
     public void setPatientName(String forName, String surName) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(forName).append(" ").append(surName);
-        setPatientName(sb.toString());
+        setPatientName(forName + " " + surName);
     }
     
     public String getIntygId() {

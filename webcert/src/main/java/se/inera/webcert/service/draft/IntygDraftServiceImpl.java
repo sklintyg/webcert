@@ -143,7 +143,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         LOG.debug("Calling module '{}' to get populated model", intygType);
         
-        String modelAsJson = null;
+        String modelAsJson;
         
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
         
@@ -227,7 +227,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     @Override
     public DraftValidation validateDraft(String intygId, String intygType, String draftAsJson) {
         
-        DraftValidation draftValidation = null;
+        DraftValidation draftValidation;
         
         LOG.debug("Validating Intyg with id {} and type {}", intygId, intygType);
 

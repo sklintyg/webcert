@@ -83,7 +83,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         // Get HSA id for the selected MIU
         String medarbetaruppdragHsaId = assertion.getEnhetHsaId();
         
-        boolean changeSuccess = false;
+        boolean changeSuccess;
         
         if (StringUtils.isNotBlank(medarbetaruppdragHsaId)) {
             changeSuccess = user.changeValdVardenhet(medarbetaruppdragHsaId);

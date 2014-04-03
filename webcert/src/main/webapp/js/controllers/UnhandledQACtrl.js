@@ -126,7 +126,7 @@ define(
 							vantarPaSelector : $scope.statusList[1],
 							doctorSelector : $scope.doctorList[0],
 							replyLatest : undefined
-						}
+						};
 
 						$scope.decorateList = function(list) {
 							angular.forEach(list, function(qa) {

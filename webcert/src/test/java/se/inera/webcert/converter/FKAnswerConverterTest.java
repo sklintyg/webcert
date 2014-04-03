@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 

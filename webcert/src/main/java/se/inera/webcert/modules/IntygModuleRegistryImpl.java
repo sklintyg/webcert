@@ -25,12 +25,11 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
     @PostConstruct
     private void initModulesList() {
 
-        IntygModule module;
-
         for (ModuleEntryPoint entryPoint : moduleEntryPoints) {
             moduleApiMap.put(entryPoint.getModuleId(), entryPoint.getModuleApi());
-            module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(),
+            IntygModule module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(),
                     entryPoint.getModuleDescription(), entryPoint.getModuleCssPath(), entryPoint.getModuleScriptPath());
+
             moduleList.add(module);
         }
 

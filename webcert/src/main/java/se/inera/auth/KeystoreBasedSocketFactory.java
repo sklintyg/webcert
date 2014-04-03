@@ -66,15 +66,7 @@ public class KeystoreBasedSocketFactory implements SecureProtocolSocketFactory {
         if (timeout == 0) {
             return createSocket(host, port, localAddress, localPort);
         } else {
-
             return new SSLProtocolSocketFactory().createSocket(host, port, localAddress, localPort, params);
-            /*// To be eventually deprecated when migrated to Java 1.4 or above
-            Socket socket = ReflectionSocketFactory.createSocket("javax.net.ssl.SSLSocketFactory", host, port,
-                    localAddress, localPort, timeout);
-            if (socket == null) {
-                socket = ControllerThreadSocketFactory.createSocket(this, host, port, localAddress, localPort, timeout);
-            }
-            return socket;*/
         }
     }
 

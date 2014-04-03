@@ -4,11 +4,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
 import org.springframework.core.io.ClassPathResource;
-import se.inera.webcert.medcertqa.v1.Amnetyp;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
-import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
 
 import javax.xml.bind.JAXBContext;

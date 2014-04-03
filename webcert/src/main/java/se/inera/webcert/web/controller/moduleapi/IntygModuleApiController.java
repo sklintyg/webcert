@@ -235,9 +235,7 @@ public class IntygModuleApiController extends AbstractApiController {
     }
     
     private String buildPdfHeader(String pdfFileName) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("attachment; filename=\"").append(pdfFileName).append("\"");
-        return sb.toString();
+        return "attachment; filename=\"" + pdfFileName + "\"";
     }
     
 }
