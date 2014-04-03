@@ -1,0 +1,13 @@
+Testet beskriver fallet när en användare logga ut och försöker nå startsidan igen.
+
+!3 Givet att användaren kan logga in och logga ut, verifiera att användaren är utloggad
+
+| script | !-SvaraOchFraga-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+| ohanterade fragor sidan visas |
+
+| script | !-LoggaUt-! |
+| logga ut |
+| login sidan visas |
+| ga till startsidan |
+| access denied sidan visas |

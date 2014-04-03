@@ -1,0 +1,17 @@
+!3 1. Inloggning som läkare på Vårdenhet A
+| Steg | Beskrivning | Förväntat resultat |
+| 1 | Sätt i SITHS-kort för Markus Gran i kortläsaren | |
+| 2 | Gå till "/" | Sidan "Välkommen till !-WebCert-!" visas-! |
+| 3 | Klicka på "Logga in" | Redirect till säkerhetstjänsten sker. Dialog för val av certifikat visas, där Marcus Gran är förvalt |
+| 4 | Ange säkerhetskod för Markus Gran | Sidan "Val av uppdrag" visas. Bland alternativen finns "Vårdenhet A", "Vårdenhet 1A" och "Vårdenhet 2A" |
+| 5 | Välj enhet "Vårdenhet A" | Sidan "Frågor och svar" visas. I headern visas dagens datum, vårdgivare "IFV Testdata" och vårdenhet  "VårdEnhetA". Längst ut till höger visas "Läkare - Markus Gran" |
+| 6 | Välj "Logga ut" | Sidan "Välkommen till !-WebCert-!" visas |
+
+!3 2. Inloggning som läkare på Vårdenhet 1A
+| Steg | Beskrivning | Förväntat resultat |
+| 1 | Sätt i SITHS-kort för Markus Gran i kortläsaren | |
+| 2 | Gå till "/" | Sidan "Välkommen till !-WebCert-!" visas-! |
+| 3 | Klicka på "Logga in" | Redirect till säkerhetstjänsten sker. Dialog för val av certifikat visas, där Marcus Gran är förvalt |
+| 4 | Ange säkerhetskod för Markus Gran | Sidan "Val av uppdrag" visas. Bland alternativen finns "Vårdenhet A", "Vårdenhet 1A" och "Vårdenhet 2A" |
+| 5 | Välj enhet "Vårdenhet 1A" | Sidan "Frågor och svar" visas. I headern visas dagens datum, vårdgivare "IFV Testdata" och vårdenhet  "VårdEnhet1A". Längst ut till höger visas "Läkare - Markus Gran" |
+| 6 | Välj "Logga ut" | Sidan "Välkommen till !-WebCert-!" visas |

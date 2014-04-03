@@ -4,7 +4,6 @@ import groovyx.net.http.RESTClient
 import se.inera.webcert.spec.util.RestClientFixture
 
 /**
- *
  * @author andreaskaltenbach
  */
 class FragorOchSvar extends RestClientFixture {

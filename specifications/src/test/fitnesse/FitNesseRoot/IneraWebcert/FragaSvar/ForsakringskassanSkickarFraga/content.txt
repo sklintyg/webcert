@@ -1,7 +1,8 @@
-!3 Det finns en enhet i HSA katalogen
-|Vardgivare|
-|vardgivarid|enhetsid|enhetsnamn|enhetsmail|
-|vg1|enhet-1|Vårdenhet 1|!-enhet1@hsastub.se-!|
+!3 Givet ett intyg
+
+|Intyg|
+|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdarId|enhetsId|typ|id|mall|
+|19121212-1212|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|fitnesse-intyg-1|M|
 
 !3 Och det finns ingen fråga med extern referens 'FK-1234'.
 |Fragor och svar|
@@ -12,32 +13,22 @@
 
 |Fk skickar fraga|
 |amne|externReferens|frageText|intygsId|vardpersonal|vardenhet|resultat?|
-|OVRIGT|FK-1234|Fungerar detta?|intyg-1|lakare-1|enhet-1|OK|
-
+|OVRIGT|FK-1234|Fungerar detta?|fitnesse-intyg-1|IFV1239877878-104B|IFV1239877878-1042|OK|
 
 !3 så ska det finnas en fråga med extern referens 'FK-1234' från Försäkringskassan som behöver svaras på
 |Fragor och svar|
 |externReferens|finns?|fraga?|internId?|
 |FK-1234|true|Fungerar detta?|$id=|
 
-!3 och ett mejl har skickats till enheten
-|Mail|
-|mottagare?|amne?|innehall?|
-|!-[enhet1@hsastub.se]-!|!-Inkommen fråga från Försäkringskassan-!|!-<p>Försäkringskassan har skickat en ny fråga till Vårdenhet 1.<br>Frågan kan besvaras i <a href="http://localhost:9088/m/fk7263/webcert/intyg/-!$id!-#/view">Webcert</a></p>-!|
+!3 Ta bort test-intyg, frågor och mail
 
-
-
-!3 Ta bort test frågor, HSA katalog och mail
+|ta bort Intyg|
+|id|
+|fitnesse-intyg-1|
 
 |Ta bort fraga|
 |externReferens|
 |FK-1234|
 
-|Ta bort vardgivare|
-|vardgivarid|
-|vg1|
-
 |script|Mailbox|
 |rensa|
-
-TODO - integrate intygstjänsten stub!

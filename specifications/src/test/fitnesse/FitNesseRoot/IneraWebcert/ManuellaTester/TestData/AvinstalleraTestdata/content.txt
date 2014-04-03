@@ -1,6 +1,4 @@
-!3 Ta bort Frågor:
+!3 Ta bort alla Frågor:
 
-|ta bort Fraga|
-|externReferens|
-|FK-123A|
-|FK-123B|
+|script|Rensa fragor och svar|
+|ta bort alla fragor|

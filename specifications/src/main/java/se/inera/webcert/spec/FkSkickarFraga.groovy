@@ -1,4 +1,5 @@
 package se.inera.webcert.spec
+
 import org.springframework.core.io.ClassPathResource
 import se.inera.webcert.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType
@@ -8,8 +9,8 @@ import se.inera.webcert.spec.util.WsClientFixture
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Unmarshaller
 import javax.xml.transform.stream.StreamSource
+
 /**
- *
  * @author andreaskaltenbach
  */
 class FkSkickarFraga extends WsClientFixture {
@@ -51,5 +52,4 @@ class FkSkickarFraga extends WsClientFixture {
         def response = questionResponder.receiveMedicalCertificateQuestion(logicalAddress, request);
         resultAsString(response)
     }
-
 }

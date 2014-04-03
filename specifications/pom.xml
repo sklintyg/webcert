@@ -19,6 +19,8 @@
     <fitnesse.port>9126</fitnesse.port>
     <fitnesse.working>${project.basedir}/src/test/fitnesse</fitnesse.working>
     <fitnesse.root>FitNesseRoot</fitnesse.root>
+    <fitnesse.project.root>IneraWebcert</fitnesse.project.root>
+    <fitnesse.suite>${fitnesse.project.root}</fitnesse.suite>
     <!-- This example has no unit tests, just integration tests -->
     <skipTests>true</skipTests>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
@@ -135,22 +137,15 @@
         <configuration>
           <filesets>
             <fileset>
-              <directory>src/test/fitnesse/Resources</directory>
-            </fileset>
-            <fileset>
-              <directory>src/test/fitnesse/FitNesseRoot/ErrorLogs</directory>
-            </fileset>
-            <fileset>
-              <directory>src/test/fitnesse/FitNesseRoot/FitNesse</directory>
-            </fileset>
-            <fileset>
-              <directory>src/test/fitnesse/FitNesseRoot/PageHeader</directory>
-            </fileset>
-            <fileset>
-              <directory>src/test/fitnesse/FitNesseRoot/RecentChanges</directory>
-            </fileset>
-            <fileset>
-              <directory>src/test/fitnesse/FitNesseRoot/files</directory>
+              <directory>${fitnesse.working}</directory>
+              <excludes>
+                <exclude>${fitnesse.root}/${fitnesse.project.root}/**</exclude>
+                <exclude>${fitnesse.root}/FrontPage/**</exclude>
+                <exclude>${fitnesse.root}/PageFooter/**</exclude>
+                <exclude>${fitnesse.root}/files/validering/**</exclude>
+                <exclude>plugins.properties</exclude>
+                <exclude>**/.gitignore</exclude>
+              </excludes>
             </fileset>
           </filesets>
         </configuration>
@@ -166,7 +161,7 @@
           <createSymLink>false</createSymLink>
           <createSymLink>false</createSymLink>
           <markerFile>${project.build.directory}/fitnesse-launcher-plugin-marker</markerFile>
-          <suite>IneraWebcert</suite>
+          <suite>${fitnesse.suite}</suite>
           <useProjectDependencies>
             <scope>compile</scope>
           </useProjectDependencies>
@@ -221,8 +216,8 @@
       <id>demo</id>
       <properties>
         <webcert.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
         <logsender.baseUrl>http://demo.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
@@ -230,8 +225,8 @@
       <properties>
         <webcert.web.baseUrl>http://utveckling.webcert.intygstjanster.se/</webcert.web.baseUrl>
         <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
         <logsender.baseUrl>http://utveckling.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
@@ -239,8 +234,26 @@
       <properties>
         <webcert.web.baseUrl>https://test.webcert.intygstjanster.se/</webcert.web.baseUrl>
         <webcert.baseUrl>https://test.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
         <logsender.baseUrl>https://test.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
+      <id>nmt</id>
+      <properties>
+        <webcert.web.baseUrl>https://webcert.inera.nordicmedtest.se:21443/</webcert.web.baseUrl>
+        <webcert.baseUrl>https://webcert.inera.nordicmedtest.se:21443/services/</webcert.baseUrl>
+        <logsender.baseUrl>https://webcert.inera.nordicmedtest.se:21443/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://intygstjanst.inera.nordicmedtest.se:23443/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
+      <id>ssh-tunnel-server</id>
+      <properties>
+        <webcert.web.baseUrl>http://localhost:28080/</webcert.web.baseUrl>
+        <webcert.baseUrl>http://localhost:28080/services/</webcert.baseUrl>
+        <logsender.baseUrl>http://localhost:28080/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>http://localhost:18080/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
@@ -358,29 +371,6 @@
             </executions>
           </plugin>
         </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>selenium-server</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>exec-maven-plugin</artifactId>
-              <configuration>
-                <mainClass>org.openqa.grid.selenium.GridLauncher</mainClass>
-                <arguments>
-                  <argument>-timeout</argument>
-                  <argument>600</argument>
-                </arguments>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
       </build>
     </profile>
   </profiles>

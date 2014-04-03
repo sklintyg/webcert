@@ -1,7 +1,6 @@
 package se.inera.webcert.spec
 
 import groovy.json.JsonOutput
-import groovyx.net.http.RESTClient
 import se.inera.webcert.spec.util.RestClientFixture
 
 import static groovyx.net.http.ContentType.JSON
@@ -16,10 +15,8 @@ public class HsaMedarbetare extends RestClientFixture {
     String email
     String[] medarbetaruppdrag
 
-
     public void execute() {
-        System.out.println("HsaMedarbetare.execute()!!!!!!")
-        def restClient = new RESTClient(baseUrl)
+        def restClient = createRestClient(baseUrl)
         restClient.post(
                 path: 'hsa-api/medarbetaruppdrag',
                 body: questionJson(),
@@ -30,5 +27,4 @@ public class HsaMedarbetare extends RestClientFixture {
     private questionJson() {
         JsonOutput.toJson(this)
     }
-
 }

@@ -2,11 +2,14 @@
 <properties>
 	<Edit/>
 	<Files/>
+	<Help></Help>
 	<Properties/>
+	<Prune/>
 	<RecentChanges/>
 	<Refactor/>
 	<Search/>
-	<Static/>
+	<Suite/>
+	<Suites></Suites>
 	<SymbolicLinks>
 		<SuiteSetUp>.IneraWebcert.WebTest.SuiteSetUp</SuiteSetUp>
 		<AllTests>.IneraWebcert.WebTest.AllTests</AllTests>
