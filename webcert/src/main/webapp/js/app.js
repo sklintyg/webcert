@@ -68,6 +68,7 @@ define([
         var modulesUrls = [];
         for (var artifactId in modulesMap) {
             modulesUrls.push('../web/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
+            loadCssFromUrl('../web/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].cssPath);
         }
 
         require(modulesUrls, function () {
@@ -78,5 +79,19 @@ define([
             });
         });
     });
+
+    function loadCssFromUrl(url) {
+        var link = createLinkElement(url);
+        document.getElementsByTagName('head')[0].appendChild(link);
+    }
+
+    function createLinkElement(url) {
+        var link = document.createElement('link');
+        link.type = 'text/css';
+        link.rel = 'stylesheet';
+        link.href = url;
+        return link;
+    }
+
     return app;
 });

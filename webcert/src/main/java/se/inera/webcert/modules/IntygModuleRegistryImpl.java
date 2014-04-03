@@ -1,20 +1,14 @@
 package se.inera.webcert.modules;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.certificate.modules.support.ModuleEntryPoint;
 import se.inera.certificate.modules.support.api.ModuleApi;
+
+import javax.annotation.PostConstruct;
+import java.util.*;
 
 @Component
 public class IntygModuleRegistryImpl implements IntygModuleRegistry {
@@ -36,7 +30,7 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
         for (ModuleEntryPoint entryPoint : moduleEntryPoints) {
             moduleApiMap.put(entryPoint.getModuleId(), entryPoint.getModuleApi());
             module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(),
-                    entryPoint.getModuleDescription(), entryPoint.getModuleScriptPath());
+                    entryPoint.getModuleDescription(), entryPoint.getModuleCssPath(), entryPoint.getModuleScriptPath());
             moduleList.add(module);
         }
 

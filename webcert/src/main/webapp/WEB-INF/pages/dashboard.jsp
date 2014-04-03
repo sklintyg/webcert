@@ -38,7 +38,6 @@
 <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/bootstrap-responsive-modified.css"/>">
 <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-webcert.css"/>">
 <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-certificate.css"/>">
-<link rel="stylesheet" href="<c:url value="/web/webjars/ts-bas/webcert/css/ts-bas.css"/>">
 
 <SCRIPT LANGUAGE="VBScript">
     Function ControlExists(objectID)
