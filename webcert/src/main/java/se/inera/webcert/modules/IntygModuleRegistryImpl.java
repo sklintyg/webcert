@@ -13,7 +13,7 @@ import java.util.*;
 @Component
 public class IntygModuleRegistryImpl implements IntygModuleRegistry {
 
-    private static Logger LOG = LoggerFactory.getLogger(IntygModuleRegistryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IntygModuleRegistryImpl.class);
 
     @Autowired
     private List<ModuleEntryPoint> moduleEntryPoints;

@@ -52,14 +52,14 @@ import se.inera.webcert.web.controller.api.dto.QueryIntygResponse;
 @Path("/intyg")
 public class IntygApiController extends AbstractApiController {
 
-    private static Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
 
-    private static List<IntygsStatus> ALL_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
+    private static final List<IntygsStatus> ALL_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
             IntygsStatus.DRAFT_INCOMPLETE);
     
-    private static List<IntygsStatus> COMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE);
+    private static final List<IntygsStatus> COMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE);
     
-    private static List<IntygsStatus> INCOMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_INCOMPLETE);
+    private static final List<IntygsStatus> INCOMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_INCOMPLETE);
     
     @Autowired
     private IntygService intygService;

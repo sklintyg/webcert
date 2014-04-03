@@ -46,7 +46,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private static final List<IntygsStatus> ALL_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
             IntygsStatus.DRAFT_INCOMPLETE);
     
-    private static Logger LOG = LoggerFactory.getLogger(IntygDraftServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IntygDraftServiceImpl.class);
 
     @Autowired
     private IntygRepository intygRepository;

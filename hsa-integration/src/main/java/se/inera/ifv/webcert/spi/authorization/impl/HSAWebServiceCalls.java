@@ -51,14 +51,11 @@ public class HSAWebServiceCalls {
 
     private AttributedURIType messageId = new AttributedURIType();
 
-    private String hsaLogicalAddress = "SE165565594230-1000";
-
     /**
      * @param hsaLogicalAddress
      *            the hsaLogicalAddress to set
      */
     public void setHsaLogicalAddress(String hsaLogicalAddress) {
-        this.hsaLogicalAddress = hsaLogicalAddress;
         logicalAddressHeader.setValue(hsaLogicalAddress);
     }
 

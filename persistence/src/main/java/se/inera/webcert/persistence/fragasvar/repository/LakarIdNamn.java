@@ -4,8 +4,8 @@ package se.inera.webcert.persistence.fragasvar.repository;
  * Created by pehr on 31/10/13.
  */
 public class LakarIdNamn {
-    protected String hsaId;
-    protected String name;
+    private String hsaId;
+    private String name;
 
     public LakarIdNamn(String hsaId, String name) {
         this.hsaId = hsaId;

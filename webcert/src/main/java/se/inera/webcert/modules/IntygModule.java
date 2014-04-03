@@ -13,7 +13,6 @@ public class IntygModule implements Comparable<IntygModule> {
     private String scriptPath;
 
     public IntygModule(String id, String label, String description, String cssPath, String scriptPath) {
-        super();
         this.id = id;
         this.label = label;
         this.description = description;
@@ -46,4 +45,18 @@ public class IntygModule implements Comparable<IntygModule> {
         return getLabel().compareTo(o.getLabel());
     }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof IntygModule) {
+            IntygModule other = (IntygModule) obj;
+            return id.equals(other.id);
+        } else {
+            return false;
+        }
+    }
 }

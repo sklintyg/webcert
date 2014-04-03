@@ -27,7 +27,7 @@ public class MedcertLegacyApiController {
 
     private static final String FK7263_URI_TEMPLATE = "/m/fk7263/webcert/intyg/{certId}";
 
-    public static Logger LOG = LoggerFactory.getLogger(MedcertLegacyApiController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MedcertLegacyApiController.class);
 
     /**
      * Emulates the Medcert funtionality to create a new question for a specific

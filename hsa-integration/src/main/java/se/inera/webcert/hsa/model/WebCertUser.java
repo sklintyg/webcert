@@ -2,6 +2,7 @@ package se.inera.webcert.hsa.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
@@ -55,7 +56,7 @@ public class WebCertUser implements Serializable {
     public List<Vardgivare> getVardgivare() {
         
         if (vardgivare == null) {
-            vardgivare = new ArrayList<Vardgivare>();
+            vardgivare = Collections.emptyList();
         }
         
         return vardgivare;
@@ -120,7 +121,7 @@ public class WebCertUser implements Serializable {
         SelectableVardenhet selected = getValdVardenhet();
         
         if (selected == null) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         
         return selected.getHsaIds();
@@ -128,16 +129,11 @@ public class WebCertUser implements Serializable {
     
     @JsonIgnore
     public List<String> getIdsOfAllVardenheter() {
-        
-        List<Vardgivare> allVardgivare = getVardgivare();
-                
-        List<String> allIds = new ArrayList<String>();
-        
-        for (Vardgivare vardgivare : allVardgivare) {
-            allIds.addAll(vardgivare.getHsaIds());
+        List<String> allIds = new ArrayList<>();
+        for (Vardgivare v : getVardgivare()) {
+            allIds.addAll(v.getHsaIds());
         }
-        
-        return allIds;    
+        return allIds;
     }
     
     public int getTotaltAntalVardenheter() {

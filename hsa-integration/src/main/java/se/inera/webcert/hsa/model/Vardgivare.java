@@ -82,17 +82,19 @@ public class Vardgivare implements SelectableVardenhet, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        } else if (o == null || getClass() != o.getClass()) {
             return false;
+        } else {
+            Vardgivare that = (Vardgivare) o;
 
-        Vardgivare that = (Vardgivare) o;
-
-        if (id != null ? !id.equals(that.id) : that.id != null)
-            return false;
-
-        return true;
+            if (id == null) {
+                return that.id == null;
+            } else {
+                return id.equals(that.id);
+            }
+        }
     }
 
     @Override

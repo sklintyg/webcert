@@ -19,7 +19,7 @@ import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
 @Path("/user")
 public class UserApiController extends AbstractApiController {
 
-    private static Logger LOG = LoggerFactory.getLogger(UserApiController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)

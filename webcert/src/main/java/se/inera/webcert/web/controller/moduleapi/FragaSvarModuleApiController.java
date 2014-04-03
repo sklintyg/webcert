@@ -1,6 +1,5 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -20,9 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.service.FragaSvarService;
 import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
-import se.inera.webcert.web.service.WebCertUserService;
-
-
 
 public class FragaSvarModuleApiController {
 
@@ -30,14 +26,7 @@ public class FragaSvarModuleApiController {
 
     @Autowired
     private FragaSvarService fragaSvarService;
-    
 
-    /**
-     * Helper service to get current user.
-     */
-    @Autowired
-    private WebCertUserService webCertUserService;
-    
     @GET
     @Path("/{intygId}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")

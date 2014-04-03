@@ -24,6 +24,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 
 import se.inera.log.messages.ActivityPurpose;
@@ -53,7 +54,7 @@ public class LogServiceImplTest {
 
     @Test
     public void serviceSendsDocumentAndIdForCreate() throws Exception {
-        logService.systemId = "webcert";
+        ReflectionTestUtils.setField(logService, "systemId", "webcert");
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 

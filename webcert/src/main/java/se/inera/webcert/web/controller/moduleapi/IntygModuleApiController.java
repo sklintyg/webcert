@@ -159,7 +159,7 @@ public class IntygModuleApiController extends AbstractApiController {
         try {
             return new String(bytes, UTF_8);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Could not convert the payload from bytes to String!");
+            throw new RuntimeException("Could not convert the payload from bytes to String!", e);
         }
     }
     

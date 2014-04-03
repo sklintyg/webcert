@@ -19,7 +19,6 @@ import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.FragaSvarService;
-import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
@@ -32,9 +31,6 @@ import se.inera.webcert.web.controller.moduleapi.dto.VardgivareStats;
 public class StatModuleApiController extends AbstractApiController {
 
     private static final String SEPARATOR = " - ";
-
-    @Autowired
-    private IntygService intygService;
 
     @Autowired
     private FragaSvarService fragaSvarService;

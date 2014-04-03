@@ -8,6 +8,6 @@ package se.inera.webcert.service.draft.util;
  */
 public interface CreateIntygsIdStrategy {
     
-    public String createId();
+    String createId();
     
 }

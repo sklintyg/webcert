@@ -41,10 +41,10 @@ public class LogServiceImpl implements LogService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogServiceImpl.class);
 
     @Autowired(required = false)
-    JmsTemplate jmsTemplate;
+    private JmsTemplate jmsTemplate;
 
     @Value("${pdlLogging.systemId}")
-    String systemId;
+    private String systemId;
 
     @Autowired
     private WebCertUserService webCertUserService;

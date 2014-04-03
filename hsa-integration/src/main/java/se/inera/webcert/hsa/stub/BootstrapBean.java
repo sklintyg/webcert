@@ -20,10 +20,10 @@ public class BootstrapBean {
     private static final Logger LOG = LoggerFactory.getLogger(BootstrapBean.class);
 
     @Autowired
-    HsaServiceStub hsaServiceStub;
+    private HsaServiceStub hsaServiceStub;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @PostConstruct
     public void bootstrapVardgivare() throws IOException {

@@ -12,7 +12,7 @@ import se.inera.webcert.web.service.WebCertUserService;
 
 public abstract class AbstractApiController {
     
-    private static Logger LOG = LoggerFactory.getLogger(AbstractApiController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractApiController.class);
 
     protected static final String UTF_8 = "UTF-8";
 

@@ -96,33 +96,7 @@ public class LogSender {
         if (chunk == 0) {
             LOG.info("Zero messages in logging queue. Nothing will be sent to loggtjänst");
         } else {
-            Boolean reExecute = jmsTemplate.execute(new SessionCallback<Boolean>() {
-                @Override
-                public Boolean doInJms(Session session) throws JMSException {
-
-                    int count = chunk;
-
-                    LOG.info("Transferring " + count + " log entries to loggtjänst.");
-
-                    MessageConsumer consumer = session.createConsumer(queue);
-
-                    List<Message> messages = new ArrayList<>();
-                    while (count > 0) {
-                        messages.add(consumer.receive());
-                        count--;
-                    }
-
-                    try {
-                        sendLogEntriesToLoggtjanst(convert(messages));
-                        session.commit();
-                        return true;
-                    } catch (LoggtjanstExecutionException e) {
-                        LOG.warn("Failed to send log entries to loggtjänst, JMS session will be rolled back.", e);
-                        session.rollback();
-                        return false;
-                    }
-                }
-            }, true);
+            Boolean reExecute = jmsTemplate.execute(new JmsToLogSender(chunk), true);
 
             // there may be messages left on the queue after the first chunk, so reperform the action
             if (reExecute) {
@@ -232,5 +206,35 @@ public class LogSender {
             throw new LoggtjanstExecutionException(e);
         }
 
+    }
+
+    private class JmsToLogSender implements SessionCallback<Boolean> {
+        private final int chunk;
+
+        public JmsToLogSender(int chunk) {
+            this.chunk = chunk;
+        }
+
+        @Override
+        public Boolean doInJms(Session session) throws JMSException {
+            LOG.info("Transferring " + chunk + " log entries to loggtjänst.");
+
+            MessageConsumer consumer = session.createConsumer(queue);
+
+            List<Message> messages = new ArrayList<>();
+            for (int i = 0; i < chunk; i++) {
+                messages.add(consumer.receive());
+            }
+
+            try {
+                sendLogEntriesToLoggtjanst(convert(messages));
+                session.commit();
+                return true;
+            } catch (LoggtjanstExecutionException e) {
+                LOG.warn("Failed to send log entries to loggtjänst, JMS session will be rolled back.", e);
+                session.rollback();
+                return false;
+            }
+        }
     }
 }
