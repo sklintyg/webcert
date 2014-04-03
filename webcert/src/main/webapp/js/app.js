@@ -67,11 +67,11 @@ define([
 
         var modulesUrls = [];
         for (var artifactId in modulesMap) {
-            modulesUrls.push('../web/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
-            loadCssFromUrl('../web/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].cssPath);
+            modulesUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
+            loadCssFromUrl('/web/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].cssPath);
         }
 
-        require(modulesUrls, function () {
+        require({ baseUrl: '/web/webjars/' }, modulesUrls, function () {
             var modules = arguments;
 
             angular.element().ready(function () {

@@ -10,12 +10,7 @@ require.config({
         angularSwedish : '../web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se',
         angularUiBootstrap : '../web/webjars/angular-ui-bootstrap/0.8.0/ui-bootstrap-tpls',
 
-        text : '../web/webjars/requirejs-text/2.0.10/text',
-
-        'ts-bas' : '../web/webjars/ts-bas',
-       	'ts-diabetes' : '../web/webjars/ts-diabetes',
-       	'fk7263' : '../web/webjars/fk7263'
-        	
+        text : '../web/webjars/requirejs-text/2.0.10/text'
     },
     shim : {
         'angular' : {'exports' : 'angular'},
