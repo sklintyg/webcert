@@ -1,7 +1,6 @@
 package se.inera.webcert.hsa.stub;
 
 import static java.util.Arrays.asList;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +12,6 @@ public class Medarbetaruppdrag {
 
     private String hsaId;
     private List<Uppdrag> uppdrag;
-
 
     public Medarbetaruppdrag() {
     }
