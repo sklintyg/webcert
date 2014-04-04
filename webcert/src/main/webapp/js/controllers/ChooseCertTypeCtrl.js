@@ -17,7 +17,7 @@ define([
                 $scope.intygType = CertificateDraft.intygType;
             });
 
-            function _createDraft () {
+            function _createDraft() {
                 var valdVardenhet = User.getValdVardenhet();
                 CertificateDraft.vardGivareHsaId = valdVardenhet.id;
                 CertificateDraft.vardGivareNamn = valdVardenhet.namn;
@@ -40,23 +40,23 @@ define([
                         '<br>Adress: ' + CertificateDraft.address;
 
                     wcDialogService.showDialog($scope, {
-                        dialogId : 'confirm-address-dialog',
-                        titleId : 'label.confirmaddress',
-                        bodyText : bodyText,
+                        dialogId: 'confirm-address-dialog',
+                        titleId: 'label.confirmaddress',
+                        bodyText: bodyText,
 
-                        button1click : function () {
+                        button1click: function () {
                             $log.debug('confirm address yes');
                             _createDraft();
                         },
-                        button2click : function () {
+                        button2click: function () {
                             $log.debug('confirm address no');
                             CertificateDraft.address = null;
                             _createDraft();
                         },
 
-                        button1text : 'common.yes',
-                        button2text : 'common.no',
-                        button3text : 'common.cancel'
+                        button1text: 'common.yes',
+                        button2text: 'common.no',
+                        button3text: 'common.cancel'
                     });
                 } else {
                     // Address is not important
@@ -75,10 +75,10 @@ define([
             // List of old certificates.
 
             $scope.widgetState = {
-                doneLoading : false,
-                activeErrorMessageKey : null,
-                currentList : undefined,
-                queryFormCollapsed : true
+                doneLoading: false,
+                activeErrorMessageKey: null,
+                currentList: undefined,
+                queryFormCollapsed: true
             };
 
             $scope.updateCertList = function () {
@@ -108,14 +108,14 @@ define([
             $scope.copyIntyg = function (cert) {
                 //CertificateDraft.reset();
                 wcDialogService.showDialog($scope, {
-                    dialogId : 'copy-dialog',
-                    titleId : 'label.copycert',
-                    bodyText : '<p>När du kopierar detta intyg får du upp ett nytt intyg av samma typ och med samma information som finns i det intyg som du kopierar. Du får möjlighet att redigera informationen innan du signerar det nya intyget.</p><div class=\'form-inline\'><input id=\'dontShowAgain\' type=\'checkbox\' ng-model=\'dontShowCopyInfo\'> <label for=\'dontShowAgain\'>Visa inte denna information igen</label></div>',
-                    button1click : function () {
+                    dialogId: 'copy-dialog',
+                    titleId: 'label.copycert',
+                    bodyText: '<p>När du kopierar detta intyg får du upp ett nytt intyg av samma typ och med samma information som finns i det intyg som du kopierar. Du får möjlighet att redigera informationen innan du signerar det nya intyget.</p><div class=\'form-inline\'><input id=\'dontShowAgain\' type=\'checkbox\' ng-model=\'dontShowCopyInfo\'> <label for=\'dontShowAgain\'>Visa inte denna information igen</label></div>',
+                    button1click: function () {
                         $log.debug('copy cert');
                     },
-                    button1text : 'common.copy',
-                    button2text : 'common.cancel'
+                    button1text: 'common.copy',
+                    button2text: 'common.cancel'
                 });
             };
         }];

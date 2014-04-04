@@ -2,7 +2,7 @@ define([
 ], function () {
     'use strict';
 
-    return ['$http', '$log', function ($http, $log) {
+    return ['$http', '$log', 'statService', function ($http, $log, statService) {
         return {
 
             reset : function () {
@@ -73,6 +73,7 @@ define([
                 $http.post(restPath, payload).success(function (data) {
                     $log.debug('got callback data: ' + data);
                     onSuccess(data);
+                    statService.refreshStat();
 
                 }).error(function (data, status) {
                     $log.error('error ' + status);
