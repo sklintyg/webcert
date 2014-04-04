@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.hamcrest.core.IsNull;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -122,4 +124,15 @@ public class IntygRepositoryTest {
         
         assertThat(res.size(), is(2));
     }
+    
+    @Test
+    public void testDelete() {
+        
+        intygRepository.save(IntygTestUtil.buildIntyg("intyg-1", IntygTestUtil.ENHET_1_ID, IntygsStatus.DRAFT_INCOMPLETE));
+        
+        intygRepository.delete("intyg-1");
+        
+        assertThat(intygRepository.findOne("intyg-1"), is(nullValue()));
+    }
+    
 }

@@ -43,7 +43,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 @Service
 public class IntygDraftServiceImpl implements IntygDraftService {
     
-    private static final List<IntygsStatus> ALL_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
+    private static final List<IntygsStatus> ALL_DRAFT_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
             IntygsStatus.DRAFT_INCOMPLETE);
     
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftServiceImpl.class);
@@ -192,14 +192,19 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String intygId = request.getIntygId();
 
-        LOG.debug("Saving and validating Intyg with id '{}'", intygId);
+        LOG.debug("Saving and validating Intyg '{}'", intygId);
 
         Intyg intyg = intygRepository.findOne(intygId);
 
         if (intyg == null) {
-            LOG.warn("Intyg with id '{}' was not found", intygId);
-            // TODO Throw exception perhaps?
-            return null;
+            LOG.warn("Intyg '{}' was not found", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
+        }
+        
+        // check that the draft is still a draft
+        if (!isTheDraftStillADraft(intyg.getStatus())) {
+            LOG.error("Intyg '{}' can not be updated since it is no longer a draft", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "This intyg can not be updated since it is no longer a draft");
         }
 
         String intygType = intyg.getIntygsTyp();
@@ -229,7 +234,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         DraftValidation draftValidation;
         
-        LOG.debug("Validating Intyg with id {} and type {}", intygId, intygType);
+        LOG.debug("Validating Intyg '{}' with type '{}'", intygId, intygType);
 
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
 
@@ -274,7 +279,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         List<Lakare> lakareList = new ArrayList<>();
         
-        List<Object[]> result = intygRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFTS);
+        List<Object[]> result = intygRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFT_STATUSES);
         
         for (Object[] lakareArr : result) {
             lakareList.add(new Lakare((String) lakareArr[0], (String) lakareArr[1]));
@@ -284,6 +289,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
+    @Transactional
     public Intyg setForwardOnDraft(String intygsId, Boolean forwarded) {
 
         Intyg intyg = intygRepository.findOne(intygsId);
@@ -298,11 +304,12 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return intygRepository.save(intyg);
     }
     
+    @Override
     public Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds) {
         
         Map<String, Long> resultsMap = new HashMap<String, Long>();
         
-        List<Object[]> countResults = intygRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFTS);
+        List<Object[]> countResults = intygRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES);
         
         for (Object[] resultArr : countResults) {
             resultsMap.put((String) resultArr[0], (Long) resultArr[1]);
@@ -310,5 +317,30 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         
         return resultsMap;
     }
+    
+    @Override
+    @Transactional
+    public void deleteUnsignedDraft(String intygId) {      
 
+        LOG.debug("Deleting draft with id '{}'", intygId); 
+        
+        Intyg intyg = intygRepository.findOne(intygId);
+        
+        // check that the draft exists
+        if (intyg == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be deleted since it could not be found");
+        }
+        
+        // check that the draft is still unsigned
+        if (!isTheDraftStillADraft(intyg.getStatus())) {
+            LOG.error("Intyg '{}' can not be deleted since it is no longer a draft", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "The intyg can not be deleted since it is no longer a draft");
+        }
+        
+        intygRepository.delete(intyg);
+    }
+    
+    private boolean isTheDraftStillADraft(IntygsStatus intygStatus) {
+        return ALL_DRAFT_STATUSES.contains(intygStatus);
+    }
 }

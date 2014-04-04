@@ -22,5 +22,6 @@ public interface IntygDraftService {
     Intyg setForwardOnDraft(String intygsId, Boolean forwarded);
     
     Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds);
-
+    
+    void deleteUnsignedDraft(String intygId);
 }

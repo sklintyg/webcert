@@ -173,10 +173,10 @@ public class IntygModuleApiController extends AbstractApiController {
     @Transactional
     public Response discardDraft(@PathParam("intygId") String intygId) {
         
-        LOG.debug("Discarding Intyg with id {}", intygId);
+        LOG.debug("Deleting draft with id {}", intygId);
         
-        // TODO: Implement
-        
+        draftService.deleteUnsignedDraft(intygId);
+                
         return Response.ok().build();
     }
     

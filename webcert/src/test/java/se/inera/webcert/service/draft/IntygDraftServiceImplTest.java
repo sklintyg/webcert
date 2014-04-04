@@ -25,6 +25,7 @@ import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
@@ -49,7 +50,9 @@ public class IntygDraftServiceImplTest {
     @InjectMocks
     private IntygDraftService draftService = new IntygDraftServiceImpl();
 
-    private Intyg intyg;
+    private Intyg intygDraft;
+    
+    private Intyg intygSigned;
 
     private HoSPerson hoSPerson;
     
@@ -59,11 +62,18 @@ public class IntygDraftServiceImplTest {
 
     @Before
     public void setup() {
-        this.intyg = new Intyg();
-        intyg.setIntygsId(INTYG_ID);
-        intyg.setIntygsTyp(INTYG_TYPE);
-        intyg.setModel(INTYG_JSON);
+        this.intygDraft = new Intyg();
+        intygDraft.setIntygsId(INTYG_ID);
+        intygDraft.setIntygsTyp(INTYG_TYPE);
+        intygDraft.setStatus(IntygsStatus.DRAFT_INCOMPLETE);
+        intygDraft.setModel(INTYG_JSON);
 
+        this.intygSigned = new Intyg();
+        intygSigned.setIntygsId(INTYG_ID);
+        intygSigned.setIntygsTyp(INTYG_TYPE);
+        intygSigned.setStatus(IntygsStatus.SIGNED);
+        intygSigned.setModel(INTYG_JSON);
+        
         this.hoSPerson = new HoSPerson();
         hoSPerson.setHsaId("AAA");
         hoSPerson.setNamn("Dr Dengroth");
@@ -71,9 +81,40 @@ public class IntygDraftServiceImplTest {
     }
 
     @Test
+    public void testDeleteDraftThatIsUnsigned() {
+        
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
+                
+        draftService.deleteUnsignedDraft(INTYG_ID);
+        
+        verify(intygRepository).findOne(INTYG_ID);
+        verify(intygRepository).delete(intygDraft);
+    }
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testDeleteDraftThatIsSigned() {
+        
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygSigned);
+                
+        draftService.deleteUnsignedDraft(INTYG_ID);
+        
+        verify(intygRepository).findOne(INTYG_ID);
+    }
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testDeleteDraftThatDoesNotExist() {
+        
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(null);
+                
+        draftService.deleteUnsignedDraft(INTYG_ID);
+        
+        verify(intygRepository).findOne(INTYG_ID);
+    }
+    
+    @Test
     public void testSaveAndValidateDraft() throws Exception {
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intyg);
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
         
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
@@ -83,7 +124,7 @@ public class IntygDraftServiceImplTest {
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
         
-        SaveAndValidateDraftRequest request = buildSaveAndValidatRequest();
+        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
         
         DraftValidation res = draftService.saveAndValidateDraft(request);
 
@@ -93,11 +134,21 @@ public class IntygDraftServiceImplTest {
         assertFalse("Validation should fail", res.isDraftValid());
         assertEquals("Validation should have 1 message", 1, res.getMessages().size());
     }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testSaveAndValidateDraftWithException() throws Exception {
     
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intyg);
+    @Test(expected = WebCertServiceException.class)
+    public void testSaveAndValidateDraftThatIsSigned() {
+        
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygSigned);
+        
+        draftService.saveAndValidateDraft(buildSaveAndValidateRequest());
+        
+        verify(intygRepository).findOne(INTYG_ID);
+    }
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testSaveAndValidateDraftWithExceptionInModule() throws Exception {
+    
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
     
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
@@ -105,12 +156,12 @@ public class IntygDraftServiceImplTest {
         // Oooops! Something failed in the module
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenThrow(ModuleException.class);
         
-        SaveAndValidateDraftRequest request = buildSaveAndValidatRequest();
+        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
         
         draftService.saveAndValidateDraft(request);
     }
 
-    private SaveAndValidateDraftRequest buildSaveAndValidatRequest() {
+    private SaveAndValidateDraftRequest buildSaveAndValidateRequest() {
         SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
         request.setIntygId(INTYG_ID);
         request.setDraftAsJson(INTYG_JSON);

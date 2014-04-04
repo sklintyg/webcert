@@ -36,12 +36,17 @@ public class IntygTestUtil {
         return buildIntyg(enhetsId, IntygsStatus.DRAFT_INCOMPLETE, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN,
                 PERSON_NUMMER, PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
-
+    
     public static Intyg buildIntyg(String enhetsId, IntygsStatus status) {
         return buildIntyg(enhetsId, status, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN, PERSON_NUMMER,
                 PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
 
+    public static Intyg buildIntyg(String intygsId, String enhetsId, IntygsStatus status) {
+        return buildIntyg(intygsId, enhetsId, status, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN, PERSON_NUMMER,
+                PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL, null);
+    }
+    
     public static Intyg buildIntyg(String enhetsId, String hoSPersonId, String hoSPersonNamn, IntygsStatus status,
             String sparadStr) {
         LocalDateTime sparad = LocalDateTime.parse(sparadStr);
@@ -52,8 +57,15 @@ public class IntygTestUtil {
     public static Intyg buildIntyg(String enhetsId, IntygsStatus status, String type, String hoSPersonId,
             String hoSPersonNamn, String personNummer, String personFornamn, String personEfternamn, String model,
             LocalDateTime senastSparadDatum) {
+        return buildIntyg(UUID.randomUUID().toString(), enhetsId, status, type, hoSPersonId, hoSPersonNamn,
+                personNummer, personFornamn, personEfternamn, model, senastSparadDatum);
+    }
+
+    public static Intyg buildIntyg(String intygsId, String enhetsId, IntygsStatus status, String type,
+            String hoSPersonId, String hoSPersonNamn, String personNummer, String personFornamn,
+            String personEfternamn, String model, LocalDateTime senastSparadDatum) {
         Intyg intyg = new Intyg();
-        intyg.setIntygsId(UUID.randomUUID().toString());
+        intyg.setIntygsId(intygsId);
         intyg.setIntygsTyp(type);
         intyg.setEnhetsId(enhetsId);
         intyg.setPatientPersonnummer(personNummer);
