@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.PatientType;
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
-import se.inera.log.messages.IntygCreateMessage;
+import se.inera.log.messages.CreateDraftMessage;
 import se.inera.log.messages.IntygPrintMessage;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.log.messages.Patient;
@@ -73,7 +73,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logCreateOfIntyg(LogRequest logRequest) {
-        IntygCreateMessage logMsg = new IntygCreateMessage(logRequest.getIntygId());
+        CreateDraftMessage logMsg = new CreateDraftMessage(logRequest.getIntygId());
         populateLogMessage(logRequest, logMsg);
         send(logMsg);
     }

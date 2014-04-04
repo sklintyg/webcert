@@ -1,8 +1,8 @@
 package se.inera.log.messages;
 
-public class IntygCreateMessage extends AbstractLogMessage {
+public class CreateDraftMessage extends AbstractLogMessage {
 
-    public IntygCreateMessage(String intygId) {
+    public CreateDraftMessage(String intygId) {
         super(ActivityType.WRITE, ActivityPurpose.CARE_TREATMENT, "Intyg");
         setActivityLevel(intygId);
     }
