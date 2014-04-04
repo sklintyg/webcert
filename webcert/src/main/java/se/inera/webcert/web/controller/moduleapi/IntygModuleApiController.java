@@ -170,6 +170,7 @@ public class IntygModuleApiController extends AbstractApiController {
      */
     @DELETE
     @Path("/draft/{intygId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Transactional
     public Response discardDraft(@PathParam("intygId") String intygId) {
         
