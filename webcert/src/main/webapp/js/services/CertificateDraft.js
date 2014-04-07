@@ -46,7 +46,7 @@ define([
                     ];
                     for (var i in data) {
                         var m = data[i];
-                        types.push({sortValue : sortValue++, id : m.id, label : m.label})
+                        types.push({sortValue : sortValue++, id : m.id, label : m.label});
                     }
                     onSuccess(types);
                 }).error(function (data, status) {
