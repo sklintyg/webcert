@@ -1,6 +1,5 @@
 package se.inera.webcert.persistence.fragasvar.repository;
 
-import org.springframework.data.domain.Pageable;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 
 import java.util.List;

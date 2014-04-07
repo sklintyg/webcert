@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * @author andreaskaltenbach
  */

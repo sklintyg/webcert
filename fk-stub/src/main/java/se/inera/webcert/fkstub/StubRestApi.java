@@ -3,7 +3,6 @@ package se.inera.webcert.fkstub;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;

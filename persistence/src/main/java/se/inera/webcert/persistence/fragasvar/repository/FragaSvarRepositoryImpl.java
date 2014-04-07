@@ -1,7 +1,6 @@
 package se.inera.webcert.persistence.fragasvar.repository;
 
 import org.joda.time.LocalDate;
-import org.springframework.data.domain.Pageable;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Status;
@@ -21,9 +20,6 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
     @PersistenceContext
     private EntityManager entityManager;
-
-
-
 
     private Predicate createPredicate(FragaSvarFilter filter, CriteriaBuilder builder,Root<FragaSvar> root){
         Predicate pred= builder.conjunction();
