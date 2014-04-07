@@ -6,10 +6,10 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 
 public interface IntygModuleRegistry {
 
-    abstract ModuleApi getModuleApi(String id);
+    ModuleApi getModuleApi(String id);
 
-    abstract IntygModule getIntygModule(String id);
+    IntygModule getIntygModule(String id);
 
-    abstract List<IntygModule> listAllModules();
+    List<IntygModule> listAllModules();
 
 }

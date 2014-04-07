@@ -12,7 +12,7 @@ public interface FragaSvarFilteredRepositoryCustom {
 
     List<FragaSvar> filterFragaSvar(FragaSvarFilter filter);
 
-    public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, int startPos, int size);
+    List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, int startPos, int size);
 
-    public int filterCountFragaSvar(FragaSvarFilter filter) ;
+    int filterCountFragaSvar(FragaSvarFilter filter) ;
 }

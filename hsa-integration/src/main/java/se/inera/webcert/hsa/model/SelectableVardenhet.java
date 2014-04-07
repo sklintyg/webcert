@@ -6,11 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public interface SelectableVardenhet {
 
-    public String getId();
+    String getId();
 
-    public String getNamn();
+    String getNamn();
 
     @JsonIgnore
-    public abstract List<String> getHsaIds();
-    
+    List<String> getHsaIds();
 }
