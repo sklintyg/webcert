@@ -15,8 +15,6 @@ import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.*;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
@@ -62,9 +60,6 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
-    @Autowired
-    private LogService logService;
-
     public IntygApiController() {
 
     }
@@ -90,19 +85,7 @@ public class IntygApiController extends AbstractApiController {
 
         LOG.debug("Created a new draft of type '{}' with id '{}'", intygType, idOfCreatedDraft);
 
-        logCreateOfIntyg(idOfCreatedDraft, request);
-
         return Response.ok().entity(idOfCreatedDraft).build();
-    }
-
-    private void logCreateOfIntyg(String idOfCreatedDraft, CreateNewIntygRequest request) {
-
-        LogRequest logRequest = new LogRequest();
-        logRequest.setIntygId(idOfCreatedDraft);
-        logRequest.setPatientId(request.getPatientPersonnummer());
-        logRequest.setPatientName(request.getPatientFornamn(), request.getPatientEfternamn());
-
-        logService.logCreateOfIntyg(logRequest);
     }
 
     private CreateNewDraftRequest createServiceRequest(CreateNewIntygRequest req) {

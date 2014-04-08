@@ -34,6 +34,7 @@ import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.log.LogServiceImpl;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 import se.inera.webcert.web.service.WebCertUserServiceImpl;
 
@@ -60,9 +61,12 @@ public class LogServiceImplTest {
 
         when(webCertUserService.getWebCertUser()).thenReturn(createWcUser());
 
-        //GetCertificateForCareResponseType certificate = certificate();
-
-        logService.logReadOfIntyg("abc123", "19121212-1212");
+        LogRequest logRequest = new LogRequest();
+        logRequest.setIntygId("abc123");
+        logRequest.setPatientId("19121212-1212");
+        logRequest.setPatientName("Hans Olof van der Test");
+        
+        logService.logReadOfIntyg(logRequest );
 
         verify(template, only()).send(messageCreatorCaptor.capture());
 
@@ -85,13 +89,13 @@ public class LogServiceImplTest {
         assertEquals("HSAID", intygReadMessage.getUserId());
         assertEquals("Markus Gran", intygReadMessage.getUserName());
 
-        assertEquals("VARDENHET_ID", intygReadMessage.getEnhet().getEnhetsId());
-        assertEquals("Vårdenheten", intygReadMessage.getEnhet().getEnhetsNamn());
-        assertEquals("VARDGIVARE_ID", intygReadMessage.getEnhet().getVardgivareId());
-        assertEquals("Vårdgivaren", intygReadMessage.getEnhet().getVardgivareNamn());
+        assertEquals("VARDENHET_ID", intygReadMessage.getUserCareUnit().getEnhetsId());
+        assertEquals("Vårdenheten", intygReadMessage.getUserCareUnit().getEnhetsNamn());
+        assertEquals("VARDGIVARE_ID", intygReadMessage.getUserCareUnit().getVardgivareId());
+        assertEquals("Vårdgivaren", intygReadMessage.getUserCareUnit().getVardgivareNamn());
 
         assertEquals("19121212-1212", intygReadMessage.getPatient().getPatientId());
-        //assertEquals("Hans Olof van der Test", intygReadMessage.getPatient().getPatientNamn());
+        assertEquals("Hans Olof van der Test", intygReadMessage.getPatient().getPatientNamn());
 
         assertTrue(intygReadMessage.getTimestamp().minusSeconds(10).isBefore(now()));
         assertTrue(intygReadMessage.getTimestamp().plusSeconds(10).isAfter(now()));
@@ -116,6 +120,9 @@ public class LogServiceImplTest {
         wcu.setHsaId("HSAID");
         wcu.setNamn("Markus Gran");
         wcu.setVardgivare(Arrays.asList(vg));
+        wcu.setValdVardenhet(ve);
+        wcu.setValdVardgivare(vg);
+        
         return wcu;
     }
 }

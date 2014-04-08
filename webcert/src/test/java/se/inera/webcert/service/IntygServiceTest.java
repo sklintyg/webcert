@@ -252,9 +252,8 @@ public class IntygServiceTest {
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
 
-    @Ignore
     @Test
-    public void testFetchIntygCommonModel() throws Exception {
+    public void testFetchExternalIntygData() throws Exception {
 
         // setup intygstjansten WS mock to return intyg information
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
@@ -269,13 +268,13 @@ public class IntygServiceTest {
         ExternalModelResponse unmarshallResponse = new ExternalModelResponse("<external-json/>", utlatande);
         when(moduleApi.unmarshall(any(TransportModelHolder.class))).thenReturn(unmarshallResponse);
 
-        UtlatandeCommonModelHolder intygData = intygService.fetchIntygCommonModel(CERTIFICATE_ID);
+        IntygContentHolder intygData = intygService.fetchExternalIntygData(CERTIFICATE_ID);
 
         // ensure that correct WS call is made to intygstjanst
         verify(getCertificateForCareResponder).getCertificateForCare(LOGICAL_ADDRESS, request);
 
         // ensure correct module lookup is done with module Rest API factory
-        verify(moduleRegistry).getIntygModule("fk7263");
+        verify(moduleRegistry).getModuleApi(CERTIFICATE_TYPE);
 
         // ensure that correct utlatande XML is sent to module to convert from transport to external format
         //verify(moduleApi).unmarshall(argThat(new UtlatandeXmlMatcher()));
@@ -284,7 +283,7 @@ public class IntygServiceTest {
     }
 
     @Test( expected = WebCertServiceException.class )
-    public void testFetchIntygCommonModelWithFailingIntygstjanst() {
+    public void testFetchExternalIntygDataWithFailingIntygstjanst() {
 
         // setup intygstjansten WS mock to return error response
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
@@ -292,23 +291,23 @@ public class IntygServiceTest {
         when(getCertificateForCareResponder.getCertificateForCare(LOGICAL_ADDRESS, request)).thenReturn(
                 intygtjanstErrorResponse);
 
-        intygService.fetchIntygCommonModel(CERTIFICATE_ID);
+        intygService.fetchExternalIntygData(CERTIFICATE_ID);
     }
 
     @Test( expected = WebCertServiceException.class )
-    public void testFetchIntygCommonModelWithFailingAuth() {
+    public void testFetchExternalIntygDataWithFailingAuth() {
         // setup intygstjansten WS mock to return success response
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
         request.setCertificateId(CERTIFICATE_ID);
         when(getCertificateForCareResponder.getCertificateForCare(LOGICAL_ADDRESS, request)).thenReturn(
                 intygtjanstResponse);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
-        intygService.fetchIntygCommonModel(CERTIFICATE_ID);
+        intygService.fetchExternalIntygData(CERTIFICATE_ID);
     }
 
     @SuppressWarnings("unchecked")
     @Test( expected = WebCertServiceException.class )
-    public void testFetchIntygCommonModelWithFailingUnmarshalling() throws Exception {
+    public void testFetchExternalIntygDataWithFailingUnmarshalling() throws Exception {
 
         // setup intygstjansten WS mock to return intyg information
         GetCertificateForCareRequestType request = new GetCertificateForCareRequestType();
@@ -322,7 +321,7 @@ public class IntygServiceTest {
         // setup module API behaviour for conversion from transport to external
         when(moduleApi.unmarshall(any(TransportModelHolder.class))).thenThrow(ModuleException.class);
 
-        intygService.fetchIntygCommonModel(CERTIFICATE_ID);
+        intygService.fetchExternalIntygData(CERTIFICATE_ID);
     }
 
     @Test

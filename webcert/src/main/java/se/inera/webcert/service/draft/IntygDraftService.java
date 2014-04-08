@@ -24,4 +24,6 @@ public interface IntygDraftService {
     Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds);
     
     void deleteUnsignedDraft(String intygId);
+    
+    Intyg getDraft(String intygId);
 }

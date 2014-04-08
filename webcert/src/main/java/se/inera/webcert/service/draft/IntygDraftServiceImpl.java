@@ -39,6 +39,8 @@ import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 
 @Service
 public class IntygDraftServiceImpl implements IntygDraftService {
@@ -56,6 +58,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
+    
+    @Autowired
+    private LogService logService;
 
     public IntygDraftServiceImpl() {
 
@@ -73,9 +78,12 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
 
-        String persistedIntygId = persistNewDraft(request, intygJsonModel);
-
-        return persistedIntygId;
+        Intyg persistedIntyg = persistNewDraft(request, intygJsonModel);
+        
+        LogRequest logRequest = createLogRequestFromDraft(persistedIntyg);
+        logService.logCreateOfDraft(logRequest);
+        
+        return persistedIntyg.getIntygsId();
     }
 
     private void populateRequestWithIntygId(CreateNewDraftRequest request) {
@@ -91,7 +99,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         LOG.debug("Created id '{}' for the new draft", generatedIntygId);
     }
 
-    private String persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
+    private Intyg persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
 
         Intyg draft = new Intyg();
 
@@ -127,7 +135,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         LOG.debug("Draft '{}' persisted", savedDraft.getIntygsId());
 
-        return savedDraft.getIntygsId();
+        return savedDraft;
     }
 
     private VardpersonReferens createVardpersonFromHosPerson(HoSPerson hosPerson) {
@@ -186,6 +194,23 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }
 
+    public Intyg getDraft(String intygId) {
+        
+        LOG.debug("Fetching Intyg '{}'", intygId);
+        
+        Intyg intyg = intygRepository.findOne(intygId);
+        
+        if (intyg == null) {
+            LOG.warn("Intyg '{}' was not found", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
+        }
+        
+        LogRequest logRequest = createLogRequestFromDraft(intyg);
+        logService.logReadOfIntyg(logRequest);
+        
+        return intyg;
+    }
+    
     @Override
     @Transactional
     public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request) {
@@ -222,11 +247,31 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         VardpersonReferens vardPersonRef = createVardpersonFromHosPerson(request.getSavedBy());
         intyg.setSenastSparadAv(vardPersonRef);
 
-        intygRepository.save(intyg);
+        Intyg persistedDraft = intygRepository.save(intyg);
 
-        LOG.debug("Intyg '{}' updated", intygId);
+        LOG.debug("Draft '{}' updated", persistedDraft.getIntygsId());
+        
+        LogRequest logRequest = createLogRequestFromDraft(persistedDraft);
+        logService.logUpdateOfDraft(logRequest); 
 
         return draftValidation;
+    }
+
+    private LogRequest createLogRequestFromDraft(Intyg draft) {
+
+        LogRequest logRequest = new LogRequest();
+        
+        logRequest.setIntygId(draft.getIntygsId());
+        logRequest.setPatientId(draft.getPatientPersonnummer());
+        logRequest.setPatientName(draft.getPatientFornamn(), draft.getPatientEfternamn());
+        
+        logRequest.setIntygCareUnitId(draft.getEnhetsId());
+        logRequest.setIntygCareUnitName(draft.getEnhetsNamn());
+        
+        logRequest.setIntygCareGiverId(draft.getVardgivarId());
+        logRequest.setIntygCareGiverName(draft.getVardgivarNamn());
+        
+        return logRequest;
     }
 
     @Override
@@ -338,6 +383,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         }
         
         intygRepository.delete(intyg);
+        
+        LogRequest logRequest = createLogRequestFromDraft(intyg);
+        logService.logDeleteOfDraft(logRequest);
     }
     
     private boolean isTheDraftStillADraft(IntygsStatus intygStatus) {

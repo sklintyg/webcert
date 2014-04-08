@@ -16,7 +16,7 @@ public interface LogService {
      * @param intygId
      * @param patientId
      */
-    void logReadOfIntyg(String intygId, String patientId);
+    void logReadOfIntyg(LogRequest logRequest);
     
     /**
      * Creates a log event when an user requests an intyg as PDF.
@@ -24,12 +24,16 @@ public interface LogService {
      * @param intygId
      * @param patientId
      */
-    void logPrintOfIntyg(String intygId, String patientId);
+    void logPrintOfIntyg(LogRequest logRequest);
 
     /**
      * Creates a log event when an user creates a new intyg.
      * 
      * @param logRequest
      */
-    void logCreateOfIntyg(LogRequest logRequest);
+    void logCreateOfDraft(LogRequest logRequest);
+    
+    void logUpdateOfDraft(LogRequest logRequest);
+    
+    void logDeleteOfDraft(LogRequest logRequest);
 }

@@ -1,6 +1,5 @@
 package se.inera.webcert.service;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +9,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +26,15 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.Certificat
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateStatusType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
-import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.model.Patient;
 import se.inera.certificate.model.Utlatande;
-import se.inera.certificate.model.common.MinimalUtlatande;
+import se.inera.certificate.model.Vardenhet;
+import se.inera.certificate.model.Vardgivare;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.certificate.modules.support.api.dto.TransportModelHolder;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.modules.IntygModuleRegistry;
@@ -40,12 +42,15 @@ import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.IntygMetadata;
 import se.inera.webcert.service.dto.IntygStatus;
-import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 
 import com.google.common.base.Throwables;
+
+//import se.inera.certificate.modules.support.api.dto.Patient;
 
 /**
  * @author andreaskaltenbach
@@ -81,6 +86,9 @@ public class IntygServiceImpl implements IntygService {
     @Autowired
     private WebCertUserService webCertUserService;
 
+    @Autowired
+    private LogService logService;
+
     @Override
     public IntygContentHolder fetchIntygData(String intygId) {
 
@@ -94,7 +102,7 @@ public class IntygServiceImpl implements IntygService {
 
             ExternalModelHolder extHolder = new ExternalModelHolder(intygAsExternal.getContents());
             InternalModelResponse internalModelReponse = moduleApi.convertExternalToInternal(extHolder);
-
+            
             return new IntygContentHolder(internalModelReponse.getInternalModel(), metaData);
 
         } catch (ModuleException me) {
@@ -105,7 +113,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygContentHolder fetchExternalIntygData(String intygId) {
         try {
-            
+
             GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
 
             verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
@@ -116,12 +124,16 @@ public class IntygServiceImpl implements IntygService {
             String intygType = metaData.getType();
 
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-                        
+
             String xml = marshal(intyg.getCertificate());
             ExternalModelResponse unmarshallResponse = moduleApi.unmarshall(new TransportModelHolder(xml));
             
-            return new IntygContentHolder(unmarshallResponse.getExternalModelJson(), unmarshallResponse.getExternalModel(), metaData);
+            LogRequest logRequest = createLogRequest(unmarshallResponse.getExternalModel());
+            logService.logReadOfIntyg(logRequest);
             
+            return new IntygContentHolder(unmarshallResponse.getExternalModelJson(),
+                    unmarshallResponse.getExternalModel(), metaData);
+
         } catch (ModuleException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
@@ -142,22 +154,6 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public UtlatandeCommonModelHolder fetchIntygCommonModel(String intygId) {
-        
-        IntygContentHolder intygAsExternal = fetchExternalIntygData(intygId);
-
-        // Map it to our common model
-        CustomObjectMapper objectMapper = new CustomObjectMapper();
-        Utlatande utlatande;
-        try {
-            utlatande = objectMapper.readValue(intygAsExternal.getContents(), MinimalUtlatande.class);
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
-        }
-        return new UtlatandeCommonModelHolder(utlatande, intygAsExternal.getMetaData());
-    }
-
-    @Override
     public List<IntygItem> listIntyg(List<String> enhetId, String personnummer) {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
         request.setNationalIdentityNumber(personnummer);
@@ -172,6 +168,28 @@ public class IntygServiceImpl implements IntygService {
         default:
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                     "listCertificatesForCare WS call: ERROR :" + response.getResult().getResultText());
+        }
+    }
+
+    public PdfResponse fetchIntygAsPdf(String intygId) {
+        try {
+            LOG.debug("Fetching intyg '{}' as PDF", intygId);
+
+            IntygContentHolder intygAsExternal = fetchExternalIntygData(intygId);
+
+            String intygType = intygAsExternal.getMetaData().getType();
+
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+
+            PdfResponse pdfResponse = moduleApi.pdf(new ExternalModelHolder(intygAsExternal.getContents()));
+
+            LogRequest logRequest = createLogRequest(intygAsExternal.getExternalModel());
+            logService.logPrintOfIntyg(logRequest);
+
+            return pdfResponse;
+
+        } catch (ModuleException me) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
     }
 
@@ -241,6 +259,32 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
+    private LogRequest createLogRequest(Utlatande cert) {
+
+        LogRequest logRequest = new LogRequest();
+        logRequest.setIntygId(cert.getId().getExtension());
+
+        Patient patient = cert.getPatient();
+
+        logRequest.setPatientId(patient.getId().getExtension());
+
+        String patientFornamn = StringUtils.join(patient.getFornamn(), " ");
+
+        logRequest.setPatientName(patientFornamn, patient.getEfternamn());
+        
+        Vardenhet skapadAvVardenhet = cert.getSkapadAv().getVardenhet();
+        
+        logRequest.setIntygCareUnitId(skapadAvVardenhet.getId().getExtension());
+        logRequest.setIntygCareUnitName(skapadAvVardenhet.getNamn());
+        
+        Vardgivare skapadAvVardgivare = skapadAvVardenhet.getVardgivare();
+        
+        logRequest.setIntygCareGiverId(skapadAvVardgivare.getId().getExtension());
+        logRequest.setIntygCareGiverName(skapadAvVardgivare.getNamn());
+        
+        return logRequest;
+    }
+
     protected void verifyEnhetsAuth(String enhetsId) {
         if (!webCertUserService.isAuthorizedForUnit(enhetsId)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
@@ -248,4 +292,5 @@ public class IntygServiceImpl implements IntygService {
         }
 
     }
+
 }

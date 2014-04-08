@@ -31,6 +31,8 @@ import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygDraftServiceImplTest {
@@ -46,6 +48,9 @@ public class IntygDraftServiceImplTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
+    
+    @Mock
+    private LogService logService;
 
     @InjectMocks
     private IntygDraftService draftService = new IntygDraftServiceImpl();
@@ -89,6 +94,7 @@ public class IntygDraftServiceImplTest {
         
         verify(intygRepository).findOne(INTYG_ID);
         verify(intygRepository).delete(intygDraft);
+        verify(logService).logDeleteOfDraft(any(LogRequest.class));
     }
     
     @Test(expected = WebCertServiceException.class)
@@ -123,6 +129,8 @@ public class IntygDraftServiceImplTest {
         
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
+        
+        when(intygRepository.save(intygDraft)).thenReturn(intygDraft);
         
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
         

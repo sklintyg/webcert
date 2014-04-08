@@ -72,20 +72,14 @@ public class IntygModuleApiControllerTest {
 
     @Test
     public void testGetCertificatePdf() throws Exception {
-
-        when(intygService.fetchExternalIntygData(CERTIFICATE_ID)).thenReturn(utlatandeHolder);
-        
-        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenReturn(moduleApi);
         
         PdfResponse pdfResponse = new PdfResponse(PDF_DATA, PDF_NAME);
-        when(moduleApi.pdf(any(ExternalModelHolder.class))).thenReturn(pdfResponse);
+        
+        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID)).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getSignedIntygAsPdf(CERTIFICATE_ID);
 
-        verify(intygService).fetchExternalIntygData(CERTIFICATE_ID);
-        verify(moduleRegistry).getModuleApi(CERTIFICATE_TYPE);
-        verify(moduleApi).pdf(any(ExternalModelHolder.class));
-        verify(logService).logPrintOfIntyg(CERTIFICATE_ID, PATIENT_ID);
+        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(PDF_DATA, response.getEntity());

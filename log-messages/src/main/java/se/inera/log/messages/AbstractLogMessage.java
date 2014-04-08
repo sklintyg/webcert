@@ -27,11 +27,13 @@ public class AbstractLogMessage implements Serializable {
     private String userId;
     private String userName;
 
-    private Enhet enhet;
+    private Enhet userCareUnit;
 
     private Patient patient;
 
     private String resourceType;
+    
+    private Enhet resourceOwner;
 
     /**
      * Constructor for a log message.
@@ -111,11 +113,19 @@ public class AbstractLogMessage implements Serializable {
         this.patient = patient;
     }
 
-    public Enhet getEnhet() {
-        return enhet;
+    public Enhet getUserCareUnit() {
+        return userCareUnit;
     }
 
-    public void setEnhet(Enhet enhet) {
-        this.enhet = enhet;
+    public void setUserCareUnit(Enhet enhet) {
+        this.userCareUnit = enhet;
+    }
+
+    public Enhet getResourceOwner() {
+        return resourceOwner;
+    }
+
+    public void setResourceOwner(Enhet resourceOwner) {
+        this.resourceOwner = resourceOwner;
     }
 }

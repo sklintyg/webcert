@@ -150,15 +150,15 @@ public class LogSender {
         UserType user = new UserType();
         user.setUserId(source.getUserId());
         user.setName(source.getUserName());
-        user.setCareProvider(careProvider(source.getEnhet()));
-        user.setCareUnit(careUnit(source.getEnhet()));
+        user.setCareProvider(careProvider(source.getUserCareUnit()));
+        user.setCareUnit(careUnit(source.getUserCareUnit()));
         logType.setUser(user);
 
         logType.setResources(new ResourcesType());
         ResourceType resource = new ResourceType();
         resource.setResourceType(source.getResourceType());
-        resource.setCareProvider(careProvider(source.getEnhet()));
-        resource.setCareUnit(careUnit(source.getEnhet()));
+        resource.setCareProvider(careProvider(source.getResourceOwner()));
+        resource.setCareUnit(careUnit(source.getResourceOwner()));
 
         resource.setPatient(patient(source.getPatient()));
 
@@ -217,7 +217,7 @@ public class LogSender {
 
         @Override
         public Boolean doInJms(Session session) throws JMSException {
-            LOG.info("Transferring " + chunk + " log entries to loggtjänst.");
+            LOG.info("Transferring {} log entries to loggtjänst.", chunk);
 
             MessageConsumer consumer = session.createConsumer(queue);
 

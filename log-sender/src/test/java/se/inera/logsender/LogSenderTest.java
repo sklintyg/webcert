@@ -108,10 +108,13 @@ public class LogSenderTest {
         intygReadMessage.setUserName("Markus Gran");
 
         Enhet enhet = new Enhet("enhet1", "Enhet 1", "vg1", "Vårdgivare 1");
-        intygReadMessage.setEnhet(enhet);
+        intygReadMessage.setUserCareUnit(enhet);
 
         Patient patient = new Patient("19121212-1212", "Tolv Tolvasson");
         intygReadMessage.setPatient(patient);
+        
+        Enhet owner = new Enhet("enhet1", "Enhet 1", "vg1", "Vårdgivare 1");
+        intygReadMessage.setResourceOwner(owner);
 
         return intygReadMessage;
     }
