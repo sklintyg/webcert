@@ -160,6 +160,7 @@ define([
 
                 $log.debug('filterDrafts');
                 $scope.widgetState.activeErrorMessageKey = null;
+                $scope.filterForm.lastFilterQuery.startFrom = 0;
                 var filterQuery = $scope.filterForm.lastFilterQuery;
                 $cookieStore.put('enhetsId', filterQuery.enhetsId);
                 $cookieStore.put('unsignedCertFilter', $scope.filterForm.lastFilterQuery);
