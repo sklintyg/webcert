@@ -18,6 +18,8 @@
  */
 package se.inera.webcert.web.service;
 
+import java.util.List;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +34,13 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
     @Override
     public boolean isAuthorizedForUnit(String enhetsHsaId) {
-        WebCertUser user = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        WebCertUser user = getWebCertUser();
         return user != null && user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
     }
-
+    
+    public boolean isAuthorizedForUnits(List<String> enhetsHsaIds) {
+        WebCertUser user = getWebCertUser();
+        return user != null && user.getIdsOfSelectedVardenhet().containsAll(enhetsHsaIds);   
+    }
+    
 }

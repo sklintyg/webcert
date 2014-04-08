@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -636,12 +637,12 @@ public class FragaSvarServiceImplTest {
         queryResult.add(new Object[] { "HSA-3_ID", "NAMN3" });
         queryResult.add(new Object[] { "HSA-4_ID", "NAMN4" });
 
-        when(fragasvarRepository.findDistinctFragaSvarHsaIdByEnhet(anyString())).thenReturn(queryResult);
+        when(fragasvarRepository.findDistinctFragaSvarHsaIdByEnhet(Matchers.anyListOf(String.class))).thenReturn(queryResult);
         List<LakarIdNamn> result = service.getFragaSvarHsaIdByEnhet(enhetsId);
         ArgumentCaptor<String> capture = ArgumentCaptor.forClass(String.class);
         verify(webCertUserService).isAuthorizedForUnit(capture.capture());
 
-        verify(fragasvarRepository).findDistinctFragaSvarHsaIdByEnhet(anyString());
+        verify(fragasvarRepository).findDistinctFragaSvarHsaIdByEnhet(Matchers.anyListOf(String.class));
         assertEquals(enhetsId, capture.getValue());
         assertEquals(4, result.size());
     }

@@ -63,11 +63,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     private static final String SENT_STATUS_TYPE = "SENT";
     private static final String REVOKED_STATUS_TYPE = "CANCELLED";
-    
+
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT, Amne.OVRIGT);
-
-    
 
     @Autowired
     private MailNotificationService mailNotificationService;
@@ -140,8 +138,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public List<FragaSvar> getFragaSvar(List<String> enhetsHsaIds) {
         List<FragaSvar> result = fragaSvarRepository.findByEnhetsId(enhetsHsaIds);
         if (result != null) {
-            // We do the sorting in code, since we need to sort on a derived property and not a direct entity persisted
-            // proerty in which case we could have used an order by in the query.
+            // We do the sorting in code, since we need to sort on a derived
+            // property and not a direct entity persisted
+            // proerty in which case we could have used an order by in the
+            // query.
             Collections.sort(result, senasteHandelseDatumComparator);
         }
         return result;
@@ -155,7 +155,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         WebCertUser user = webCertUserService.getWebCertUser();
         List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
 
-        // Filter questions to that current user only sees questions issued to units with active employment role
+        // Filter questions to that current user only sees questions issued to
+        // units with active employment role
         Iterator<FragaSvar> iterator = fragaSvarList.iterator();
         while (iterator.hasNext()) {
             FragaSvar fragaSvar = iterator.next();
@@ -166,7 +167,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Finally sort by senasteHandelseDatum
-        // We do the sorting in code, since we need to sort on a derived property and not a direct entity persisted
+        // We do the sorting in code, since we need to sort on a derived
+        // property and not a direct entity persisted
         // property in which case we could have used an order by in the query.
         Collections.sort(fragaSvarList, senasteHandelseDatumComparator);
         return fragaSvarList;
@@ -188,7 +190,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Fetch certificate from Intygstjansten
-        IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(fragaSvar.getIntygsReferens().getIntygsId());
+        IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(fragaSvar.getIntygsReferens()
+                .getIntygsId());
         // Get utfardande vardperson
         Vardperson vardPerson = FragaSvarConverter.convert(externalIntygData.getExternalModel().getSkapadAv());
 
@@ -200,7 +203,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-XXX: Cannot save Svar when certificate is revoked!");
         }
-        
+
         if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "FragaSvar with id "
                     + fragaSvar.getInternReferens().toString() + " has invalid state for saving answer("
@@ -276,14 +279,15 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-001: Certificate must be sent to FK first before sending question!");
         }
-        
+
         // Verify that certificate is not revoked
         if (isRevoked(externalIntygData.getMetaData().getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-XXX: Cannot save Fraga when certificate is revoked!");
         }
 
-        IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(externalIntygData.getExternalModel());
+        IntygsReferens intygsReferens = FragaSvarConverter
+                .convertToIntygsReferens(externalIntygData.getExternalModel());
 
         FragaSvar fraga = new FragaSvar();
         fraga.setFrageStallare(FRAGE_STALLARE_WEBCERT);
@@ -294,7 +298,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fraga.setIntygsReferens(intygsReferens);
         fraga.setVardperson(vardPerson);
         fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
-        
+
         WebCertUser user = webCertUserService.getWebCertUser();
         fraga.setVardAktorHsaId(user.getHsaId());
         fraga.setVardAktorNamn(user.getNamn());
@@ -373,12 +377,13 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     "Could not find FragaSvar with id:" + frageSvarId);
         }
 
-       //Enforce business rule FS-011
-       if (!FRAGE_STALLARE_WEBCERT.equals(fragaSvar.getFrageStallare()) && !StringUtils.isEmpty(fragaSvar.getSvarsText())) {
-           throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                   "FS-011: Cant revert status for question " + frageSvarId);
-       }
-       
+        // Enforce business rule FS-011
+        if (!FRAGE_STALLARE_WEBCERT.equals(fragaSvar.getFrageStallare())
+                && !StringUtils.isEmpty(fragaSvar.getSvarsText())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "FS-011: Cant revert status for question " + frageSvarId);
+        }
+
         if (fragaSvar.getSvarsText() != null && !fragaSvar.getSvarsText().isEmpty()) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
@@ -413,13 +418,23 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
     }
-
+    
     @Override
     public List<LakarIdNamn> getFragaSvarHsaIdByEnhet(String enhetsId) {
-        verifyEnhetsAuth(enhetsId);
+
+        List<String> enhetsIdParams = new ArrayList<>();
+
+        if (enhetsId != null) {
+            verifyEnhetsAuth(enhetsId);
+            enhetsIdParams.add(enhetsId);
+        } else {
+            WebCertUser user = webCertUserService.getWebCertUser();
+            enhetsIdParams.addAll(user.getIdsOfSelectedVardenhet());
+        }
+
         List<LakarIdNamn> mdList = new ArrayList<>();
 
-        List<Object[]> tempList = fragaSvarRepository.findDistinctFragaSvarHsaIdByEnhet(enhetsId);
+        List<Object[]> tempList = fragaSvarRepository.findDistinctFragaSvarHsaIdByEnhet(enhetsIdParams);
 
         for (Object[] obj : tempList) {
             mdList.add(new LakarIdNamn((String) obj[0], (String) obj[1]));
@@ -431,19 +446,19 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds) {
         return fragaSvarRepository.countUnhandledForEnhetsIds(vardenheterIds);
     }
-    
+
     public Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds) {
-        
+
         Map<String, Long> resultsMap = new HashMap<String, Long>();
-        
+
         List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIds(vardenheterIds);
-        
+
         for (Object[] resArr : results) {
-            String id = (String) resArr[0]; 
+            String id = (String) resArr[0];
             Long nbr = (Long) resArr[1];
             resultsMap.put(id, nbr);
         }
-        
+
         return resultsMap;
     }
 }

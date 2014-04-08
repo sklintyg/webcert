@@ -76,7 +76,7 @@ public class IntygApiControllerTest {
         // Mock call to database
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES)).thenReturn(intygDrafts);
 
-        Response response = intygCtrl.listIntyg(PNR);
+        Response response = intygCtrl.listDraftsAndIntygForPerson(PNR);
 
         List<ListIntygEntry> res = (List<ListIntygEntry>) response.getEntity();
 
@@ -90,7 +90,7 @@ public class IntygApiControllerTest {
         // Mock call to database
         when(intygRepository.filterIntyg(any(IntygFilter.class))).thenReturn(intygDrafts);
 
-        Response response = intygCtrl.filterUnsignedIntygForUnit(null);
+        Response response = intygCtrl.filterDraftsForUnit(null);
 
         List<ListIntygEntry> res = (List<ListIntygEntry>) response.getEntity();
 

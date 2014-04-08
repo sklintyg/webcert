@@ -6,8 +6,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -69,9 +69,9 @@ public class FragaSvarApiController extends AbstractApiController {
 
 
     @GET
-    @Path("/mdlist/{enhetsId}")
+    @Path("/mdlist")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public List<LakarIdNamn> getFragaSvarLakareByEnhet(@PathParam("enhetsId") String enhetsId) {
+    public List<LakarIdNamn> getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
         return fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
     }
 }

@@ -68,7 +68,7 @@ public class IntygApiController extends AbstractApiController {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createNewIntyg(CreateNewIntygRequest request) {
+    public Response createNewDraft(CreateNewIntygRequest request) {
 
         if (!request.isValid()) {
             LOG.error("Request is invalid: " + request.toString());
@@ -128,7 +128,7 @@ public class IntygApiController extends AbstractApiController {
     @GET
     @Path("/list/{personNummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response listIntyg(@PathParam("personNummer") String personNummer) {
+    public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummer) {
 
         LOG.debug("Retrieving intyg for person {}", personNummer);
 
@@ -155,7 +155,7 @@ public class IntygApiController extends AbstractApiController {
     @Path("/unsigned")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response filterUnsignedIntygForUnit(@QueryParam("") QueryIntygParameter filterParameters) {
+    public Response filterDraftsForUnit(@QueryParam("") QueryIntygParameter filterParameters) {
 
         IntygFilter intygFilter = createIntygFilter(filterParameters);
         QueryIntygResponse queryResponse = performIntygFilterQuery(intygFilter);
@@ -203,23 +203,6 @@ public class IntygApiController extends AbstractApiController {
     }
 
     /**
-     * Returns a list of all deployed modules.
-     *
-     * @return
-     */
-    @GET
-    @Path("/types")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response listIntygTypes() {
-
-        List<IntygModule> allModules = moduleRegistry.listAllModules();
-
-        LOG.debug("Returning list of {} modules", allModules.size());
-
-        return Response.ok().entity(allModules).build();
-    }
-
-    /**
      * Returns a list of doctors that have one or more unsigned intyg.
      *
      * @return a list of {@link se.inera.webcert.service.dto.Lakare} objects.
@@ -227,7 +210,7 @@ public class IntygApiController extends AbstractApiController {
     @GET
     @Path("/unsigned/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getIntygLakareByEnhet() {
+    public Response getLakareWithDraftsByEnheter() {
 
         WebCertUser user = webCertUserService.getWebCertUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();

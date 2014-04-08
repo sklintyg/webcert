@@ -233,24 +233,28 @@ public class FragaSvarRepositoryTest {
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_1_ID,HSA_1_NAMN));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.PENDING_INTERNAL_ACTION,HSA_4_ID,HSA_4_NAMN));
-
-        List<Object[]> lakare = fragasvarRepository.findDistinctFragaSvarHsaIdByEnhet(ENHET_1_ID);
-
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
+        
+        List<String> params = Arrays.asList(ENHET_1_ID, ENHET_2_ID);
+        
+        List<Object[]> lakare = fragasvarRepository.findDistinctFragaSvarHsaIdByEnhet(params);
+        
+        //Assert that we only get 3 items back.
+        assertEquals(3, lakare.size());
+        
         //Assert that no value is HSA_4_ID. Wrong Enhet
         for (int i = 0; i < lakare.size(); i++) {
-            assertFalse(lakare.get(i)[0]==HSA_4_ID);
+            assertFalse(lakare.get(i)[0].equals(HSA_4_ID));
         }
 
         //Results should be sorted by name, so we should always get them in the same order.
-        assertTrue(lakare.get(0)[0]==HSA_1_ID);
-        assertTrue(lakare.get(1)[0]==HSA_2_ID);
-        assertTrue(lakare.get(2)[0]==HSA_3_ID);
-
-        //Assert that we only get 3 items back.
-        assertTrue(lakare.size()==3);
+        assertTrue(lakare.get(0)[0].equals(HSA_1_ID));
+        assertTrue(lakare.get(1)[0].equals(HSA_2_ID));
+        assertTrue(lakare.get(2)[0].equals(HSA_3_ID));
     }
 }
