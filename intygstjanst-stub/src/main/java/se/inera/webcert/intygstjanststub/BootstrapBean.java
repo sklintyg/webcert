@@ -16,7 +16,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 
-
 public class BootstrapBean {
     private static final Logger LOG = LoggerFactory.getLogger(BootstrapBean.class);
 
@@ -24,14 +23,12 @@ public class BootstrapBean {
     private IntygStore intygStore;
 
     private Unmarshaller unmarshaller;
-    private JAXBContext jaxbContext;
 
     @PostConstruct
     public void initData() {
-
         try {
             LOG.debug("Intygstjanst Stub : initializing intyg data...");
-            jaxbContext = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
 
             unmarshaller = jaxbContext.createUnmarshaller();
 
@@ -41,7 +38,6 @@ public class BootstrapBean {
             }
 
         } catch (JAXBException | IOException e) {
-            e.printStackTrace();
             throw new RuntimeException("Could not bootstrap intygsdata for intygstjanststub", e);
         }
 
@@ -57,12 +53,10 @@ public class BootstrapBean {
     }
 
     private void addIntyg(Resource res) throws JAXBException, IOException {
-
         GetCertificateForCareResponseType response = unmarshaller.unmarshal(new StreamSource(res.getInputStream()),
                 GetCertificateForCareResponseType.class).getValue();
 
         intygStore.addIntyg(response);
-
     }
 
 }

@@ -60,7 +60,9 @@ public class IntygApiController extends AbstractApiController {
     private static final List<IntygsStatus> COMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE);
     
     private static final List<IntygsStatus> INCOMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_INCOMPLETE);
-    
+
+    private static final int PAGE_SIZE = 10;
+
     @Autowired
     private IntygService intygService;
 
@@ -189,10 +191,10 @@ public class IntygApiController extends AbstractApiController {
         
         IntygFilter filter = new IntygFilter(selectedUnitHsaId);
         filter.setStatusList(ALL_DRAFTS);
-        filter.setPageSize(10);
+        filter.setPageSize(PAGE_SIZE);
         filter.setStartFrom(0);
         
-        QueryIntygResponse response = performIntygFilterQuery(selectedUnitHsaId, filter);
+        QueryIntygResponse response = performIntygFilterQuery(filter);
                 
         return Response.ok(response).build();
     }
@@ -223,12 +225,12 @@ public class IntygApiController extends AbstractApiController {
         filter.setPageSize(filterDto.getPageSize());
         filter.setStartFrom(filterDto.getStartFrom());
         
-        QueryIntygResponse queryResponse = performIntygFilterQuery(selectedUnitHsaId, filter);
+        QueryIntygResponse queryResponse = performIntygFilterQuery(filter);
                         
         return Response.ok(queryResponse).build();
     }
     
-    private QueryIntygResponse performIntygFilterQuery(String selectedUnitHsaId, IntygFilter filter) {
+    private QueryIntygResponse performIntygFilterQuery(IntygFilter filter) {
         
         List<Intyg> intygList = intygRepository.filterIntyg(filter);
                 
