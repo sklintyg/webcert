@@ -16,11 +16,11 @@ class ViewCertQAPage extends Page {
 
         unhandledQAList { $("#unhandledQACol") }
 
-        questionIsSentToFkMessage(required: false) {$("#question-is-sent-to-fk-message-text")}
+        questionIsSentToFkMessage(required: false) { $("#question-is-sent-to-fk-message-text") }
 
         certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
         certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
-        certificateIsNotSentToFkMessage(required: false) {$("#certificate-is-not-sent-to-fk-message-text")}
+        certificateIsNotSentToFkMessage(required: false) { $("#certificate-is-not-sent-to-fk-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
 
         field1yes { $("#field1yes") }
@@ -43,6 +43,7 @@ class ViewCertQAPage extends Page {
         field17 { $("#field17") }
         field_vardperson_namn { $("#vardperson_namn") }
         field_vardperson_enhetsnamn { $("#vardperson_enhetsnamn") }
+        intygSaknas { $("#cert-load-error") }
     }
 
     def showNewQuestionForm() {

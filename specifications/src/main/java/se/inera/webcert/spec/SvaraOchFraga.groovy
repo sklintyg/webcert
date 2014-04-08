@@ -328,7 +328,7 @@ class SvaraOchFraga {
 
     def gaTillIntygsvyMedIntygsid(String id) {
         Browser.drive {
-            go "/m/fk7263/webcert/intyg/${id}#view"
+            go "/web/dashboard#/fk7263/view/${id}"
             waitFor {
                 at ViewCertQAPage
             }
@@ -533,6 +533,17 @@ class SvaraOchFraga {
         return result
     }
 
+    boolean intygSaknasVisas() {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.intygSaknas.isDisplayed()
+            }
+        }
+        return true
+    }
 
     boolean intygFält1Visas(String visatVarde) {
         def result = false
