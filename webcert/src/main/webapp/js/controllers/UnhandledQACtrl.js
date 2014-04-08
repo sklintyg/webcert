@@ -1,393 +1,410 @@
 define(
-		[],
-		function() {
-			'use strict';
+    [],
+    function () {
+        'use strict';
 
-			/*
-			 * Controller for logic related to listing questions and answers
-			 */
-			return [
-					'$scope',
-					'$window',
-					'$location',
-					'$log',
-					'$timeout',
-					'$filter',
-					'$cookieStore',
-					'dashBoardService',
-					'fragaSvarCommonService',
-					'wcDialogService',
-					function($scope, $window, $location, $log, $timeout, $filter, $cookieStore, dashBoardService,
-							fragaSvarCommonService, wcDialogService) {
+        /*
+         * Controller for logic related to listing questions and answers
+         */
+        return [
+            '$scope',
+            '$window',
+            '$location',
+            '$log',
+            '$timeout',
+            '$filter',
+            '$cookieStore',
+            'dashBoardService',
+            'fragaSvarCommonService',
+            'wcDialogService',
+            function ($scope, $window, $location, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
 
-						// init state
-						$scope.widgetState = {
-							doneLoading : false,
-							activeErrorMessageKey : null,
-							queryMode : false,
-							queryStartFrom : 0,
-							queryPageSize : 10,
-							totalCount : 0,
-							currentList : undefined,
-							queryFormCollapsed : true,
-							form : {
-								questionFrom : "default",
-								vidarebefordrad : "default"
-							},
-							dpFromOpen : {
-								open : false
-							},
-							dpToOpen : {
-								open : false
-							},
-							dpAnswerOpen : {
-								open : false
-							}
-						};
+                // init state
+                $scope.widgetState = {
+                    doneLoading: false,
+                    activeErrorMessageKey: null,
+                    queryMode: false,
+                    queryStartFrom: 0,
+                    queryPageSize: 10,
+                    totalCount: 0,
+                    currentList: undefined,
+                    queryFormCollapsed: true,
+                    form: {
+                        questionFrom: "default",
+                        vidarebefordrad: "default"
+                    },
+                    dpFromOpen: {
+                        open: false
+                    },
+                    dpToOpen: {
+                        open: false
+                    },
+                    dpAnswerOpen: {
+                        open: false
+                    }
+                };
 
-						$scope.qaListUnhandled = {};
-						$scope.qaListQuery = {};
-						$scope.activeUnit = {};
+                $scope.qaListUnhandled = {};
+                $scope.qaListQuery = {};
+                $scope.activeUnit = {};
 
-						$scope.isActiveUnitChosen = function() {
-							// there is no better crossbrowser way to check activeunit == {} without using libraries
-							// like JSON or jquery. The following is using a modified version of jquerys isEmptyObject
-							// implementation.
-							var name;
-							for (name in $scope.activeUnit) {
-								return true;
-							}
-							return false;
-						};
+                $scope.isActiveUnitChosen = function () {
+                    // there is no better crossbrowser way to check activeunit == {} without using libraries
+                    // like JSON or jquery. The following is using a modified version of jquerys isEmptyObject
+                    // implementation.
+                    var name;
+                    for (name in $scope.activeUnit) {
+                        return true;
+                    }
+                    return false;
+                };
 
-						$scope.$on('qa-filter-select-care-unit', function(event, unit) {
-							$log.debug('ActiveUnit is now:' + unit);
-							$scope.activeUnit = unit;
-							$scope.widgetState.queryMode = false;
-							$scope.widgetState.queryFormCollapsed = true;
+                function filterCurrentList(unit) {
+                    if (unit.id === "wc-all") {
+                        $scope.widgetState.currentList = angular.copy($scope.qaListUnhandled);
+                    } else {
+                        $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, unit.id);
+                    }
+                }
 
-							// If we change enhet then we probably don't want the same filter criterias
-							if ($cookieStore.get('enhetsId') && $cookieStore.get('enhetsId') !== unit.id) {
-								$scope.resetSearchForm();
-							}
-							$cookieStore.put('enhetsId', unit.id);
+                $scope.$on('qa-filter-select-care-unit', function (event, unit) {
+                    $log.debug('ActiveUnit is now:' + unit);
+                    $scope.activeUnit = unit;
+                    $scope.widgetState.queryMode = false;
+                    $scope.widgetState.queryFormCollapsed = true;
 
-							$scope.initDoctorList(unit.id);
-							$scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled,
-									unit.id);
+                    // If we change enhet then we probably don't want the same filter criterias
+                    if ($cookieStore.get('enhetsId') && $cookieStore.get('enhetsId') !== unit.id) {
+                        $scope.resetSearchForm();
+                    }
+                    $cookieStore.put('enhetsId', unit.id);
 
-							// If we have a query stored, open the advanced filter
-							if ($cookieStore.get('query_instance')) {
-								$scope.widgetState.queryFormCollapsed = false;
-								$scope.doSearch();
-							}
-						});
+                    $scope.initDoctorList(unit.id);
+                    filterCurrentList(unit);
 
-						$scope.statusList = [ {
-							label : 'Visa alla',
-							value : 'ALLA'
-						}, {
-							label : 'Alla som kräver åtgärd',
-							value : 'ALLA_OHANTERADE'
-						}, {
-							label : 'Markera som hanterad',
-							value : 'MARKERA_SOM_HANTERAD'
-						}, {
-							label : 'Komplettera',
-							value : 'KOMPLETTERING_FRAN_VARDEN'
-						}, {
-							label : 'Svara',
-							value : 'SVAR_FRAN_VARDEN'
-						}, {
-							label : 'Invänta svar från Försäkringskassan',
-							value : 'SVAR_FRAN_FK'
-						}, {
-							label : 'Ingen',
-							value : 'HANTERAD'
-						} ];
+                    // If we have a query stored, open the advanced filter
+                    if ($cookieStore.get('query_instance')) {
+                        $scope.widgetState.queryFormCollapsed = false;
+                        $scope.doSearch();
+                    }
+                });
 
-						$scope.doctorListEmptyChoice = {
-							hsaId : undefined,
-							name : 'Alla'
-						};
-						$scope.doctorList = [];
-						$scope.doctorList.push($scope.doctorListEmptyChoice);
+                $scope.statusList = [
+                    {
+                        label: 'Visa alla',
+                        value: 'ALLA'
+                    },
+                    {
+                        label: 'Alla som kräver åtgärd',
+                        value: 'ALLA_OHANTERADE'
+                    },
+                    {
+                        label: 'Markera som hanterad',
+                        value: 'MARKERA_SOM_HANTERAD'
+                    },
+                    {
+                        label: 'Komplettera',
+                        value: 'KOMPLETTERING_FRAN_VARDEN'
+                    },
+                    {
+                        label: 'Svara',
+                        value: 'SVAR_FRAN_VARDEN'
+                    },
+                    {
+                        label: 'Invänta svar från Försäkringskassan',
+                        value: 'SVAR_FRAN_FK'
+                    },
+                    {
+                        label: 'Ingen',
+                        value: 'HANTERAD'
+                    }
+                ];
 
-						var defaultQuery = {
-							enhetsId : undefined, // set to chosen enhet
-							// before submitting query
-							questionFromFK : false,
-							questionFromWC : false,
-							hsaId : undefined, // läkare
-							vidarebefordrad : undefined, // 3-state
-							// boolean
-							changedFrom : undefined,
-							changedTo : undefined,
-							vantarPaSelector : $scope.statusList[1],
-							doctorSelector : $scope.doctorList[0],
-							replyLatest : undefined
-						};
+                $scope.doctorListEmptyChoice = {
+                    hsaId: undefined,
+                    name: 'Alla'
+                };
+                $scope.doctorList = [];
+                $scope.doctorList.push($scope.doctorListEmptyChoice);
 
-						$scope.decorateList = function(list) {
-							angular.forEach(list, function(qa) {
-								fragaSvarCommonService.decorateSingleItemMeasure(qa);
-							});
-						};
+                var defaultQuery = {
+                    enhetsId: undefined, // set to chosen enhet
+                    // before submitting query
+                    questionFromFK: false,
+                    questionFromWC: false,
+                    hsaId: undefined, // läkare
+                    vidarebefordrad: undefined, // 3-state
+                    // boolean
+                    changedFrom: undefined,
+                    changedTo: undefined,
+                    vantarPaSelector: $scope.statusList[1],
+                    doctorSelector: $scope.doctorList[0],
+                    replyLatest: undefined
+                };
 
-						$scope.doSearch = function() {
-							$log.debug('doSearch');
-							$scope.widgetState.queryMode = true;
-							$scope.widgetState.runningQuery = true;
-							$scope.widgetState.activeErrorMessageKey = null;
-							var toSend = $scope.prepareSearchFormForQuery($scope.qp, $scope.widgetState);
-							$scope.widgetState.lastQuery = toSend;
-							dashBoardService.getQAByQuery(toSend, function(successData) {
-								$scope.widgetState.runningQuery = false;
+                $scope.decorateList = function (list) {
+                    angular.forEach(list, function (qa) {
+                        fragaSvarCommonService.decorateSingleItemMeasure(qa);
+                    });
+                };
 
-								$scope.qaListQuery = successData.results;
-								$scope.widgetState.currentList = $scope.qaListQuery;
-								$scope.widgetState.totalCount = successData.totalCount;
-								$scope.decorateList($scope.widgetState.currentList);
+                $scope.doSearch = function () {
+                    $log.debug('doSearch');
+                    $scope.widgetState.queryMode = true;
+                    $scope.widgetState.runningQuery = true;
+                    $scope.widgetState.activeErrorMessageKey = null;
+                    var toSend = $scope.prepareSearchFormForQuery($scope.qp, $scope.widgetState);
+                    $scope.widgetState.lastQuery = toSend;
+                    dashBoardService.getQAByQuery(toSend, function (successData) {
+                        $scope.widgetState.runningQuery = false;
 
-							}, function() {
-								$scope.widgetState.runningQuery = false;
-								$log.debug('Query Error');
-								// TODO: real errorhandling
-								$scope.widgetState.activeErrorMessageKey = 'info.query.error';
-							});
-						};
+                        $scope.qaListQuery = successData.results;
+                        $scope.widgetState.currentList = $scope.qaListQuery;
+                        $scope.widgetState.totalCount = successData.totalCount;
+                        $scope.decorateList($scope.widgetState.currentList);
 
-						$scope.fetchMore = function() {
-							$log.debug('fetchMore');
-							$scope.widgetState.queryMode = true;
-							$scope.widgetState.fetchingMoreInProgress = true;
-							$scope.widgetState.activeErrorMessageKey = null;
-							var queryInstance = $scope.widgetState.lastQuery;
-							queryInstance.startFrom = queryInstance.startFrom + queryInstance.pageSize;
-							$scope.widgetState.lastQuery = queryInstance;
+                    }, function () {
+                        $scope.widgetState.runningQuery = false;
+                        $log.debug('Query Error');
+                        $scope.widgetState.activeErrorMessageKey = 'info.query.error';
+                    });
+                };
 
-							dashBoardService.getQAByQueryFetchMore(queryInstance, function(successData) {
-								$scope.widgetState.fetchingMoreInProgress = false;
-								$scope.decorateList(successData.results);
+                $scope.fetchMore = function () {
+                    $log.debug('fetchMore');
+                    $scope.widgetState.queryMode = true;
+                    $scope.widgetState.fetchingMoreInProgress = true;
+                    $scope.widgetState.activeErrorMessageKey = null;
+                    var queryInstance = $scope.widgetState.lastQuery;
+                    queryInstance.startFrom += queryInstance.pageSize;
+                    $scope.widgetState.lastQuery = queryInstance;
 
-								for ( var i = 0; i < successData.results.length; i++) {
-									$scope.qaListQuery.push(successData.results[i]);
-								}
+                    dashBoardService.getQAByQueryFetchMore(queryInstance, function (successData) {
+                        $scope.widgetState.fetchingMoreInProgress = false;
+                        $scope.decorateList(successData.results);
 
-								$scope.widgetState.currentList = $scope.qaListQuery;
-							}, function() {
-								$scope.widgetState.fetchingMoreInProgress = false;
-								$log.debug('Query Error');
-								$scope.widgetState.activeErrorMessageKey = 'info.query.error';
-							});
-						};
-						$scope.resetSearchForm = function() {
-							$cookieStore.remove('query_instance');
+                        for (var i = 0; i < successData.results.length; i++) {
+                            $scope.qaListQuery.push(successData.results[i]);
+                        }
 
-							$scope.qp = angular.copy(defaultQuery);
-							$scope.qp.vantarPaSelector = $scope.statusList[1];
-							$scope.qp.doctorSelector = $scope.doctorList[0];
-							$scope.widgetState.form.questionFrom = "default";
-							$scope.widgetState.form.vidarebefordrad = "default";
-						};
+                        $scope.widgetState.currentList = $scope.qaListQuery;
+                    }, function () {
+                        $scope.widgetState.fetchingMoreInProgress = false;
+                        $log.debug('Query Error');
+                        $scope.widgetState.activeErrorMessageKey = 'info.query.error';
+                    });
+                };
+                $scope.resetSearchForm = function () {
+                    $cookieStore.remove('query_instance');
 
-						$scope.reloadSearchForm = function() {
-							if ($cookieStore.get('query_instance')) {
-								$scope.qp = $cookieStore.get('query_instance').filter;
+                    $scope.qp = angular.copy(defaultQuery);
+                    $scope.qp.vantarPaSelector = $scope.statusList[1];
+                    $scope.qp.doctorSelector = $scope.doctorList[0];
+                    $scope.widgetState.form.questionFrom = "default";
+                    $scope.widgetState.form.vidarebefordrad = "default";
+                };
 
-								if ($scope.qp.questionFromFK == false && $scope.qp.questionFromWC == false) {
-									$scope.widgetState.form.questionFrom = "default";
-								} else if ($scope.qp.questionFromFK) {
-									$scope.widgetState.form.questionFrom = "FK";
-								} else {
-									$scope.widgetState.form.questionFrom = "WC";
-								}
+                $scope.reloadSearchForm = function () {
+                    if ($cookieStore.get('query_instance')) {
+                        $scope.qp = $cookieStore.get('query_instance').filter;
 
-								if ($scope.qp.vidarebefordrad == undefined) {
-									$scope.widgetState.form.vidarebefordrad = "default";
-								} else {
-									$scope.widgetState.form.vidarebefordrad = $scope.qp.vidarebefordrad;
-								}
+                        if ($scope.qp.questionFromFK === false && $scope.qp.questionFromWC === false) {
+                            $scope.widgetState.form.questionFrom = "default";
+                        } else if ($scope.qp.questionFromFK) {
+                            $scope.widgetState.form.questionFrom = "FK";
+                        } else {
+                            $scope.widgetState.form.questionFrom = "WC";
+                        }
 
-								if ($scope.qp.vantarPaSelector) {
-									$scope.qp.vantarPaSelector = selectVantarPaByValue($cookieStore
-											.get('query_instance').filter.vantarPaSelector.value);
-								} else {
-									$scope.qp.vantarPaSelector = $scope.statusList[1];
-								}
+                        if ($scope.qp.vidarebefordrad === undefined) {
+                            $scope.widgetState.form.vidarebefordrad = "default";
+                        } else {
+                            $scope.widgetState.form.vidarebefordrad = $scope.qp.vidarebefordrad;
+                        }
 
-							} else {
-								$scope.resetSearchForm();
-							}
-						};
+                        if ($scope.qp.vantarPaSelector) {
+                            $scope.qp.vantarPaSelector = selectVantarPaByValue($cookieStore
+                                .get('query_instance').filter.vantarPaSelector.value);
+                        } else {
+                            $scope.qp.vantarPaSelector = $scope.statusList[1];
+                        }
 
-						$scope.prepareSearchFormForQuery = function(qp, ws) {
+                    } else {
+                        $scope.resetSearchForm();
+                    }
+                };
 
-							qp.enhetsId = $scope.activeUnit.id;
-							$cookieStore.put('enhetsId', qp.enhetsId);
-							qp.vantarPa = qp.vantarPaSelector.value;
+                $scope.prepareSearchFormForQuery = function (qp, ws) {
 
-							if (qp.doctorSelector) {
-								qp.hsaId = qp.doctorSelector.hsaId;
-							}
+                    qp.enhetsId = $scope.activeUnit.id;
+                    $cookieStore.put('enhetsId', qp.enhetsId);
+                    qp.vantarPa = qp.vantarPaSelector.value;
 
-							if (qp.changedFrom) {
-								qp.changedFrom = $filter('date')(qp.changedFrom, 'yyyy-MM-dd');
-							}
+                    if (qp.doctorSelector) {
+                        qp.hsaId = qp.doctorSelector.hsaId;
+                    }
 
-							if (qp.changedTo) {
-								qp.changedTo = $filter('date')(qp.changedTo, 'yyyy-MM-dd');
-							}
+                    if (qp.changedFrom) {
+                        qp.changedFrom = $filter('date')(qp.changedFrom, 'yyyy-MM-dd');
+                    }
 
-							if (qp.replyLatest) {
-								qp.replyLatest = $filter('date')(qp.replyLatest, 'yyyy-MM-dd');
-							}
+                    if (qp.changedTo) {
+                        qp.changedTo = $filter('date')(qp.changedTo, 'yyyy-MM-dd');
+                    }
 
-							if ($scope.widgetState.form.questionFrom == "FK") {
-								qp.questionFromFK = true;
-								qp.questionFromWC = false;
-							} else if ($scope.widgetState.form.questionFrom == "WC") {
-								qp.questionFromFK = false;
-								qp.questionFromWC = true;
-							} else {
-								qp.questionFromFK = false;
-								qp.questionFromWC = false;
-							}
-							if ($scope.widgetState.form.vidarebefordrad == "default") {
-								qp.vidarebefordrad = undefined;
-							} else {
-								qp.vidarebefordrad = $scope.widgetState.form.vidarebefordrad;
-							}
+                    if (qp.replyLatest) {
+                        qp.replyLatest = $filter('date')(qp.replyLatest, 'yyyy-MM-dd');
+                    }
 
-							var queryInstance = {};
-							queryInstance.startFrom = ws.queryStartFrom;
-							queryInstance.pageSize = ws.queryPageSize;
-							queryInstance.filter = qp;
-							$cookieStore.put('query_instance', queryInstance);
-							return queryInstance;
-						};
+                    if ($scope.widgetState.form.questionFrom === "FK") {
+                        qp.questionFromFK = true;
+                        qp.questionFromWC = false;
+                    } else if ($scope.widgetState.form.questionFrom === "WC") {
+                        qp.questionFromFK = false;
+                        qp.questionFromWC = true;
+                    } else {
+                        qp.questionFromFK = false;
+                        qp.questionFromWC = false;
+                    }
+                    if ($scope.widgetState.form.vidarebefordrad === "default") {
+                        qp.vidarebefordrad = undefined;
+                    } else {
+                        qp.vidarebefordrad = $scope.widgetState.form.vidarebefordrad;
+                    }
 
-						$scope.reloadSearchForm();
+                    var queryInstance = {};
+                    queryInstance.startFrom = ws.queryStartFrom;
+                    queryInstance.pageSize = ws.queryPageSize;
+                    queryInstance.filter = qp;
+                    $cookieStore.put('query_instance', queryInstance);
+                    return queryInstance;
+                };
 
-						// load all fragasvar for all units in usercontext
+                $scope.reloadSearchForm();
 
-						dashBoardService.getQA(function(data) {
-							$scope.widgetState.queryMode = false;
-							$scope.widgetState.doneLoading = true;
-							if (data !== null) {
-								$scope.widgetState.activeErrorMessageKey = null;
-								$scope.qaListUnhandled = data;
-								$scope.widgetState.currentList = $scope.qaListUnhandled;
-								$scope.widgetState.totalCount = $scope.widgetState.currentList.length;
-								$scope.decorateList($scope.widgetState.currentList);
-								$scope.widgetState.queryMode = false;
+                // load all fragasvar for all units in usercontext
 
-								// If active unit is already set then do the
-								// filtering
-								if ($scope.activeUnit) {
-									$scope.widgetState.currentList = $filter('QAEnhetsIdFilter')(
-											$scope.qaListUnhandled, $scope.activeUnit.id);
-								}
-							} else {
-								$scope.widgetState.activeErrorMessageKey = 'error.unansweredcerts.couldnotbeloaded';
-							}
-						});
+                dashBoardService.getQA(function (data) {
+                    $scope.widgetState.queryMode = false;
+                    $scope.widgetState.doneLoading = true;
+                    if (data !== null) {
+                        $scope.widgetState.activeErrorMessageKey = null;
+                        $scope.qaListUnhandled = data;
+                        $scope.widgetState.currentList = $scope.qaListUnhandled;
+                        $scope.widgetState.totalCount = $scope.widgetState.currentList.length;
+                        $scope.decorateList($scope.widgetState.currentList);
+                        $scope.widgetState.queryMode = false;
 
-						$scope.onVidareBefordradChange = function(qa) {
-							qa.updateInProgress = true;
-							fragaSvarCommonService
-									.setVidareBefordradState(
-											qa.internReferens,
-											qa.vidarebefordrad,
-											function(result) {
-												qa.updateInProgress = false;
+                        // If active unit is already set then do the
+                        // filtering
+                        if ($scope.activeUnit) {
+                            filterCurrentList($scope.activeUnit);
+                        }
+                    } else {
+                        $scope.widgetState.activeErrorMessageKey = 'error.unansweredcerts.couldnotbeloaded';
+                    }
+                });
 
-												if (result !== null) {
-													qa.vidarebefordrad = result.vidarebefordrad;
-												} else {
-													qa.vidarebefordrad = !qa.vidarebefordrad;
-													wcDialogService
-															.showErrorMessageDialog('Kunde inte markera/avmarkera frågan som vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. Annars kan du kontakta supporten');
-												}
-											});
-						};
+                $scope.onVidareBefordradChange = function (qa) {
+                    qa.updateInProgress = true;
+                    fragaSvarCommonService
+                        .setVidareBefordradState(
+                        qa.internReferens,
+                        qa.vidarebefordrad,
+                        function (result) {
+                            qa.updateInProgress = false;
 
-						$scope.initDoctorList = function(unitId) {
-							$scope.widgetState.loadingDoctors = true;
-							dashBoardService.getDoctorList(unitId, function(list) {
-								$scope.widgetState.loadingDoctors = false;
+                            if (result !== null) {
+                                qa.vidarebefordrad = result.vidarebefordrad;
+                            } else {
+                                qa.vidarebefordrad = !qa.vidarebefordrad;
+                                wcDialogService
+                                    .showErrorMessageDialog('Kunde inte markera/avmarkera frågan som vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. Annars kan du kontakta supporten');
+                            }
+                        });
+                };
 
-								$scope.doctorList = list;
-								if (list && (list.length > 0)) {
-									$scope.doctorList.unshift($scope.doctorListEmptyChoice);
+                $scope.initDoctorList = function (unitId) {
+                    $scope.widgetState.loadingDoctors = true;
+                    dashBoardService.getDoctorList(unitId === "wc-all" ? "" : unitId, function (list) {
 
-									if ($cookieStore.get('query_instance')
-											&& $cookieStore.get('query_instance').filter.doctorSelector) {
-										$scope.qp.doctorSelector = selectDoctorByHsaId($cookieStore
-												.get('query_instance').filter.doctorSelector.hsaId);
-									} else {
-										$scope.doctorSelector = $scope.doctorList[0];
-									}
-								}
-							}, function() {
-								$scope.widgetState.loadingDoctors = false;
-								$scope.doctorList = [];
-								$scope.doctorList.push({
-									hsaId : undefined,
-									name : '<Kunde inte hämta lista>'
-								});
-							});
-						};
+                        $scope.widgetState.loadingDoctors = false;
 
-						function selectDoctorByHsaId(hsaId) {
-							for ( var count = 0; count < $scope.doctorList.length; count++) {
-								if ($scope.doctorList[count].hsaId === hsaId) {
-									return $scope.doctorList[count];
-								}
-							}
-							return $scope.doctorList[0];
-						}
+                        $scope.doctorList = list;
+                        if (list && (list.length > 0)) {
+                            $scope.doctorList.unshift($scope.doctorListEmptyChoice);
 
-						function selectVantarPaByValue(vantaValue) {
-							for ( var count = 0; count < $scope.statusList.length; count++) {
-								if ($scope.statusList[count].value === vantaValue) {
-									return $scope.statusList[count];
-								}
-							}
-							return $scope.statusList[0];
-						}
+                            if ($cookieStore.get('query_instance') && $cookieStore.get('query_instance').filter.doctorSelector) {
+                                $scope.qp.doctorSelector = selectDoctorByHsaId($cookieStore
+                                    .get('query_instance').filter.doctorSelector.hsaId);
+                            } else {
+                                $scope.doctorSelector = $scope.doctorList[0];
+                            }
+                        }
+                    }, function () {
+                        $scope.widgetState.loadingDoctors = false;
+                        $scope.doctorList = [];
+                        $scope.doctorList.push({
+                            hsaId: undefined,
+                            name: '<Kunde inte hämta lista>'
+                        });
+                    });
+                };
 
-						// Calculate how many entities we have for a
-						// specific
-						// enhetsId
-						$scope.getItemCountForUnitId = function(unit) {
-							if (!$scope.widgetState.doneLoading) {
-								return '?';
-							}
-							var count = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, unit.id).length;
+                function selectDoctorByHsaId(hsaId) {
+                    for (var count = 0; count < $scope.doctorList.length; count++) {
+                        if ($scope.doctorList[count].hsaId === hsaId) {
+                            return $scope.doctorList[count];
+                        }
+                    }
+                    return $scope.doctorList[0];
+                }
 
-							return count;
-						};
+                function selectVantarPaByValue(vantaValue) {
+                    for (var count = 0; count < $scope.statusList.length; count++) {
+                        if ($scope.statusList[count].value === vantaValue) {
+                            return $scope.statusList[count];
+                        }
+                    }
+                    return $scope.statusList[0];
+                }
 
-						$scope.openIntyg = function(intygsReferens) {
-							$log.debug('open intyg ' + intygsReferens.intygsId);
-							$location.url('/' + intygsReferens.intygsTyp.toLowerCase() + "/view/"
-									+ intygsReferens.intygsId, true);
-						};
+                // Calculate how many entities we have for a
+                // specific
+                // enhetsId
+                $scope.getItemCountForUnitId = function (unit) {
+                    if (!$scope.widgetState.doneLoading) {
+                        return '?';
+                    }
+                    var count = 0;
+                    if (unit.id === "wc-all") {
+                        count = $scope.qaListUnhandled.length;
+                    }
+                    else {
+                        count = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, unit.id).length;
+                    }
 
-						// Handle vidarebefordra dialog
-						$scope.openMailDialog = function(qa) {
-							$timeout(function() {
-								fragaSvarCommonService.handleVidareBefodradToggle(qa, $scope.onVidareBefordradChange);
-							}, 1000);
-							// Launch mail client
-							$window.location = fragaSvarCommonService.buildMailToLink(qa);
-						};
+                    return count;
+                };
 
-						$scope.toggleDatePickerInstance = function(instance) {
-							$timeout(function() {
-								instance.open = !instance.open;
-							});
-						};
-					} ];
-		});
+                $scope.openIntyg = function (intygsReferens) {
+                    $log.debug('open intyg ' + intygsReferens.intygsId);
+                    $location.url('/' + intygsReferens.intygsTyp.toLowerCase() + "/view/" + intygsReferens.intygsId, true);
+                };
+
+                // Handle vidarebefordra dialog
+                $scope.openMailDialog = function (qa) {
+                    $timeout(function () {
+                        fragaSvarCommonService.handleVidareBefodradToggle(qa, $scope.onVidareBefordradChange);
+                    }, 1000);
+                    // Launch mail client
+                    $window.location = fragaSvarCommonService.buildMailToLink(qa);
+                };
+
+                $scope.toggleDatePickerInstance = function (instance) {
+                    $timeout(function () {
+                        instance.open = !instance.open;
+                    });
+                };
+            } ];
+    });
