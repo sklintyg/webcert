@@ -31,7 +31,7 @@ define([
         function _getUnsignedCertificatesByQueryFetchMore(query, onSuccess, onError) {
             $log.debug('_getUnsignedCertificatesByQueryFetchMore');
             var restPath = '/api/intyg/unsigned';
-            $http.put(restPath, query).success(function (data) {
+            $http.get(restPath, { params: query }).success(function (data) {
 
                 /////////////// MOCKED ////////////////
                 //var restPath = '/jsonmocks/intyg_unsigned_fetchmore.json'; // mocked version

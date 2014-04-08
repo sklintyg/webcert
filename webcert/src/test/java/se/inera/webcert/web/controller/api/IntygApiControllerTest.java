@@ -1,17 +1,5 @@
 package se.inera.webcert.web.controller.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.any;
-
-
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ws.rs.core.Response;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
@@ -30,6 +17,16 @@ import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.test.TestIntygFactory;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Ignore
 @RunWith(MockitoJUnitRunner.class)
@@ -43,7 +40,7 @@ public class IntygApiControllerTest {
     private static List<IntygsStatus> DRAFT_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
             IntygsStatus.DRAFT_INCOMPLETE);
     private static List<IntygsStatus> DRAFT_COMPLETE_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE);
-    
+
     private static List<Intyg> intygDrafts = TestIntygFactory.createListWithIntygDrafts();
 
     private static List<IntygItem> intygSigned = TestIntygFactory.createListWithIntygItems();
@@ -62,20 +59,20 @@ public class IntygApiControllerTest {
 
     @Before
     public void setupExpectations() {
-        
+
         WebCertUser user = mock(WebCertUser.class);
 
         when(webCertUserService.getWebCertUser()).thenReturn(user);
         when(user.getIdsOfSelectedVardenhet()).thenReturn(ENHET_IDS);
         when(user.getValdVardenhet().getId()).thenReturn(ENHET_ID);
     }
-    
+
     @Test
     public void testListIntyg() {
-        
+
         // Mock call to Intygstjanst
         when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(intygSigned);
-        
+
         // Mock call to database
         when(intygRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES)).thenReturn(intygDrafts);
 
@@ -86,19 +83,18 @@ public class IntygApiControllerTest {
         assertNotNull(res);
         assertEquals(4, res.size());
     }
-    
+
     @Test
     public void testGetUnsignedIntygForUnit() {
-        
+
         // Mock call to database
         when(intygRepository.filterIntyg(any(IntygFilter.class))).thenReturn(intygDrafts);
 
-        Response response = intygCtrl.getUnsignedIntygForUnit();
-        
+        Response response = intygCtrl.filterUnsignedIntygForUnit(null);
+
         List<ListIntygEntry> res = (List<ListIntygEntry>) response.getEntity();
 
         assertNotNull(res);
         assertEquals(2, res.size());
-                
     }
 }
