@@ -182,6 +182,7 @@ define([
             $scope.resetFilter = function () {
                 $cookieStore.remove('unsignedCertFilter');
                 resetFilterState();
+                $scope.filterDrafts();
             };
 
             $scope.fetchMore = function () {
