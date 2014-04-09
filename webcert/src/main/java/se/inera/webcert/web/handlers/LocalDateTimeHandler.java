@@ -11,7 +11,7 @@ import org.joda.time.format.ISODateTimeFormat;
 public class LocalDateTimeHandler implements ParameterHandler<LocalDateTime> {
 
     // Use the same parser as we do in CustomObjectMapper.
-    final static DateTimeFormatter PARSER = ISODateTimeFormat.localDateOptionalTimeParser();
+    static final DateTimeFormatter PARSER = ISODateTimeFormat.localDateOptionalTimeParser();
 
     @Override
     public LocalDateTime fromString(String str) {

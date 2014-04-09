@@ -18,7 +18,7 @@ import iso.v21090.dt.v1.II;
 /**
  * Created by pehr on 10/2/13.
  */
-public class ConvertToFKTypes {
+public final class ConvertToFKTypes {
 
     private ConvertToFKTypes() {
     }

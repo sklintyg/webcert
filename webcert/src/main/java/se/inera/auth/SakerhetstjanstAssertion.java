@@ -118,6 +118,8 @@ public class SakerhetstjanstAssertion {
             case MEDARBETARUPPDRAG_ID:
                 medarbetaruppdragHsaId = getValue(attribute);
                 break;
+            default:
+                // Ignore.
             }
         }
     }
