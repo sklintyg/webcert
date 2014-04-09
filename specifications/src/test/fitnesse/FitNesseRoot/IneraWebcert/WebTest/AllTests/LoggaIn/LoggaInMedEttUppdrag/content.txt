@@ -9,11 +9,10 @@ Testet beskriver fallet när en användare med bara ett uppdrag loggar in.
 
 !3 Givet att man loggar in som en användare med medarbetaruppdrag på endast en enhet, verifiera att enhetsväljaren ej visas
 
-| script | !-SvaraOchFraga-! |
+| script | !-SokSkrivIntyg-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| ohanterade fragor sidan visas |
+| sok skriv intyg sidan visas |
 | enhetsvaljare visas | false |
-| lista med ohanterade fragor visas |
 
 !3 Ta bort frågor
 

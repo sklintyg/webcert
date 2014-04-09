@@ -25,6 +25,10 @@ class UnhandledQAPage extends Page {
         logoutLink { $("#logoutLink") }
     }
 
+    def visaAllaFragor() {
+        $("#select-active-unit-wc-all").click();
+    }
+
     def selectCareUnit(String careUnit) {
         $("#select-active-unit-${careUnit}").click()
     }

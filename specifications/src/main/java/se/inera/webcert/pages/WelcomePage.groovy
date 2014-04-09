@@ -12,9 +12,6 @@ class WelcomePage extends Page {
     }
 
     def loginAs(String id) {
-        System.err.println($("${id}"))
-        System.err.println($("#${id}"))
-        System.err.println($("#${id}").value())
         userSelect = $("#${id}").value();
         loginBtn.click()
     }

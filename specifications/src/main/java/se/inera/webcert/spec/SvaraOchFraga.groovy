@@ -7,6 +7,21 @@ import se.inera.webcert.pages.WelcomePage
 
 class SvaraOchFraga {
 
+    def gaTillSvaraOchFraga() {
+        Browser.drive {
+            go "/web/dashboard#/unhandled-qa"
+            waitFor {
+                at UnhandledQAPage
+            }
+        }
+    }
+
+    def visaAllaFragor() {
+        Browser.drive {
+            page.visaAllaFragor();
+        }
+    }
+
     def aterstallSokformular() {
         Browser.drive {
             waitFor {
@@ -337,7 +352,7 @@ class SvaraOchFraga {
 
     def gaTillIntygsvyViaUthoppMedIntygsid(String id) {
         Browser.drive {
-            go "/medcert/web/user/certificate/${id}/questions"
+            go "/visa/intyg/${id}/fragor"
             waitFor {
                 at ViewCertQAPage
             }
