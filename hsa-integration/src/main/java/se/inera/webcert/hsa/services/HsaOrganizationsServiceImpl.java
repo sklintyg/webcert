@@ -188,9 +188,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         AttributeListType attributeList = new AttributeListType();
         attributeList.getAttribute().add("hsaHealthCareUnitMember");
         lookupType.setAttributes(attributeList);
-
-        // TODO - improve - search base can be narrowed down
-        // lookupType.setSearchBase("c=SE");
+        lookupType.setSearchBase("c=SE");
         lookupType.setLookup(exactType);
 
         HsawsSimpleLookupResponseType lookupResponse = client.callHsawsSimpleLookup(lookupType);
