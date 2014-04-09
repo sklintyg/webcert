@@ -105,7 +105,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>medcertlegacyapi</servlet-name>
-    <url-pattern>/medcert/*</url-pattern>
+    <url-pattern>/visa/*</url-pattern>
   </servlet-mapping>
   
   <!-- Filter for Spring Security -->

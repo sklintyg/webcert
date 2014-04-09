@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-@Path("/user")
 public class MedcertLegacyApiController {
 
     private static final String CERT_FK7263 = "fk7263";
@@ -35,6 +33,9 @@ public class MedcertLegacyApiController {
     private static final String PARAM_CERT_ID = "certId";
 
     private static final String PARAM_CERT_TYPE = "certType";
+
+    private static final String FK7263_PATH_TEMPLATE = "/web/dashboard";
+    private static final String FK7263_FRAGMENT_TEMPLATE = "/fk7263/view/{certId}";
 
     private static final Logger LOG = LoggerFactory.getLogger(MedcertLegacyApiController.class);
     
@@ -45,39 +46,15 @@ public class MedcertLegacyApiController {
     private String urlFragmentTemplate;
 
     /**
-     * Emulates the Medcert funtionality to create a new question for a specific
-     * certificate. The user is redirected to the new location of the FK7263 view.
-     * 
-     * /medcert/web/user/question/create?careUnitId=IFV1239877878103N&
-     * certificateId
-     * =123456789&certificateSignedAt=1288180860000&patientName=Tolvan
-     * +Tolvansson&patientSsn=19121212-1212
-     * 
-     * @return
-     */
-    @GET
-    @Path("/question/create")
-    public Response createNewQuestion(@Context UriInfo uriInfo, @QueryParam(value = "certificateId") String certificateId) {
-        
-        if (StringUtils.isBlank(certificateId)) {
-            return buildMissingCertificateIdParameterErrorResponse(uriInfo);
-        }
-        
-        LOG.debug("User is trying to create question for certificate '{}' thru legacy url", certificateId);
-
-        return buildRedirectResponse(uriInfo, certificateId);
-    }
-
-    /**
-     * Emulates the Medcert funtionality to view questions for a specific
+     * Emulates the Medcert functionality to view questions for a specific
      * certificate. The user is now redirected to the new location of the FK7263 view.
      * 
-     * http://localhost:8080/medcert/web/user/certificate/123456789/questions
+     * http://localhost:8080/mvisa/intyg/123456789/fragor
      * 
      * @return
      */
     @GET
-    @Path("/certificate/{certificateId}/questions")
+    @Path("/intyg/{certificateId}/fragor")
     public Response viewCertificate(@Context UriInfo uriInfo, @PathParam(value = "certificateId") String certificateId) {
 
         if (StringUtils.isBlank(certificateId)) {
@@ -99,7 +76,7 @@ public class MedcertLegacyApiController {
         
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
-        return Response.status(Status.MOVED_PERMANENTLY).location(location).build();
+        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }
     
     private Response buildMissingCertificateIdParameterErrorResponse(UriInfo uriInfo) {
