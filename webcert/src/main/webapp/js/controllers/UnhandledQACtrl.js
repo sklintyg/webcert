@@ -326,7 +326,7 @@ define(
 
                 $scope.initDoctorList = function (unitId) {
                     $scope.widgetState.loadingDoctors = true;
-                    dashBoardService.getDoctorList(unitId === "wc-all" ? "" : unitId, function (list) {
+                    dashBoardService.getDoctorList(unitId === "wc-all" ? undefined : unitId, function (list) {
 
                         $scope.widgetState.loadingDoctors = false;
 

@@ -8,7 +8,7 @@
 
             <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading"
                  show-content="widgetState.doneLoading">
-                <div ng-show="units.length > 1">
+                <div ng-if="units.length > 2">
                     <h2 class="less-top-padding">
                         Välj vårdenhet eller mottagning
                     </h2>

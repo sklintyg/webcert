@@ -7,7 +7,7 @@ define([
         /*
          * Load certificate list of all certificates for a person
          */
-        function _getCertificatesForPerson (requestConfig, onSuccess, onError) {
+        function _getCertificatesForPerson(requestConfig, onSuccess, onError) {
             $log.debug('_getCertificatesForPerson type:' + requestConfig);
             var restPath = '/api/intyg/list/' + requestConfig;
             $http.get(restPath).success(function (data) {
@@ -23,7 +23,7 @@ define([
         /*
          * Load questions and answers data for
          */
-        function _getQA (callback) {
+        function _getQA(callback) {
             $log.debug('_getQA');
             var restPath = '/api/fragasvar';
             $http.get(restPath).success(function (data) {
@@ -40,7 +40,7 @@ define([
         /*
          * Load questions and answers data for
          */
-        function _getQAByQuery (qp, onSuccess, onError) {
+        function _getQAByQuery(qp, onSuccess, onError) {
             $log.debug('_getQAByQuery');
             var restPath = '/api/fragasvar/query';
             $http.put(restPath, qp).success(function (data) {
@@ -56,7 +56,7 @@ define([
         /*
          * Load questions and answers data for
          */
-        function _getQAByQueryFetchMore (qp, onSuccess, onError) {
+        function _getQAByQueryFetchMore(qp, onSuccess, onError) {
             $log.debug('_getQAByQueryFetchMore');
             var restPath = '/api/fragasvar/query/paging';
             $http.put(restPath, qp).success(function (data) {
@@ -69,10 +69,10 @@ define([
             });
         }
 
-        function _getDoctorList (enhetsId, onSuccess, onError) {
+        function _getDoctorList(enhetsId, onSuccess, onError) {
             $log.debug('_getDoctorList: ' + enhetsId);
-            var restPath = '/api/fragasvar/mdlist/' + enhetsId;
-            $http.get(restPath).success(function (data) {
+            var restPath = '/api/fragasvar/lakare';
+            $http.get(restPath, {params: { 'enhetsId' : enhetsId}}).success(function (data) {
                 $log.debug('_getDoctorList got data:' + data);
                 onSuccess(data);
             }).error(function (data, status) {
@@ -84,11 +84,11 @@ define([
 
         // Return public API for the service
         return {
-            getCertificatesForPerson : _getCertificatesForPerson,
-            getQA : _getQA,
-            getQAByQuery : _getQAByQuery,
-            getQAByQueryFetchMore : _getQAByQueryFetchMore,
-            getDoctorList : _getDoctorList
+            getCertificatesForPerson: _getCertificatesForPerson,
+            getQA: _getQA,
+            getQAByQuery: _getQAByQuery,
+            getQAByQueryFetchMore: _getQAByQueryFetchMore,
+            getDoctorList: _getDoctorList
         };
     }];
 });

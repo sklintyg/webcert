@@ -5,7 +5,7 @@ define([
     return ['$http', '$log', 'statService', function ($http, $log, statService) {
         return {
 
-            reset : function () {
+            reset: function () {
                 this.personnummer = null;
                 this.intygType = 'default';
                 this.firstname = null;
@@ -17,7 +17,7 @@ define([
                 this.vardGivareHsaNamn = null;
             },
 
-            getNameAndAddress : function (personnummer, onSuccess) {
+            getNameAndAddress: function (personnummer, onSuccess) {
                 $log.debug('CertificateDraft getNameAndAddress');
 
                 this.personnummer = personnummer;
@@ -34,7 +34,7 @@ define([
                 onSuccess();
             },
 
-            getCertTypes : function (onSuccess, onError) {
+            getCertTypes: function (onSuccess, onError) {
                 this.intygType = 'default';
 
                 var restPath = '/api/modules/map';
@@ -42,11 +42,11 @@ define([
                     $log.debug('got data:', data);
                     var sortValue = 0;
                     var types = [
-                        {sortValue : sortValue++, id : 'default', label : 'Välj intygstyp'}
+                        {sortValue: sortValue++, id: 'default', label: 'Välj intygstyp'}
                     ];
                     for (var i in data) {
                         var m = data[i];
-                        types.push({sortValue : sortValue++, id : m.id, label : m.label});
+                        types.push({sortValue: sortValue++, id: m.id, label: m.label});
                     }
                     onSuccess(types);
                 }).error(function (data, status) {
@@ -55,7 +55,7 @@ define([
                 });
             },
 
-            createDraft : function (onSuccess, onError) {
+            createDraft: function (onSuccess, onError) {
                 $log.debug('_createDraft');
 
                 var payload = {};

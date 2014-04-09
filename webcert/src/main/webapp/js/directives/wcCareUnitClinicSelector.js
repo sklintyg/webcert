@@ -12,7 +12,7 @@ define([
             controller: function ($scope) {
 
                 $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
-                $scope.units.unshift({id: "wc-all", namn: "Alla vårdenheters frågor och svar"});
+                $scope.units.unshift({id: "wc-all", namn: "Alla mottagningars frågor och svar"});
                 $scope.selectedUnit = null;
 
                 $scope.selectUnit = function (unit) {
@@ -39,9 +39,9 @@ define([
                 }
 
                 //initial selection
-                if ($scope.units.length === 1) {
+                if ($scope.units.length === 2) {
                     $scope.selectUnit(selectFirstUnit($scope.units));
-                } else if ($scope.units.length > 1 && $cookieStore.get('enhetsId')) {
+                } else if ($scope.units.length > 2 && $cookieStore.get('enhetsId')) {
                     $scope.selectUnit(selectUnitById($scope.units, $cookieStore.get('enhetsId')));
                 }
             }

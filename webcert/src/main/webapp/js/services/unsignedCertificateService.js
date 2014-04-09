@@ -77,7 +77,7 @@ define([
 
         function _buildMailToLink(cert) {
             var baseURL = $window.location.protocol + "//" + $window.location.hostname + ($window.location.port ? ':' + $window.location.port : '');
-            var url = baseURL + "/web/dashboard#/"+ cert.intygType + "/edit/" + cert.intygId;
+            var url = baseURL + "/web/dashboard#/" + cert.intygType + "/edit/" + cert.intygId;
             var recipient = "";
             var subject = "Du har blivit tilldelad ett ej signerat intyg i Webcert";
             var body = "Klicka länken för att gå till intyget:\n" + url;
@@ -173,11 +173,12 @@ define([
 
         // Return public API for the service
         return {
-            getUnsignedCertificates : _getUnsignedCertificates,
-            getUnsignedCertificatesByQueryFetchMore : _getUnsignedCertificatesByQueryFetchMore,
-            getCertificateSavedByList : _getCertificateSavedByList,
+            getUnsignedCertificates: _getUnsignedCertificates,
+            getUnsignedCertificatesByQueryFetchMore: _getUnsignedCertificatesByQueryFetchMore,
+            getCertificateSavedByList: _getCertificateSavedByList,
             setForwardedState: _setForwardedState,
             handleForwardedToggle: _handleForwardedToggle,
             buildMailToLink: _buildMailToLink
         }
-    }]});
+    }]
+});
