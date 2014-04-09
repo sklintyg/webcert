@@ -18,8 +18,7 @@
   
   <jaxrs:server address="/web">
     <jaxrs:serviceBeans>
-      <bean
-        class="se.inera.webcert.web.controller.legacy.MedcertLegacyApiController" />
+      <ref bean="medcertLegacyApiController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

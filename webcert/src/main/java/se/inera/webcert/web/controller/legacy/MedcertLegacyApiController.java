@@ -1,6 +1,8 @@
 package se.inera.webcert.web.controller.legacy;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,6 +17,8 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * API controller for handling Medcert legacy integrations.
@@ -22,12 +26,23 @@ import org.slf4j.LoggerFactory;
  * @author nikpet
  *
  */
+@Component
 @Path("/user")
 public class MedcertLegacyApiController {
 
-    private static final String FK7263_URI_TEMPLATE = "/m/fk7263/webcert/intyg/{certId}";
+    private static final String CERT_FK7263 = "fk7263";
+
+    private static final String PARAM_CERT_ID = "certId";
+
+    private static final String PARAM_CERT_TYPE = "certType";
 
     private static final Logger LOG = LoggerFactory.getLogger(MedcertLegacyApiController.class);
+    
+    @Value("${certificate.view.url.base}")
+    private String urlBaseTemplate;
+    
+    @Value("${certificate.view.url.fragment.template}")
+    private String urlFragmentTemplate;
 
     /**
      * Emulates the Medcert funtionality to create a new question for a specific
@@ -78,7 +93,11 @@ public class MedcertLegacyApiController {
         
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
         
-        URI location = uriBuilder.replacePath(FK7263_URI_TEMPLATE).build(certificateId);
+        Map<String, Object> urlParams = new HashMap<String, Object>();
+        urlParams.put(PARAM_CERT_TYPE, CERT_FK7263);
+        urlParams.put(PARAM_CERT_ID, certificateId);
+        
+        URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.MOVED_PERMANENTLY).location(location).build();
     }
