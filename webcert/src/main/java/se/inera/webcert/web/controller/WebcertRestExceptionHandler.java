@@ -1,5 +1,6 @@
 package se.inera.webcert.web.controller;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -37,7 +38,7 @@ public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeExcep
             moduleResponse = new ModuleRestExceptionResponse(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e.getMessage());    
         }
         
-        return Response.status(Status.INTERNAL_SERVER_ERROR).entity(moduleResponse).build();
+        return Response.status(Status.INTERNAL_SERVER_ERROR).entity(moduleResponse).type(MediaType.APPLICATION_JSON).build();
     }
 
 }

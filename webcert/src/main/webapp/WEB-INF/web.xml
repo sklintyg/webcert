@@ -76,6 +76,17 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
   
+  <!-- External system integration services -->
+  <servlet>
+    <servlet-name>integrationapi</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <init-param>
+      <param-name>config-location</param-name>
+      <param-value>/WEB-INF/integration-cxf-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  
   <!-- Legacy integration services -->
   <servlet>
     <servlet-name>medcertlegacyapi</servlet-name>
@@ -102,6 +113,10 @@
   <servlet-mapping>
     <servlet-name>services</servlet-name>
     <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>integrationapi</servlet-name>
+    <url-pattern>/integration/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>medcertlegacyapi</servlet-name>

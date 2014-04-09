@@ -13,13 +13,13 @@
   </cxf:bus>
 
   <context:annotation-config />
-  
+
   <context:property-placeholder location="classpath:default.properties"
     order="2" ignore-resource-not-found="false" />
-  
+
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
-      <ref bean="medcertLegacyIntegrationController" />
+      <ref bean="intygIntegrationController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -29,10 +29,11 @@
       <entry key="json" value="application/json" />
     </jaxrs:extensionMappings>
   </jaxrs:server>
-  
-  <bean id="medcertLegacyIntegrationController" class="se.inera.webcert.web.controller.legacy.MedcertLegacyIntegrationController">
+
+  <bean id="intygIntegrationController"
+    class="se.inera.webcert.web.controller.integration.IntygIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
     <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
   </bean>
-  
+
 </beans>

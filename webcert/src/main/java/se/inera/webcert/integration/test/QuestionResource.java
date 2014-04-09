@@ -25,6 +25,8 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 
 /**
+ * Bean for inserting questions directly into the database
+ * 
  * Created by Pehr Assarsson on 9/24/13.
  */
 @Transactional

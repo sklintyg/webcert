@@ -9,19 +9,15 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.springframework.beans.factory.annotation.Value;
-
 public abstract class AbstractIntegrationController {
 
     private static final String PARAM_CERT_ID = "certId";
 
     private static final String PARAM_CERT_TYPE = "certType";
+        
+    protected String urlBaseTemplate;
     
-    @Value("${certificate.view.url.base}")
-    private String urlBaseTemplate;
-    
-    @Value("${certificate.view.url.fragment.template}")
-    private String urlFragmentTemplate;
+    protected String urlFragmentTemplate;
     
     protected Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
         
@@ -34,5 +30,13 @@ public abstract class AbstractIntegrationController {
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.MOVED_PERMANENTLY).location(location).build();
-    }    
+    }
+        
+    public void setUrlBaseTemplate(String urlBaseTemplate) {
+        this.urlBaseTemplate = urlBaseTemplate;
+    }
+
+    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
+        this.urlFragmentTemplate = urlFragmentTemplate;
+    }
 }
