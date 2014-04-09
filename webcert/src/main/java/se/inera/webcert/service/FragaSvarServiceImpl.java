@@ -30,7 +30,6 @@ import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.persistence.fragasvar.repository.LakarIdNamn;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -41,6 +40,7 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCert
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygStatus;
+import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
@@ -420,7 +420,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
     
     @Override
-    public List<LakarIdNamn> getFragaSvarHsaIdByEnhet(String enhetsId) {
+    public List<Lakare> getFragaSvarHsaIdByEnhet(String enhetsId) {
 
         List<String> enhetsIdParams = new ArrayList<>();
 
@@ -432,12 +432,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             enhetsIdParams.addAll(user.getIdsOfSelectedVardenhet());
         }
 
-        List<LakarIdNamn> mdList = new ArrayList<>();
+        List<Lakare> mdList = new ArrayList<>();
 
         List<Object[]> tempList = fragaSvarRepository.findDistinctFragaSvarHsaIdByEnhet(enhetsIdParams);
 
         for (Object[] obj : tempList) {
-            mdList.add(new LakarIdNamn((String) obj[0], (String) obj[1]));
+            mdList.add(new Lakare((String) obj[0], (String) obj[1]));
         }
         return mdList;
     }

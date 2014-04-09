@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.repository.LakarIdNamn;
 import se.inera.webcert.service.FragaSvarService;
+import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.QueryFragaSvarParameter;
 import se.inera.webcert.web.controller.api.dto.QueryFragaSvarResponse;
@@ -69,9 +69,10 @@ public class FragaSvarApiController extends AbstractApiController {
 
 
     @GET
-    @Path("/mdlist")
+    @Path("/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public List<LakarIdNamn> getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
-        return fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
+    public Response getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
+        List<Lakare> lakare = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
+        return Response.ok(lakare).build();
     }
 }
