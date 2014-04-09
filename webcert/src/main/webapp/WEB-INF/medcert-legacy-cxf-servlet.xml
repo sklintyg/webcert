@@ -18,7 +18,7 @@
   
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
-      <ref bean="medcertLegacyApiController" />
+      <ref bean="medcertLegacyIntegrationController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
