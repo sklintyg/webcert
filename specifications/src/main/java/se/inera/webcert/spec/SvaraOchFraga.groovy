@@ -18,7 +18,9 @@ class SvaraOchFraga {
 
     def visaAllaFragor() {
         Browser.drive {
-            page.visaAllaFragor();
+            waitFor() {
+                page.visaAllaFragor()
+            }
         }
     }
 

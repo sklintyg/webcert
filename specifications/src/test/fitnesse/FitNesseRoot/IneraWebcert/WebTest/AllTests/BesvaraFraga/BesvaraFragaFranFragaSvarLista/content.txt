@@ -11,7 +11,6 @@ Testet beskriver fallet när en användare besvarar en fråga från försäkring
 !| script | SvaraOchFraga |
 | logga in som |IFV1239877878-104B_IFV1239877878-1042|
 | ga till svara och fraga |
-| visa alla fragor |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
