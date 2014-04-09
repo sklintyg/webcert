@@ -50,8 +50,6 @@ import se.inera.webcert.web.service.WebCertUserService;
 
 import com.google.common.base.Throwables;
 
-//import se.inera.certificate.modules.support.api.dto.Patient;
-
 /**
  * @author andreaskaltenbach
  */
@@ -102,7 +100,7 @@ public class IntygServiceImpl implements IntygService {
 
             ExternalModelHolder extHolder = new ExternalModelHolder(intygAsExternal.getContents());
             InternalModelResponse internalModelReponse = moduleApi.convertExternalToInternal(extHolder);
-            
+
             return new IntygContentHolder(internalModelReponse.getInternalModel(), metaData);
 
         } catch (ModuleException me) {
@@ -127,10 +125,10 @@ public class IntygServiceImpl implements IntygService {
 
             String xml = marshal(intyg.getCertificate());
             ExternalModelResponse unmarshallResponse = moduleApi.unmarshall(new TransportModelHolder(xml));
-            
+
             LogRequest logRequest = createLogRequest(unmarshallResponse.getExternalModel());
             logService.logReadOfIntyg(logRequest);
-            
+
             return new IntygContentHolder(unmarshallResponse.getExternalModelJson(),
                     unmarshallResponse.getExternalModel(), metaData);
 
@@ -194,7 +192,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private List<IntygItem> convert(List<CertificateMetaType> source) {
-        List<IntygItem> intygItems = new ArrayList<IntygItem>();
+        List<IntygItem> intygItems = new ArrayList<>();
         for (CertificateMetaType certificateMetaType : source) {
             intygItems.add(convert(certificateMetaType));
         }
@@ -271,17 +269,17 @@ public class IntygServiceImpl implements IntygService {
         String patientFornamn = StringUtils.join(patient.getFornamn(), " ");
 
         logRequest.setPatientName(patientFornamn, patient.getEfternamn());
-        
+
         Vardenhet skapadAvVardenhet = cert.getSkapadAv().getVardenhet();
-        
+
         logRequest.setIntygCareUnitId(skapadAvVardenhet.getId().getExtension());
         logRequest.setIntygCareUnitName(skapadAvVardenhet.getNamn());
-        
+
         Vardgivare skapadAvVardgivare = skapadAvVardenhet.getVardgivare();
-        
+
         logRequest.setIntygCareGiverId(skapadAvVardgivare.getId().getExtension());
         logRequest.setIntygCareGiverName(skapadAvVardgivare.getNamn());
-        
+
         return logRequest;
     }
 
