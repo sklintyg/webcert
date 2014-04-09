@@ -34,7 +34,8 @@
 
     <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon"/>
 
-    <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/2.3.2/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
     <style type="text/css">
         textarea {
             font-family: Consolas, Lucida Console, monospace;
@@ -245,10 +246,10 @@
                     omvandlas
                     till inloggad userContext</p>
 
-                <div class="form-group span6">
+                <div class="form-group col-xs-8">
 
                     <h4>Mallar</h4>
-                    <select id="jsonSelect" name="jsonSelect" onChange="updateJsonInput()" size="10" style="width: 100%">
+                    <select id="jsonSelect" name="jsonSelect" onChange="updateJsonInput()" size="15" style="width: 100%" class="form-control">
                         <option value="0" id="IFV1239877878-1049_IFV1239877878-1042" selected>Jan Nilsson - WebCert Enhet 1 (Läkare)(Vård och Behandling + Admin)</option>
                         <option value="1" id="IFV1239877878-104B_IFV1239877878-1042">Åsa Andersson - WebCert Enhet 1 (Läkare)(Vård och Behandling)</option>
                         <option value="2" id="IFV1239877878-104B_IFV1239877878-1045">Åsa Andersson - WebCert Enhet 2 + 2UE (Läkare)(Vård och Behandling)</option>
@@ -270,19 +271,17 @@
                         <option value="17" id="fitnesse-admin2">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
                         <option value="18">Han Solo (Administratör, Centrum Norr)</option>
                     </select>
-                    <p/>
-
-                    <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-default"
-                           style="width: 100%">
+                    <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary"
+                           style="margin-top: 20px;width: 100%">
 
                 </div>
 
-                <div class="form-group span6">
+                <div class="form-group col-xs-4">
                     <p>
                     <h4>Inloggningsprofil</h4>
                     <input type="hidden" id="userJson" name="userjson"/>
-                    <textarea id="userJsonDisplay" name="userJsonDisplay" class="field"
-                              style="height: 200px; width: 50%">
+                    <textarea id="userJsonDisplay" name="userJsonDisplay" class="field form-control"
+                              style="height: 200px;width: 100%;">
                     </textarea>
                 </div>
 

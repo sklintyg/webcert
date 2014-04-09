@@ -5,7 +5,8 @@
 <html>
 <head>
   <title>Application Version</title>
-  <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/2.3.2/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 </head>
 <body>
 <div style="padding-left:20px">
@@ -18,7 +19,7 @@
     <div>Application version: <span class="label label-warning"><spring:message code="project.version"/></span></div>
     <div>Spring profiles: <span class="label label-warning"><%= System.getProperty("spring.profiles.active") %></span></div>
   </div>
-  <div class="muted">Nu: <%= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) %></div>
+  <div class="text-muted">Nu: <%= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) %></div>
 </div>
 </body>
 </html>

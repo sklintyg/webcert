@@ -1,46 +1,50 @@
 <div id="wcHeader" wc-header></div>
 <div class="container-fluid">
-    <div class="row-fluid">
-  <div class="span7 webcert-col webcert-col-single">
-    <form name="certForm" ng-submit="lookupAddress()" novalidate autocomplete="off">
-      <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
-      <h1>Sök/skriv intyg</h1>
-      <div class="control-group">
-        <label class="control-label">Patientuppgifter</label>
-          <div class="control-group">
-            {{firstname}} {{lastname}}<br/>
-            {{personnummer}}
-          </div>
-          <button class="btn" type="button" ng-click="changePatient()">Byt patient</button>
-          <button class="btn" type="button" ng-click="editPatientName()">Korrigera namn</button>
-      </div>
+    <div class="row">
+  <div class="col-xs-12 col-lg-7 webcert-col webcert-col-single">
+	<div class="row">
+		<div class="col-xs-12">
+			<form name="certForm" ng-submit="lookupAddress()" novalidate autocomplete="off">
+			  <!--<a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a>-->
+			  <h1>Sök/skriv intyg</h1>
+			  <div class="form-group">
+				<label class="control-label">Patientuppgifter</label>
+				  <div class="form-group">
+					{{firstname}} {{lastname}}<br/>
+					{{personnummer}}
+				  </div>
+				  <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
+				  <button class="btn btn-default" type="button" ng-click="editPatientName()">Korrigera namn</button>
+			  </div>
 
-      <!-- New cert -->
-      <div class="webcert-col-section qa-table-section">
-        <div class="control-group">
-          <label for="intygType" class="control-label">Skriv nytt intyg</label>
-          <select id="intygType" name="intygType" data-ng-model="intygType" data-ng-options="type.id as type.label for type in certTypes"></select>
-        </div>
-        <div class="control-group">
-          <button class="btn btn-success" type="submit" ng-disabled="intygType == 'default'">Fortsätt</button>
-        </div>
-        <div class="alert alert-warning" ng-show="intygType != 'default'">
-        	<span message key='{{"certificatetypes."+ intygType +".helptext"}}'/>
-        </div>
-      </div>
+			  <!-- New cert -->
+			  <div class="webcert-col-section qa-table-section">
+				<div class="form-group">
+				  <label for="intygType" class="control-label">Skriv nytt intyg</label>
+				  <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType" data-ng-options="type.id as type.label for type in certTypes"></select>
+				</div>
+				<div class="form-group">
+				  <button class="btn btn-success" type="submit" ng-disabled="intygType == 'default'">Fortsätt</button>
+				</div>
+				<div class="alert alert-warning col-lg-7" ng-show="intygType != 'default'">
+					<span message key='{{"certificatetypes."+ intygType +".helptext"}}'/>
+				</div>
+			  </div>
 
-    </form>
+			</form>
+		</div>
+	</div>
 
     <!-- Tidigare intyg table -->
     <div class="webcert-col-section">
       <h2 class="col-head">{{firstname}} {{lastname}}s tidigare intyg</h2>
-      <div class="control-group" ng-hide="true">
+      <div class="form-group" ng-hide="true">
         <div class="controls pointer-labels">
           <label class="checkbox"><input type="radio" name="olderCerts"> Visa intyg för Vårdenheter och till mottagare som jag har medarbetaruppdrag på</label>
           <label class="checkbox"><input type="radio" name="olderCerts"> Visa intyg för hela vårdgivaren som jag har medarbetaruppdrag på</label>
         </div>
       </div>
-      <div class="control-group">
+      <div class="form-group">
         <span ng-if="!widgetState.queryMode">Visar endast aktuella signerade intyg.<br></span>
         <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
           <span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span>
@@ -56,17 +60,17 @@
           </div>
 
           <!-- error message -->
-          <div id="current-list-noResults-error" ng-show="widgetState.activeErrorMessageKey" class="alert alert-error">
+          <div id="current-list-noResults-error" ng-show="widgetState.activeErrorMessageKey" class="alert alert-danger">
             <span message key="{{widgetState.activeErrorMessageKey}}"></span>
           </div>
 
           <!-- Previous certs table -->
-          <div class="row-fluid" ng-show="widgetState.currentList.length>0" id="prevCertTable">
-            <table class="span12 table table-striped table-qa">
+          <div class="row" ng-show="widgetState.currentList.length>0" id="prevCertTable">
+            <table class="col-md-12 table table-striped table-qa">
               <tr>
                 <th></th>
                 <th></th>
-                <th class="center" title="">Intygstyp</th>
+                <th title="">Intygstyp</th>
                 <th title="">Status</th>
                 <th title="">Ändringsdatum</th>
                 <th title="">Signerat/Sparat av</th>

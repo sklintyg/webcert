@@ -36,8 +36,8 @@
 
     <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon"/>
 
-    <link rel="stylesheet" href="<c:url value="/webjars/bootstrap/2.3.2/css/bootstrap.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/bootstrap-responsive-modified.css"/>">
+    <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-webcert.css"/>">
     <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-certificate.css"/>">
 </head>
@@ -47,11 +47,11 @@
 <div class="container-fluid">
 
   <div class="content-container">
-    <div class="row-fluid">
-        <div class="span6">
+    <div class="row">
+        <div class="col-xs-6">
             <img class="pull-right" src="/img/webcert_big.png"/>
         </div>
-        <div class="span6">
+        <div class="col-xs-6">
 
             <c:choose>
                 <c:when test="${param.reason eq \"logout\"}">
@@ -83,7 +83,7 @@
                         <spring:message code="error.medarbetaruppdrag.title"/>
                     </h1>
 
-                    <div id="noAuth" class="alert alert-error">
+                    <div id="noAuth" class="alert alert-danger">
                         <spring:message code="error.medarbetaruppdrag.text"/>
                     </div>
 
@@ -94,7 +94,7 @@
                         <spring:message code="error.notfound.title"/>
                     </h1>
 
-                    <div id="notFound" class="alert alert-error">
+                    <div id="notFound" class="alert alert-danger">
                         <spring:message code="error.notfound.text"/>
                     </div>
                 </c:when>
@@ -104,7 +104,7 @@
                         <spring:message code="error.generictechproblem.title"/>
                     </h1>
 
-                    <div id="genericTechProblem" class="alert alert-error">
+                    <div id="genericTechProblem" class="alert alert-danger">
                         <spring:message code="error.generictechproblem.text"/>
                     </div>
 

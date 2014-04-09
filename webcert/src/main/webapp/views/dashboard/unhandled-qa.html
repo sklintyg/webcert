@@ -1,7 +1,7 @@
 <div id="wcHeader" wc-header></div>
 <div class="container-fluid">
-    <div class="row-fluid" id="unhandled-qa">
-        <div class="span12 webcert-col webcert-col-single">
+    <div class="row" id="unhandled-qa">
+        <div class="col-md-12 webcert-col webcert-col-single">
             <h1>
                 <span message key="dashboard.unanswered.title"></span>
             </h1>
@@ -13,7 +13,7 @@
                         Välj vårdenhet eller mottagning
                     </h2>
 
-                    <div class="row-fluid">
+                    <div class="row">
                         <div id="wc-care-unit-clinic-selector" wc-care-unit-clinic-selector></div>
                     </div>
                 </div>
@@ -30,101 +30,87 @@
                                 ng-switch-when="false">Dölj sökfilter</span>
                         </button>
                         <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed"
-                             class="qa-filter-panel form-horizontal form-inline" style="background-color: #f5f5f5;">
-                            <div class="qa-filter">
-                                <div class="control-group">
-                                    <label class="control-label">Frågor från</label>
-
-                                    <div class="controls pointer-labels">
-                                        <label for="frageStallareAlla"><input id="frageStallareAlla"
-                                                                              name="frageStallare" type="radio"
-                                                                              value="default"
-                                                                              ng-model="filterForm.questionFrom"
-                                                                              checked="checked"> Alla</label>
-                                        <label for="frageStallareFK"><input id="frageStallareFK" name="frageStallare"
-                                                                            type="radio" value="FK"
-                                                                            ng-model="filterForm.questionFrom">
-                                            Försäkringskassan</label>
-                                        <label for="frageStallareWC"><input id="frageStallareWC" name="frageStallare"
-                                                                            type="radio" value="WC"
-                                                                            ng-model="filterForm.questionFrom">
-                                            Vårdenheten</label>
-                                    </div>
-                                </div>
-                                <div class="control-group">
-                                    <label class="control-label">Läkare</label>
-
-                                    <div class="controls pointer-labels">
-                                        <select id="qp-lakareSelector" ng-model="filterForm.lakareSelector"
-                                                ng-options="s.name for s in lakareList"
-                                                ng-disabled="widgetState.loadingLakares"></select>
-                                    </div>
-                                </div>
-
-                                <div class="control-group">
-                                    <label class="control-label">Frågor som är</label>
-
-                                    <div class="controls pointer-labels">
-                                        <label for="vidarebefordradAlla"><input id="vidarebefordradAlla"
-                                                                                name="vidarebefordrad" type="radio"
-                                                                                value="default"
-                                                                                ng-model="filterForm.vidarebefordrad"
-                                                                                checked="checked"> Alla</label>
-                                        <label for="vidarebefordradJa"><input id="vidarebefordradJa"
-                                                                              name="vidarebefordrad" type="radio"
-                                                                              value="true"
-                                                                              ng-model="filterForm.vidarebefordrad">
-                                            Vidarebefordrade</label>
-                                        <label for="vidarebefordradNej"><input id="vidarebefordradNej"
-                                                                               name="vidarebefordrad" type="radio"
-                                                                               value="false"
-                                                                               ng-model="filterForm.vidarebefordrad">
-                                            Ej vidarebefordrade</label>
-                                    </div>
-                                </div>
-                                <div class="control-group">
-                                    <label class="control-label">Ändringsdatum</label>
-
-                                    <div class="controls">
-                                        Från <input type="text" id="filter-changedate-from" datepicker-popup
-                                                    ng-model="filterForm.changedFrom" is-open="widgetState.dpFromOpen.open"
-                                                    datepicker-options="datepickerConfig"/>
-                                        <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
-                                            <i class="icon-calendar"></i>
-                                        </button>
-
-                                        till <input type="text" id="filter-changedate-to" datepicker-popup
-                                                    ng-model="filterForm.changedTo" is-open="widgetState.dpToOpen.open"
-                                                    datepicker-options="datepickerConfig"/>
-                                        <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
-                                            <i class="icon-calendar"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="control-group">
-                                    <label class="control-label">Åtgärd</label>
-
-                                    <div class="controls pointer-labels">
-                                        <select id="qp-showStatus" ng-model="filterForm.vantarPaSelector"
-                                                ng-options="s.label for s in statusList"></select>
-                                    </div>
-                                </div>
-                                <!--            <div class="control-group"> commented out until needed
-                                              <label class="control-label">Svar senast</label>
-                                              <div class="controls">
-                                                <input type="text" id="filter-reply-by" datepicker-popup ng-model="filterForm.replyLatest" is-open="widgetState.dpAnswerOpen.open" datepicker-options="datepickerConfig"/>
-                                                <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpAnswerOpen)">
-                                                  <i class="icon-calendar"></i>
-                                                </button>
-                                              </div>
-                                            </div>-->
-                                <div>
-                                    <button id="filter-qa-btn" class="btn" ng-click="doSearch()">Sök</button>
-                                    <button class="btn" ng-click="resetSearchForm()" id="reset-search-form">Återställ
-                                        sökformuläret
-                                    </button>
-                                </div>
+                             class="qa-filter-panel form-horizontal">
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">Frågor från</label>
+                            <div class="col-sm-10">
+                              <label class="radio-inline">
+                                <input id="frageStallareAlla" name="frageStallare" type="radio" value="default"
+                                       ng-model="filterForm.questionFrom" checked="checked"> Alla
+                              </label>
+                              <label class="radio-inline">
+                                <input id="frageStallareFK" name="frageStallare" type="radio" value="FK"
+                                       ng-model="filterForm.questionFrom"> Försäkringskassan
+                              </label>
+                              <label class="radio-inline">
+                                <input id="frageStallareWC" name="frageStallare" type="radio" value="WC"
+                                       ng-model="filterForm.questionFrom"> Vårdenheten</label>
                             </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">Läkare</label>
+                            <div class="col-sm-10">
+                              <select id="qp-lakareSelector" class="form-control" ng-model="filterForm.lakareSelector"
+                                      ng-options="s.name for s in lakareList"
+                                      ng-disabled="widgetState.loadingLakares"></select>
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">Frågor som är</label>
+                            <div class="col-sm-10">
+                              <label class="radio-inline">
+                                <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio" value="default"
+                                       ng-model="filterForm.vidarebefordrad" checked="checked"> Alla
+                              </label>
+                              <label class="radio-inline">
+                                <input id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="true"
+                                       ng-model="filterForm.vidarebefordrad"> Vidarebefordrade
+                              </label>
+                              <label class="radio-inline">
+                                <input id="vidarebefordradNej" name="vidarebefordrad" type="radio" value="false"
+                                       ng-model="filterForm.vidarebefordrad"> Ej vidarebefordrade
+                              </label>
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">Ändringsdatum</label>
+                            <div class="col-sm-10 form-inline">
+                              Från
+                              <input type="text" class="form-control" id="filter-changedate-from" datepicker-popup
+                                          ng-model="filterForm.changedFrom" is-open="widgetState.dpFromOpen.open"
+                                          datepicker-options="{{datepickerConfig}}"/>
+                              <button class="btn btn-default" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                              </button>
+                              till
+                              <input type="text" class="form-control" id="filter-changedate-to" datepicker-popup
+                                          ng-model="filterForm.changedTo" is-open="widgetState.dpToOpen.open"
+                                          datepicker-options="{{datepickerConfig}}"/>
+                              <button class="btn btn-default" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                              </button>
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <label class="col-sm-2 control-label">Åtgärd</label>
+                            <div class="col-sm-10">
+                              <select id="qp-showStatus" class="form-control" ng-model="filterForm.vantarPaSelector"
+                                      ng-options="s.label for s in statusList"></select>
+                            </div>
+                          </div>
+
+                          <div class="form-group" style="margin-top:10px;">
+                            <div class="col-sm-offset-2 col-sm-10">
+                              <button id="filter-qa-btn" class="btn btn-default" ng-click="doSearch()">Sök</button>
+                              <button class="btn btn-default" ng-click="resetSearchForm()" id="reset-search-form">
+                                Återställ sökformuläret
+                              </button>
+                            </div>
+                          </div>
                         </div>
                     </div>
 
@@ -149,7 +135,7 @@
                             <!-- error message -->
                             <div id="current-list-noResults-error"
                                  ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey"
-                                 class="alert alert-error">
+                                 class="alert alert-danger">
                                 <span message key="{{widgetState.activeErrorMessageKey}}"></span>
                             </div>
 
@@ -158,9 +144,9 @@
                             </div>
 
                             <!-- qa table -->
-                            <div class="row-fluid" ng-show="widgetState.currentList.length>0"
+                            <div class="row" ng-show="widgetState.currentList.length>0"
                                  id="qaTable">
-                                <table class="span12 table table-striped table-qa">
+                                <table class="col-md-12 table table-striped table-qa">
                                     <tr>
                                         <th></th>
                                         <th></th>
@@ -185,8 +171,8 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <button class="btn"
-                                                    ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-secondary' : qa.vidarebefordrad}"
+                                            <button class="btn btn-default"
+                                                    ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-default btn-secondary' : qa.vidarebefordrad}"
                                                     title="Skicka ett mejl med en länk till intyget för att informera den som ska hantera ärendet."
                                                     ng-click="openMailDialog(qa)">
                                                 <img ng-if="!qa.vidarebefordrad" src="/img/mail.png">
@@ -214,7 +200,7 @@
                                 {{widgetState.totalCount}}
                             </div>
                             <div ng-show="((lastQuery.startFrom + lastQuery.pageSize) < widgetState.totalCount)">
-                                <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()"
+                                <button class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
                                         ng-disabled="widgetState.fetchingMoreInProgress">
                                     <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
                                     fler träffar

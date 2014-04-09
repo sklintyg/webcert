@@ -1,14 +1,14 @@
 <div>
   <h1><span message key="dashboard.about.title"></span></h1>
-  <div class="row-fluid">
-    <div class="span3">
-      <ul class="nav nav-tabs nav-stacked">
+  <div class="row">
+    <div class="col-sm-3">
+      <ul class="nav nav-pills nav-stacked">
         <li ng-class="{active: isActive(menu.link)}" ng-repeat="menu in menuItems">
-          <a ng-href="{{menu.link}}">{{menu.label}}<i class="icon-chevron-right"></i></a>
+          <a ng-href="{{menu.link}}">{{menu.label}}<i class="glyphicon glyphicon-chevron-right"></i></a>
         </li>
       </ul>
     </div>
-    <div class="span9 about-content">
+    <div class="col-sm-9 about-content">
       <h2 class="col-head col-head-about">{{currentSubMenuLabel}}</h2>
       <div ng-transclude></div>
     </div>

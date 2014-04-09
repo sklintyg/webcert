@@ -29,13 +29,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="ROBOTS" content="nofollow, noindex" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title><spring:message code="application.name" /></title>
 
 <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
-<link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/2.3.2/css/bootstrap.min.css"/>">
-<link rel="stylesheet" href="<c:url value="/web/webjars/common/css/bootstrap-responsive-modified.css"/>">
+<link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
+<link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
 <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-webcert.css"/>">
 <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-certificate.css"/>">
 
@@ -68,7 +69,7 @@
         <h1>
           <span><spring:message code="error.noscript.title" /></span>
         </h1>
-        <div class="alert alert-error">
+        <div class="alert alert-danger">
           <spring:message code="error.noscript.text" />
         </div>
     </noscript>

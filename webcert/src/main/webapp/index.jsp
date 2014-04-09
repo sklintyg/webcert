@@ -34,8 +34,8 @@
 
 <link rel="icon" href="<c:url value="/favicon.ico" />" type="image/vnd.microsoft.icon" />
 
-<link rel="stylesheet" href="<c:url value="/webjars/bootstrap/2.3.2/css/bootstrap.min.css"/>">
-<link rel="stylesheet" href="<c:url value="/web/webjars/common/css/bootstrap-responsive-modified.css"/>">
+<link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
+<link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
 <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-webcert.css"/>">
 <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-certificate.css"/>">
 
@@ -45,12 +45,12 @@
 
   <div class="container-fluid">
 
-    <div class="content-container">
-	    <div class="row-fluid">
-	      <div class="span6">
+    <div class="content-container row">
+	    <div class="row">
+	      <div class="col-xs-6">
 	        <img class="pull-right" src="/img/webcert_big.png"/>
 	      </div>
-	      <div class="span6">
+	      <div class="col-xs-6">
 	        <h1>Välkommen till Webcert</h1>
 	        <p>Webcert är en tjänst för elektroniska läkarintyg. I tjänsten kan du skriva intyg samt kommunicera med Försäkringskassan kring läkarintyg FK 7263.</p>
             <p>För närvarande stödjer tjänsten följande intyg:</p>

@@ -8,7 +8,7 @@ require.config({
         angularRoute : '../web/webjars/angularjs/1.2.14/angular-route.min',
         angularSanitize : '../web/webjars/angularjs/1.2.14/angular-sanitize.min',
         angularSwedish : '../web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se',
-        angularUiBootstrap : '../web/webjars/angular-ui-bootstrap/0.8.0/ui-bootstrap-tpls',
+        angularUiBootstrap : '../web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls',
 
         text : '../web/webjars/requirejs-text/2.0.10/text'
     },
