@@ -95,28 +95,34 @@ define([
         }
 
         function _isSkipForwardedCookieSet() {
-            return document.cookie && document.cookie.indexOf('WCDontAskForForwardedToggle=1') != -1;
+            return document.cookie && document.cookie.indexOf('WCDontAskForForwardedToggle=1') !== -1;
         }
 
         function _handleForwardedToggle(qa, onYesCallback) {
             // Only ask about toggle if not already set AND not skipFlag cookie is
             // set
             if (!qa.forwarded && !_isSkipForwardedCookieSet()) {
-                _showForwardedPreferenceDialog("markforward", "Det verkar som att du har informerat den som ska hantera ärendet. Vill du markera ärendet som vidarebefordrat?", function () { // yes
-                    $log.debug("yes");
-                    qa.forwarded = true;
-                    if (onYesCallback) {
-                        // let calling scope handle yes answer
-                        onYesCallback(qa);
+                _showForwardedPreferenceDialog(
+                    "markforward",
+                    "Det verkar som att du har informerat den som ska hantera ärendet. Vill du markera ärendet som vidarebefordrat?",
+                    function () { // yes
+                        $log.debug("yes");
+                        qa.forwarded = true;
+                        if (onYesCallback) {
+                            // let calling scope handle yes answer
+                            onYesCallback(qa);
+                        }
+                    },
+                    function () { // no
+                        $log.debug("no");
+                        // Do nothing
+                    },
+                    function () {
+                        $log.debug("no and dont ask");
+                        // How can user reset this?
+                        _setSkipForwardedCookie();
                     }
-                }, function () { // no
-                    $log.debug("no");
-                    // Do nothing
-                }, function () {
-                    $log.debug("no and dont ask");
-                    // How can user reset this?
-                    _setSkipForwardedCookie();
-                });
+                );
             }
         }
 
@@ -125,18 +131,18 @@ define([
             var DialogInstanceCtrl = function ($scope, $modalInstance, title, bodyText, yesCallback, noCallback, noDontAskCallback) {
                 $scope.title = title;
                 $scope.bodyText = bodyText;
-                $scope.noDontAskVisible = noDontAskCallback != undefined;
+                $scope.noDontAskVisible = noDontAskCallback !== undefined;
                 $scope.yes = function (result) {
                     yesCallback();
-                    $modalInstance.close(result)
+                    $modalInstance.close(result);
                 };
                 $scope.no = function (result) {
                     noCallback();
-                    $modalInstance.close('cancel')
+                    $modalInstance.close('cancel');
                 };
                 $scope.noDontAsk = function (result) {
                     noDontAskCallback();
-                    $modalInstance.close('cancel_dont_ask_again')
+                    $modalInstance.close('cancel_dont_ask_again');
                 };
             };
 
@@ -164,7 +170,7 @@ define([
 
             msgbox.result.then(function (result) {
                 if (callback) {
-                    callback(result)
+                    callback(result);
                 }
             }, function () {
             });
@@ -179,6 +185,6 @@ define([
             setForwardedState: _setForwardedState,
             handleForwardedToggle: _handleForwardedToggle,
             buildMailToLink: _buildMailToLink
-        }
-    }]
+        };
+    }];
 });
