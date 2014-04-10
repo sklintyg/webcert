@@ -36,7 +36,11 @@ class SvaraOchFraga {
     }
 
     boolean doljsFraga(String id) {
-        return !visasFraga(id)
+        try {
+            return !visasFraga(id)
+        } finally {
+            sleep(10L)
+        }
     }
 
     boolean enhetsvaljareVisas(boolean expected = true) {
@@ -354,7 +358,7 @@ class SvaraOchFraga {
 
     def gaTillIntygsvyViaUthoppMedIntygsid(String id) {
         Browser.drive {
-            go "/visa/intyg/${id}/fragor"
+            go "/integration/intyg/visa/${id}"
             waitFor {
                 at ViewCertQAPage
             }
@@ -370,7 +374,7 @@ class SvaraOchFraga {
         }
     }
 
-    public boolean intygÄrSkickatTillIntygstjänstenMeddelandeVisas(boolean expected) {
+    public boolean intygArSkickatTillIntygstjanstenMeddelandeVisas(boolean expected) {
         def result = false
         Browser.drive {
             waitFor {
@@ -450,7 +454,7 @@ class SvaraOchFraga {
         return result == expectedVisibility
     }
 
-    public boolean FrågaMedIdHarFrågenamn(String internId, String namn) {
+    public boolean FragaMedIdHarFragenamn(String internId, String namn) {
         def result = false
         Browser.drive {
             waitFor {
@@ -481,7 +485,7 @@ class SvaraOchFraga {
         return result
     }
 
-    public boolean FrågaMedIdHarSvarsnamn(String internId, String namn) {
+    public boolean FragaMedIdHarSvarsnamn(String internId, String namn) {
         def result = false
         Browser.drive {
             waitFor {
@@ -583,7 +587,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält2Visas(String visatVarde) {
+    boolean intygFalt2Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -597,7 +601,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält3Visas(String visatVarde) {
+    boolean intygFalt3Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -611,7 +615,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält4Visas(String visatVarde) {
+    boolean intygFalt4Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -625,7 +629,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält4bVisas(String visatVarde) {
+    boolean intygFalt4bVisas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -639,7 +643,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält5Visas(String visatVarde) {
+    boolean intygFalt5Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -653,7 +657,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält6aVisas(String visatVarde) {
+    boolean intygFalt6aVisas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -667,7 +671,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält6bVisas(String visatVarde) {
+    boolean intygFalt6bVisas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -681,7 +685,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält7Visas(String visatVarde) {
+    boolean intygFalt7Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -695,7 +699,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält8aVisas(String visatVarde) {
+    boolean intygFalt8aVisas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -709,7 +713,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält8bVisas(String visatVarde) {
+    boolean intygFalt8bVisas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -723,7 +727,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält9Visas(String visatVarde) {
+    boolean intygFalt9Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -737,7 +741,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält10Visas(String visatVarde) {
+    boolean intygFalt10Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -751,7 +755,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält11Visas(String visatVarde) {
+    boolean intygFalt11Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -765,7 +769,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält12Visas(String visatVarde) {
+    boolean intygFalt12Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -779,7 +783,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält13Visas(String visatVarde) {
+    boolean intygFalt13Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -793,7 +797,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFält17Visas(String visatVarde) {
+    boolean intygFalt17Visas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -807,7 +811,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFältVarpersonNamnVisas(String visatVarde) {
+    boolean intygFaltVarpersonNamnVisas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
@@ -821,7 +825,7 @@ class SvaraOchFraga {
         return result
     }
 
-    boolean intygFältVarpersonEnhetsnamnVisas(String visatVarde) {
+    boolean intygFaltVarpersonEnhetsnamnVisas(String visatVarde) {
         def result = false
         Browser.drive {
             waitFor {
