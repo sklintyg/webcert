@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import se.inera.webcert.web.controller.AbstractIntegrationController;
 
 /**
- * API controller for handling Medcert legacy integrations.
+ * Controller for handling Medcert legacy integrations.
  * 
  * @author nikpet
  *
  */
-@Path("/user")
+@Path("/web/user")
 public class MedcertLegacyIntegrationController extends AbstractIntegrationController {
 
     private static final String CERT_FK7263 = "fk7263";

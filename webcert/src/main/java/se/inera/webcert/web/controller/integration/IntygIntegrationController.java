@@ -15,6 +15,13 @@ import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.web.controller.AbstractIntegrationController;
 
+/**
+ * Controller to enable an external user to access certificates directly from a
+ * link in an external patient care system.
+ * 
+ * @author nikpet
+ *
+ */
 @Path("/intyg")
 public class IntygIntegrationController extends AbstractIntegrationController {
 
@@ -23,6 +30,14 @@ public class IntygIntegrationController extends AbstractIntegrationController {
     @Autowired
     private IntygService intygService;
 
+    /**
+     * Fetches a certificate from IT and then performs a redirect to the view that displays
+     * the certificate. Can be used for all types of certificates.
+     * 
+     * @param uriInfo
+     * @param intygId The id of the certificate to view.
+     * @return
+     */
     @GET
     @Path("/view/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {

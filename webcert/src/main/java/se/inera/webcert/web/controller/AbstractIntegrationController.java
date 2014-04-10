@@ -9,6 +9,13 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+/**
+ * Abstract base class for integration controllers that performs redirects
+ * to views in WebCert.
+ * 
+ * @author nikpet
+ *
+ */
 public abstract class AbstractIntegrationController {
 
     private static final String PARAM_CERT_ID = "certId";
