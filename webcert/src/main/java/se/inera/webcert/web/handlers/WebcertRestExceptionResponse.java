@@ -1,16 +1,14 @@
-package se.inera.webcert.web.controller.moduleapi.dto;
+package se.inera.webcert.web.handlers;
 
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 
-public class ModuleRestExceptionResponse {
-
+public class WebcertRestExceptionResponse {
+    
     private WebCertServiceErrorCodeEnum errorCode;
+    
     private String message;
 
-    public ModuleRestExceptionResponse() {
-    }
-
-    public ModuleRestExceptionResponse(WebCertServiceErrorCodeEnum errorCode, String message) {
+    public WebcertRestExceptionResponse(WebCertServiceErrorCodeEnum errorCode, String message) {
         this.errorCode = errorCode;
         this.message = message;
     }
