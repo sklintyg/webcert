@@ -74,7 +74,7 @@ public class IntygIntegrationController {
         
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
-        return Response.status(Status.MOVED_PERMANENTLY).location(location).build();
+        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }
         
     public void setUrlBaseTemplate(String urlBaseTemplate) {
