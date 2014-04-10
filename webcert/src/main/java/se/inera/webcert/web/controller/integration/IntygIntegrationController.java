@@ -52,7 +52,7 @@ public class IntygIntegrationController {
      * @return
      */
     @GET
-    @Path("/view/{intygId}")
+    @Path("/visa/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
     
         IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId);
