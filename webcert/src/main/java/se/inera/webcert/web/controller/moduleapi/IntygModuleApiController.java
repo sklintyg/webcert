@@ -86,11 +86,11 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Transactional
-    public Response saveDraft(@PathParam("intygId") String intygId, byte[] bytes) {
+    public Response saveDraft(@PathParam("intygId") String intygId, byte[] draftCertificate) {
 
         LOG.debug("Saving Intyg with id {}", intygId);
 
-        String draftAsJson = fromBytesToString(bytes);
+        String draftAsJson = fromBytesToString(draftCertificate);
 
         SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygId, draftAsJson);
         DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
@@ -133,7 +133,7 @@ public class IntygModuleApiController extends AbstractApiController {
         try {
             return new String(bytes, UTF_8);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Could not convert the payload from bytes to String!", e);
+            throw new RuntimeException("Could not convert the payload from draftCertificate to String!", e);
         }
     }
 
@@ -177,7 +177,7 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Return the signed certificate identified by the given id as PDF.
      * 
-     * @param id
+     * @param intygId
      *            - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
