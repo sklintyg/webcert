@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.service.FragaSvarService;
+import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
 
 public class FragaSvarModuleApiController {

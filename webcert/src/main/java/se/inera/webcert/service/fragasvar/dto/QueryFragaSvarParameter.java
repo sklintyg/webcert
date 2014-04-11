@@ -1,20 +1,14 @@
-package se.inera.webcert.persistence.fragasvar.repository;
-
-import java.util.ArrayList;
-import java.util.List;
+package se.inera.webcert.service.fragasvar.dto;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
-/**
- * Created by pehr on 10/21/13.
- */
-public class FragaSvarFilter {
+public class QueryFragaSvarParameter {
 
-    private List<String> enhetsIds = new ArrayList<String>();
-    
-    private boolean questionFromFK;
-    private boolean questionFromWC;
+    private String enhetId;
+
+    private Boolean questionFromFK;
+    private Boolean questionFromWC;
 
     private String hsaId;
 
@@ -23,39 +17,34 @@ public class FragaSvarFilter {
     private LocalDateTime changedFrom;
     private LocalDateTime changedTo;
 
-    private VantarPa vantarPa = VantarPa.ALLA_OHANTERADE;
+    private String vantarPa;
 
     private LocalDate replyLatest;
-    
+
     private Integer startFrom;
-    
     private Integer pageSize;
-    
-    public boolean hasPageSizeAndStartFrom() {
-        return (pageSize != null && startFrom != null);
+
+    public String getEnhetId() {
+        return enhetId;
     }
 
-    public List<String> getEnhetsIds() {
-        return enhetsIds;
+    public void setEnhetId(String enhetId) {
+        this.enhetId = enhetId;
     }
 
-    public void setEnhetsIds(List<String> enhetsIds) {
-        this.enhetsIds = enhetsIds;
-    }
-
-    public boolean isQuestionFromFK() {
+    public Boolean getQuestionFromFK() {
         return questionFromFK;
     }
 
-    public void setQuestionFromFK(boolean questionFromFK) {
+    public void setQuestionFromFK(Boolean questionFromFK) {
         this.questionFromFK = questionFromFK;
     }
 
-    public boolean isQuestionFromWC() {
+    public Boolean getQuestionFromWC() {
         return questionFromWC;
     }
 
-    public void setQuestionFromWC(boolean questionFromWC) {
+    public void setQuestionFromWC(Boolean questionFromWC) {
         this.questionFromWC = questionFromWC;
     }
 
@@ -91,20 +80,20 @@ public class FragaSvarFilter {
         this.changedTo = changedTo;
     }
 
+    public String getVantarPa() {
+        return vantarPa;
+    }
+
+    public void setVantarPa(String vantarPa) {
+        this.vantarPa = vantarPa;
+    }
+
     public LocalDate getReplyLatest() {
         return replyLatest;
     }
 
     public void setReplyLatest(LocalDate replyLatest) {
         this.replyLatest = replyLatest;
-    }
-
-    public VantarPa getVantarPa() {
-        return vantarPa;
-    }
-
-    public void setVantarPa(VantarPa vantarPa) {
-        this.vantarPa = vantarPa;
     }
 
     public Integer getStartFrom() {

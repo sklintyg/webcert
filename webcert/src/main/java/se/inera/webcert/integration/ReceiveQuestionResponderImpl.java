@@ -9,7 +9,7 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
-import se.inera.webcert.service.FragaSvarService;
+import se.inera.webcert.service.fragasvar.FragaSvarService;
 
 /**
  * @author andreaskaltenbach

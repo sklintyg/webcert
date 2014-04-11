@@ -1,4 +1,4 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.fragasvar;
 
 import java.util.List;
 import java.util.Map;
@@ -7,8 +7,9 @@ import org.joda.time.LocalDateTime;
 
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.service.dto.Lakare;
+import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 
 /**
  * @author andreaskaltenbach
@@ -67,12 +68,7 @@ public interface FragaSvarService {
     /**
      * Returns all the question/answer matching filter criteria.
      */
-    List<FragaSvar> getFragaSvarByFilter(FragaSvarFilter filter, int startFrom, int pageSize);
-
-    /**
-     * Returns total count of question/answers matching filter criteria.
-     */
-    int getFragaSvarByFilterCount(FragaSvarFilter filter);
+    QueryFragaSvarResponse filterFragaSvar(QueryFragaSvarParameter filterParameters);
 
     /**
      * Returns a list of all unique hsaId and name (of vardperson who signed a certificate that a FragaSvar is linked to) that matches the supplied id.

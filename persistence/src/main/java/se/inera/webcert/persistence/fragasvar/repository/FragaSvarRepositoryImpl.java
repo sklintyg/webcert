@@ -1,12 +1,16 @@
 package se.inera.webcert.persistence.fragasvar.repository;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Status;
+import se.inera.webcert.persistence.intyg.model.Intyg;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -24,21 +28,24 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
     private Predicate createPredicate(FragaSvarFilter filter, CriteriaBuilder builder,Root<FragaSvar> root){
         Predicate pred= builder.conjunction();
 
-        pred = builder.and(pred, builder.equal(root.get("vardperson").get("enhetsId"), filter.getEnhetsId()));
+        pred = builder.and(pred, root.get("vardperson").get("enhetsId").in(filter.getEnhetsIds()));
 
         if (filter.isQuestionFromFK()){
             pred = builder.and(pred, builder.equal(root.get("frageStallare"), "FK"));
         }
+        
         if (filter.isQuestionFromWC()){
             pred = builder.and(pred, builder.equal(root.get("frageStallare"), "WC"));
         }
 
-        if(filter.getHsaId()!=null&&!filter.getHsaId().isEmpty()){
+        if (StringUtils.isNotEmpty(filter.getHsaId())) {
             pred = builder.and(pred, builder.equal(root.get("vardperson").get("hsaId"), filter.getHsaId()));
         }
+        
         if (filter.getVidarebefordrad() != null) {
             pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getVidarebefordrad())) ;
         }
+        
         if (filter.getChangedFrom() != null) {
             pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDate>get("senasteHandelse"), filter.getChangedFrom())) ;
         }
@@ -46,10 +53,10 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         if (filter.getChangedTo() != null) {
             pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDate>get("senasteHandelse"), filter.getChangedTo())) ;
         }
+        
         if (filter.getReplyLatest() != null) {
             pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDate>get("sistaDatumForSvar"), filter.getReplyLatest())) ;
         }
-
 
         switch(filter.getVantarPa()){
             case ALLA_OHANTERADE:
@@ -59,17 +66,14 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
                 pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.CLOSED)) ;
                 break;
             case KOMPLETTERING_FRAN_VARDEN:
-                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION), builder.equal(root.<Amne>get("amne"), Amne.KOMPLETTERING_AV_LAKARINTYG)) ;
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION), builder.equal(root.<Amne>get("amne"), Amne.KOMPLETTERING_AV_LAKARINTYG));
                 break;
             case SVAR_FRAN_VARDEN:
-                Predicate careReplyAmnePred;
-                careReplyAmnePred = builder.or(builder.equal(root.<Amne>get("amne"), Amne.OVRIGT), builder.equal(root.<Amne>get("amne"), Amne.ARBETSTIDSFORLAGGNING), builder.equal(root.<Amne>get("amne"), Amne.AVSTAMNINGSMOTE), builder.equal(root.<Amne>get("amne"), Amne.KONTAKT));
-
-                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION),careReplyAmnePred) ;
+                Predicate careReplyAmnePred = builder.or(builder.equal(root.<Amne>get("amne"), Amne.OVRIGT), builder.equal(root.<Amne>get("amne"), Amne.ARBETSTIDSFORLAGGNING), builder.equal(root.<Amne>get("amne"), Amne.AVSTAMNINGSMOTE), builder.equal(root.<Amne>get("amne"), Amne.KONTAKT));
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION), careReplyAmnePred);
                 break;
             case SVAR_FRAN_FK:
-                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_EXTERNAL_ACTION), builder.notEqual(root.<Amne>get("amne"), Amne.MAKULERING_AV_LAKARINTYG)) ;
-
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_EXTERNAL_ACTION), builder.notEqual(root.<Amne>get("amne"), Amne.MAKULERING_AV_LAKARINTYG));
                 break;
             case MARKERA_SOM_HANTERAD:
                 Predicate amnePred1;
@@ -89,21 +93,26 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
     @Override
     public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter) {
-        CriteriaBuilder builder;
-        CriteriaQuery<FragaSvar> query;
-        Root<FragaSvar> root;
+        
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<FragaSvar> cq = builder.createQuery(FragaSvar.class);
 
-        builder = entityManager.getCriteriaBuilder();
-        query = builder.createQuery(FragaSvar.class);
+        Root<FragaSvar> root = cq.from(FragaSvar.class);
 
-        root = query.from(FragaSvar.class);
+        cq.where(createPredicate(filter, builder, root));
+        cq.orderBy(builder.desc(root.get("senasteHandelse")));
+        
+        TypedQuery<FragaSvar> query = entityManager.createQuery(cq);
+        
+        if (filter.hasPageSizeAndStartFrom()) {
+            query.setMaxResults(filter.getPageSize());
+            query.setFirstResult(filter.getStartFrom());
+        }
 
-        query.where(createPredicate(filter, builder, root));
-        query.orderBy(builder.desc(root.get("senasteHandelse")));
-        return entityManager.createQuery(query).getResultList();
+        return query.getResultList();
     }
 
-    @Override
+    @Deprecated
     public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, int startPos, int size) {
         CriteriaBuilder builder;
         CriteriaQuery<FragaSvar> query;
@@ -116,23 +125,23 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
 
         query.where(createPredicate(filter, builder, root));
         query.orderBy(builder.desc(root.get("senasteHandelse")));
+        
         return entityManager.createQuery(query).setMaxResults(size).setFirstResult(startPos).getResultList();
     }
 
     @Override
     public int filterCountFragaSvar(FragaSvarFilter filter) {
-        CriteriaBuilder builder;
-        CriteriaQuery<FragaSvar> query;
-        Root<FragaSvar> root;
 
-        builder = entityManager.getCriteriaBuilder();
-        query = builder.createQuery(FragaSvar.class);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<FragaSvar> root = cq.from(FragaSvar.class);
+        cq.select(cb.count(root));
 
-        root = query.from(FragaSvar.class);
+        cq.where(createPredicate(filter, cb, root));
 
-        query.where(createPredicate(filter, builder, root));
+        Query query = entityManager.createQuery(cq);
 
-        return entityManager.createQuery(query).getResultList().size();
+        return ((Long) query.getSingleResult()).intValue();
     }
 
 }

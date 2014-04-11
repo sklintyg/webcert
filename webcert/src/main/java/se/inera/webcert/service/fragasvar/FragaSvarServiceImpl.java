@@ -1,4 +1,4 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.fragasvar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +10,9 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
-import org.apache.cxf.common.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.webcert.persistence.fragasvar.repository.VantarPa;
 import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -40,11 +42,15 @@ import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalC
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
+import se.inera.webcert.service.IntygService;
+import se.inera.webcert.service.MailNotificationService;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygStatus;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -59,15 +65,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
-    private static final String FRAGE_STALLARE_WEBCERT = "WC";
-
-    private static final Object FK_TARGET = "FK";
+    private static final String WEBCERT = "WC";
+    private static final String FORSAKRINGSKASSAN = "FK";
 
     private static final String SENT_STATUS_TYPE = "SENT";
     private static final String REVOKED_STATUS_TYPE = "CANCELLED";
 
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT, Amne.OVRIGT);
+
+    private static final Integer DEFAULT_PAGE_SIZE = 10;
 
     @Autowired
     private MailNotificationService mailNotificationService;
@@ -121,7 +128,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new IllegalStateException("No question found with internal ID " + internId);
         }
 
-        if ("FK".equals(fragaSvar.getFrageStallare())) {
+        if (FORSAKRINGSKASSAN.equals(fragaSvar.getFrageStallare())) {
             throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
 
@@ -300,7 +307,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 .convertToIntygsReferens(externalIntygData.getExternalModel());
 
         FragaSvar fraga = new FragaSvar();
-        fraga.setFrageStallare(FRAGE_STALLARE_WEBCERT);
+        fraga.setFrageStallare(WEBCERT);
         fraga.setAmne(amne);
         fraga.setFrageText(frageText);
         fraga.setFrageSkickadDatum(new LocalDateTime());
@@ -346,7 +353,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private boolean isSentToFK(List<IntygStatus> statuses) {
         if (statuses != null) {
             for (IntygStatus status : statuses) {
-                if (FK_TARGET.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
+                if (FORSAKRINGSKASSAN.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
                     return true;
                 }
             }
@@ -390,7 +397,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Enforce business rule FS-011
-        if (!FRAGE_STALLARE_WEBCERT.equals(fragaSvar.getFrageStallare())
+        if (!WEBCERT.equals(fragaSvar.getFrageStallare())
                 && !StringUtils.isEmpty(fragaSvar.getSvarsText())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "FS-011: Cant revert status for question " + frageSvarId);
@@ -399,7 +406,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         if (fragaSvar.getSvarsText() != null && !fragaSvar.getSvarsText().isEmpty()) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
-            if (fragaSvar.getFrageStallare().equalsIgnoreCase(FRAGE_STALLARE_WEBCERT)) {
+            if (fragaSvar.getFrageStallare().equalsIgnoreCase(WEBCERT)) {
                 fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
             } else {
                 fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
@@ -411,16 +418,52 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return saved;
     }
 
-    @Override
-    public List<FragaSvar> getFragaSvarByFilter(FragaSvarFilter filter, int startFrom, int pageSize) {
-        verifyEnhetsAuth(filter.getEnhetsId());
-        return fragaSvarRepository.filterFragaSvar(filter, startFrom, pageSize);
-    }
 
     @Override
-    public int getFragaSvarByFilterCount(FragaSvarFilter filter) {
-        verifyEnhetsAuth(filter.getEnhetsId());
-        return fragaSvarRepository.filterCountFragaSvar(filter);
+    public QueryFragaSvarResponse filterFragaSvar(QueryFragaSvarParameter filterParameters) {
+        
+        FragaSvarFilter filter = createFragaSvarFilter(filterParameters);
+        List<FragaSvar> results = fragaSvarRepository.filterFragaSvar(filter);
+        
+        int totalResultsCount = fragaSvarRepository.filterCountFragaSvar(filter);
+        
+        QueryFragaSvarResponse response = new QueryFragaSvarResponse();
+        response.setResults(results);
+        response.setTotalCount(totalResultsCount);
+        
+        return response;
+    }
+
+    private FragaSvarFilter createFragaSvarFilter(QueryFragaSvarParameter params) {
+        
+        FragaSvarFilter filter = new FragaSvarFilter();
+                
+        if (StringUtils.isNotEmpty(params.getEnhetId())) {
+            verifyEnhetsAuth(params.getEnhetId());
+            filter.getEnhetsIds().add(params.getEnhetId());
+        } else {
+            WebCertUser user = webCertUserService.getWebCertUser();
+            filter.getEnhetsIds().addAll(user.getIdsOfSelectedVardenhet());
+        }
+        
+        filter.setChangedFrom(params.getChangedFrom());
+        filter.setChangedTo(params.getChangedTo());
+        filter.setHsaId(params.getHsaId());
+        filter.setQuestionFromFK(getSafeBooleanValue(params.getQuestionFromFK()));
+        filter.setQuestionFromWC(getSafeBooleanValue(params.getQuestionFromWC()));
+        filter.setReplyLatest(params.getReplyLatest());
+        filter.setVidarebefordrad(getSafeBooleanValue(params.getVidarebefordrad()));
+        
+        filter.setVantarPa(VantarPa.valueOf(params.getVantarPa()));
+        
+        filter.setPageSize(params.getPageSize() == null ? DEFAULT_PAGE_SIZE : params.getPageSize());
+        filter.setStartFrom(params.getStartFrom() == null ? 0 : params.getStartFrom());
+                
+        return filter;
+    }
+
+    private boolean getSafeBooleanValue(Boolean booleanObj) {
+        return (booleanObj != null) ? booleanObj.booleanValue() : false;
     }
 
     protected void verifyEnhetsAuth(String enhetsId) {

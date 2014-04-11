@@ -9,7 +9,7 @@ import se.inera.webcert.medcertqa.v1.InnehallType;
 import se.inera.webcert.receivemedicalcertificateanswer.v1.rivtabp20.ReceiveMedicalCertificateAnswerResponderInterface;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
-import se.inera.webcert.service.FragaSvarService;
+import se.inera.webcert.service.fragasvar.FragaSvarService;
 
 /**
  * @author andreaskaltenbach
