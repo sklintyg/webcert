@@ -15,9 +15,11 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
@@ -84,6 +86,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
+
+    @Value("${sendquestiontofk.logicaladdress}")
+    private String sendQuestionToFkLogicalAddress;
+
+    @Value("${sendanswertofk.logicaladdress}")
+    private String sendAnswerToFkLogicalAddress;
 
     private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
 
@@ -238,7 +246,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         SendMedicalCertificateAnswerType sendType = new SendMedicalCertificateAnswerType();
         AnswerToFkType answer = FKAnswerConverter.convert(saved);
         sendType.setAnswer(answer);
-        SendMedicalCertificateAnswerResponseType response = sendAnswerToFKClient.sendMedicalCertificateAnswer(null,
+        AttributedURIType logicalAddress = new AttributedURIType();
+        logicalAddress.setValue(sendAnswerToFkLogicalAddress);
+        SendMedicalCertificateAnswerResponseType response = sendAnswerToFKClient.sendMedicalCertificateAnswer(logicalAddress,
                 sendType);
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOG.error("Failed to send answer to FK, result was " + response.getResult().toString());
@@ -309,8 +319,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         SendMedicalCertificateQuestionType sendType = new SendMedicalCertificateQuestionType();
         QuestionToFkType question = FKQuestionConverter.convert(saved);
         sendType.setQuestion(question);
+        AttributedURIType logicalAddress = new AttributedURIType();
+        logicalAddress.setValue(sendQuestionToFkLogicalAddress);
         SendMedicalCertificateQuestionResponseType response = sendQuestionToFKClient.sendMedicalCertificateQuestion(
-                null, sendType);
+                logicalAddress, sendType);
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOG.error("Failed to send question to FK, result was " + response.getResult().toString());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
