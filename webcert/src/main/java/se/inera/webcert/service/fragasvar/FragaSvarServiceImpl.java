@@ -446,6 +446,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             filter.getEnhetsIds().addAll(user.getIdsOfSelectedVardenhet());
         }
         
+        if (StringUtils.isNotEmpty(params.getVantarPa())) {
+            filter.setVantarPa(VantarPa.valueOf(params.getVantarPa()));
+        }
+        
         filter.setChangedFrom(params.getChangedFrom());
         filter.setChangedTo(params.getChangedTo());
         filter.setHsaId(params.getHsaId());
@@ -453,8 +457,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         filter.setQuestionFromWC(getSafeBooleanValue(params.getQuestionFromWC()));
         filter.setReplyLatest(params.getReplyLatest());
         filter.setVidarebefordrad(getSafeBooleanValue(params.getVidarebefordrad()));
-        
-        filter.setVantarPa(VantarPa.valueOf(params.getVantarPa()));
         
         filter.setPageSize(params.getPageSize() == null ? DEFAULT_PAGE_SIZE : params.getPageSize());
         filter.setStartFrom(params.getStartFrom() == null ? 0 : params.getStartFrom());
