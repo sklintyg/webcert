@@ -11,21 +11,11 @@
   a copy of the GNU Affero General Public License along with this program.
   If not, see <http://www.gnu.org/licenses/>. -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context" xmlns:jaxws="http://cxf.apache.org/jaxws"
-       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mockito="http://www.mockito.org/spring/mockito"
-       xmlns:sec="http://cxf.apache.org/configuration/security"
-       xmlns:amq="http://activemq.apache.org/schema/core"
-       xmlns:camel="http://camel.apache.org/schema/spring" xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
-        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd
-        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
-        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd
-        http://www.mockito.org/spring/mockito classpath:spring/mockito.xsd">
+        http://www.mockito.org/spring/mockito http://www.mockito.org/spring/mockito.xsd">
 
   <context:property-placeholder location="classpath:test.properties" order="0" ignore-resource-not-found="true"/>
   <import resource="classpath:log-sender-jms-config.xml"/>
