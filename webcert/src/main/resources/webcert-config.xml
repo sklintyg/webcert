@@ -170,7 +170,7 @@
     </http:conduit>
   </beans>
 
-  <beans profile="qa,prod">
+  <beans profile="test,qa,prod">
     <http:conduit
         name="{urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestion:1:rivtabp20}SendMedicalCertificateQuestionResponderInterfacePort.http-conduit">
       <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive" />
