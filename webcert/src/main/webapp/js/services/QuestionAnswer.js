@@ -5,23 +5,7 @@ define([
     return ['$http', '$log', function ($http, $log) {
 
         /*
-         * Load certificate list of all certificates for a person
-         */
-        function _getCertificatesForPerson(requestConfig, onSuccess, onError) {
-            $log.debug('_getCertificatesForPerson type:' + requestConfig);
-            var restPath = '/api/intyg/list/' + requestConfig;
-            $http.get(restPath).success(function (data) {
-                $log.debug('got data:' + data);
-                onSuccess(data);
-            }).error(function (data, status) {
-                $log.error('error ' + status);
-                // Let calling code handle the error of no data response
-                onError(status);
-            });
-        }
-
-        /*
-         * Load questions and answers data for
+         * Load questions and answers data for initial state
          */
         function _getQA(callback) {
             $log.debug('_getQA');
@@ -38,7 +22,7 @@ define([
         }
 
         /*
-         * Load questions and answers data for
+         * Load questions and answers data for search
          */
         function _getQAByQuery(qp, onSuccess, onError) {
             $log.debug('_getQAByQuery');
@@ -54,7 +38,7 @@ define([
         }
 
         /*
-         * Load questions and answers data for
+         * Load more questions and answers data
          */
         function _getQAByQueryFetchMore(qp, onSuccess, onError) {
             $log.debug('_getQAByQueryFetchMore');
@@ -69,7 +53,10 @@ define([
             });
         }
 
-        function _getDoctorList(enhetsId, onSuccess, onError) {
+        /*
+         * Get list of lakare for enhet
+         */
+        function _getQALakareList(enhetsId, onSuccess, onError) {
             $log.debug('_getDoctorList: ' + enhetsId);
             var restPath = '/api/fragasvar/lakare';
             $http.get(restPath, {params: { 'enhetsId' : enhetsId}}).success(function (data) {
@@ -84,11 +71,10 @@ define([
 
         // Return public API for the service
         return {
-            getCertificatesForPerson: _getCertificatesForPerson,
             getQA: _getQA,
             getQAByQuery: _getQAByQuery,
             getQAByQueryFetchMore: _getQAByQueryFetchMore,
-            getDoctorList: _getDoctorList
+            getQALakareList: _getQALakareList
         };
     }];
 });

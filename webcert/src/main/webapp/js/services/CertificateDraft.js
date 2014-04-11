@@ -34,27 +34,6 @@ define([
                 onSuccess();
             },
 
-            getCertTypes: function (onSuccess, onError) {
-                this.intygType = 'default';
-
-                var restPath = '/api/modules/map';
-                $http.get(restPath).success(function (data) {
-                    $log.debug('got data:', data);
-                    var sortValue = 0;
-                    var types = [
-                        {sortValue: sortValue++, id: 'default', label: 'Välj intygstyp'}
-                    ];
-                    for (var i in data) {
-                        var m = data[i];
-                        types.push({sortValue: sortValue++, id: m.id, label: m.label});
-                    }
-                    onSuccess(types);
-                }).error(function (data, status) {
-                    $log.error('error ' + status);
-                    onError();
-                });
-            },
-
             createDraft: function (onSuccess, onError) {
                 $log.debug('_createDraft');
 

@@ -11,7 +11,7 @@ describe('InitCertCtrl', function () {
     beforeEach(inject(function ($controller, _$location_) {
         $location = _$location_;
         CertificateDraft = jasmine.createSpyObj('CertificateDraft',
-            ['reset', 'getNameAndAddress', 'getCertTypes', 'createDraft']);
+            ['reset', 'getNameAndAddress', 'createDraft']);
         $scope = {};
 
         InitCertCtrl = $controller('InitCertCtrl', {

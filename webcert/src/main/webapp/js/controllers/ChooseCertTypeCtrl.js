@@ -2,8 +2,8 @@ define([
 ], function () {
     'use strict';
 
-    return ['$rootScope', '$scope', '$window', '$location', '$filter', '$log', '$timeout', 'wcDialogService', 'dashBoardService', 'CertificateDraft', 'User',
-        function ($rootScope, $scope, $window, $location, $filter, $log, $timeout, wcDialogService, dashBoardService, CertificateDraft, User) {
+    return ['$rootScope', '$scope', '$window', '$location', '$filter', '$log', '$timeout', 'wcDialogService', 'WebcertCertificate', 'CertificateDraft', 'User',
+        function ($rootScope, $scope, $window, $location, $filter, $log, $timeout, wcDialogService, WebcertCertificate, CertificateDraft, User) {
             if (!CertificateDraft.personnummer || !CertificateDraft.firstname || !CertificateDraft.lastname) {
                 $location.url('/create/index', true);
             }
@@ -12,7 +12,7 @@ define([
             $scope.firstname = CertificateDraft.firstname;
             $scope.lastname = CertificateDraft.lastname;
 
-            CertificateDraft.getCertTypes(function (types) {
+            WebcertCertificate.getCertTypes(function (types) {
                 $scope.certTypes = types;
                 $scope.intygType = CertificateDraft.intygType;
             });
@@ -89,7 +89,7 @@ define([
             $scope.widgetState.doneLoading = true;
 
             $timeout(function () {
-                dashBoardService.getCertificatesForPerson($scope.personnummer, function (data) {
+                WebcertCertificate.getCertificatesForPerson($scope.personnummer, function (data) {
                     $scope.widgetState.doneLoading = false;
                     $scope.widgetState.certListUnhandled = data;
                     $scope.updateCertList();

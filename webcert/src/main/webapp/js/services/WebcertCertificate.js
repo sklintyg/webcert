@@ -8,6 +8,41 @@ define([
 
     return ['$http', '$log', '$window', '$modal', function ($http, $log, $window, $modal) {
 
+        function _getCertTypes(onSuccess, onError) {
+            var restPath = '/api/modules/map';
+            $http.get(restPath).success(function (data) {
+                $log.debug('got data:', data);
+                var sortValue = 0;
+                var types = [
+                    {sortValue: sortValue++, id: 'default', label: 'Välj intygstyp'}
+                ];
+                for (var i in data) {
+                    var m = data[i];
+                    types.push({sortValue: sortValue++, id: m.id, label: m.label});
+                }
+                onSuccess(types);
+            }).error(function (data, status) {
+                $log.error('error ' + status);
+                onError();
+            });
+        }
+
+        /*
+         * Load certificate list of all certificates for a person
+         */
+        function _getCertificatesForPerson(requestConfig, onSuccess, onError) {
+            $log.debug('_getCertificatesForPerson type:' + requestConfig);
+            var restPath = '/api/intyg/list/' + requestConfig;
+            $http.get(restPath).success(function (data) {
+                $log.debug('got data:' + data);
+                onSuccess(data);
+            }).error(function (data, status) {
+                $log.error('error ' + status);
+                // Let calling code handle the error of no data response
+                onError(status);
+            });
+        }
+
         /*
          * Load unsigned certificate list for valdVardenhet
          */
@@ -174,11 +209,12 @@ define([
                 }
             }, function () {
             });
-
         }
 
         // Return public API for the service
         return {
+            getCertTypes: _getCertTypes,
+            getCertificatesForPerson: _getCertificatesForPerson,
             getUnsignedCertificates: _getUnsignedCertificates,
             getUnsignedCertificatesByQueryFetchMore: _getUnsignedCertificatesByQueryFetchMore,
             getCertificateSavedByList: _getCertificateSavedByList,

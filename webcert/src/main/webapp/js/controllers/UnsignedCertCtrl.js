@@ -5,8 +5,10 @@ define([
     /*
      * Controller for logic related to listing unsigned certs
      */
-    return ['$scope', '$window', '$log', '$filter', '$location', '$cookieStore', '$timeout', 'User', 'unsignedCertificateService', 'wcDialogService',
-        function ($scope, $window, $log, $filter, $location, $cookieStore, $timeout, User, unsignedCertificateService, wcDialogService) {
+    return ['$scope', '$window', '$log', '$filter', '$location', '$cookieStore', '$timeout',
+            'User', 'WebcertCertificate', 'wcDialogService',
+        function ($scope, $window, $log, $filter, $location, $cookieStore, $timeout,
+                  User, WebcertCertificate, wcDialogService) {
 
             // Constant settings
             var PAGE_SIZE = 10;
@@ -44,6 +46,22 @@ define([
                 lastFilterQuery: defaultFilterQuery
             };
 
+            function resetFilterState() {
+                $scope.filterForm = angular.copy(defaultFilterFormData);
+            }
+
+            function loadFilterForm() {
+
+                resetFilterState();
+                loadSavedByList($scope.widgetState.valdVardenhet);
+
+                // Use saved choice if cookie has saved a filter
+                var storedFilter = $cookieStore.get('unsignedCertFilter');
+                if (storedFilter && storedFilter.filter.savedBy) {
+                    $scope.filterForm.lastFilterQuery.filter.savedBy = selectSavedByHsaId(storedFilter.filter.savedBy.hsaId);
+                }
+            }
+
             // Exposed page state variables
             resetFilterState(); // Initializes $scope.filterForm from defaultFilterFormData
             $scope.widgetState = {
@@ -76,36 +94,24 @@ define([
             loadFilterForm();
             $scope.widgetState.doneLoading = false;
 
-            unsignedCertificateService.getUnsignedCertificates(function (data) {
+            WebcertCertificate.getUnsignedCertificates(function (data) {
 
-                    $scope.widgetState.doneLoading = true;
-                    $scope.widgetState.activeErrorMessageKey = null;
-                    $scope.widgetState.currentList = data.results;
-                    $scope.widgetState.totalCount = data.totalCount;
+                $scope.widgetState.doneLoading = true;
+                $scope.widgetState.activeErrorMessageKey = null;
+                $scope.widgetState.currentList = data.results;
+                $scope.widgetState.totalCount = data.totalCount;
 
-                }, function () {
+            }, function () {
 
-                    $log.debug('Query Error');
-                    $scope.widgetState.doneLoading = true;
-                    $scope.widgetState.activeErrorMessageKey = 'info.query.error';
+                $log.debug('Query Error');
+                $scope.widgetState.doneLoading = true;
+                $scope.widgetState.activeErrorMessageKey = 'info.query.error';
 
-                }
-            );
+            });
 
             /**
              * Private functions
              */
-            function loadFilterForm() {
-
-                resetFilterState();
-                loadSavedByList($scope.widgetState.valdVardenhet);
-
-                // Use saved choice if cookie has saved a filter
-                var storedFilter = $cookieStore.get('unsignedCertFilter');
-                if (storedFilter && storedFilter.filter.savedBy) {
-                    $scope.filterForm.lastFilterQuery.filter.savedBy = selectSavedByHsaId(storedFilter.filter.savedBy.hsaId);
-                }
-            }
 
             function selectSavedByHsaId(hsaId) {
                 for (var count = 0; count < $scope.widgetState.savedByList.length; count++) {
@@ -116,15 +122,11 @@ define([
                 return $scope.widgetState.savedByList[0];
             }
 
-            function resetFilterState() {
-                $scope.filterForm = angular.copy(defaultFilterFormData);
-            }
-
             function loadSavedByList() {
 
                 $scope.widgetState.loadingSavedByList = true;
 
-                unsignedCertificateService.getCertificateSavedByList(function (list) {
+                WebcertCertificate.getCertificateSavedByList(function (list) {
                     $scope.widgetState.loadingSavedByList = false;
                     $scope.widgetState.savedByList = list;
                     if (list && (list.length > 0)) {
@@ -167,7 +169,7 @@ define([
                 filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
 
                 $scope.widgetState.runningQuery = true;
-                unsignedCertificateService.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
+                WebcertCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
                     $scope.widgetState.runningQuery = false;
                     $scope.widgetState.currentList = successData.results;
                     $scope.widgetState.totalCount = successData.totalCount;
@@ -193,7 +195,7 @@ define([
                 var filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
                 $scope.widgetState.fetchingMoreInProgress = true;
 
-                unsignedCertificateService.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
+                WebcertCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
                     $scope.widgetState.fetchingMoreInProgress = false;
                     for (var i = 0; i < successData.results.length; i++) {
                         $scope.widgetState.currentList.push(successData.results[i]);
@@ -218,16 +220,16 @@ define([
             // Handle forwarding
             $scope.openMailDialog = function (cert) {
                 $timeout(function () {
-                    unsignedCertificateService.handleForwardedToggle(cert, $scope.onForwardedChange);
+                    WebcertCertificate.handleForwardedToggle(cert, $scope.onForwardedChange);
                 }, 1000);
                 // Launch mail client
-                $window.location = unsignedCertificateService.buildMailToLink(cert);
+                $window.location = WebcertCertificate.buildMailToLink(cert);
 
             };
 
             $scope.onForwardedChange = function (cert) {
                 cert.updateInProgress = true;
-                unsignedCertificateService.setForwardedState(cert.intygId, cert.forwarded, function (result) {
+                WebcertCertificate.setForwardedState(cert.intygId, cert.forwarded, function (result) {
                     cert.updateInProgress = false;
 
                     if (result !== null) {

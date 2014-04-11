@@ -1,16 +1,16 @@
 define([
     'angular',
-    'services/dashBoardService',
-    'services/unsignedCertificateService',
+    'services/QuestionAnswer',
+    'services/WebcertCertificate',
     'services/CertificateDraft'
-], function (angular, dashBoardService, unsignedCertificateService, CertificateDraft) {
+], function (angular, QuestionAnswer, WebcertCertificate, CertificateDraft) {
     'use strict';
 
     var moduleName = 'wc.dashboard.services';
 
     angular.module(moduleName, [])
-        .factory('dashBoardService', dashBoardService)
-        .factory('unsignedCertificateService', unsignedCertificateService)
+        .factory('QuestionAnswer', QuestionAnswer)
+        .factory('WebcertCertificate', WebcertCertificate)
         .factory('CertificateDraft', CertificateDraft);
 
     return moduleName;

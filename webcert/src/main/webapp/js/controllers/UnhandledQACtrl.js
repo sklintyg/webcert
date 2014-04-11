@@ -7,17 +7,10 @@ define(
          * Controller for logic related to listing questions and answers
          */
         return [
-            '$scope',
-            '$window',
-            '$location',
-            '$log',
-            '$timeout',
-            '$filter',
-            '$cookieStore',
-            'dashBoardService',
-            'fragaSvarCommonService',
-            'wcDialogService',
-            function ($scope, $window, $location, $log, $timeout, $filter, $cookieStore, dashBoardService, fragaSvarCommonService, wcDialogService) {
+            '$scope', '$window', '$location', '$log', '$timeout', '$filter', '$cookieStore',
+            'WebcertCertificate', 'fragaSvarCommonService', 'QuestionAnswer', 'wcDialogService',
+            function ($scope, $window, $location, $log, $timeout, $filter, $cookieStore,
+                      WebcertCertificate, fragaSvarCommonService, QuestionAnswer, wcDialogService) {
 
                 // init state
                 $scope.widgetState = {
@@ -79,7 +72,7 @@ define(
                     }
                     $cookieStore.put('enhetsId', unit.id);
 
-                    $scope.initDoctorList(unit.id);
+                    $scope.initLakareList(unit.id);
                     filterCurrentList(unit);
 
                     // If we have a query stored, open the advanced filter
@@ -120,12 +113,12 @@ define(
                     }
                 ];
 
-                $scope.doctorListEmptyChoice = {
+                $scope.lakareListEmptyChoice = {
                     hsaId: undefined,
                     name: 'Alla'
                 };
-                $scope.doctorList = [];
-                $scope.doctorList.push($scope.doctorListEmptyChoice);
+                $scope.lakareList = [];
+                $scope.lakareList.push($scope.lakareListEmptyChoice);
 
                 var defaultQuery = {
                     enhetsId: undefined, // set to chosen enhet
@@ -138,7 +131,7 @@ define(
                     changedFrom: undefined,
                     changedTo: undefined,
                     vantarPaSelector: $scope.statusList[1],
-                    doctorSelector: $scope.doctorList[0],
+                    lakareSelector: $scope.lakareList[0],
                     replyLatest: undefined
                 };
 
@@ -155,7 +148,7 @@ define(
                     $scope.widgetState.activeErrorMessageKey = null;
                     var toSend = $scope.prepareSearchFormForQuery($scope.qp, $scope.widgetState);
                     $scope.widgetState.lastQuery = toSend;
-                    dashBoardService.getQAByQuery(toSend, function (successData) {
+                    QuestionAnswer.getQAByQuery(toSend, function (successData) {
                         $scope.widgetState.runningQuery = false;
 
                         $scope.qaListQuery = successData.results;
@@ -179,7 +172,7 @@ define(
                     queryInstance.startFrom += queryInstance.pageSize;
                     $scope.widgetState.lastQuery = queryInstance;
 
-                    dashBoardService.getQAByQueryFetchMore(queryInstance, function (successData) {
+                    QuestionAnswer.getQAByQueryFetchMore(queryInstance, function (successData) {
                         $scope.widgetState.fetchingMoreInProgress = false;
                         $scope.decorateList(successData.results);
 
@@ -199,7 +192,7 @@ define(
 
                     $scope.qp = angular.copy(defaultQuery);
                     $scope.qp.vantarPaSelector = $scope.statusList[1];
-                    $scope.qp.doctorSelector = $scope.doctorList[0];
+                    $scope.qp.lakareSelector = $scope.lakareList[0];
                     $scope.widgetState.form.questionFrom = "default";
                     $scope.widgetState.form.vidarebefordrad = "default";
                 };
@@ -237,11 +230,14 @@ define(
                 $scope.prepareSearchFormForQuery = function (qp, ws) {
 
                     qp.enhetsId = $scope.activeUnit.id;
+                    if(qp.enhetsId === "wc-all") {
+                        qp.enhetsId = undefined;
+                    }
                     $cookieStore.put('enhetsId', qp.enhetsId);
                     qp.vantarPa = qp.vantarPaSelector.value;
 
-                    if (qp.doctorSelector) {
-                        qp.hsaId = qp.doctorSelector.hsaId;
+                    if (qp.lakareSelector) {
+                        qp.hsaId = qp.lakareSelector.hsaId;
                     }
 
                     if (qp.changedFrom) {
@@ -284,7 +280,7 @@ define(
 
                 // load all fragasvar for all units in usercontext
 
-                dashBoardService.getQA(function (data) {
+                QuestionAnswer.getQA(function (data) {
                     $scope.widgetState.queryMode = false;
                     $scope.widgetState.doneLoading = true;
                     if (data !== null) {
@@ -324,40 +320,40 @@ define(
                         });
                 };
 
-                $scope.initDoctorList = function (unitId) {
-                    $scope.widgetState.loadingDoctors = true;
-                    dashBoardService.getDoctorList(unitId === "wc-all" ? undefined : unitId, function (list) {
+                $scope.initLakareList = function (unitId) {
+                    $scope.widgetState.loadingLakares = true;
+                    QuestionAnswer.getQALakareList(unitId === "wc-all" ? undefined : unitId, function (list) {
 
-                        $scope.widgetState.loadingDoctors = false;
+                        $scope.widgetState.loadingLakares = false;
 
-                        $scope.doctorList = list;
+                        $scope.lakareList = list;
                         if (list && (list.length > 0)) {
-                            $scope.doctorList.unshift($scope.doctorListEmptyChoice);
+                            $scope.lakareList.unshift($scope.lakareListEmptyChoice);
 
-                            if ($cookieStore.get('query_instance') && $cookieStore.get('query_instance').filter.doctorSelector) {
-                                $scope.qp.doctorSelector = selectDoctorByHsaId($cookieStore
-                                    .get('query_instance').filter.doctorSelector.hsaId);
+                            if ($cookieStore.get('query_instance') && $cookieStore.get('query_instance').filter.lakareSelector) {
+                                $scope.qp.lakareSelector = selectLakareByHsaId($cookieStore
+                                    .get('query_instance').filter.lakareSelector.hsaId);
                             } else {
-                                $scope.doctorSelector = $scope.doctorList[0];
+                                $scope.lakareSelector = $scope.lakareList[0];
                             }
                         }
                     }, function () {
-                        $scope.widgetState.loadingDoctors = false;
-                        $scope.doctorList = [];
-                        $scope.doctorList.push({
+                        $scope.widgetState.loadingLakares = false;
+                        $scope.lakareList = [];
+                        $scope.lakareList.push({
                             hsaId: undefined,
                             name: '<Kunde inte hämta lista>'
                         });
                     });
                 };
 
-                function selectDoctorByHsaId(hsaId) {
-                    for (var count = 0; count < $scope.doctorList.length; count++) {
-                        if ($scope.doctorList[count].hsaId === hsaId) {
-                            return $scope.doctorList[count];
+                function selectLakareByHsaId(hsaId) {
+                    for (var count = 0; count < $scope.lakareList.length; count++) {
+                        if ($scope.lakareList[count].hsaId === hsaId) {
+                            return $scope.lakareList[count];
                         }
                     }
-                    return $scope.doctorList[0];
+                    return $scope.lakareList[0];
                 }
 
                 function selectVantarPaByValue(vantaValue) {
