@@ -12,6 +12,8 @@ import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCert
  */
 public class SendAnswerStub implements SendMedicalCertificateAnswerResponderInterface {
 
+    private static final String LOGICAL_ADDRESS = "SendAnswerStub";
+
     @Autowired
     private QuestionAnswerStore questionAnswerStore;
 
@@ -20,7 +22,11 @@ public class SendAnswerStub implements SendMedicalCertificateAnswerResponderInte
             SendMedicalCertificateAnswerType parameters) {
         SendMedicalCertificateAnswerResponseType response = new SendMedicalCertificateAnswerResponseType();
 
-        if (parameters.getAnswer().getSvar().getMeddelandeText().equalsIgnoreCase("error")) {
+        if (logicalAddress == null) {
+            response.setResult(ResultOfCallUtil.failResult("Ingen LogicalAddress är satt"));
+        } else if (!LOGICAL_ADDRESS.equals(logicalAddress.getValue())) {
+            response.setResult(ResultOfCallUtil.failResult("LogicalAddress '" + logicalAddress.getValue() + "' är inte samma som '" + LOGICAL_ADDRESS + "'"));
+        } else if (parameters.getAnswer().getSvar().getMeddelandeText().equalsIgnoreCase("error")) {
             response.setResult(ResultOfCallUtil.failResult("Du ville ju få ett fel"));
         } else {
             response.setResult(ResultOfCallUtil.okResult());
