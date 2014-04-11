@@ -1,17 +1,17 @@
 define([
     'angular',
     'services/QuestionAnswer',
-    'services/WebcertCertificate',
-    'services/CertificateDraft'
-], function (angular, QuestionAnswer, WebcertCertificate, CertificateDraft) {
+    'services/ManageCertificate',
+    'services/CreateCertificateDraft'
+], function (angular, QuestionAnswer, ManageCertificate, CreateCertificateDraft) {
     'use strict';
 
     var moduleName = 'wc.dashboard.services';
 
     angular.module(moduleName, [])
         .factory('QuestionAnswer', QuestionAnswer)
-        .factory('WebcertCertificate', WebcertCertificate)
-        .factory('CertificateDraft', CertificateDraft);
+        .factory('ManageCertificate', ManageCertificate)
+        .factory('CreateCertificateDraft', CreateCertificateDraft);
 
     return moduleName;
 });

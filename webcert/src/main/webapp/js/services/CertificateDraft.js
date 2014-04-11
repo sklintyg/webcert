@@ -18,7 +18,7 @@ define([
             },
 
             getNameAndAddress: function (personnummer, onSuccess) {
-                $log.debug('CertificateDraft getNameAndAddress');
+                $log.debug('CreateCertificateDraft getNameAndAddress');
 
                 this.personnummer = personnummer;
 

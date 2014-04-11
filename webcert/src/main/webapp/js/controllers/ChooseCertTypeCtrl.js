@@ -2,42 +2,42 @@ define([
 ], function () {
     'use strict';
 
-    return ['$rootScope', '$scope', '$window', '$location', '$filter', '$log', '$timeout', 'wcDialogService', 'WebcertCertificate', 'CertificateDraft', 'User',
-        function ($rootScope, $scope, $window, $location, $filter, $log, $timeout, wcDialogService, WebcertCertificate, CertificateDraft, User) {
-            if (!CertificateDraft.personnummer || !CertificateDraft.firstname || !CertificateDraft.lastname) {
+    return ['$rootScope', '$scope', '$window', '$location', '$filter', '$log', '$timeout', 'wcDialogService', 'ManageCertificate', 'CreateCertificateDraft', 'User',
+        function ($rootScope, $scope, $window, $location, $filter, $log, $timeout, wcDialogService, ManageCertificate, CreateCertificateDraft, User) {
+            if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.firstname || !CreateCertificateDraft.lastname) {
                 $location.url('/create/index', true);
             }
 
-            $scope.personnummer = CertificateDraft.personnummer;
-            $scope.firstname = CertificateDraft.firstname;
-            $scope.lastname = CertificateDraft.lastname;
+            $scope.personnummer = CreateCertificateDraft.personnummer;
+            $scope.firstname = CreateCertificateDraft.firstname;
+            $scope.lastname = CreateCertificateDraft.lastname;
 
-            WebcertCertificate.getCertTypes(function (types) {
+            ManageCertificate.getCertTypes(function (types) {
                 $scope.certTypes = types;
-                $scope.intygType = CertificateDraft.intygType;
+                $scope.intygType = CreateCertificateDraft.intygType;
             });
 
             function _createDraft() {
                 var valdVardenhet = User.getValdVardenhet();
-                CertificateDraft.vardGivareHsaId = valdVardenhet.id;
-                CertificateDraft.vardGivareNamn = valdVardenhet.namn;
-                CertificateDraft.vardEnhetHsaId = valdVardenhet.id;
-                CertificateDraft.vardEnhetNamn = valdVardenhet.namn;
-                CertificateDraft.createDraft(function (data) {
-                    $location.url('/' + CertificateDraft.intygType + '/edit/' + data, true);
-                    CertificateDraft.reset();
+                CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
+                CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
+                CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
+                CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
+                CreateCertificateDraft.createDraft(function (data) {
+                    $location.url('/' + CreateCertificateDraft.intygType + '/edit/' + data, true);
+                    CreateCertificateDraft.reset();
                 }, function () {
                     // TODO: handle error visually for "failed to create cert"
                 });
             }
 
             $scope.lookupAddress = function () {
-                CertificateDraft.intygType = $scope.intygType;
+                CreateCertificateDraft.intygType = $scope.intygType;
 
                 // TODO: create a list with which intygTypes wants and address or not. FK7263 does not want an address, so hardcoded for now as it is the only one in the foreseeble future
-                if (CertificateDraft.intygType !== 'fk7263' && CertificateDraft.address) {
+                if (CreateCertificateDraft.intygType !== 'fk7263' && CreateCertificateDraft.address) {
                     var bodyText = 'Patienten har tidigare intyg där adressuppgifter har angivits. Vill du återanvända dessa i det nya intyget?<br>' +
-                        '<br>Adress: ' + CertificateDraft.address;
+                        '<br>Adress: ' + CreateCertificateDraft.address;
 
                     wcDialogService.showDialog($scope, {
                         dialogId: 'confirm-address-dialog',
@@ -50,7 +50,7 @@ define([
                         },
                         button2click: function () {
                             $log.debug('confirm address no');
-                            CertificateDraft.address = null;
+                            CreateCertificateDraft.address = null;
                             _createDraft();
                         },
 
@@ -60,7 +60,7 @@ define([
                     });
                 } else {
                     // Address is not important
-                    CertificateDraft.address = null;
+                    CreateCertificateDraft.address = null;
                     _createDraft();
                 }
             };
@@ -89,7 +89,7 @@ define([
             $scope.widgetState.doneLoading = true;
 
             $timeout(function () {
-                WebcertCertificate.getCertificatesForPerson($scope.personnummer, function (data) {
+                ManageCertificate.getCertificatesForPerson($scope.personnummer, function (data) {
                     $scope.widgetState.doneLoading = false;
                     $scope.widgetState.certListUnhandled = data;
                     $scope.updateCertList();
@@ -102,11 +102,11 @@ define([
 
             $scope.openIntyg = function (cert) {
                 $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
-                CertificateDraft.reset();
+                CreateCertificateDraft.reset();
             };
 
             $scope.copyIntyg = function (cert) {
-                //CertificateDraft.reset();
+                //CreateCertificateDraft.reset();
                 wcDialogService.showDialog($scope, {
                     dialogId: 'copy-dialog',
                     titleId: 'label.copycert',

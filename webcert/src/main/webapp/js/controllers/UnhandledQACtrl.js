@@ -8,9 +8,9 @@ define(
          */
         return [
             '$scope', '$window', '$location', '$log', '$timeout', '$filter', '$cookieStore',
-            'WebcertCertificate', 'fragaSvarCommonService', 'QuestionAnswer', 'wcDialogService',
+            'ManageCertificate', 'fragaSvarCommonService', 'QuestionAnswer', 'wcDialogService',
             function ($scope, $window, $location, $log, $timeout, $filter, $cookieStore,
-                      WebcertCertificate, fragaSvarCommonService, QuestionAnswer, wcDialogService) {
+                      ManageCertificate, fragaSvarCommonService, QuestionAnswer, wcDialogService) {
 
                 // init state
                 $scope.widgetState = {

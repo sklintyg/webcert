@@ -2,19 +2,19 @@ define([
 ], function () {
     'use strict';
 
-    return ['$scope', '$location', 'CertificateDraft',
-        function ($scope, $location, CertificateDraft) {
-            if (!CertificateDraft.personnummer) {
+    return ['$scope', '$location', 'CreateCertificateDraft',
+        function ($scope, $location, CreateCertificateDraft) {
+            if (!CreateCertificateDraft.personnummer) {
                 $location.url('/create/choose-patient/index', true);
             }
 
-            $scope.personnummer = CertificateDraft.personnummer;
-            $scope.firstname = CertificateDraft.firstname;
-            $scope.lastname = CertificateDraft.lastname;
+            $scope.personnummer = CreateCertificateDraft.personnummer;
+            $scope.firstname = CreateCertificateDraft.firstname;
+            $scope.lastname = CreateCertificateDraft.lastname;
 
             $scope.chooseCertType = function () {
-                CertificateDraft.firstname = $scope.firstname;
-                CertificateDraft.lastname = $scope.lastname;
+                CreateCertificateDraft.firstname = $scope.firstname;
+                CreateCertificateDraft.lastname = $scope.lastname;
                 $location.path('/create/choose-cert-type/index');
             };
 

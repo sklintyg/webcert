@@ -6,9 +6,9 @@ define([
      * Controller for logic related to listing unsigned certs
      */
     return ['$scope', '$window', '$log', '$filter', '$location', '$cookieStore', '$timeout',
-            'User', 'WebcertCertificate', 'wcDialogService',
+            'User', 'ManageCertificate', 'wcDialogService',
         function ($scope, $window, $log, $filter, $location, $cookieStore, $timeout,
-                  User, WebcertCertificate, wcDialogService) {
+                  User, ManageCertificate, wcDialogService) {
 
             // Constant settings
             var PAGE_SIZE = 10;
@@ -94,7 +94,7 @@ define([
             loadFilterForm();
             $scope.widgetState.doneLoading = false;
 
-            WebcertCertificate.getUnsignedCertificates(function (data) {
+            ManageCertificate.getUnsignedCertificates(function (data) {
 
                 $scope.widgetState.doneLoading = true;
                 $scope.widgetState.activeErrorMessageKey = null;
@@ -126,7 +126,7 @@ define([
 
                 $scope.widgetState.loadingSavedByList = true;
 
-                WebcertCertificate.getCertificateSavedByList(function (list) {
+                ManageCertificate.getCertificateSavedByList(function (list) {
                     $scope.widgetState.loadingSavedByList = false;
                     $scope.widgetState.savedByList = list;
                     if (list && (list.length > 0)) {
@@ -169,7 +169,7 @@ define([
                 filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
 
                 $scope.widgetState.runningQuery = true;
-                WebcertCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
+                ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
                     $scope.widgetState.runningQuery = false;
                     $scope.widgetState.currentList = successData.results;
                     $scope.widgetState.totalCount = successData.totalCount;
@@ -195,7 +195,7 @@ define([
                 var filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
                 $scope.widgetState.fetchingMoreInProgress = true;
 
-                WebcertCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
+                ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
                     $scope.widgetState.fetchingMoreInProgress = false;
                     for (var i = 0; i < successData.results.length; i++) {
                         $scope.widgetState.currentList.push(successData.results[i]);
@@ -220,16 +220,16 @@ define([
             // Handle forwarding
             $scope.openMailDialog = function (cert) {
                 $timeout(function () {
-                    WebcertCertificate.handleForwardedToggle(cert, $scope.onForwardedChange);
+                    ManageCertificate.handleForwardedToggle(cert, $scope.onForwardedChange);
                 }, 1000);
                 // Launch mail client
-                $window.location = WebcertCertificate.buildMailToLink(cert);
+                $window.location = ManageCertificate.buildMailToLink(cert);
 
             };
 
             $scope.onForwardedChange = function (cert) {
                 cert.updateInProgress = true;
-                WebcertCertificate.setForwardedState(cert.intygId, cert.forwarded, function (result) {
+                ManageCertificate.setForwardedState(cert.intygId, cert.forwarded, function (result) {
                     cert.updateInProgress = false;
 
                     if (result !== null) {
