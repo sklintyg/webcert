@@ -4,13 +4,13 @@ define([
 
     return {
         'sv' : {
-        	"webcert.header": "Webcert",
+            "webcert.header": "Webcert",
             "webcert.description" : "Välkommen till Webcert.",
             "dashboard.title" : "Mina andra enheter",
             "dashboard.unanswered.title" : "Frågor och svar",
             "dashboard.unsigned.title" : "Ej signerade intyg",
             "dashboard.about.title" : "Om Webcert",
-            
+
             //labels
             "label.unsignedcerts" : "Ej signerade intyg",
             "label.unansweredcerts": "Intyg med ej hanterad fråga",
