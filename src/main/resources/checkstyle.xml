@@ -119,7 +119,7 @@
     <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
   </module>
   <module name="NewlineAtEndOfFile"/>
-  <module name="Translation"/>
+  <!-- module name="Translation"/ -->
   <module name="FileLength"/>
   <module name="FileTabCharacter"/>
   <module name="RegexpSingleline">
