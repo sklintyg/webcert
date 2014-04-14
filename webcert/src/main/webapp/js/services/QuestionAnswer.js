@@ -5,26 +5,25 @@ define([
     return ['$http', '$log', function ($http, $log) {
 
         /*
-         * Load questions and answers data for initial state
+         * Load questions and answers data
          */
-        function _getQA(callback) {
+        function _getQA(query, onSuccess, onError) {
             $log.debug('_getQA');
-            var restPath = '/api/fragasvar';
-            $http.get(restPath).success(function (data) {
+            var restPath = '/api/fragasvar/query';
+            $http.get(restPath, { params: query}).success(function (data) {
                 $log.debug('got data:' + data);
-                callback(data);
+                onSuccess(data);
             }).error(function (data, status) {
                 $log.error('error ' + status);
                 // Let calling code handle the error of no data response
-                callback(null);
+                onError(data);
             });
-
         }
 
         /*
          * Load questions and answers data for search
          */
-        function _getQAByQuery(qp, onSuccess, onError) {
+/*        function _getQAByQuery(qp, onSuccess, onError) {
             $log.debug('_getQAByQuery');
             var restPath = '/api/fragasvar/query';
             $http.put(restPath, qp).success(function (data) {
@@ -36,11 +35,11 @@ define([
                 onError(data);
             });
         }
-
+*/
         /*
          * Load more questions and answers data
          */
-        function _getQAByQueryFetchMore(qp, onSuccess, onError) {
+/*        function _getQAByQueryFetchMore(qp, onSuccess, onError) {
             $log.debug('_getQAByQueryFetchMore');
             var restPath = '/api/fragasvar/query/paging';
             $http.put(restPath, qp).success(function (data) {
@@ -52,7 +51,7 @@ define([
                 onError(data);
             });
         }
-
+*/
         /*
          * Get list of lakare for enhet
          */
@@ -72,8 +71,8 @@ define([
         // Return public API for the service
         return {
             getQA: _getQA,
-            getQAByQuery: _getQAByQuery,
-            getQAByQueryFetchMore: _getQAByQueryFetchMore,
+/*            getQAByQuery: _getQAByQuery,
+            getQAByQueryFetchMore: _getQAByQueryFetchMore,*/
             getQALakareList: _getQALakareList
         };
     }];
