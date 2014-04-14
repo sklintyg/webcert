@@ -15,6 +15,40 @@ define([
                 $scope.units.unshift({id: "wc-all", namn: "Alla mottagningars frågor och svar"});
                 $scope.selectedUnit = null;
 
+                $scope.$on("wc-stat-update", function (event, message) {
+
+                    // Get the latest stats
+                    var unitStats = message;
+
+                    // Get the chosen vardenhet
+                    var valdVardenhet = User.getValdVardenhet();
+                    var valdVardgivare = User.getValdVardgivare();
+
+                    // Find stats for the chosen vardenhets units below the chosen vardgivare
+                    var valdVardenheterStats = {};
+                    angular.forEach(unitStats.vardgivare, function (vardgivareStats, key) {
+                        if (vardgivareStats.id === valdVardgivare.id) {
+                            valdVardenheterStats = vardgivareStats.vardenheter;
+                        }
+                    });
+
+                    // Set stats for each unit available for the filter
+                    angular.forEach($scope.units, function (unit, keyu) {
+
+                        // If it's the all choice, we know we want the total of everything
+                        if (unit.id === "wc-all") {
+                            unit.fragaSvar = unitStats.fragaSvarValdEnhet;
+                        } else {
+                            // Otherwise find the stats for the unit
+                            angular.forEach(valdVardenheterStats, function (unitStat, keys) {
+                                if (unit.id === unitStat.id) {
+                                    unit.fragaSvar = unitStat.fragaSvar;
+                                }
+                            });
+                        }
+                    });
+                });
+
                 $scope.selectUnit = function (unit) {
                     $scope.selectedUnit = unit;
                     $rootScope.$broadcast('qa-filter-select-care-unit', $scope.selectedUnit);
