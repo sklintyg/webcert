@@ -22,7 +22,7 @@
                     <h2 class="col-head" ng-class="{'less-top-padding' : units.length < 2}">{{selectedUnit.namn}}</h2>
 
                     <div class="webcert-bottom-padding-section">
-                        <span ng-if="!widgetState.queryMode">Här visas alla ej hanterade frågor.<br></span>
+                        <span ng-if="!widgetState.searchedYet">Här visas alla ej hanterade frågor.<br></span>
                         <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
                                 ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed"
                                 ng-switch="widgetState.queryFormCollapsed">
@@ -39,15 +39,15 @@
                                         <label for="frageStallareAlla"><input id="frageStallareAlla"
                                                                               name="frageStallare" type="radio"
                                                                               value="default"
-                                                                              ng-model="widgetState.form.questionFrom"
+                                                                              ng-model="filterForm.questionFrom"
                                                                               checked="checked"> Alla</label>
                                         <label for="frageStallareFK"><input id="frageStallareFK" name="frageStallare"
                                                                             type="radio" value="FK"
-                                                                            ng-model="widgetState.form.questionFrom">
+                                                                            ng-model="filterForm.questionFrom">
                                             Försäkringskassan</label>
                                         <label for="frageStallareWC"><input id="frageStallareWC" name="frageStallare"
                                                                             type="radio" value="WC"
-                                                                            ng-model="widgetState.form.questionFrom">
+                                                                            ng-model="filterForm.questionFrom">
                                             Vårdenheten</label>
                                     </div>
                                 </div>
@@ -55,9 +55,9 @@
                                     <label class="control-label">Läkare</label>
 
                                     <div class="controls pointer-labels">
-                                        <select id="qp-doctorSelector" ng-model="qp.doctorSelector"
-                                                ng-options="s.name for s in doctorList"
-                                                ng-disabled="widgetState.loadingDoctors"></select>
+                                        <select id="qp-lakareSelector" ng-model="lastQuery.lakareSelector"
+                                                ng-options="s.name for s in lakareList"
+                                                ng-disabled="widgetState.loadingLakares"></select>
                                     </div>
                                 </div>
 
@@ -68,17 +68,17 @@
                                         <label for="vidarebefordradAlla"><input id="vidarebefordradAlla"
                                                                                 name="vidarebefordrad" type="radio"
                                                                                 value="default"
-                                                                                ng-model="widgetState.form.vidarebefordrad"
+                                                                                ng-model="filterForm.vidarebefordrad"
                                                                                 checked="checked"> Alla</label>
                                         <label for="vidarebefordradJa"><input id="vidarebefordradJa"
                                                                               name="vidarebefordrad" type="radio"
                                                                               value="true"
-                                                                              ng-model="widgetState.form.vidarebefordrad">
+                                                                              ng-model="filterForm.vidarebefordrad">
                                             Vidarebefordrade</label>
                                         <label for="vidarebefordradNej"><input id="vidarebefordradNej"
                                                                                name="vidarebefordrad" type="radio"
                                                                                value="false"
-                                                                               ng-model="widgetState.form.vidarebefordrad">
+                                                                               ng-model="filterForm.vidarebefordrad">
                                             Ej vidarebefordrade</label>
                                     </div>
                                 </div>
@@ -87,14 +87,14 @@
 
                                     <div class="controls">
                                         Från <input type="text" id="filter-changedate-from" datepicker-popup
-                                                    ng-model="qp.changedFrom" is-open="widgetState.dpFromOpen.open"
+                                                    ng-model="lastQuery.changedFrom" is-open="widgetState.dpFromOpen.open"
                                                     datepicker-options="datepickerConfig"/>
                                         <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
                                             <i class="icon-calendar"></i>
                                         </button>
 
                                         till <input type="text" id="filter-changedate-to" datepicker-popup
-                                                    ng-model="qp.changedTo" is-open="widgetState.dpToOpen.open"
+                                                    ng-model="lastQuery.changedTo" is-open="widgetState.dpToOpen.open"
                                                     datepicker-options="datepickerConfig"/>
                                         <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
                                             <i class="icon-calendar"></i>
@@ -105,14 +105,14 @@
                                     <label class="control-label">Åtgärd</label>
 
                                     <div class="controls pointer-labels">
-                                        <select id="qp-showStatus" ng-model="qp.vantarPaSelector"
+                                        <select id="qp-showStatus" ng-model="lastQuery.vantarPaSelector"
                                                 ng-options="s.label for s in statusList"></select>
                                     </div>
                                 </div>
                                 <!--            <div class="control-group"> commented out until needed
                                               <label class="control-label">Svar senast</label>
                                               <div class="controls">
-                                                <input type="text" id="filter-reply-by" datepicker-popup ng-model="qp.replyLatest" is-open="widgetState.dpAnswerOpen.open" datepicker-options="datepickerConfig"/>
+                                                <input type="text" id="filter-reply-by" datepicker-popup ng-model="lastQuery.replyLatest" is-open="widgetState.dpAnswerOpen.open" datepicker-options="datepickerConfig"/>
                                                 <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpAnswerOpen)">
                                                   <i class="icon-calendar"></i>
                                                 </button>
@@ -135,14 +135,14 @@
 
                             <!-- No results message for unhandled -->
                             <div id="current-list-noResults-unit"
-                                 ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && !widgetState.queryMode && widgetState.currentList.length<1"
+                                 ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1"
                                  class="alert alert-info">
                                 <span message key="info.nounanswered.qa.for.unit"></span>
                             </div>
 
                             <!-- No results message for query -->
                             <div id="current-list-noResults-query"
-                                 ng-show="widgetState.totalCount<1 && widgetState.queryMode" class="alert alert-info">
+                                 ng-show="widgetState.totalCount<1" class="alert alert-info">
                                 <span message key="info.query.noresults"></span>
                             </div>
 
@@ -153,7 +153,7 @@
                                 <span message key="{{widgetState.activeErrorMessageKey}}"></span>
                             </div>
 
-                            <div id="query-count" ng-show="widgetState.queryMode && widgetState.totalCount>0">
+                            <div id="query-count" ng-show="widgetState.totalCount>0">
                                 Sökresultat - {{widgetState.totalCount}} träffar
                             </div>
 
@@ -209,11 +209,11 @@
                                         <!--td class="unbreakable table-qa-last">{{qa.sistaDatumForSvar}}</td-->
                                 </table>
                             </div>
-                            <div id="showing-nr-hits" ng-show="widgetState.queryMode && widgetState.totalCount>0">Visar
+                            <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
                                 träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av
                                 {{widgetState.totalCount}}
                             </div>
-                            <div ng-show="widgetState.queryMode && ((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
+                            <div ng-show="((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
                                 <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()"
                                         ng-disabled="widgetState.fetchingMoreInProgress">
                                     <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
