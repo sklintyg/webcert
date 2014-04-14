@@ -333,7 +333,7 @@
         <version>${inera.certificate.version}</version>
       </dependency>
       <dependency>
-        <groupId>se.inera.certificate</groupId>
+        <groupId>se.inera.certificate.modules</groupId>
         <artifactId>integration-util</artifactId>
         <version>${inera.certificate.version}</version>
       </dependency>

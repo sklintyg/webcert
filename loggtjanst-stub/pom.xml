@@ -31,7 +31,7 @@
       <artifactId>cxf-rt-frontend-jaxrs</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.certificate</groupId>
+      <groupId>se.inera.certificate.modules</groupId>
       <artifactId>integration-util</artifactId>
     </dependency>
   </dependencies>
