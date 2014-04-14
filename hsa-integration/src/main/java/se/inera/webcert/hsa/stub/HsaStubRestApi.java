@@ -20,7 +20,7 @@ import se.inera.webcert.hsa.model.Vardgivare;
 public class HsaStubRestApi {
 
     @Autowired
-    HsaServiceStub hsaServiceStub;
+    private HsaServiceStub hsaServiceStub;
 
     @POST
     @Path("/vardgivare")

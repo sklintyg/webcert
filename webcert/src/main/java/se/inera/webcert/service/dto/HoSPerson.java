@@ -4,13 +4,13 @@ package se.inera.webcert.service.dto;
 public class HoSPerson {
 
     private String hsaId;
-    
+
     private String namn;
-    
+
     private String forskrivarkod;
-    
+
     private String befattning;
-        
+
     public HoSPerson() {
 
     }

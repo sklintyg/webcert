@@ -7,17 +7,17 @@ import org.joda.time.LocalDate;
 
 
 public class IntygMetadata {
-    
+
     private String id;
-    
+
     private String type;
-    
+
     private String patientId;
-    
+
     private LocalDate fromDate;
-        
+
     private LocalDate tomDate;
-    
+
     private List<IntygStatus> statuses = new ArrayList<>();
 
     public String getId() {
@@ -67,5 +67,5 @@ public class IntygMetadata {
     public void setStatuses(List<IntygStatus> statuses) {
         this.statuses = statuses;
     }
-       
+
 }

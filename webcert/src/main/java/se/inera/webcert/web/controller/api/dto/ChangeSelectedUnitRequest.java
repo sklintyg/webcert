@@ -3,11 +3,11 @@ package se.inera.webcert.web.controller.api.dto;
 public class ChangeSelectedUnitRequest {
 
     private String id;
-    
+
     private String namn;
-    
+
     public ChangeSelectedUnitRequest() {
-     
+
     }
 
     public String getId() {
@@ -25,5 +25,5 @@ public class ChangeSelectedUnitRequest {
     public void setNamn(String namn) {
         this.namn = namn;
     }
-    
+
 }

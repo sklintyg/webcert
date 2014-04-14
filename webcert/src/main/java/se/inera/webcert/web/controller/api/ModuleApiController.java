@@ -15,7 +15,7 @@ import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.web.controller.AbstractApiController;
 
 /**
- * Controller managing module wiring
+ * Controller managing module wiring.
  */
 @Path("/modules")
 public class ModuleApiController extends AbstractApiController {
@@ -24,7 +24,8 @@ public class ModuleApiController extends AbstractApiController {
     private IntygModuleRegistry moduleRegistry;
 
     /**
-     * Serving module configuration for Angular bootstrapping
+     * Serving module configuration for Angular bootstrapping.
+     *
      * @return a JSON object
      */
     @GET

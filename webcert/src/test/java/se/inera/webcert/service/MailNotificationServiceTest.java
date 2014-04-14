@@ -55,8 +55,8 @@ public class MailNotificationServiceTest {
 
     @PostConstruct
     public void setupMailNotificationService() {
-        mailNotificationService.webCertHostUrl = "https://www.webcert.se";
-        mailNotificationService.adminMailAddress = "admin@sverige.se";
+        mailNotificationService.setWebCertHostUrl("https://www.webcert.se");
+        mailNotificationService.setAdminMailAddress("admin@sverige.se");
     }
 
     @Test

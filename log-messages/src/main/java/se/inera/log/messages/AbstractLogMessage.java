@@ -15,7 +15,7 @@ public class AbstractLogMessage implements Serializable {
     private String logId;
 
     private String systemId;
-    
+
     private String activityLevel;
 
     private ActivityType activityType;
@@ -32,13 +32,14 @@ public class AbstractLogMessage implements Serializable {
     private Patient patient;
 
     private String resourceType;
-    
+
     private Enhet resourceOwner;
 
     /**
      * Constructor for a log message.
+     *
      * @param activityType Något av dessa värden ska anges: Läsa, Skriva, Signera, Utskrift, Vidimera, Radera och Nödöppning
-     * @param purpose kan vara något av dessa värden: Vård och behandling, Kvalitetssäkring, Annan dokumentation enligt lag, Statistik, Administration och Kvalitetsregister.
+     * @param purpose      kan vara något av dessa värden: Vård och behandling, Kvalitetssäkring, Annan dokumentation enligt lag, Statistik, Administration och Kvalitetsregister.
      * @param resourceType Kan vara kemlabbsvar, journaltext, remiss, översikt, samtycke, patientrelation, sätta spärr, rapport osv.
      */
     public AbstractLogMessage(ActivityType activityType, ActivityPurpose purpose, String resourceType) {
@@ -80,7 +81,7 @@ public class AbstractLogMessage implements Serializable {
     public void setActivityLevel(String activityLevel) {
         this.activityLevel = activityLevel;
     }
-    
+
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }

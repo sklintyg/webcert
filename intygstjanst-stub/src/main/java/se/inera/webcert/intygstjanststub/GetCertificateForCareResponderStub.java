@@ -11,8 +11,8 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType
 
 /**
  * Stub class for mocking Intygstjanstens {@link GetCertificateForCareResponderStub} WS interface Uses a simple in
- * memory store for complete {@link GetCertificateForCareResponseType} responses
- * 
+ * memory store for complete {@link GetCertificateForCareResponseType} responses.
+ *
  * @author marced
  */
 public class GetCertificateForCareResponderStub implements GetCertificateForCareResponderInterface {
@@ -22,14 +22,14 @@ public class GetCertificateForCareResponderStub implements GetCertificateForCare
 
     @Override
     public GetCertificateForCareResponseType getCertificateForCare(String logicalAddress,
-            GetCertificateForCareRequestType request) {
+                                                                   GetCertificateForCareRequestType request) {
 
-         GetCertificateForCareResponseType intygResponse = intygStore.getAllIntyg().get(request.getCertificateId());
-         if (intygResponse!=null) {
-             return intygResponse;
-         } else {
-             return buildNotFoundResponse();
-         }
+        GetCertificateForCareResponseType intygResponse = intygStore.getAllIntyg().get(request.getCertificateId());
+        if (intygResponse != null) {
+            return intygResponse;
+        } else {
+            return buildNotFoundResponse();
+        }
     }
 
     private GetCertificateForCareResponseType buildNotFoundResponse() {
@@ -40,7 +40,7 @@ public class GetCertificateForCareResponderStub implements GetCertificateForCare
         resultType.setResultText("Intyg not found in stub");
         response.setResult(resultType);
         return response;
-        
+
     }
 
 }

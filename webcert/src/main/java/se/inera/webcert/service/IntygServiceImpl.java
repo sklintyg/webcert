@@ -57,7 +57,7 @@ import com.google.common.base.Throwables;
 public class IntygServiceImpl implements IntygService {
 
     @Value("${intygstjanst.logicaladdress}")
-    String logicalAddress;
+    private String logicalAddress;
 
     private static Marshaller marshaller;
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
@@ -106,6 +106,10 @@ public class IntygServiceImpl implements IntygService {
         } catch (ModuleException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
+    }
+
+    protected void setLogicalAddress(String logicalAddress) {
+        this.logicalAddress = logicalAddress;
     }
 
     @Override

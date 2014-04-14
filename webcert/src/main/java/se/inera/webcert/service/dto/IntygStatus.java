@@ -3,15 +3,15 @@ package se.inera.webcert.service.dto;
 import org.joda.time.LocalDateTime;
 
 public class IntygStatus {
-    
+
     private String type;
 
     private String target;
 
     private LocalDateTime timestamp;
-    
+
     public IntygStatus() {
-        
+
     }
 
     public IntygStatus(String type, String target, LocalDateTime timestamp) {

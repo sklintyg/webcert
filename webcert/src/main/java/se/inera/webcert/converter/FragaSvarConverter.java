@@ -80,7 +80,7 @@ public class FragaSvarConverter {
     }
 
     /**
-     * Converts a from common models {@link HosPersonal} to an {@link Vardperson} new instance
+     * Converts a from common models {@link HosPersonal} to an {@link Vardperson} new instance.
      */
     public static Vardperson convert(HosPersonal source) {
         Vardperson vardperson = new Vardperson();
@@ -146,8 +146,8 @@ public class FragaSvarConverter {
     }
 
     /**
-     * Extract / Convert from {@link Utlatande} to {@link IntygsReferens}
-     * 
+     * Extract / Convert from {@link Utlatande} to {@link IntygsReferens}.
+     *
      * @param utlatande
      * @return
      */

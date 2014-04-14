@@ -29,10 +29,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private static final String INCOMING_ANSWER_SUBJECT = "Försäkringskassan har svarat på en fråga";
 
     @Value("${mail.admin}")
-    String adminMailAddress;
+    private String adminMailAddress;
 
     @Value("${mail.webcert.host.url}")
-    String webCertHostUrl;
+    private String webCertHostUrl;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -52,6 +52,14 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         GetHsaUnitResponseType recipient = getHsaUnit(fragaSvar.getVardperson().getEnhetsId());
         sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar),
                 recipient);
+    }
+
+    public void setAdminMailAddress(String adminMailAddress) {
+        this.adminMailAddress = adminMailAddress;
+    }
+
+    public void setWebCertHostUrl(String webCertHostUrl) {
+        this.webCertHostUrl = webCertHostUrl;
     }
 
     private void sendNotificationMailToEnhet(FragaSvar fragaSvar, String subject, String body,

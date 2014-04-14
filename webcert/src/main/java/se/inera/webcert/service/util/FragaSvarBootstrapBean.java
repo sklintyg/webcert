@@ -18,7 +18,7 @@ import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 
 public class FragaSvarBootstrapBean {
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarBootstrapBean.class);
-    
+
     @Autowired
     private FragaSvarRepository fragaSvarRepository;
 

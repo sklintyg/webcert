@@ -28,7 +28,7 @@ import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
- * 
+ *
  * @author nikpet
  */
 @Service
@@ -66,7 +66,7 @@ public class LogServiceImpl implements LogService {
     public void logCreateOfDraft(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new CreateDraftMessage(logRequest.getIntygId())));
     }
-    
+
     @Override
     public void logUpdateOfDraft(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new UpdateDraftMessage(logRequest.getIntygId())));
@@ -78,55 +78,55 @@ public class LogServiceImpl implements LogService {
     }
 
     private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg) {
-        
+
         populateWithCurrentUserAndCareUnit(logMsg);
-        
+
         Patient patient = new Patient(logRequest.getPatientId(), logRequest.getPatientName());
         logMsg.setPatient(patient);
-        
+
         String careUnitId = logRequest.getIntygCareUnitId();
         String careUnitName = logRequest.getIntygCareUnitName();
-        
+
         String careGiverId = logRequest.getIntygCareGiverId();
         String careGiverName = logRequest.getIntygCareGiverName();
-        
-        Enhet resourceOwner = new Enhet(careUnitId , careUnitName, careGiverId, careGiverName);
+
+        Enhet resourceOwner = new Enhet(careUnitId, careUnitName, careGiverId, careGiverName);
         logMsg.setResourceOwner(resourceOwner);
-        
+
         logMsg.setSystemId(systemId);
-        
+
         return logMsg;
     }
-    
+
     private void populateWithCurrentUserAndCareUnit(AbstractLogMessage logMsg) {
         WebCertUser user = webCertUserService.getWebCertUser();
         logMsg.setUserId(user.getHsaId());
         logMsg.setUserName(user.getNamn());
-        
-        SelectableVardenhet valdVardenhet = user.getValdVardenhet(); 
+
+        SelectableVardenhet valdVardenhet = user.getValdVardenhet();
         String enhetsId = valdVardenhet.getId();
         String enhetsNamn = valdVardenhet.getNamn();
-        
+
         SelectableVardenhet valdVardgivare = user.getValdVardgivare();
         String vardgivareId = valdVardgivare.getId();
         String vardgivareNamn = valdVardgivare.getNamn();
-        
+
         Enhet vardenhet = new Enhet(enhetsId, enhetsNamn, vardgivareId, vardgivareNamn);
         logMsg.setUserCareUnit(vardenhet);
     }
 
     private void send(AbstractLogMessage logMsg) {
-        
+
         if (jmsTemplate == null) {
             LOGGER.warn("Can not log {} of Intyg '{}' since PDL logging is disabled!", logMsg.getActivityType(), logMsg.getActivityLevel());
             return;
         }
-        
+
         LOGGER.debug("Logging {} of Intyg {}", logMsg.getActivityType(), logMsg.getActivityLevel());
-        
+
         jmsTemplate.send(new MC(logMsg));
     }
-    
+
     private static final class MC implements MessageCreator {
         private final AbstractLogMessage logMsg;
 

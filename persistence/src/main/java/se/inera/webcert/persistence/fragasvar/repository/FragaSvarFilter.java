@@ -12,7 +12,7 @@ import org.joda.time.LocalDateTime;
 public class FragaSvarFilter {
 
     private List<String> enhetsIds = new ArrayList<String>();
-    
+
     private boolean questionFromFK;
     private boolean questionFromWC;
 
@@ -26,11 +26,11 @@ public class FragaSvarFilter {
     private VantarPa vantarPa = VantarPa.ALLA_OHANTERADE;
 
     private LocalDate replyLatest;
-    
+
     private Integer startFrom;
-    
+
     private Integer pageSize;
-    
+
     public boolean hasPageSizeAndStartFrom() {
         return (pageSize != null && startFrom != null);
     }

@@ -31,7 +31,6 @@ import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * @author marced
- * 
  */
 @Controller
 @RequestMapping(value = "")
@@ -56,10 +55,10 @@ public class PageController {
     }
 
     /**
-     * Select Starting point view depending on user properties
-     * 
-     * @param user
-     * @return
+     * Select Starting point view depending on user properties.
+     *
+     * @param user user
+     * @return String
      */
     protected String resolveStartView(WebCertUser user) {
         if (user.isLakare()) {

@@ -3,13 +3,13 @@ package se.inera.webcert.service.draft.dto;
 public class DraftValidationMessage {
 
     private String field;
-    
+
     private String message;
-    
+
     public DraftValidationMessage() {
-        
+
     }
-    
+
     public DraftValidationMessage(String field, String message) {
         super();
         this.field = field;

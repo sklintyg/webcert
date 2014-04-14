@@ -11,7 +11,7 @@ import java.util.List;
  * @author andreaskaltenbach
  */
 public class OutgoingMail {
-    
+
     private List<String> recipients = new ArrayList<>();
     private String subject;
     private String body;

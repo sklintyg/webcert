@@ -89,10 +89,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private WebCertUserService webCertUserService;
 
     @Autowired
-    SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
+    private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
 
     @Autowired
-    SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
+    private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
 
     @Value("${sendquestiontofk.logicaladdress}")
     private String sendQuestionToFkLogicalAddress;
@@ -421,23 +421,23 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     public QueryFragaSvarResponse filterFragaSvar(QueryFragaSvarParameter filterParameters) {
-        
+
         FragaSvarFilter filter = createFragaSvarFilter(filterParameters);
         List<FragaSvar> results = fragaSvarRepository.filterFragaSvar(filter);
-        
+
         int totalResultsCount = fragaSvarRepository.filterCountFragaSvar(filter);
-        
+
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
         response.setResults(results);
         response.setTotalCount(totalResultsCount);
-        
+
         return response;
     }
 
     private FragaSvarFilter createFragaSvarFilter(QueryFragaSvarParameter params) {
-        
+
         FragaSvarFilter filter = new FragaSvarFilter();
-                
+
         if (StringUtils.isNotEmpty(params.getEnhetId())) {
             verifyEnhetsAuth(params.getEnhetId());
             filter.getEnhetsIds().add(params.getEnhetId());
@@ -445,11 +445,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             WebCertUser user = webCertUserService.getWebCertUser();
             filter.getEnhetsIds().addAll(user.getIdsOfSelectedVardenhet());
         }
-        
+
         if (StringUtils.isNotEmpty(params.getVantarPa())) {
             filter.setVantarPa(VantarPa.valueOf(params.getVantarPa()));
         }
-        
+
         filter.setChangedFrom(params.getChangedFrom());
         filter.setChangedTo(params.getChangedTo());
         filter.setHsaId(params.getHsaId());
@@ -460,7 +460,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         
         filter.setPageSize(params.getPageSize() == null ? DEFAULT_PAGE_SIZE : params.getPageSize());
         filter.setStartFrom(params.getStartFrom() == null ? 0 : params.getStartFrom());
-                
+
         return filter;
     }
 
@@ -475,7 +475,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
     }
-    
+
     @Override
     public List<Lakare> getFragaSvarHsaIdByEnhet(String enhetsId) {
 

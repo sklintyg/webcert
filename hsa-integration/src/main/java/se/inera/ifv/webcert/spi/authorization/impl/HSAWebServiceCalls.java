@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
@@ -51,16 +51,15 @@ public class HSAWebServiceCalls {
     private AttributedURIType messageId = new AttributedURIType();
 
     /**
-     * @param hsaLogicalAddress
-     *            the hsaLogicalAddress to set
+     * @param hsaLogicalAddress the hsaLogicalAddress to set
      */
     public void setHsaLogicalAddress(String hsaLogicalAddress) {
         logicalAddressHeader.setValue(hsaLogicalAddress);
     }
 
     /**
-     * Help method to test access to HSA
-     * 
+     * Help method to test access to HSA.
+     *
      * @throws Exception
      */
     public void callPing() throws Exception {
@@ -77,8 +76,8 @@ public class HSAWebServiceCalls {
     }
 
     /**
-     * Method used to get miuRights for a HoS Person
-     * 
+     * Method used to get miuRights for a HoS Person.
+     *
      * @param parameters
      * @return
      * @throws Exception
@@ -96,8 +95,8 @@ public class HSAWebServiceCalls {
     }
 
     /**
-     * Method to retrieve data for a hsa unit
-     * 
+     * Method to retrieve data for a hsa unit.
+     *
      * @param hsaId
      * @throws Exception
      */
@@ -116,8 +115,8 @@ public class HSAWebServiceCalls {
     }
 
     /**
-     * Method to retrieve the caregiver for a hsa unit
-     * 
+     * Method to retrieve the caregiver for a hsa unit.
+     *
      * @param hsaId
      */
     public GetHsaUnitResponseType callGetHsaunit(String hsaId) {
@@ -134,8 +133,8 @@ public class HSAWebServiceCalls {
     }
 
     /**
-     * Method to retrieve attributes for a HoS Person
-     * 
+     * Method to retrieve attributes for a HoS Person.
+     *
      * @param parameters
      * @return
      * @throws Exception
@@ -163,7 +162,7 @@ public class HSAWebServiceCalls {
             return null;
         }
     }
-    
+
     public GetHsaPersonResponseType callGetHsaPerson(GetHsaPersonType parameters) {
         try {
             GetHsaPersonResponseType response = serverInterface.getHsaPerson(logicalAddressHeader, messageId, parameters);

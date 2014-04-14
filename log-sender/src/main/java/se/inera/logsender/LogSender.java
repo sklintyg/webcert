@@ -46,21 +46,21 @@ public class LogSender {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogSender.class);
 
-    @Value( "${loggtjanst.logicalAddress}" )
+    @Value("${loggtjanst.logicalAddress}")
     private String logicalAddress;
 
-    @Value( "${logsender.bulkSize}" )
+    @Value("${logsender.bulkSize}")
     private int bulkSize;
 
     @Autowired
     private StoreLogResponderInterface loggTjanstResponder;
 
     @Autowired
-    @Qualifier( "jmsTemplate" )
+    @Qualifier("jmsTemplate")
     private JmsTemplate jmsTemplate;
 
     @Autowired
-    @Qualifier( "nonTransactedJmsTemplate" )
+    @Qualifier("nonTransactedJmsTemplate")
     private JmsTemplate nonTransactedJmsTemplate;
 
     @Autowired

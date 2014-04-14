@@ -4,11 +4,11 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
- * Created by pehr on 10/3/13.</br></br>
- *
- *   Patient_id_root can be either</br>
- *   personnummer : 1.2.752.129.2.1.3.1 </br>
- *   samordningsnummer : 1.2.752.129.2.1.3.3 </br>
+ * Created by pehr on 10/3/13.
+ * <p/>
+ * Patient_id_root can be either
+ * personnummer : 1.2.752.129.2.1.3.1
+ * samordningsnummer : 1.2.752.129.2.1.3.3
  */
 @Embeddable
 public class Id {
@@ -18,7 +18,8 @@ public class Id {
     @Column(name = "PATIENT_ID_EXTENSION")
     private String patientIdExtension;
 
-    public Id() {}
+    public Id() {
+    }
 
     public Id(String patientId) {
         this.patientIdExtension = patientId;

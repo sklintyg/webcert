@@ -26,26 +26,27 @@ public interface FragaSvarService {
      * Returns all the question/answer pairs that exist for the given certificate.
      */
     List<FragaSvar> getFragaSvar(String intygId);
-    
+
 
     /**
-     * Create an answer for an existing  question
+     * Create an answer for an existing  question.
      */
     FragaSvar saveSvar(Long frageSvarId, String svarsText);
-    
+
     /**
-     * Create a new FragaSvar instance for a certificate and send it to external receiver (FK)
+     * Create a new FragaSvar instance for a certificate and send it to external receiver (FK).
      */
     FragaSvar saveNewQuestion(String intygId, Amne amne, String frageText);
 
     /**
-     * Set the dispatch state for the specified {@link FragaSvar} entity
+     * Set the dispatch state for the specified {@link FragaSvar} entity.
+     *
      * @param frageSvarId
      * @param isDispatched
      * @return
      */
     FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched);
-    
+
 
     /**
      * A FragaSvar is set as handled.
@@ -60,11 +61,12 @@ public interface FragaSvarService {
      * A FragaSvar is set as unhandled.
      * If it has an answer, the status is set to "ANSWERED"
      * If it doesn't have an answer, the status is set to "PENDING_EXTERNAL_ACTION"
+     *
      * @param frageSvarId
      * @return
      */
     FragaSvar openQuestionAsUnhandled(Long frageSvarId);
-    
+
     /**
      * Returns all the question/answer matching filter criteria.
      */
@@ -76,13 +78,13 @@ public interface FragaSvarService {
     List<Lakare> getFragaSvarHsaIdByEnhet(String enhetsId);
 
     /**
-     * Returns a count of unhandled {@link FragaSvar} entities that matches the supplied hsa unit id's vardenheterIds
+     * Returns a count of unhandled {@link FragaSvar} entities that matches the supplied hsa unit id's vardenheterIds.
      */
     long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds);
-    
+
     /**
      * Returns a {@link Map} containing the nbr of unhandled {@link FragaSvar} FragaSvar with the HSA id of the care unit as key.
-     * 
+     *
      * @param vardenheterIds
      * @return
      */

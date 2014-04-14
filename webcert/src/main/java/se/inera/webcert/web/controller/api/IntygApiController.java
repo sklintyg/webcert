@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.modules.IntygModule;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
@@ -14,14 +13,26 @@ import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.dto.*;
+import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.dto.IntygItem;
+import se.inera.webcert.service.dto.Lakare;
+import se.inera.webcert.service.dto.Patient;
+import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
 import se.inera.webcert.web.controller.api.dto.QueryIntygResponse;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -164,7 +175,7 @@ public class IntygApiController extends AbstractApiController {
     }
 
     private IntygFilter createIntygFilter(QueryIntygParameter filterParameters) {
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = getWebCertUserService().getWebCertUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
 
         IntygFilter intygFilter = new IntygFilter(selectedUnitHsaId);
@@ -212,7 +223,7 @@ public class IntygApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getLakareWithDraftsByEnheter() {
 
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = getWebCertUserService().getWebCertUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
 
         List<Lakare> lakareWithDraftsByEnhet = intygDraftService.getLakareWithDraftsByEnhet(selectedUnitHsaId);

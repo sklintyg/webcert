@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HsaPerson {
-    
+
     private String hsaId;
-    
+
     private String forNamn;
-    
+
     private String efterNamn;
-    
+
     private List<HsaSpecialicering> specialiseringar = new ArrayList<HsaSpecialicering>();
-    
+
     private List<String> enhetIds = new ArrayList<String>();
-    
+
     public HsaPerson() {
         super();
     }
-    
+
     public HsaPerson(String hsaId, String forNamn, String efterNamn) {
         super();
         this.hsaId = hsaId;
@@ -65,5 +65,5 @@ public class HsaPerson {
     public void setEnhetIds(List<String> enhetIds) {
         this.enhetIds = enhetIds;
     }
-    
+
 }

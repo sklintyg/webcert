@@ -8,7 +8,7 @@ import org.joda.time.LocalDateTime;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 public class IntygFilter {
-    
+
     private String unitHsaId;
 
     private String savedByHsaId;
@@ -16,23 +16,23 @@ public class IntygFilter {
     private Boolean forwarded;
 
     private LocalDateTime savedFrom;
-    
+
     private LocalDateTime savedTo;
 
     private List<IntygsStatus> statusList = new ArrayList<>();
 
     private Integer startFrom;
-    
+
     private Integer pageSize;
-    
+
     public IntygFilter(String unitHsaId) {
         this.unitHsaId = unitHsaId;
     }
-    
+
     public boolean hasPageSizeAndStartFrom() {
         return (pageSize != null && startFrom != null);
     }
-    
+
     public String getUnitHsaId() {
         return unitHsaId;
     }
@@ -48,7 +48,7 @@ public class IntygFilter {
     public void setSavedByHsaId(String savedByHsaId) {
         this.savedByHsaId = savedByHsaId;
     }
-    
+
     public Boolean getForwarded() {
         return forwarded;
     }

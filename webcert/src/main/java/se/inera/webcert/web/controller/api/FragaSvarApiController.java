@@ -30,7 +30,7 @@ public class FragaSvarApiController extends AbstractApiController {
         QueryFragaSvarResponse result = fragaSvarService.filterFragaSvar(queryParam);
         return Response.ok(result).build();
     }
-   
+
     @GET
     @Path("/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)

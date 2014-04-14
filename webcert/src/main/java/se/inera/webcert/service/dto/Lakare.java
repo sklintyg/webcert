@@ -3,9 +3,9 @@ package se.inera.webcert.service.dto;
 public class Lakare {
 
     private String hsaId;
-    
+
     private String name;
-    
+
     public Lakare(String hsaId, String name) {
         this.hsaId = hsaId;
         this.name = name;
@@ -18,5 +18,5 @@ public class Lakare {
     public String getName() {
         return name;
     }
-    
+
 }

@@ -6,9 +6,8 @@ import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 /**
  * Container for a draft and its current status.
- * 
- * @author nikpet
  *
+ * @author nikpet
  */
 public class IntygDraftHolder {
 

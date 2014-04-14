@@ -34,7 +34,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
 
 /**
  * Controller exposing services to be used by modules.
- * 
+ *
  * @author nikpet
  */
 public class IntygModuleApiController extends AbstractApiController {
@@ -51,9 +51,8 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Returns the draft certificate as JSON identified by the intygId.
-     * 
-     * @param intygId
-     *            The id of the certificate
+     *
+     * @param intygId The id of the certificate
      * @return a JSON object
      */
     @GET
@@ -75,11 +74,9 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Persists the supplied draft certificate using the intygId as key.
-     * 
-     * @param intygId
-     *            The id of the certificate.
-     * @param draftCertificate
-     *            Object holding the certificate and its current status.
+     *
+     * @param intygId          The id of the certificate.
+     * @param draftCertificate Object holding the certificate and its current status.
      */
     @PUT
     @Path("/draft/{intygId}")
@@ -139,9 +136,8 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Marks the draft certificate identified by the certificateId as discarded.
-     * 
-     * @param intygId
-     *            The id of the certificate
+     *
+     * @param intygId The id of the certificate
      */
     @DELETE
     @Path("/draft/{intygId}")
@@ -157,8 +153,8 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Delivers a signed intyg
-     * 
+     * Delivers a signed intyg.
+     *
      * @param intygId
      * @return
      */
@@ -176,16 +172,15 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Return the signed certificate identified by the given id as PDF.
-     * 
-     * @param intygId
-     *            - the globally unique id of a certificate.
+     *
+     * @param intygId - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
     @Path("/signed/{intygId}/pdf")
     @Produces("application/pdf")
     public final Response getSignedIntygAsPdf(@PathParam(value = "intygId") final String intygId) {
-        
+
         LOG.debug("Fetching signed intyg '{}' as PDF", intygId);
 
         PdfResponse pdfResponse = intygService.fetchIntygAsPdf(intygId);

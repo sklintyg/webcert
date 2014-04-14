@@ -3,7 +3,7 @@ package se.inera.webcert.service.dto;
 public class Patient {
 
     private String forNamn;
-    
+
     private String efterNamn;
 
     private String personNummer;
@@ -65,5 +65,5 @@ public class Patient {
     public void setPostOrt(String postOrt) {
         this.postOrt = postOrt;
     }
-    
+
 }

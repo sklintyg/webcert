@@ -1,15 +1,15 @@
 package se.inera.webcert.hsa.stub;
 
 public class HsaSpecialicering {
-    
+
     private String kod;
-    
+
     private String namn;
 
     public HsaSpecialicering() {
-        
+
     }
-    
+
     public String getKod() {
         return kod;
     }
@@ -25,5 +25,5 @@ public class HsaSpecialicering {
     public void setNamn(String namn) {
         this.namn = namn;
     }
-    
+
 }

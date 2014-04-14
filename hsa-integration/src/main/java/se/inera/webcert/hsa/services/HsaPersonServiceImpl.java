@@ -16,7 +16,6 @@ import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 
 /**
  * @author nikpet
- * 
  */
 @Service
 public class HsaPersonServiceImpl implements HsaPersonService {
@@ -31,9 +30,9 @@ public class HsaPersonServiceImpl implements HsaPersonService {
      */
     @Override
     public List<String> getSpecialitiesForHsaPerson(String personHsaId) {
-        
+
         LOG.debug("Getting specialities for person '{}'", personHsaId);
-        
+
         List<GetHsaPersonHsaUserType> personHsaInfos = getHsaPersonInfo(personHsaId);
 
         if (personHsaInfos.isEmpty()) {
@@ -41,9 +40,9 @@ public class HsaPersonServiceImpl implements HsaPersonService {
         }
 
         List<String> userSpecialities = extractSpecialitiesFromUsers(personHsaInfos);
-        
+
         LOG.debug("Person '{}' has {} specialities", personHsaId, userSpecialities.size());
-        
+
         return userSpecialities;
     }
 
@@ -52,9 +51,9 @@ public class HsaPersonServiceImpl implements HsaPersonService {
      */
     @Override
     public List<GetHsaPersonHsaUserType> getHsaPersonInfo(String personHsaId) {
-        
+
         LOG.debug("Getting info from HSA for person '{}'", personHsaId);
-        
+
         GetHsaPersonType parameters = new GetHsaPersonType();
         parameters.setHsaIdentity(personHsaId);
 
@@ -66,9 +65,9 @@ public class HsaPersonServiceImpl implements HsaPersonService {
         }
 
         List<GetHsaPersonHsaUserType> hsaUserTypeList = response.getUserInformations().getUserInformation();
-        
+
         LOG.debug("Returning {} information objects for HSA id '{}'", hsaUserTypeList.size(), personHsaId);
-        
+
         return hsaUserTypeList;
     }
 
@@ -79,10 +78,10 @@ public class HsaPersonServiceImpl implements HsaPersonService {
         for (GetHsaPersonHsaUserType userType : userTypeList) {
             List<String> userSpecNames = userType.getSpecialityNames().getSpecialityName();
             specialities.addAll(userSpecNames);
-        }        
-                
+        }
+
         Collections.sort(specialities);
-        
+
         return specialities;
     }
 }

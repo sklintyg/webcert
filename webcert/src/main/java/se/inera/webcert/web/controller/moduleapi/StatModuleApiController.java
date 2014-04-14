@@ -45,7 +45,7 @@ public class StatModuleApiController extends AbstractApiController {
 
         StatsResponse statsResponse = new StatsResponse();
 
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = getWebCertUserService().getWebCertUser();
         List<String> allUnitIds = user.getIdsOfAllVardenheter();
 
         Map<String, Long> fragaSvarStatsMap = fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(allUnitIds);
@@ -53,10 +53,10 @@ public class StatModuleApiController extends AbstractApiController {
         Map<String, Long> intygStatsMap = intygDraftService.getNbrOfUnsignedDraftsByCareUnits(allUnitIds);
 
         List<String> unitIdsOfSelected = user.getIdsOfSelectedVardenhet();
-        
+
         @SuppressWarnings("unchecked")
         List<String> unitIdsOfNotSelected = (List<String>) CollectionUtils.subtract(allUnitIds, unitIdsOfSelected);
-                
+
         long fragaSvarOnOtherUnitThanTheSelected = calcSumFromSelectedUnits(unitIdsOfNotSelected,
                 fragaSvarStatsMap);
         statsResponse.setTotalNbrOfUnhandledFragaSvarOnOtherThanSelected(fragaSvarOnOtherUnitThanTheSelected);
@@ -70,7 +70,7 @@ public class StatModuleApiController extends AbstractApiController {
 
         long unsignedDraftsOnSelected = calcSumFromSelectedUnits(unitIdsOfSelected, intygStatsMap);
         statsResponse.setTotalNbrOfUnsignedDraftsOnSelected(unsignedDraftsOnSelected);
-        
+
         populateStatsResponseWithVardgivarStats(statsResponse, user.getVardgivare(), intygStatsMap, fragaSvarStatsMap);
 
         return Response.ok(statsResponse).build();
@@ -88,7 +88,7 @@ public class StatModuleApiController extends AbstractApiController {
     }
 
     private void populateStatsResponseWithVardgivarStats(StatsResponse statsResponse, List<Vardgivare> vardgivare,
-            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+                                                         Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
         VardgivareStats vgStats;
 
@@ -101,7 +101,7 @@ public class StatModuleApiController extends AbstractApiController {
     }
 
     private List<VardenhetStats> createAndPopulateVardenheterWithStats(List<Vardenhet> vardenheter,
-            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+                                                                       Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
         List<VardenhetStats> veStatsList = new ArrayList<VardenhetStats>();
 
@@ -122,7 +122,7 @@ public class StatModuleApiController extends AbstractApiController {
     }
 
     private void addStatsForMottagningar(Vardenhet vardenhet, List<VardenhetStats> veStatsList,
-            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+                                         Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
         List<Mottagning> mottagningar = vardenhet.getMottagningar();
 
@@ -133,7 +133,7 @@ public class StatModuleApiController extends AbstractApiController {
         VardenhetStats moStats;
 
         for (Mottagning mo : mottagningar) {
-            String moNamn = StringUtils.join(new Object[] { vardenhet.getNamn(), mo.getNamn() }, SEPARATOR);
+            String moNamn = StringUtils.join(new Object[]{vardenhet.getNamn(), mo.getNamn()}, SEPARATOR);
             moStats = new VardenhetStats(moNamn, mo.getId());
             moStats.setOhanteradeFragaSvar(getSafeStatValueFromMap(mo.getId(), fragaSvarStats));
             moStats.setOsigneradeIntyg(getSafeStatValueFromMap(mo.getId(), intygStats));

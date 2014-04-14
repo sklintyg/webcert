@@ -25,16 +25,16 @@ public class ListCertificatesForCareResponderStub implements ListCertificatesFor
     public ListCertificatesForCareResponseType listCertificatesForCare(String s, ListCertificatesForCareType request) {
 
         ListCertificatesForCareResponseType response = new ListCertificatesForCareResponseType();
-                
+
         Iterable<CertificateMetaType> certsIterable = intygStore.getIntygForEnhetAndPersonnummer(request.getCareUnit(), request.getNationalIdentityNumber());
-        
-        List<CertificateMetaType> certs = Lists.newArrayList(certsIterable);   
+
+        List<CertificateMetaType> certs = Lists.newArrayList(certsIterable);
         response.getMeta().addAll(certs);
-        
+
         ResultType result = new ResultType();
         result.setResultCode(ResultCodeType.OK);
         response.setResult(result);
-        
+
         return response;
     }
 }

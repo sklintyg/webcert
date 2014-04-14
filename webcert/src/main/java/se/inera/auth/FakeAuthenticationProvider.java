@@ -86,7 +86,7 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
         Assertion assertion = new AssertionBuilder().buildObject();
 
         attachAuthenticationContext(assertion);
-                
+
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         assertion.getAttributeStatements().add(attributeStatement);
 
@@ -97,7 +97,7 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
         attributeStatement.getAttributes().add(createAttribute(ENHET_HSA_ID_ATTRIBUTE, fakeCredentials.getEnhetId()));
         attributeStatement.getAttributes().add(createAttribute(MEDARBETARUPPDRAG_TYPE, Medarbetaruppdrag.VARD_OCH_BEHANDLING));
         attributeStatement.getAttributes().add(createAttribute(MEDARBETARUPPDRAG_ID, fakeCredentials.getEnhetId()));
-        
+
         if (fakeCredentials.isLakare()) {
             attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Läkare"));
         }

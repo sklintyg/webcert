@@ -7,9 +7,13 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkTyp
 /**
  * Created by pehr on 10/2/13.
  */
-public class FKQuestionConverter {
+public final class FKQuestionConverter {
 
-    public static QuestionToFkType convert(FragaSvar fs){
+    private FKQuestionConverter() {
+
+    }
+
+    public static QuestionToFkType convert(FragaSvar fs) {
         QuestionToFkType fkQuestion = new QuestionToFkType();
 
         fkQuestion.setAmne(ConvertToFKTypes.toAmneTyp(fs.getAmne()));

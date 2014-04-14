@@ -6,7 +6,7 @@ import java.util.List;
 public class QueryIntygResponse {
 
     private int totalCount = 0;
-    
+
     private List<ListIntygEntry> results = new ArrayList<>();
 
     public QueryIntygResponse(List<ListIntygEntry> results) {
@@ -28,5 +28,5 @@ public class QueryIntygResponse {
     public void setResults(List<ListIntygEntry> results) {
         this.results = results;
     }
-    
+
 }

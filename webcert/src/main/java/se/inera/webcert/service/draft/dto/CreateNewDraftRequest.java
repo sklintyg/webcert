@@ -8,17 +8,17 @@ import se.inera.webcert.service.dto.Vardenhet;
 public class CreateNewDraftRequest {
 
     private String intygId;
-    
+
     private String intygType;
-    
+
     private Patient patient;
-    
+
     private HoSPerson hosPerson;
-    
+
     private Vardenhet vardenhet;
-    
+
     public CreateNewDraftRequest() {
-    
+
     }
 
     public String getIntygId() {

@@ -7,6 +7,6 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 public interface IntygFilteredRepositoryCustom {
 
     List<Intyg> filterIntyg(IntygFilter filter);
-    
+
     int countFilterIntyg(IntygFilter filter);
 }

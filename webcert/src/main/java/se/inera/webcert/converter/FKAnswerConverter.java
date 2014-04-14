@@ -9,9 +9,12 @@ import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 /**
  * Created by pehr on 10/2/13.
  */
-public class FKAnswerConverter {
+public final class FKAnswerConverter {
 
-    public static AnswerToFkType convert(FragaSvar fs){
+    private FKAnswerConverter() {
+    }
+
+    public static AnswerToFkType convert(FragaSvar fs) {
         AnswerToFkType fkAnswer = new AnswerToFkType();
 
         fkAnswer.setAmne(ConvertToFKTypes.toAmneTyp(fs.getAmne()));
@@ -25,7 +28,7 @@ public class FKAnswerConverter {
         fkAnswer.setFkReferensId(fs.getExternReferens());
         fkAnswer.setVardReferensId(fs.getInternReferens().toString());
 
-        if(fs.getSistaDatumForSvar()!= null){
+        if (fs.getSistaDatumForSvar() != null) {
             fkAnswer.setFkSistaDatumForSvar(fs.getSistaDatumForSvar());
         }
         fkAnswer.setFraga(ConvertToFKTypes.toInnehallType(fs.getFrageText(), fs.getFrageSigneringsDatum()));
@@ -33,8 +36,8 @@ public class FKAnswerConverter {
 
         fkAnswer.setLakarutlatande(ConvertToFKTypes.toLakarUtlatande(fs.getIntygsReferens()));
 
-        if(fs.getKompletteringar()!=null){
-            for (Komplettering komplettering: fs.getKompletteringar()) {
+        if (fs.getKompletteringar() != null) {
+            for (Komplettering komplettering : fs.getKompletteringar()) {
                 KompletteringType kt = new KompletteringType();
                 kt.setFalt(komplettering.getFalt());
                 kt.setText(komplettering.getText());

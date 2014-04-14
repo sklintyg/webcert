@@ -19,7 +19,7 @@ public class HsaServiceStub {
 
     private List<Vardgivare> vardgivare = new ArrayList<>();
     private List<Medarbetaruppdrag> medarbetaruppdrag = new ArrayList<>();
-    
+
     private Map<String, HsaPerson> personMap = new HashMap<String, HsaPerson>();
 
     public Vardenhet getVardenhet(String hsaIdentity) {
@@ -74,11 +74,11 @@ public class HsaServiceStub {
         }
         return null;
     }
-    
+
     public HsaPerson getHsaPerson(String hsaId) {
         return personMap.get(hsaId);
     }
-    
+
     public void addHsaPerson(HsaPerson person) {
         personMap.put(person.getHsaId(), person);
     }

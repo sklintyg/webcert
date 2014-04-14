@@ -3,21 +3,21 @@ package se.inera.webcert.web.controller.api.dto;
 import org.joda.time.LocalDateTime;
 
 public class QueryIntygParameter {
-        
+
     private Integer startFrom;
-    
+
     private Integer pageSize;
-    
+
     private String enhetsId;
-    
+
     private String savedBy;
 
     private Boolean forwarded;
-    
+
     private Boolean complete;
 
     private LocalDateTime savedFrom;
-    
+
     private LocalDateTime savedTo;
 
     public Integer getStartFrom() {

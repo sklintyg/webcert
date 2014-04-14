@@ -64,11 +64,11 @@ public class FakeCredentials {
 
     @Override
     public String toString() {
-        return "FakeCredentials{" +
-                "hsaId='" + hsaId + '\'' +
-                ", fornamn='" + fornamn + '\'' +
-                ", efternamn='" + efternamn + '\'' +
-                ", lakare=" + lakare +
-                '}';
+        return "FakeCredentials{"
+                + "hsaId='" + hsaId + '\''
+                + ", fornamn='" + fornamn + '\''
+                + ", efternamn='" + efternamn + '\''
+                + ", lakare=" + lakare
+                + '}';
     }
 }

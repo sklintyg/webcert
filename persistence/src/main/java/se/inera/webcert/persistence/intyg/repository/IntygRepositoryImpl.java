@@ -24,21 +24,21 @@ public class IntygRepositoryImpl implements IntygFilteredRepositoryCustom {
 
     @Override
     public List<Intyg> filterIntyg(IntygFilter filter) {
-       
+
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Intyg> cq = cb.createQuery(Intyg.class);
         Root<Intyg> root = cq.from(Intyg.class);
-        
+
         cq.where(createPredicate(filter, cb, root));
         cq.orderBy(cb.desc(root.get("senastSparadDatum")));
-        
+
         TypedQuery<Intyg> query = entityManager.createQuery(cq);
 
         if (filter.hasPageSizeAndStartFrom()) {
             query.setMaxResults(filter.getPageSize());
             query.setFirstResult(filter.getStartFrom());
         }
-                
+
         return query.getResultList();
     }
 
@@ -67,21 +67,21 @@ public class IntygRepositoryImpl implements IntygFilteredRepositoryCustom {
         }
 
         if (!filter.getStatusList().isEmpty()) {
-            pred = builder.and(pred, root.<IntygsStatus> get("status").in(filter.getStatusList()));
+            pred = builder.and(pred, root.<IntygsStatus>get("status").in(filter.getStatusList()));
         }
 
         if (filter.getForwarded() != null) {
-            pred = builder.and(pred, builder.equal(root.<Boolean> get("vidarebefordrad"), filter.getForwarded()));
+            pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getForwarded()));
         }
 
         if (filter.getSavedFrom() != null) {
             pred = builder.and(pred,
-                    builder.greaterThanOrEqualTo(root.<LocalDate> get("senastSparadDatum"), filter.getSavedFrom()));
+                    builder.greaterThanOrEqualTo(root.<LocalDate>get("senastSparadDatum"), filter.getSavedFrom()));
         }
 
         if (filter.getSavedTo() != null) {
             pred = builder.and(pred,
-                    builder.lessThanOrEqualTo(root.<LocalDate> get("senastSparadDatum"), filter.getSavedTo()));
+                    builder.lessThanOrEqualTo(root.<LocalDate>get("senastSparadDatum"), filter.getSavedTo()));
         }
 
         return pred;

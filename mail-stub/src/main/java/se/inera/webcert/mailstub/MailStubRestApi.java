@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MailStubRestApi {
 
     @Autowired
-    MailStore mailStore;
+    private MailStore mailStore;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

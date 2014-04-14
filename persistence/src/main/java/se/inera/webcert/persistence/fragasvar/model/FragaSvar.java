@@ -27,7 +27,7 @@ import org.joda.time.LocalDateTime;
 public class FragaSvar {
 
     /**
-     * The (system-wide) unique id for this entity
+     * The (system-wide) unique id for this entity.
      */
 
     @Id
@@ -81,10 +81,10 @@ public class FragaSvar {
     @Column(name = "SISTA_DATUM_FOR_SVAR")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDate")
     private LocalDate sistaDatumForSvar;
-    
+
     @Column(name = "VARD_AKTOR_HSAID")
     private String vardAktorHsaId;
-    
+
     @Column(name = "VARD_AKTOR_NAMN")
     private String vardAktorNamn;
 
@@ -107,17 +107,17 @@ public class FragaSvar {
     private Boolean vidarebefordrad = Boolean.FALSE;
 
     @PrePersist
-    void onPrePersist(){
-        if(getSvarSkickadDatum()==null && getFrageSkickadDatum()!=null){
+    void onPrePersist() {
+        if (getSvarSkickadDatum() == null && getFrageSkickadDatum() != null) {
             senasteHandelse = getFrageSkickadDatum();
-        }else if(getSvarSkickadDatum()!=null){
-            senasteHandelse =getSvarSkickadDatum();
+        } else if (getSvarSkickadDatum() != null) {
+            senasteHandelse = getSvarSkickadDatum();
         }
     }
 
     @PreUpdate
-    void onPreUpdate(){
-        if(getSvarSkickadDatum()!=null){
+    void onPreUpdate() {
+        if (getSvarSkickadDatum() != null) {
             senasteHandelse = getSvarSkickadDatum();
         }
     }
@@ -269,7 +269,7 @@ public class FragaSvar {
     /**
      * Return latest event for this FragaSvar. If no svarsDatum has been set, the fragaSkickadDatum is considered the
      * lastest event.
-     * 
+     *
      * @return lastest date
      */
     public LocalDateTime getSenasteHandelseDatum() {
@@ -287,7 +287,7 @@ public class FragaSvar {
         } else if (o == null || getClass() != o.getClass()) {
             return false;
         } else {
-           FragaSvar fragaSvar = (FragaSvar) o;
+            FragaSvar fragaSvar = (FragaSvar) o;
 
             if (internReferens == null) {
                 return fragaSvar.internReferens == null;

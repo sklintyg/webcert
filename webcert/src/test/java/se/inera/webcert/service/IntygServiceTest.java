@@ -141,7 +141,7 @@ public class IntygServiceTest {
 
     @Before
     public void setupLogicalAddress() {
-        intygService.logicalAddress = LOGICAL_ADDRESS;
+        intygService.setLogicalAddress(LOGICAL_ADDRESS);
     }
 
     @Test

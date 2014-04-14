@@ -11,5 +11,5 @@ public interface FragaSvarFilteredRepositoryCustom {
 
     List<FragaSvar> filterFragaSvar(FragaSvarFilter filter);
 
-    int filterCountFragaSvar(FragaSvarFilter filter) ;
+    int filterCountFragaSvar(FragaSvarFilter filter);
 }

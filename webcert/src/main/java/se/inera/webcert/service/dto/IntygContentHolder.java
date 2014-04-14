@@ -5,14 +5,14 @@ import se.inera.certificate.model.Utlatande;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
 public class IntygContentHolder {
-    
+
     @JsonRawValue
     private final String contents;
-    
+
     private final IntygMetadata metaData;
-    
+
     private final Utlatande externalModel;
-    
+
     public IntygContentHolder(String contents, IntygMetadata metaData) {
         super();
         this.contents = contents;
@@ -38,5 +38,5 @@ public class IntygContentHolder {
     public Utlatande getExternalModel() {
         return externalModel;
     }
-    
+
 }

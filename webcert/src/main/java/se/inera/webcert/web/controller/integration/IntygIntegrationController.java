@@ -23,9 +23,8 @@ import se.inera.webcert.service.dto.IntygContentHolder;
 /**
  * Controller to enable an external user to access certificates directly from a
  * link in an external patient care system.
- * 
- * @author nikpet
  *
+ * @author nikpet
  */
 @Path("/intyg")
 public class IntygIntegrationController {
@@ -46,7 +45,7 @@ public class IntygIntegrationController {
     /**
      * Fetches a certificate from IT and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
-     * 
+     *
      * @param uriInfo
      * @param intygId The id of the certificate to view.
      * @return
@@ -54,29 +53,29 @@ public class IntygIntegrationController {
     @GET
     @Path("/visa/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
-    
+
         IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId);
-    
+
         String intygType = intygData.getMetaData().getType();
-    
+
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
-    
+
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
-        
+
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
-        
+
         Map<String, Object> urlParams = new HashMap<String, Object>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
-        
+
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
     }
-        
+
     public void setUrlBaseTemplate(String urlBaseTemplate) {
         this.urlBaseTemplate = urlBaseTemplate;
     }

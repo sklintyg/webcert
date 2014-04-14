@@ -5,7 +5,7 @@ import org.joda.time.LocalDateTime;
 public class ListIntygEntry {
 
     private String intygId;
-    
+
     private String patientId;
 
     private IntygSource source;
@@ -17,7 +17,7 @@ public class ListIntygEntry {
     private LocalDateTime lastUpdatedSigned;
 
     private String updatedSignedBy;
-    
+
     private boolean forwarded;
 
     public ListIntygEntry() {

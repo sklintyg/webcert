@@ -6,9 +6,8 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
  * Compare senasteHandelseDatum (latest first) for two FragaSvar entities in a null safe manner.
- * 
+ *
  * @author marced
- * 
  */
 public class FragaSvarSenasteHandelseDatumComparator implements Comparator<FragaSvar> {
 

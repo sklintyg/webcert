@@ -27,13 +27,13 @@ public class BootstrapBean {
 
     @PostConstruct
     public void bootstrapVardgivare() throws IOException {
-        
+
         List<Resource> files = getResourceListing("bootstrap-vardgivare/*.json");
         LOG.debug("Bootstrapping {} vardgivare for HSA stub ...", files.size());
         for (Resource res : files) {
             addVardgivare(res);
         }
-        
+
         files = getResourceListing("bootstrap-medarbetaruppdrag/*.json");
         LOG.debug("Bootstrapping {} medarbetare for HSA stub ...", files.size());
         for (Resource res : files) {
@@ -57,7 +57,7 @@ public class BootstrapBean {
         hsaServiceStub.getMedarbetaruppdrag().add(medarbetaruppdrag);
         LOG.debug("Loaded medarbetaruppdrag for " + medarbetaruppdrag.getHsaId());
     }
-    
+
     private void addPerson(Resource res) throws IOException {
         HsaPerson hsaPerson = objectMapper.readValue(res.getFile(), HsaPerson.class);
         hsaServiceStub.addHsaPerson(hsaPerson);

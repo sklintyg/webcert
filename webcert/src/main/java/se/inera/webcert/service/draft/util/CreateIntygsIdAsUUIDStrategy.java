@@ -6,9 +6,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Strategy implementation that generates a Intyg id a a UUID.
- * 
- * @author nikpet
  *
+ * @author nikpet
  */
 @Component
 public class CreateIntygsIdAsUUIDStrategy implements CreateIntygsIdStrategy {

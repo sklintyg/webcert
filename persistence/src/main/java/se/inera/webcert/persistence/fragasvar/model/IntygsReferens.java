@@ -12,8 +12,9 @@ public class IntygsReferens {
 
     public IntygsReferens() {
     }
+
     public IntygsReferens(String intygsId, String intygsTyp, String patientNamn,
-            LocalDateTime signeringsDatum) {
+                          LocalDateTime signeringsDatum) {
         this.intygsId = intygsId;
         this.intygsTyp = intygsTyp;
         this.patientNamn = patientNamn;
@@ -22,10 +23,10 @@ public class IntygsReferens {
 
     @Column(name = "INTYGS_ID")
     private String intygsId;
-    
+
     @Column(name = "INTYGS_TYP")
     private String intygsTyp;
-    
+
     @Column(name = "PATIENT_NAMN")
     private String patientNamn;
 

@@ -24,21 +24,21 @@ public class UserApiController extends AbstractApiController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getUser() {
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = getWebCertUserService().getWebCertUser();
         return Response.ok(user.getAsJson()).build();
     }
-    
+
     @POST
     @Path("/changeunit")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response changeSelectedUnitOnUser(ChangeSelectedUnitRequest request) {
 
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = getWebCertUserService().getWebCertUser();
 
         LOG.debug("Attempting to change selected unit for user '{}', currently selected unit is '{}'", user.getHsaId(),
                 user.getValdVardenhet().getId());
-        
+
         boolean changeSuccess = user.changeValdVardenhet(request.getId());
 
         if (!changeSuccess) {

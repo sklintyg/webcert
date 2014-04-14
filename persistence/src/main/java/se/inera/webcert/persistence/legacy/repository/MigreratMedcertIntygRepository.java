@@ -6,9 +6,8 @@ import se.inera.webcert.persistence.legacy.model.MigreratMedcertIntyg;
 
 /**
  * Repository for migrated Medcert certificate entities.
- * 
- * @author nikpet
  *
+ * @author nikpet
  */
 public interface MigreratMedcertIntygRepository extends CrudRepository<MigreratMedcertIntyg, String> {
 

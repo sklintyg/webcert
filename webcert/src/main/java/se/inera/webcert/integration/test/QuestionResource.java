@@ -25,8 +25,8 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 
 /**
- * Bean for inserting questions directly into the database
- * 
+ * Bean for inserting questions directly into the database.
+ * <p/>
  * Created by Pehr Assarsson on 9/24/13.
  */
 @Transactional
@@ -36,10 +36,10 @@ public class QuestionResource {
     private EntityManager entityManager;
 
     private TransactionTemplate transactionTemplate;
-    
+
     @Autowired
     public void setTxManager(PlatformTransactionManager txManager) {
-        this.transactionTemplate = new TransactionTemplate(txManager); 
+        this.transactionTemplate = new TransactionTemplate(txManager);
     }
 
 
