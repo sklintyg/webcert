@@ -80,7 +80,7 @@ define(
                 var defaultQuery = {
                     enhetId: undefined, // set to chosen enhet
                     startFrom: 0,
-                    pageSize: undefined,
+                    pageSize: 10,
 
                     questionFromFK: false,
                     questionFromWC: false,
@@ -290,7 +290,7 @@ define(
                 $scope.doSearch = function () {
                     $log.debug('doSearch');
                     $scope.filterQuery.startFrom = 0;
-                    $scope.filterQuery.pageSize = undefined;
+                    $scope.filterQuery.pageSize = 10;
                     $scope.widgetState.searchedYet = true;
                     getQA();
                 };

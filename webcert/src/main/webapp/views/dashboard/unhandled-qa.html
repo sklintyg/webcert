@@ -213,7 +213,7 @@
                                 träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av
                                 {{widgetState.totalCount}}
                             </div>
-                            <div ng-show="((widgetState.filterForm.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
+                            <div ng-show="((lastQuery.startFrom + lastQuery.pageSize) < widgetState.totalCount)">
                                 <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()"
                                         ng-disabled="widgetState.fetchingMoreInProgress">
                                     <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
