@@ -12,7 +12,7 @@ define(
             function ($scope, $window, $location, $log, $timeout, $filter, $cookieStore,
                       ManageCertificate, fragaSvarCommonService, QuestionAnswer, wcDialogService, User) {
 
-                // init state
+                var PAGE_SIZE = 10;
                 $scope.widgetState = {
                     doneLoading: false,
                     runningQuery: false,
@@ -80,7 +80,7 @@ define(
                 var defaultQuery = {
                     enhetId: undefined, // set to chosen enhet
                     startFrom: 0,
-                    pageSize: 10,
+                    pageSize: PAGE_SIZE,
 
                     questionFromFK: false,
                     questionFromWC: false,
@@ -94,10 +94,9 @@ define(
                     replyLatest: undefined
                 };
 
-                $scope.qaListUnhandled = {};
-                $scope.qaListQuery = {};
+                $scope.qaListUnhandled = undefined;
                 $scope.activeUnit = {};
-                $scope.lastQuery = {};
+                $scope.filterQuery = {};
                 var unitStats = {};
 
                 /**
@@ -165,11 +164,29 @@ define(
                     QuestionAnswer.getQA(toSend, function (successData) {
 
                         $scope.widgetState.runningQuery = false;
-                        $scope.qaListQuery = successData.results;
-                        $scope.qaListUnhandled = $scope.qaListQuery;
-                        $scope.widgetState.currentList = $scope.qaListQuery;
                         $scope.widgetState.totalCount = successData.totalCount;
-                        decorateList($scope.widgetState.currentList);
+
+                        // If we temporarily pulled a bigger batch to set an initial state, reset page size to normal
+                        if ($scope.filterQuery.pageSize > PAGE_SIZE) {
+                            $scope.filterQuery.pageSize = PAGE_SIZE;
+                        }
+
+                        var qaListQuery = {};
+                        if ($scope.lastQuery.startFrom === 0) {
+                            // Get initial list
+                            qaListQuery = successData.results;
+                            $scope.qaListUnhandled = {};
+                        } else {
+                            // Fetch more
+                            qaListQuery = $scope.qaListUnhandled;
+                            for (var i = 0; i < successData.results.length; i++) {
+                                qaListQuery.push(successData.results[i]);
+                            }
+                        }
+
+                        decorateList(qaListQuery);
+                        $scope.qaListUnhandled = qaListQuery;
+                        $scope.widgetState.currentList = $scope.qaListUnhandled;
 
                     }, function (errorData) {
 
@@ -210,6 +227,12 @@ define(
                 function loadSearchForm() {
                     if ($cookieStore.get('savedFilterQuery')) {
                         $scope.filterQuery = $cookieStore.get('savedFilterQuery');
+
+                        // If we saved an old query where we had fetched more load everything up to that page
+                        if($scope.qaListUnhandled === undefined && $scope.filterQuery.startFrom > 0) {
+                            $scope.filterQuery.pageSize = $scope.filterForm.startFrom + $scope.filterForm.pageSize;
+                            $scope.filterQuery.startFrom = 0;
+                        }
 
                         if ($scope.filterQuery.questionFromFK === false && $scope.filterQuery.questionFromWC === false) {
                             $scope.filterForm.questionFrom = "default";
@@ -290,7 +313,6 @@ define(
                 $scope.doSearch = function () {
                     $log.debug('doSearch');
                     $scope.filterQuery.startFrom = 0;
-                    $scope.filterQuery.pageSize = 10;
                     $scope.widgetState.searchedYet = true;
                     getQA();
                 };
@@ -298,7 +320,6 @@ define(
                 $scope.fetchMore = function () {
                     $log.debug('fetchMore');
                     $scope.filterQuery.startFrom += $scope.filterQuery.pageSize;
-                    $scope.filterQuery.pageSize = 10;
                     getQA();
                 };
 
@@ -335,7 +356,7 @@ define(
                 });
 
                 $scope.$on('qa-filter-select-care-unit', function (event, unit) {
-                    $log.debug('ActiveUnit is now:' + unit);
+                    $log.debug('ActiveUnit is now:' + unit.id);
                     $scope.activeUnit = unit;
                     $scope.widgetState.queryFormCollapsed = true;
 
