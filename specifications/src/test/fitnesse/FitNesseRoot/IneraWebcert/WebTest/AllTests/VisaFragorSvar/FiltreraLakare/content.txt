@@ -35,6 +35,8 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 
 | script | !-SvaraOchFraga-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+| ga till svara och fraga |
+| ohanterade fragor sidan visas |
 | visa avancerat filter |
 | valj lakare med namn | Jan Nilsson |
 | filtrera fragor och svar |

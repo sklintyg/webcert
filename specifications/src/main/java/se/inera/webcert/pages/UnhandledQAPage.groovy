@@ -14,7 +14,7 @@ class UnhandledQAPage extends Page {
         advancedFilterBtn { $("#show-advanced-filter-btn") }
         advancedFilterForm { $("#advanced-filter-form") }
         advandecFilterFormFragestallare { $("input", name: "frageStallare") }
-        advancedFilterSelectDoctor { $("#qp-doctorSelector") }
+        advancedFilterSelectDoctor { $("#qp-lakareSelector") }
         advancedFilterVidarebefordrad { $("input", name: "vidarebefordrad") }
         advancedFilterChangeDateFrom { $("#filter-changedate-from") }
         advancedFilterChangeDateTo { $("#filter-changedate-to") }
