@@ -112,23 +112,6 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         return query.getResultList();
     }
 
-    @Deprecated
-    public List<FragaSvar> filterFragaSvar(FragaSvarFilter filter, int startPos, int size) {
-        CriteriaBuilder builder;
-        CriteriaQuery<FragaSvar> query;
-        Root<FragaSvar> root;
-
-        builder = entityManager.getCriteriaBuilder();
-        query = builder.createQuery(FragaSvar.class);
-
-        root = query.from(FragaSvar.class);
-
-        query.where(createPredicate(filter, builder, root));
-        query.orderBy(builder.desc(root.get("senasteHandelse")));
-        
-        return entityManager.createQuery(query).setMaxResults(size).setFirstResult(startPos).getResultList();
-    }
-
     @Override
     public int filterCountFragaSvar(FragaSvarFilter filter) {
 

@@ -456,7 +456,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         filter.setQuestionFromFK(getSafeBooleanValue(params.getQuestionFromFK()));
         filter.setQuestionFromWC(getSafeBooleanValue(params.getQuestionFromWC()));
         filter.setReplyLatest(params.getReplyLatest());
-        filter.setVidarebefordrad(getSafeBooleanValue(params.getVidarebefordrad()));
+        filter.setVidarebefordrad(params.getVidarebefordrad());
         
         filter.setPageSize(params.getPageSize() == null ? DEFAULT_PAGE_SIZE : params.getPageSize());
         filter.setStartFrom(params.getStartFrom() == null ? 0 : params.getStartFrom());
