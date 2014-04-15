@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 
@@ -34,7 +35,8 @@ public class GetCertificateForCareResponderStub implements GetCertificateForCare
     private GetCertificateForCareResponseType buildNotFoundResponse() {
         GetCertificateForCareResponseType response = new GetCertificateForCareResponseType();
         ResultType resultType = new ResultType();
-        resultType.setResultCode(ResultCodeType.VALIDATION_ERROR);
+        resultType.setResultCode(ResultCodeType.ERROR);
+        resultType.setErrorId(ErrorIdType.VALIDATION_ERROR);
         resultType.setResultText("Intyg not found in stub");
         response.setResult(resultType);
         return response;

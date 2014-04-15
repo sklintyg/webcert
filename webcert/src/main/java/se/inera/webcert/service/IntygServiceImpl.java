@@ -245,12 +245,20 @@ public class IntygServiceImpl implements IntygService {
                 request);
 
         switch (response.getResult().getResultCode()) {
+        case INFO:
         case OK:
-        case REVOKED:
             return response;
-        case VALIDATION_ERROR:
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                    "getCertificateForCare WS call:  VALIDATION_ERROR :" + response.getResult().getResultText());
+        case ERROR:
+            switch (response.getResult().getErrorId()) {
+            case REVOKED:
+                return response;
+            case VALIDATION_ERROR:
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                        "getCertificateForCare WS call:  VALIDATION_ERROR :" + response.getResult().getResultText());
+            default:
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
+                        "getCertificateForCare WS call: ERROR :" + response.getResult().getResultText());
+            }
         default:
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                     "getCertificateForCare WS call: ERROR :" + response.getResult().getResultText());
