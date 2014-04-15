@@ -3,6 +3,7 @@
                                  xmlns:ns3="urn:riv:clinicalprocess:healthcond:certificate:1">
   <result>
     <ns3:resultCode>ERROR</ns3:resultCode>
+    <ns3:errorId>APPLICATION_ERROR</ns3:errorId>
     <ns3:resultText>Something bad happened</ns3:resultText>
   </result>
 </ListCertificatesForCareResponse>
