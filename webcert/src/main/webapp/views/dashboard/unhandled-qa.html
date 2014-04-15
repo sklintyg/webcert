@@ -55,7 +55,7 @@
                                     <label class="control-label">Läkare</label>
 
                                     <div class="controls pointer-labels">
-                                        <select id="qp-lakareSelector" ng-model="lastQuery.lakareSelector"
+                                        <select id="qp-lakareSelector" ng-model="filterForm.lakareSelector"
                                                 ng-options="s.name for s in lakareList"
                                                 ng-disabled="widgetState.loadingLakares"></select>
                                     </div>
@@ -87,14 +87,14 @@
 
                                     <div class="controls">
                                         Från <input type="text" id="filter-changedate-from" datepicker-popup
-                                                    ng-model="lastQuery.changedFrom" is-open="widgetState.dpFromOpen.open"
+                                                    ng-model="filterForm.changedFrom" is-open="widgetState.dpFromOpen.open"
                                                     datepicker-options="datepickerConfig"/>
                                         <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
                                             <i class="icon-calendar"></i>
                                         </button>
 
                                         till <input type="text" id="filter-changedate-to" datepicker-popup
-                                                    ng-model="lastQuery.changedTo" is-open="widgetState.dpToOpen.open"
+                                                    ng-model="filterForm.changedTo" is-open="widgetState.dpToOpen.open"
                                                     datepicker-options="datepickerConfig"/>
                                         <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
                                             <i class="icon-calendar"></i>
@@ -105,14 +105,14 @@
                                     <label class="control-label">Åtgärd</label>
 
                                     <div class="controls pointer-labels">
-                                        <select id="qp-showStatus" ng-model="lastQuery.vantarPaSelector"
+                                        <select id="qp-showStatus" ng-model="filterForm.vantarPaSelector"
                                                 ng-options="s.label for s in statusList"></select>
                                     </div>
                                 </div>
                                 <!--            <div class="control-group"> commented out until needed
                                               <label class="control-label">Svar senast</label>
                                               <div class="controls">
-                                                <input type="text" id="filter-reply-by" datepicker-popup ng-model="lastQuery.replyLatest" is-open="widgetState.dpAnswerOpen.open" datepicker-options="datepickerConfig"/>
+                                                <input type="text" id="filter-reply-by" datepicker-popup ng-model="filterForm.replyLatest" is-open="widgetState.dpAnswerOpen.open" datepicker-options="datepickerConfig"/>
                                                 <button class="btn" ng-click="toggleDatePickerInstance(widgetState.dpAnswerOpen)">
                                                   <i class="icon-calendar"></i>
                                                 </button>
@@ -213,7 +213,7 @@
                                 träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av
                                 {{widgetState.totalCount}}
                             </div>
-                            <div ng-show="((widgetState.lastQuery.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
+                            <div ng-show="((widgetState.filterForm.startFrom + widgetState.queryPageSize) < widgetState.totalCount)">
                                 <button class="btn" title="Hämta fler träffar" ng-click="fetchMore()"
                                         ng-disabled="widgetState.fetchingMoreInProgress">
                                     <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
