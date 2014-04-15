@@ -197,14 +197,14 @@ define(
                     });
                 }
 
-                function filterCurrentList(unit) {
+/*                function filterCurrentList(unit) {
                     if (unit.id === "wc-all") {
                         $scope.widgetState.currentList = angular.copy($scope.qaListUnhandled);
                     } else {
                         $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, unit.id);
                     }
                 }
-
+*/
                 function selectVantarPaByValue(vantaValue) {
                     for (var count = 0; count < $scope.statusList.length; count++) {
                         if ($scope.statusList[count].value === vantaValue) {
@@ -367,12 +367,12 @@ define(
                     $cookieStore.put('enhetId', unit.id);
 
                     initLakareList(unit.id);
-                    filterCurrentList(unit);
+                    //filterCurrentList(unit);
+                    getQA();
 
                     // If we have a query stored, open the advanced filter
                     if ($cookieStore.get('savedFilterQuery')) {
                         //$scope.widgetState.queryFormCollapsed = false;
-                        //getQA();
                     }
                 });
 
