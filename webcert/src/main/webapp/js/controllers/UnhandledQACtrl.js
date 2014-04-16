@@ -210,7 +210,7 @@ define(
                     return $scope.statusList[0];
                 }
 
-                function resetSearchForm() {
+                function resetFilterForm() {
                     $cookieStore.remove('savedFilterQuery');
                     $scope.filterQuery = angular.copy(defaultQuery);
                     $scope.filterForm.vantarPaSelector = $scope.statusList[1];
@@ -298,14 +298,14 @@ define(
                  * Exposed view functions
                  */
 
-                $scope.resetSearchForm = function () {
-                    resetSearchForm();
+                $scope.resetFilterForm = function () {
+                    resetFilterForm();
                     $scope.widgetState.runningQuery = true;
                     getQA();
                 };
 
-                $scope.doSearch = function () {
-                    $log.debug('doSearch');
+                $scope.filterList = function () {
+                    $log.debug('filterList');
                     $scope.filterQuery.startFrom = 0;
                     $scope.widgetState.filteredYet = true;
                     $scope.widgetState.runningQuery = true;
@@ -384,7 +384,7 @@ define(
 
                     // If we change enhet then we probably don't want the same filter criterias
                     if ($cookieStore.get('enhetsId') && $cookieStore.get('enhetsId') !== unit.id) {
-                        resetSearchForm();
+                        resetFilterForm();
                     }
 
                     // Set unit id (reset search form resets it)
