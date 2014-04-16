@@ -2,7 +2,7 @@
 	
 	"fragaSvarValdEnhet" : "8",
 	"fragaSvarAndraEnheter" : "3",
-	"intygValdEnhet" : "3",
+	"intygValdEnhet" : "0",
 	"intygAndraEnheter" : "2",
 	"vardgivare" : [{
 		"namn" : "Vardgivaren",

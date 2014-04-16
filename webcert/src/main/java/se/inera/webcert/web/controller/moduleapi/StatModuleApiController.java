@@ -68,7 +68,8 @@ public class StatModuleApiController extends AbstractApiController {
                 intygStatsMap);
         statsResponse.setTotalNbrOfUnsignedDraftsOnOtherThanSelected(unsignedDraftsOnOtherThanSelected);
 
-        long unsignedDraftsOnSelected = calcSumFromSelectedUnits(unitIdsOfSelected, intygStatsMap);
+        long unsignedDraftsOnSelected = getSafeStatValueFromMap(user.getValdVardenhet().getId(), intygStatsMap);
+
         statsResponse.setTotalNbrOfUnsignedDraftsOnSelected(unsignedDraftsOnSelected);
 
         populateStatsResponseWithVardgivarStats(statsResponse, user.getVardgivare(), intygStatsMap, fragaSvarStatsMap);
@@ -79,7 +80,6 @@ public class StatModuleApiController extends AbstractApiController {
     private long calcSumFromSelectedUnits(List<String> unitIdsList, Map<String, Long> statsMap) {
 
         long sum = 0;
-
         for (String unitId : unitIdsList) {
             sum += getSafeStatValueFromMap(unitId, statsMap);
         }
@@ -88,7 +88,7 @@ public class StatModuleApiController extends AbstractApiController {
     }
 
     private void populateStatsResponseWithVardgivarStats(StatsResponse statsResponse, List<Vardgivare> vardgivare,
-                                                         Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
         VardgivareStats vgStats;
 
@@ -101,7 +101,7 @@ public class StatModuleApiController extends AbstractApiController {
     }
 
     private List<VardenhetStats> createAndPopulateVardenheterWithStats(List<Vardenhet> vardenheter,
-                                                                       Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
         List<VardenhetStats> veStatsList = new ArrayList<VardenhetStats>();
 
@@ -122,7 +122,7 @@ public class StatModuleApiController extends AbstractApiController {
     }
 
     private void addStatsForMottagningar(Vardenhet vardenhet, List<VardenhetStats> veStatsList,
-                                         Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
         List<Mottagning> mottagningar = vardenhet.getMottagningar();
 
@@ -133,7 +133,7 @@ public class StatModuleApiController extends AbstractApiController {
         VardenhetStats moStats;
 
         for (Mottagning mo : mottagningar) {
-            String moNamn = StringUtils.join(new Object[]{vardenhet.getNamn(), mo.getNamn()}, SEPARATOR);
+            String moNamn = StringUtils.join(new Object[] { vardenhet.getNamn(), mo.getNamn() }, SEPARATOR);
             moStats = new VardenhetStats(moNamn, mo.getId());
             moStats.setOhanteradeFragaSvar(getSafeStatValueFromMap(mo.getId(), fragaSvarStats));
             moStats.setOsigneradeIntyg(getSafeStatValueFromMap(mo.getId(), intygStats));
