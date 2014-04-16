@@ -22,14 +22,16 @@
                     <h2 class="col-head" ng-class="{'less-top-padding' : units.length < 2}">{{selectedUnit.namn}}</h2>
 
                     <div class="webcert-bottom-padding-section">
-                        <span ng-if="!widgetState.searchedYet">Här visas alla ej hanterade frågor.<br></span>
+                        <span ng-if="!widgetState.filteredYet">Här visas alla ej hanterade frågor.<br></span>
                         <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
-                                ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed"
-                                ng-switch="widgetState.queryFormCollapsed">
+                                ng-click="widgetState.filterFormCollapsed = !widgetState.filterFormCollapsed"
+                                ng-switch="widgetState.filterFormCollapsed">
                             <span ng-switch-when="true">Visa sökfilter</span><span
                                 ng-switch-when="false">Dölj sökfilter</span>
                         </button>
-                        <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed"
+
+						<!-- Filter form -->
+                        <div id="advanced-filter-form" ng-show="!widgetState.filterFormCollapsed"
                              class="qa-filter-panel form-horizontal">
                           <div class="form-group">
                             <label class="col-sm-2 control-label">Frågor från</label>
@@ -80,14 +82,14 @@
                             <div class="col-sm-10 form-inline">
                               Från
                               <input type="text" class="form-control" id="filter-changedate-from" datepicker-popup
-                                          ng-model="filterForm.changedFrom" is-open="widgetState.dpFromOpen.open"
+                                          ng-model="filterQuery.changedFrom" is-open="widgetState.dpFromOpen.open"
                                           datepicker-options="{{datepickerConfig}}"/>
                               <button class="btn btn-default" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
                                 <i class="glyphicon glyphicon-calendar"></i>
                               </button>
                               till
                               <input type="text" class="form-control" id="filter-changedate-to" datepicker-popup
-                                          ng-model="filterForm.changedTo" is-open="widgetState.dpToOpen.open"
+                                          ng-model="filterQuery.changedTo" is-open="widgetState.dpToOpen.open"
                                           datepicker-options="{{datepickerConfig}}"/>
                               <button class="btn btn-default" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
                                 <i class="glyphicon glyphicon-calendar"></i>
@@ -121,30 +123,30 @@
 
                             <!-- No results message for unhandled -->
                             <div id="current-list-noResults-unit"
-                                 ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1"
+                                 ng-show="widgetState.currentList.length < 1 && !widgetState.activeErrorMessageKey"
                                  class="alert alert-info">
-                                <span message key="info.nounanswered.qa.for.unit"></span>
+								<span message key="info.query.noresults"></span>
                             </div>
 
                             <!-- No results message for query -->
                             <div id="current-list-noResults-query"
-                                 ng-show="widgetState.totalCount<1" class="alert alert-info">
-                                <span message key="info.query.noresults"></span>
+                                 ng-show="widgetState.totalCount < 1 && !widgetState.activeErrorMessageKey" class="alert alert-info">
+								<span message key="info.nounanswered.qa.for.unit"></span>
                             </div>
 
                             <!-- error message -->
                             <div id="current-list-noResults-error"
-                                 ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey"
+                                 ng-show="widgetState.activeErrorMessageKey"
                                  class="alert alert-danger">
                                 <span message key="{{widgetState.activeErrorMessageKey}}"></span>
                             </div>
 
-                            <div id="query-count" ng-show="widgetState.totalCount>0">
+                            <div id="query-count" ng-show="widgetState.totalCount > 0">
                                 Sökresultat - {{widgetState.totalCount}} träffar
                             </div>
 
                             <!-- qa table -->
-                            <div class="row" ng-show="widgetState.currentList.length>0"
+                            <div class="row" ng-show="widgetState.currentList.length > 0"
                                  id="qaTable">
                                 <table class="col-md-12 table table-striped table-qa">
                                     <tr>
@@ -196,10 +198,10 @@
                                 </table>
                             </div>
                             <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
-                                träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av
+                                träff 1 - {{widgetState.currentList.length}} av
                                 {{widgetState.totalCount}}
                             </div>
-                            <div ng-show="((filterQuery.startFrom + filterQuery.pageSize) < widgetState.totalCount)">
+                            <div ng-show="widgetState.currentList.length < widgetState.totalCount">
                                 <button class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
                                         ng-disabled="widgetState.fetchingMoreInProgress">
                                     <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta

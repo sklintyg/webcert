@@ -13,14 +13,16 @@ define(
                       ManageCertificate, fragaSvarCommonService, QuestionAnswer, wcDialogService, User) {
 
                 var PAGE_SIZE = 10;
+                var enhetId = "wc-all";
+
                 $scope.widgetState = {
-                    doneLoading: false,
+                    doneLoading: true,
                     runningQuery: false,
                     activeErrorMessageKey: null,
-                    searchedYet: false,
+                    filteredYet: false,
                     totalCount: 0,
-                    currentList: undefined,
-                    queryFormCollapsed: true,
+                    currentList: {},
+                    filterFormCollapsed: true,
                     dpFromOpen: {
                         open: false
                     },
@@ -78,7 +80,7 @@ define(
                 };
 
                 var defaultQuery = {
-                    enhetId: undefined, // set to chosen enhet
+                    enhetId: undefined,
                     startFrom: 0,
                     pageSize: PAGE_SIZE,
 
@@ -94,7 +96,7 @@ define(
                     replyLatest: undefined
                 };
 
-                $scope.qaListUnhandled = undefined;
+//                $scope.qaListUnhandled = undefined;
                 $scope.activeUnit = {};
                 $scope.filterQuery = {};
                 var unitStats = {};
@@ -109,16 +111,20 @@ define(
                     });
                 }
 
-                function prepareSearchFormForQuery(filterQuery) {
+                function prepareFilterQuery(enhetId, scopeFilterQuery) {
 
-                    filterQuery.enhetId = $scope.activeUnit.id;
-                    if (filterQuery.enhetId === "wc-all") {
+                    // Converts view values and sets them on a copy of query object
+                    var filterQuery = angular.copy(scopeFilterQuery);
+
+                    if (enhetId === "wc-all") {
                         filterQuery.enhetId = undefined;
+                    } else {
+                        filterQuery.enhetId = enhetId;
                     }
-                    $cookieStore.put('enhetId', filterQuery.enhetId);
+
                     filterQuery.vantarPa = $scope.filterForm.vantarPaSelector.value;
 
-                    if (filterQuery.lakareSelector) {
+                    if ($scope.filterForm.lakareSelector) {
                         filterQuery.hsaId = $scope.filterForm.lakareSelector.hsaId;
                     }
 
@@ -150,20 +156,18 @@ define(
                         filterQuery.vidarebefordrad = $scope.filterForm.vidarebefordrad;
                     }
 
-                    $cookieStore.put('savedFilterQuery', filterQuery);
                     return filterQuery;
                 }
 
                 function getQA() {
 
-                    $scope.widgetState.runningQuery = true;
                     $scope.widgetState.activeErrorMessageKey = null;
-                    var toSend = prepareSearchFormForQuery($scope.filterQuery);
-                    $scope.lastQuery = toSend;
+                    $cookieStore.put('enhetsId', enhetId);
+                    $cookieStore.put('savedFilterQuery', $scope.filterQuery);
+                    var preparedQuery = prepareFilterQuery(enhetId, $scope.filterQuery);
 
-                    QuestionAnswer.getQA(toSend, function (successData) {
+                    QuestionAnswer.getQA(preparedQuery, function (successData) {
 
-                        $scope.widgetState.runningQuery = false;
                         $scope.widgetState.totalCount = successData.totalCount;
 
                         // If we temporarily pulled a bigger batch to set an initial state, reset page size to normal
@@ -172,21 +176,21 @@ define(
                         }
 
                         var qaListQuery = {};
-                        if ($scope.lastQuery.startFrom === 0) {
+                        if ($scope.filterQuery.startFrom === 0) {
                             // Get initial list
                             qaListQuery = successData.results;
-                            $scope.qaListUnhandled = {};
+                            $scope.widgetState.currentList = qaListQuery;
+                            $scope.widgetState.runningQuery = false;
                         } else {
+                            $scope.widgetState.fetchingMoreInProgress = false;
                             // Fetch more
-                            qaListQuery = $scope.qaListUnhandled;
+                            qaListQuery = $scope.widgetState.currentList;
                             for (var i = 0; i < successData.results.length; i++) {
                                 qaListQuery.push(successData.results[i]);
                             }
                         }
 
-                        decorateList(qaListQuery);
-                        $scope.qaListUnhandled = qaListQuery;
-                        $scope.widgetState.currentList = $scope.qaListUnhandled;
+                        decorateList($scope.widgetState.currentList);
 
                     }, function (errorData) {
 
@@ -197,14 +201,6 @@ define(
                     });
                 }
 
-/*                function filterCurrentList(unit) {
-                    if (unit.id === "wc-all") {
-                        $scope.widgetState.currentList = angular.copy($scope.qaListUnhandled);
-                    } else {
-                        $scope.widgetState.currentList = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, unit.id);
-                    }
-                }
-*/
                 function selectVantarPaByValue(vantaValue) {
                     for (var count = 0; count < $scope.statusList.length; count++) {
                         if ($scope.statusList[count].value === vantaValue) {
@@ -221,16 +217,21 @@ define(
                     $scope.filterForm.lakareSelector = $scope.lakareList[0];
                     $scope.filterForm.questionFrom = "default";
                     $scope.filterForm.vidarebefordrad = "default";
-                    getQA();
                 }
 
                 function loadSearchForm() {
-                    if ($cookieStore.get('savedFilterQuery')) {
+
+                    // Check if cookie exists
+                    if ($cookieStore.get('savedFilterQuery') === undefined) {
+                        resetFilterForm(); // Set default state for filter form
+                    } else {
+
+                        // Load filter from cookie
                         $scope.filterQuery = $cookieStore.get('savedFilterQuery');
 
                         // If we saved an old query where we had fetched more load everything up to that page
-                        if($scope.qaListUnhandled === undefined && $scope.filterQuery.startFrom > 0) {
-                            $scope.filterQuery.pageSize = $scope.filterForm.startFrom + $scope.filterForm.pageSize;
+                        if($scope.filterQuery.startFrom > 0) {
+                            $scope.filterQuery.pageSize = $scope.filterQuery.startFrom + $scope.filterQuery.pageSize;
                             $scope.filterQuery.startFrom = 0;
                         }
 
@@ -254,11 +255,6 @@ define(
                         } else {
                             $scope.filterForm.vantarPaSelector = $scope.statusList[1];
                         }
-
-                        getQA();
-
-                    } else {
-                        resetSearchForm();
                     }
                 }
 
@@ -298,28 +294,28 @@ define(
                     });
                 }
 
-                // load initial state
-                loadSearchForm();
-                $scope.widgetState.doneLoading = true;
-
                 /**
                  * Exposed view functions
                  */
 
                 $scope.resetSearchForm = function () {
                     resetSearchForm();
+                    $scope.widgetState.runningQuery = true;
+                    getQA();
                 };
 
                 $scope.doSearch = function () {
                     $log.debug('doSearch');
                     $scope.filterQuery.startFrom = 0;
-                    $scope.widgetState.searchedYet = true;
+                    $scope.widgetState.filteredYet = true;
+                    $scope.widgetState.runningQuery = true;
                     getQA();
                 };
 
                 $scope.fetchMore = function () {
                     $log.debug('fetchMore');
                     $scope.filterQuery.startFrom += $scope.filterQuery.pageSize;
+                    $scope.widgetState.fetchingMoreInProgress = true;
                     getQA();
                 };
 
@@ -333,48 +329,6 @@ define(
                     }
                     return false;
                 };
-
-                // Calculate how many entities we have for a specific enhetsId
-                $scope.getItemCountForUnitId = function(unit) {
-                    if (!$scope.widgetState.doneLoading) {
-                        return '?';
-                    }
-                    var count = 0;
-
-                    if (unit.id === "wc-all") {
-                        count = $scope.qaListUnhandled.length;
-                    }
-                    else {
-                        count = $filter('QAEnhetsIdFilter')($scope.qaListUnhandled, unit.id).length;
-                    }
-
-                    return count;
-                };
-
-                $scope.$on("wc-stat-update", function (event, message) {
-                    unitStats = message;
-                });
-
-                $scope.$on('qa-filter-select-care-unit', function (event, unit) {
-                    $log.debug('ActiveUnit is now:' + unit.id);
-                    $scope.activeUnit = unit;
-                    $scope.widgetState.queryFormCollapsed = true;
-
-                    // If we change enhet then we probably don't want the same filter criterias
-                    if ($cookieStore.get('enhetId') && $cookieStore.get('enhetId') !== unit.id) {
-                        resetSearchForm();
-                    }
-                    $cookieStore.put('enhetId', unit.id);
-
-                    initLakareList(unit.id);
-                    //filterCurrentList(unit);
-                    getQA();
-
-                    // If we have a query stored, open the advanced filter
-                    if ($cookieStore.get('savedFilterQuery')) {
-                        //$scope.widgetState.queryFormCollapsed = false;
-                    }
-                });
 
                 $scope.onVidareBefordradChange = function (qa) {
                     qa.updateInProgress = true;
@@ -414,57 +368,40 @@ define(
                         instance.open = !instance.open;
                     });
                 };
+
+                /**
+                 * Broadcast event handlers
+                 */
+                    // Broadcast by statService on poll
+                $scope.$on("wc-stat-update", function (event, message) {
+                    unitStats = message;
+                });
+
+                // Broadcast by wcCareUnitClinicSelector directive on load and selection
+                $scope.$on('qa-filter-select-care-unit', function (event, unit) {
+                    $log.debug('ActiveUnit is now:' + unit.id);
+                    $scope.activeUnit = unit;
+
+                    // If we change enhet then we probably don't want the same filter criterias
+                    if ($cookieStore.get('enhetsId') && $cookieStore.get('enhetsId') !== unit.id) {
+                        resetSearchForm();
+                    }
+
+                    // Set unit id (reset search form resets it)
+                    $cookieStore.put('enhetsId', unit.id);
+                    enhetId = unit.id;
+
+                    $scope.widgetState.filterFormCollapsed = true; // collapse filter form so it isn't in the way
+
+                    initLakareList(unit.id); // Update lakare list for filter form
+                    $scope.widgetState.runningQuery = true;
+                    getQA();
+                });
+
+                /**
+                 * Page load
+                 */
+                // Load filter form from cookie if available (for first page load)
+                loadSearchForm();
             } ];
     });
-
-
-//getQA();
-
-/*              QuestionAnswer.getQA(function (data) {
- $scope.widgetState.queryMode = false;
- $scope.widgetState.doneLoading = true;
- if (data !== null) {
- $scope.widgetState.activeErrorMessageKey = null;
- $scope.qaListUnhandled = data;
- $scope.widgetState.currentList = $scope.qaListUnhandled;
- $scope.widgetState.totalCount = $scope.widgetState.currentList.length;
- $scope.decorateList($scope.widgetState.currentList);
- $scope.widgetState.queryMode = false;
-
- // If active unit is already set then do the
- // filtering
- if ($scope.activeUnit) {
- filterCurrentList($scope.activeUnit);
- }
- } else {
- $scope.widgetState.activeErrorMessageKey = 'error.unansweredcerts.couldnotbeloaded';
- }
- });
- */
-
-
-/*                $scope.fetchMore = function () {
- $log.debug('fetchMore');
- var queryInstance = $scope.lastQuery;
- queryInstance.startFrom += queryInstance.pageSize;
- $scope.lastQuery= queryInstance;
- $scope.widgetState.queryMode = true;
- $scope.widgetState.fetchingMoreInProgress = true;
- $scope.widgetState.activeErrorMessageKey = null;
-
- QuestionAnswer.getQA(queryInstance, function (successData) {
- $scope.widgetState.fetchingMoreInProgress = false;
- $scope.decorateList(successData.results);
-
- for (var i = 0; i < successData.results.length; i++) {
- $scope.qaListQuery.push(successData.results[i]);
- }
-
- $scope.widgetState.currentList = $scope.qaListQuery;
- }, function () {
- $scope.widgetState.fetchingMoreInProgress = false;
- $log.debug('Query Error');
- $scope.widgetState.activeErrorMessageKey = 'info.query.error';
- });
- };
- */

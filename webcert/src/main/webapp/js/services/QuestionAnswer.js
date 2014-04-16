@@ -24,13 +24,13 @@ define([
          * Get list of lakare for enhet
          */
         function _getQALakareList(enhetsId, onSuccess, onError) {
-            $log.debug('_getDoctorList: ' + enhetsId);
+            $log.debug('_getQALakareList: ' + enhetsId);
             var restPath = '/api/fragasvar/lakare';
             $http.get(restPath, {params: { 'enhetsId' : enhetsId}}).success(function (data) {
-                $log.debug('_getDoctorList got data:' + data);
+                $log.debug('_getQALakareList got data:' + data);
                 onSuccess(data);
             }).error(function (data, status) {
-                $log.error('_getDoctorList error ' + status);
+                $log.error('_getQALakareList error ' + status);
                 // Let calling code handle the error of no data response
                 onError(data);
             });
