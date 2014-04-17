@@ -2,9 +2,8 @@ package se.inera.webcert.service.exception;
 
 /**
  * Runtime exception used to signal internal errors.
- * 
- * @author nikpet
  *
+ * @author nikpet
  */
 public class WebCertServiceException extends RuntimeException {
 
@@ -14,8 +13,9 @@ public class WebCertServiceException extends RuntimeException {
     }
 
     /**
-     * Constructor with just errorCode
-     * @param errorCode
+     * Constructor with just errorCode.
+     *
+     * @param errorCode error code
      */
     public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode) {
         super();
@@ -23,8 +23,8 @@ public class WebCertServiceException extends RuntimeException {
     }
 
     /**
-     * @param errorCode
-     * @param message - Custom error message
+     * @param errorCode error code
+     * @param message   - Custom error message
      */
     public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode, String message) {
         super(message);
@@ -32,9 +32,10 @@ public class WebCertServiceException extends RuntimeException {
     }
 
     /**
-     * Constructor with original exception
-     * @param errorCode
-     * @param cause
+     * Constructor with original exception.
+     *
+     * @param errorCode error code
+     * @param cause cause
      */
     public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode, Exception cause) {
         super(cause);

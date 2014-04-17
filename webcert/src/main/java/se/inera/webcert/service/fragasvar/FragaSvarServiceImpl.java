@@ -383,9 +383,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         fragaSvar.setStatus(Status.CLOSED);
-        FragaSvar saved = fragaSvarRepository.save(fragaSvar);
-
-        return saved;
+        return fragaSvarRepository.save(fragaSvar);
     }
 
     @Override
@@ -413,9 +411,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             }
 
         }
-        FragaSvar saved = fragaSvarRepository.save(fragaSvar);
-
-        return saved;
+        return fragaSvarRepository.save(fragaSvar);
     }
 
 
@@ -457,7 +453,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         filter.setQuestionFromWC(getSafeBooleanValue(params.getQuestionFromWC()));
         filter.setReplyLatest(params.getReplyLatest());
         filter.setVidarebefordrad(params.getVidarebefordrad());
-        
+
         filter.setPageSize(params.getPageSize() == null ? DEFAULT_PAGE_SIZE : params.getPageSize());
         filter.setStartFrom(params.getStartFrom() == null ? 0 : params.getStartFrom());
 
@@ -465,7 +461,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     private boolean getSafeBooleanValue(Boolean booleanObj) {
-        return (booleanObj != null) ? booleanObj.booleanValue() : false;
+        return (booleanObj != null) && booleanObj;
     }
 
     protected void verifyEnhetsAuth(String enhetsId) {
@@ -506,7 +502,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     public Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds) {
 
-        Map<String, Long> resultsMap = new HashMap<String, Long>();
+        Map<String, Long> resultsMap = new HashMap<>();
 
         List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIds(vardenheterIds);
 

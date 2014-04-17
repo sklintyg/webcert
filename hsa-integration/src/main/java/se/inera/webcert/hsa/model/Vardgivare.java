@@ -67,9 +67,9 @@ public class Vardgivare implements SelectableVardenhet, Serializable {
         if (id == null) {
             return null;
         }
-        
+
         SelectableVardenhet sve = null;
-        
+
         for (Vardenhet vardenhet : getVardenheter()) {
             sve = vardenhet.findSelectableVardenhet(id);
             if (sve != null) {

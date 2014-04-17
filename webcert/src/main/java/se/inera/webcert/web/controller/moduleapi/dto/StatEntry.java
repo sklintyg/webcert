@@ -1,10 +1,9 @@
 package se.inera.webcert.web.controller.moduleapi.dto;
 
 /**
- * Simple DTO for statistics for number of unsigned certificates and unhandled questions
- * 
+ * Simple DTO for statistics for number of unsigned certificates and unhandled questions.
+ *
  * @author marced
- * 
  */
 public class StatEntry {
     private long unsignedCerts;

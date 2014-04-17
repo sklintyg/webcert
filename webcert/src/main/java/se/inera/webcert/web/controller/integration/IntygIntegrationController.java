@@ -33,7 +33,7 @@ public class IntygIntegrationController {
 
     private static final String PARAM_CERT_ID = "certId";
 
-    private static Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
     private String urlBaseTemplate;
 

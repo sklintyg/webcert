@@ -16,9 +16,8 @@ import se.inera.webcert.service.exception.WebCertServiceException;
  * {@link WebCertServiceException} WebCertServiceException are logged as
  * warnings. All other runtime exceptions thrown are treated as errors and
  * logged as such.
- * 
+ *
  * @author nikpet
- * 
  */
 public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeException> {
 

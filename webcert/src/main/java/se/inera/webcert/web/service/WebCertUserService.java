@@ -24,11 +24,11 @@ public interface WebCertUserService {
 
     /**
      * Implementation should return the {@link WebCertUser} instance representing the currently logged in user.
-     * 
+     *
      * @return WebCertUser
      */
     WebCertUser getWebCertUser();
-    
+
     boolean isAuthorizedForUnit(String enhetsHsaId);
 
 }

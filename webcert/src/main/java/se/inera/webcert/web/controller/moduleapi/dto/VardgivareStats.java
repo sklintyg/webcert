@@ -7,23 +7,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"namn", "id", "vardenheter"})
+@JsonPropertyOrder({"namn", "id", "vardenheter" })
 public class VardgivareStats {
-            
+
     @JsonProperty("namn")
     private String namn;
-    
+
     @JsonProperty("id")
     private String hsaId;
-    
+
     private List<VardenhetStats> vardenheter = new ArrayList<VardenhetStats>();
-    
+
     public VardgivareStats(@JsonProperty("namn") String namn, @JsonProperty("id") String hsaId) {
         super();
         this.namn = namn;
         this.hsaId = hsaId;
     }
-    
+
     public String getNamn() {
         return namn;
     }
@@ -53,5 +53,5 @@ public class VardgivareStats {
     public String toString() {
         return "VardgivareStats [namn=" + namn + ", hsaId=" + hsaId + ", vardenheter=" + vardenheter + "]";
     }
-    
+
 }

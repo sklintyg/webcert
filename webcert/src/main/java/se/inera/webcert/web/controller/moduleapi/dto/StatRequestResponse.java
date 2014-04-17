@@ -4,9 +4,8 @@ package se.inera.webcert.web.controller.moduleapi.dto;
 /**
  * Simple DTO for holding statEntries for units and user.
  * {@see StatModuleApiController}
- * 
+ *
  * @author marced
- * 
  */
 public class StatRequestResponse {
 

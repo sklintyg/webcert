@@ -13,17 +13,16 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
  * Logback converter that returns information about the current user.
  * User info is retrieved from the Spring Security context. If no context
  * is available a NO USER is returned.
- * 
- * @author nikpet
  *
+ * @author nikpet
  */
 public class UserConverter extends ClassicConverter {
 
     @Override
     public String convert(ILoggingEvent event) {
-        
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (auth == null) {
             return "NO USER";
         }

@@ -81,44 +81,44 @@ public class SakerhetstjanstAssertion {
     private void extractAttributes(List<Attribute> attributes) {
         for (Attribute attribute : attributes) {
             switch (attribute.getName()) {
-            case TITEL_ATTRIBUTE:
-                titel = getValue(attribute);
-                break;
-            case TITEL_KOD_ATTRIBUTE:
-                titelKod = getValue(attribute);
-                break;
-            case FORSKRIVARKOD_ATTRIBUTE:
-                forskrivarkod = getValue(attribute);
-                break;
-            case HSA_ID_ATTRIBUTE:
-                hsaId = getValue(attribute);
-                break;
-            case FORNAMN_ATTRIBUTE:
-                fornamn = getValue(attribute);
-                break;
-            case MELLAN_OCH_EFTERNAMN_ATTRIBUTE:
-                mellanOchEfternamn = getValue(attribute);
-                break;
-            case ENHET_HSA_ID_ATTRIBUTE:
-                enhetHsaId = getValue(attribute);
-                break;
-            case ENHET_NAMN_ATTRIBUTE:
-                enhetNamn = getValue(attribute);
-                break;
-            case VARDGIVARE_HSA_ID_ATTRIBUTE:
-                vardgivareHsaId = getValue(attribute);
-                break;
-            case VARDGIVARE_NAMN_ATTRIBUTE:
-                vardgivareNamn = getValue(attribute);
-                break;
-            case MEDARBETARUPPDRAG_TYPE:
-                medarbetaruppdragType = getValue(attribute);
-                break;
-            case MEDARBETARUPPDRAG_ID:
-                medarbetaruppdragHsaId = getValue(attribute);
-                break;
-            default:
-                // Ignore.
+                case TITEL_ATTRIBUTE:
+                    titel = getValue(attribute);
+                    break;
+                case TITEL_KOD_ATTRIBUTE:
+                    titelKod = getValue(attribute);
+                    break;
+                case FORSKRIVARKOD_ATTRIBUTE:
+                    forskrivarkod = getValue(attribute);
+                    break;
+                case HSA_ID_ATTRIBUTE:
+                    hsaId = getValue(attribute);
+                    break;
+                case FORNAMN_ATTRIBUTE:
+                    fornamn = getValue(attribute);
+                    break;
+                case MELLAN_OCH_EFTERNAMN_ATTRIBUTE:
+                    mellanOchEfternamn = getValue(attribute);
+                    break;
+                case ENHET_HSA_ID_ATTRIBUTE:
+                    enhetHsaId = getValue(attribute);
+                    break;
+                case ENHET_NAMN_ATTRIBUTE:
+                    enhetNamn = getValue(attribute);
+                    break;
+                case VARDGIVARE_HSA_ID_ATTRIBUTE:
+                    vardgivareHsaId = getValue(attribute);
+                    break;
+                case VARDGIVARE_NAMN_ATTRIBUTE:
+                    vardgivareNamn = getValue(attribute);
+                    break;
+                case MEDARBETARUPPDRAG_TYPE:
+                    medarbetaruppdragType = getValue(attribute);
+                    break;
+                case MEDARBETARUPPDRAG_ID:
+                    medarbetaruppdragHsaId = getValue(attribute);
+                    break;
+                default:
+                    // Ignore.
             }
         }
     }

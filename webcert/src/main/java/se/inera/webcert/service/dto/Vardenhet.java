@@ -3,23 +3,23 @@ package se.inera.webcert.service.dto;
 public class Vardenhet {
 
     private String hsaId;
-    
+
     private String namn;
-    
+
     private String postadress;
-    
+
     private String postnummer;
-        
+
     private String postort;
-    
+
     private String telefonnummer;
-    
+
     private String epost;
-    
+
     private Vardgivare vardgivare;
-    
+
     public Vardenhet() {
-        
+
     }
 
     public String getHsaId() {

@@ -9,7 +9,7 @@ public class SaveDraftValidationMessage {
     public SaveDraftValidationMessage() {
 
     }
-    
+
     public SaveDraftValidationMessage(String field, String message) {
         super();
         this.field = field;

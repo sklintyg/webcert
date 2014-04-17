@@ -3,9 +3,9 @@ package se.inera.webcert.web.handlers;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 
 public class WebcertRestExceptionResponse {
-    
+
     private WebCertServiceErrorCodeEnum errorCode;
-    
+
     private String message;
 
     public WebcertRestExceptionResponse(WebCertServiceErrorCodeEnum errorCode, String message) {

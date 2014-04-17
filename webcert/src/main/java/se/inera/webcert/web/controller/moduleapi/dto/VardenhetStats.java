@@ -4,21 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"namn", "id", "fragaSvar", "intyg"})
+@JsonPropertyOrder({"namn", "id", "fragaSvar", "intyg" })
 public class VardenhetStats {
-    
+
     @JsonProperty("fragaSvar")
     private long ohanteradeFragaSvar;
-    
+
     @JsonProperty("intyg")
     private long osigneradeIntyg;
-    
+
     @JsonProperty("namn")
     private String namn;
-    
+
     @JsonProperty("id")
     private String hsaId;
-        
+
     public VardenhetStats(@JsonProperty("namn") String namn, @JsonProperty("id") String hsaId) {
         super();
         this.namn = namn;
@@ -63,5 +63,5 @@ public class VardenhetStats {
         return "VardenhetStats [ohanteradeFragaSvar=" + ohanteradeFragaSvar + ", osigneradeIntyg=" + osigneradeIntyg
                 + ", namn=" + namn + ", hsaId=" + hsaId + "]";
     }
-    
+
 }

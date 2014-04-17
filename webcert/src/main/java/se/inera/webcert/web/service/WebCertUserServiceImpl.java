@@ -37,10 +37,10 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         WebCertUser user = getWebCertUser();
         return user != null && user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
     }
-    
+
     public boolean isAuthorizedForUnits(List<String> enhetsHsaIds) {
         WebCertUser user = getWebCertUser();
-        return user != null && user.getIdsOfSelectedVardenhet().containsAll(enhetsHsaIds);   
+        return user != null && user.getIdsOfSelectedVardenhet().containsAll(enhetsHsaIds);
     }
-    
+
 }

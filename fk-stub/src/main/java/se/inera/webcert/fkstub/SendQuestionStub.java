@@ -32,7 +32,7 @@ public class SendQuestionStub implements SendMedicalCertificateQuestionResponder
             response.setResult(ResultOfCallUtil.okResult());
             questionAnswerStore.addQuestion(parameters.getQuestion());
         }
-        
+
         return response;
     }
 

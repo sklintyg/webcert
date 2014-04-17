@@ -6,26 +6,26 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({"fragaSvarValdEnhet", "fragaSvarAndraEnheter", "intygAndraEnheter", "intygValdEnhet", "vardgivare"})
+@JsonPropertyOrder({"fragaSvarValdEnhet", "fragaSvarAndraEnheter", "intygAndraEnheter", "intygValdEnhet", "vardgivare" })
 public class StatsResponse {
-    
+
     @JsonProperty("fragaSvarAndraEnheter")
     private long totalNbrOfUnhandledFragaSvarOnOtherThanSelected = 0;
-    
+
     @JsonProperty("fragaSvarValdEnhet")
     private long totalNbrOfUnhandledFragaSvarOnSelected = 0;
-    
+
     @JsonProperty("intygAndraEnheter")
     private long totalNbrOfUnsignedDraftsOnOtherThanSelected = 0;
-    
+
     @JsonProperty("intygValdEnhet")
     private long totalNbrOfUnsignedDraftsOnSelected = 0;
-    
+
     @JsonProperty("vardgivare")
     private List<VardgivareStats> vardgivare = new ArrayList<VardgivareStats>();
-    
+
     public StatsResponse() {
-    
+
     }
 
     public long getTotalNbrOfUnhandledFragaSvarOnOtherThanSelected() {
@@ -76,5 +76,5 @@ public class StatsResponse {
                 + totalNbrOfUnsignedDraftsOnOtherThanSelected + ", totalNbrOfUnsignedDraftsOnSelected="
                 + totalNbrOfUnsignedDraftsOnSelected + ", vardgivare=" + vardgivare + "]";
     }
-    
+
 }

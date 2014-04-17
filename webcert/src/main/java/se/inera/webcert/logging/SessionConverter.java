@@ -8,9 +8,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 
 /**
  * Logback converter that returns the id of the current user session.
- * 
- * @author nikpet
  *
+ * @author nikpet
  */
 public class SessionConverter extends ClassicConverter {
 

@@ -10,7 +10,7 @@ import org.joda.time.LocalDateTime;
  * @author andreaskaltenbach
  */
 public class Vardenhet extends AbstractVardenhet implements Serializable {
-    
+
     private String mail;
 
     private LocalDateTime start;
@@ -30,7 +30,7 @@ public class Vardenhet extends AbstractVardenhet implements Serializable {
         this.start = start;
         this.end = end;
     }
-    
+
     public List<Mottagning> getMottagningar() {
         if (mottagningar == null) {
             mottagningar = new ArrayList<>();
@@ -49,7 +49,7 @@ public class Vardenhet extends AbstractVardenhet implements Serializable {
     public void setMail(String mail) {
         this.mail = mail;
     }
-    
+
     public List<String> getHsaIds() {
         List<String> ids = new ArrayList<>();
         ids.add(getId());
@@ -58,22 +58,22 @@ public class Vardenhet extends AbstractVardenhet implements Serializable {
         }
         return ids;
     }
-    
+
     public SelectableVardenhet findSelectableVardenhet(String id) {
-        
+
         if (id.equals(getId())) {
             return this;
         }
-        
+
         for (Mottagning m : getMottagningar()) {
             if (id.equals(m.getId())) {
                 return m;
             }
         }
-        
+
         return null;
     }
-    
+
     public LocalDateTime getStart() {
         return start;
     }
