@@ -28,7 +28,7 @@
 	version="1.0">
 	
 	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:medcertqa:1" schemaLocation="../../core_components/MedicalCertificateQuestionsAnswers_1.0.xsd"/>
-	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:2" schemaLocation="../../core_components/Insuranceprocess_healthreporting_2.0.xsd"/>
+	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:2" schemaLocation="../../core_components/insuranceprocess_healthreporting_2.0.xsd"/>
 	
 	<xs:element name="ReceiveMedicalCertificateQuestion"           type="tns:ReceiveMedicalCertificateQuestionType"/>
 	<xs:element name="ReceiveMedicalCertificateQuestionResponse"   type="tns:ReceiveMedicalCertificateQuestionResponseType"/>
