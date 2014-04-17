@@ -7,40 +7,40 @@ import javax.persistence.Embeddable;
 public class Vardperson {
     @Column(name = "HSAID")
     private String hsaId;
-    
+
     @Column(name = "NAMN")
     private String namn;
-    
+
     @Column(name = "FORSKRIVAR_KOD")
     private String forskrivarKod;
-    
+
     @Column(name = "ENHETS_ID")
     private String enhetsId;
-    
+
     @Column(name = "ARBETSPLATS_KOD")
     private String arbetsplatsKod;
-    
+
     @Column(name = "ENHETSNAMN")
     private String enhetsnamn;
-    
+
     @Column(name = "POSTADRESS")
     private String postadress;
-    
+
     @Column(name = "POSTNUMMER")
     private String postnummer;
-    
+
     @Column(name = "POSTORT")
     private String postort;
-    
+
     @Column(name = "TELEFONNUMMER")
     private String telefonnummer;
-    
+
     @Column(name = "EPOST")
     private String epost;
-    
+
     @Column(name = "VARDGIVAR_ID")
     private String vardgivarId;
-    
+
     @Column(name = "VARDGIVARNAMN")
     private String vardgivarnamn;
 
@@ -147,6 +147,5 @@ public class Vardperson {
     public void setVardgivarnamn(String vardgivarnamn) {
         this.vardgivarnamn = vardgivarnamn;
     }
-
 
 }

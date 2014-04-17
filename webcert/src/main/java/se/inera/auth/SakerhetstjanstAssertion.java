@@ -11,7 +11,7 @@ import org.opensaml.xml.XMLObject;
 /**
  * This SAML-assertion is based on the one described in the document
  * sakerhetstjanster_sambi_saml_profil_1.03.pdf.
- * 
+ *
  * @author andreaskaltenbach, nikpet
  */
 public class SakerhetstjanstAssertion {
@@ -20,7 +20,7 @@ public class SakerhetstjanstAssertion {
     public static final String TITEL_ATTRIBUTE = "urn:sambi:names:attribute:title";
     // Personens befattningskod
     private static final String TITEL_KOD_ATTRIBUTE = "urn:sambi:names:attribute:titleCode";
-    
+
     // Förskrivarkod för specificerad person
     private static final String FORSKRIVARKOD_ATTRIBUTE = "urn:sambi:names:attribute:personalPrescriptionCode";
 
@@ -29,12 +29,12 @@ public class SakerhetstjanstAssertion {
 
     public static final String FORNAMN_ATTRIBUTE = "urn:sambi:names:attribute:givenName";
     public static final String MELLAN_OCH_EFTERNAMN_ATTRIBUTE = "urn:sambi:names:attribute:middleAndSurname";
-    
+
     // HSA-identitet på den vårdenhet aktuellt uppdrag tillhör
     public static final String ENHET_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careUnitHsaId";
     // Namn på den vårdenhet aktuellt uppdrag tillhör
     private static final String ENHET_NAMN_ATTRIBUTE = "urn:sambi:names:attribute:careUnitName";
-    
+
     // HSA-identitet på den vårdgivare aktuellt uppdrag tillhör
     private static final String VARDGIVARE_HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:careProviderHsaId";
     // Namn på den vårdgivare aktuellt uppdrag tillhör
@@ -74,8 +74,7 @@ public class SakerhetstjanstAssertion {
         }
 
         if (!assertion.getAuthnStatements().isEmpty()) {
-            authenticationScheme = assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef()
-                    .getAuthnContextClassRef();
+            authenticationScheme = assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
         }
     }
 

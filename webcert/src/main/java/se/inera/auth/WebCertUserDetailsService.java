@@ -31,12 +31,12 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
-    
+
     @Autowired
     private HsaPersonService hsaPersonService;
 
     @Override
-    public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
+    public Object loadUserBySAML(SAMLCredential credential) {
         LOG.info("User authentication was successful. SAML credential is " + credential);
 
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(credential.getAuthenticationAssertion());
@@ -56,9 +56,9 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         }
 
         webCertUser.setVardgivare(authorizedVardgivare);
-        
+
         setDefaultSelectedVardenhetOnUser(webCertUser, assertion);
-        
+
         return webCertUser;
     }
 
@@ -68,46 +68,46 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         webcertUser.setNamn(assertion.getFornamn() + " " + assertion.getMellanOchEfternamn());
         webcertUser.setForskrivarkod(assertion.getForskrivarkod());
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
-    
+
         // lakare flag is calculated by checking for lakare profession in title and title code
         webcertUser.setLakare(LAKARE.equals(assertion.getTitel()) || LAKARE_CODE.equals(assertion.getTitelKod()));
-        
+
         List<String> specialities = hsaPersonService.getSpecialitiesForHsaPerson(assertion.getHsaId());
         webcertUser.setSpecialiseringar(specialities);
-                
+
         return webcertUser;
     }
 
     private void setDefaultSelectedVardenhetOnUser(WebCertUser user, SakerhetstjanstAssertion assertion) {
-        
+
         // Get HSA id for the selected MIU
         String medarbetaruppdragHsaId = assertion.getEnhetHsaId();
-        
+
         boolean changeSuccess;
-        
+
         if (StringUtils.isNotBlank(medarbetaruppdragHsaId)) {
             changeSuccess = user.changeValdVardenhet(medarbetaruppdragHsaId);
         } else {
             LOG.error("Assertion did not contain a medarbetaruppdrag, defaulting to use one of the Vardenheter present in the user");
             changeSuccess = setFirstVardenhetOnFirstVardgivareAsDefault(user);
         }
-        
+
         if (!changeSuccess) {
             LOG.error("When logging in user '{}', unit with HSA-id {} could not be found in users MIUs", user.getHsaId(), medarbetaruppdragHsaId);
             throw new MissingMedarbetaruppdragException(user.getHsaId());
         }
-        
+
         LOG.debug("Setting care unit '{}' as default unit on user '{}'", user.getValdVardenhet().getId(), user.getHsaId());
     }
-    
+
     private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
-        
+
         Vardgivare firstVardgivare = user.getVardgivare().get(0);
         user.setValdVardgivare(firstVardgivare);
-        
+
         Vardenhet firstVardenhet = firstVardgivare.getVardenheter().get(0);
         user.setValdVardenhet(firstVardenhet);
-        
+
         return true;
     }
 }

@@ -22,11 +22,11 @@ public class WebCertUser implements Serializable {
     private String authenticationScheme;
 
     private List<Vardgivare> vardgivare;
-    
+
     private List<String> specialiseringar;
-    
+
     private SelectableVardenhet valdVardenhet;
-    
+
     private SelectableVardenhet valdVardgivare;
 
     public String getHsaId() {
@@ -54,11 +54,11 @@ public class WebCertUser implements Serializable {
     }
 
     public List<Vardgivare> getVardgivare() {
-        
+
         if (vardgivare == null) {
             vardgivare = Collections.emptyList();
         }
-        
+
         return vardgivare;
     }
 
@@ -80,7 +80,7 @@ public class WebCertUser implements Serializable {
 
     public void setValdVardenhet(SelectableVardenhet valdVardenhet) {
         this.valdVardenhet = valdVardenhet;
-    }   
+    }
 
     public String getAuthenticationScheme() {
         return authenticationScheme;
@@ -93,11 +93,11 @@ public class WebCertUser implements Serializable {
     public SelectableVardenhet getValdVardgivare() {
         return valdVardgivare;
     }
-    
+
     public void setValdVardgivare(SelectableVardenhet valdVardgivare) {
         this.valdVardgivare = valdVardgivare;
     }
-    
+
     public String getForskrivarkod() {
         return forskrivarkod;
     }
@@ -111,22 +111,22 @@ public class WebCertUser implements Serializable {
         try {
             return new CustomObjectMapper().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
-    
+
     @JsonIgnore
     public List<String> getIdsOfSelectedVardenhet() {
-        
+
         SelectableVardenhet selected = getValdVardenhet();
-        
+
         if (selected == null) {
             return Collections.emptyList();
         }
-        
+
         return selected.getHsaIds();
     }
-    
+
     @JsonIgnore
     public List<String> getIdsOfAllVardenheter() {
         List<String> allIds = new ArrayList<>();
@@ -135,28 +135,25 @@ public class WebCertUser implements Serializable {
         }
         return allIds;
     }
-    
+
     public int getTotaltAntalVardenheter() {
         return getIdsOfAllVardenheter().size();
     }
-    
+
     public boolean changeValdVardenhet(String vardenhetId) {
-    
         if (vardenhetId == null) {
             return false;
         }
-                
-        SelectableVardenhet ve = null;
-        
+
         for (Vardgivare vg : getVardgivare()) {
-            ve = vg.findVardenhet(vardenhetId);
+            SelectableVardenhet ve = vg.findVardenhet(vardenhetId);
             if (ve != null) {
                 setValdVardenhet(ve);
                 setValdVardgivare(vg);
                 return true;
             }
         }
-                
+
         return false;
     }
 }
