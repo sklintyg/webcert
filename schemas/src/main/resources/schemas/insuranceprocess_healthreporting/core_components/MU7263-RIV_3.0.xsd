@@ -9,7 +9,7 @@
 	attributeFormDefault="unqualified"
 	version="3.0">
 
-	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:2" schemaLocation="Insuranceprocess_healthreporting_2.0.xsd"/>
+	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:2" schemaLocation="insuranceprocess_healthreporting_2.0.xsd"/>
 	<xs:import namespace="urn:iso:21090:dt:1" schemaLocation="ISO_dt_subset_1.0.xsd"/>
 	
 	<xs:element name="lakarutlatande" type="lakarutlatandeType">

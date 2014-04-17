@@ -7,7 +7,7 @@
 	attributeFormDefault="unqualified"
 	version="1.0">
 	
-	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:2" schemaLocation="Insuranceprocess_healthreporting_2.0.xsd"/>
+	<xs:import namespace="urn:riv:insuranceprocess:healthreporting:2" schemaLocation="insuranceprocess_healthreporting_2.0.xsd"/>
 	
 	<xs:simpleType name="Amnetyp">
 		<xs:restriction base="xs:string">
