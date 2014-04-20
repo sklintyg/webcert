@@ -27,7 +27,7 @@ public class SendAnswerStub implements SendMedicalCertificateAnswerResponderInte
     public SendMedicalCertificateAnswerResponseType sendMedicalCertificateAnswer(AttributedURIType logicalAddress,
             SendMedicalCertificateAnswerType parameters) {
         SendMedicalCertificateAnswerResponseType response = new SendMedicalCertificateAnswerResponseType();
-        
+
         if (logicalAddress == null) {
             response.setResult(ResultOfCallUtil.failResult("Ingen LogicalAddress är satt"));
         } else if (!LOGICAL_ADDRESS.equals(logicalAddress.getValue())) {
@@ -48,6 +48,4 @@ public class SendAnswerStub implements SendMedicalCertificateAnswerResponderInte
 
         return response;
     }
-    
-    
 }

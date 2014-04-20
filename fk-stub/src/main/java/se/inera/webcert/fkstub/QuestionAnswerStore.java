@@ -12,7 +12,7 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkTyp
 @Component
 public class QuestionAnswerStore {
 
-        private ConcurrentHashMap<String, QuestionToFkType> questions = new ConcurrentHashMap<String, QuestionToFkType>();
+    private ConcurrentHashMap<String, QuestionToFkType> questions = new ConcurrentHashMap<String, QuestionToFkType>();
     private ConcurrentHashMap<String, AnswerToFkType> answers = new ConcurrentHashMap<String, AnswerToFkType>();
 
     public ConcurrentHashMap<String, QuestionToFkType> getQuestions() {
@@ -30,6 +30,4 @@ public class QuestionAnswerStore {
     public void addAnswer(AnswerToFkType answer) {
         answers.put(answer.getVardReferensId(), answer);
     }
-
-
 }

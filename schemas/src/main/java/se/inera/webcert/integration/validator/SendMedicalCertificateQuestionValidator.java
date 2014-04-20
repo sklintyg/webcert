@@ -8,8 +8,8 @@ import org.springframework.util.StringUtils;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
 
 public class SendMedicalCertificateQuestionValidator {
-    QuestionToFkType questionType = null;
-    private List<String> validationErrors = new ArrayList<>();
+    private final QuestionToFkType questionType;
+    private final List<String> validationErrors = new ArrayList<>();
 
     public SendMedicalCertificateQuestionValidator(QuestionToFkType questionType) {
         this.questionType = questionType;
@@ -27,7 +27,7 @@ public class SendMedicalCertificateQuestionValidator {
         // use commmon validators for common elements
         new LakarutlatandeEnkelTypeValidator(questionType.getLakarutlatande(), validationErrors).validateAndCorrect();
         new VardAdresseringsTypeValidator(questionType.getAdressVard(), validationErrors).validateAndCorrect();
- 
+
         if (!validationErrors.isEmpty()) {
             throw new ValidationException(validationErrors);
         }

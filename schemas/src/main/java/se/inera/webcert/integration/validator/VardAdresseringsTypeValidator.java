@@ -13,8 +13,8 @@ import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
  */
 public class VardAdresseringsTypeValidator {
 
-    private VardAdresseringsType vardAdress;
-    private List<String> validationErrors = null;
+    private final VardAdresseringsType vardAdress;
+    private final List<String> validationErrors;
 
     private static final String HOS_PERSONAL_OID = "1.2.752.129.2.1.4.1";
     private static final String ENHET_OID = "1.2.752.129.2.1.4.1";
@@ -53,11 +53,9 @@ public class VardAdresseringsTypeValidator {
         }
 
         validateHosPersonalEnhet(hosPersonal.getEnhet());
-      
     }
 
     private void validateHosPersonalEnhet(EnhetType enhet) {
-
         if (enhet == null) {
             validationErrors.add("No enhet element found!");
             return;
@@ -104,7 +102,5 @@ public class VardAdresseringsTypeValidator {
         if (vardgivare.getVardgivarnamn() == null || vardgivare.getVardgivarnamn().isEmpty()) {
             validationErrors.add("No vardgivarenamn found!");
         }
-
     }
-
 }

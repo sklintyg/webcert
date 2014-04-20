@@ -7,7 +7,7 @@ import javax.persistence.Embeddable;
 public class VardpersonReferens {
     @Column(name = "HSAID")
     private String hsaId;
-    
+
     @Column(name = "NAMN")
     private String namn;
 
@@ -26,5 +26,4 @@ public class VardpersonReferens {
     public void setNamn(String namn) {
         this.namn = namn;
     }
-   
 }

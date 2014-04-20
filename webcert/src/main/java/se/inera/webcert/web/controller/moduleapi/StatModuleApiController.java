@@ -133,7 +133,7 @@ public class StatModuleApiController extends AbstractApiController {
         VardenhetStats moStats;
 
         for (Mottagning mo : mottagningar) {
-            String moNamn = StringUtils.join(new Object[] { vardenhet.getNamn(), mo.getNamn() }, SEPARATOR);
+            String moNamn = StringUtils.join(new Object[] {vardenhet.getNamn(), mo.getNamn()}, SEPARATOR);
             moStats = new VardenhetStats(moNamn, mo.getId());
             moStats.setOhanteradeFragaSvar(getSafeStatValueFromMap(mo.getId(), fragaSvarStats));
             moStats.setOsigneradeIntyg(getSafeStatValueFromMap(mo.getId(), intygStats));

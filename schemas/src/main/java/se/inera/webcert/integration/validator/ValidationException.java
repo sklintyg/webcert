@@ -9,7 +9,7 @@ import com.google.common.base.Joiner;
  */
 public class ValidationException extends RuntimeException {
     private static final String VALIDATION_ERROR_PREFIX = "Validation Error(s) found: ";
-    
+
     public ValidationException(String message) {
         super(VALIDATION_ERROR_PREFIX + message);
     }

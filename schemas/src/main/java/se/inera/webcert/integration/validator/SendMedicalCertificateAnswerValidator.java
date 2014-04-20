@@ -8,8 +8,8 @@ import org.springframework.util.StringUtils;
 import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 
 public class SendMedicalCertificateAnswerValidator {
-    AnswerToFkType answerType = null;
-    private List<String> validationErrors = new ArrayList<>();
+    private final AnswerToFkType answerType;
+    private final List<String> validationErrors = new ArrayList<>();
 
     public SendMedicalCertificateAnswerValidator(AnswerToFkType answerType) {
         this.answerType = answerType;
