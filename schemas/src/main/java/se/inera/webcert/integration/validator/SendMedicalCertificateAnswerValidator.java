@@ -27,7 +27,7 @@ public class SendMedicalCertificateAnswerValidator {
         // use commmon validators for common elements
         new LakarutlatandeEnkelTypeValidator(answerType.getLakarutlatande(), validationErrors).validateAndCorrect();
         new VardAdresseringsTypeValidator(answerType.getAdressVard(), validationErrors).validateAndCorrect();
- 
+
         if (!validationErrors.isEmpty()) {
             throw new ValidationException(validationErrors);
         }
