@@ -16,6 +16,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
+import se.inera.webcert.medcertqa.v1.Amnetyp;
 import se.inera.webcert.medcertqa.v1.InnehallType;
 import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
@@ -69,8 +70,15 @@ public class SendAnswerStubTest {
     private SendMedicalCertificateAnswerType createAnswer(String message) {
         SendMedicalCertificateAnswerType parameters = new SendMedicalCertificateAnswerType();
         AnswerToFkType answerType = new AnswerToFkType();
+        answerType.setFkReferensId("fkReferensId");
+        answerType.setAmne(Amnetyp.OVRIGT);
+        InnehallType fraga = new InnehallType();
+        fraga.setMeddelandeText("fraga");
+        fraga.setSigneringsTidpunkt(LocalDateTime.now());
+        answerType.setFraga(fraga);
         InnehallType svar = new InnehallType();
         svar.setMeddelandeText(message);
+        svar.setSigneringsTidpunkt(LocalDateTime.now());
         answerType.setSvar(svar);
         answerType.setVardReferensId("vardRef");
         answerType.setAvsantTidpunkt(LocalDateTime.now());
