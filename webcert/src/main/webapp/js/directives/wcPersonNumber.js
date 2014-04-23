@@ -66,20 +66,25 @@ define([
                 ctrl.$parsers.unshift(function (viewValue) {
 
                     var date;
+                    var dateStr;
+                    var dateSplit;
 
                     // Try to match personnummer since that case is most common.
                     var parts = PERSONNUMMER_REGEXP.exec(viewValue);
+                    PERSONNUMMER_REGEXP.lastIndex = 0; // Reset regexp. Apparently exec continues from last match rather than starting over in IE8
                     if (parts) {
 
                         // Parse with yyyy-MM-dd to make sure we get parse errors.
                         // new Date('2010-02-41') is invalid but new Date(2010, 1, 41) is valid.
 
                         if (parts[1]) {
-                            date = new Date(parts[1] + parts[2] + '-' + parts[3] + '-' + parts[4]);
+                            date = new Date(parts[1] + parts[2] + '/' + parts[3] + '/' + parts[4]);
                         } else {
 
                             // Assume that the date is in 20xx and fix later.
-                            date = new Date((parseInt(parts[2], 10) + 2000) + '-' + parts[3] + '-' + parts[4]);
+                            dateStr = (parseInt(parts[2], 10) + 2000) + '/' + parts[3] + '/' + parts[4];
+
+                            date = new Date(dateStr); //<-- IE8 can't parse 2000-01-01 dates this way. Using '/' instead
 
                             // Make sure the date is not in the future.
                             if (date > new Date()) {
@@ -108,6 +113,7 @@ define([
                     }
 
                     parts = SAMORDNINGSNUMMER_REGEXP.exec(viewValue);
+                    SAMORDNINGSNUMMER_REGEXP.lastIndex = 0; // Reset regexp. Apparently exec continues from last match rather than starting over in IE8
                     if (parts) {
 
                         // Parse with yyyy-MM-dd to make sure we get parse errors.
@@ -116,11 +122,13 @@ define([
                         var day = parseInt(parts[4], 10) - 60; // 60 is the special number for samordningsnummer.
 
                         if (parts[1]) {
-                            date = new Date(parts[1] + parts[2] + '-' + parts[3] + '-' + pad(day));
+                            date = new Date(parts[1] + parts[2] + '/' + parts[3] + '/' + pad(day));
                         } else {
 
                             // Assume that the date is in 20xx and fix later.
-                            date = new Date((parseInt(parts[2], 10) + 2000) + '-' + parts[3] + '-' + pad(day));
+                            dateStr = (parseInt(parts[2], 10) + 2000) + '/' + parts[3] + '/' + pad(day);
+
+                            date = new Date(dateStr); //<-- IE8 can't parse Y-m-d these dates this way. Using '/' instead
 
                             // Make sure the date is not in the future.
                             if (date > new Date()) {

@@ -29,13 +29,13 @@ require.config({
 window.name = 'NG_DEFER_BOOTSTRAP!';
 
 require([
+    'angularSwedish',
     'app',
     'angularRoute',
     'angularSanitize',
     'angular',
     'routes',
     'angularCookies',
-    'angularSwedish',
     'angularUiBootstrap'
 ], function (app, angular) {
     'use strict';

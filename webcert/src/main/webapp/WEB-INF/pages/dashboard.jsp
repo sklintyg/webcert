@@ -74,7 +74,7 @@
         </div>
     </noscript>
 
-    <script type="text/javascript" data-main="/js/main" src="<c:url value="/web/webjars/requirejs/2.1.10/require.min.js"/>"></script>
+    <script type="text/javascript" data-main="/js/main" src="<c:url value="/web/webjars/requirejs/2.1.10/require.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/siths.jsp"/>"></script>
 </body>
 </html>
