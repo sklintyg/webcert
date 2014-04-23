@@ -2,8 +2,8 @@ define([
 ], function () {
     'use strict';
 
-    return ['$rootScope', '$scope', '$window', '$location', '$filter', '$log', '$timeout', 'wcDialogService', 'ManageCertificate', 'CreateCertificateDraft', 'User',
-        function ($rootScope, $scope, $window, $location, $filter, $log, $timeout, wcDialogService, ManageCertificate, CreateCertificateDraft, User) {
+    return ['$scope', '$location', '$filter', '$log', '$timeout', 'wcDialogService', 'ManageCertificate', 'CreateCertificateDraft', 'User',
+        function ($scope, $location, $filter, $log, $timeout, wcDialogService, ManageCertificate, CreateCertificateDraft, User) {
             if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.firstname || !CreateCertificateDraft.lastname) {
                 $location.url('/create/index', true);
             }
@@ -11,6 +11,16 @@ define([
             $scope.personnummer = CreateCertificateDraft.personnummer;
             $scope.firstname = CreateCertificateDraft.firstname;
             $scope.lastname = CreateCertificateDraft.lastname;
+
+            $scope.intygType = "default";
+            $scope.certificateTypeText = "";
+
+            $scope.certTypes = [
+                {
+                    id : "default",
+                    label : ""
+                }
+            ];
 
             ManageCertificate.getCertTypes(function (types) {
                 $scope.certTypes = types;
