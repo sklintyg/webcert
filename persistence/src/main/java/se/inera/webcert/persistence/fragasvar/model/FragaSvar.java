@@ -2,6 +2,10 @@ package se.inera.webcert.persistence.fragasvar.model;
 
 import java.util.Set;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -14,13 +18,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 
 @Entity
 @Table(name = "FRAGASVAR")
@@ -70,7 +71,7 @@ public class FragaSvar {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime senasteHandelse;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "EXTERNA_KONTAKTER", joinColumns = @JoinColumn(name = "FRAGASVAR_ID"))
     @Column(name = "KONTAKT")
     private Set<String> externaKontakter;
@@ -92,7 +93,7 @@ public class FragaSvar {
     @Embedded
     private IntygsReferens intygsReferens;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "KOMPLETTERING", joinColumns = @JoinColumn(name = "FRAGASVAR_ID"))
     private Set<Komplettering> kompletteringar;
 
@@ -120,6 +121,16 @@ public class FragaSvar {
         if (getSvarSkickadDatum() != null) {
             senasteHandelse = getSvarSkickadDatum();
         }
+    }
+
+    /**
+     * Tvinga laddning av refererade objeckt utan att använda FetchType.EAGER. Fixar bug WEBCERT-464 vilken duplicerade
+     * Komplettering för varje externaKontakter då vi fick multipla left outer joins.
+     */
+    @PostLoad
+    private void simulateEagerLoading() {
+        getKompletteringar().size();
+        getExternaKontakter().size();
     }
 
     public Status getStatus() {
