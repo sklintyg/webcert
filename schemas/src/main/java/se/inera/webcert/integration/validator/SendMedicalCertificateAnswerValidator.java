@@ -16,9 +16,35 @@ public class SendMedicalCertificateAnswerValidator {
     }
 
     public void validateAndCorrect() {
-        // First, validate properties at Revoke request level
+        // First, validate properties at SendMedicalCertificateAnswer request level
         if (StringUtils.isEmpty(answerType.getVardReferensId())) {
-            validationErrors.add("No vardReferens found!");
+            validationErrors.add("No vardReferens-id found!");
+        }
+        if (StringUtils.isEmpty(answerType.getFkReferensId())) {
+            validationErrors.add("No fkReferens-id found!");
+        }
+        if (answerType.getAmne() == null) {
+            validationErrors.add("No Amne element found!");
+        }
+        if (answerType.getFraga() == null) {
+            validationErrors.add("No Answer fraga element found!");
+        } else {
+            if (StringUtils.isEmpty(answerType.getFraga().getMeddelandeText())) {
+                validationErrors.add("No Answer fraga meddelandeText elements found or set!");
+            }
+            if (answerType.getFraga().getSigneringsTidpunkt() == null) {
+                validationErrors.add("No Answer fraga signeringsTidpunkt elements found or set!");
+            }
+        }
+        if (answerType.getSvar() == null) {
+            validationErrors.add("No Answer svar element found!");
+        } else {
+            if (StringUtils.isEmpty(answerType.getSvar().getMeddelandeText())) {
+                validationErrors.add("No Answer svar meddelandeText elements found or set!");
+            }
+            if (answerType.getSvar().getSigneringsTidpunkt() == null) {
+                validationErrors.add("No Answer svar signeringsTidpunkt elements found or set!");
+            }
         }
         if (answerType.getAvsantTidpunkt() == null) {
             validationErrors.add("No avsantTidpunkt found!");
