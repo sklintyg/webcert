@@ -80,6 +80,7 @@ public class ConvertToFKTypes {
 
         lu.setPatient(pt);
         lu.setSigneringsTidpunkt(ir.getSigneringsDatum());
+
         return lu;
     }
 
