@@ -240,18 +240,21 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + ") can only be answered by user that is Lakare");
         }
 
+        LocalDateTime now = new LocalDateTime();
         // Ok, lets save the answer
         fragaSvar.setVardAktorHsaId(user.getHsaId());
         fragaSvar.setVardAktorNamn(user.getNamn());
         fragaSvar.setSvarsText(svarsText);
-        fragaSvar.setSvarSkickadDatum(new LocalDateTime());
+        fragaSvar.setSvarSkickadDatum(now);
         fragaSvar.setStatus(Status.CLOSED);
-        // TODO: SvarSigneringsDatum??
+        fragaSvar.setSvarSigneringsDatum(now);
+
         FragaSvar saved = fragaSvarRepository.save(fragaSvar);
 
         // Send to external party (FK)
         SendMedicalCertificateAnswerType sendType = new SendMedicalCertificateAnswerType();
         AnswerToFkType answer = FKAnswerConverter.convert(saved);
+
         sendType.setAnswer(answer);
         AttributedURIType logicalAddress = new AttributedURIType();
         logicalAddress.setValue(sendAnswerToFkLogicalAddress);
@@ -310,7 +313,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fraga.setFrageStallare(WEBCERT);
         fraga.setAmne(amne);
         fraga.setFrageText(frageText);
-        fraga.setFrageSkickadDatum(new LocalDateTime());
+        LocalDateTime now = new LocalDateTime();
+        fraga.setFrageSkickadDatum(now);
+        fraga.setFrageSigneringsDatum(now);
 
         fraga.setIntygsReferens(intygsReferens);
         fraga.setVardperson(vardPerson);
