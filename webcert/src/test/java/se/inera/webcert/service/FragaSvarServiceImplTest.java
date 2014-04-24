@@ -312,23 +312,7 @@ public class FragaSvarServiceImplTest {
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getAmne(), fraga.getFrageText());
 
     }
-    @Test(expected = WebCertServiceException.class)
-    public void testSaveSvarOnRevokedCertificate() throws IOException {
-        FragaSvar svar = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
-        svar.setSvarsText("Svar på ogiltigt intyg");
-        when(fragasvarRepository.findOne(1L)).thenReturn(svar);
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
-        List<CertificateStatus> list = Arrays.asList(new CertificateStatus("SENT", "FK", null), new CertificateStatus("CANCELLED", "FK", null));
-        when(certificateContentMetaMock.getStatuses()).thenReturn(list);
 
-        when(intygService.fetchIntygCommonModel(svar.getIntygsReferens().getIntygsId())).thenReturn(
-                getUtlatandeCommonModelHolder());
-        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
-    
-        // test call
-        service.saveSvar(svar.getInternReferens(), svar.getSvarsText());
-
-    }
     @Test
     public void testSetVidareBefordradOK() {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
