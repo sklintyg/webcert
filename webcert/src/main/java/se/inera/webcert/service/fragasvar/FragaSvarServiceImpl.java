@@ -204,20 +204,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     "Could not find FragaSvar with id:" + fragaSvarsId);
         }
 
-        // Fetch certificate from Intygstjansten
-        IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(fragaSvar.getIntygsReferens()
-                .getIntygsId());
-        // Get utfardande vardperson
-        Vardperson vardPerson = FragaSvarConverter.convert(externalIntygData.getExternalModel().getSkapadAv());
-
         // Is user authorized to save an answer to this question?
-        verifyEnhetsAuth(vardPerson.getEnhetsId());
-
-        // Verify that certificate is not revoked
-        if (isRevoked(externalIntygData.getMetaData().getStatuses())) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "FS-XXX: Cannot save Svar when certificate is revoked!");
-        }
+        verifyEnhetsAuth(fragaSvar.getVardperson().getEnhetsId());
 
         if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "FragaSvar with id "
