@@ -4,7 +4,7 @@ import geb.Page
 
 class OmWebcertCookiesPage extends Page {
 
-    static at = { $("#aboutWebcertSupport").isDisplayed() }
+    static at = { $("#about-webcert-cookies").isDisplayed() }
 
     static content = {
         supportLink { $("#about-support") }

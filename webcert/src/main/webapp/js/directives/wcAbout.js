@@ -14,15 +14,19 @@ define([ 'text!directives/wcAbout.html' ], function(template) {
 				// Expose "now" as a model property for the template to render as todays date
 				$scope.today = new Date();
 				$scope.menuItems = [ {
+                    id : 'about-support',
 					link : '/web/dashboard#/support/about',
 					label : 'Support / kontaktinformation'
 				}, {
+                    id : 'about-intyg',
 					link : '/web/dashboard#/certificates/about',
 					label : 'Intyg som stöds i Webcert'
 				}, {
+                    id : 'about-faq',
 					link : '/web/dashboard#/faq/about',
 					label : 'Vanliga frågor'
 				}, {
+                    id : 'about-cookies',
 					link : '/web/dashboard#/cookies/about',
 					label : 'Om kakor (cookies)'
 				} ];

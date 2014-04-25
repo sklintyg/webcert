@@ -4,15 +4,12 @@ import geb.Page
 
 class OmWebcertSupportPage extends Page {
 
-    static at = { $("#loginForm").isDisplayed() }
+    static at = { $("#about-webcert-support").isDisplayed() }
 
     static content = {
-        userSelect { $("#jsonSelect") }
-        loginBtn { $("#loginBtn") }
-    }
-
-    def loginAs(String id) {
-        userSelect = $("#${id}").value();
-        loginBtn.click()
+        supportLink { $("#about-support") }
+        intygLink { $("#about-intyg") }
+        faqLink { $("#about-faq") }
+        cookiesLink { $("#about-cookies") }
     }
 }

@@ -1,12 +1,9 @@
 package se.inera.webcert.spec
 
-import se.inera.webcert.pages.IndexPage
-import se.inera.webcert.pages.SokSkrivaIntygPage
-import se.inera.webcert.pages.UnhandledQAPage
+import se.inera.webcert.pages.UnsignedIntygPage
 import se.inera.webcert.pages.WelcomePage
-import se.inera.webcert.pages.fk7263.ViewCertQAPage
 
-class SokSkrivIntyg {
+class HanteraUtkast {
 
     def loggaInSom(String id) {
         Browser.drive {
@@ -19,45 +16,21 @@ class SokSkrivIntyg {
         }
     }
 
-    boolean enhetsvaljareVisas(boolean expected = true) {
-        def result = false
+    def gaTillEjSigneradeIntyg() {
         Browser.drive {
+            go "/web/dashboard#/unsigned"
             waitFor {
-                at SokSkrivaIntygPage
-            }
-            result = page.careUnitSelector.isDisplayed()
-        }
-        result == expected
-    }
-
-    def valjVardenhet(String careUnit) {
-        Browser.drive {
-            waitFor {
-                at SokSkrivaIntygPage
-            }
-            waitFor {
-                page.careUnitSelector.click()
-            }
-            waitFor {
-                page.selectCareUnit(careUnit);
+                at UnsignedIntygPage
             }
         }
     }
 
+    boolean ejSigneradeIntygSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+        }
+    }
 
-    boolean sokSkrivIntygSidanVisas() {
-        Browser.drive {
-            waitFor {
-                at SokSkrivaIntygPage
-            }
-        }
-    }
-    public void loggaInIndex() {
-        Browser.drive {
-            waitFor {
-                at IndexPage
-            }
-            page.startLogin()
-        }
-    }
 }

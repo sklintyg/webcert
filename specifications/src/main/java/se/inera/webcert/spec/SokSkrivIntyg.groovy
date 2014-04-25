@@ -2,9 +2,7 @@ package se.inera.webcert.spec
 
 import se.inera.webcert.pages.IndexPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
-import se.inera.webcert.pages.UnhandledQAPage
 import se.inera.webcert.pages.WelcomePage
-import se.inera.webcert.pages.fk7263.ViewCertQAPage
 
 class SokSkrivIntyg {
 

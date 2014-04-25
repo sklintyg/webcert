@@ -4,7 +4,7 @@ import geb.Page
 
 class OmWebcertIntygPage extends Page {
 
-    static at = { $("#aboutWebcertSupport").isDisplayed() }
+    static at = { $("#about-webcert-intyg").isDisplayed() }
 
     static content = {
         supportLink { $("#about-support") }

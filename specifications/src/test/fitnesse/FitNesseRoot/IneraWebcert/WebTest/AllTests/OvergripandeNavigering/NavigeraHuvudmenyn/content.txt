@@ -1,0 +1,27 @@
+Testar möjligheten att nå alla delar av applikationen.
+
+!3 Verifiera att man kan logga in och nå Sök/Skriv intyg
+
+| script | !-SokSkrivIntyg-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+| sok skriv intyg sidan visas |
+
+!3 Verifiera att man kan nå fliken Frågor och svar
+
+| script | !-SvaraOchFraga-! |
+| ga till svara och fraga |
+| ohanterade fragor sidan visas |
+
+!3 Verifiera att man kan nå fliken Ej signerade intyg
+
+| script | !-HanteraUtkast-! |
+| ga till ej signerade intyg |
+| ej signerade intyg sidan visas |
+
+!3 Verifiera att man kan nå fliken Om Webcert och navigera till dess undermenyer
+
+| script | !-OmWebcert-! |
+| ga till om webcert support |
+| valj intyg som stods |
+| valj vanliga fragor |
+| valj om kakor |

@@ -2,16 +2,15 @@ package se.inera.webcert.pages
 
 import geb.Page
 
-class UnhandledQAPage extends Page {
+class UnsignedIntygPage extends Page {
 
-    static at = { $("#unhandled-qa").isDisplayed() }
+    static at = { $("#unsigned").isDisplayed() }
 
     static content = {
-        unitstatUnhandledQuestionsBadgde(required: false) { $("#stat-unitstat-unhandled-question-count") }
-        careUnitSelector(required: false) { $("#wc-care-unit-clinic-selector") }
-        unhandledQATable(required: false) { $("#qaTable") }
+        unitstatUnsignedIntygsBadge(required: false) { $("#stat-unitstat-unsigned-certs-count") }
+        unsignedIntygTable(required: false) { $("#unsignedCertTable") }
 
-        advancedFilterBtn { $("#show-advanced-filter-btn") }
+ /*       advancedFilterBtn { $("#show-advanced-filter-btn") }
         advancedFilterForm { $("#advanced-filter-form") }
         advandecFilterFormFragestallare { $("input", name: "frageStallare") }
         advancedFilterSelectDoctor { $("#qp-lakareSelector") }
@@ -21,19 +20,11 @@ class UnhandledQAPage extends Page {
         advancedFilterStatus { $("#qp-showStatus") }
         advancedFilterSearchBtn { $("#filter-qa-btn") }
         advancedFilterResetBtn { $("#reset-search-form") }
-
+*/
         logoutLink { $("#logoutLink") }
     }
-
-    def visaAllaFragor() {
-        $("#select-active-unit-wc-all").click();
-    }
-
-    def selectCareUnit(String careUnit) {
-        $("#select-active-unit-${careUnit}").click()
-    }
-
-    def showQA(String internReferens) {
+/*
+    def showIntyg(String internReferens) {
         $("#showqaBtn-${internReferens}").click()
     }
 
@@ -52,4 +43,5 @@ class UnhandledQAPage extends Page {
     def logout() {
         logoutLink.click()
     }
+    */
 }

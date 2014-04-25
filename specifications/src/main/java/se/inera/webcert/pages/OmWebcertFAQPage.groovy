@@ -4,7 +4,7 @@ import geb.Page
 
 class OmWebcertFAQPage extends Page {
 
-    static at = { $("#aboutWebcertSupport").isDisplayed() }
+    static at = { $("#about-webcert-faq").isDisplayed() }
 
     static content = {
         supportLink { $("#about-support") }
