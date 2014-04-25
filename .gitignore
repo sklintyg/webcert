@@ -12,6 +12,8 @@ rebel.xml
 .DS_Store
 
 bin
+node
+node_modules
 target
 activemq-data
 webcert/node_modules/
