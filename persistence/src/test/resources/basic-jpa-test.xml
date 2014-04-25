@@ -39,7 +39,7 @@
     </bean>
 
     <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
-        <property name="dataSource" ref="dataSWEBCEource"/>
+        <property name="dataSource" ref="dataSource"/>
         <property name="changeLog" value="classpath:changelog/changelog.xml"/>
     </bean>
 
