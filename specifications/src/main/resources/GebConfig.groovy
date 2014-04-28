@@ -39,7 +39,7 @@ environments {
 	saucelabsie {
 		// Login to saucelabs.com. Name: olofklason  Pwd: MittSauceLabs1
 		driver = {
-			DesiredCapabilities capabilities = DesiredCapabilities.internetExplore();
+			DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
 			capabilities.setCapability("version", "10");
 			capabilities.setCapability("platform", Platform.WIN8);
 			new RemoteWebDriver(
