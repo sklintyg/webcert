@@ -2,8 +2,8 @@ package se.inera.webcert.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,7 +15,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+
 import org.joda.time.LocalDateTime;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +27,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
 
@@ -57,6 +61,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarServiceImpl;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -85,6 +90,12 @@ public class FragaSvarServiceImplTest {
     @Mock
     IntygMetadata intygMetadataMock;
 
+    @Mock
+    MailNotificationService mailNotificationService;
+
+    @Mock
+    Logger logger;
+
     @InjectMocks
     private FragaSvarServiceImpl service;
 
@@ -93,6 +104,11 @@ public class FragaSvarServiceImplTest {
     private LocalDateTime AUGUST = new LocalDateTime("2013-08-02T11:11:11");
     private LocalDateTime DECEMBER_YEAR_9999 = new LocalDateTime("9999-12-11T10:22:00");
 
+    @Before
+    public void setUpLoggerFactory() throws Exception {
+        ReflectionUtils.setStaticFinalAttribute(FragaSvarServiceImpl.class, "LOG", logger);
+    }
+    
     @SuppressWarnings("unchecked")
     @Test
     public void testFindByEnhetsIdSorting() {
@@ -685,4 +701,39 @@ public class FragaSvarServiceImplTest {
         return user;
     }
 
+    @Test
+    public void testMailNotificationForQuestion() throws MessagingException {
+        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
+        service.processIncomingQuestion(fraga);
+        verify(mailNotificationService).sendMailForIncomingQuestion(fraga);
+    }
+
+    @Test
+    public void testMailNotificationFailsForQuestion() throws MessagingException {
+        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
+        Mockito.doThrow(new MessagingException("MessagingExceptionCause")).when(mailNotificationService).sendMailForIncomingQuestion(fraga);
+        service.processIncomingQuestion(fraga);
+        ArgumentCaptor<String> capture = ArgumentCaptor.forClass(String.class);
+        verify(logger).error(capture.capture());
+        assertTrue("An error should have been logged", capture.getValue().matches(".*Notification mail.*couldn't be sent.*MessagingExceptionCause"));
+    }
+
+    @Test
+    public void testMailNotificationForAnswer() throws MessagingException {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        service.processIncomingAnswer(1L, "svarsText", new LocalDateTime());
+        verify(mailNotificationService).sendMailForIncomingAnswer(fragaSvar);
+    }
+
+    @Test
+    public void testMailNotificationFailsForAnswer() throws MessagingException {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
+        Mockito.doThrow(new MessagingException("MessagingExceptionCause")).when(mailNotificationService).sendMailForIncomingAnswer(fragaSvar);
+        service.processIncomingAnswer(1L, "svarsText", new LocalDateTime());
+        ArgumentCaptor<String> capture = ArgumentCaptor.forClass(String.class);
+        verify(logger).error(capture.capture());
+        assertTrue("An error should have been logged", capture.getValue().matches(".*Notification mail.*couldn't be sent.*MessagingExceptionCause"));
+    }
 }
