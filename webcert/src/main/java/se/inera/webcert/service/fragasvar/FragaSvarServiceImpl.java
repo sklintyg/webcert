@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,8 +54,6 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import com.google.common.base.Throwables;
 
 /**
  * @author andreaskaltenbach
@@ -113,8 +112,15 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
-        } catch (MessagingException e) {
-            Throwables.propagate(e);
+        } catch (MailSendException | MessagingException e) {
+            Long frageId = fragaSvar.getInternReferens();
+            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
+            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
+            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
+            LOG.error("Notification mail for question '" + frageId
+                      +  "' concerning certificate '" + intygsId
+                      + "' couldn't be sent to " + enhetsId
+                      + " (" + enhetsNamn + "): " + e.getMessage());
         }
     }
 
@@ -144,8 +150,15 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
-        } catch (MessagingException e) {
-            Throwables.propagate(e);
+        } catch (MailSendException | MessagingException e) {
+            Long svarsId = fragaSvar.getInternReferens();
+            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
+            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
+            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
+            LOG.error("Notification mail for answer '" + svarsId
+                    +  "' concerning certificate '" + intygsId
+                    + "' couldn't be sent to " + enhetsId
+                    + " (" + enhetsNamn + "): " + e.getMessage());
         }
     }
 
