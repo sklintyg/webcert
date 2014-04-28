@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
@@ -42,16 +43,26 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Override
     public void sendMailForIncomingQuestion(FragaSvar fragaSvar) throws MessagingException {
-        GetHsaUnitResponseType recipient = getHsaUnit(fragaSvar.getVardperson().getEnhetsId());
+    	
+    	String careUnitId = fragaSvar.getVardperson().getEnhetsId();
+    	
+        GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
+        
         sendNotificationMailToEnhet(fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar),
                 recipient);
+        LOGGER.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming question '{}'", careUnitId, fragaSvar.getInternReferens());
     }
 
     @Override
     public void sendMailForIncomingAnswer(FragaSvar fragaSvar) throws MessagingException {
-        GetHsaUnitResponseType recipient = getHsaUnit(fragaSvar.getVardperson().getEnhetsId());
+        
+    	String careUnitId = fragaSvar.getVardperson().getEnhetsId();
+    	
+        GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
+    	
         sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar),
                 recipient);
+        LOGGER.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming answer on question '{}'", careUnitId, fragaSvar.getInternReferens());
     }
 
     private void sendNotificationMailToEnhet(FragaSvar fragaSvar, String subject, String body,

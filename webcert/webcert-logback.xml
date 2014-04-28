@@ -2,6 +2,11 @@
 <configuration scan="true" scanPeriod="30 seconds">
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <filter class="se.inera.certificate.logging.MarkerFilter">
+      <markers>Monitoring</markers>
+      <onMatch>DENY</onMatch>
+      <onMismatch>ACCEPT</onMismatch>
+    </filter>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
         <param name="Pattern"
@@ -13,17 +18,39 @@
   <!--Daily rolling file appender -->
   <appender name="FILE"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <File>${catalina.base}/logs/webcert.log</File>
+    <filter class="se.inera.certificate.logging.MarkerFilter">
+      <markers>Monitoring</markers>
+      <onMatch>DENY</onMatch>
+      <onMismatch>ACCEPT</onMismatch>
+    </filter>
+    <file>${catalina.base}/logs/webcert.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <FileNamePattern>${catalina.base}/logs/webcert.%d{yyyy-MM-dd}.log
-      </FileNamePattern>
+      <fileNamePattern>${catalina.base}/logs/webcert.%d{yyyy-MM-dd}.log
+      </fileNamePattern>
     </rollingPolicy>
-    
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
         <param name="Pattern"
           value="%date{ISO8601} [%thread] %-5level %logger{10} [%user %session] - %msg%n" />
       </layout>
+    </encoder>
+  </appender>
+
+  <!--Daily rolling file appender for logging monitoring events -->
+  <appender name="MONITORING"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <filter class="se.inera.certificate.logging.MarkerFilter">
+      <marker>Monitoring</marker>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+    <file>${catalina.base}/logs/webcert-monitoring.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${catalina.base}/logs/webcert-monitoring.%d{yyyy-MM-dd}.log
+      </fileNamePattern>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%date{ISO8601} %-5level %logger{10} - %msg%n</pattern>
     </encoder>
   </appender>
 
@@ -39,5 +66,6 @@
     <level value="error" />
     <appender-ref ref="STDOUT" />
     <appender-ref ref="FILE" />
+    <appender-ref ref="MONITORING" />
   </root>
 </configuration>
