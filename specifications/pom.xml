@@ -357,7 +357,7 @@
             <groupId>uk.co.javahelp.fitnesse</groupId>
             <artifactId>fitnesse-launcher-maven-plugin</artifactId>
             <configuration>
-              <suite>IneraWebcert.WebTest.AllSauceLabsBrowsers</suite>
+              <suite>IneraWebcert.WebTest.AllSauceLabsBrowsers.ChromeSuite</suite>
             </configuration>
             <executions>
               <execution>
