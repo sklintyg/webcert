@@ -1,5 +1,5 @@
-'use strict';
 define([ 'angular', 'angularMocks', 'angularSanitize', 'angularUiBootstrap', 'services'], function(angular, mocks) {
+    'use strict';
 
 	describe('ManageCertificate', function() {
         var ManageCertificate;

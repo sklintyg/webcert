@@ -1,9 +1,6 @@
-/**
- * Created by BESA on 2014-03-27.
- */
-
 define([
-], function () {
+    'angular'
+], function (angular) {
     'use strict';
 
     return ['$http', '$log', '$window', '$modal', function ($http, $log, $window, $modal) {
@@ -16,7 +13,7 @@ define([
                 var types = [
                     {sortValue: sortValue++, id: 'default', label: 'Välj intygstyp'}
                 ];
-                for (var i in data) {
+                for (var i = 0; i < data.length; i++) {
                     var m = data[i];
                     types.push({sortValue: sortValue++, id: m.id, label: m.label});
                 }
@@ -98,25 +95,25 @@ define([
          * Toggle Forwarded state of a fragasvar entity with given id
          */
         function _setForwardedState(id, isForwarded, callback) {
-            $log.debug("_setForwardedState");
+            $log.debug('_setForwardedState');
             var restPath = '/api/intyg/forward/' + id;
             $http.put(restPath, isForwarded.toString()).success(function (data) {
-                $log.debug("_setForwardedState data:" + data);
+                $log.debug('_setForwardedState data:' + data);
                 callback(data);
-            }).error(function (data, status, headers, config) {
-                $log.error("error " + status);
+            }).error(function (data, status) {
+                $log.error('error ' + status);
                 // Let calling code handle the error of no data response
                 callback(null);
             });
         }
 
         function _buildMailToLink(cert) {
-            var baseURL = $window.location.protocol + "//" + $window.location.hostname + ($window.location.port ? ':' + $window.location.port : '');
-            var url = baseURL + "/web/dashboard#/" + cert.intygType + "/edit/" + cert.intygId;
-            var recipient = "";
-            var subject = "Du har blivit tilldelad ett ej signerat intyg i Webcert";
-            var body = "Klicka länken för att gå till intyget:\n" + url;
-            var link = "mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+            var baseURL = $window.location.protocol + '//' + $window.location.hostname + ($window.location.port ? ':' + $window.location.port : '');
+            var url = baseURL + '/web/dashboard#/' + cert.intygType + '/edit/' + cert.intygId;
+            var recipient = '';
+            var subject = 'Du har blivit tilldelad ett ej signerat intyg i Webcert';
+            var body = 'Klicka länken för att gå till intyget:\n' + url;
+            var link = 'mailto:' + recipient + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
             $log.debug(link);
             return link;
         }
@@ -138,10 +135,10 @@ define([
             // set
             if (!qa.forwarded && !_isSkipForwardedCookieSet()) {
                 _showForwardedPreferenceDialog(
-                    "markforward",
-                    "Det verkar som att du har informerat den som ska hantera ärendet. Vill du markera ärendet som vidarebefordrat?",
+                    'markforward',
+                    'Det verkar som att du har informerat den som ska hantera ärendet. Vill du markera ärendet som vidarebefordrat?',
                     function () { // yes
-                        $log.debug("yes");
+                        $log.debug('yes');
                         qa.forwarded = true;
                         if (onYesCallback) {
                             // let calling scope handle yes answer
@@ -149,11 +146,11 @@ define([
                         }
                     },
                     function () { // no
-                        $log.debug("no");
+                        $log.debug('no');
                         // Do nothing
                     },
                     function () {
-                        $log.debug("no and dont ask");
+                        $log.debug('no and dont ask');
                         // How can user reset this?
                         _setSkipForwardedCookie();
                     }
@@ -171,11 +168,11 @@ define([
                     yesCallback();
                     $modalInstance.close(result);
                 };
-                $scope.no = function (result) {
+                $scope.no = function () {
                     noCallback();
                     $modalInstance.close('cancel');
                 };
-                $scope.noDontAsk = function (result) {
+                $scope.noDontAsk = function () {
                     noDontAskCallback();
                     $modalInstance.close('cancel_dont_ask_again');
                 };

@@ -73,11 +73,11 @@ define([
             }
 
             if (month === 2) {
-                var is_leap_year = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
-                if (is_leap_year && day > 29) {
+                var isLeapYear = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+                if (isLeapYear && day > 29) {
                     return false;
                 }
-                if (!is_leap_year && day > 28) {
+                if (!isLeapYear && day > 28) {
                     return false;
                 }
             } else if ((( month === 4  || month === 6  || month === 9  || month === 11 ) && day > 30) ||

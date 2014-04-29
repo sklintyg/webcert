@@ -1,5 +1,6 @@
 define([
-], function () {
+    'angular'
+], function (angular) {
     'use strict';
 
     /*
@@ -35,8 +36,8 @@ define([
 
             // Default view filter form widget states
             var defaultFilterFormData = {
-                forwarded: "default",
-                complete: "default",
+                forwarded: 'default',
+                complete: 'default',
                 savedFromOpen: {
                     open: false
                 },
@@ -142,14 +143,14 @@ define([
                 });
             }
 
-            function convertFormFilterToPayload(filterQuery) {
-                var filterQuery = angular.copy(filterQuery);
+            function convertFormFilterToPayload(query) {
+                var filterQuery = angular.copy(query);
                 var converted = filterQuery.filter;
                 converted.enhetsId = filterQuery.enhetsId;
                 converted.startFrom = filterQuery.startFrom;
                 converted.pageSize = filterQuery.pageSize;
-                converted.forwarded = $scope.filterForm.forwarded !== "default" ? $scope.filterForm.forwarded : undefined;
-                converted.complete = $scope.filterForm.complete !== "default" ? $scope.filterForm.complete : undefined;
+                converted.forwarded = $scope.filterForm.forwarded !== 'default' ? $scope.filterForm.forwarded : undefined;
+                converted.complete = $scope.filterForm.complete !== 'default' ? $scope.filterForm.complete : undefined;
                 converted.savedFrom = $filter('date')(converted.savedFrom, 'yyyy-MM-dd');
                 converted.savedTo = $filter('date')(converted.savedTo, 'yyyy-MM-dd');
                 return converted;

@@ -1,7 +1,7 @@
-define([ 'text!directives/wcAbout.html' ], function(template) {
+define([ 'angular', 'text!directives/wcAbout.html' ], function(angular, template) {
 	'use strict';
 
-	return [ '$rootScope', '$location', function($rootScope, $location) {
+  return [ '$rootScope', '$location', function($rootScope, $location) {
 		return {
 			restrict : 'A',
 			transclude : true,
@@ -10,7 +10,7 @@ define([ 'text!directives/wcAbout.html' ], function(template) {
 				menuDefsAbout : '@'
 			},
 			template : template,
-			controller : function($scope, $element, $attrs) {
+			controller : function($scope) {
 				// Expose "now" as a model property for the template to render as todays date
 				$scope.today = new Date();
 				$scope.menuItems = [ {

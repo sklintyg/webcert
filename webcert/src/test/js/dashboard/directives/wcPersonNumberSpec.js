@@ -1,5 +1,5 @@
-'use strict';
 define([ 'angular', 'angularMocks', 'directives' ], function(angular, mocks) {
+    'use strict';
 
 	describe('wcPersonNumber', function() {
 		beforeEach(mocks.module('wc.dashboard.directives'));

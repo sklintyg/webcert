@@ -1,5 +1,5 @@
-'use strict';
 define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
+    'use strict';
 
     describe('CreateCertificateDraft', function () {
 

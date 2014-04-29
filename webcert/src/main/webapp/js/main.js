@@ -26,7 +26,7 @@ require.config({
 });
 
 //http://code.angularjs.org/1.2.1/docs/guide/bootstrap#overview_deferred-bootstrap
-window.name = 'NG_DEFER_BOOTSTRAP!';
+window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
 require([
     'angularSwedish',
@@ -37,7 +37,7 @@ require([
     'routes',
     'angularCookies',
     'angularUiBootstrap'
-], function (app, angular) {
+], function () {
     'use strict';
 
 });

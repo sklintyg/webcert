@@ -1,6 +1,4 @@
-define(
-    [],
-    function () {
+define(['angular'], function (angular) {
         'use strict';
 
         /*
@@ -8,12 +6,12 @@ define(
          */
         return [
             '$scope', '$window', '$location', '$log', '$timeout', '$filter', '$cookieStore',
-            'ManageCertificate', 'fragaSvarCommonService', 'QuestionAnswer', 'wcDialogService', 'User',
+            'ManageCertificate', 'fragaSvarCommonService', 'QuestionAnswer', 'wcDialogService',
             function ($scope, $window, $location, $log, $timeout, $filter, $cookieStore,
-                      ManageCertificate, fragaSvarCommonService, QuestionAnswer, wcDialogService, User) {
+                      ManageCertificate, fragaSvarCommonService, QuestionAnswer, wcDialogService) {
 
                 var PAGE_SIZE = 10;
-                var enhetId = "wc-all";
+                var enhetId = 'wc-all';
 
                 $scope.widgetState = {
                     doneLoading: true,
@@ -73,8 +71,8 @@ define(
                 $scope.lakareList.push($scope.lakareListEmptyChoice);
 
                 $scope.filterForm = {
-                    questionFrom: "default",
-                    vidarebefordrad: "default",
+                    questionFrom: 'default',
+                    vidarebefordrad: 'default',
                     vantarPaSelector: $scope.statusList[1],
                     lakareSelector: $scope.lakareList[0]
                 };
@@ -116,7 +114,7 @@ define(
                     // Converts view values and sets them on a copy of query object
                     var filterQuery = angular.copy(scopeFilterQuery);
 
-                    if (enhetId === "wc-all") {
+                    if (enhetId === 'wc-all') {
                         filterQuery.enhetId = undefined;
                     } else {
                         filterQuery.enhetId = enhetId;
@@ -140,17 +138,17 @@ define(
                         filterQuery.replyLatest = $filter('date')(filterQuery.replyLatest, 'yyyy-MM-dd');
                     }
 
-                    if ($scope.filterForm.questionFrom === "FK") {
+                    if ($scope.filterForm.questionFrom === 'FK') {
                         filterQuery.questionFromFK = true;
                         filterQuery.questionFromWC = false;
-                    } else if ($scope.filterForm.questionFrom === "WC") {
+                    } else if ($scope.filterForm.questionFrom === 'WC') {
                         filterQuery.questionFromFK = false;
                         filterQuery.questionFromWC = true;
                     } else {
                         filterQuery.questionFromFK = false;
                         filterQuery.questionFromWC = false;
                     }
-                    if ($scope.filterForm.vidarebefordrad === "default") {
+                    if ($scope.filterForm.vidarebefordrad === 'default') {
                         filterQuery.vidarebefordrad = undefined;
                     } else {
                         filterQuery.vidarebefordrad = $scope.filterForm.vidarebefordrad;
@@ -215,8 +213,8 @@ define(
                     $scope.filterQuery = angular.copy(defaultQuery);
                     $scope.filterForm.vantarPaSelector = $scope.statusList[1];
                     $scope.filterForm.lakareSelector = $scope.lakareList[0];
-                    $scope.filterForm.questionFrom = "default";
-                    $scope.filterForm.vidarebefordrad = "default";
+                    $scope.filterForm.questionFrom = 'default';
+                    $scope.filterForm.vidarebefordrad = 'default';
                 }
 
                 function loadSearchForm() {
@@ -236,15 +234,15 @@ define(
                         }
 
                         if ($scope.filterQuery.questionFromFK === false && $scope.filterQuery.questionFromWC === false) {
-                            $scope.filterForm.questionFrom = "default";
+                            $scope.filterForm.questionFrom = 'default';
                         } else if ($scope.filterQuery.questionFromFK) {
-                            $scope.filterForm.questionFrom = "FK";
+                            $scope.filterForm.questionFrom = 'FK';
                         } else {
-                            $scope.filterForm.questionFrom = "WC";
+                            $scope.filterForm.questionFrom = 'WC';
                         }
 
                         if ($scope.filterQuery.vidarebefordrad === undefined) {
-                            $scope.filterForm.vidarebefordrad = "default";
+                            $scope.filterForm.vidarebefordrad = 'default';
                         } else {
                             $scope.filterForm.vidarebefordrad = $scope.filterQuery.vidarebefordrad;
                         }
@@ -269,7 +267,7 @@ define(
 
                 function initLakareList(unitId) {
                     $scope.widgetState.loadingLakares = true;
-                    QuestionAnswer.getQALakareList(unitId === "wc-all" ? undefined : unitId, function (list) {
+                    QuestionAnswer.getQALakareList(unitId === 'wc-all' ? undefined : unitId, function (list) {
 
                         $scope.widgetState.loadingLakares = false;
 
@@ -351,7 +349,7 @@ define(
 
                 $scope.openIntyg = function (intygsReferens) {
                     $log.debug('open intyg ' + intygsReferens.intygsId);
-                    $location.url('/' + intygsReferens.intygsTyp.toLowerCase() + "/view/" + intygsReferens.intygsId, true);
+                    $location.url('/' + intygsReferens.intygsTyp.toLowerCase() + '/view/' + intygsReferens.intygsId, true);
                 };
 
                 // Handle vidarebefordra dialog
@@ -373,7 +371,7 @@ define(
                  * Broadcast event handlers
                  */
                     // Broadcast by statService on poll
-                $scope.$on("wc-stat-update", function (event, message) {
+                $scope.$on('wc-stat-update', function (event, message) {
                     unitStats = message;
                 });
 

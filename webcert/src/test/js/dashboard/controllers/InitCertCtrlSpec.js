@@ -1,5 +1,5 @@
-'use strict';
 define([ 'angular', 'angularMocks', 'controllers' ], function(angular, mocks) {
+    'use strict';
 
 	describe('InitCertCtrl', function() {
 		beforeEach(mocks.module('wc.dashboard.controllers'));
