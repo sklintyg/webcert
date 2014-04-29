@@ -20,8 +20,8 @@ import se.inera.webcert.service.fragasvar.FragaSvarService;
 @SchemaValidation
 public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQuestionResponderInterface {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveQuestionResponderImpl.class);
-	
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveQuestionResponderImpl.class);
+
     @Autowired
     private FragaSvarConverter converter;
 
@@ -32,13 +32,13 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
     public ReceiveMedicalCertificateQuestionResponseType receiveMedicalCertificateQuestion(
             AttributedURIType logicalAddress, ReceiveMedicalCertificateQuestionType request) {
         ReceiveMedicalCertificateQuestionResponseType response = new ReceiveMedicalCertificateQuestionResponseType();
-        
+
         FragaSvar fragaSvar = converter.convert(request.getQuestion());
-        
+
         LOGGER.info(LogMarkers.MONITORING, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(), fragaSvar.getExternReferens());
-                
+
         fragaSvarService.processIncomingQuestion(fragaSvar);
-        
+
         response.setResult(ResultOfCallUtil.okResult());
         return response;
     }

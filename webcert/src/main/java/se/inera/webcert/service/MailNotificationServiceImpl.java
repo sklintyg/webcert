@@ -43,11 +43,11 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Override
     public void sendMailForIncomingQuestion(FragaSvar fragaSvar) throws MessagingException {
-    	
-    	String careUnitId = fragaSvar.getVardperson().getEnhetsId();
-    	
+
+        String careUnitId = fragaSvar.getVardperson().getEnhetsId();
+
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
-        
+
         sendNotificationMailToEnhet(fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar),
                 recipient);
         LOGGER.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming question '{}'", careUnitId, fragaSvar.getInternReferens());
@@ -55,11 +55,11 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Override
     public void sendMailForIncomingAnswer(FragaSvar fragaSvar) throws MessagingException {
-        
-    	String careUnitId = fragaSvar.getVardperson().getEnhetsId();
-    	
+
+        String careUnitId = fragaSvar.getVardperson().getEnhetsId();
+
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
-    	
+
         sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar),
                 recipient);
         LOGGER.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming answer on question '{}'", careUnitId, fragaSvar.getInternReferens());
@@ -74,7 +74,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private void sendNotificationMailToEnhet(FragaSvar fragaSvar, String subject, String body,
-            GetHsaUnitResponseType receivingEnhet) throws MessagingException {
+                                             GetHsaUnitResponseType receivingEnhet) throws MessagingException {
         String recipientAddress = receivingEnhet.getEmail();
 
         // if recipient unit does not have a mail address configured, we try to lookup the unit's parent

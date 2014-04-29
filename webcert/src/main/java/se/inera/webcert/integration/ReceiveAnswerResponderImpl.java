@@ -21,8 +21,8 @@ import se.inera.webcert.service.fragasvar.FragaSvarService;
 @SchemaValidation
 public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnswerResponderInterface {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveAnswerResponderImpl.class);
-	
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveAnswerResponderImpl.class);
+
     @Autowired
     private FragaSvarService fragaSvarService;
 
@@ -37,14 +37,14 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
         }
 
         AnswerFromFkType answerType = request.getAnswer();
-        
+
         LOGGER.info(LogMarkers.MONITORING, "Recieved answer to question '{}'", answerType.getVardReferensId());
-        
+
         InnehallType answerContents = answerType.getSvar();
-        
+
         fragaSvarService.processIncomingAnswer(Long.parseLong(answerType.getVardReferensId()),
                 answerContents.getMeddelandeText(), answerContents.getSigneringsTidpunkt());
-        
+
         response.setResult(ResultOfCallUtil.okResult());
         return response;
     }
