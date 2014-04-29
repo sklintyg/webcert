@@ -1,106 +1,117 @@
 'use strict';
+define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
 
-describe('CertificateDraft', function () {
-    beforeEach(module('wc.dashboard.services'));
+    describe('CreateCertificateDraft', function () {
 
-    var CertificateDraft;
-    var $httpBackend;
+        var CreateCertificateDraft;
+        var $httpBackend;
+        var statService;
 
-    beforeEach(inject(function (_CertificateDraft_, _$httpBackend_) {
-        CertificateDraft = _CertificateDraft_;
-        $httpBackend = _$httpBackend_;
-    }));
+        beforeEach(mocks.module('wc.dashboard.services', function ($provide) {
+            statService = jasmine
+                .createSpyObj('statService', [ 'refreshStat' ]);
+            $provide.value('statService', statService);
+        }));
 
-    describe('#reset', function () {
 
-        it('should create an empty object', function () {
-            CertificateDraft.reset();
+        beforeEach(mocks.inject(function (_CreateCertificateDraft_, _$httpBackend_) {
+            CreateCertificateDraft = _CreateCertificateDraft_;
+            $httpBackend = _$httpBackend_;
+        }));
 
-            expect(CertificateDraft.personnummer).toBeNull();
-            expect(CertificateDraft.intygType).toEqual('default');
-            expect(CertificateDraft.firstname).toBeNull();
-            expect(CertificateDraft.lastname).toBeNull();
-            expect(CertificateDraft.address).toBeNull();
-            expect(CertificateDraft.vardEnhetHsaId).toBeNull();
-            expect(CertificateDraft.vardEnhetNamn).toBeNull();
-            expect(CertificateDraft.vardGivareHsaId).toBeNull();
-            expect(CertificateDraft.vardGivareHsaNamn).toBeNull();
-        });
-    });
+        describe('#reset', function () {
 
-    describe('#getNameAndAddress', function () {
+            it('should create an empty object', function () {
+                CreateCertificateDraft.reset();
 
-        it('should set name and address to null for unknown patients', function () {
-            var onSuccess = jasmine.createSpy('onSuccess');
-
-            CertificateDraft.getNameAndAddress('19401010-1014', onSuccess);
-
-            expect(CertificateDraft.firstname).toBeNull();
-            expect(CertificateDraft.lastname).toBeNull();
-            expect(CertificateDraft.address).toBeNull();
-            expect(onSuccess).toHaveBeenCalled();
+                expect(CreateCertificateDraft.personnummer).toBeNull();
+                expect(CreateCertificateDraft.intygType).toEqual('default');
+                expect(CreateCertificateDraft.firstname).toBeNull();
+                expect(CreateCertificateDraft.lastname).toBeNull();
+                expect(CreateCertificateDraft.address).toBeNull();
+                expect(CreateCertificateDraft.vardEnhetHsaId).toBeNull();
+                expect(CreateCertificateDraft.vardEnhetNamn).toBeNull();
+                expect(CreateCertificateDraft.vardGivareHsaId).toBeNull();
+                expect(CreateCertificateDraft.vardGivareHsaNamn).toBeNull();
+            });
         });
 
-        it('should set name and address for known patients', function () {
-            var onSuccess = jasmine.createSpy('onSuccess');
+        describe('#getNameAndAddress', function () {
 
-            CertificateDraft.getNameAndAddress('19121212-1212', onSuccess);
+            it('should set name and address to null for unknown patients', function () {
+                var onSuccess = jasmine.createSpy('onSuccess');
 
-            expect(CertificateDraft.firstname).toEqual('Test');
-            expect(CertificateDraft.lastname).toEqual('Testsson');
-            expect(CertificateDraft.address).toEqual('Storgatan 23');
-            expect(onSuccess).toHaveBeenCalled();
-        });
-    });
+                CreateCertificateDraft.getNameAndAddress('19401010-1014', onSuccess);
 
-    describe('#createDraft', function () {
+                expect(CreateCertificateDraft.firstname).toBeNull();
+                expect(CreateCertificateDraft.lastname).toBeNull();
+                expect(CreateCertificateDraft.address).toBeNull();
+                expect(onSuccess).toHaveBeenCalled();
+            });
 
-        it('should create a draft if the payload is correct', function () {
-            CertificateDraft.personnummer = '19121212-1212';
-            CertificateDraft.firstname = 'Test';
-            CertificateDraft.lastname = 'Testsson';
-            CertificateDraft.intygType = 'fk7263';
-            CertificateDraft.address = 'Storgatan 23';
-            CertificateDraft.vardEnhetHsaId = '1';
-            CertificateDraft.vardEnhetNamn = 'A';
-            CertificateDraft.vardGivareHsaId = '2';
-            CertificateDraft.vardGivareNamn = 'B';
+            it('should set name and address for known patients', function () {
+                var onSuccess = jasmine.createSpy('onSuccess');
 
-            var onSuccess = jasmine.createSpy('onSuccess');
-            var onError = jasmine.createSpy('onError');
-            $httpBackend.
-                expectPOST('/api/intyg/create', {
-                    patientPersonnummer : '19121212-1212',
-                    patientFornamn : 'Test',
-                    patientEfternamn : 'Testsson',
-                    intygType : 'fk7263',
-                    address : 'Storgatan 23',
-                    vardEnhetHsaId : '1',
-                    vardEnhetNamn : 'A',
-                    vardGivareHsaId : '2',
-                    vardGivareNamn : 'B'
-                }).
-                respond(200, '12345');
+                CreateCertificateDraft.getNameAndAddress('19121212-1212', onSuccess);
 
-            CertificateDraft.createDraft(onSuccess, onError);
-            $httpBackend.flush();
-
-            expect(onSuccess).toHaveBeenCalledWith('12345');
-            expect(onError).not.toHaveBeenCalled();
+                expect(CreateCertificateDraft.firstname).toEqual('Test');
+                expect(CreateCertificateDraft.lastname).toEqual('Testsson');
+                expect(CreateCertificateDraft.address).toEqual('Storgatan 23');
+                expect(onSuccess).toHaveBeenCalled();
+            });
         });
 
-        it('should call onError if the server cannot create a draft', function () {
-            var onSuccess = jasmine.createSpy('onSuccess');
-            var onError = jasmine.createSpy('onError');
-            $httpBackend.
-                expectPOST('/api/intyg/create', {}).
-                respond(500);
+        describe('#createDraft', function () {
 
-            CertificateDraft.createDraft(onSuccess, onError);
-            $httpBackend.flush();
+            it('should create a draft if the payload is correct', function () {
+                CreateCertificateDraft.personnummer = '19121212-1212';
+                CreateCertificateDraft.firstname = 'Test';
+                CreateCertificateDraft.lastname = 'Testsson';
+                CreateCertificateDraft.intygType = 'fk7263';
+                CreateCertificateDraft.address = 'Storgatan 23';
+                CreateCertificateDraft.vardEnhetHsaId = '1';
+                CreateCertificateDraft.vardEnhetNamn = 'A';
+                CreateCertificateDraft.vardGivareHsaId = '2';
+                CreateCertificateDraft.vardGivareNamn = 'B';
 
-            expect(onSuccess).not.toHaveBeenCalled();
-            expect(onError).toHaveBeenCalled();
+                var onSuccess = jasmine.createSpy('onSuccess');
+                var onError = jasmine.createSpy('onError');
+                $httpBackend.
+                    expectPOST('/api/intyg/create', {
+                        patientPersonnummer : '19121212-1212',
+                        patientFornamn : 'Test',
+                        patientEfternamn : 'Testsson',
+                        intygType : 'fk7263',
+                        postadress : 'Storgatan 23',
+                        vardEnhetHsaId : '1',
+                        vardEnhetNamn : 'A',
+                        vardGivareHsaId : '2',
+                        vardGivareNamn : 'B'
+                    }).
+                    respond(200, '12345');
+
+                CreateCertificateDraft.createDraft(onSuccess, onError);
+                $httpBackend.flush();
+
+                expect(onSuccess).toHaveBeenCalledWith('12345');
+                expect(onError).not.toHaveBeenCalled();
+                expect(statService.refreshStat).toHaveBeenCalled();
+            });
+
+            it('should call onError if the server cannot create a draft', function () {
+                var onSuccess = jasmine.createSpy('onSuccess');
+                var onError = jasmine.createSpy('onError');
+                $httpBackend.
+                    expectPOST('/api/intyg/create', {}).
+                    respond(500);
+
+                CreateCertificateDraft.createDraft(onSuccess, onError);
+                $httpBackend.flush();
+
+                expect(onSuccess).not.toHaveBeenCalled();
+                expect(onError).toHaveBeenCalled();
+                expect(statService.refreshStat).not.toHaveBeenCalled();
+            });
         });
     });
 });

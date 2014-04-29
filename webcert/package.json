@@ -1,17 +1,16 @@
 {
-    "name" : "Webcert",
-    "version" : "1.0.0",
+    "name" : "webcert",
+    "version" : "0.0.1",
     "devDependencies" : {
-        "karma" : "~0.10.9",
-        "karma-chrome-launcher" : "~0.1.2",
-        "karma-firefox-launcher" : "~0.1.3",
-        "karma-jasmine" : "~0.1.5",
-        "karma-junit-reporter" : "~0.2.1",
-        "karma-phantomjs-launcher" : "~0.1.2",
-        "karma-coverage" : "~0.2.0",
-        "karma-ng-scenario" : "~0.1.0",
         "grunt-cli" : "~0.1.13",
         "grunt" : "~0.4.4",
-        "grunt-contrib-jshint" : "~0.10.0"
+        "grunt-contrib-csslint" : "~0.2.0",
+        "grunt-contrib-jshint" : "~0.10.0",
+        "karma-jasmine" : "~0.1.5",
+        "karma-junit-reporter" : "~0.2.1",
+        "karma-requirejs" : "~0.2.1",
+        "karma-chrome-launcher" : "~0.1.3",
+        "karma-firefox-launcher" : "~0.1.3",
+        "karma-phantomjs-launcher" : "~0.1.1"
     }
 }

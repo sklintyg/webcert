@@ -363,30 +363,69 @@
         </dependencies>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.8</version>
+        <executions>
+          <execution>
+            <id>unpack-webjar-dependencies</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeGroupIds>org.webjars,se.inera.certificate.modules</includeGroupIds>
+              <outputDirectory>${project.build.directory}/webjardependenciestemp</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>process-test-resources</phase>
+            <configuration>
+              <target>
+                <copy todir="${project.build.directory}/webjardependencies" verbose="false">
+                  <regexpmapper from="^(.*)[/\\].*[/\\](.*)$$" to="\1/\2"/>
+                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/">
+                  </fileset>
+                </copy>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <!-- NB! Set <version> to the latest released version of frontend-maven-plugin, like in README.md -->
         <version>0.0.14</version>
+        <inherited>false</inherited>
         <executions>
-
           <execution>
             <id>install node and npm</id>
             <goals>
               <goal>install-node-and-npm</goal>
             </goals>
+            <configuration>
+              <nodeVersion>v0.10.18</nodeVersion>
+              <npmVersion>1.3.8</npmVersion>
+            </configuration>
           </execution>
-
           <execution>
             <id>npm install</id>
             <goals>
               <goal>npm</goal>
             </goals>
-            <!-- Optional configuration which provides for running any npm command -->
             <configuration>
               <arguments>install</arguments>
             </configuration>
           </execution>
-
           <execution>
             <id>grunt build</id>
             <goals>
@@ -394,51 +433,21 @@
             </goals>
             <configuration>
               <arguments>--no-color</arguments>
+              <arguments>-force</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>javascript tests</id>
+            <goals>
+              <goal>karma</goal>
+            </goals>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <karmaConfPath>${project.basedir}/src/test/karma.conf.ci.js</karmaConfPath>
             </configuration>
           </execution>
         </executions>
-
-        <configuration>
-          <nodeVersion>v0.10.18</nodeVersion>
-          <npmVersion>1.3.8</npmVersion>
-        </configuration>
-
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>karma</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.kelveden</groupId>
-            <artifactId>maven-karma-plugin</artifactId>
-            <version>${karma-plugin-version}</version>
-            <executions>
-              <execution>
-                <phase>process-test-classes</phase>
-                <goals>
-                  <goal>start</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <autoWatch>false</autoWatch>
-              <browsers>PhantomJS</browsers>
-              <colors>true</colors>
-              <configFile>src/test/resources/karma.conf.js</configFile>
-              <karmaFailureIgnore>false</karmaFailureIgnore>
-              <reporters>dots,junit</reporters>
-              <singleRun>true</singleRun>
-              <skipKarma>false</skipKarma>
-              <skipTests>false</skipTests>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
 </project>

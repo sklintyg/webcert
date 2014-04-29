@@ -42,7 +42,7 @@ module.exports = function(grunt) {
 					jshintrc : '../src/main/resources/.jshintrc',
 					force : true,
 					reporter : 'checkstyle',
-					reporterOutput : 'target/jshint/checkstyle-result.xml'
+					reporterOutput : 'target/checkstyle-jshint-result.xml'
 				},
 				src : [ 'Gruntfile.js', 'src/main/webapp/js/**/*.js', 'src/test/js/**/*.js' ]
 			}

@@ -56,6 +56,39 @@ define([
             return number < 10 ? '0' + number : number;
         }
 
+        function isDateValid(dateStr) {
+            // We have to implement this since there is no native, cross browser, way of checking this.
+
+            var parts= dateStr.split('/');
+            var year = parseInt(parts[0], 10);
+            var month = parseInt(parts[1], 10);
+            var day = parseInt(parts[2], 10);
+
+            if (day < 1) {
+                return false;
+            }
+
+            if (month < 1 || month > 12) {
+                return false;
+            }
+
+            if (month === 2) {
+                var is_leap_year = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+                if (is_leap_year && day > 29) {
+                    return false;
+                }
+                if (!is_leap_year && day > 28) {
+                    return false;
+                }
+            } else if ((( month === 4  || month === 6  || month === 9  || month === 11 ) && day > 30) ||
+                (( month === 1 || month === 3 || month === 5 || month === 7 || month === 8 ||
+                    month === 10 || month === 12 ) && day > 31)) {
+                return false;
+            }
+
+            return true;
+        }
+
         return {
 
             restrict : 'A',
@@ -67,22 +100,37 @@ define([
 
                     var date;
                     var dateStr;
-                    var dateSplit;
 
                     // Try to match personnummer since that case is most common.
                     var parts = PERSONNUMMER_REGEXP.exec(viewValue);
                     PERSONNUMMER_REGEXP.lastIndex = 0; // Reset regexp. Apparently exec continues from last match rather than starting over in IE8
                     if (parts) {
 
+
                         // Parse with yyyy-MM-dd to make sure we get parse errors.
                         // new Date('2010-02-41') is invalid but new Date(2010, 1, 41) is valid.
 
                         if (parts[1]) {
-                            date = new Date(parts[1] + parts[2] + '/' + parts[3] + '/' + parts[4]);
+                            dateStr = parts[1] + parts[2] + '/' + parts[3] + '/' + parts[4];
+
+                            // Handle invalid dates.
+                            if (!isDateValid(dateStr)) {
+                                ctrl.$setValidity('personNumberValidate', false);
+                                return undefined;
+                            }
+
+                            date = new Date(dateStr);
+
                         } else {
 
                             // Assume that the date is in 20xx and fix later.
                             dateStr = (parseInt(parts[2], 10) + 2000) + '/' + parts[3] + '/' + parts[4];
+
+                            // Handle invalid dates.
+                            if (!isDateValid(dateStr)) {
+                                ctrl.$setValidity('personNumberValidate', false);
+                                return undefined;
+                            }
 
                             date = new Date(dateStr); //<-- IE8 can't parse 2000-01-01 dates this way. Using '/' instead
 
@@ -95,12 +143,6 @@ define([
                             if (parts[5] === '+') {
                                 date.setFullYear(date.getFullYear() - 100);
                             }
-                        }
-
-                        // Handle invalid dates.
-                        if (isNaN(date.getTime())) {
-                            ctrl.$setValidity('personNumberValidate', false);
-                            return undefined;
                         }
 
                         if (isCheckDigitValid(parts[2] + parts[3] + parts[4] + parts[6])) {
@@ -122,11 +164,26 @@ define([
                         var day = parseInt(parts[4], 10) - 60; // 60 is the special number for samordningsnummer.
 
                         if (parts[1]) {
-                            date = new Date(parts[1] + parts[2] + '/' + parts[3] + '/' + pad(day));
+                            dateStr = parts[1] + parts[2] + '/' + parts[3] + '/' + pad(day);
+
+                            // Handle invalid dates.
+                            if (!isDateValid(dateStr)) {
+                                ctrl.$setValidity('personNumberValidate', false);
+                                return undefined;
+                            }
+
+                            date = new Date(dateStr);
+
                         } else {
 
                             // Assume that the date is in 20xx and fix later.
                             dateStr = (parseInt(parts[2], 10) + 2000) + '/' + parts[3] + '/' + pad(day);
+
+                            // Handle invalid dates.
+                            if (!isDateValid(dateStr)) {
+                                ctrl.$setValidity('personNumberValidate', false);
+                                return undefined;
+                            }
 
                             date = new Date(dateStr); //<-- IE8 can't parse Y-m-d these dates this way. Using '/' instead
 
@@ -134,12 +191,6 @@ define([
                             if (date > new Date()) {
                                 date.setFullYear(date.getFullYear() - 100);
                             }
-                        }
-
-                        // Handle invalid dates.
-                        if (isNaN(date.getTime())) {
-                            ctrl.$setValidity('personNumberValidate', false);
-                            return undefined;
                         }
 
                         if (isCheckDigitValid(parts[2] + parts[3] + parts[4] + parts[5])) {

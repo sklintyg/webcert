@@ -1,27 +1,29 @@
 'use strict';
+define([ 'angular', 'angularMocks', 'controllers' ], function(angular, mocks) {
 
-describe('InitCertCtrl', function () {
-    beforeEach(module('wc.dashboard.controllers'));
+	describe('InitCertCtrl', function() {
+		beforeEach(mocks.module('wc.dashboard.controllers'));
 
-    var InitCertCtrl;
-    var CertificateDraft;
-    var $scope;
-    var $location;
+		var InitCertCtrl;
+		var CreateCertificateDraft;
+		var $scope;
+		var $location;
 
-    beforeEach(inject(function ($controller, _$location_) {
-        $location = _$location_;
-        CertificateDraft = jasmine.createSpyObj('CertificateDraft',
-            ['reset', 'getNameAndAddress', 'createDraft']);
-        $scope = {};
+		beforeEach(mocks.inject(function($controller, _$location_) {
+			$location = _$location_;
+			CreateCertificateDraft = jasmine.createSpyObj('CreateCertificateDraft', [ 'reset', 'getNameAndAddress',
+					'createDraft' ]);
+			$scope = {};
 
-        InitCertCtrl = $controller('InitCertCtrl', {
-            $scope : $scope,
-            CertificateDraft : CertificateDraft
-        });
-    }));
+			InitCertCtrl = $controller('InitCertCtrl', {
+				$scope : $scope,
+				CreateCertificateDraft : CreateCertificateDraft
+			});
+		}));
 
-    it('should reset certificate draft and redirect to choose patient', function () {
-        expect(CertificateDraft.reset).toHaveBeenCalled();
-        expect($location.path()).toEqual('/create/choose-patient/index');
-    });
+		it('should reset certificate draft and redirect to choose patient', function() {
+			expect(CreateCertificateDraft.reset).toHaveBeenCalled();
+			expect($location.path()).toEqual('/create/choose-patient/index');
+		});
+	});
 });
