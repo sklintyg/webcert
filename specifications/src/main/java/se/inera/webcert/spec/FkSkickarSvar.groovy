@@ -28,10 +28,9 @@ class FkSkickarSvar extends WsClientFixture {
 
     public FkSkickarSvar(String logiskAddress) {
         super(logiskAddress)
-        boolean ntjpClientAuthentication = Boolean.getBoolean("service.ntjpClientAuthentication")
         String serviceUrl = System.getProperty("service.receiveAnswerUrl")
         String url = serviceUrl ? serviceUrl : baseUrl + "receive-answer/v1.0"
-        answerResponder = createClient(ReceiveMedicalCertificateAnswerResponderInterface.class, url, ntjpClientAuthentication)
+        answerResponder = createClient(ReceiveMedicalCertificateAnswerResponderInterface.class, url)
     }
 
     public String resultat() {

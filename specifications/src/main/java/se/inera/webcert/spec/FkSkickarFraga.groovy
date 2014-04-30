@@ -30,10 +30,9 @@ class FkSkickarFraga extends WsClientFixture {
 
     public FkSkickarFraga(String logiskAddress) {
         super(logiskAddress)
-        boolean ntjpClientAuthentication = Boolean.getBoolean("service.ntjpClientAuthentication")
         String serviceUrl = System.getProperty("service.receiveQuestionUrl")
         String url = serviceUrl ? serviceUrl : baseUrl + "receive-question/v1.0"
-        questionResponder = createClient(ReceiveMedicalCertificateQuestionResponderInterface.class, url, ntjpClientAuthentication)
+        questionResponder = createClient(ReceiveMedicalCertificateQuestionResponderInterface.class, url)
     }
 
     def resultat() {

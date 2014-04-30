@@ -49,13 +49,13 @@ class WsClientFixture {
 		client.getRequestContext().put(Message.ENDPOINT_ADDRESS, url)
 	}
 	
-	def createClient(def responderInterface, String url, boolean ntjpClientAuthentication = false) {
+	def createClient(def responderInterface, String url) {
 		ClientProxyFactoryBean factory = new ClientProxyFactoryBean(new JaxWsClientFactoryBean());
 		factory.setServiceClass( responderInterface );
 		factory.setAddress(url);
 		def responder = factory.create();
 		if (url.startsWith("https:")) {
-			setupSSLCertificates(responder, ntjpClientAuthentication)
+			setupSSLCertificates(responder)
 		}
 		return responder
 	}
@@ -74,8 +74,9 @@ class WsClientFixture {
 		else null
 	}
 
-	def setupSSLCertificates(def responder, boolean ntjpClientAuthentication) {
-		Client client = ClientProxy.getClient(responder)
+	def setupSSLCertificates(def responder) {
+        boolean ntjpClientAuthentication = Boolean.getBoolean("service.ntjpClientAuthentication")
+        Client client = ClientProxy.getClient(responder)
 		HTTPConduit httpConduit = (HTTPConduit)client.getConduit();
 		TLSClientParameters tlsParams = new TLSClientParameters();
 		tlsParams.setDisableCNCheck(true);
