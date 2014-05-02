@@ -1,27 +1,26 @@
 define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
     'use strict';
 
-    describe('CreateCertificateDraft', function () {
+    describe('CreateCertificateDraft', function() {
 
         var CreateCertificateDraft;
         var $httpBackend;
         var statService;
 
-        beforeEach(mocks.module('wc.dashboard.services', function ($provide) {
-            statService = jasmine
-                .createSpyObj('statService', [ 'refreshStat' ]);
+        beforeEach(mocks.module('wc.dashboard.services', function($provide) {
+            statService = jasmine.createSpyObj('statService', [ 'refreshStat' ]);
             $provide.value('statService', statService);
         }));
 
 
-        beforeEach(mocks.inject(function (_CreateCertificateDraft_, _$httpBackend_) {
+        beforeEach(mocks.inject(function(_CreateCertificateDraft_, _$httpBackend_) {
             CreateCertificateDraft = _CreateCertificateDraft_;
             $httpBackend = _$httpBackend_;
         }));
 
-        describe('#reset', function () {
+        describe('#reset', function() {
 
-            it('should create an empty object', function () {
+            it('should create an empty object', function() {
                 CreateCertificateDraft.reset();
 
                 expect(CreateCertificateDraft.personnummer).toBeNull();
@@ -36,9 +35,9 @@ define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
             });
         });
 
-        describe('#getNameAndAddress', function () {
+        describe('#getNameAndAddress', function() {
 
-            it('should set name and address to null for unknown patients', function () {
+            it('should set name and address to null for unknown patients', function() {
                 var onSuccess = jasmine.createSpy('onSuccess');
 
                 CreateCertificateDraft.getNameAndAddress('19401010-1014', onSuccess);
@@ -49,7 +48,7 @@ define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
                 expect(onSuccess).toHaveBeenCalled();
             });
 
-            it('should set name and address for known patients', function () {
+            it('should set name and address for known patients', function() {
                 var onSuccess = jasmine.createSpy('onSuccess');
 
                 CreateCertificateDraft.getNameAndAddress('19121212-1212', onSuccess);
@@ -61,9 +60,9 @@ define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
             });
         });
 
-        describe('#createDraft', function () {
+        describe('#createDraft', function() {
 
-            it('should create a draft if the payload is correct', function () {
+            it('should create a draft if the payload is correct', function() {
                 CreateCertificateDraft.personnummer = '19121212-1212';
                 CreateCertificateDraft.firstname = 'Test';
                 CreateCertificateDraft.lastname = 'Testsson';
@@ -78,15 +77,15 @@ define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
                 var onError = jasmine.createSpy('onError');
                 $httpBackend.
                     expectPOST('/api/intyg/create', {
-                        patientPersonnummer : '19121212-1212',
-                        patientFornamn : 'Test',
-                        patientEfternamn : 'Testsson',
-                        intygType : 'fk7263',
-                        postadress : 'Storgatan 23',
-                        vardEnhetHsaId : '1',
-                        vardEnhetNamn : 'A',
-                        vardGivareHsaId : '2',
-                        vardGivareNamn : 'B'
+                        patientPersonnummer: '19121212-1212',
+                        patientFornamn: 'Test',
+                        patientEfternamn: 'Testsson',
+                        intygType: 'fk7263',
+                        postadress: 'Storgatan 23',
+                        vardEnhetHsaId: '1',
+                        vardEnhetNamn: 'A',
+                        vardGivareHsaId: '2',
+                        vardGivareNamn: 'B'
                     }).
                     respond(200, '12345');
 
@@ -98,12 +97,10 @@ define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
                 expect(statService.refreshStat).toHaveBeenCalled();
             });
 
-            it('should call onError if the server cannot create a draft', function () {
+            it('should call onError if the server cannot create a draft', function() {
                 var onSuccess = jasmine.createSpy('onSuccess');
                 var onError = jasmine.createSpy('onError');
-                $httpBackend.
-                    expectPOST('/api/intyg/create', {}).
-                    respond(500);
+                $httpBackend.expectPOST('/api/intyg/create', {}).respond(500);
 
                 CreateCertificateDraft.createDraft(onSuccess, onError);
                 $httpBackend.flush();

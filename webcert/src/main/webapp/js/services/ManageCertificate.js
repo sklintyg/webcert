@@ -1,24 +1,22 @@
-define([
-    'angular'
-], function (angular) {
+define([ 'angular' ], function(angular) {
     'use strict';
 
-    return ['$http', '$log', '$window', '$modal', function ($http, $log, $window, $modal) {
+    return ['$http', '$log', '$window', '$modal', function($http, $log, $window, $modal) {
 
         function _getCertTypes(onSuccess, onError) {
             var restPath = '/api/modules/map';
-            $http.get(restPath).success(function (data) {
+            $http.get(restPath).success(function(data) {
                 $log.debug('got data:', data);
                 var sortValue = 0;
                 var types = [
-                    {sortValue: sortValue++, id: 'default', label: 'Välj intygstyp'}
+                    { sortValue: sortValue++, id: 'default', label: 'Välj intygstyp' }
                 ];
                 for (var i = 0; i < data.length; i++) {
                     var m = data[i];
                     types.push({sortValue: sortValue++, id: m.id, label: m.label});
                 }
                 onSuccess(types);
-            }).error(function (data, status) {
+            }).error(function(data, status) {
                 $log.error('error ' + status);
                 onError();
             });
@@ -30,10 +28,10 @@ define([
         function _getCertificatesForPerson(requestConfig, onSuccess, onError) {
             $log.debug('_getCertificatesForPerson type:' + requestConfig);
             var restPath = '/api/intyg/list/' + requestConfig;
-            $http.get(restPath).success(function (data) {
+            $http.get(restPath).success(function(data) {
                 $log.debug('got data:' + data);
                 onSuccess(data);
-            }).error(function (data, status) {
+            }).error(function(data, status) {
                 $log.error('error ' + status);
                 // Let calling code handle the error of no data response
                 onError(status);
@@ -47,10 +45,10 @@ define([
             $log.debug('_getUnsignedCertificates:');
             var restPath = '/api/intyg/unsigned/'; // release version
             //var restPath = '/jsonmocks/intyg_unsigned.json'; // mocked version
-            $http.get(restPath).success(function (data) {
+            $http.get(restPath).success(function(data) {
                 $log.debug('got data:' + data);
                 onSuccess(data);
-            }).error(function (data, status) {
+            }).error(function(data, status) {
                 $log.error('error ' + status);
                 // Let calling code handle the error of no data response
                 onError(null);
@@ -63,15 +61,10 @@ define([
         function _getUnsignedCertificatesByQueryFetchMore(query, onSuccess, onError) {
             $log.debug('_getUnsignedCertificatesByQueryFetchMore');
             var restPath = '/api/intyg/unsigned';
-            $http.get(restPath, { params: query }).success(function (data) {
-
-                /////////////// MOCKED ////////////////
-                //var restPath = '/jsonmocks/intyg_unsigned_fetchmore.json'; // mocked version
-                //$http.get(restPath).success(function (data) {
-                /////////////// MOCKED ////////////////
+            $http.get(restPath, { params: query }).success(function(data) {
                 $log.debug('_getUnsignedCertificatesByQueryFetchMore got data:' + data);
                 onSuccess(data);
-            }).error(function (data, status) {
+            }).error(function(data, status) {
                 $log.error('_getUnsignedCertificatesByQueryFetchMore error ' + status);
                 // Let calling code handle the error of no data response
                 onError(data);
@@ -81,10 +74,10 @@ define([
         function _getCertificateSavedByList(onSuccess, onError) {
             $log.debug('_getCertificateSavedByList');
             var restPath = '/api/intyg/unsigned/lakare/';
-            $http.get(restPath).success(function (data) {
+            $http.get(restPath).success(function(data) {
                 $log.debug('_getCertificateSavedByList got data:' + data);
                 onSuccess(data);
-            }).error(function (data, status) {
+            }).error(function(data, status) {
                 $log.error('_getCertificateSavedByList error ' + status);
                 // Let calling code handle the error of no data response
                 onError(data);
@@ -97,10 +90,10 @@ define([
         function _setForwardedState(id, isForwarded, callback) {
             $log.debug('_setForwardedState');
             var restPath = '/api/intyg/forward/' + id;
-            $http.put(restPath, isForwarded.toString()).success(function (data) {
+            $http.put(restPath, isForwarded.toString()).success(function(data) {
                 $log.debug('_setForwardedState data:' + data);
                 callback(data);
-            }).error(function (data, status) {
+            }).error(function(data, status) {
                 $log.error('error ' + status);
                 // Let calling code handle the error of no data response
                 callback(null);
@@ -108,12 +101,14 @@ define([
         }
 
         function _buildMailToLink(cert) {
-            var baseURL = $window.location.protocol + '//' + $window.location.hostname + ($window.location.port ? ':' + $window.location.port : '');
+            var baseURL = $window.location.protocol + '//' + $window.location.hostname +
+                ($window.location.port ? ':' + $window.location.port : '');
             var url = baseURL + '/web/dashboard#/' + cert.intygType + '/edit/' + cert.intygId;
             var recipient = '';
             var subject = 'Du har blivit tilldelad ett ej signerat intyg i Webcert';
             var body = 'Klicka länken för att gå till intyget:\n' + url;
-            var link = 'mailto:' + recipient + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+            var link = 'mailto:' + recipient + '?subject=' + encodeURIComponent(subject) + '&body=' +
+                encodeURIComponent(body);
             $log.debug(link);
             return link;
         }
@@ -123,7 +118,6 @@ define([
             var now = new Date();
             var expires = new Date(now.getTime() + secsDays);
             document.cookie = 'WCDontAskForForwardedToggle=1; expires=' + expires.toUTCString();
-
         }
 
         function _isSkipForwardedCookieSet() {
@@ -134,10 +128,9 @@ define([
             // Only ask about toggle if not already set AND not skipFlag cookie is
             // set
             if (!qa.forwarded && !_isSkipForwardedCookieSet()) {
-                _showForwardedPreferenceDialog(
-                    'markforward',
+                _showForwardedPreferenceDialog('markforward',
                     'Det verkar som att du har informerat den som ska hantera ärendet. Vill du markera ärendet som vidarebefordrat?',
-                    function () { // yes
+                    function() { // yes
                         $log.debug('yes');
                         qa.forwarded = true;
                         if (onYesCallback) {
@@ -145,11 +138,11 @@ define([
                             onYesCallback(qa);
                         }
                     },
-                    function () { // no
+                    function() { // no
                         $log.debug('no');
                         // Do nothing
                     },
-                    function () {
+                    function() {
                         $log.debug('no and dont ask');
                         // How can user reset this?
                         _setSkipForwardedCookie();
@@ -160,19 +153,20 @@ define([
 
         function _showForwardedPreferenceDialog(title, bodyText, yesCallback, noCallback, noDontAskCallback, callback) {
 
-            var DialogInstanceCtrl = function ($scope, $modalInstance, title, bodyText, yesCallback, noCallback, noDontAskCallback) {
+            var DialogInstanceCtrl = function($scope, $modalInstance, title, bodyText, yesCallback, noCallback,
+                noDontAskCallback) {
                 $scope.title = title;
                 $scope.bodyText = bodyText;
                 $scope.noDontAskVisible = noDontAskCallback !== undefined;
-                $scope.yes = function (result) {
+                $scope.yes = function(result) {
                     yesCallback();
                     $modalInstance.close(result);
                 };
-                $scope.no = function () {
+                $scope.no = function() {
                     noCallback();
                     $modalInstance.close('cancel');
                 };
-                $scope.noDontAsk = function () {
+                $scope.noDontAsk = function() {
                     noDontAskCallback();
                     $modalInstance.close('cancel_dont_ask_again');
                 };
@@ -182,29 +176,29 @@ define([
                 templateUrl: '/views/partials/preference-dialog.html',
                 controller: DialogInstanceCtrl,
                 resolve: {
-                    title: function () {
+                    title: function() {
                         return angular.copy(title);
                     },
-                    bodyText: function () {
+                    bodyText: function() {
                         return angular.copy(bodyText);
                     },
-                    yesCallback: function () {
+                    yesCallback: function() {
                         return yesCallback;
                     },
-                    noCallback: function () {
+                    noCallback: function() {
                         return noCallback;
                     },
-                    noDontAskCallback: function () {
+                    noDontAskCallback: function() {
                         return noDontAskCallback;
                     }
                 }
             });
 
-            msgbox.result.then(function (result) {
+            msgbox.result.then(function(result) {
                 if (callback) {
                     callback(result);
                 }
-            }, function () {
+            }, function() {
             });
         }
 

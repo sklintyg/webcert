@@ -1,6 +1,9 @@
+/* global module */
 var baseConfig = require('./karma.conf.js');
 
-module.exports = function(config){
+module.exports = function(config) {
+    'use strict';
+
     // Load base config
     baseConfig(config);
 
@@ -8,8 +11,12 @@ module.exports = function(config){
     config.set({
         singleRun: true,
         autoWatch: false,
-        plugins : [ 'karma-jasmine', 'karma-junit-reporter',
-            'karma-phantomjs-launcher', 'karma-requirejs' ],
+        plugins: [
+            'karma-jasmine',
+            'karma-junit-reporter',
+            'karma-phantomjs-launcher',
+            'karma-requirejs'
+        ],
         browsers: ['PhantomJS']
     });
 };

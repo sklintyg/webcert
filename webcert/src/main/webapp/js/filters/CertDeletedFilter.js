@@ -1,17 +1,15 @@
-define([
-    'angular'
-], function (angular) {
+define([ 'angular' ], function(angular) {
     'use strict';
 
-    return function () {
-        return function (certs, includeDeleted) {
+    return function() {
+        return function(certs, includeDeleted) {
             var result = [];
 
             if (includeDeleted) {
                 return certs;
             }
 
-            angular.forEach(certs, function (cert) {
+            angular.forEach(certs, function(cert) {
                 if (!cert.discarded) {
                     result.push(cert);
                 }

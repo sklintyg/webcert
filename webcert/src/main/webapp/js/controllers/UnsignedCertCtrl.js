@@ -1,15 +1,13 @@
-define([
-    'angular'
-], function (angular) {
+define([ 'angular' ], function(angular) {
     'use strict';
 
     /*
      * Controller for logic related to listing unsigned certs
      */
-    return ['$scope', '$window', '$log', '$filter', '$location', '$cookieStore', '$timeout',
-            'User', 'ManageCertificate', 'wcDialogService',
-        function ($scope, $window, $log, $filter, $location, $cookieStore, $timeout,
-                  User, ManageCertificate, wcDialogService) {
+    return ['$scope', '$window', '$log', '$filter', '$location', '$cookieStore', '$timeout', 'User',
+        'ManageCertificate', 'wcDialogService',
+        function($scope, $window, $log, $filter, $location, $cookieStore, $timeout, User, ManageCertificate,
+            wcDialogService) {
 
             // Constant settings
             var PAGE_SIZE = 10;
@@ -59,7 +57,8 @@ define([
                 // Use saved choice if cookie has saved a filter
                 var storedFilter = $cookieStore.get('unsignedCertFilter');
                 if (storedFilter && storedFilter.filter.savedBy) {
-                    $scope.filterForm.lastFilterQuery.filter.savedBy = selectSavedByHsaId(storedFilter.filter.savedBy.hsaId);
+                    $scope.filterForm.lastFilterQuery.filter.savedBy =
+                        selectSavedByHsaId(storedFilter.filter.savedBy.hsaId);
                 }
             }
 
@@ -95,19 +94,15 @@ define([
             loadFilterForm();
             $scope.widgetState.doneLoading = false;
 
-            ManageCertificate.getUnsignedCertificates(function (data) {
-
+            ManageCertificate.getUnsignedCertificates(function(data) {
                 $scope.widgetState.doneLoading = true;
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.widgetState.currentList = data.results;
                 $scope.widgetState.totalCount = data.totalCount;
-
-            }, function () {
-
+            }, function() {
                 $log.debug('Query Error');
                 $scope.widgetState.doneLoading = true;
                 $scope.widgetState.activeErrorMessageKey = 'info.query.error';
-
             });
 
             /**
@@ -127,13 +122,13 @@ define([
 
                 $scope.widgetState.loadingSavedByList = true;
 
-                ManageCertificate.getCertificateSavedByList(function (list) {
+                ManageCertificate.getCertificateSavedByList(function(list) {
                     $scope.widgetState.loadingSavedByList = false;
                     $scope.widgetState.savedByList = list;
                     if (list && (list.length > 0)) {
                         $scope.widgetState.savedByList.unshift(defaultSavedByChoice);
                     }
-                }, function () {
+                }, function() {
                     $scope.widgetState.loadingSavedByList = false;
                     $scope.widgetState.savedByList = [];
                     $scope.widgetState.savedByList.push({
@@ -149,7 +144,8 @@ define([
                 converted.enhetsId = filterQuery.enhetsId;
                 converted.startFrom = filterQuery.startFrom;
                 converted.pageSize = filterQuery.pageSize;
-                converted.forwarded = $scope.filterForm.forwarded !== 'default' ? $scope.filterForm.forwarded : undefined;
+                converted.forwarded =
+                        $scope.filterForm.forwarded !== 'default' ? $scope.filterForm.forwarded : undefined;
                 converted.complete = $scope.filterForm.complete !== 'default' ? $scope.filterForm.complete : undefined;
                 converted.savedFrom = $filter('date')(converted.savedFrom, 'yyyy-MM-dd');
                 converted.savedTo = $filter('date')(converted.savedTo, 'yyyy-MM-dd');
@@ -159,8 +155,7 @@ define([
             /**
              * Exposed scope functions
              **/
-            $scope.filterDrafts = function () {
-
+            $scope.filterDrafts = function() {
                 $log.debug('filterDrafts');
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.filterForm.lastFilterQuery.startFrom = 0;
@@ -170,11 +165,11 @@ define([
                 filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
 
                 $scope.widgetState.runningQuery = true;
-                ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
+                ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function(successData) {
                     $scope.widgetState.runningQuery = false;
                     $scope.widgetState.currentList = successData.results;
                     $scope.widgetState.totalCount = successData.totalCount;
-                }, function () {
+                }, function() {
                     $scope.widgetState.runningQuery = false;
                     $log.debug('Query Error');
                     // TODO: real errorhandling
@@ -182,65 +177,64 @@ define([
                 });
             };
 
-            $scope.resetFilter = function () {
+            $scope.resetFilter = function() {
                 $cookieStore.remove('unsignedCertFilter');
                 resetFilterState();
                 $scope.filterDrafts();
             };
 
-            $scope.fetchMore = function () {
-
+            $scope.fetchMore = function() {
                 $log.debug('fetchMore');
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.filterForm.lastFilterQuery.startFrom += PAGE_SIZE;
                 var filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
                 $scope.widgetState.fetchingMoreInProgress = true;
 
-                ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function (successData) {
+                ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function(successData) {
                     $scope.widgetState.fetchingMoreInProgress = false;
                     for (var i = 0; i < successData.results.length; i++) {
                         $scope.widgetState.currentList.push(successData.results[i]);
                     }
-                }, function () {
+                }, function() {
                     $scope.widgetState.fetchingMoreInProgress = false;
                     $log.debug('Query Error');
                     $scope.widgetState.activeErrorMessageKey = 'info.query.error';
                 });
             };
 
-            $scope.openIntyg = function (cert) {
+            $scope.openIntyg = function(cert) {
                 $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
             };
 
-            $scope.toggleDatePickerInstance = function (instance) {
-                $timeout(function () {
+            $scope.toggleDatePickerInstance = function(instance) {
+                $timeout(function() {
                     instance.open = !instance.open;
                 });
             };
 
             // Handle forwarding
-            $scope.openMailDialog = function (cert) {
-                $timeout(function () {
+            $scope.openMailDialog = function(cert) {
+                $timeout(function() {
                     ManageCertificate.handleForwardedToggle(cert, $scope.onForwardedChange);
                 }, 1000);
                 // Launch mail client
                 $window.location = ManageCertificate.buildMailToLink(cert);
-
             };
 
-            $scope.onForwardedChange = function (cert) {
+            $scope.onForwardedChange = function(cert) {
                 cert.updateInProgress = true;
-                ManageCertificate.setForwardedState(cert.intygId, cert.forwarded, function (result) {
+                ManageCertificate.setForwardedState(cert.intygId, cert.forwarded, function(result) {
                     cert.updateInProgress = false;
 
                     if (result !== null) {
                         cert.forwarded = result.forwarded;
                     } else {
                         cert.forwarded = !cert.forwarded;
-                        wcDialogService.showErrorMessageDialog('Kunde inte markera/avmarkera frågan som vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. Annars kan du kontakta supporten.');
+                        wcDialogService.showErrorMessageDialog('Kunde inte markera/avmarkera frågan som vidarebefordrad. ' +
+                            'Försök gärna igen för att se om felet är tillfälligt. Annars kan du kontakta supporten.');
                     }
                 });
             };
-
-        }];
+        }
+    ];
 });

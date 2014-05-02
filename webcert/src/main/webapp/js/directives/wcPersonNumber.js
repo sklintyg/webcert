@@ -1,5 +1,4 @@
-define([
-], function () {
+define([], function() {
     'use strict';
 
     /**
@@ -8,12 +7,12 @@ define([
      * samordningsnummer) but it allows the user to input the number in any of the valid formats.
      */
 
-    return [function () {
+    return [function() {
 
         var PERSONNUMMER_REGEXP = /^(\d{2})?(\d{2})(\d{2})([0-3]\d)([-+]?)(\d{4})$/;
         var SAMORDNINGSNUMMER_REGEXP = /^(\d{2})?(\d{2})(\d{2})([6-9]\d)-?(\d{4})$/;
 
-        var isCheckDigitValid = function (value) {
+        var isCheckDigitValid = function(value) {
 
             // Remove separator.
             var cleanValue = value.replace(/[-+]/, '');
@@ -44,22 +43,22 @@ define([
             }
         };
 
-        var formatPersonnummer = function (date, number) {
+        var formatPersonnummer = function(date, number) {
             return '' + date.getFullYear() + pad(date.getMonth() + 1) + pad(date.getDate()) + '-' + number;
         };
 
-        var formatSamordningsnummer = function (date, number) {
+        var formatSamordningsnummer = function(date, number) {
             return '' + date.getFullYear() + pad(date.getMonth() + 1) + pad(date.getDate() + 60) + '-' + number;
         };
 
-        function pad (number) {
+        function pad(number) {
             return number < 10 ? '0' + number : number;
         }
 
         function isDateValid(dateStr) {
             // We have to implement this since there is no native, cross browser, way of checking this.
 
-            var parts= dateStr.split('/');
+            var parts = dateStr.split('/');
             var year = parseInt(parts[0], 10);
             var month = parseInt(parts[1], 10);
             var day = parseInt(parts[2], 10);
@@ -80,7 +79,7 @@ define([
                 if (!isLeapYear && day > 28) {
                     return false;
                 }
-            } else if ((( month === 4  || month === 6  || month === 9  || month === 11 ) && day > 30) ||
+            } else if ((( month === 4 || month === 6 || month === 9 || month === 11 ) && day > 30) ||
                 (( month === 1 || month === 3 || month === 5 || month === 7 || month === 8 ||
                     month === 10 || month === 12 ) && day > 31)) {
                 return false;
@@ -91,12 +90,12 @@ define([
 
         return {
 
-            restrict : 'A',
-            require : 'ngModel',
+            restrict: 'A',
+            require: 'ngModel',
 
-            link : function (scope, element, attrs, ctrl) {
+            link: function(scope, element, attrs, ctrl) {
 
-                ctrl.$parsers.unshift(function (viewValue) {
+                ctrl.$parsers.unshift(function(viewValue) {
 
                     var date;
                     var dateStr;
