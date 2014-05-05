@@ -61,18 +61,29 @@
   
   <!-- REST service for inserting questions directly into the database for testing purposes -->
   <beans profile="dev,test,qa">
-    <jaxrs:server address="/questions">
-      <jaxrs:serviceBeans>
-        <ref bean="questionBean" />
-      </jaxrs:serviceBeans>
-      <jaxrs:providers>
-        <ref bean="jacksonJsonProvider" />
-      </jaxrs:providers>
-      <jaxrs:extensionMappings>
-        <entry key="json" value="application/json" />
-      </jaxrs:extensionMappings>
-    </jaxrs:server>
-    <bean id="questionBean" class="se.inera.webcert.integration.test.QuestionResource" />
+      <jaxrs:server address="/questions">
+          <jaxrs:serviceBeans>
+              <ref bean="questionBean" />
+          </jaxrs:serviceBeans>
+          <jaxrs:providers>
+              <ref bean="jacksonJsonProvider" />
+          </jaxrs:providers>
+          <jaxrs:extensionMappings>
+              <entry key="json" value="application/json" />
+          </jaxrs:extensionMappings>
+      </jaxrs:server>
+      <bean id="questionBean" class="se.inera.webcert.integration.test.QuestionResource" />
+      <jaxrs:server address="/intyg">
+          <jaxrs:serviceBeans>
+              <bean class="se.inera.webcert.integration.test.IntygResource" />
+          </jaxrs:serviceBeans>
+          <jaxrs:providers>
+              <ref bean="jacksonJsonProvider" />
+          </jaxrs:providers>
+          <jaxrs:extensionMappings>
+              <entry key="json" value="application/json" />
+          </jaxrs:extensionMappings>
+      </jaxrs:server>
   </beans>
   
 </beans>

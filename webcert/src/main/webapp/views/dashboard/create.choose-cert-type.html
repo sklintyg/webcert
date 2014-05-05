@@ -24,7 +24,7 @@
 				  <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType" data-ng-options="type.id as type.label for type in certTypes"></select>
 				</div>
 				<div class="form-group">
-				  <button class="btn btn-success" type="submit" ng-disabled="intygType == 'default'">Fortsätt</button>
+				  <button id="intygTypeFortsatt" class="btn btn-success" type="submit" ng-disabled="intygType == 'default'">Fortsätt</button>
 				</div>
 				<div class="alert alert-warning col-lg-7" ng-show="intygType != 'default'">
 					<span message key='{{"certificatetypes."+ intygType +".helptext"}}'></span>

@@ -8,6 +8,11 @@ class SokSkrivaIntygPage extends Page {
 
     static content = {
         careUnitSelector(required: false) { $("#wc-care-unit-clinic-selector") }
+        personnummer { $("#pnr") }
+        personnummerFortsattKnapp { $("#skapapersonnummerfortsatt") }
+        intygtypFortsattKnapp { $("#skapaintygtypfortsatt") }
+        intygTyp { $("#intygType") }
+        intygTypFortsatt { $("#intygTypeFortsatt") }
 
         logoutLink { $("#logoutLink") }
     }

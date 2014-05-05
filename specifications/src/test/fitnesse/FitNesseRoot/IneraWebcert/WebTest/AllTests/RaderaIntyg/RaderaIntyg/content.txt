@@ -1,0 +1,9 @@
+!contents -R2 -g -p -f -h
+
+!| script | HanteraUtkast |
+| logga in som |IFV1239877878-104B_IFV1239877878-1042|
+| skapa intyg for personnummer | 19121212-1212 | med typ | Läkarintyg FK 7263 |
+| editera sidan visas |
+| radera utkast |
+| ej signerade intyg sidan visas |
+| inga ej signerade intyg visas |
