@@ -4,8 +4,20 @@ import se.inera.webcert.pages.OmWebcertSupportPage
 import se.inera.webcert.pages.OmWebcertIntygPage
 import se.inera.webcert.pages.OmWebcertFAQPage
 import se.inera.webcert.pages.OmWebcertCookiesPage
+import se.inera.webcert.pages.WelcomePage
 
 class OmWebcert {
+
+    def loggaInSom(String id) {
+        Browser.drive {
+            go "/welcome.jsp"
+
+            waitFor {
+                at WelcomePage
+            }
+            page.loginAs(id)
+        }
+    }
 
     def gaTillOmWebcertSupport() {
         Browser.drive {

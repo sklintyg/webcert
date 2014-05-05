@@ -115,8 +115,12 @@ define([], function() {
             }, 500);
 
             $scope.openIntyg = function(cert) {
-                $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
-                CreateCertificateDraft.reset();
+                if (cert.source === 'WC') {
+                    $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
+                    CreateCertificateDraft.reset();
+                } else {
+                    $location.path('/' + cert.intygType + '/view/' + cert.intygId);
+                }
             };
 
             $scope.copyIntyg = function(cert) {

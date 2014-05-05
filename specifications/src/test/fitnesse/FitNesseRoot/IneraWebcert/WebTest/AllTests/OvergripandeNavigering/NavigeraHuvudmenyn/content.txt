@@ -22,6 +22,3 @@ Testar möjligheten att nå alla delar av applikationen.
 
 | script | !-OmWebcert-! |
 | ga till om webcert support |
-| valj intyg som stods |
-| valj vanliga fragor |
-| valj om kakor |
