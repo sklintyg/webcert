@@ -28,7 +28,7 @@ define([ 'angular', 'app' ], function(angular, app) {
                 templateUrl: '/views/dashboard/unsigned.html',
                 controller: 'UnsignedCertCtrl'
             }).
-            when('/view', {
+            when('/view', { //is this needed? seems unused as neither view nor controller exists in the project
                 templateUrl: '/views/dashboard/view-cert.html',
                 controller: 'ViewCertCtrl'
             }).
