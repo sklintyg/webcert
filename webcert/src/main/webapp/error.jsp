@@ -63,7 +63,7 @@
                         <spring:message code="info.loggedout.text"/>
                     </div>
                     <!-- reason: loggedout -->
-                    <a href="/web/start" class="btn btn-success" id="loginBtn">Logga in</a>
+                    <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
                 </c:when>
 
                 <c:when test="${param.reason eq \"denied\"}">
@@ -75,7 +75,7 @@
                         <spring:message code="error.noauth.text"/>
                     </div>
                     <!-- reason: denied -->
-                    <a href="/web/start" class="btn btn-success" id="loginBtn">Logga in</a>
+                    <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
                 </c:when>
 
                 <c:when test="${param.reason eq \"medarbetaruppdrag\"}">
