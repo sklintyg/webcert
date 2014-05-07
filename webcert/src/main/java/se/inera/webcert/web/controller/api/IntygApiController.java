@@ -254,4 +254,18 @@ public class IntygApiController extends AbstractApiController {
 
         return Response.ok(intygEntry).build();
     }
+
+    /**
+     * Signera utkast eller dö
+     *
+     * @param intygsId intyg id
+     * @return
+     */
+    @POST
+    @Path("/{intygsId}/signera")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response signeraUtkast(@PathParam("intygsId") String intygsId) {
+        String biljett = intygDraftService.signeraUtkast(intygsId);
+        return Response.ok(biljett, MediaType.TEXT_PLAIN).build();
+    }
 }

@@ -26,4 +26,14 @@ public interface IntygDraftService {
     void deleteUnsignedDraft(String intygId);
 
     Intyg getDraft(String intygId);
+
+    /**
+     * Signera intyg
+     *
+     * @param intygId intyg id
+     * @return biljettId
+     */
+    String signeraUtkast(String intygId);
+
+    String biljettStatus(String biljettId);
 }

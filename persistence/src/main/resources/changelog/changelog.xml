@@ -255,4 +255,26 @@
     </createTable>
   </changeSet>
 
+  <changeSet id="4" author="ps">
+      <createTable tableName="SIGNATUR">
+          <column name="SIGNATUR_ID" type="bigint">
+              <constraints unique="true" nullable="false" />
+          </column>
+          <column name="SIGNERINGS_DATUM" type="datetime">
+              <constraints nullable="true" />
+          </column>
+          <column name="SIGNERAD_AV" type="varchar(255)">
+              <constraints nullable="false"/>
+          </column>
+          <column name="INTYG_DATA" type="blob">
+              <constraints nullable="false"/>
+          </column>
+          <column name="SIGNATUR" type="varchar(255)">
+              <constraints nullable="false"/>
+          </column>
+      </createTable>
+      <!-- Add auto incremented id column to table -->
+      <addAutoIncrement columnDataType="bigint" columnName="SIGNATUR_ID"
+                        incrementBy="1" startWith="1" tableName="SIGNATUR" />
+  </changeSet>
 </databaseChangeLog>

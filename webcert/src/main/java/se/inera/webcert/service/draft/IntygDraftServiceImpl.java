@@ -212,6 +212,16 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
+    public String biljettStatus(String biljettId) {
+        return null;
+    }
+
+    @Override
+    public String signeraUtkast(String intygId) {
+        return null;
+    }
+
+    @Override
     @Transactional
     public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request) {
 
