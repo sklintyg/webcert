@@ -21,7 +21,7 @@ import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.BiljettResponse;
+import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
@@ -255,33 +255,5 @@ public class IntygApiController extends AbstractApiController {
         ListIntygEntry intygEntry = IntygDraftsConverter.convertIntygToListIntygEntry(updatedIntyg);
 
         return Response.ok(intygEntry).build();
-    }
-
-    /**
-     * Signera utkast.
-     *
-     * @param intygsId intyg id
-     * @return
-     */
-    @POST
-    @Path("/{intygsId}/signera")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse signeraUtkast(@PathParam("intygsId") String intygsId) {
-        SigneringsBiljett biljett = intygDraftService.signeraUtkast(intygsId);
-        return new BiljettResponse(biljett);
-    }
-
-    /**
-     * Signera utkast.
-     *
-     * @param biljettId biljett id
-     * @return
-     */
-    @GET
-    @Path("/biljett/{biljettId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse biljettStatus(@PathParam("biljettId") String biljettId) {
-        SigneringsBiljett biljett = intygDraftService.biljettStatus(biljettId);
-        return new BiljettResponse(biljett);
     }
 }

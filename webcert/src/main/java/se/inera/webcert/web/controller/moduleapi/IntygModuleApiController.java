@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -25,9 +26,11 @@ import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationMessage;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.draft.dto.SigneringsBiljett;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
@@ -190,6 +193,34 @@ public class IntygModuleApiController extends AbstractApiController {
 
     private String buildPdfHeader(String pdfFileName) {
         return "attachment; filename=\"" + pdfFileName + "\"";
+    }
+
+    /**
+     * Signera utkast.
+     *
+     * @param intygsId intyg id
+     * @return
+     */
+    @POST
+    @Path("/signera/{intygsId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public BiljettResponse signeraUtkast(@PathParam("intygsId") String intygsId) {
+        SigneringsBiljett biljett = draftService.signeraUtkast(intygsId);
+        return new BiljettResponse(biljett);
+    }
+
+    /**
+     * Signera utkast.
+     *
+     * @param biljettId biljett id
+     * @return
+     */
+    @GET
+    @Path("/signera/status/{biljettId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public BiljettResponse biljettStatus(@PathParam("biljettId") String biljettId) {
+        SigneringsBiljett biljett = draftService.biljettStatus(biljettId);
+        return new BiljettResponse(biljett);
     }
 
 }

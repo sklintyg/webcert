@@ -1,5 +1,8 @@
 package se.inera.webcert.service.draft;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,12 +217,21 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return intyg;
     }
 
+    // XXX Väldigt tillfällig, soarasenaset (1 st) biljett.
+
+    private volatile SigneringsBiljett biljett;
+
     @Override
     public SigneringsBiljett biljettStatus(String biljettId) {
-        return new SigneringsBiljett(biljettId, "SIGNERAD", "");
+        if (biljett != null && biljett.getId().equals(biljettId)) {
+            return biljett;
+        } else {
+            return new SigneringsBiljett(biljettId, "OKANT", null, null);
+        }
     }
 
     @Override
+    @Transactional
     public SigneringsBiljett signeraUtkast(String intygId) {
 
         LOG.debug("Signera utkast '{}'", intygId);
@@ -228,8 +241,33 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         if (intyg == null) {
             LOG.warn("Intyg '{}' was not found", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
+        } else if (intyg.getStatus() != IntygsStatus.DRAFT_COMPLETE) {
+            LOG.warn("Intyg '{}' with status '{}' can not be signed", intygId, intyg.getStatus());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "The intyg was not in state " + IntygsStatus.DRAFT_COMPLETE);
         }
-        return new SigneringsBiljett(UUID.randomUUID().toString(), "BEARBETAR", intyg.getIntygsId());
+        // TODO Se till att det är rätt person som signerar
+        String hash;
+        try {
+            MessageDigest sha = MessageDigest.getInstance("SHA-256");
+            String payload = intyg.getModel();
+            sha.update(payload.getBytes("UTF-8"));
+            byte[] digest = sha.digest();
+            hash = new String(Hex.encodeHex(digest));
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e ) {
+            LOG.error("Fel vid hashgenerering intyg {}. {}", intyg.getIntygsId(), e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Internal error signing intyg");
+        }
+        SigneringsBiljett statusBiljett = new SigneringsBiljett(UUID.randomUUID().toString(), "BEARBETAR", intyg.getIntygsId(), hash);
+        LOG.info("Signeringsbiljett id={} intyg={} hash={}", new Object[] {biljett.getId(), biljett.getIntygsId(), biljett.getHash()});
+        // TODO Tillfällig persistering av utestående biljetter och direkt "signerad" av intyg
+        biljett = statusBiljett.withStatus("SIGNERAD");
+        intyg.setStatus(IntygsStatus.SIGNED);
+        Intyg persisted = intygRepository.save(intyg);
+
+        LogRequest logRequest = createLogRequestFromDraft(persisted);
+        logService.logSigningOfDraft(logRequest);
+
+        return statusBiljett;
     }
 
     @Override

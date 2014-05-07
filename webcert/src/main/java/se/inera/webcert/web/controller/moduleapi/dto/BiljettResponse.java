@@ -1,4 +1,4 @@
-package se.inera.webcert.web.controller.api.dto;
+package se.inera.webcert.web.controller.moduleapi.dto;
 
 import se.inera.webcert.service.draft.dto.SigneringsBiljett;
 
@@ -6,11 +6,13 @@ public class BiljettResponse {
     private final String id;
     private final String status;
     private final String intygsId;
+    private final String hash;
 
     public BiljettResponse(SigneringsBiljett biljett) {
         id = biljett.getId();
         status = biljett.getStatus();
         intygsId = biljett.getIntygsId();
+        hash = biljett.getHash();
     }
 
     public String getId() {
@@ -23,5 +25,9 @@ public class BiljettResponse {
 
     public String getIntygsId() {
         return intygsId;
+    }
+
+    public String getHash() {
+        return hash;
     }
 }

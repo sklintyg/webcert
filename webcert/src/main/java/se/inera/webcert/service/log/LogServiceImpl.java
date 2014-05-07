@@ -20,6 +20,7 @@ import se.inera.log.messages.Enhet;
 import se.inera.log.messages.IntygPrintMessage;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.log.messages.Patient;
+import se.inera.log.messages.SignDraftMessage;
 import se.inera.log.messages.UpdateDraftMessage;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -75,6 +76,11 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logDeleteOfDraft(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new DeleteDraftMessage(logRequest.getIntygId())));
+    }
+
+    @Override
+    public void logSigningOfDraft(LogRequest logRequest) {
+        send(populateLogMessage(logRequest, new SignDraftMessage(logRequest.getIntygId())));
     }
 
     private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg) {

@@ -36,4 +36,6 @@ public interface LogService {
     void logUpdateOfDraft(LogRequest logRequest);
 
     void logDeleteOfDraft(LogRequest logRequest);
+
+    void logSigningOfDraft(LogRequest logRequest);
 }
