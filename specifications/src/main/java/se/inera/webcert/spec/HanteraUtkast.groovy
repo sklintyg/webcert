@@ -73,25 +73,4 @@ class HanteraUtkast {
             }
         }
     }
-
-    String utkastId() {
-        def url
-        Browser.drive {
-            waitFor {
-                at EditeraIntygPage
-            }
-            url = getDriver().getCurrentUrl().split('/').last()
-        }
-        url
-    }
-
-    boolean skapaIntygForPersonnummerMedTyp(String personnummer, String typ) {
-        Browser.drive {
-            at SokSkrivaIntygPage
-            page.personnummer = personnummer
-            page.personnummerFortsattKnapp.click()
-            page.intygTyp = typ
-            page.intygTypFortsatt.click()
-        }
-    }
 }
