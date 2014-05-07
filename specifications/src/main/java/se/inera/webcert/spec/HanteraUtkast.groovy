@@ -1,7 +1,5 @@
 package se.inera.webcert.spec
-
 import se.inera.webcert.pages.EditeraIntygPage
-import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnsignedIntygPage
 import se.inera.webcert.pages.WelcomePage
 
@@ -72,5 +70,53 @@ class HanteraUtkast {
                 page.konfirmeraRadera.click()
             }
         }
+    }
+
+    boolean signeraKnappAktiverad(boolean expected = true) {
+        def result = false
+        Browser.drive {
+            at EditeraIntygPage
+            result = page.signeraBtn.isEnabled()
+        }
+        result == expected
+    }
+
+    boolean signeraKnappVisas(boolean expected = true) {
+        def result = false
+        Browser.drive {
+            at EditeraIntygPage
+            result = page.signeraBtn.isDisplayed()
+        }
+        result == expected
+    }
+
+    boolean signeraUtkast() {
+        false
+    }
+
+    boolean signeraDialogVisas() {
+        false
+    }
+
+    boolean bekraftaSigneraUtkast() {
+        false
+    }
+
+    boolean signeringKraverLakareVisas(boolean expected = true) {
+        def result = false
+        Browser.drive {
+            asType EditeraIntygPage
+            result = page.signRequiresDoctorMessage.isDisplayed()
+        }
+        result == expected
+    }
+
+    boolean intygetSigneratMeddelandeVisas(boolean expected = true) {
+        def result = false
+        Browser.drive {
+            asType EditeraIntygPage
+            result = page.certificateSignedMessage.isDisplayed()
+        }
+        result == expected
     }
 }

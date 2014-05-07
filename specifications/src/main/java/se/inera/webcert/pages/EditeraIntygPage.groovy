@@ -9,6 +9,8 @@ class EditeraIntygPage extends Page {
     static content = {
         radera { $("#ta-bort-utkast") }
         konfirmeraRadera { $("#confirm-draft-delete-button") }
+        signeraBtn { $("#signeraBtn") }
+        signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
+        certificateSignedMessage(required: false) { $("#certificate-is-signed-message-text") }
     }
-
 }

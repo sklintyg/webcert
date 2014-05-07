@@ -1,0 +1,23 @@
+Testet beskriver fallet när en administratör går in på ett komplett fk7263 intyg för att signera.
+
+!3 Lägg till utkast som är komplett
+
+| skapa utkast |
+| intygId | intygTyp | personNummer | forNamn | efterNamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-signera-1 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+
+!3 Givet att det finns ett utkast som är komplett, verifiera att det inte går att signera det
+
+| script | !-HanteraUtkast-! |
+| logga in som | IFV1239877878-104N_IFV1239877878-1045 |
+| ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-1 |
+| editera sidan visas |
+| signera knapp visas | false |
+| signering kraver lakare visas |
+
+!3 Ta bort utkast
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-signera-1 |
+
