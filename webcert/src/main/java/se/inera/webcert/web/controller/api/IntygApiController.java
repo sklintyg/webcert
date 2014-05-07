@@ -13,6 +13,7 @@ import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
+import se.inera.webcert.service.draft.dto.SigneringsBiljett;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.Lakare;
@@ -20,6 +21,7 @@ import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.api.dto.BiljettResponse;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
@@ -256,7 +258,7 @@ public class IntygApiController extends AbstractApiController {
     }
 
     /**
-     * Signera utkast eller dö
+     * Signera utkast.
      *
      * @param intygsId intyg id
      * @return
@@ -264,8 +266,22 @@ public class IntygApiController extends AbstractApiController {
     @POST
     @Path("/{intygsId}/signera")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response signeraUtkast(@PathParam("intygsId") String intygsId) {
-        String biljett = intygDraftService.signeraUtkast(intygsId);
-        return Response.ok(biljett, MediaType.TEXT_PLAIN).build();
+    public BiljettResponse signeraUtkast(@PathParam("intygsId") String intygsId) {
+        SigneringsBiljett biljett = intygDraftService.signeraUtkast(intygsId);
+        return new BiljettResponse(biljett);
+    }
+
+    /**
+     * Signera utkast.
+     *
+     * @param biljettId biljett id
+     * @return
+     */
+    @GET
+    @Path("/biljett/{biljettId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public BiljettResponse biljettStatus(@PathParam("biljettId") String biljettId) {
+        SigneringsBiljett biljett = intygDraftService.biljettStatus(biljettId);
+        return new BiljettResponse(biljett);
     }
 }

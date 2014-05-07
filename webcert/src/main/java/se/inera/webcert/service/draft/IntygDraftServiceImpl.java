@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationStatus;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.draft.dto.SigneringsBiljett;
 import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Lakare;
@@ -212,13 +214,22 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    public String biljettStatus(String biljettId) {
-        return null;
+    public SigneringsBiljett biljettStatus(String biljettId) {
+        return new SigneringsBiljett(biljettId, "SIGNERAD", "");
     }
 
     @Override
-    public String signeraUtkast(String intygId) {
-        return null;
+    public SigneringsBiljett signeraUtkast(String intygId) {
+
+        LOG.debug("Signera utkast '{}'", intygId);
+
+        Intyg intyg = intygRepository.findOne(intygId);
+
+        if (intyg == null) {
+            LOG.warn("Intyg '{}' was not found", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
+        }
+        return new SigneringsBiljett(UUID.randomUUID().toString(), "BEARBETAR", intyg.getIntygsId());
     }
 
     @Override
