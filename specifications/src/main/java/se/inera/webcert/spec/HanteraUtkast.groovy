@@ -1,6 +1,5 @@
 package se.inera.webcert.spec
 
-import org.openqa.selenium.WebDriver
 import se.inera.webcert.pages.EditeraIntygPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnsignedIntygPage
@@ -47,9 +46,9 @@ class HanteraUtkast {
         }
     }
 
-    def gaTillEditeraIntyg(String intygid) {
+    def gaTillEditeraIntygMedTypOchIntygid(String typ, String intygid) {
         Browser.drive {
-            go "/web/dashboard#/fk7263/edit/" + intygid
+            go "/web/dashboard#/$typ/edit/$intygid"
         }
     }
 
