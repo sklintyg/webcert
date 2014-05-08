@@ -21,6 +21,7 @@ define([], function() {
             'label.signselectedcerts': 'Signera valda intyg',
 
             'label.confirmaddress': 'Återanvänd uppgifter',
+            'label.confirmsign': 'Signera intyget',
             'label.copycert': 'Kopiera intyg',
 
             //certificate types

@@ -1,15 +1,5 @@
 package se.inera.webcert.service.draft;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -17,29 +7,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.certificate.modules.support.api.dto.HoSPersonal;
-import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
-import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.certificate.modules.support.api.dto.ValidationMessage;
-import se.inera.certificate.modules.support.api.dto.ValidationStatus;
+import se.inera.certificate.modules.support.api.dto.*;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.draft.dto.DraftValidation;
-import se.inera.webcert.service.draft.dto.DraftValidationStatus;
-import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.dto.SigneringsBiljett;
+import se.inera.webcert.service.draft.dto.*;
 import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Lakare;
+import se.inera.webcert.service.dto.*;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
@@ -47,6 +25,11 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 
 @Service
 public class IntygDraftServiceImpl implements IntygDraftService {
@@ -258,7 +241,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Internal error signing intyg");
         }
         SigneringsBiljett statusBiljett = new SigneringsBiljett(UUID.randomUUID().toString(), "BEARBETAR", intyg.getIntygsId(), hash);
-        LOG.info("Signeringsbiljett id={} intyg={} hash={}", new Object[] {biljett.getId(), biljett.getIntygsId(), biljett.getHash()});
+        LOG.info("Signeringsbiljett id={} intyg={} hash={}", new Object[] {statusBiljett.getId(), statusBiljett.getIntygsId(), statusBiljett.getHash()});
         // TODO Tillfällig persistering av utestående biljetter och direkt "signerad" av intyg
         biljett = statusBiljett.withStatus("SIGNERAD");
         intyg.setStatus(IntygsStatus.SIGNED);
