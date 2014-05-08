@@ -13,7 +13,6 @@ import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.draft.dto.SigneringsBiljett;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.Lakare;
@@ -21,7 +20,6 @@ import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
@@ -135,7 +133,7 @@ public class IntygApiController extends AbstractApiController {
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
      * types of Intyg are converted and merged into one sorted list.
      *
-     * @param personNummer
+     * @param personNummer personnummer
      * @return a Response carrying a list containing all Intyg for a person.
      */
     @GET
@@ -241,6 +239,7 @@ public class IntygApiController extends AbstractApiController {
      * @param forwarded
      *            True or False
      * @return
+     *            Response
      */
     @PUT
     @Path("/forward/{intygsId}")

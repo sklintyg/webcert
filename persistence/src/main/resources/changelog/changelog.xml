@@ -266,10 +266,16 @@
           <column name="SIGNERAD_AV" type="varchar(255)">
               <constraints nullable="false"/>
           </column>
-          <column name="INTYG_DATA" type="blob">
+          <column name="INTYG_ID" type="varchar(255)">
               <constraints nullable="false"/>
           </column>
-          <column name="SIGNATUR" type="varchar(255)">
+          <column name="INTYG_DATA" type="clob">
+              <constraints nullable="false"/>
+          </column>
+          <column name="INTYG_HASH" type="clob">
+              <constraints nullable="false"/>
+          </column>
+          <column name="SIGNATUR_DATA" type="clob">
               <constraints nullable="false"/>
           </column>
       </createTable>

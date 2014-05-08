@@ -158,8 +158,8 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Delivers a signed intyg.
      *
-     * @param intygId
-     * @return
+     * @param intygId intygid
+     * @return Response
      */
     @GET
     @Path("/signed/{intygId}")
@@ -199,7 +199,7 @@ public class IntygModuleApiController extends AbstractApiController {
      * Signera utkast.
      *
      * @param intygsId intyg id
-     * @return
+     * @return BiljettResponse
      */
     @POST
     @Path("/signera/{intygsId}")
@@ -210,10 +210,10 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Signera utkast.
+     * Hamta signeringsstatus.
      *
      * @param biljettId biljett id
-     * @return
+     * @return BiljettResponse
      */
     @GET
     @Path("/signera/status/{biljettId}")

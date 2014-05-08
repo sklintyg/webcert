@@ -10,7 +10,7 @@ public class BiljettResponse {
 
     public BiljettResponse(SigneringsBiljett biljett) {
         id = biljett.getId();
-        status = biljett.getStatus();
+        status = biljett.getStatus().name();
         intygsId = biljett.getIntygsId();
         hash = biljett.getHash();
     }

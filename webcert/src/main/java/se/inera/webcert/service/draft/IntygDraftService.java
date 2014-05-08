@@ -29,10 +29,10 @@ public interface IntygDraftService {
     Intyg getDraft(String intygId);
 
     /**
-     * Signera intyg
+     * Signera intyg.
      *
-     * @param intygId intyg id
-     * @return biljettId
+     * @param intygId intygid
+     * @return SigneringsBiljett
      */
     SigneringsBiljett signeraUtkast(String intygId);
 
