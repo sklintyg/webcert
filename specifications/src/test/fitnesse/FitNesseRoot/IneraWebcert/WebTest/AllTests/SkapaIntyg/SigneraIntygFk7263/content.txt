@@ -14,12 +14,11 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | editera sidan visas |
 | signera knapp visas |
 | signera knapp aktiverad |
-#| signera utkast |
-#| signera dialog visas |
-#| bekrafta signera utkast |
-#| editera sidan visas |
-#| intyget signerat meddelande visas |
-#| signera knapp visas | false |
+| signera utkast |
+| editera sidan visas |
+| intyget signerat meddelande visas |
+| signera knapp visas | false |
+
 
 !3 Ta bort utkast
 

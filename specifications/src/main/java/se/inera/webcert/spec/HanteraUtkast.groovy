@@ -91,15 +91,17 @@ class HanteraUtkast {
     }
 
     boolean signeraUtkast() {
-        false
-    }
-
-    boolean signeraDialogVisas() {
-        false
-    }
-
-    boolean bekraftaSigneraUtkast() {
-        false
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            waitFor {
+                page.signeraBtn.click()
+            }
+            waitFor {
+                page.konfirmeraSignera.click()
+            }
+        }
     }
 
     boolean signeringKraverLakareVisas(boolean expected = true) {
