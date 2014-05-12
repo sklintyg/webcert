@@ -1,6 +1,7 @@
 package se.inera.webcert.spec
 import se.inera.webcert.pages.EditeraIntygPage
 import se.inera.webcert.pages.UnsignedIntygPage
+import se.inera.webcert.pages.VisaIntygPage
 import se.inera.webcert.pages.WelcomePage
 
 class HanteraUtkast {
@@ -117,8 +118,17 @@ class HanteraUtkast {
         def result = false
         Browser.drive {
             asType EditeraIntygPage
-            result = page.certificateSignedMessage.isDisplayed()
+            result = page.certificateIsSentToITMessage.isDisplayed()
         }
         result == expected
     }
+
+    boolean visaSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaIntygPage
+            }
+        }
+    }
+
 }

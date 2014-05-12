@@ -12,6 +12,6 @@ class EditeraIntygPage extends Page {
         signeraBtn(required: false) { $("#signera-utkast-button") }
         konfirmeraSignera { $("#confirm-signera-utkast-button") }
         signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
-        certificateSignedMessage(required: false) { $("#certificate-is-signed-message-text") }
+        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
     }
 }
