@@ -1,9 +1,9 @@
 define([], function() {
     'use strict';
 
-    return ['$scope', '$location', '$filter', '$log', '$timeout', 'wcDialogService', 'ManageCertificate',
+    return ['$scope', '$location', '$filter', '$log', 'wcDialogService', 'ManageCertificate',
         'CreateCertificateDraft', 'User',
-        function($scope, $location, $filter, $log, $timeout, wcDialogService, ManageCertificate, CreateCertificateDraft,
+        function($scope, $location, $filter, $log, wcDialogService, ManageCertificate, CreateCertificateDraft,
             User) {
             if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.firstname ||
                 !CreateCertificateDraft.lastname) {
@@ -102,17 +102,15 @@ define([], function() {
             $scope.widgetState.activeErrorMessageKey = null;
             $scope.widgetState.doneLoading = true;
 
-            $timeout(function() {
-                ManageCertificate.getCertificatesForPerson($scope.personnummer, function(data) {
-                    $scope.widgetState.doneLoading = false;
-                    $scope.widgetState.certListUnhandled = data;
-                    $scope.updateCertList();
-                }, function(errorData) {
-                    $scope.widgetState.doneLoading = false;
-                    $log.debug('Query Error' + errorData);
-                    $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
-                });
-            }, 500);
+            ManageCertificate.getCertificatesForPerson($scope.personnummer, function(data) {
+                $scope.widgetState.doneLoading = false;
+                $scope.widgetState.certListUnhandled = data;
+                $scope.updateCertList();
+            }, function(errorData) {
+                $scope.widgetState.doneLoading = false;
+                $log.debug('Query Error' + errorData);
+                $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
+            });
 
             $scope.openIntyg = function(cert) {
                 if (cert.source === 'WC') {
