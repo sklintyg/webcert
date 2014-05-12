@@ -3,6 +3,7 @@ package se.inera.webcert.service;
 import java.util.List;
 
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
+import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygItem;
 
@@ -44,4 +45,5 @@ public interface IntygService {
      */
     PdfResponse fetchIntygAsPdf(String intygId);
 
+    void storeIntyg(Intyg intyg);
 }

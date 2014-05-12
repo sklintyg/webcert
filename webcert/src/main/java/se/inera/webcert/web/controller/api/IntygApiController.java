@@ -122,6 +122,13 @@ public class IntygApiController extends AbstractApiController {
         venh.setVardgivare(vgiv);
         venh.setHsaId(req.getVardEnhetHsaId());
         venh.setNamn(req.getVardEnhetNamn());
+        // TODO detta borde komma från HSA
+        venh.setEpost("epost@server.invalid");
+        venh.setPostadress("Storgatan 12");
+        venh.setPostnummer("12345");
+        venh.setPostort("Ankeborg");
+        venh.setTelefonnummer("010-12345678");
+        venh.setArbetsplatskod("0123456789");
 
         srvReq.setVardenhet(venh);
 

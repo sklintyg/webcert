@@ -10,7 +10,7 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 
 | script | !-HanteraUtkast-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
-| ga till editera intyg med typ | ts-bas | och intygid | webcert-fitnesse-signera-1 |
+| ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
 | signera knapp visas |
 | signera knapp aktiverad |
@@ -24,5 +24,9 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 
 | ta bort utkast |
 | utkastId |
+| webcert-fitnesse-signera-1 |
+
+| ta bort intyg |
+| id |
 | webcert-fitnesse-signera-1 |
 

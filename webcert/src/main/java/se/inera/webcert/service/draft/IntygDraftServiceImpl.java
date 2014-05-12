@@ -25,6 +25,7 @@ import se.inera.webcert.persistence.intyg.model.Signatur;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.SignaturRepository;
+import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationStatus;
@@ -80,6 +81,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Autowired
     private BiljettTracker biljettTracker;
+
+    @Autowired
+    private IntygService intygService;
 
     public IntygDraftServiceImpl() {
 
@@ -199,7 +203,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         Vardenhet reqVardenhet = request.getVardenhet();
         se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(
                 reqVardenhet.getHsaId(), reqVardenhet.getNamn(), reqVardenhet.getPostadress(),
-                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(), vardgivare);
+                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(), reqVardenhet.getArbetsplatskod(), vardgivare);
 
         HoSPerson reqHosPerson = request.getHosPerson();
         HoSPersonal hosPerson = new HoSPersonal(reqHosPerson.getHsaId(), reqHosPerson.getNamn(),
@@ -275,6 +279,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         signaturRepository.save(signatur);
 
         biljettTracker.updateStatusBiljett(statusBiljett.getId(), SigneringsBiljett.Status.SIGNERAD);
+
+        // Skicka till intygstjansten
+        intygService.storeIntyg(intyg);
 
         LogRequest logRequest = createLogRequestFromDraft(persisted);
         logService.logSigningOfDraft(logRequest);

@@ -18,6 +18,8 @@ public class Vardenhet {
 
     private Vardgivare vardgivare;
 
+    private String arbetsplatskod;
+
     public Vardenhet() {
 
     }
@@ -86,4 +88,11 @@ public class Vardenhet {
         this.vardgivare = vardgivare;
     }
 
+    public String getArbetsplatskod() {
+        return arbetsplatskod;
+    }
+
+    public void setArbetsplatskod(String arbetsplatskod) {
+        this.arbetsplatskod = arbetsplatskod;
+    }
 }

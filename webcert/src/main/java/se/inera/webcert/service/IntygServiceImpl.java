@@ -1,5 +1,6 @@
 package se.inera.webcert.service;
 
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -22,9 +25,14 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificat
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateResponderInterface;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateStatusType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.model.Patient;
 import se.inera.certificate.model.Utlatande;
@@ -33,11 +41,15 @@ import se.inera.certificate.model.Vardgivare;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.certificate.modules.support.api.dto.TransportModelHolder;
+import se.inera.certificate.modules.support.api.dto.TransportModelResponse;
+import se.inera.certificate.modules.support.api.dto.TransportModelVersion;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.modules.IntygModuleRegistry;
+import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.IntygMetadata;
@@ -60,12 +72,15 @@ public class IntygServiceImpl implements IntygService {
     private String logicalAddress;
 
     private static Marshaller marshaller;
+    private static Unmarshaller unmarshaller;
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
+
 
     static {
         try {
-            JAXBContext context = JAXBContext.newInstance(UtlatandeType.class);
+            JAXBContext context = JAXBContext.newInstance(UtlatandeType.class, RegisterMedicalCertificateType.class);
             marshaller = context.createMarshaller();
+            unmarshaller = context.createUnmarshaller();
         } catch (JAXBException e) {
             LOG.error("Failed to initialize marshaller for GetCertificate interaction", e);
             Throwables.propagate(e);
@@ -77,6 +92,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private ListCertificatesForCareResponderInterface listCertificateService;
+
+    @Autowired
+    private RegisterMedicalCertificateResponderInterface intygSender;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -303,4 +321,43 @@ public class IntygServiceImpl implements IntygService {
 
     }
 
+    @Override
+    public void storeIntyg(Intyg intyg) {
+        try {
+            LOG.info("Förbered registrera intyg intyg {}", intyg.getIntygsId());
+            RegisterMedicalCertificateType data = new RegisterMedicalCertificateType();
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intyg.getIntygsTyp());
+            ExternalModelResponse external = moduleApi.convertInternalToExternal(new InternalModelHolder(intyg.getModel()));
+
+            ExternalModelHolder holder = new ExternalModelHolder(external.getExternalModelJson());
+            TransportModelResponse modelResponse = moduleApi.marshall(holder, TransportModelVersion.UTLATANDE_V1);
+            LOG.info("{}", modelResponse.getTransportModel());
+
+            UtlatandeType request = unmarshaller.unmarshal(new StreamSource(new StringReader(modelResponse.getTransportModel())), UtlatandeType.class).getValue();
+
+            // TODO Varför fel case?
+            request.getTypAvUtlatande().setCode(request.getTypAvUtlatande().getCode().toLowerCase());
+
+            // TODO Hårkoda vad som saknas i testintyg
+            request.setSigneringsdatum(intyg.getSenastSparadDatum());
+            request.setSkickatdatum(intyg.getSenastSparadDatum());
+            data.setUtlatande(request);
+            if ("fk7263".equals(request.getTypAvUtlatande().getCode())) {
+
+                // TODO varför kommer det en lista med ett tomt namn?
+                request.getPatient().getFornamn().clear();
+
+                LOG.info("Förbered registrera intyg intyg på {}", intygSender);
+                RegisterMedicalCertificateResponseType registerMedicalCertificateResponseType = intygSender.registerMedicalCertificate("", data);
+                ResultType result = registerMedicalCertificateResponseType.getResult();
+                if (result.getResultCode() == ResultCodeType.ERROR) {
+                    LOG.error("Register intyg {} {} {}", new Object[] {result.getResultCode(), result.getErrorId(), result.getResultText()});
+                } else {
+                    LOG.info("Register intyg {}", result.getResultCode());
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error register intyg {}", e);
+        }
+    }
 }

@@ -24,4 +24,3 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-bas intyg oc
 | ta bort utkast |
 | utkastId |
 | webcert-fitnesse-signera-1 |
-
