@@ -57,7 +57,7 @@ public class IntygApiController extends AbstractApiController {
 
     private static final List<IntygsStatus> INCOMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_INCOMPLETE);
 
-    private static final int PAGE_SIZE = 10;
+    private static final Integer PAGE_SIZE = 10;
 
     @Autowired
     private IntygService intygService;

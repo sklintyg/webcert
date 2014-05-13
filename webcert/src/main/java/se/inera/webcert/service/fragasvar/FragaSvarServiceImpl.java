@@ -461,7 +461,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         filter.setVidarebefordrad(params.getVidarebefordrad());
 
         filter.setPageSize(params.getPageSize() == null ? DEFAULT_PAGE_SIZE : params.getPageSize());
-        filter.setStartFrom(params.getStartFrom() == null ? 0 : params.getStartFrom());
+        filter.setStartFrom(params.getStartFrom() == null ? Integer.valueOf(0) : params.getStartFrom());
 
         return filter;
     }
