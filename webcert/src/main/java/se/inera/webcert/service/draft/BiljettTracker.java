@@ -44,7 +44,7 @@ public class BiljettTracker {
 
     public synchronized SigneringsBiljett updateStatusBiljett(String id, SigneringsBiljett.Status status) {
         SigneringsBiljett biljett = getBiljett(id);
-        if (id != null) {
+        if (biljett != null) {
             LOG.info("Updating status {}", biljett);
             biljett = biljett.withStatus(status);
             biljettMap.put(biljett.getId(), biljett);
