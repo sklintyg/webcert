@@ -29,7 +29,7 @@ import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev","unit-testing"})
 @Transactional
 public class FragaSvarRepositoryTest {
 

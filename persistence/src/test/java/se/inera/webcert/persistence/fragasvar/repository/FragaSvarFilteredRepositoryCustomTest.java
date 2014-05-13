@@ -27,7 +27,7 @@ import se.inera.webcert.persistence.fragasvar.repository.util.FragaSvarTestUtil;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev","unit-testing"})
 @Transactional
 public class FragaSvarFilteredRepositoryCustomTest {
 

@@ -32,15 +32,18 @@
   </bean>
 
   <!-- Start web console for H2 in dev mode -->
-  <bean id="org.h2.tools.Server" class="org.h2.tools.Server"
-    factory-method="createTcpServer" init-method="start" destroy-method="stop"
-    lazy-init="false">
-    <constructor-arg value="-tcp,-tcpAllowOthers,-tcpPort,9094" />
-  </bean>
+  <beans profile="!unit-testing">
+    <bean id="org.h2.tools.Server" class="org.h2.tools.Server"
+      factory-method="createTcpServer" init-method="start"
+      destroy-method="stop" lazy-init="false">
+      <constructor-arg value="-tcp,-tcpAllowOthers,-tcpPort,9094" />
+    </bean>
 
-  <bean id="h2WebServer" class="org.h2.tools.Server"
-    factory-method="createWebServer" init-method="start" destroy-method="stop">
-    <constructor-arg value="-web,-webAllowOthers,-webPort,9090" />
-  </bean>
+    <bean id="h2WebServer" class="org.h2.tools.Server"
+      factory-method="createWebServer" init-method="start"
+      destroy-method="stop">
+      <constructor-arg value="-web,-webAllowOthers,-webPort,9090" />
+    </bean>
+  </beans>
 
 </beans>
