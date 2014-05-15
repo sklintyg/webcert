@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package se.inera.certificate.mc2wc.jpa.model;
+package se.inera.certificate.mc2wc.medcert.jpa.model;
 
 import se.vgregion.dao.domain.patterns.entity.AbstractEntity;
 

@@ -3,7 +3,7 @@ package se.inera.certificate.mc2wc.jpa;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.junit.Test;
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
-import se.inera.certificate.mc2wc.jpa.model.Certificate;
+import se.inera.certificate.mc2wc.medcert.jpa.model.Certificate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

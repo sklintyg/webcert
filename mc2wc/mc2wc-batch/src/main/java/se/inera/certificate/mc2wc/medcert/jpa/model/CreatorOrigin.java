@@ -17,28 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package se.inera.certificate.mc2wc.jpa.model;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+package se.inera.certificate.mc2wc.medcert.jpa.model;
 
 /**
  * @author Pär Wenåker
  */
-@Embeddable
-public class Patient {
+public enum CreatorOrigin {
 
-    @Column(name = "PATIENT_NAME")
-    protected String name;
+    QUESTION_FK("QUESTION_FK"), QUESTION_CARE("QUESTION_CARE"), APPLICATION("APPLICATION");
 
-    @Column(name = "PATIENT_SSN")
-    protected String ssn;
+    private String origin;
 
-    public String getName() {
-        return name;
+    private CreatorOrigin(String origin) {
+        this.origin = origin;
     }
 
-    public String getSsn() {
-        return ssn;
+    @Override
+    public String toString() {
+        return origin;
     }
+
 }

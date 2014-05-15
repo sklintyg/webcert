@@ -3,12 +3,12 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
              version="2.0">
   <persistence-unit name="jpa.migration.medcert" transaction-type="RESOURCE_LOCAL">
-    <class>se.inera.certificate.mc2wc.jpa.model.AddressCare</class>
-    <class>se.inera.certificate.mc2wc.jpa.model.AddressFk</class>
-    <class>se.inera.certificate.mc2wc.jpa.model.Answer</class>
-    <class>se.inera.certificate.mc2wc.jpa.model.Certificate</class>
-    <class>se.inera.certificate.mc2wc.jpa.model.Complement</class>
-    <class>se.inera.certificate.mc2wc.jpa.model.Patient</class>
-    <class>se.inera.certificate.mc2wc.jpa.model.Question</class>
+    <class>se.inera.certificate.mc2wc.medcert.jpa.model.AddressCare</class>
+    <class>se.inera.certificate.mc2wc.medcert.jpa.model.AddressFk</class>
+    <class>se.inera.certificate.mc2wc.medcert.jpa.model.Answer</class>
+    <class>se.inera.certificate.mc2wc.medcert.jpa.model.Certificate</class>
+    <class>se.inera.certificate.mc2wc.medcert.jpa.model.Complement</class>
+    <class>se.inera.certificate.mc2wc.medcert.jpa.model.Patient</class>
+    <class>se.inera.certificate.mc2wc.medcert.jpa.model.Question</class>
   </persistence-unit>
 </persistence>

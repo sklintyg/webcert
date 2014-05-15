@@ -4,7 +4,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.certificate.mc2wc.jpa.model.*;
+
+import se.inera.certificate.mc2wc.medcert.jpa.model.*;
 import se.inera.certificate.mc2wc.message.*;
 
 import java.util.Date;

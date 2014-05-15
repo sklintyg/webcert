@@ -6,7 +6,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import se.inera.certificate.mc2wc.converter.MigrationMessageConverter;
-import se.inera.certificate.mc2wc.jpa.model.Certificate;
+import se.inera.certificate.mc2wc.medcert.jpa.model.Certificate;
 import se.inera.certificate.mc2wc.message.MigrationMessage;
 
 public class CertificateConverterProcessor implements ItemProcessor<Certificate, MigrationMessage> {

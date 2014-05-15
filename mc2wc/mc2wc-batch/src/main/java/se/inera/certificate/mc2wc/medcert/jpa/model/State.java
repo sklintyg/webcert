@@ -17,17 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package se.inera.certificate.mc2wc.jpa.model;
+package se.inera.certificate.mc2wc.medcert.jpa.model;
 
 /**
  * @author Pär Wenåker
  */
-public enum Subject {
-    WORK_PROLONGING,
-    MEETING,
-    KOMPLEMENTING,
-    MAKULERING,
-    CONTACT,
-    REMINDER,
-    OTHER;
+public enum State {
+    CREATED,
+    EDITED,
+    SIGNED,
+    SENT,
+    SIGNED_AND_SENT,
+    PRINTED,
+    SENT_HANDLED,
+    SENT_UNHANDLED
 }
