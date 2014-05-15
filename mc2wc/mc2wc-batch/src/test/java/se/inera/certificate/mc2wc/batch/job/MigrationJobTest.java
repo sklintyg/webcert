@@ -1,6 +1,8 @@
 package se.inera.certificate.mc2wc.batch.job;
 
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DbUnitConfiguration;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.certificate.mc2wc.batch.writer.MockMigrationRecieverBean;
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
+import se.inera.certificate.mc2wc.dbunit.CustomFlatXmlDataSetLoader;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
+@DbUnitConfiguration(databaseConnection = "medcertDataSource", dataSetLoader = CustomFlatXmlDataSetLoader.class)
 @DatabaseSetup({"/data/certificate_dataset_25.xml"})
 public class MigrationJobTest extends AbstractDbUnitSpringTest {
 
@@ -31,6 +35,7 @@ public class MigrationJobTest extends AbstractDbUnitSpringTest {
     @Autowired
     @Qualifier("migrationJob")
     private Job migrationJob;
+    
     @Autowired
     private MockMigrationRecieverBean recieverBean;
 

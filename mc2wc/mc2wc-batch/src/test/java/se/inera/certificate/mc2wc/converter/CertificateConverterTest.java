@@ -1,9 +1,12 @@
 package se.inera.certificate.mc2wc.converter;
 
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DbUnitConfiguration;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
+import se.inera.certificate.mc2wc.dbunit.CustomFlatXmlDataSetLoader;
 import se.inera.certificate.mc2wc.medcert.jpa.model.Certificate;
 import se.inera.certificate.mc2wc.message.MigrationMessage;
 
@@ -13,6 +16,7 @@ import javax.persistence.TypedQuery;
 
 import static org.junit.Assert.*;
 
+@DbUnitConfiguration(databaseConnection = "medcertDataSource", dataSetLoader = CustomFlatXmlDataSetLoader.class)
 @DatabaseSetup({"/data/certificate_dataset_25.xml"})
 public class CertificateConverterTest extends AbstractDbUnitSpringTest {
 
@@ -22,7 +26,7 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
     private static final String CERT_WITH_JUST_QUESTION = "certificate020";
     private static final String CERT_WITH_QUESTIONS_ANSWERS = "certificate007";
 
-    @PersistenceContext
+    @PersistenceContext(unitName="jpa.migration.medcert")
     private EntityManager em;
 
     @Autowired

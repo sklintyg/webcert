@@ -1,7 +1,5 @@
 package se.inera.certificate.mc2wc.dbunit;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -13,6 +11,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+
 /**
  * Abstract base class for data loading unit tests.
  *
@@ -22,7 +22,6 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @ContextConfiguration(locations = {"classpath:/application-context.xml", "classpath:/spring/rest-client-test-context.xml"})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class})
-@DbUnitConfiguration(databaseConnection = "medcertDataSource", dataSetLoader = CustomFlatXmlDataSetLoader.class)
 @ActiveProfiles("dev")
 public abstract class AbstractDbUnitSpringTest {
 

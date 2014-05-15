@@ -11,4 +11,9 @@
     <class>se.inera.certificate.mc2wc.medcert.jpa.model.Patient</class>
     <class>se.inera.certificate.mc2wc.medcert.jpa.model.Question</class>
   </persistence-unit>
+  
+  <persistence-unit name="jpa.migration.mc2wc" transaction-type="RESOURCE_LOCAL">
+    <class>se.inera.certificate.mc2wc.jpa.MigratedCertificate</class>
+  </persistence-unit>
+  
 </persistence>
