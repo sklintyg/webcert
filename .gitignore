@@ -15,3 +15,5 @@ bin
 target
 activemq-data
 webcert/node_modules/
+node_modules/
+webcert/node/
