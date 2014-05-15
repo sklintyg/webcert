@@ -56,12 +56,9 @@
             <p>För närvarande stödjer tjänsten följande intyg:</p>
             <ul>
                 <li>Läkarintyg för sjukskrivning (FK 7263)</li>
-                <!--li>Intyg vid avbeställd resa</li>
-                <li>Läkarintyg Transportstyrelsen Bas</li>
-                <li>Läkarintyg Transportstyrelsen Diabetes</li-->
             </ul>
             <p>
-                Tjänsten kräver inloggning med SITHS-kort eller e-legitimation, samt medarbetaruppdrag med behörigheten Hälso- och sjukvårdspersonal.
+                Tjänsten kräver inloggning med SITHS-kort samt medarbetaruppdrag på vårdenhet med syfte Vård- och behandling.
             </p>
 	        <p><a href="/web/start" class="btn btn-success" id="loginBtn">Logga in</a></p>
 	      </div>
