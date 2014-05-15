@@ -2,6 +2,7 @@ package se.inera.certificate.mc2wc.batch.processors;
 
 import java.io.ByteArrayOutputStream;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -44,10 +45,15 @@ public class MigratedCertificateConverterProcessor implements
 		marshaller.marshal(migrationMessage, xmlBaos);
 		return xmlBaos.toByteArray();
 	}
-
-	public void init() throws Exception {
-		this.context = JAXBContext.newInstance(MigrationMessage.class);
-	    this.marshaller = context.createMarshaller();
-	    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
-	}
+	
+	@PostConstruct
+	private void initJaxbContext() {
+        try {
+        	this.context = JAXBContext.newInstance(MigrationMessage.class);
+    	    this.marshaller = context.createMarshaller();
+    	    this.marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+        } catch (JAXBException e) {
+            throw new RuntimeException("Could not create JAXB context: " + e.getMessage(), e);
+        }
+    }
 }

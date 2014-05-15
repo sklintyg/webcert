@@ -45,6 +45,6 @@
         class="se.inera.certificate.mc2wc.batch.processors.MigrationMessageValidationProcessor" scope="step" />
         
   <bean id="migratedCertificateConverterProcessor" 
-        class="se.inera.certificate.mc2wc.batch.processors.MigratedCertificateConverterProcessor" scope="step" init-method="init" />        
+        class="se.inera.certificate.mc2wc.batch.processors.MigratedCertificateConverterProcessor" scope="step" />        
 
 </beans>
