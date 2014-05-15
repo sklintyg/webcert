@@ -29,10 +29,13 @@
       </props>
     </property>
   </bean>
-
-  <bean id="mc2wcTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    <property name="dataSource" ref="mc2wcDataSource" />
+  
+  <bean id="mc2wcTransactionManager"
+        class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="mc2wcEntityManagerFactory" />
   </bean>
+  
+  <bean id="mc2wcDAO" class="se.inera.certificate.mc2wc.jpa.Mc2wcDAO" />
 
   <beans profile="!dev">
     <bean id="mc2wcDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

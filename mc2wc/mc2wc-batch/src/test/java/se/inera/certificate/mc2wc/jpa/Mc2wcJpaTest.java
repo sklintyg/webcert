@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
 import se.inera.certificate.mc2wc.dbunit.CustomFlatXmlDataSetLoader;
@@ -21,6 +22,9 @@ public class Mc2wcJpaTest extends AbstractDbUnitSpringTest {
 
 	@PersistenceContext(unitName="jpa.migration.mc2wc")
     private EntityManager em;
+	
+	@Autowired
+	private Mc2wcDAO dao;
 
     @Test
     public void testThatWeCanAccessDb() {
@@ -29,8 +33,14 @@ public class Mc2wcJpaTest extends AbstractDbUnitSpringTest {
         Long nbrOfCerts = query.getSingleResult();
         assertNotNull(nbrOfCerts);
         assertEquals(3L, nbrOfCerts.longValue());
-
     }
 	
-	
+    @Test
+    public void testCountMigratedCertificatesInDao() {
+
+        Long res = dao.countMigratedCertificates();
+        
+        assertNotNull(res);
+        assertEquals(3L, res.longValue());
+    }
 }

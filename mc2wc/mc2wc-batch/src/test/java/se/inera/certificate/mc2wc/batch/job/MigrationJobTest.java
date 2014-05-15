@@ -1,7 +1,10 @@
 package se.inera.certificate.mc2wc.batch.job;
 
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DbUnitConfiguration;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -13,15 +16,13 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import se.inera.certificate.mc2wc.batch.writer.MockMigrationRecieverBean;
+
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
 import se.inera.certificate.mc2wc.dbunit.CustomFlatXmlDataSetLoader;
+import se.inera.certificate.mc2wc.jpa.Mc2wcDAO;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-
-import static com.jayway.awaitility.Awaitility.await;
-import static org.junit.Assert.assertEquals;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
 @DbUnitConfiguration(databaseConnection = "medcertDataSource", dataSetLoader = CustomFlatXmlDataSetLoader.class)
 @DatabaseSetup({"/data/certificate_dataset_25.xml"})
@@ -37,7 +38,7 @@ public class MigrationJobTest extends AbstractDbUnitSpringTest {
     private Job migrationJob;
     
     @Autowired
-    private MockMigrationRecieverBean recieverBean;
+    private Mc2wcDAO mc2wcDAO;
 
     @Test
     public void testRunMigrationJob() throws Exception {
@@ -54,6 +55,6 @@ public class MigrationJobTest extends AbstractDbUnitSpringTest {
             }
         });
 
-        assertEquals(13, recieverBean.getMessages().size());
+        assertEquals(13L, mc2wcDAO.countMigratedCertificates().longValue());
     }
 }

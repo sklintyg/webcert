@@ -7,8 +7,8 @@
   <import resource="classpath:env/*-persistence-config.xml" />
 
   <bean id="medcertTransactionManager"
-        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    <property name="dataSource" ref="medcertDataSource" />
+        class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="medcertEntityManagerFactory" />
   </bean>
 
 </beans>

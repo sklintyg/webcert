@@ -21,7 +21,7 @@ import java.util.List;
 @Controller
 public class StatisticsController {
 
-    @PersistenceContext
+	@PersistenceContext(unitName="jpa.migration.medcert")
     private EntityManager entityManager;
 
     @Autowired

@@ -5,11 +5,11 @@
           http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <batch:job id="migrationJob" job-repository="migrationJobRepository" restartable="true">
+  <batch:job id="migrationJob" job-repository="migrationJobRepository" restartable="false">
     <batch:step id="certificateMigrationStep">
-      <batch:tasklet transaction-manager="medcertTransactionManager">
-        <batch:chunk reader="migrationStepItemReader"
-                     processor="migrationMessageCompositeProcessor" writer="restServiceItemWriter"
+      <batch:tasklet transaction-manager="mc2wcTransactionManager">
+        <batch:chunk reader="medcertCertificateJpaReader"
+                     processor="migrationMessageCompositeProcessor" writer="migratedCertificateJpaWriter"
                      commit-interval="5">
         </batch:chunk>
       </batch:tasklet>
@@ -22,22 +22,29 @@
       <list>
         <ref bean="certificateConverterProcessor" />
         <ref bean="migrationMessageValidationProcessor" />
+        <ref bean="migratedCertificateConverterProcessor" /> 
       </list>
     </property>
   </bean>
 
-  <bean id="migrationStepItemReader"
+  <bean id="medcertCertificateJpaReader"
         class="org.springframework.batch.item.database.JpaPagingItemReader">
     <property name="entityManagerFactory" ref="medcertEntityManagerFactory" />
     <property name="queryString" value="select c from Certificate c order by c.createdAt" />
     <property name="pageSize" value="25" />
   </bean>
+  
+  <bean id="migratedCertificateJpaWriter" class="org.springframework.batch.item.database.JpaItemWriter">
+    <property name="entityManagerFactory" ref="mc2wcEntityManagerFactory" />
+  </bean>
 
   <bean id="certificateConverterProcessor"
         class="se.inera.certificate.mc2wc.batch.processors.CertificateConverterProcessor" scope="step" />
+  
   <bean id="migrationMessageValidationProcessor"
         class="se.inera.certificate.mc2wc.batch.processors.MigrationMessageValidationProcessor" scope="step" />
-
-  <bean id="restServiceItemWriter" class="se.inera.certificate.mc2wc.batch.writer.RestServiceItemWriter" scope="step" />
+        
+  <bean id="migratedCertificateConverterProcessor" 
+        class="se.inera.certificate.mc2wc.batch.processors.MigratedCertificateConverterProcessor" scope="step" init-method="init" />        
 
 </beans>
