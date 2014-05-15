@@ -216,15 +216,20 @@ public class IntygModuleApiController extends AbstractApiController {
      * @return BiljettResponse
      */
     @POST
-    @Path("/signera/klient/{intygsId}")
+    @Path("/signera/klient/{biljettId}")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse klientSigneraUtkast(@PathParam("intygsId") String intygsId) {
-        SigneringsBiljett biljett = draftService.klientSigneraUtkast(intygsId);
+    public BiljettResponse klientSigneraUtkast(@PathParam("biljettId") String biljettId, byte[] rawSignatur) {
+        LOG.debug("Signerar intyg med biljettId {}", biljettId);
+
+        String draftAsJson = fromBytesToString(rawSignatur);
+
+        SigneringsBiljett biljett = draftService.klientSigneraUtkast(biljettId, draftAsJson);
         return new BiljettResponse(biljett);
     }
 
     /**
-     * Signera utkast.
+     * Skapa signeringshash.
      *
      * @param intygsId intyg id
      * @return BiljettResponse
@@ -233,7 +238,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signeringshash/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse signeraUtkast(@PathParam("intygsId") String intygsId) {
-        SigneringsBiljett biljett = draftService.serverSigneraUtkast(intygsId);
+        SigneringsBiljett biljett = draftService.skapaUtkastHash(intygsId);
         return new BiljettResponse(biljett);
     }
 

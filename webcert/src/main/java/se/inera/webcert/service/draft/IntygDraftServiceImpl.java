@@ -271,7 +271,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Override
     @Transactional
-    public SigneringsBiljett klientSigneraUtkast(String biljettId) {
+    public SigneringsBiljett klientSigneraUtkast(String biljettId, String rawSignatur) {
 
         SigneringsBiljett biljett = biljettTracker.getBiljett(biljettId);
         // TODO Verifiera signatur
@@ -291,7 +291,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         intyg.setStatus(IntygsStatus.SIGNED);
         Intyg persisted = intygRepository.save(intyg);
 
-        Signatur signatur = new Signatur(new LocalDateTime(), userId, biljett.getIntygsId(), payload, biljett.getHash(), "Signatur");
+        Signatur signatur = new Signatur(new LocalDateTime(), userId, biljett.getIntygsId(), payload, biljett.getHash(), rawSignatur);
         signaturRepository.save(signatur);
 
         biljett = biljettTracker.updateStatusBiljett(biljett.getId(), SigneringsBiljett.Status.SIGNERAD);
@@ -360,7 +360,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return statusBiljett;
     }
 
-    private String createHash(Intyg intyg, String payload) {
+    private String createHash(Intyg intyg, String payload) { // TODO ta bort intygsparameter
         try {
             MessageDigest sha = MessageDigest.getInstance("SHA-256");
             sha.update(payload.getBytes("UTF-8"));
