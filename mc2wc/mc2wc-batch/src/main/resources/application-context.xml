@@ -12,7 +12,6 @@
   <import resource="classpath:/spring/beans-context.xml" />
   <import resource="classpath:/spring/mc2wc-persistence-config.xml" />
   <import resource="classpath:/spring/persistence-context.xml" />
-  <import resource="classpath:/spring/rest-client-context.xml" />
   <import resource="classpath:/spring/migration-job-context.xml" />
 
   <context:annotation-config />

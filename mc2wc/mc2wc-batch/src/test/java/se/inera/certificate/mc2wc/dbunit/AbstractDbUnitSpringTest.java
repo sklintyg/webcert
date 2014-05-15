@@ -19,7 +19,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
  * @author nikpet
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/application-context.xml", "classpath:/spring/rest-client-test-context.xml"})
+@ContextConfiguration(locations = {"classpath:/application-context.xml"})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         DbUnitTestExecutionListener.class, TransactionalTestExecutionListener.class})
 @ActiveProfiles("dev")
