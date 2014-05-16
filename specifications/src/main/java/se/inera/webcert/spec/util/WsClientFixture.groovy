@@ -61,17 +61,21 @@ class WsClientFixture {
 	}
 	
 	def resultAsString(response) {
+        String result = null
 		if (response) {
 	        switch (response.result.resultCode) {
-	            case ResultCodeEnum.OK:
-	                return response.result.resultCode.toString()
-	            case ResultCodeEnum.INFO:
-	                return "[${response.result.resultCode.toString()}] - ${response.result.infoText}"
-	            default:
-					return "[${response.result.resultCode.toString()}] - ${response.result.errorText}"
+                case ResultCodeEnum.OK:
+                    result = response.result.resultCode.toString()
+                    break
+                case ResultCodeEnum.INFO:
+                    result = "[${response.result.resultCode.toString()}] - ${response.result.infoText}"
+                    break
+                case ResultCodeEnum.ERROR:
+                    result = "[${response.result.errorId.toString()}] - ${response.result.errorText}"
+                    break
 	        }
 		}
-		else null
+		return result
 	}
 
 	def setupSSLCertificates(def responder) {
