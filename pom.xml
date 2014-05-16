@@ -32,6 +32,7 @@
     <module>specifications</module>
     <module>hsa-integration</module>
     <module>persistence</module>
+    <module>eid-integration</module>
   </modules>
 
   <properties>
