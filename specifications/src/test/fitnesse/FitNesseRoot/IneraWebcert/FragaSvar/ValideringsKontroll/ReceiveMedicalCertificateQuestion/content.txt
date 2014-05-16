@@ -1,0 +1,214 @@
+!3 Givet ett intyg
+
+|Intyg|
+|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdarId|enhetsId|typ|id|mall|
+|19121212-1212|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|fitnesse-intyg-1|M|
+
+!3 Korrekt fråga med ämne "Övrigt" ger inga fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/giltig-fraga-ovrigt.xml|OK|
+
+|Ta bort fraga|
+|externReferens|
+|giltig-fraga-ovrigt|
+
+!3 Kontakt-info kan utelämnas
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/giltig-fraga-utan-kontaktinfo.xml|OK|
+
+|Ta bort fraga|
+|externReferens|
+|giltig-fraga-utan-kontaktinfo|
+
+!3 Meddelande-rubrik kan utelämnas
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/giltig-fraga-utan-rubrik.xml|OK|
+
+|Ta bort fraga|
+|externReferens|
+|giltig-fraga-utan-rubrik|
+
+!3 FK-komplettering kan utelämnas
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/giltig-fraga-utan-komplettering.xml|OK|
+
+|Ta bort fraga|
+|externReferens|
+|giltig-fraga-utan-komplettering|
+
+!3 Sista datum för svar kan utelämnas
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/giltig-fraga-utan-sista-datum.xml|OK|
+
+|Ta bort fraga|
+|externReferens|
+|giltig-fraga-utan-sista-datum|
+
+!3 Fråga utan fk-referens ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknad-fk-referens.xml|=~/VALIDATION_ERROR/|
+
+!3 Kontakt-info utan kontakt ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/kontaktinfo-utan-kontakt.xml|=~/VALIDATION_ERROR/|
+
+!3 Saknad adressVard ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknad-adressVard.xml|=~/VALIDATION_ERROR/|
+
+!3 Saknad !-HoS-!-personal ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknad-hos-personal.xml|=~/VALIDATION_ERROR/|
+
+!3 Felaktig personal-id-kod ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/felaktig-personal-id-kod.xml|=~/VALIDATION_ERROR/|
+
+!3 Tomt personal-id ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/tomt-personal-id.xml|=~/VALIDATION_ERROR/|
+
+!3 Saknat personal-namn ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknat-personal-namn.xml|=~/VALIDATION_ERROR/|
+
+!3 tomt personalnamn ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/tomt-personalnamn.xml|=~/VALIDATION_ERROR/|
+
+!3 Saknad enhet ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknad-enhet.xml|=~/VALIDATION_ERROR/|
+
+!3 Saknat enhets-id ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknat-enhets-id.xml|=~/VALIDATION_ERROR/|
+
+!3 Felaktig enhets-id-kod ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/felaktig-enhets-id-kod.xml|=~/VALIDATION_ERROR/|
+
+!3 Tomt enhets-id ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/tomt-enhets-id.xml|=~/VALIDATION_ERROR/|
+
+!3 Saknat enhets-namn ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknat-enhets-namn.xml|=~/VALIDATION_ERROR/|
+
+!3 tomt enhetsnamn ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/tomt-enhetsnamn.xml|=~/VALIDATION_ERROR/|
+
+!3 saknat lakarutlatande ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknat-lakarutlatande.xml|=~/VALIDATION_ERROR/|
+
+!3 saknat lakarutlatande-id ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknat-lakarutlatande-id.xml|=~/VALIDATION_ERROR/|
+
+!3 tomt lakarutlatande-id ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/tomt-lakarutlatande-id.xml|=~/VALIDATION_ERROR/|
+
+!3 saknad signeringstidpunkt ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknad-signeringstidpunkt.xml|=~/VALIDATION_ERROR/|
+
+!3 felaktig signeringstidpunkt ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/felaktig-signeringstidpunkt.xml|=~/VALIDATION_ERROR/|
+
+!3 saknad patient ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknad-patient.xml|=~/VALIDATION_ERROR/|
+
+!3 Saknad person-id ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknad-person-id.xml|=~/VALIDATION_ERROR/|
+
+!3 Felaktig person-id-kod ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/felaktig-person-id-kod.xml|=~/VALIDATION_ERROR/|
+
+!3 Tomt person-id ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/tomt-person-id.xml|=~/VALIDATION_ERROR/|
+
+!3 Saknat person-namn ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/saknat-person-namn.xml|=~/VALIDATION_ERROR/|
+
+!3 tomt person-namn ger fel
+
+|validera fraga|
+|filnamn|resultat?|
+|validering/fraga/tomt-person-namn.xml|=~/VALIDATION_ERROR/|
+
+!3 Rensa bort test-intyg och mail
+
+|ta bort Intyg|
+|id|
+|fitnesse-intyg-1|
+
+|script|Mailbox|
+|rensa|
