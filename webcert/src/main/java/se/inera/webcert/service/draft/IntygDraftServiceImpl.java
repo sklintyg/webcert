@@ -1,5 +1,6 @@
 package se.inera.webcert.service.draft;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
@@ -17,6 +18,7 @@ import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.eid.services.SignatureService;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
@@ -43,6 +45,7 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -84,6 +87,12 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Autowired
     private IntygService intygService;
+
+    @Autowired
+    private SignatureService signatureService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public IntygDraftServiceImpl() {
 
@@ -274,14 +283,21 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     public SigneringsBiljett klientSigneraUtkast(String biljettId, String rawSignatur) {
 
         SigneringsBiljett biljett = biljettTracker.getBiljett(biljettId);
-        // TODO Verifiera signatur
 
         LOG.debug("Klientsignering biljett '{}' intyg '{}'", biljett.getId(), biljett.getIntygsId());
-
 
         WebCertUser user = webCertUserService.getWebCertUser();
         String userId = user.getHsaId();
 
+        try {
+            String signature = objectMapper.readTree(rawSignatur).get("signature").textValue();
+            if (!signatureService.validateSiths(userId, biljett.getHash(), signature)) {
+                throw new RuntimeException("Kunde inte validera intyget");
+            }
+        } catch (IOException e) {
+            // TODO Handle correctly
+            throw new RuntimeException(e);
+        }
 
         Intyg intyg = getIntygForSignering(biljett.getIntygsId());
         String payload = intyg.getModel();
@@ -290,6 +306,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         intyg.setStatus(IntygsStatus.SIGNED);
         Intyg persisted = intygRepository.save(intyg);
+
 
         Signatur signatur = new Signatur(new LocalDateTime(), userId, biljett.getIntygsId(), payload, biljett.getHash(), rawSignatur);
         signaturRepository.save(signatur);
