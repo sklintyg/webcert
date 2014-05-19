@@ -13,6 +13,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -335,12 +336,9 @@ public class IntygServiceImpl implements IntygService {
 
             UtlatandeType request = unmarshaller.unmarshal(new StreamSource(new StringReader(modelResponse.getTransportModel())), UtlatandeType.class).getValue();
 
-            // TODO Varför fel case?
-            request.getTypAvUtlatande().setCode(request.getTypAvUtlatande().getCode().toLowerCase());
-
             // TODO Hårkoda vad som saknas i testintyg
             request.setSigneringsdatum(intyg.getSenastSparadDatum());
-            request.setSkickatdatum(intyg.getSenastSparadDatum());
+            request.setSkickatdatum(new LocalDateTime());
             data.setUtlatande(request);
             if ("fk7263".equals(request.getTypAvUtlatande().getCode())) {
 
