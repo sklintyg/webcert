@@ -7,10 +7,9 @@ define([
     'controllers/InitCertCtrl',
     'controllers/UnhandledQACtrl',
     'controllers/UnsignedCertCtrl',
-    'controllers/ViewCertCtrl',
-    'controllers/ViewQaCtrl'
+    'controllers/ViewCertCtrl'
 ], function(angular, AboutWebcertCtrl, ChooseCertTypeCtrl, ChoosePatientCtrl, EditPatientNameCtrl, InitCertCtrl,
-    UnhandledQACtrl, UnsignedCertCtrl, ViewCertCtrl, ViewQaCtrl) {
+    UnhandledQACtrl, UnsignedCertCtrl, ViewCertCtrl) {
     'use strict';
 
     var moduleName = 'wc.dashboard.controllers';
@@ -23,8 +22,7 @@ define([
         controller('InitCertCtrl', InitCertCtrl).
         controller('UnhandledQACtrl', UnhandledQACtrl).
         controller('UnsignedCertCtrl', UnsignedCertCtrl).
-        controller('ViewCertCtrl', ViewCertCtrl).
-        controller('ViewQaCtrl', ViewQaCtrl);
+        controller('ViewCertCtrl', ViewCertCtrl);
 
     return moduleName;
 });

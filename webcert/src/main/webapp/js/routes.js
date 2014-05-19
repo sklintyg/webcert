@@ -34,7 +34,7 @@ define([ 'angular', 'app' ], function(angular, app) {
             }).
             when('/qa/:certificateType/:certificateId', {
                 templateUrl: '/views/dashboard/view.qa.html',
-                controller: 'ViewQaCtrl'
+                controller: 'ViewCertCtrl'
             }).
             when('/support/about', {
                 templateUrl: '/views/dashboard/about.support.html',

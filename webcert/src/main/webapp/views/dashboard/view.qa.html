@@ -1,19 +1,23 @@
 <div id="wcHeader" wc-header default-active="unhandled-qa"></div>
-<div class="row webcert-multicol" id="viewCertAndQA">
+<div class="row webcert-multicol" id="viewQAandCert">
 
   <!-- Left column -->
   <div class="col-sm-6 webcert-col webcert-col-primary">
-
-    <div qa-fk7263></div>
-
+    <a class="backlink-icon" href="/web/dashboard#/unhandled-qa" title="Tillbaka till Fråga och Svar"></a>
+    <h1 class="backlink-heading">
+      Fråga &amp; Svar
+    </h1>
+    <div wc-insert-qa certificate-type="{{widgetState.certificateType}}"></div>
   </div>
   <!-- Certificate Left side end -->
 
   <!-- Right side -->
   <div class="col-sm-6 webcert-col-secondary">
     <div class="webcert-col-shadow"></div>
-
-    <div view-fk7263></div>
+    <h2 class="col-head">
+      <span message key="{{widgetState.certificateType}}.label.pagetitle.{{widgetState.certificateType}}"></span>
+    </h2>
+    <div wc-insert-certificate certificate-type="{{widgetState.certificateType}}"></div>
   </div>
 
 </div>

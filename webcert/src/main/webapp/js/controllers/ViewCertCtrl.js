@@ -7,8 +7,9 @@ define([], function() {
     return [ '$scope', '$routeParams',
         function($scope, $routeParams) {
 
-            $scope.certificateType = $routeParams.certificateType;
-
+            $scope.widgetState = {
+                certificateType: $routeParams.certificateType
+            };
         }
     ];
 });
