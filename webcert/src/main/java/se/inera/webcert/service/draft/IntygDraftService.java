@@ -3,6 +3,7 @@ package se.inera.webcert.service.draft;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
@@ -34,7 +35,12 @@ public interface IntygDraftService {
      * @param intygId intygid
      * @return SigneringsBiljett
      */
-    SigneringsBiljett signeraUtkast(String intygId);
+    SigneringsBiljett serverSigneraUtkast(String intygId);
+
+    SigneringsBiljett klientSigneraUtkast(String biljettId);
 
     SigneringsBiljett biljettStatus(String biljettId);
+
+    SigneringsBiljett skapaUtkastHash(String intygId);
+
 }

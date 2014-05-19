@@ -246,19 +246,11 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Override
     @Transactional
-    public SigneringsBiljett signeraUtkast(String intygId) {
+    public SigneringsBiljett skapaUtkastHash(String intygId) {
 
-        LOG.debug("Signera utkast '{}'", intygId);
+        LOG.debug("Underlag för klientsignering av utkast '{}'", intygId);
 
-        Intyg intyg = intygRepository.findOne(intygId);
-
-        if (intyg == null) {
-            LOG.warn("Intyg '{}' was not found", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
-        } else if (intyg.getStatus() != IntygsStatus.DRAFT_COMPLETE) {
-            LOG.warn("Intyg '{}' with status '{}' can not be signed", intygId, intyg.getStatus());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "The intyg was not in state " + IntygsStatus.DRAFT_COMPLETE);
-        }
+        Intyg intyg = getIntygForSignering(intygId);
 
         WebCertUser user = webCertUserService.getWebCertUser();
         String userId = user.getHsaId();
@@ -268,14 +260,72 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
 
         String payload = intyg.getModel();
-        String hash = createHash(intyg, payload);
+        SigneringsBiljett statusBiljett = createSigneringsBiljett(intyg, payload);
 
-        SigneringsBiljett statusBiljett = new SigneringsBiljett(UUID.randomUUID().toString(), SigneringsBiljett.Status.BEARBETAR, intyg.getIntygsId(), hash, new LocalDateTime());
-        biljettTracker.trackBiljett(statusBiljett);
+        Intyg persisted = intygRepository.save(intyg);
+
+        // TODO PDL log skapade signatursunderlag?
+        return statusBiljett;
+    }
+
+
+    @Override
+    @Transactional
+    public SigneringsBiljett klientSigneraUtkast(String biljettId) {
+
+        SigneringsBiljett biljett = biljettTracker.getBiljett(biljettId);
+        // TODO Verifiera signatur
+
+        LOG.debug("Klientsignering biljett '{}' intyg '{}'", biljett.getId(), biljett.getIntygsId());
+
+
+        WebCertUser user = webCertUserService.getWebCertUser();
+        String userId = user.getHsaId();
+
+
+        Intyg intyg = getIntygForSignering(biljett.getIntygsId());
+        String payload = intyg.getModel();
+
+        // TODO Verifiera att intyget inte ändrats
 
         intyg.setStatus(IntygsStatus.SIGNED);
         Intyg persisted = intygRepository.save(intyg);
-        Signatur signatur = new Signatur(new LocalDateTime(), userId, intygId, payload, hash, "Signatur");
+
+        Signatur signatur = new Signatur(new LocalDateTime(), userId, biljett.getIntygsId(), payload, biljett.getHash(), "Signatur");
+        signaturRepository.save(signatur);
+
+        biljett = biljettTracker.updateStatusBiljett(biljett.getId(), SigneringsBiljett.Status.SIGNERAD);
+
+        // Skicka till intygstjansten
+        intygService.storeIntyg(intyg);
+
+        LogRequest logRequest = createLogRequestFromDraft(persisted);
+        logService.logSigningOfDraft(logRequest);
+
+        return biljett;
+    }
+
+    @Override
+    @Transactional
+    public SigneringsBiljett serverSigneraUtkast(String intygId) {
+
+        LOG.debug("Signera utkast '{}'", intygId);
+
+        Intyg intyg = getIntygForSignering(intygId);
+
+        WebCertUser user = webCertUserService.getWebCertUser();
+        String userId = user.getHsaId();
+
+        intyg.getSenastSparadAv().setHsaId(userId);
+        intyg.getSenastSparadAv().setNamn(user.getNamn());
+
+
+        String payload = intyg.getModel();
+        SigneringsBiljett statusBiljett = createSigneringsBiljett(intyg, payload);
+
+        intyg.setStatus(IntygsStatus.SIGNED);
+        Intyg persisted = intygRepository.save(intyg);
+        Signatur signatur = new Signatur(new LocalDateTime(), userId, intygId, payload, statusBiljett.getHash(), "Signatur");
         signaturRepository.save(signatur);
 
         biljettTracker.updateStatusBiljett(statusBiljett.getId(), SigneringsBiljett.Status.SIGNERAD);
@@ -286,6 +336,27 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         LogRequest logRequest = createLogRequestFromDraft(persisted);
         logService.logSigningOfDraft(logRequest);
 
+        return statusBiljett;
+    }
+
+    private Intyg getIntygForSignering(String intygId) {
+        Intyg intyg = intygRepository.findOne(intygId);
+
+        if (intyg == null) {
+            LOG.warn("Intyg '{}' was not found", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
+        } else if (intyg.getStatus() != IntygsStatus.DRAFT_COMPLETE) {
+            LOG.warn("Intyg '{}' with status '{}' can not be signed", intygId, intyg.getStatus());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "The intyg was not in state " + IntygsStatus.DRAFT_COMPLETE);
+        }
+        return intyg;
+    }
+
+    private SigneringsBiljett createSigneringsBiljett(Intyg intyg, String payload) {
+        String hash = createHash(intyg, payload);
+
+        SigneringsBiljett statusBiljett = new SigneringsBiljett(UUID.randomUUID().toString(), SigneringsBiljett.Status.BEARBETAR, intyg.getIntygsId(), hash, new LocalDateTime());
+        biljettTracker.trackBiljett(statusBiljett);
         return statusBiljett;
     }
 

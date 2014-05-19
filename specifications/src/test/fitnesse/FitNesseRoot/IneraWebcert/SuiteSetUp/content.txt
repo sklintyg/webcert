@@ -7,6 +7,7 @@
 
 !|Config|
 |property|value|
+|fitnesse.working|${fitnesse.working}|
 |webcert.baseUrl|${webcert.baseUrl}|
 |certificate.baseUrl|${certificate.baseUrl}|
 |service.listCertificatesUrl|${services.listCertificatesUrl}|

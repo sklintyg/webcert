@@ -6,17 +6,27 @@
 
 | Fraga Svar |
 | amne | frageStallare | frageText | intygsId | enhetsId | internReferens? |
-| OVRIGT | WC | Tomten kan inte vara sjukskriven den 24e december! | fitnesse-intyg-1 | IFV1239877878-1042 | $internReferens= |
+| OVRIGT | WC | En fråga | fitnesse-intyg-1 | IFV1239877878-1042 | $internReferens= |
+
+!2 Normalflöde
 
 !3 Om Försäkringskassan skickar ett svar på frågan
 | Fk skickar svar |
 | amne | vardreferens | svarText | vardenhet | resultat? |
-| OVRIGT | $internReferens | Han är tyvärr inte med i adressboken | IFV1239877878-1042 | OK |
+| OVRIGT | $internReferens | Ett svar | IFV1239877878-1042 | OK |
 
 !3 så ska det finnas en fråga med svar
 | Fragor och svar |
 | internReferens | finns? | svar? |
-| $internReferens | true | Han är tyvärr inte med i adressboken |
+| $internReferens | true | Ett svar |
+
+!2 Undantagsflöden
+
+!3 Om Försäkringskassan skickar ett svar på en okänt fråga, ges ett felmeddelande
+| Fk skickar svar |
+| amne | vardreferens | svarText | vardenhet | resultat? |
+| OVRIGT | fråga-som-saknas | Svar på fråga som aldrig ställts | IFV1239877878-1042 | [APPLICATION_ERROR] -No question found with internal ID fråga-som-saknas |
+| OVRIGT | 999 | Svar på fråga som aldrig ställts | IFV1239877878-1042 | [APPLICATION_ERROR] - No question found with internal ID 999 |
 
 !3 Ta bort test-intyg, frågor och mail
 
