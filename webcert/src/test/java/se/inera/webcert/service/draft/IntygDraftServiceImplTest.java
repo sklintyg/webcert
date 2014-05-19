@@ -3,13 +3,16 @@ package se.inera.webcert.service.draft;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,22 +20,32 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.eid.services.SignatureService;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.Signatur;
+import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.repository.SignaturRepository;
+import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.util.ReflectionUtils;
+import se.inera.webcert.web.service.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygDraftServiceImplTest {
@@ -48,41 +61,64 @@ public class IntygDraftServiceImplTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
-    
+
+    @Mock
+    private WebCertUserService webcertUserService;
+
     @Mock
     private LogService logService;
+
+    @Mock
+    private SignatureService signatureService;
+
+    @Mock
+    private SignaturRepository signatureRepository;
+
+    @Mock
+    IntygService intygService;
 
     @InjectMocks
     private IntygDraftService draftService = new IntygDraftServiceImpl();
 
     private Intyg intygDraft;
-    
+
+    private Intyg intygCompleted;
+
     private Intyg intygSigned;
 
     private HoSPerson hoSPerson;
     
-    public IntygDraftServiceImplTest() {
-
-    }
-
     @Before
     public void setup() {
-        this.intygDraft = new Intyg();
-        intygDraft.setIntygsId(INTYG_ID);
-        intygDraft.setIntygsTyp(INTYG_TYPE);
-        intygDraft.setStatus(IntygsStatus.DRAFT_INCOMPLETE);
-        intygDraft.setModel(INTYG_JSON);
-
-        this.intygSigned = new Intyg();
-        intygSigned.setIntygsId(INTYG_ID);
-        intygSigned.setIntygsTyp(INTYG_TYPE);
-        intygSigned.setStatus(IntygsStatus.SIGNED);
-        intygSigned.setModel(INTYG_JSON);
-        
-        this.hoSPerson = new HoSPerson();
+        hoSPerson = new HoSPerson();
         hoSPerson.setHsaId("AAA");
         hoSPerson.setNamn("Dr Dengroth");
 
+        VardpersonReferens vardperson = new VardpersonReferens();
+        vardperson.setHsaId(hoSPerson.getHsaId());
+        vardperson.setNamn(hoSPerson.getNamn());
+
+        intygDraft = createIntyg(INTYG_ID, INTYG_TYPE, IntygsStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
+        intygCompleted = createIntyg(INTYG_ID, INTYG_TYPE, IntygsStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson);
+        intygSigned = createIntyg(INTYG_ID, INTYG_TYPE, IntygsStatus.SIGNED, INTYG_JSON, vardperson);
+
+        WebCertUser user = new WebCertUser();
+        user.setNamn(hoSPerson.getNamn());
+        user.setHsaId(hoSPerson.getHsaId());
+        when(webcertUserService.getWebCertUser()).thenReturn(user);
+        ReflectionUtils.setTypedField(draftService, new TicketTracker());
+        ReflectionUtils.setTypedField(draftService, new CustomObjectMapper());
+    }
+
+    private Intyg createIntyg(String intygId, String type, IntygsStatus status, String model, VardpersonReferens vardperson) {
+        Intyg intyg = new Intyg();
+        intyg.setIntygsId(intygId);
+        intyg.setIntygsTyp(type);
+        intyg.setStatus(status);
+        intyg.setModel(model);
+        intyg.setSkapadAv(vardperson);
+        intyg.setSenastSparadAv(vardperson);
+        return intyg;
     }
 
     @Test
@@ -160,13 +196,69 @@ public class IntygDraftServiceImplTest {
     
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-    
-        // Oooops! Something failed in the module
+
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenThrow(ModuleException.class);
-        
+
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
-        
         draftService.saveAndValidateDraft(request);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void getSignatureHashReturnsErrorIfIntygNotCompleted() {
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
+        draftService.createDraftHash(INTYG_ID);
+        fail();
+    }
+
+    @Test
+    public void getSignatureHashReturnsTicket() {
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygCompleted);
+        SignatureTicket ticket = draftService.createDraftHash(INTYG_ID);
+        assertEquals(INTYG_ID, ticket.getIntygsId());
+        assertEquals(SignatureTicket.Status.BEARBETAR, ticket.getStatus());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void clientSignatureFailsIfTicketDoesNotExist() {
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygCompleted);
+
+        draftService.clientSignature("unknownId", "SIGNATURE");
+        fail();
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void clientSignatureFailsIfIntygWasModified() throws IOException {
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygCompleted);
+        SignatureTicket ticket = draftService.createDraftHash(INTYG_ID);
+
+        intygCompleted.setModel("{}");
+
+        String signature = "{\"signature\":\"SIGNATURE\"}";
+        when(signatureService.validateSiths(hoSPerson.getHsaId(), ticket.getHash(), "SIGNATURE")).thenReturn(true);
+        when(signatureRepository.save(any(Signatur.class))).thenReturn(null);
+
+        draftService.clientSignature(ticket.getId(), signature);
+        fail();
+    }
+
+    @Test
+    public void clientSignatureSuccess() throws IOException {
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygCompleted);
+        SignatureTicket ticket = draftService.createDraftHash(INTYG_ID);
+
+        SignatureTicket status = draftService.ticketStatus(ticket.getId());
+        assertEquals(SignatureTicket.Status.BEARBETAR, status.getStatus());
+
+        String signature = "{\"signature\":\"SIGNATURE\"}";
+        when(signatureService.validateSiths(hoSPerson.getHsaId(), ticket.getHash(), "SIGNATURE")).thenReturn(true);
+        when(signatureRepository.save(any(Signatur.class))).thenReturn(null);
+
+        SignatureTicket signatureTicket = draftService.clientSignature(ticket.getId(), signature);
+        assertNotNull(signatureTicket);
+        verify(intygService).storeIntyg(intygCompleted);
+
+        status = draftService.ticketStatus(ticket.getId());
+        assertEquals(SignatureTicket.Status.SIGNERAD, status.getStatus());
     }
 
     private SaveAndValidateDraftRequest buildSaveAndValidateRequest() {

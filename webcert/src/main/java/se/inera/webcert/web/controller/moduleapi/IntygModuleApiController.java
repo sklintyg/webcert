@@ -26,7 +26,7 @@ import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationMessage;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.dto.SigneringsBiljett;
+import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.web.controller.AbstractApiController;
@@ -205,14 +205,14 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signera/server/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse serverSigneraUtkast(@PathParam("intygsId") String intygsId) {
-        SigneringsBiljett biljett = draftService.serverSigneraUtkast(intygsId);
+        SignatureTicket biljett = draftService.serverSignature(intygsId);
         return new BiljettResponse(biljett);
     }
 
     /**
      * Signera utkast.
      *
-     * @param intygsId intyg id
+     * @param biljettId biljett id
      * @return BiljettResponse
      */
     @POST
@@ -224,7 +224,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         String draftAsJson = fromBytesToString(rawSignatur);
 
-        SigneringsBiljett biljett = draftService.klientSigneraUtkast(biljettId, draftAsJson);
+        SignatureTicket biljett = draftService.clientSignature(biljettId, draftAsJson);
         return new BiljettResponse(biljett);
     }
 
@@ -238,7 +238,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signeringshash/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse signeraUtkast(@PathParam("intygsId") String intygsId) {
-        SigneringsBiljett biljett = draftService.skapaUtkastHash(intygsId);
+        SignatureTicket biljett = draftService.createDraftHash(intygsId);
         return new BiljettResponse(biljett);
     }
 
@@ -252,7 +252,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signera/status/{biljettId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse biljettStatus(@PathParam("biljettId") String biljettId) {
-        SigneringsBiljett biljett = draftService.biljettStatus(biljettId);
+        SignatureTicket biljett = draftService.ticketStatus(biljettId);
         return new BiljettResponse(biljett);
     }
 

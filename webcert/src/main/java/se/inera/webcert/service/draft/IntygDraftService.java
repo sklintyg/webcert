@@ -7,7 +7,7 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.dto.SigneringsBiljett;
+import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.dto.Lakare;
 
 public interface IntygDraftService {
@@ -32,14 +32,14 @@ public interface IntygDraftService {
      * Signera intyg.
      *
      * @param intygId intygid
-     * @return SigneringsBiljett
+     * @return SignatureTicket
      */
-    SigneringsBiljett serverSigneraUtkast(String intygId);
+    SignatureTicket serverSignature(String intygId);
 
-    SigneringsBiljett klientSigneraUtkast(String biljettId, String rawSignatur);
+    SignatureTicket clientSignature(String biljettId, String rawSignatur);
 
-    SigneringsBiljett biljettStatus(String biljettId);
+    SignatureTicket ticketStatus(String biljettId);
 
-    SigneringsBiljett skapaUtkastHash(String intygId);
+    SignatureTicket createDraftHash(String intygId);
 
 }

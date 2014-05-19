@@ -2,7 +2,7 @@ package se.inera.webcert.service.draft.dto;
 
 import org.joda.time.LocalDateTime;
 
-public class SigneringsBiljett {
+public class SignatureTicket {
 
     public enum Status { BEARBETAR, SIGNERAD, OKAND }
 
@@ -12,7 +12,7 @@ public class SigneringsBiljett {
     private final String hash;
     private final LocalDateTime timestamp;
 
-    public SigneringsBiljett(String id, Status status, String intygsId, String hash, LocalDateTime timestamp) {
+    public SignatureTicket(String id, Status status, String intygsId, String hash, LocalDateTime timestamp) {
         this.id = id;
         this.status = status;
         this.intygsId = intygsId;
@@ -40,12 +40,12 @@ public class SigneringsBiljett {
         return timestamp;
     }
 
-    public SigneringsBiljett withStatus(Status status) {
-        return new SigneringsBiljett(id, status, intygsId, hash, new LocalDateTime());
+    public SignatureTicket withStatus(Status status) {
+        return new SignatureTicket(id, status, intygsId, hash, new LocalDateTime());
     }
 
     @Override
     public String toString() {
-        return "SigneringsBiljett [ id:" + id + " intyg:" + intygsId + " status: " + status + " ]";
+        return "SignatureTicket [ id:" + id + " intyg:" + intygsId + " status: " + status + " ]";
     }
 }
