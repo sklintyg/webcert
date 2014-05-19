@@ -27,19 +27,4 @@ public interface IntygDraftService {
     void deleteUnsignedDraft(String intygId);
 
     Intyg getDraft(String intygId);
-
-    /**
-     * Signera intyg.
-     *
-     * @param intygId intygid
-     * @return SignatureTicket
-     */
-    SignatureTicket serverSignature(String intygId);
-
-    SignatureTicket clientSignature(String biljettId, String rawSignatur);
-
-    SignatureTicket ticketStatus(String biljettId);
-
-    SignatureTicket createDraftHash(String intygId);
-
 }

@@ -23,6 +23,7 @@ import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
+import se.inera.webcert.service.draft.IntygSignatureService;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationMessage;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
@@ -51,6 +52,9 @@ public class IntygModuleApiController extends AbstractApiController {
 
     @Autowired
     private IntygDraftService draftService;
+
+    @Autowired
+    private IntygSignatureService signatureService;
 
     /**
      * Returns the draft certificate as JSON identified by the intygId.
@@ -205,7 +209,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signera/server/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse serverSigneraUtkast(@PathParam("intygsId") String intygsId) {
-        SignatureTicket biljett = draftService.serverSignature(intygsId);
+        SignatureTicket biljett = signatureService.serverSignature(intygsId);
         return new BiljettResponse(biljett);
     }
 
@@ -224,7 +228,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         String draftAsJson = fromBytesToString(rawSignatur);
 
-        SignatureTicket biljett = draftService.clientSignature(biljettId, draftAsJson);
+        SignatureTicket biljett = signatureService.clientSignature(biljettId, draftAsJson);
         return new BiljettResponse(biljett);
     }
 
@@ -238,7 +242,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signeringshash/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse signeraUtkast(@PathParam("intygsId") String intygsId) {
-        SignatureTicket biljett = draftService.createDraftHash(intygsId);
+        SignatureTicket biljett = signatureService.createDraftHash(intygsId);
         return new BiljettResponse(biljett);
     }
 
@@ -252,7 +256,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signera/status/{biljettId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse biljettStatus(@PathParam("biljettId") String biljettId) {
-        SignatureTicket biljett = draftService.ticketStatus(biljettId);
+        SignatureTicket biljett = signatureService.ticketStatus(biljettId);
         return new BiljettResponse(biljett);
     }
 
