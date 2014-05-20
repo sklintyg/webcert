@@ -32,6 +32,7 @@
         "require" : false,
 
         // Test
+        "afterEach" : false,
         "beforeEach" : false,
         "describe" : false,
         "expect" : false,
