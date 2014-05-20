@@ -20,8 +20,6 @@ public class StoreLogStubResponder implements StoreLogResponderInterface {
 
     @Override
     public StoreLogResponseType storeLog(String logicalAddress, StoreLogRequestType request) {
-
-
         logEntries.addAll(request.getLog());
 
         StoreLogResponseType response = new StoreLogResponseType();

@@ -1,6 +1,7 @@
 package se.inera.webcert.intygstjanststub;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.base.Function;
@@ -22,14 +23,14 @@ import com.google.common.collect.Iterables;
 public class IntygStore {
     private static final Logger LOG = LoggerFactory.getLogger(IntygStore.class);
 
-    private ConcurrentHashMap<String, GetCertificateForCareResponseType> intyg = new ConcurrentHashMap<String, GetCertificateForCareResponseType>();
+    private Map<String, GetCertificateForCareResponseType> intyg = new ConcurrentHashMap<>();
 
     public void addIntyg(GetCertificateForCareResponseType request) {
         LOG.debug("IntygStore: added intyg " + request.getMeta().getCertificateId() + " to store.");
         intyg.put(request.getMeta().getCertificateId(), request);
     }
 
-    public ConcurrentHashMap<String, GetCertificateForCareResponseType> getAllIntyg() {
+    public Map<String, GetCertificateForCareResponseType> getAllIntyg() {
         return intyg;
     }
 
@@ -39,8 +40,7 @@ public class IntygStore {
                 new Predicate<GetCertificateForCareResponseType>() {
                     @Override
                     public boolean apply(GetCertificateForCareResponseType i) {
-                        return enhetsIds.contains(i.getCertificate().getSkapadAv().getEnhet().getEnhetsId()
-                                .getExtension())
+                        return enhetsIds.contains(i.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension())
                                 && personnummer.equals(i.getCertificate().getPatient().getPersonId().getExtension());
 
                     }

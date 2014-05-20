@@ -1,5 +1,6 @@
 package se.inera.webcert.fkstub;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
@@ -12,14 +13,14 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkTyp
 @Component
 public class QuestionAnswerStore {
 
-    private ConcurrentHashMap<String, QuestionToFkType> questions = new ConcurrentHashMap<String, QuestionToFkType>();
-    private ConcurrentHashMap<String, AnswerToFkType> answers = new ConcurrentHashMap<String, AnswerToFkType>();
+    private final Map<String, QuestionToFkType> questions = new ConcurrentHashMap<>();
+    private final Map<String, AnswerToFkType> answers = new ConcurrentHashMap<>();
 
-    public ConcurrentHashMap<String, QuestionToFkType> getQuestions() {
+    public Map<String, QuestionToFkType> getQuestions() {
         return questions;
     }
 
-    public ConcurrentHashMap<String, AnswerToFkType> getAnswers() {
+    public Map<String, AnswerToFkType> getAnswers() {
         return answers;
     }
 
