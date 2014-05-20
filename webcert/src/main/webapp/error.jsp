@@ -137,7 +137,7 @@
 	      </p>
 	    </div>
 	 </div>
-	</div>
+	</div><!-- container-fluid -->
 
   <script>
     var cookiejar = document.getElementById('cookiejar');
@@ -150,8 +150,6 @@
         cookiejar.style.visibility = 'hidden';
     }
   </script>
-
-</div><!-- container-fluid -->
 
 </body>
 </html>

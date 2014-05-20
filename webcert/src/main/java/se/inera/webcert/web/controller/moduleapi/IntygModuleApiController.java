@@ -1,24 +1,9 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.IntygService;
@@ -35,6 +20,19 @@ import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
  * Controller exposing services to be used by modules.
@@ -253,7 +251,7 @@ public class IntygModuleApiController extends AbstractApiController {
      * @return BiljettResponse
      */
     @GET
-    @Path("/signera/status/{biljettId}")
+    @Path("/signeringsstatus/{biljettId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse biljettStatus(@PathParam("biljettId") String biljettId) {
         SignatureTicket biljett = signatureService.ticketStatus(biljettId);

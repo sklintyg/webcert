@@ -1,11 +1,6 @@
 package se.inera.webcert.service.draft;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -13,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.webcert.eid.services.SignatureService;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.intyg.model.Intyg;
@@ -27,7 +21,11 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 @Service
 public class IntygSignatureServiceImpl implements IntygSignatureService {
@@ -101,7 +99,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         String userId = user.getHsaId();
 
         try {
-            String signature = objectMapper.readTree(rawSignatur).get("signature").textValue();
+            String signature = objectMapper.readTree(rawSignatur).get("signatur").textValue();
             if (!signatureService.validateSiths(userId, ticket.getHash(), signature)) {
                 throw new RuntimeException("Kunde inte validera intyget");
             }

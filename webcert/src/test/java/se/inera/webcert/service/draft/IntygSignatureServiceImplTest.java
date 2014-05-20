@@ -1,21 +1,11 @@
 package se.inera.webcert.service.draft;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.eid.services.SignatureService;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -31,6 +21,15 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygSignatureServiceImplTest {
@@ -66,7 +65,7 @@ public class IntygSignatureServiceImplTest {
     private Intyg intygSigned;
 
     private HoSPerson hoSPerson;
-    
+
     @Before
     public void setup() {
         hoSPerson = new HoSPerson();
@@ -137,7 +136,7 @@ public class IntygSignatureServiceImplTest {
 
         intygCompleted.setModel("{}");
 
-        String signature = "{\"signature\":\"SIGNATURE\"}";
+        String signature = "{\"signatur\":\"SIGNATURE\"}";
         when(signatureService.validateSiths(hoSPerson.getHsaId(), ticket.getHash(), "SIGNATURE")).thenReturn(true);
         when(signatureRepository.save(any(Signatur.class))).thenReturn(null);
 
@@ -153,7 +152,7 @@ public class IntygSignatureServiceImplTest {
         SignatureTicket status = draftService.ticketStatus(ticket.getId());
         assertEquals(SignatureTicket.Status.BEARBETAR, status.getStatus());
 
-        String signature = "{\"signature\":\"SIGNATURE\"}";
+        String signature = "{\"signatur\":\"SIGNATURE\"}";
         when(signatureService.validateSiths(hoSPerson.getHsaId(), ticket.getHash(), "SIGNATURE")).thenReturn(true);
         when(signatureRepository.save(any(Signatur.class))).thenReturn(null);
 
