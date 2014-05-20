@@ -4,7 +4,7 @@ import geb.Page
 
 class ViewCertQAPage extends Page {
 
-    static at = { $("#viewCertAndQA").isDisplayed() }
+    static at = { $("#viewQAandCert").isDisplayed() }
 
     static content = {
         newQuestionBtn(required: false) { $("#askQuestionBtn") }
