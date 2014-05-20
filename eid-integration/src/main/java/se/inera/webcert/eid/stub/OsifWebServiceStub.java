@@ -43,6 +43,7 @@ public class OsifWebServiceStub implements Osif {
         return response;
     }
 
+    // CHECKSTYLE:OFF MagicNumber Ej dokumenterade felkoder från OSIF service.
     private boolean validate(VerifySignatureRequest verifySignatureRequest, VerifySignatureResponse response) {
         if (verifySignatureRequest.getTbsText() == null) {
             response.setStatus(failStatus(218, 17));
@@ -62,6 +63,7 @@ public class OsifWebServiceStub implements Osif {
         }
         return false;
     }
+    // CHECKSTYLE:ON MagicNumber
 
     private Status failStatus(int code, int group) {
         Status status = new Status();

@@ -4,7 +4,9 @@ import org.joda.time.LocalDateTime;
 
 public class SignatureTicket {
 
-    public enum Status { BEARBETAR, SIGNERAD, OKAND }
+    public enum Status {
+        BEARBETAR, SIGNERAD, OKAND
+    }
 
     private final String id;
     private final Status status;
