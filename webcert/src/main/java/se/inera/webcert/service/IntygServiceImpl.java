@@ -344,7 +344,7 @@ public class IntygServiceImpl implements IntygService {
 
                 // TODO varför kommer det en lista med ett tomt namn?
                 request.getPatient().getFornamn().clear();
-
+            }
                 LOG.info("Förbered registrera intyg intyg på {}", intygSender);
                 RegisterMedicalCertificateResponseType registerMedicalCertificateResponseType = intygSender.registerMedicalCertificate("", data);
                 ResultType result = registerMedicalCertificateResponseType.getResult();
@@ -353,7 +353,6 @@ public class IntygServiceImpl implements IntygService {
                 } else {
                     LOG.info("Register intyg {}", result.getResultCode());
                 }
-            }
         } catch (Exception e) {
             LOG.error("Error register intyg {}", e);
         }
