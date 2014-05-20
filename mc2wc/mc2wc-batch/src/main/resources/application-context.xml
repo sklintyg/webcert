@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:security="http://www.springframework.org/schema/security"
-       xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:security="http://www.springframework.org/schema/security" xmlns="http://www.springframework.org/schema/beans"
+  xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
@@ -16,37 +15,12 @@
 
   <context:annotation-config />
 
-  <security:http auto-config="true">
-    <security:intercept-url pattern="/se/inera/certificate/mc2wc/batch/writer" access="ROLE_USER" />
-    <security:http-basic />
-  </security:http>
+  <bean id="migrationJobExecutor" class="se.inera.certificate.mc2wc.batch.MigrationJobExecutor" />
 
-  <security:authentication-manager>
-    <security:authentication-provider>
-      <security:user-service>
-        <security:user name="medcert" password="webcert" authorities="ROLE_USER" />
-      </security:user-service>
-    </security:authentication-provider>
-  </security:authentication-manager>
-
-  <context:property-placeholder
-      location="file:${mc2wc-batch.config.file}"
-      ignore-resource-not-found="true" ignore-unresolvable="true" order="0" />
-
-  <beans profile="dev">
-    <context:property-placeholder
-        location="classpath:/env/default.properties, classpath:/env/default.dev.properties"
-        ignore-resource-not-found="true" ignore-unresolvable="true" order="1" />
-  </beans>
-  <beans profile="test">
-    <context:property-placeholder
-        location="classpath:/env/default.properties, classpath:/env/default.test.properties"
-        ignore-resource-not-found="true" ignore-unresolvable="true" order="1" />
-  </beans>
-  <beans profile="prod">
-    <context:property-placeholder
-        location="classpath:/env/default.properties, classpath:/env/default.prod.properties"
-        ignore-resource-not-found="true" ignore-unresolvable="true" order="1" />
+  <beans profile="!dev">
+    <context:property-placeholder location="file:${configFile}"
+      ignore-resource-not-found="false" ignore-unresolvable="false"
+      order="0" />
   </beans>
 
 </beans>

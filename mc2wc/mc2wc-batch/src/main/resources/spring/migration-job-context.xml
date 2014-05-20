@@ -6,7 +6,10 @@
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <batch:job id="migrationJob" job-repository="migrationJobRepository" restartable="false">
-    <batch:step id="certificateMigrationStep">
+    <batch:step id="clearPreviousExportStep" next="exportCertificatesStep">
+      <batch:tasklet ref="clearPreviousExportTasklet" transaction-manager="mc2wcTransactionManager"/>
+    </batch:step>
+    <batch:step id="exportCertificatesStep">
       <batch:tasklet transaction-manager="mc2wcTransactionManager">
         <batch:chunk reader="medcertCertificateJpaReader"
                      processor="migrationMessageCompositeProcessor" writer="migratedCertificateJpaWriter"
@@ -15,7 +18,8 @@
       </batch:tasklet>
     </batch:step>
   </batch:job>
-
+  
+  <bean id="clearPreviousExportTasklet" class="se.inera.certificate.mc2wc.batch.ClearPreviousExportTasklet" />
 
   <bean id="migrationMessageCompositeProcessor" class="org.springframework.batch.item.support.CompositeItemProcessor">
     <property name="delegates">

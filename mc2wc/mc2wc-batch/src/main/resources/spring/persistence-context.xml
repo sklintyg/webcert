@@ -1,14 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="
+       http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-  <import resource="classpath:env/*-persistence-config.xml" />
 
   <bean id="medcertTransactionManager"
         class="org.springframework.orm.jpa.JpaTransactionManager">
     <property name="entityManagerFactory" ref="medcertEntityManagerFactory" />
   </bean>
+
+  <beans profile="!dev">
+    <bean id="medcertDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+      <property name="driverClassName" value="${medcert.database.driver}" />
+      <property name="url" value="${medcert.database.url}" />
+      <property name="username" value="${medcert.database.user}" />
+      <property name="password" value="${medcert.database.pwd}" />
+    </bean>
+  
+    <bean id="medcertEntityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+      <property name="dataSource" ref="medcertDataSource" />
+      <property name="packagesToScan" value="se.inera.certificate.mc2wc.medcert.jpa.model" />
+      <property name="persistenceUnitName" value="jpa.migration.medcert" />
+      <property name="jpaVendorAdapter">
+        <bean
+            class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+          <property name="database" value="${medcert.database.type}" />
+        </bean>
+      </property>
+    </bean>
+  </beans>
+
+  <beans profile="dev">
+    <jdbc:initialize-database data-source="medcertDataSource">
+      <jdbc:script location="classpath:/db/create_medcert_db_h2.sql" />
+    </jdbc:initialize-database>
+  
+    <jdbc:embedded-database id="medcertDataSource" type="H2" />
+  
+    <bean id="medcertEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+      <property name="dataSource" ref="medcertDataSource" />
+      <property name="packagesToScan" value="se.inera.certificate.mc2wc.medcert.jpa.model" />
+      <property name="persistenceUnitName" value="jpa.migration.medcert" />
+      <property name="jpaVendorAdapter">
+        <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+          <property name="database" value="H2" />
+        </bean>
+      </property>
+      <property name="jpaProperties">
+        <props>
+          <prop key="hibernate.show_sql">false</prop>
+          <prop key="hibernate.format_sql">false</prop>
+          <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+        </props>
+      </property>
+    </bean>
+  </beans>
 
 </beans>

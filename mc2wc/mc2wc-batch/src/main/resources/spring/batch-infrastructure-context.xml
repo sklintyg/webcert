@@ -37,27 +37,10 @@
     <property name="dataSource" ref="batchDataSource" />
   </bean>
 
-  <beans profile="dev">
-    <jdbc:initialize-database data-source="batchDataSource" ignore-failures="ALL">
-      <jdbc:script
-          location="classpath:/org/springframework/batch/core/schema-h2.sql" />
-    </jdbc:initialize-database>
+  <jdbc:initialize-database data-source="batchDataSource" ignore-failures="ALL">
+    <jdbc:script location="classpath:/org/springframework/batch/core/schema-h2.sql" />
+  </jdbc:initialize-database>
 
-    <jdbc:embedded-database id="batchDataSource" type="H2" />
-  </beans>
-
-  <beans profile="!dev">
-    <jdbc:initialize-database data-source="batchDataSource" ignore-failures="ALL">
-      <jdbc:script
-          location="classpath:/org/springframework/batch/core/schema-h2.sql" />
-    </jdbc:initialize-database>
-
-    <bean id="batchDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-      <property name="driverClassName" value="org.h2.Driver" />
-      <property name="url" value="jdbc:h2:file:${mc2wc-batch.database.path}" />
-      <property name="username" value="sa" />
-      <property name="password" value="" />
-    </bean>
-  </beans>
+  <jdbc:embedded-database id="batchDataSource" type="H2" />
 
 </beans>

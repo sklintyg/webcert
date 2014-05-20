@@ -16,7 +16,7 @@ public class CertificateConverterProcessor implements ItemProcessor<Certificate,
     @Autowired
     private MigrationMessageConverter converter;
 
-    @Value("${medcert.sender.id}")
+    @Value("${medcert.exporting.entity}")
     private String sender;
 
     @Override

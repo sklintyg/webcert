@@ -27,7 +27,7 @@
 
   <logger name="org.apache.cxf" level="ERROR" />
 
-  <logger name="se.inera.certificate.mc2wc" level="INFO">
+  <logger name="se.inera.certificate.mc2wc" level="DEBUG">
     <appender-ref ref="FILE" />
   </logger>
 

@@ -19,9 +19,18 @@
  */
 package se.inera.certificate.mc2wc.medcert.jpa.model;
 
-import se.vgregion.dao.domain.patterns.entity.AbstractEntity;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import javax.persistence.*;
 import java.util.Date;
 
 /**

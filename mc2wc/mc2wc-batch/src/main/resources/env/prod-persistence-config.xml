@@ -5,12 +5,15 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
-       profile="prod">
+       profile="!dev">
 
   <context:annotation-config />
 
-  <bean id="medcertDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="${medcert.datasource.name}" />
+  <bean id="medcertDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${medcert.database.driver}" />
+    <property name="url" value="${medcert.database.url}" />
+    <property name="username" value="${medcert.database.user}" />
+    <property name="password" value="${medcert.database.pwd}" />
   </bean>
 
   <bean id="medcertEntityManagerFactory"
