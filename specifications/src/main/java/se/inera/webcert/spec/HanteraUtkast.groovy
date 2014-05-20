@@ -74,21 +74,23 @@ class HanteraUtkast {
     }
 
     boolean signeraKnappAktiverad(boolean expected = true) {
-        def result = false
         Browser.drive {
             at EditeraIntygPage
-            result = page.signeraBtn.isEnabled()
+            waitFor {
+                expected == page.signeraBtn.isEnabled()
+            }
         }
-        result == expected
+        true
     }
 
     boolean signeraKnappVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             at EditeraIntygPage
-            result = page.signeraBtn.isDisplayed()
+            waitFor {
+                expected == page.signeraBtn.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     boolean signeraUtkast() {
@@ -115,12 +117,13 @@ class HanteraUtkast {
     }
 
     boolean intygetSigneratMeddelandeVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             asType EditeraIntygPage
-            result = page.certificateIsSentToITMessage.isDisplayed()
+            waitFor {
+                expected == page.certificateIsSentToITMessage.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     boolean visaSidanVisas() {
