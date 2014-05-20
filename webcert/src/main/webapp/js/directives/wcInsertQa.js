@@ -11,7 +11,6 @@ define(['angular'], function(angular) {
             link: function(scope, element, attrs) {
 
                 require(['text!./' + scope.certificateType + '/webcert/views/qa.html'], function(file) {
-                    $log.debug(file);
                     element.html(file);
                     element.replaceWith($compile(element.html())(scope));
                 });
