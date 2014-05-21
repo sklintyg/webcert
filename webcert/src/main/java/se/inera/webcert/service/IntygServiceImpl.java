@@ -341,18 +341,17 @@ public class IntygServiceImpl implements IntygService {
             request.setSkickatdatum(new LocalDateTime());
             data.setUtlatande(request);
             if ("fk7263".equals(request.getTypAvUtlatande().getCode())) {
-
                 // TODO varför kommer det en lista med ett tomt namn?
                 request.getPatient().getFornamn().clear();
             }
-                LOG.info("Förbered registrera intyg intyg på {}", intygSender);
-                RegisterMedicalCertificateResponseType registerMedicalCertificateResponseType = intygSender.registerMedicalCertificate("", data);
-                ResultType result = registerMedicalCertificateResponseType.getResult();
-                if (result.getResultCode() == ResultCodeType.ERROR) {
-                    LOG.error("Register intyg {} {} {}", new Object[] {result.getResultCode(), result.getErrorId(), result.getResultText()});
-                } else {
-                    LOG.info("Register intyg {}", result.getResultCode());
-                }
+            LOG.info("Förbered registrera intyg intyg på {}", intygSender);
+            RegisterMedicalCertificateResponseType registerMedicalCertificateResponseType = intygSender.registerMedicalCertificate("", data);
+            ResultType result = registerMedicalCertificateResponseType.getResult();
+            if (result.getResultCode() == ResultCodeType.ERROR) {
+                LOG.error("Register intyg {} {} {}", new Object[] {result.getResultCode(), result.getErrorId(), result.getResultText()});
+            } else {
+                LOG.info("Register intyg {}", result.getResultCode());
+            }
         } catch (Exception e) {
             LOG.error("Error register intyg {}", e);
         }

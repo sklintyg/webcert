@@ -15,9 +15,8 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-diabetes int
 | signera knapp visas |
 | signera knapp aktiverad |
 | signera utkast |
-| editera sidan visas |
+| visa sidan visas |
 | intyget signerat meddelande visas |
-| signera knapp visas | false |
 
 !3 Ta bort utkast
 
@@ -25,4 +24,7 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-diabetes int
 | utkastId |
 | webcert-fitnesse-signera-1 |
 
+| ta bort intyg |
+| id |
+| webcert-fitnesse-signera-1 |
 
