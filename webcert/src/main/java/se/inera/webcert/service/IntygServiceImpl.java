@@ -51,6 +51,7 @@ import se.inera.certificate.modules.support.api.dto.TransportModelVersion;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.IntygMetadata;
@@ -96,6 +97,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private RegisterMedicalCertificateResponderInterface intygSender;
+
+    @Autowired
+    private OmsandningRepository omsandningRepository;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
