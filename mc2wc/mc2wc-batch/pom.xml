@@ -163,6 +163,10 @@
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
     </dependency>
+    <dependency>
+      <groupId>org.jadira.usertype</groupId>
+      <artifactId>usertype.core</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

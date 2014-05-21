@@ -13,7 +13,7 @@ import se.inera.certificate.mc2wc.jpa.Mc2wcDAO;
 
 public class ClearPreviousExportTasklet implements Tasklet {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private static Logger log = LoggerFactory.getLogger(ClearPreviousExportTasklet.class);
 	
 	@Autowired
 	private Mc2wcDAO mc2wcDAO;

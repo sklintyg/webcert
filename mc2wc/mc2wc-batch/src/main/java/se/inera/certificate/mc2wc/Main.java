@@ -12,14 +12,13 @@ import org.springframework.core.env.PropertySource;
 import se.inera.certificate.mc2wc.batch.MigrationJobExecutor;
 
 public class Main {
-	
-	public static final String CONSOLE_LOGGER = "mc2wc.console";
-		
+			
 	private static final String CONTEXT_LOCATION = "/application-context.xml";
 	private static final String CONFIG_PARAM = "configFile";
 	private static final String LOGGER_PARAM = "logFile";
+	private static final String LOG_FILE_DIR_PROP = "LOG_FILE_DIR";
 	
-	private static Logger log = LoggerFactory.getLogger(CONSOLE_LOGGER);
+	private static Logger log = LoggerFactory.getLogger(ApplicationConsoleLogger.NAME);
 	
 	@Autowired
 	private MigrationJobExecutor migrationJobExecutor;
@@ -33,22 +32,45 @@ public class Main {
 
 	public void configure(String[] args) throws Exception {
 		log.info("Configuring...");
-		OptionParser parser = new OptionParser();
-		parser.accepts(CONFIG_PARAM).withRequiredArg();
-		OptionSet options = parser.parse(args);
-		PropertySource ps = new JOptCommandLinePropertySource(options);
+		
+		OptionSet options = parseArguments(args);
+		
+		if (options == null) {
+			System.exit(-1);
+		}
+		
+		System.getProperties().setProperty(LOG_FILE_DIR_PROP, (String) options.valueOf(LOGGER_PARAM));
+		
+		PropertySource<OptionSet> ps = new JOptCommandLinePropertySource(options);
 		
 		ApplicationContextLoader appCxtLoader = new ApplicationContextLoader();
 		appCxtLoader.load(this, ps, CONTEXT_LOCATION);
 	}
 	
+	private OptionSet parseArguments(String[] args) {
+		OptionParser parser = new OptionParser();
+		parser.accepts(CONFIG_PARAM).withRequiredArg().ofType(String.class);
+		parser.accepts(LOGGER_PARAM).withRequiredArg().ofType(String.class);
+				
+		OptionSet options = parser.parse(args);
+		
+		if (!options.has(CONFIG_PARAM) || !options.has(LOGGER_PARAM)) {
+			log.error("Can not start, missing required arguments...");
+			return null;
+		}
+		
+		return options;
+	}
+	
 	private void start() throws Exception {
 		log.info("Starting migration!");
-		int status = migrationJobExecutor.startMigration();
+		Long jobExecId = migrationJobExecutor.startMigration();
+		
+		int status = migrationJobExecutor.checkMigrationJob(jobExecId);
 		
 		while (status > 0) {
-			status = migrationJobExecutor.checkMigrationJob();
 			Thread.sleep(500);
+			status = migrationJobExecutor.checkMigrationJob(jobExecId);
 		}
 		
 	}

@@ -10,6 +10,8 @@
         class="org.springframework.orm.jpa.JpaTransactionManager">
     <property name="entityManagerFactory" ref="medcertEntityManagerFactory" />
   </bean>
+  
+  <bean id="medcertDAO" class="se.inera.certificate.mc2wc.medcert.jpa.MedcertDAO" />
 
   <beans profile="!dev">
     <bean id="medcertDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

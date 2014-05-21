@@ -23,4 +23,8 @@ public class Mc2wcDAO {
 		Query query = entityManager.createQuery(CLEAR_MIGRATED_CERTS);
 		query.executeUpdate();
 	}
+	
+	public void insertMigrationManifest(MigrationManifest manifest) {
+		entityManager.persist(manifest);
+	}
 }

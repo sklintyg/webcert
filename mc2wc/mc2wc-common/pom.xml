@@ -77,5 +77,10 @@
       <artifactId>hibernate-jpa-2.0-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jadira.usertype</groupId>
+      <artifactId>usertype.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>

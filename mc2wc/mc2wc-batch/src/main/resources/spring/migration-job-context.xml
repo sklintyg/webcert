@@ -6,8 +6,11 @@
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <batch:job id="migrationJob" job-repository="migrationJobRepository" restartable="false">
-    <batch:step id="clearPreviousExportStep" next="exportCertificatesStep">
+    <batch:step id="clearPreviousExportStep" next="storeExportManifestStep">
       <batch:tasklet ref="clearPreviousExportTasklet" transaction-manager="mc2wcTransactionManager"/>
+    </batch:step>
+    <batch:step id="storeExportManifestStep" next="exportCertificatesStep">
+      <batch:tasklet ref="storeMigrationManifestTasklet" transaction-manager="mc2wcTransactionManager"/>
     </batch:step>
     <batch:step id="exportCertificatesStep">
       <batch:tasklet transaction-manager="mc2wcTransactionManager">
@@ -20,6 +23,8 @@
   </batch:job>
   
   <bean id="clearPreviousExportTasklet" class="se.inera.certificate.mc2wc.batch.ClearPreviousExportTasklet" />
+  
+  <bean id="storeMigrationManifestTasklet" class="se.inera.certificate.mc2wc.batch.StoreMigrationManifestTasklet" />
 
   <bean id="migrationMessageCompositeProcessor" class="org.springframework.batch.item.support.CompositeItemProcessor">
     <property name="delegates">

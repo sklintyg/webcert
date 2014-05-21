@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -15,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import se.inera.certificate.mc2wc.Main;
+import se.inera.certificate.mc2wc.ApplicationConsoleLogger;
 
 @Component
 public class MigrationJobExecutor {
@@ -26,7 +25,7 @@ public class MigrationJobExecutor {
 	private static final int FAILED = -1;
 	private static final int FINISHED = 0;
 	
-	private static Logger logger = LoggerFactory.getLogger(Main.CONSOLE_LOGGER);
+	private static Logger logger = LoggerFactory.getLogger(ApplicationConsoleLogger.NAME);
 
 	@Autowired
 	private JobLauncher jobLauncher;
@@ -41,38 +40,36 @@ public class MigrationJobExecutor {
 	@Autowired
 	private JobOperator jobOperator;
 
-	public int startMigration() throws Exception {
-		logger.info("Running job '{}'", MIGRATION_JOB);
+	public Long startMigration() throws Exception {
+		logger.info("Starting job '{}'", MIGRATION_JOB);
 
 		Set<JobExecution> executions = jobExplorer
 				.findRunningJobExecutions(MIGRATION_JOB);
 
 		if (!executions.isEmpty()) {
 			logger.error("Job '{}' is already running!", MIGRATION_JOB);
-			return FAILED;
+			return null;
 		}
 		JobParametersBuilder builder = new JobParametersBuilder();
 		builder.addLong("millis", System.currentTimeMillis(), true);
 
-		jobLauncher.run(migrationJob, builder.toJobParameters());
+		JobExecution execution = jobLauncher.run(migrationJob, builder.toJobParameters());
 		
-		return RUNNING;
+		return execution.getId();
 	}
 
-	public int checkMigrationJob() {
+	public int checkMigrationJob(Long execId) {
 		
-		Set<JobExecution> executions = jobExplorer.findRunningJobExecutions(MIGRATION_JOB);
+		JobExecution execution = jobExplorer.getJobExecution(execId);
 
-        if (executions.isEmpty()) {
-        	logger.info("Job '{}' was not found!", MIGRATION_JOB);
+        if (execution == null) {
+        	logger.info("Execution with id '{}' for job '{}' was not found!", execId, MIGRATION_JOB);
             return FINISHED;
         }
-
-        JobExecution execution = executions.iterator().next();
-		
+                
 		logger.info("Job '{}': {}", MIGRATION_JOB, execution.getStatus());
 		
-		return RUNNING;
+		return (execution.isRunning()) ? RUNNING : FINISHED;
 	}
 
 }
