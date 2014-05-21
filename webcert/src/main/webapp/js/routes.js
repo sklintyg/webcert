@@ -28,11 +28,11 @@ define([ 'angular', 'app' ], function(angular, app) {
                 templateUrl: '/views/dashboard/unsigned.html',
                 controller: 'UnsignedCertCtrl'
             }).
-            when('/view/:certificateType/:certificateId', {
+            when('/intyg/:certificateType/:certificateId', {
                 templateUrl: '/views/dashboard/view.certificate.html',
                 controller: 'ViewCertCtrl'
             }).
-            when('/qa/:certificateType/:certificateId', {
+            when('/fragasvar/:certificateType/:certificateId', {
                 templateUrl: '/views/dashboard/view.qa.html',
                 controller: 'ViewCertCtrl'
             }).

@@ -344,7 +344,7 @@ define(['angular'], function(angular) {
 
             $scope.openIntyg = function(intygsReferens) {
                 $log.debug('open intyg ' + intygsReferens.intygsId);
-                $location.url('/qa/' + intygsReferens.intygsTyp.toLowerCase() + '/' + intygsReferens.intygsId, true);
+                $location.url('/fragasvar/' + intygsReferens.intygsTyp.toLowerCase() + '/' + intygsReferens.intygsId, true);
             };
 
             // Handle vidarebefordra dialog

@@ -117,7 +117,7 @@ define([], function() {
                     $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
                     CreateCertificateDraft.reset();
                 } else {
-                    $location.path('/view/' + cert.intygType + '/' + cert.intygId);
+                    $location.path('/intyg/' + cert.intygType + '/' + cert.intygId);
                 }
             };
 

@@ -349,7 +349,7 @@ class SvaraOchFraga {
 
     def gaTillIntygsvyMedIntygsid(String id) {
         Browser.drive {
-            go "/web/dashboard#/qa/fk7263/${id}"
+            go "/web/dashboard#/fragasvar/fk7263/${id}"
             waitFor {
                 at ViewCertQAPage
             }
