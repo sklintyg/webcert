@@ -7,23 +7,10 @@
   </parent>
   <artifactId>mc2wc-batch</artifactId>
   <packaging>jar</packaging>
-  <properties>
-    <jetty.version>9.1.1.v20140108</jetty.version>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>mc2wc-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
-      <version>${jetty.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-webapp</artifactId>
-      <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -46,18 +33,6 @@
       <artifactId>spring-tx</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-config</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.springframework.batch</groupId>
       <artifactId>spring-batch-core</artifactId>
     </dependency>
@@ -70,16 +45,6 @@
       <artifactId>commons-dbcp</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>jstl</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
@@ -88,16 +53,6 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
-<!--     <dependency>
-      <groupId>se.vgregion.daoframework</groupId>
-      <artifactId>dao-framework-jpa</artifactId>
-      <version>3.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency> -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
