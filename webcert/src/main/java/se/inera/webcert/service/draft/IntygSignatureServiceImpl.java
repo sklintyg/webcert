@@ -123,6 +123,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
         ticket = ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
 
+        // TODO hantera fallet att skicka misslyckas.
         intygService.storeIntyg(intyg);
 
         return ticket;
@@ -151,6 +152,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
         ticketTracker.updateStatus(statusTicket.getId(), SignatureTicket.Status.SIGNERAD);
 
+        // TODO hantera fallet att skicka misslyckas.
         intygService.storeIntyg(intyg);
 
         return statusTicket;

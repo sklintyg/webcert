@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
@@ -51,6 +53,7 @@ import se.inera.certificate.modules.support.api.dto.TransportModelVersion;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygItem;
@@ -328,21 +331,31 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public void storeIntyg(Intyg intyg) {
+        Omsandning omsandning = createOmsandning(intyg.getIntygsId());
+        // Redan schedulerat för att skickas, men vi gör ett försök redan nu.
+        storeIntyg(intyg, omsandning);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Omsandning createOmsandning(String intygId) {
+        Omsandning omsandning = new Omsandning();
+        omsandning.setIntygId(intygId);
+        omsandning.setAntalForsok(100);
+        omsandning.setGallringsdatum(new LocalDateTime().plusHours(24 * 7));
+        omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
+        return omsandningRepository.save(omsandning);
+    }
+
+    public void storeIntyg(Intyg intyg, Omsandning omsandning) {
         try {
             LOG.info("Förbered registrera intyg intyg {}", intyg.getIntygsId());
-            RegisterMedicalCertificateType data = new RegisterMedicalCertificateType();
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intyg.getIntygsTyp());
-            ExternalModelResponse external = moduleApi.convertInternalToExternal(new InternalModelHolder(intyg.getModel()));
+            UtlatandeType request = convertToUtlatande(intyg);
 
-            ExternalModelHolder holder = new ExternalModelHolder(external.getExternalModelJson());
-            TransportModelResponse modelResponse = moduleApi.marshall(holder, TransportModelVersion.UTLATANDE_V1);
-            LOG.info("{}", modelResponse.getTransportModel());
-
-            UtlatandeType request = unmarshaller.unmarshal(new StreamSource(new StringReader(modelResponse.getTransportModel())), UtlatandeType.class).getValue();
-
-            // TODO Hårkoda vad som saknas i testintyg
+            // TODO Hårdkoda vad som saknas i testintyg
             request.setSigneringsdatum(intyg.getSenastSparadDatum());
             request.setSkickatdatum(new LocalDateTime());
+
+            RegisterMedicalCertificateType data = new RegisterMedicalCertificateType();
             data.setUtlatande(request);
             if ("fk7263".equals(request.getTypAvUtlatande().getCode())) {
                 // TODO varför kommer det en lista med ett tomt namn?
@@ -353,11 +366,25 @@ public class IntygServiceImpl implements IntygService {
             ResultType result = registerMedicalCertificateResponseType.getResult();
             if (result.getResultCode() == ResultCodeType.ERROR) {
                 LOG.error("Register intyg {} {} {}", new Object[] {result.getResultCode(), result.getErrorId(), result.getResultText()});
+                omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
+                omsandningRepository.save(omsandning);
             } else {
                 LOG.info("Register intyg {}", result.getResultCode());
+                omsandningRepository.delete(omsandning);
             }
         } catch (Exception e) {
             LOG.error("Error register intyg {}", e);
         }
+    }
+
+    private UtlatandeType convertToUtlatande(Intyg intyg) throws ModuleException, JAXBException {
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intyg.getIntygsTyp());
+        ExternalModelResponse external = moduleApi.convertInternalToExternal(new InternalModelHolder(intyg.getModel()));
+
+        ExternalModelHolder holder = new ExternalModelHolder(external.getExternalModelJson());
+        TransportModelResponse modelResponse = moduleApi.marshall(holder, TransportModelVersion.UTLATANDE_V1);
+        LOG.info("{}", modelResponse.getTransportModel());
+
+        return unmarshaller.unmarshal(new StreamSource(new StringReader(modelResponse.getTransportModel())), UtlatandeType.class).getValue();
     }
 }

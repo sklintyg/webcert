@@ -16,6 +16,7 @@ public class Omsandning {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "OMSANDNING_ID")
     private long id;
 
     @Column(name = "INTYG_ID")
