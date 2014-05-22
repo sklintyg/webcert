@@ -55,7 +55,7 @@ class WsClientFixture {
 		factory.setAddress(url);
 		def responder = factory.create();
 		if (url.startsWith("https:")) {
-			setClientCertificate(responder)
+			setupSSLCertificates(responder)
 		}
 		return responder
 	}
@@ -78,32 +78,37 @@ class WsClientFixture {
 		return result
 	}
 
-	def setClientCertificate(def responder) {
+	def setupSSLCertificates(def responder) {
+        boolean ntjpClientAuthentication = Boolean.getBoolean("service.ntjpClientAuthentication")
 		Client client = ClientProxy.getClient(responder)
 		HTTPConduit httpConduit = (HTTPConduit)client.getConduit();
 		TLSClientParameters tlsParams = new TLSClientParameters();
 		tlsParams.setDisableCNCheck(true);
 
-		KeyStore trustStore = KeyStore.getInstance("JKS");
-		String trustpass = "password";//provide trust pass
-
-		trustStore.load(se.inera.certificate.spec.util.WsClientFixture.class.getResourceAsStream("/truststore-ntjp.jks"), trustpass.toCharArray());
-		TrustManagerFactory trustFactory =
-				TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		trustFactory.init(trustStore);
-		TrustManager[] tm = trustFactory.getTrustManagers();
-		// TrustManager[] tm = [new TrustAllX509TrustManager()]
-		tlsParams.setTrustManagers(tm);
-
-		KeyStore certStore = KeyStore.getInstance("PKCS12");
-		String certPass = "psgccsSeBZ"
-		certStore.load(se.inera.certificate.spec.util.WsClientFixture.class.getResourceAsStream("/hsaws-user.ifv.sjunet.org_auth.p12"), certPass.toCharArray());
-		KeyManagerFactory keyFactory =
-				KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-		keyFactory.init(certStore, certPass.toCharArray());
-		KeyManager[] km = keyFactory.getKeyManagers();
-		tlsParams.setKeyManagers(km);
-
+        if (ntjpClientAuthentication) {
+    		KeyStore trustStore = KeyStore.getInstance("JKS");
+    		String trustpass = "password";//provide trust pass
+    
+    		trustStore.load(se.inera.certificate.spec.util.WsClientFixture.class.getResourceAsStream("/truststore-ntjp.jks"), trustpass.toCharArray());
+    		TrustManagerFactory trustFactory =
+    				TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    		trustFactory.init(trustStore);
+    		TrustManager[] tm = trustFactory.getTrustManagers();
+    		// TrustManager[] tm = [new TrustAllX509TrustManager()]
+    		tlsParams.setTrustManagers(tm);
+    
+    		KeyStore certStore = KeyStore.getInstance("PKCS12");
+    		String certPass = "psgccsSeBZ"
+    		certStore.load(se.inera.certificate.spec.util.WsClientFixture.class.getResourceAsStream("/hsaws-user.ifv.sjunet.org_auth.p12"), certPass.toCharArray());
+    		KeyManagerFactory keyFactory =
+    				KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+    		keyFactory.init(certStore, certPass.toCharArray());
+    		KeyManager[] km = keyFactory.getKeyManagers();
+    		tlsParams.setKeyManagers(km);
+        } else {
+            TrustManager[] tm = [new TrustAllX509TrustManager()]
+            tlsParams.setTrustManagers(tm);
+        }
 		FiltersType filter = new FiltersType();
 		filter.getInclude().add(".*_EXPORT_.*");
 		filter.getInclude().add(".*_EXPORT1024_.*");
@@ -114,48 +119,42 @@ class WsClientFixture {
 
 		httpConduit.setTlsClientParameters(tlsParams);
 	}
+
+    /**
+     * This class allow any X509 certificates to be used to authenticate the remote side of a secure socket, including
+     * self-signed certificates.
+     */
+    public class TrustAllX509TrustManager implements X509TrustManager {
+
+        /** Empty array of certificate authority certificates. */
+        private static final X509Certificate[] acceptedIssuers = [];
+
+        /**
+         * Always trust for client SSL chain peer certificate chain with any authType authentication types.
+         *
+         * @param chain the peer certificate chain.
+         * @param authType the authentication type based on the client certificate.
+         */
+        public void checkClientTrusted( X509Certificate[] chain, String authType ) {
+        }
+
+        /**
+         * Always trust for server SSL chain peer certificate chain with any authType exchange algorithm types.
+         *
+         * @param chain the peer certificate chain.
+         * @param authType the key exchange algorithm used.
+         */
+        public void checkServerTrusted( X509Certificate[] chain, String authType ) {
+        }
+
+        /**
+         * Return an empty array of certificate authority certificates which are trusted for authenticating peers.
+         *
+         * @return a empty array of issuer certificates.
+         */
+        public X509Certificate[] getAcceptedIssuers() {
+            return ( acceptedIssuers );
+        }
+    }
 }
 
-/**
- * This class allow any X509 certificates to be used to authenticate the remote side of a secure socket, including
- * self-signed certificates.
- */
-public class TrustAllX509TrustManager
-	implements X509TrustManager
-{
-
-	/** Empty array of certificate authority certificates. */
-	private static final X509Certificate[] acceptedIssuers = [];
-
-	/**
-	 * Always trust for client SSL chain peer certificate chain with any authType authentication types.
-	 *
-	 * @param chain the peer certificate chain.
-	 * @param authType the authentication type based on the client certificate.
-	 */
-	public void checkClientTrusted( X509Certificate[] chain, String authType )
-	{
-		System.err.println "Yes, client is trusted, type is ${authType}"
-	}
-
-	/**
-	 * Always trust for server SSL chain peer certificate chain with any authType exchange algorithm types.
-	 *
-	 * @param chain the peer certificate chain.
-	 * @param authType the key exchange algorithm used.
-	 */
-	public void checkServerTrusted( X509Certificate[] chain, String authType )
-	{
-		System.err.println "Yes, server is trusted, type is ${authType}"
-	}
-
-	/**
-	 * Return an empty array of certificate authority certificates which are trusted for authenticating peers.
-	 *
-	 * @return a empty array of issuer certificates.
-	 */
-	public X509Certificate[] getAcceptedIssuers()
-	{
-		return ( acceptedIssuers );
-	}
-}
