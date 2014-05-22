@@ -54,6 +54,7 @@ import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
+import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygItem;
@@ -103,6 +104,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private OmsandningRepository omsandningRepository;
+
+    @Autowired
+    private IntygRepository intygRepository;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -344,6 +348,10 @@ public class IntygServiceImpl implements IntygService {
         omsandning.setGallringsdatum(new LocalDateTime().plusHours(24 * 7));
         omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
         return omsandningRepository.save(omsandning);
+    }
+
+    public void storeIntyg(Omsandning omsandning) {
+        storeIntyg(intygRepository.findOne(omsandning.getIntygId()), omsandning);
     }
 
     public void storeIntyg(Intyg intyg, Omsandning omsandning) {
