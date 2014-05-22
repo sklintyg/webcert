@@ -344,7 +344,7 @@ public class IntygServiceImpl implements IntygService {
     public Omsandning createOmsandning(String intygId) {
         Omsandning omsandning = new Omsandning();
         omsandning.setIntygId(intygId);
-        omsandning.setAntalForsok(100);
+        omsandning.setAntalForsok(0);
         omsandning.setGallringsdatum(new LocalDateTime().plusHours(24 * 7));
         omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
         return omsandningRepository.save(omsandning);
@@ -375,6 +375,7 @@ public class IntygServiceImpl implements IntygService {
             if (result.getResultCode() == ResultCodeType.ERROR) {
                 LOG.error("Register intyg {} {} {}", new Object[] {result.getResultCode(), result.getErrorId(), result.getResultText()});
                 omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
+                omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
                 omsandningRepository.save(omsandning);
             } else {
                 LOG.info("Register intyg {}", result.getResultCode());
