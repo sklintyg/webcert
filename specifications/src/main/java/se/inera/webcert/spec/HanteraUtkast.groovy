@@ -67,6 +67,7 @@ class HanteraUtkast {
             waitFor {
                 page.radera.click()
             }
+            Thread.sleep(300);
             waitFor {
                 page.konfirmeraRadera.click()
             }

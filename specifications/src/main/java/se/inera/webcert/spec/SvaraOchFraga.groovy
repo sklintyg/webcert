@@ -209,8 +209,9 @@ class SvaraOchFraga {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.newQuestionBtn.isDisplayed()
 
+            Thread.sleep(300);
+            result = page.newQuestionBtn.isDisplayed()
         }
         result == expected
     }
