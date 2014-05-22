@@ -334,10 +334,10 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public void storeIntyg(Intyg intyg) {
+    public boolean storeIntyg(Intyg intyg) {
         Omsandning omsandning = createOmsandning(intyg.getIntygsId());
         // Redan schedulerat för att skickas, men vi gör ett försök redan nu.
-        storeIntyg(intyg, omsandning);
+        return storeIntyg(intyg, omsandning);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -350,11 +350,11 @@ public class IntygServiceImpl implements IntygService {
         return omsandningRepository.save(omsandning);
     }
 
-    public void storeIntyg(Omsandning omsandning) {
-        storeIntyg(intygRepository.findOne(omsandning.getIntygId()), omsandning);
+    public boolean storeIntyg(Omsandning omsandning) {
+        return storeIntyg(intygRepository.findOne(omsandning.getIntygId()), omsandning);
     }
 
-    public void storeIntyg(Intyg intyg, Omsandning omsandning) {
+    public boolean storeIntyg(Intyg intyg, Omsandning omsandning) {
         try {
             LOG.info("Förbered registrera intyg intyg {}", intyg.getIntygsId());
             UtlatandeType request = convertToUtlatande(intyg);
@@ -374,16 +374,17 @@ public class IntygServiceImpl implements IntygService {
             ResultType result = registerMedicalCertificateResponseType.getResult();
             if (result.getResultCode() == ResultCodeType.ERROR) {
                 LOG.error("Register intyg {} {} {}", new Object[] {result.getResultCode(), result.getErrorId(), result.getResultText()});
-                omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
                 omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
                 omsandningRepository.save(omsandning);
             } else {
                 LOG.info("Register intyg {}", result.getResultCode());
                 omsandningRepository.delete(omsandning);
+                return true;
             }
         } catch (Exception e) {
             LOG.error("Error register intyg {}", e);
         }
+        return false;
     }
 
     private UtlatandeType convertToUtlatande(Intyg intyg) throws ModuleException, JAXBException {

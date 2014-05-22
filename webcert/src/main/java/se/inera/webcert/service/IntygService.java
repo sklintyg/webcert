@@ -46,7 +46,7 @@ public interface IntygService {
      */
     PdfResponse fetchIntygAsPdf(String intygId);
 
-    void storeIntyg(Intyg intyg);
+    boolean storeIntyg(Intyg intyg);
 
-    void storeIntyg(Omsandning omsandning);
+    boolean storeIntyg(Omsandning omsandning);
 }

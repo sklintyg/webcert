@@ -15,6 +15,7 @@ import se.inera.webcert.service.IntygService;
 @Component
 public class OmsandningJob {
     private static final Logger LOG = LoggerFactory.getLogger(OmsandningJob.class);
+    private static final int MAX_OMSANDNING_PER_CYCLE = 100;
 
     @Autowired
     private OmsandningRepository omsandningRepository;
@@ -22,22 +23,26 @@ public class OmsandningJob {
     @Autowired
     private IntygService intygService;
 
-    @Scheduled(cron = "5 * * * * ?")
-//    @Scheduled(cron = "${scheduler.omsandningJob.cron}")
+//    @Scheduled(cron = "5 * * * * ?")
+    @Scheduled(cron = "${scheduler.omsandningJob.cron}")
     public void sandOm() {
         LOG.info("<<<Schemalagd omsandning startar.");
+        int failures = 0;
         for (Omsandning omsandning : omsandningRepository.findAll()) {
             if (omsandning.getGallringsdatum().isAfter(LocalDateTime.now())) {
                 LOG.warn("Forsoker skicka om intyg: " + omsandning.getIntygId());
-                sandOm(omsandning);
+                if(!sandOm(omsandning)) {
+                    if(++failures >= MAX_OMSANDNING_PER_CYCLE) {
+                        break;
+                    }
+                }
             }
         }
         LOG.info(">>>Schemalagd omsandning klar.");
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void sandOm(Omsandning omsandning) {
-        intygService.storeIntyg(omsandning);
-        omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
+    private boolean sandOm(Omsandning omsandning) {
+        return intygService.storeIntyg(omsandning);
     }
 }
