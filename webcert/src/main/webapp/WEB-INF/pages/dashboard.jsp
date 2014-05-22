@@ -24,7 +24,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
-<html lang="sv" id="ng-app" ng-app="wcDashBoardApp">
+<html lang="sv" id="ng-app" ng-app="webcert">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -37,7 +37,7 @@
 
 <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
 <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
-<link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-webcert.css"/>">
+<link rel="stylesheet" href="<c:url value="/web/webjars/common/webcert/css/inera-webcert.css"/>">
 <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-certificate.css"/>">
 
 <SCRIPT LANGUAGE="VBScript">

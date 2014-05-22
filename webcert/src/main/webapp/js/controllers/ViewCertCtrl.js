@@ -1,15 +1,22 @@
-define([], function() {
+define([
+    'angular'
+], function(angular) {
     'use strict';
+
+    var moduleName = 'wc.ViewCertCtrl';
 
     /*
      * Controller for logic related to viewing signed certs
      */
-    return [ '$scope', '$routeParams',
-        function($scope, $routeParams) {
+    angular.module(moduleName, []).
+        controller(moduleName, [ '$routeParams', '$scope',
+            function($routeParams, $scope) {
 
-            $scope.widgetState = {
-                certificateType: $routeParams.certificateType
-            };
-        }
-    ];
+                $scope.widgetState = {
+                    certificateType: $routeParams.certificateType
+                };
+            }
+        ]);
+
+    return moduleName;
 });

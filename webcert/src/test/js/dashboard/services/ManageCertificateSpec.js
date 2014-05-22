@@ -1,4 +1,10 @@
-define([ 'angular', 'angularMocks', 'angularSanitize', 'angularUiBootstrap', 'services'], function(angular, mocks) {
+define([
+    'angular',
+    'angularMocks',
+    'services/ManageCertificate',
+    'angularSanitize',
+    'angularUiBootstrap'
+], function(angular, mocks, ManageCertificateId) {
     'use strict';
 
     describe('ManageCertificate', function() {
@@ -6,12 +12,14 @@ define([ 'angular', 'angularMocks', 'angularSanitize', 'angularUiBootstrap', 'se
         var $httpBackend;
 
         beforeEach(mocks.module('ui.bootstrap'));
-        beforeEach(mocks.module('wc.dashboard.services'));
+        beforeEach(mocks.module(ManageCertificateId));
 
-        beforeEach(mocks.inject(function(_ManageCertificate_, _$httpBackend_) {
-            ManageCertificate = _ManageCertificate_;
-            $httpBackend = _$httpBackend_;
-        }));
+        beforeEach(mocks.inject([ ManageCertificateId, '$httpBackend',
+            function(_ManageCertificate_, _$httpBackend_) {
+                ManageCertificate = _ManageCertificate_;
+                $httpBackend = _$httpBackend_;
+            }
+        ]));
 
         describe('#getCertTypes', function() {
 

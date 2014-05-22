@@ -397,6 +397,10 @@
                   <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/">
                   </fileset>
                 </copy>
+                <copy todir="${project.build.directory}/webjardependencies/common" verbose="false">
+                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/common">
+                  </fileset>
+                </copy>
               </target>
             </configuration>
             <goals>

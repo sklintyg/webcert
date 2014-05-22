@@ -1,17 +1,14 @@
 define([
     'angular',
+    'filters/CertDeletedFilter',
     'filters/QAEnhetsIdFilter',
-    'webjars/common/js/filters/BoolToTextFilter',
-    'filters/CertDeletedFilter'
-], function(angular, QAEnhetsIdFilter, BoolToTextFilter, CertDeletedFilter) {
+    'webjars/common/webcert/js/filters/BoolToTextFilter'
+], function(angular, CertDeletedFilter, QAEnhetsIdFilter, BoolToTextFilter) {
     'use strict';
 
-    var moduleName = 'wc.dashboard.filters';
+    var moduleName = 'wc.filters';
 
-    angular.module(moduleName, []).
-        filter('QAEnhetsIdFilter', QAEnhetsIdFilter).
-        filter('BoolToTextFilter', BoolToTextFilter).
-        filter('CertDeletedFilter', CertDeletedFilter);
+    angular.module(moduleName, [ CertDeletedFilter, QAEnhetsIdFilter, BoolToTextFilter ]);
 
     return moduleName;
 });

@@ -1,44 +1,103 @@
 define([
     'angular',
+    'angularCookies',
     'angularRoute',
     'angularSanitize',
-    'controllers',
+    'angularSwedish',
+    'angularUiBootstrap',
     'directives',
     'filters',
     'messages',
-    'services',
-    'webjars/common/js/wc-common',
-    'webjars/common/js/wc-common-fragasvar-module',
-    'webjars/common/js/wc-common-message-resources',
-    'webjars/common/js/wc-message-module',
-    'webjars/common/js/wc-utils'
-], function(angular, angularRoute, angularSanitize, controllers, directives, filters, messages, services, wcCommon,
-    wcCommonFragaSvarModule, commonMessages, wcMessageModule, wcUtils) {
+    'controllers/AboutWebcertCtrl',
+    'controllers/ChooseCertTypeCtrl',
+    'controllers/ChoosePatientCtrl',
+    'controllers/EditPatientNameCtrl',
+    'controllers/InitCertCtrl',
+    'controllers/UnhandledQACtrl',
+    'controllers/UnsignedCertCtrl',
+    'controllers/ViewCertCtrl',
+    'webjars/common/webcert/js/messages',
+    'webjars/common/webcert/js/directives',
+    'webjars/common/webcert/js/services/http403ResponseInterceptor',
+    'webjars/common/webcert/js/services/httpRequestInterceptorCacheBuster',
+    'webjars/common/webcert/js/services/messageService',
+    'webjars/common/webcert/js/services/User'
+], function(angular, angularCookies, angularRoute, angularSanitize, angularSwedish, angularUiBootstrap, directives,
+    filters, messages, AboutWebcertCtrl, ChooseCertTypeCtrl, ChoosePatientCtrl, EditPatientNameCtrl, InitCertCtrl,
+    UnhandledQACtrl, UnsignedCertCtrl, ViewCertCtrl, commonMessages, commonDirectives, http403ResponseInterceptor,
+    httpRequestInterceptorCacheBuster, messageService, User) {
     'use strict';
 
-    var app = angular.module('wcDashBoardApp', ['ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize',
-        controllers, directives, filters, services, wcCommon, wcCommonFragaSvarModule, wcMessageModule, wcUtils]);
+    var app = angular.module('webcert', [ 'ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize',
+        directives, commonDirectives, filters, AboutWebcertCtrl, ChooseCertTypeCtrl, ChoosePatientCtrl,
+        EditPatientNameCtrl, InitCertCtrl, UnhandledQACtrl, UnsignedCertCtrl, ViewCertCtrl, http403ResponseInterceptor,
+        httpRequestInterceptorCacheBuster, messageService, User ]);
 
-    app.config(['$routeProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$provide',
-        '$httpProvider', 'http403ResponseInterceptorProvider',
-        function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $httpProvider,
-            http403ResponseInterceptorProvider) {
+    app.config(['$routeProvider', function($routeProvider) {
+        $routeProvider.
+            when('/create/index', {
+                // Route to initialize the create flow, template will be ignored.
+                templateUrl: '/views/dashboard/create.choose-patient.html',
+                controller: InitCertCtrl
+            }).
+            when('/create/choose-patient/index', {
+                templateUrl: '/views/dashboard/create.choose-patient.html',
+                controller: ChoosePatientCtrl
+            }).
+            when('/create/edit-patient-name/index', {
+                templateUrl: '/views/dashboard/create.edit-patient-name.html',
+                controller: EditPatientNameCtrl
+            }).
+            when('/create/choose-cert-type/index', {
+                templateUrl: '/views/dashboard/create.choose-cert-type.html',
+                controller: ChooseCertTypeCtrl
+            }).
+            when('/unhandled-qa', {
+                templateUrl: '/views/dashboard/unhandled-qa.html',
+                controller: UnhandledQACtrl
+            }).
+            when('/unsigned', {
+                templateUrl: '/views/dashboard/unsigned.html',
+                controller: UnsignedCertCtrl
+            }).
+            when('/intyg/:certificateType/:certificateId', {
+                templateUrl: '/views/dashboard/view.certificate.html',
+                controller: ViewCertCtrl
+            }).
+            when('/fragasvar/:certificateType/:certificateId', {
+                templateUrl: '/views/dashboard/view.qa.html',
+                controller: ViewCertCtrl
+            }).
+            when('/support/about', {
+                templateUrl: '/views/dashboard/about.support.html',
+                controller: AboutWebcertCtrl
+            }).
+            when('/certificates/about', {
+                templateUrl: '/views/dashboard/about.certificates.html',
+                controller: AboutWebcertCtrl
+            }).
+            when('/faq/about', {
+                templateUrl: '/views/dashboard/about.faq.html',
+                controller: AboutWebcertCtrl
+            }).
+            when('/cookies/about', {
+                templateUrl: '/views/dashboard/about.cookies.html',
+                controller: AboutWebcertCtrl
+            }).
+            otherwise({
+                redirectTo: '/create/index'
+            });
+    }]);
 
-            app.register = {
-                controller: $controllerProvider.register,
-                directive: $compileProvider.directive,
-                filter: $httpProvider.register,
-                factory: $provide.factory,
-                service: $provide.service,
-                $routeProvider: $routeProvider
-            };
+    app.config([ '$httpProvider', http403ResponseInterceptor + 'Provider',
+        function($httpProvider, http403ResponseInterceptorProvider) {
 
             // Add cache buster interceptor
-            $httpProvider.interceptors.push('httpRequestInterceptorCacheBuster');
+            $httpProvider.interceptors.push(httpRequestInterceptorCacheBuster);
 
             // Configure 403 interceptor provider
             http403ResponseInterceptorProvider.setRedirectUrl('/error.jsp?reason=denied');
-            $httpProvider.responseInterceptors.push('http403ResponseInterceptor');
+            $httpProvider.responseInterceptors.push(http403ResponseInterceptor);
         }]);
 
     // Global config of default date picker config (individual attributes can be
@@ -55,7 +114,7 @@ define([
     });
 
     // Inject language resources
-    app.run(['$rootScope', 'messageService', 'User',
+    app.run([ '$rootScope', messageService, User,
         function($rootScope, messageService, User) {
             $rootScope.lang = 'sv';
             $rootScope.DEFAULT_LANG = 'sv';
@@ -64,7 +123,7 @@ define([
             messageService.addResources(commonMessages);
         }]);
 
-    require(['text!/api/modules/map'], function(modules) {
+    require([ 'text!/api/modules/map' ], function(modules) {
 
         var modulesMap = JSON.parse(modules);
 

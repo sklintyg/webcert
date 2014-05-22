@@ -1,20 +1,27 @@
-define([ 'angular' ], function(angular) {
+define([
+    'angular'
+], function(angular) {
     'use strict';
 
-    return function() {
-        return function(certs, includeDeleted) {
-            var result = [];
+    var moduleName = 'wc.CertDeletedFilter';
 
-            if (includeDeleted) {
-                return certs;
-            }
+    angular.module(moduleName, []).
+        filter(moduleName, function() {
+            return function(certs, includeDeleted) {
+                var result = [];
 
-            angular.forEach(certs, function(cert) {
-                if (!cert.discarded) {
-                    result.push(cert);
+                if (includeDeleted) {
+                    return certs;
                 }
-            });
-            return result;
-        };
-    };
+
+                angular.forEach(certs, function(cert) {
+                    if (!cert.discarded) {
+                        result.push(cert);
+                    }
+                });
+                return result;
+            };
+        });
+
+    return moduleName;
 });

@@ -1,16 +1,16 @@
 require.config({
     paths: {
 
-        webjars: '../web/webjars',
+        webjars: '/web/webjars',
 
-        angular: '../web/webjars/angularjs/1.2.14/angular',
-        angularCookies: '../web/webjars/angularjs/1.2.14/angular-cookies',
-        angularRoute: '../web/webjars/angularjs/1.2.14/angular-route.min',
-        angularSanitize: '../web/webjars/angularjs/1.2.14/angular-sanitize.min',
-        angularSwedish: '../web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se',
-        angularUiBootstrap: '../web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls',
+        angular: '/web/webjars/angularjs/1.2.14/angular',
+        angularCookies: '/web/webjars/angularjs/1.2.14/angular-cookies',
+        angularRoute: '/web/webjars/angularjs/1.2.14/angular-route.min',
+        angularSanitize: '/web/webjars/angularjs/1.2.14/angular-sanitize.min',
+        angularSwedish: '/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se',
+        angularUiBootstrap: '/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls',
 
-        text: '../web/webjars/requirejs-text/2.0.10/text'
+        text: '/web/webjars/requirejs-text/2.0.10/text'
     },
     shim: {
         'angular': {'exports': 'angular'},
@@ -28,7 +28,5 @@ require.config({
 //http://code.angularjs.org/1.2.1/docs/guide/bootstrap#overview_deferred-bootstrap
 window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
-require([ 'angularSwedish', 'app', 'angularRoute', 'angularSanitize', 'angular', 'routes', 'angularCookies',
-    'angularUiBootstrap'
-], function() {
+require([ 'app' ], function() {
 });
