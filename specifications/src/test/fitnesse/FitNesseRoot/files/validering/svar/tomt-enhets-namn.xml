@@ -28,7 +28,7 @@
         <hr:enhet>
           <hr:enhets-id root="1.2.752.129.2.1.4.1" extension="IFV1239877878-1042"/>
           <hr:arbetsplatskod root="1.2.752.29.4.71" extension="123456789011"/>
-          <hr:enhetsnamn>Kir mott</hr:enhetsnamn>
+          <hr:enhetsnamn></hr:enhetsnamn>
           <hr:postadress>Lasarettsvägen 13</hr:postadress>
           <hr:postnummer>85150</hr:postnummer>
           <hr:postort>Sundsvall</hr:postort>

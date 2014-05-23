@@ -1,5 +1,7 @@
 package se.inera.webcert.integration;
 
+import iso.v21090.dt.v1.II;
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,12 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.certificate.logging.LogMarkers;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.webcert.converter.FragaSvarConverter;
+import se.inera.webcert.integration.validator.QuestionAnswerValidator;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -32,6 +39,12 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
     public ReceiveMedicalCertificateQuestionResponseType receiveMedicalCertificateQuestion(
             AttributedURIType logicalAddress, ReceiveMedicalCertificateQuestionType request) {
         ReceiveMedicalCertificateQuestionResponseType response = new ReceiveMedicalCertificateQuestionResponseType();
+
+        List<String> validationMessages = QuestionAnswerValidator.validate(request);
+        if (!validationMessages.isEmpty()) {
+            response.setResult(ResultOfCallUtil.failResult(StringUtils.join(validationMessages, ",")));
+            return response;
+        }
 
         FragaSvar fragaSvar = converter.convert(request.getQuestion());
 

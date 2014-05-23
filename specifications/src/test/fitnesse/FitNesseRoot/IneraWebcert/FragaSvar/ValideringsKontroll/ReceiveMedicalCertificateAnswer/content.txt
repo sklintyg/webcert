@@ -178,6 +178,8 @@
 
 !3 Saknat person-namn ger fel
 
+Schemat har dokumentation att namn får vara tomt, dock så tillåter inte anpassningsplattformen detta, så vi följer implementationen.
+
 |validera svar|
 |filnamn|resultat?|
 |validering/svar/saknat-person-namn.xml|=~/VALIDATION_ERROR/|
