@@ -2,6 +2,8 @@ package se.inera.webcert.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,13 +15,9 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.transform.stream.StreamSource;
 
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -31,23 +29,33 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificat
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateResponderInterface;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.common.MinimalUtlatande;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.TransportModelHolder;
+import se.inera.certificate.modules.support.api.dto.TransportModelResponse;
+import se.inera.certificate.modules.support.api.dto.TransportModelVersion;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.modules.IntygModuleRegistry;
+import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Omsandning;
+import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygItem;
-import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.test.NamespacePrefixNameIgnoringListener;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
@@ -73,6 +81,15 @@ public class IntygServiceTest {
     @Mock
     private ModuleApi moduleApi;
 
+    @Mock
+    private IntygRepository intygRepository;
+
+    @Mock
+    private OmsandningRepository omsandningRepository;
+
+    @Mock
+    private RegisterMedicalCertificateResponderInterface intygSender;
+
     @InjectMocks
     private IntygServiceImpl intygService = new IntygServiceImpl();
 
@@ -88,8 +105,6 @@ public class IntygServiceTest {
     private ListCertificatesForCareResponseType listErrorResponse;
 
     private Utlatande utlatande;
-
-    private String intygXml;
 
     @Mock
     private WebCertUserService webCertUserService;
@@ -107,7 +122,6 @@ public class IntygServiceTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         context.createMarshaller().marshal(new ObjectFactory().createUtlatande(intygtjanstResponse.getCertificate()),
                 outputStream);
-        intygXml = new String(outputStream.toByteArray());
 
         ClassPathResource errorResponse = new ClassPathResource("IntygServiceTest/response-get-certificate-error.xml");
         intygtjanstErrorResponse = context.createUnmarshaller()
@@ -171,16 +185,6 @@ public class IntygServiceTest {
 
         // ensure correct module lookup is done with module registry
         verify(moduleRegistry, times(2)).getModuleApi("fk7263");
-
-        // ensure that correct utlatande XML is sent to module to convert from transport to external format
-        //verify(moduleApi).unmarshall(argThat(new UtlatandeXmlMatcher()));
-
-        // ensure that correct JSON data is sent to module to convert from external to internal format
-//        ArgumentCaptor<IntygContentHolder> captor = ArgumentCaptor.forClass(IntygContentHolder.class);
-//        verify(moduleApi).convertExternalToInternal(captor.capture());
-//        assertEquals("<externalJson>", captor.getValue().getCertificateContent());
-//        assertEquals("123", captor.getValue().getCertificateContentMeta().getId());
-//        assertEquals("fk7263", captor.getValue().getCertificateContentMeta().getType());
 
         assertEquals("<internal-json/>", intygData.getContents());
         assertEquals("19121212-1212", intygData.getMetaData().getPatientId());
@@ -268,18 +272,13 @@ public class IntygServiceTest {
         ExternalModelResponse unmarshallResponse = new ExternalModelResponse("<external-json/>", utlatande);
         when(moduleApi.unmarshall(any(TransportModelHolder.class))).thenReturn(unmarshallResponse);
 
-        IntygContentHolder intygData = intygService.fetchExternalIntygData(CERTIFICATE_ID);
+        intygService.fetchExternalIntygData(CERTIFICATE_ID);
 
         // ensure that correct WS call is made to intygstjanst
         verify(getCertificateForCareResponder).getCertificateForCare(LOGICAL_ADDRESS, request);
 
         // ensure correct module lookup is done with module Rest API factory
         verify(moduleRegistry).getModuleApi(CERTIFICATE_TYPE);
-
-        // ensure that correct utlatande XML is sent to module to convert from transport to external format
-        //verify(moduleApi).unmarshall(argThat(new UtlatandeXmlMatcher()));
-
-        //assertEquals(utlatandeAsString, new CustomObjectMapper().writeValueAsString(intygData.getUtlatande()));
     }
 
     @Test( expected = WebCertServiceException.class )
@@ -364,22 +363,49 @@ public class IntygServiceTest {
         intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
     }
 
-    private class UtlatandeXmlMatcher extends ArgumentMatcher<String> {
+    @Test
+    public void testStoreIntygWithIntyg() throws ModuleException {
+        Omsandning omsandning = new Omsandning();
+        when(omsandningRepository.save(any(Omsandning.class))).thenReturn(omsandning);
+        Intyg intyg = new Intyg();
+        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        intyg.setModel("{}");//moduleApi.convertInternalToExternal
+        ExternalModelResponse externalModelResponse = mock(ExternalModelResponse.class);
+        when(moduleApi.convertInternalToExternal(any(InternalModelHolder.class))).thenReturn(externalModelResponse);
+        when(externalModelResponse.getExternalModelJson()).thenReturn("{}");
+        when(intygRepository.findOne(anyString())).thenReturn(intyg);
+        when(moduleApi.marshall(any(ExternalModelHolder.class), any(TransportModelVersion.class))).thenReturn(new TransportModelResponse("<Utlatande/>"));
+        RegisterMedicalCertificateResponseType responseType = new RegisterMedicalCertificateResponseType();
+        ResultType result = new ResultType();
+        responseType.setResult(result);
+        result.setResultCode(ResultCodeType.OK);
+        when(intygSender.registerMedicalCertificate(anyString(), any(RegisterMedicalCertificateType.class))).thenReturn(responseType);
 
-        public boolean matches(Object o) {
-            String xml = (String) o;
+        intygService.storeIntyg(intyg, omsandning);
 
-            XMLUnit.setIgnoreWhitespace(true);
-            XMLUnit.setNormalizeWhitespace(true);
-
-            try {
-                Diff diff = new Diff(intygXml, xml);
-                diff.overrideDifferenceListener(new NamespacePrefixNameIgnoringListener());
-                return diff.identical();
-            } catch (Exception e) {
-                return false;
-            }
-        }
+        verify(omsandningRepository).delete(omsandning);
     }
 
+    @Test
+    public void testStoreIntygWithIntygFails() throws ModuleException {
+        Omsandning omsandning = new Omsandning();
+        when(omsandningRepository.save(any(Omsandning.class))).thenReturn(omsandning);
+        Intyg intyg = new Intyg();
+        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        intyg.setModel("{}");//moduleApi.convertInternalToExternal
+        ExternalModelResponse externalModelResponse = mock(ExternalModelResponse.class);
+        when(moduleApi.convertInternalToExternal(any(InternalModelHolder.class))).thenReturn(externalModelResponse);
+        when(externalModelResponse.getExternalModelJson()).thenReturn("{}");
+        when(intygRepository.findOne(anyString())).thenReturn(intyg);
+        when(moduleApi.marshall(any(ExternalModelHolder.class), any(TransportModelVersion.class))).thenReturn(new TransportModelResponse("<Utlatande/>"));
+        RegisterMedicalCertificateResponseType responseType = new RegisterMedicalCertificateResponseType();
+        ResultType result = new ResultType();
+        responseType.setResult(result);
+        result.setResultCode(ResultCodeType.ERROR);
+        when(intygSender.registerMedicalCertificate(anyString(), any(RegisterMedicalCertificateType.class))).thenReturn(responseType);
+
+        intygService.storeIntyg(intyg, omsandning);
+
+        verify(omsandningRepository, times(1)).save(omsandning);
+    }
 }
