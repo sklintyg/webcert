@@ -242,9 +242,8 @@
 
                 <h1>Testinloggningar Webcert</h1>
 
-                <p class="well">Templatelista till vänster - Manuella ändringar kan gäras i jsonstrukturen - detta
-                    omvandlas
-                    till inloggad userContext</p>
+                <p class="well">Templatelista till vänster - Manuella ändringar kan göras i jsonstrukturen - detta
+                    omvandlas till inloggad userContext</p>
 
                 <div class="form-group col-xs-8">
 

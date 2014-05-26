@@ -44,14 +44,15 @@ class SvaraOchFraga {
     }
 
     boolean enhetsvaljareVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            result = page.careUnitSelector.isDisplayed()
+            waitFor {
+                expected == page.careUnitSelector.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     def filtreraFragorOchSvar() {
@@ -92,27 +93,28 @@ class SvaraOchFraga {
     }
 
     boolean fragaVisasIListanMedOhanteradeFragor(String id, boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.qaUnhandledPanel(id) && page.qaUnhandledPanel(id).isDisplayed()
+            waitFor {
+              expected == page.qaUnhandledPanel(id).isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
 
     boolean fragaVisasIListanMedHanteradeFragor(String id, boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            sleep(1000L)
-            result = page.qaHandledPanel(id) && page.qaHandledPanel(id).isDisplayed()
+            waitFor {
+                expected == page.qaHandledPanel(id).isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     boolean intygMedFragaSvarSidanVisas() {
@@ -124,26 +126,27 @@ class SvaraOchFraga {
     }
 
     boolean intygArRattatMeddelandeVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.certificateRevokedMessage.isDisplayed()
+            waitFor {
+                expected == page.certificateRevokedMessage.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     boolean intygArSkickatTillFkMeddelandeVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.certificateIsSentToFKMessage.isDisplayed()
-
+            waitFor {
+                expected == page.certificateIsSentToFKMessage.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     def loggaInSom(String id) {
@@ -179,7 +182,6 @@ class SvaraOchFraga {
                 page.unhandledQAList.isDisplayed();
             }
             page.markAsHandledWcOriginBtn(id).click()
-            sleep(1000L)
         }
     }
 
@@ -193,26 +195,27 @@ class SvaraOchFraga {
     }
 
     boolean nyFragaFormularVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.newQuestionForm.isDisplayed()
+            waitFor {
+                expected == page.newQuestionForm.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     boolean nyFragaKnappVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.newQuestionBtn.isDisplayed()
-
+            waitFor {
+                expected == page.newQuestionBtn.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     boolean ohanteradeFragorSidanVisas() {
@@ -224,14 +227,15 @@ class SvaraOchFraga {
     }
 
     boolean skickaFragaKnappAktiverad(boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.sendQuestionBtn.isEnabled()
+            waitFor {
+                expected == page.sendQuestionBtn.isEnabled()
+            }
         }
-        result == expected
+        true
     }
 
     def skickaFragaMedAmne(String fraga, String amne) {
@@ -260,7 +264,6 @@ class SvaraOchFraga {
             waitFor {
                 page.sendAnswer(id)
             }
-            sleep(1000L)
         }
     }
 
@@ -349,7 +352,7 @@ class SvaraOchFraga {
 
     def gaTillIntygsvyMedIntygsid(String id) {
         Browser.drive {
-            go "/web/dashboard#/qa/fk7263/${id}"
+            go "/web/dashboard#/fragasvar/fk7263/${id}"
             waitFor {
                 at ViewCertQAPage
             }
@@ -375,15 +378,15 @@ class SvaraOchFraga {
     }
 
     public boolean intygArSkickatTillIntygstjanstenMeddelandeVisas(boolean expected) {
-        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-            result = page.certificateIsSentToITMessage.isDisplayed()
-
+            waitFor {
+                expected == page.certificateIsSentToITMessage.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
 
@@ -394,10 +397,10 @@ class SvaraOchFraga {
                 at ViewCertQAPage
                 page.unhandledQAList.isDisplayed();
             }
-
             waitFor {
-                result = page.qaHandledPanel(internId).isDisplayed()
+                page.qaHandledPanel(internId)
             }
+            result = page.qaHandledPanel(internId).isDisplayed()
         }
         return result
     }
@@ -416,17 +419,15 @@ class SvaraOchFraga {
     }
 
     public boolean arFragaOhanterad(String internId) {
-        def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
             }
-
             waitFor {
-                result = page.qaUnhandledPanel(internId).isDisplayed()
+                page.qaUnhandledPanel(internId).isDisplayed()
             }
         }
-        return result
+        return true
     }
 
     boolean arFragaVidarebefordrad(String id, boolean expected = true) {

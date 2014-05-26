@@ -1,8 +1,12 @@
-define([ 'angular', 'angularMocks', 'directives' ], function(angular, mocks) {
+define([
+    'angular',
+    'angularMocks',
+    'directives/wcPersonNumber'
+], function(angular, mocks, wcPersonNumber) {
     'use strict';
 
     describe('wcPersonNumber', function() {
-        beforeEach(mocks.module('wc.dashboard.directives'));
+        beforeEach(mocks.module(wcPersonNumber));
 
         var $scope;
 

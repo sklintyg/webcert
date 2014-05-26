@@ -1,4 +1,8 @@
-define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
+define([
+    'angular',
+    'angularMocks',
+    'services/CreateCertificateDraft'
+], function(angular, mocks, CreateCertificateDraftId) {
     'use strict';
 
     describe('CreateCertificateDraft', function() {
@@ -7,16 +11,16 @@ define([ 'angular', 'angularMocks', 'services'], function(angular, mocks) {
         var $httpBackend;
         var statService;
 
-        beforeEach(mocks.module('wc.dashboard.services', function($provide) {
-            statService = jasmine.createSpyObj('statService', [ 'refreshStat' ]);
-            $provide.value('statService', statService);
+        beforeEach(mocks.module(CreateCertificateDraftId, function($provide) {
+            statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
+            $provide.value('common.statService', statService);
         }));
 
-
-        beforeEach(mocks.inject(function(_CreateCertificateDraft_, _$httpBackend_) {
-            CreateCertificateDraft = _CreateCertificateDraft_;
-            $httpBackend = _$httpBackend_;
-        }));
+        beforeEach(mocks.inject([CreateCertificateDraftId, '$httpBackend',
+            function(_CreateCertificateDraft_, _$httpBackend_) {
+                CreateCertificateDraft = _CreateCertificateDraft_;
+                $httpBackend = _$httpBackend_;
+            }]));
 
         describe('#reset', function() {
 

@@ -38,7 +38,7 @@
 
     <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
-    <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-webcert.css"/>">
+    <link rel="stylesheet" href="<c:url value="/web/webjars/common/webcert/css/inera-webcert.css"/>">
     <link rel="stylesheet" href="<c:url value="/web/webjars/common/css/inera-certificate.css"/>">
 </head>
 

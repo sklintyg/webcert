@@ -1,8 +1,13 @@
-define(['angular', 'angularMocks', 'angularScenario', 'directives'], function(angular, mocks) {
+define([
+    'angular',
+    'angularMocks',
+    'directives/wcVisited',
+    'angularScenario'
+], function(angular, mocks, scenario, wcVisited) {
     'use strict';
 
     describe('wcVisited', function() {
-        beforeEach(mocks.module('wc.dashboard.directives'));
+        beforeEach(mocks.module(wcVisited));
 
         var $scope;
         var element;

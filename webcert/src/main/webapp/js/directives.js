@@ -1,23 +1,18 @@
 define([
     'angular',
-    'directives/wcCareUnitClinicSelector',
     'directives/wcAbout',
-    'directives/wcVisited',
+    'directives/wcCareUnitClinicSelector',
     'directives/wcInsertCertificate',
     'directives/wcInsertQa',
-    'directives/wcPersonNumber'
-], function(angular, wcCareUnitClinicSelector, wcAbout, wcVisited, wcInsertCertificate, wcInsertQa, wcPersonNumber) {
+    'directives/wcPersonNumber',
+    'directives/wcVisited'
+], function(angular, wcAbout, wcCareUnitClinicSelector, wcInsertCertificate, wcInsertQa, wcPersonNumber, wcVisited) {
     'use strict';
 
-    var moduleName = 'wc.dashboard.directives';
+    var moduleName = 'wc.directives';
 
-    angular.module(moduleName, []).
-        directive('wcCareUnitClinicSelector', wcCareUnitClinicSelector).
-        directive('wcAbout', wcAbout).
-        directive('wcVisited', wcVisited).
-        directive('wcInsertCertificate', wcInsertCertificate).
-        directive('wcInsertQa', wcInsertQa).
-        directive('wcPersonNumber', wcPersonNumber);
+    angular.module(moduleName, [ wcAbout, wcCareUnitClinicSelector, wcInsertCertificate, wcInsertQa,
+        wcPersonNumber, wcVisited ]);
 
     return moduleName;
 });

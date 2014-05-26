@@ -1,22 +1,20 @@
 package se.inera.webcert.modules;
 
-import static se.inera.certificate.modules.support.ApplicationOrigin.WEBCERT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import se.inera.certificate.modules.support.ModuleEntryPoint;
+import se.inera.certificate.modules.support.api.ModuleApi;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import se.inera.certificate.modules.support.ModuleEntryPoint;
-import se.inera.certificate.modules.support.api.ModuleApi;
+import static se.inera.certificate.modules.support.ApplicationOrigin.WEBCERT;
 
 @Component
 public class IntygModuleRegistryImpl implements IntygModuleRegistry {
@@ -36,8 +34,8 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
         for (ModuleEntryPoint entryPoint : moduleEntryPoints) {
             moduleApiMap.put(entryPoint.getModuleId(), entryPoint.getModuleApi());
             IntygModule module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(),
-                    entryPoint.getModuleDescription(), entryPoint.getModuleCssPath(WEBCERT),
-                    entryPoint.getModuleScriptPath(WEBCERT));
+                    entryPoint.getModuleDescription(), entryPoint.isModuleFragaSvarAvailable(),
+                    entryPoint.getModuleCssPath(WEBCERT), entryPoint.getModuleScriptPath(WEBCERT));
 
             moduleList.add(module);
         }

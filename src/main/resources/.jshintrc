@@ -19,7 +19,6 @@
     "unused" : true,
     "strict" : true,
     "trailing" : true,
-    "maxparams" : 7,
     "maxstatements" : 150,
     "maxcomplexity" : 10,
     "maxlen" : 150,
@@ -32,6 +31,7 @@
         "require" : false,
 
         // Test
+        "afterEach" : false,
         "beforeEach" : false,
         "describe" : false,
         "expect" : false,

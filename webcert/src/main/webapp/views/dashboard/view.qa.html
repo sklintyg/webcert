@@ -3,11 +3,13 @@
 
   <!-- Left column -->
   <div class="col-sm-6 webcert-col webcert-col-primary">
-    <a class="backlink-icon" href="/web/dashboard#/unhandled-qa" title="Tillbaka till Fråga och Svar"></a>
-    <h1 class="backlink-heading">
-      Fråga &amp; Svar
-    </h1>
-    <div wc-insert-qa certificate-type="{{widgetState.certificateType}}"></div>
+    <div ng-if="widgetState.fragaSvarAvailable">
+      <a class="backlink-icon" href="/web/dashboard#/unhandled-qa" title="Tillbaka till Fråga och Svar"></a>
+      <h1 class="backlink-heading">
+        Fråga &amp; Svar
+      </h1>
+      <div wc-insert-qa certificate-type="{{widgetState.certificateType}}"></div>
+    </div>
   </div>
   <!-- Certificate Left side end -->
 

@@ -1,6 +1,6 @@
+/* jshint maxlen: false */
 define([], function() {
     'use strict';
-
 
     return {
         'sv': {

@@ -1,6 +1,13 @@
-define([], function() {
+define([
+    'angular'
+], function(angular) {
     'use strict';
 
-    return [function() {
-    }];
+    var moduleName = 'wc.AboutWebcertCtrl';
+
+    angular.module(moduleName, []).
+        controller(moduleName, [ function() {
+        }]);
+
+    return moduleName;
 });
