@@ -44,10 +44,12 @@ define([
                     CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
                     CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
                     CreateCertificateDraft.createDraft(function(data) {
+                        $scope.widgetState.createErrorMessageKey = undefined;
                         $location.url('/' + CreateCertificateDraft.intygType + '/edit/' + data, true);
                         CreateCertificateDraft.reset();
-                    }, function() {
-                        // TODO: handle error visually for "failed to create cert"
+                    }, function(error) {
+                        $log.debug('Create draft failed: ' + error.message);
+                        $scope.widgetState.createErrorMessageKey = 'error.failedtocreateintyg';
                     });
                 }
 
@@ -98,13 +100,20 @@ define([
                 $scope.widgetState = {
                     doneLoading: false,
                     activeErrorMessageKey: null,
-                    currentList: undefined,
-                    queryFormCollapsed: true
+                    currentList: undefined
                 };
+
+                $scope.filterForm = {
+                    intygFilter: 'current'
+                };
+
+                $scope.$watch('filterForm.intygFilter', function() {
+                    $scope.updateCertList();
+                });
 
                 $scope.updateCertList = function() {
                     $scope.widgetState.currentList =
-                        $filter('wc.CertDeletedFilter')($scope.widgetState.certListUnhandled, false); // TODO: Use search filter instead of "false"
+                        $filter('wc.TidigareIntygFilter')($scope.widgetState.certListUnhandled, $scope.filterForm.intygFilter);
                 };
 
                 $scope.widgetState.activeErrorMessageKey = null;

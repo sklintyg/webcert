@@ -3,19 +3,20 @@ define([
 ], function(angular) {
     'use strict';
 
-    var moduleName = 'wc.CertDeletedFilter';
+    var moduleName = 'wc.TidigareIntygFilter';
 
     angular.module(moduleName, []).
         filter(moduleName, function() {
-            return function(certs, includeDeleted) {
+            return function(certs, intygToInclude) {
                 var result = [];
 
-                if (includeDeleted) {
+                if (intygToInclude === 'all') {
                     return certs;
                 }
 
                 angular.forEach(certs, function(cert) {
-                    if (!cert.discarded) {
+                    if ((intygToInclude === 'current' && cert.status !== 'CANCELLED') ||
+                        (intygToInclude === 'revoked' && cert.status === 'CANCELLED')) {
                         result.push(cert);
                     }
                 });

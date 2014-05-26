@@ -26,7 +26,13 @@
 				<div class="form-group">
 				  <button id="intygTypeFortsatt" class="btn btn-success" type="submit" ng-disabled="intygType == 'default'">Fortsätt</button>
 				</div>
-				<div class="alert alert-warning col-lg-7" ng-show="intygType != 'default'">
+
+        <!-- error message -->
+        <div id="create-error" ng-show="widgetState.createErrorMessageKey" class="alert alert-danger">
+          <span message key="{{widgetState.createErrorMessageKey}}"></span>
+        </div>
+
+				<div class="alert alert-warning col-lg-7" ng-show="intygType != 'default' && intygType != undefined">
 					<span message key='{{"certificatetypes."+ intygType +".helptext"}}'></span>
 				</div>
 			  </div>
@@ -38,17 +44,19 @@
     <!-- Tidigare intyg table -->
     <div class="webcert-col-section">
       <h2 class="col-head">{{firstname}} {{lastname}}s tidigare intyg</h2>
-      <div class="form-group" ng-hide="true">
-        <div class="controls pointer-labels">
-          <label class="checkbox"><input type="radio" name="olderCerts"> Visa intyg för Vårdenheter och till mottagare som jag har medarbetaruppdrag på</label>
-          <label class="checkbox"><input type="radio" name="olderCerts"> Visa intyg för hela vårdgivaren som jag har medarbetaruppdrag på</label>
-        </div>
-      </div>
       <div class="form-group">
-        <span ng-if="!widgetState.queryMode">Visar endast aktuella signerade intyg.<br></span>
-        <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal" ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed" ng-switch="widgetState.queryFormCollapsed">
-          <span ng-switch-when="true">Visa avancerat sökfilter</span><span ng-switch-when="false">Dölj avancerat sökfilter</span>
-        </button>
+        <label class="radio-inline">
+          <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
+                 ng-model="filterForm.intygFilter" checked="checked"> Aktuella intyg
+        </label>
+        <label class="radio-inline">
+          <input id="intygFilterRattade" name="intygFilter" type="radio" value="revoked"
+                 ng-model="filterForm.intygFilter" checked="checked"> Rättade intyg
+        </label>
+        <label class="radio-inline">
+          <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all"
+                 ng-model="filterForm.intygFilter" checked="checked"> Visa samtliga intyg
+        </label>
       </div>
 
       <div wc-spinner label="info.loadingdata" show-spinner="widgetState.doneLoading" show-content="!widgetState.doneLoading">
