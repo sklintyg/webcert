@@ -14,6 +14,7 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 | sok skriv intyg sidan visas |
 | enhetsvaljare visas |
 | valj vardenhet | IFV1239877878-1045 |
+| sok skriv intyg sidan visas |
 
 | script | !-SvaraOchFraga-! |
 | ga till svara och fraga |
