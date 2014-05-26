@@ -11,6 +11,8 @@ import org.springframework.core.env.PropertySource;
 
 import se.inera.certificate.mc2wc.batch.MigrationJobExecutor;
 
+import java.io.File;
+
 public class Main {
 			
 	private static final String CONTEXT_LOCATION = "/application-context.xml";
@@ -38,8 +40,11 @@ public class Main {
 		if (options == null) {
 			System.exit(-1);
 		}
-		
-		System.getProperties().setProperty(LOG_FILE_DIR_PROP, (String) options.valueOf(LOGGER_PARAM));
+        String logFolder = new File((String) options.valueOf(LOGGER_PARAM)).getCanonicalPath();
+        String configFile = new File((String) options.valueOf(CONFIG_PARAM)).getCanonicalPath();
+        log.info("Using log folder: " + logFolder);
+        log.info("Using config file: {}", configFile);
+		System.getProperties().setProperty(LOG_FILE_DIR_PROP, configFile);
 		
 		PropertySource<OptionSet> ps = new JOptCommandLinePropertySource(options);
 		
