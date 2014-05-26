@@ -37,19 +37,21 @@ define([
                 /**
                  * Get intyg type data
                  */
-                function _getCertType(intygType) {
+                function _getCertType(intygType, onSuccess) {
 
                     _getCertTypes(function(types) {
+
+                        var intygTypeMeta = {};
                         for (var i = 0; i < types.length; i++) {
                             if (types[i].id === intygType){
-                                return types[i];
+                                intygTypeMeta = types[i];
+                                break;
                             }
                         }
+
+                        onSuccess(intygTypeMeta);
                     });
 
-                    // Type not found
-                    $log.error('error: _getCertType - Type not found.');
-                    return null;
                 }
 
                 /*

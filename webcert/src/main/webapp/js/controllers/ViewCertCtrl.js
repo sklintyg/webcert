@@ -1,6 +1,7 @@
 define([
-    'angular'
-], function(angular) {
+    'angular',
+    'services/ManageCertificate'
+], function(angular, ManageCertificate) {
     'use strict';
 
     var moduleName = 'wc.ViewCertCtrl';
@@ -8,14 +9,18 @@ define([
     /*
      * Controller for logic related to viewing signed certs
      */
-    angular.module(moduleName, []).
-        controller(moduleName, [ '$routeParams', '$scope', 'ManageCertificate',
+    angular.module(moduleName, [ManageCertificate]).
+        controller(moduleName, [ '$routeParams', '$scope', ManageCertificate,
             function($routeParams, $scope, ManageCertificate) {
 
                 $scope.widgetState = {
                     certificateType: $routeParams.certificateType,
-                    fragaSvarAvailable: ManageCertificate.getCertType($routeParams.certificateType)
+                    fragaSvarAvailable: false
                 };
+
+                ManageCertificate.getCertType($routeParams.certificateType, function(intygType) {
+                    $scope.widgetState.fragaSvarAvailable = intygType.fragaSvarAvailable;
+                });
             }
         ]);
 
