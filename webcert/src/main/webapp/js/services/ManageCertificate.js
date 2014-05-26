@@ -10,6 +10,9 @@ define([
         factory(moduleName, [ '$http', '$log', '$window', '$modal',
             function($http, $log, $window, $modal) {
 
+                /**
+                 * Load list of all certificates types
+                 */
                 function _getCertTypes(onSuccess, onError) {
                     var restPath = '/api/modules/map';
                     $http.get(restPath).success(function(data) {
@@ -20,13 +23,33 @@ define([
                         ];
                         for (var i = 0; i < data.length; i++) {
                             var m = data[i];
-                            types.push({sortValue: sortValue++, id: m.id, label: m.label});
+                            types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
                         }
                         onSuccess(types);
                     }).error(function(data, status) {
                         $log.error('error ' + status);
-                        onError();
+                        if (onError) {
+                            onError();
+                        }
                     });
+                }
+
+                /**
+                 * Get intyg type data
+                 */
+                function _getCertType(intygType) {
+
+                    _getCertTypes(function(types) {
+                        for (var i = 0; i < types.length; i++) {
+                            if (types[i].id === intygType){
+                                return types[i];
+                            }
+                        }
+                    });
+
+                    // Type not found
+                    $log.error('error: _getCertType - Type not found.');
+                    return null;
                 }
 
                 /*
@@ -213,6 +236,7 @@ define([
                 // Return public API for the service
                 return {
                     getCertTypes: _getCertTypes,
+                    getCertType: _getCertType,
                     getCertificatesForPerson: _getCertificatesForPerson,
                     getUnsignedCertificates: _getUnsignedCertificates,
                     getUnsignedCertificatesByQueryFetchMore: _getUnsignedCertificatesByQueryFetchMore,

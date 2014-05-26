@@ -9,11 +9,12 @@ define([
      * Controller for logic related to viewing signed certs
      */
     angular.module(moduleName, []).
-        controller(moduleName, [ '$routeParams', '$scope',
-            function($routeParams, $scope) {
+        controller(moduleName, [ '$routeParams', '$scope', 'ManageCertificate',
+            function($routeParams, $scope, ManageCertificate) {
 
                 $scope.widgetState = {
-                    certificateType: $routeParams.certificateType
+                    certificateType: $routeParams.certificateType,
+                    fragaSvarAvailable: ManageCertificate.getCertType($routeParams.certificateType)
                 };
             }
         ]);
