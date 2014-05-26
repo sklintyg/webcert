@@ -15,6 +15,7 @@ I det här fallet har frågan skickats till annan enhet än intygsutfärdaren.
 
 !| script | SvaraOchFraga |
 | logga in som |IFV1239877878-1049_IFV1239877878-1042|
+| sok skriv intyg sidan visas |
 | ga till svara och fraga |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |

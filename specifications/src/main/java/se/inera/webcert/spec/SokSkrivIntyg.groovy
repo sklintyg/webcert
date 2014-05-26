@@ -50,6 +50,15 @@ class SokSkrivIntyg {
             }
         }
     }
+
+    boolean sokSkrivIntygSidanVisasSaSmaningom() {
+        Browser.drive {
+            waitFor (60, 10) {
+                at SokSkrivaIntygPage
+            }
+        }
+    }
+
     public void loggaInIndex() {
         Browser.drive {
             waitFor {

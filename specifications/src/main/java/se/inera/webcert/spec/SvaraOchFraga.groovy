@@ -1,6 +1,7 @@
 package se.inera.webcert.spec
 
 import se.inera.webcert.pages.IndexPage
+import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnhandledQAPage
 import se.inera.webcert.pages.fk7263.ViewCertQAPage
 import se.inera.webcert.pages.WelcomePage
@@ -839,4 +840,13 @@ class SvaraOchFraga {
         }
         return result
     }
+
+    boolean sokSkrivIntygSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at SokSkrivaIntygPage
+            }
+        }
+    }
+
 }

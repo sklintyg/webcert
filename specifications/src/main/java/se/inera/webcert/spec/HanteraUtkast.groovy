@@ -1,5 +1,6 @@
 package se.inera.webcert.spec
 import se.inera.webcert.pages.EditeraIntygPage
+import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnsignedIntygPage
 import se.inera.webcert.pages.VisaIntygPage
 import se.inera.webcert.pages.WelcomePage
@@ -109,12 +110,13 @@ class HanteraUtkast {
     }
 
     boolean signeringKraverLakareVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             asType EditeraIntygPage
-            result = page.signRequiresDoctorMessage.isDisplayed()
+            waitFor {
+                expected == page.signRequiresDoctorMessage.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     boolean intygetSigneratMeddelandeVisas(boolean expected = true) {
@@ -135,4 +137,11 @@ class HanteraUtkast {
         }
     }
 
+    boolean sokSkrivIntygSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at SokSkrivaIntygPage
+            }
+        }
+    }
 }

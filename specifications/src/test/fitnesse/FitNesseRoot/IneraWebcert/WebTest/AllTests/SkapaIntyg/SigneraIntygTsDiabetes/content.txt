@@ -10,6 +10,7 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-diabetes int
 
 | script | !-HanteraUtkast-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+| sok skriv intyg sidan visas |
 | ga till editera intyg med typ | ts-diabetes | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
 | signera knapp visas |
