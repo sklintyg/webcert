@@ -18,14 +18,15 @@ class SokSkrivIntyg {
     }
 
     boolean enhetsvaljareVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at SokSkrivaIntygPage
             }
-            result = page.careUnitSelector.isDisplayed()
+            waitFor {
+                expected == page.careUnitSelector.isDisplayed()
+            }
         }
-        result == expected
+        true
     }
 
     def valjVardenhet(String careUnit) {
@@ -41,7 +42,6 @@ class SokSkrivIntyg {
             }
         }
     }
-
 
     boolean sokSkrivIntygSidanVisas() {
         Browser.drive {
