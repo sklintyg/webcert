@@ -22,9 +22,9 @@
     </batch:step>
   </batch:job>
   
-  <bean id="clearPreviousExportTasklet" class="se.inera.certificate.mc2wc.batch.ClearPreviousExportTasklet" />
+  <bean id="clearPreviousExportTasklet" class="se.inera.certificate.mc2wc.batch.tasklets.ClearPreviousExportTasklet" />
   
-  <bean id="storeMigrationManifestTasklet" class="se.inera.certificate.mc2wc.batch.StoreMigrationManifestTasklet" />
+  <bean id="storeMigrationManifestTasklet" class="se.inera.certificate.mc2wc.batch.tasklets.StoreMigrationManifestTasklet" />
 
   <bean id="migrationMessageCompositeProcessor" class="org.springframework.batch.item.support.CompositeItemProcessor">
     <property name="delegates">
