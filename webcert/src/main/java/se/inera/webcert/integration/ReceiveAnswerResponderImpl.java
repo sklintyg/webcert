@@ -1,9 +1,7 @@
 package se.inera.webcert.integration;
 
-import iso.v21090.dt.v1.II;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +9,6 @@ import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.certificate.logging.LogMarkers;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.webcert.integration.validator.QuestionAnswerValidator;
 import se.inera.webcert.medcertqa.v1.InnehallType;
 import se.inera.webcert.receivemedicalcertificateanswer.v1.rivtabp20.ReceiveMedicalCertificateAnswerResponderInterface;
@@ -20,7 +17,6 @@ import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedic
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
