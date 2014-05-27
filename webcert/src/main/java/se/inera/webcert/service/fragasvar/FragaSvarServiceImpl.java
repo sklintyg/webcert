@@ -22,11 +22,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.w3.wsaddressing10.AttributedURIType;
+import se.inera.certificate.modules.support.ModuleEntryPoint;
+import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.modules.IntygModule;
+import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -53,6 +57,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
+import se.inera.webcert.web.controller.api.ModuleApiController;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
@@ -93,6 +98,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Autowired
     private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     @Value("${sendquestiontofk.logicaladdress}")
     private String sendQuestionToFkLogicalAddress;
 
@@ -104,7 +112,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Override
     public void processIncomingQuestion(FragaSvar fragaSvar) {
 
-        // TODO - validation: does certificate exist
+        validateAcceptsQuestions(fragaSvar);
 
         // persist the question
         fragaSvarRepository.save(fragaSvar);
@@ -343,6 +351,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
         return saved;
 
+    }
+
+    private void validateAcceptsQuestions(FragaSvar fragaSvar) {
+        String intygsTyp = fragaSvar.getIntygsReferens().getIntygsTyp();
+        IntygModule module = moduleRegistry.getIntygModule(intygsTyp);
+        if (!module.isFragaSvarAvailable()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Intygstyp '" + intygsTyp + "' stödjer ej fragasvar.");
+        }
     }
 
     private boolean isRevoked(List<IntygStatus> statuses) {

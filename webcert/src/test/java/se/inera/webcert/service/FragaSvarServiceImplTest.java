@@ -3,6 +3,7 @@ package se.inera.webcert.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -38,6 +39,8 @@ import se.inera.certificate.model.common.MinimalUtlatande;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.modules.IntygModule;
+import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Id;
@@ -91,6 +94,9 @@ public class FragaSvarServiceImplTest {
     IntygMetadata intygMetadataMock;
 
     @Mock
+    IntygModuleRegistry moduleRegistry;
+
+    @Mock
     MailNotificationService mailNotificationService;
 
     @Mock
@@ -107,6 +113,13 @@ public class FragaSvarServiceImplTest {
     @Before
     public void setUpLoggerFactory() throws Exception {
         ReflectionUtils.setStaticFinalAttribute(FragaSvarServiceImpl.class, "LOG", logger);
+    }
+
+    @Before
+    public void setupCommonBehaviour() {
+        IntygModule module = Mockito.mock(IntygModule.class);
+        when(moduleRegistry.getIntygModule(anyString())).thenReturn(module);
+        when(module.isFragaSvarAvailable()).thenReturn(true);
     }
     
     @SuppressWarnings("unchecked")
@@ -735,5 +748,18 @@ public class FragaSvarServiceImplTest {
         ArgumentCaptor<String> capture = ArgumentCaptor.forClass(String.class);
         verify(logger).error(capture.capture());
         assertTrue("An error should have been logged", capture.getValue().matches(".*Notification mail.*couldn't be sent.*MessagingExceptionCause"));
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void intygWithoutFragaSvarDoesNotAcceptFraga() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.getIntygsReferens().setIntygsTyp("ts-bas");
+
+        IntygModule module = Mockito.mock(IntygModule.class);
+        when(moduleRegistry.getIntygModule("ts-bas")).thenReturn(module);
+        when(module.isFragaSvarAvailable()).thenReturn(false);
+
+        service.processIncomingQuestion(fragaSvar);
+        fail("Processing should have thrown an exception");
     }
 }
