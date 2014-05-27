@@ -1,4 +1,4 @@
-package se.inera.certificate.mc2wc.batch;
+package se.inera.certificate.mc2wc.batch.tasklets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
