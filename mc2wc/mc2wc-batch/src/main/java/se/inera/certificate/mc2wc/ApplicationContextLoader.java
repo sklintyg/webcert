@@ -1,16 +1,13 @@
 package se.inera.certificate.mc2wc;
 
-import joptsimple.OptionSet;
-
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.env.PropertySource;
 
 public class ApplicationContextLoader {
 
 	protected ConfigurableApplicationContext applicationContext;
-
+	
     public ConfigurableApplicationContext getApplicationContext() {
         return applicationContext;
     }
@@ -22,10 +19,10 @@ public class ApplicationContextLoader {
      * @param configLocations
      *            configuration file locations
      */
-    protected void loadApplicationContext(PropertySource<OptionSet> ps, String[] configLocations) {
+    protected void loadApplicationContext(ApplicationMode appMode, String[] configLocations) {
         applicationContext = new ClassPathXmlApplicationContext(configLocations, false);
-        applicationContext.getEnvironment().getPropertySources().addFirst(ps);
         applicationContext.getEnvironment().setActiveProfiles("prod");
+        applicationContext.getEnvironment().addActiveProfile(appMode.mode());
         applicationContext.registerShutdownHook();
         applicationContext.refresh();
     }
@@ -50,8 +47,8 @@ public class ApplicationContextLoader {
      * @param configLocations
      *            configuration file locations
      */
-    public void load(Object main, PropertySource<OptionSet> ps, String... configLocations) {
-        loadApplicationContext(ps,configLocations);
+    public void load(Object main, ApplicationMode appMode, String... configLocations) {
+        loadApplicationContext(appMode, configLocations);
         injectDependencies(main);
     }
 

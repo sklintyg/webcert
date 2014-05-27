@@ -24,6 +24,10 @@
   <bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry">
   </bean>
 
+  <bean id="jobRegistryBeanPostProcessor" class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
+    <property name="jobRegistry" ref="jobRegistry" />
+  </bean>
+
   <bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
     <property name="jobExplorer" ref="jobExplorer" />
     <property name="jobLauncher" ref="migrationJobLauncher" />
