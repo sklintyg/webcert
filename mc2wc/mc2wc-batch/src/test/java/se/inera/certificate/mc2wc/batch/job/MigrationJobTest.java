@@ -34,8 +34,8 @@ public class MigrationJobTest extends AbstractDbUnitSpringTest {
     private JobLauncher jobLauncher;
 
     @Autowired
-    @Qualifier("migrationJob")
-    private Job migrationJob;
+    @Qualifier("exportJob")
+    private Job exportJob;
     
     @Autowired
     private Mc2wcDAO mc2wcDAO;
@@ -45,7 +45,7 @@ public class MigrationJobTest extends AbstractDbUnitSpringTest {
 
         JobParametersBuilder builder = new JobParametersBuilder();
         builder.addString("sender", "SLL");
-        final JobExecution execution = jobLauncher.run(migrationJob, builder.toJobParameters());
+        final JobExecution execution = jobLauncher.run(exportJob, builder.toJobParameters());
 
         await().atMost(10, TimeUnit.SECONDS).until(new Callable<Boolean>() {
             @Override
