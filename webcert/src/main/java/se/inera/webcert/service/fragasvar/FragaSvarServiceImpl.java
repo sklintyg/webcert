@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.w3.wsaddressing10.AttributedURIType;
-import se.inera.certificate.modules.support.ModuleEntryPoint;
-import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
@@ -57,7 +55,6 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
-import se.inera.webcert.web.controller.api.ModuleApiController;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
