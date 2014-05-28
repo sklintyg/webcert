@@ -51,7 +51,7 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
         try {
             referensId = Long.parseLong(answerType.getVardReferensId());
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("No question found with internal ID " + answerType.getVardReferensId());
+            throw new IllegalArgumentException("No question found with internal ID " + answerType.getVardReferensId(), e);
         }
         fragaSvarService.processIncomingAnswer(referensId, answerContents.getMeddelandeText(), answerContents.getSigneringsTidpunkt());
 

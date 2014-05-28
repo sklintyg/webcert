@@ -5,22 +5,9 @@ package se.inera.webcert.service.exception;
  *
  * @author nikpet
  */
-public class WebCertServiceException extends RuntimeException {
+public final class WebCertServiceException extends RuntimeException {
 
-    private WebCertServiceErrorCodeEnum errorCode;
-
-    public WebCertServiceException() {
-    }
-
-    /**
-     * Constructor with just errorCode.
-     *
-     * @param errorCode error code
-     */
-    public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode) {
-        super();
-        this.errorCode = errorCode;
-    }
+    private final WebCertServiceErrorCodeEnum errorCode;
 
     /**
      * @param errorCode error code
@@ -42,12 +29,20 @@ public class WebCertServiceException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
-    public WebCertServiceErrorCodeEnum getErrorCode() {
-        return errorCode;
+    /**
+     * Constructor with message and original exception.
+     *
+     * @param errorCode error code
+     * @param message message
+     * @param cause cause
+     */
+    public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode, String message, Exception cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
     }
 
-    public void setErrorCode(WebCertServiceErrorCodeEnum errorCode) {
-        this.errorCode = errorCode;
+    public WebCertServiceErrorCodeEnum getErrorCode() {
+        return errorCode;
     }
 
 }

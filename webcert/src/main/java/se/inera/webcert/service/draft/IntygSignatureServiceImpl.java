@@ -101,11 +101,10 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         try {
             String signature = objectMapper.readTree(rawSignatur).get("signatur").textValue();
             if (!signatureService.validateSiths(userId, ticket.getHash(), signature)) {
-                throw new RuntimeException("Kunde inte validera intyget");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Kunde inte validera intyget");
             }
         } catch (IOException e) {
-            // TODO Handle correctly
-            throw new RuntimeException(e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Kunde inte validera intyget", e);
         }
 
         Intyg intyg = getIntygForSignering(ticket.getIntygsId());
@@ -123,7 +122,6 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
         ticket = ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
 
-        // TODO hantera fallet att skicka misslyckas.
         intygService.storeIntyg(intyg);
 
         return ticket;
@@ -180,7 +178,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
             return statusTicket;
         } catch (IllegalStateException e) {
             LOG.error("Fel vid hashgenerering intyg {}. {}", intygId, e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Internal error signing intyg");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Internal error signing intyg", e);
         }
     }
 
