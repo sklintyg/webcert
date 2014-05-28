@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
@@ -15,6 +16,7 @@ import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
@@ -34,6 +36,7 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.web.service.WebCertUserService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +63,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private WebCertUserService webCertUserService;
 
     @Override
     @Transactional
@@ -236,7 +242,28 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         IntygsStatus intygStatus = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE
                 : IntygsStatus.DRAFT_INCOMPLETE;
 
-        intyg.setModel(draftAsJson);
+        WebCertUser user = webCertUserService.getWebCertUser();
+
+        HoSPerson hosp = new HoSPerson();
+        hosp.setNamn(user.getNamn());
+        hosp.setHsaId(user.getHsaId());
+        hosp.setForskrivarkod(user.getForskrivarkod());
+
+        ExternalModelHolder externalModel = new ExternalModelHolder(draftAsJson);
+        // TODO Enhet (och vårdgivare borde populeras när dessa faktiskt hämtats från hsa).
+        //se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet("hsaId");
+        HoSPersonal hosPerson = new HoSPersonal(user.getHsaId(), user.getNamn(), user.getForskrivarkod(), null, null);
+
+        // TODO save or use converted object
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+        ExternalModelHolder holder = null;
+        try {
+            holder = moduleApi.updateExternal(externalModel, hosPerson);
+        } catch (ModuleException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
+        }
+
+        intyg.setModel(holder.getExternalModel());
         intyg.setStatus(intygStatus);
 
         VardpersonReferens vardPersonRef = createVardpersonFromHosPerson(request.getSavedBy());

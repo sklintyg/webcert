@@ -6,12 +6,22 @@ public abstract class AbstractVardenhet implements SelectableVardenhet {
 
     private String namn;
 
+    private String epost;
+
+    private String postadress;
+
+    private String postnummer;
+
+    private String postort;
+
+    private String telefonnummer;
+
+    private String arbetsplatskod;
+
     public AbstractVardenhet() {
-        super();
     }
 
     public AbstractVardenhet(String id, String namn) {
-        super();
         this.id = id;
         this.namn = namn;
     }
@@ -30,5 +40,53 @@ public abstract class AbstractVardenhet implements SelectableVardenhet {
 
     public void setNamn(String namn) {
         this.namn = namn;
+    }
+
+    public String getEpost() {
+        return epost;
+    }
+
+    public void setEpost(String epost) {
+        this.epost = epost;
+    }
+
+    public String getPostadress() {
+        return postadress;
+    }
+
+    public void setPostadress(String postadress) {
+        this.postadress = postadress;
+    }
+
+    public String getPostnummer() {
+        return postnummer;
+    }
+
+    public void setPostnummer(String postnummer) {
+        this.postnummer = postnummer;
+    }
+
+    public String getPostort() {
+        return postort;
+    }
+
+    public void setPostort(String postort) {
+        this.postort = postort;
+    }
+
+    public String getTelefonnummer() {
+        return telefonnummer;
+    }
+
+    public void setTelefonnummer(String telefonnummer) {
+        this.telefonnummer = telefonnummer;
+    }
+
+    public String getArbetsplatskod() {
+        return arbetsplatskod;
+    }
+
+    public void setArbetsplatskod(String arbetsplatskod) {
+        this.arbetsplatskod = arbetsplatskod;
     }
 }

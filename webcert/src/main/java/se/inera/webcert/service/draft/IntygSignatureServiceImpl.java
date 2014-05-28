@@ -69,10 +69,6 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         LOG.debug("Hash for clientsignature of draft '{}'", intygId);
 
         Intyg intyg = getIntygForSignering(intygId);
-        WebCertUser user = webCertUserService.getWebCertUser();
-
-        intyg.getSenastSparadAv().setHsaId(user.getHsaId());
-        intyg.getSenastSparadAv().setNamn(user.getNamn());
 
         String payload = intyg.getModel();
         SignatureTicket statusTicket = createSignatureTicket(intyg.getIntygsId(), payload);
@@ -134,23 +130,18 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
         Intyg intyg = getIntygForSignering(intygId);
 
-        WebCertUser user = webCertUserService.getWebCertUser();
-        String userId = user.getHsaId();
-
-        intyg.getSenastSparadAv().setHsaId(userId);
-        intyg.getSenastSparadAv().setNamn(user.getNamn());
-
         String payload = intyg.getModel();
         SignatureTicket statusTicket = createSignatureTicket(intyg.getIntygsId(), payload);
 
         intyg.setStatus(IntygsStatus.SIGNED);
         intygRepository.save(intyg);
-        Signatur signatur = new Signatur(new LocalDateTime(), userId, intygId, payload, statusTicket.getHash(), "Signatur");
+
+        WebCertUser user = webCertUserService.getWebCertUser();
+        Signatur signatur = new Signatur(new LocalDateTime(), user.getHsaId(), intygId, payload, statusTicket.getHash(), "Signatur");
         signaturRepository.save(signatur);
 
         ticketTracker.updateStatus(statusTicket.getId(), SignatureTicket.Status.SIGNERAD);
 
-        // TODO hantera fallet att skicka misslyckas.
         intygService.storeIntyg(intyg);
 
         return statusTicket;
@@ -166,6 +157,10 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
             LOG.warn("Intyg '{}' med status '{}' kunde inte signeras", intygId, intyg.getStatus());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "The intyg was not in state " + IntygsStatus.DRAFT_COMPLETE);
         }
+        // Update senastSparat av, även i modellen
+        WebCertUser user = webCertUserService.getWebCertUser();
+        intyg.getSenastSparadAv().setHsaId(user.getHsaId());
+        intyg.getSenastSparadAv().setNamn(user.getNamn());
         return intyg;
     }
 
