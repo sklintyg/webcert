@@ -68,9 +68,6 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private IntygDraftService intygDraftService;
 
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
-
     public IntygApiController() {
 
     }

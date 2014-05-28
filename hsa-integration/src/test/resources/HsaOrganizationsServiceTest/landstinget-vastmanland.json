@@ -5,6 +5,7 @@
         {
             "id" : "centrum-vast",
             "namn" : "Vårdcentrum i Väst",
+            "epost" : "nagon@nagonstans.invalid",
             "mottagningar" : [
                 {
                     "id" : "dialys",
@@ -19,10 +20,12 @@
         {
             "id" : "centrum-ost",
             "namn" : "Vårdcentrum i Öst",
+            "epost" : "nagon@nagonstans.invalid",
             "mottagningar" : [
                 {
                     "id" : "nagel",
-                    "namn" : "Nagelmottagningen"
+                    "namn" : "Nagelmottagningen",
+                    "epost" : "nagon@nagonstans.invalid"
                 }
             ]
         },

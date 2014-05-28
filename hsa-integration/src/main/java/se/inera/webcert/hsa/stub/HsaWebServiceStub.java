@@ -39,6 +39,7 @@ import se.inera.ifv.hsawsresponder.v3.PingResponseType;
 import se.inera.ifv.hsawsresponder.v3.PingType;
 import se.inera.ifv.hsawsresponder.v3.VpwGetPublicUnitsResponseType;
 import se.inera.ifv.hsawsresponder.v3.VpwGetPublicUnitsType;
+import se.inera.webcert.hsa.model.AbstractVardenhet;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -64,9 +65,9 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         if (enhet != null) {
             response.setHsaIdentity(enhet.getId());
             response.setName(enhet.getNamn());
-            response.setEmail(enhet.getMail());
             response.setStartDate(enhet.getStart());
             response.setEndDate(enhet.getEnd());
+            updateWithContactInformation(response, enhet);
             return response;
         }
 
@@ -74,13 +75,28 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         if (mottagning != null) {
             response.setHsaIdentity(mottagning.getId());
             response.setName(mottagning.getNamn());
-            response.setEmail(mottagning.getMail());
             response.setStartDate(mottagning.getStart());
             response.setEndDate(mottagning.getEnd());
+            updateWithContactInformation(response, mottagning);
             return response;
         }
         return response;
 
+    }
+
+    private void updateWithContactInformation(GetHsaUnitResponseType response, AbstractVardenhet enhet) {
+        response.setEmail(enhet.getEpost());
+        if (enhet.getTelefonnummer() != null) {
+            GetHsaUnitResponseType.TelephoneNumbers telephoneNumbers = new GetHsaUnitResponseType.TelephoneNumbers();
+            telephoneNumbers.getTelephoneNumber().add(enhet.getTelefonnummer());
+            response.setTelephoneNumbers(telephoneNumbers);
+        }
+        if (enhet.getPostadress() != null) {
+            response.getPostalAddress().getAddressLine().add(enhet.getPostadress());
+        }
+        if (enhet.getPostnummer() != null) {
+            response.getPostalAddress().getAddressLine().add(enhet.getPostnummer() + " " + enhet.getPostort());
+        }
     }
 
     /**
