@@ -18,7 +18,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see se.inera.certificate.mc2wc.converter.MigrationMessageConverter#
      * toMigrationMessage(se.inera.certificate.mc2wc.jpa.model.Certificate,
      * boolean)
@@ -191,46 +191,46 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         }
 
         switch (subject) {
-            case CONTACT:
-                return QuestionSubjectType.CONTACT;
-            case KOMPLEMENTING:
-                return QuestionSubjectType.KOMPLEMENTING;
-            case MAKULERING:
-                return QuestionSubjectType.MAKULERING;
-            case MEETING:
-                return QuestionSubjectType.MEETING;
-            case REMINDER:
-                return QuestionSubjectType.REMINDER;
-            case WORK_PROLONGING:
-                return QuestionSubjectType.WORK_PROLONGING;
-            case OTHER:
-                return QuestionSubjectType.OTHER;
-            default:
-                return null;
+        case CONTACT:
+            return QuestionSubjectType.CONTACT;
+        case KOMPLEMENTING:
+            return QuestionSubjectType.KOMPLEMENTING;
+        case MAKULERING:
+            return QuestionSubjectType.MAKULERING;
+        case MEETING:
+            return QuestionSubjectType.MEETING;
+        case REMINDER:
+            return QuestionSubjectType.REMINDER;
+        case WORK_PROLONGING:
+            return QuestionSubjectType.WORK_PROLONGING;
+        case OTHER:
+            return QuestionSubjectType.OTHER;
+        default:
+            return null;
         }
     }
 
     private StatusType toStatusType(State state) {
 
         switch (state) {
-            case CREATED:
-                return StatusType.CREATED;
-            case EDITED:
-                return StatusType.EDITED;
-            case PRINTED:
-                return StatusType.PRINTED;
-            case SENT:
-                return StatusType.SENT;
-            case SIGNED:
-                return StatusType.SIGNED;
-            case SIGNED_AND_SENT:
-                return StatusType.SIGNED_AND_SENT;
-            case SENT_HANDLED:
-                return StatusType.SENT_HANDLED;
-            case SENT_UNHANDLED:
-                return StatusType.SENT_UNHANDLED;
-            default:
-                return null;
+        case CREATED:
+            return StatusType.CREATED;
+        case EDITED:
+            return StatusType.EDITED;
+        case PRINTED:
+            return StatusType.PRINTED;
+        case SENT:
+            return StatusType.SENT;
+        case SIGNED:
+            return StatusType.SIGNED;
+        case SIGNED_AND_SENT:
+            return StatusType.SIGNED_AND_SENT;
+        case SENT_HANDLED:
+            return StatusType.SENT_HANDLED;
+        case SENT_UNHANDLED:
+            return StatusType.SENT_UNHANDLED;
+        default:
+            return null;
         }
     }
 

@@ -16,51 +16,51 @@ import se.inera.certificate.mc2wc.ApplicationMode;
 
 @Component
 public class MigrationJobExecutor {
-	
-	private static final int RUNNING = 1;
-	private static final int FAILED = -1;
-	private static final int FINISHED = 0;
-	
-	private static Logger logger = LoggerFactory.getLogger(ApplicationConsoleLogger.NAME);
 
-	@Autowired
-	private JobLauncher jobLauncher;
-	
-	@Autowired
-	private JobLocator jobLocator;
-	
-	@Autowired
-	private JobExplorer jobExplorer;
+    private static final int RUNNING = 1;
+    private static final int FAILED = -1;
+    private static final int FINISHED = 0;
 
-	public Long startJob(ApplicationMode appMode) throws Exception {
-				
-		String jobName = appMode.jobName();
-		Job job = jobLocator.getJob(jobName); 
-		
-		logger.info("Located job '{}'", job.getName());
-		
-		JobParametersBuilder builder = new JobParametersBuilder();
-		builder.addLong("millis", System.currentTimeMillis(), true);
+    private static Logger logger = LoggerFactory.getLogger(ApplicationConsoleLogger.NAME);
 
-		JobExecution execution = jobLauncher.run(job, builder.toJobParameters());
-		
-		logger.info("Started job '{}'", execution.getJobInstance().getJobName());
-		
-		return execution.getId();
-	}
+    @Autowired
+    private JobLauncher jobLauncher;
 
-	public int checkJob(Long execId) {
-		
-		JobExecution execution = jobExplorer.getJobExecution(execId);
-		
+    @Autowired
+    private JobLocator jobLocator;
+
+    @Autowired
+    private JobExplorer jobExplorer;
+
+    public Long startJob(ApplicationMode appMode) throws Exception {
+
+        String jobName = appMode.jobName();
+        Job job = jobLocator.getJob(jobName);
+
+        logger.info("Located job '{}'", job.getName());
+
+        JobParametersBuilder builder = new JobParametersBuilder();
+        builder.addLong("millis", System.currentTimeMillis(), true);
+
+        JobExecution execution = jobLauncher.run(job, builder.toJobParameters());
+
+        logger.info("Started job '{}'", execution.getJobInstance().getJobName());
+
+        return execution.getId();
+    }
+
+    public int checkJob(Long execId) {
+
+        JobExecution execution = jobExplorer.getJobExecution(execId);
+
         if (execution == null) {
-        	logger.info("Execution with id '{}' was not found!", execId);
+            logger.info("Execution with id '{}' was not found!", execId);
             return FAILED;
         }
-                
-		logger.info("Job '{}': {}", execution.getJobInstance().getJobName(), execution.getStatus());
-		
-		return (execution.isRunning()) ? RUNNING : FINISHED;
-	}
+
+        logger.info("Job '{}': {}", execution.getJobInstance().getJobName(), execution.getStatus());
+
+        return (execution.isRunning()) ? RUNNING : FINISHED;
+    }
 
 }

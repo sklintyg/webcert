@@ -13,40 +13,40 @@ import javax.persistence.TableGenerator;
 public class MigratedCertificate {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator="MIGR_CERT_ID_GEN")
-    @TableGenerator(name="MIGR_CERT_ID_GEN", table="ID_SEQ_TABLE", pkColumnName = "SEQ_NAME", pkColumnValue = "MIGR_CERT_ID", 
-    	valueColumnName = "SEQ_VALUE", initialValue=1, allocationSize=100 )
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "MIGR_CERT_ID_GEN")
+    @TableGenerator(name = "MIGR_CERT_ID_GEN", table = "ID_SEQ_TABLE", pkColumnName = "SEQ_NAME", pkColumnValue = "MIGR_CERT_ID",
+            valueColumnName = "SEQ_VALUE", initialValue = 1, allocationSize = 100)
     @Column(name = "ID")
-	private Long id;
-	
+    private Long id;
+
     @Column(name = "CERTIFICATE_ID")
-	private String certificateId;
-	
+    private String certificateId;
+
     @Column(name = "DOCUMENT")
-	private byte[] document;
+    private byte[] document;
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getCertificateId() {
-		return certificateId;
-	}
+    public String getCertificateId() {
+        return certificateId;
+    }
 
-	public void setCertificateId(String certificateId) {
-		this.certificateId = certificateId;
-	}
+    public void setCertificateId(String certificateId) {
+        this.certificateId = certificateId;
+    }
 
-	public byte[] getDocument() {
-		return document;
-	}
+    public byte[] getDocument() {
+        return document;
+    }
 
-	public void setDocument(byte[] document) {
-		this.document = document;
-	}
+    public void setDocument(byte[] document) {
+        this.document = document;
+    }
 
 }

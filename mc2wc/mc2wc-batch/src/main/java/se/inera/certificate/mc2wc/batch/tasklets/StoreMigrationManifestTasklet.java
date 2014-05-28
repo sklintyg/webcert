@@ -16,39 +16,39 @@ import se.inera.certificate.mc2wc.medcert.jpa.MedcertDAO;
 
 public class StoreMigrationManifestTasklet implements Tasklet {
 
-	private static Logger log = LoggerFactory.getLogger(ApplicationConsoleLogger.NAME);
-	
-	@Autowired
-	private MedcertDAO medcertDao;
-	
-	@Autowired
-	private Mc2wcDAO mc2wcDao;
+    private static Logger log = LoggerFactory.getLogger(ApplicationConsoleLogger.NAME);
 
-	@Value("${medcert.exporting.entity}")
+    @Autowired
+    private MedcertDAO medcertDao;
+
+    @Autowired
+    private Mc2wcDAO mc2wcDao;
+
+    @Value("${medcert.exporting.entity}")
     private String exporter;
-	
-	@Override
-	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-		
-		MigrationManifest manifest = new MigrationManifest(exporter);
-		
-		Long certificatesWithContents = medcertDao.countCertificatesWithContents();
-		manifest.setCertificatesWithContents(certificatesWithContents);
-		
-		Long emptyCertificates = medcertDao.countEmptyCertificates();
-		manifest.setCertificatesWithoutContents(emptyCertificates);
-		
-		Long questions = medcertDao.countQuestions();
-		manifest.setQuestions(questions);
-		
-		Long answers = medcertDao.countAnswers();
-		manifest.setAnswers(answers);
-		
-		mc2wcDao.insertMigrationManifest(manifest);
-		
-		log.info("Storing manifest: {}", manifest);
-		
-		return RepeatStatus.FINISHED;
-	}
+
+    @Override
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+
+        MigrationManifest manifest = new MigrationManifest(exporter);
+
+        Long certificatesWithContents = medcertDao.countCertificatesWithContents();
+        manifest.setCertificatesWithContents(certificatesWithContents);
+
+        Long emptyCertificates = medcertDao.countEmptyCertificates();
+        manifest.setCertificatesWithoutContents(emptyCertificates);
+
+        Long questions = medcertDao.countQuestions();
+        manifest.setQuestions(questions);
+
+        Long answers = medcertDao.countAnswers();
+        manifest.setAnswers(answers);
+
+        mc2wcDao.insertMigrationManifest(manifest);
+
+        log.info("Storing manifest: {}", manifest);
+
+        return RepeatStatus.FINISHED;
+    }
 
 }

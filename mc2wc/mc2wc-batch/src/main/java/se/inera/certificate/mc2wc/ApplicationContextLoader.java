@@ -6,8 +6,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ApplicationContextLoader {
 
-	protected ConfigurableApplicationContext applicationContext;
-	
+    protected ConfigurableApplicationContext applicationContext;
+
     public ConfigurableApplicationContext getApplicationContext() {
         return applicationContext;
     }

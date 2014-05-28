@@ -10,7 +10,7 @@ import se.inera.certificate.mc2wc.schema.SchemaValidatorException;
 
 /**
  * Processor to validate if the MigrationMessage contains anything at all to migrate.
- *
+ * 
  * @author nikpet
  */
 public class MigrationMessageValidationProcessor implements ItemProcessor<MigrationMessage, MigrationMessage> {
