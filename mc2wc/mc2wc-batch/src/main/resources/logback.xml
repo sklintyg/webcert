@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
   
-  <property  ></property>
+  <property name="LOG_FILE_DIR" value="${logFile}" />
   
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
@@ -11,7 +11,7 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <File>${logFile}/mc2wc-batch.log</File>
+    <File>${LOG_FILE_DIR}/mc2wc-batch.log</File>
     <encoder>
       <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
       </Pattern>
