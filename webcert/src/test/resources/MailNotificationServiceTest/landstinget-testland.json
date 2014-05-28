@@ -5,7 +5,7 @@
         {
             "id" : "cityakuten",
             "namn" : "Testland Cityakuten",
-            "mail" : "cityakuten@testland.se"
+            "epost" : "cityakuten@testland.se"
         },
         {
             "id" : "landcentralen",
@@ -14,18 +14,18 @@
                 {
                     "id" : "vansterakuten",
                     "namn" : "Vänsterakuten",
-                    "mail" : "vansterakuten@testland.se"
+                    "epost" : "vansterakuten@testland.se"
                 },
                 {
                     "id" : "hogerakuten",
-                    "namn" : "Högerakuten"
+                    "epost" : "Högerakuten"
                 }
             ]
         },
         {
             "id" : "sjocentralen",
             "namn" : "Sjöcentralen",
-            "mail" : "sjocentralen@testland.se",
+            "epost" : "sjocentralen@testland.se",
             "mottagningar" : [
                 {
                     "id" : "kustakuten",
