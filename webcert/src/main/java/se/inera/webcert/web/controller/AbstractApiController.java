@@ -6,8 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.webcert.hsa.model.AbstractVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.web.service.WebCertUserService;
 
 public abstract class AbstractApiController {
@@ -22,19 +25,37 @@ public abstract class AbstractApiController {
     private WebCertUserService webCertUserService;
 
     protected HoSPerson createHoSPersonFromUser() {
-
         WebCertUser user = webCertUserService.getWebCertUser();
-
-        HoSPerson hosp = new HoSPerson();
-        hosp.setNamn(user.getNamn());
-        hosp.setHsaId(user.getHsaId());
-        hosp.setForskrivarkod(user.getForskrivarkod());
-
-        // TODO The users befattning needs to be supplied
-
-        return hosp;
+        return HoSPerson.create(user);
     }
 
+    protected Vardenhet createVardenhetFromUser() {
+        Vardenhet enhet = new Vardenhet();
+        WebCertUser user = webCertUserService.getWebCertUser();
+        AbstractVardenhet valdEnhet = getValdEnhet(user);
+        enhet.setHsaId(valdEnhet.getId());
+        enhet.setNamn(valdEnhet.getNamn());
+        enhet.setEpost(valdEnhet.getEpost());
+        enhet.setTelefonnummer(valdEnhet.getTelefonnummer());
+        enhet.setPostadress(valdEnhet.getPostadress());
+        enhet.setPostnummer(valdEnhet.getPostnummer());
+        enhet.setPostort(valdEnhet.getPostort());
+        enhet.setArbetsplatskod(valdEnhet.getArbetsplatskod());
+        enhet.setArbetsplatskod(valdEnhet.getArbetsplatskod());
+        Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setHsaId(user.getValdVardgivare().getId());
+        vardgivare.setNamn(user.getValdVardgivare().getNamn());
+        enhet.setVardgivare(vardgivare);
+        return enhet;
+    }
+
+    private AbstractVardenhet getValdEnhet(WebCertUser user) {
+        if (user.getValdVardenhet() instanceof  AbstractVardenhet) {
+            return (AbstractVardenhet) user.getValdVardenhet();
+        } else {
+            return null;
+        }
+    }
     protected List<String> getEnhetIdsForCurrentUser() {
 
         WebCertUser webCertUser = webCertUserService.getWebCertUser();

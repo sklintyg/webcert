@@ -8,6 +8,7 @@ import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.ifv.hsaws.v3.HsaWsFault;
 import se.inera.ifv.hsaws.v3.HsaWsResponderInterface;
+import se.inera.ifv.hsawsresponder.v3.AddressType;
 import se.inera.ifv.hsawsresponder.v3.AttributeValueListType;
 import se.inera.ifv.hsawsresponder.v3.AttributeValuePairType;
 import se.inera.ifv.hsawsresponder.v3.CareUnitType;
@@ -92,7 +93,9 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
             response.setTelephoneNumbers(telephoneNumbers);
         }
         if (enhet.getPostadress() != null) {
-            response.getPostalAddress().getAddressLine().add(enhet.getPostadress());
+            AddressType address = new AddressType();
+            address.getAddressLine().add(enhet.getPostadress());
+            response.setPostalAddress(address);
         }
         if (enhet.getPostnummer() != null) {
             response.getPostalAddress().getAddressLine().add(enhet.getPostnummer() + " " + enhet.getPostort());

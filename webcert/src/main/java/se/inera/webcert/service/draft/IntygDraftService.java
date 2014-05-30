@@ -7,6 +7,7 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.dto.Lakare;
 
 public interface IntygDraftService {
@@ -26,4 +27,8 @@ public interface IntygDraftService {
     void deleteUnsignedDraft(String intygId);
 
     Intyg getDraft(String intygId);
+
+    SignatureTicket createDraftHash(String intygsId);
+
+    SignatureTicket serverSignature(String intygsId);
 }

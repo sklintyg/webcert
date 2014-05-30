@@ -18,11 +18,14 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.modules.support.api.ModuleApi;
+import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
@@ -139,13 +142,13 @@ public class IntygDraftServiceImplTest {
 
         when(intygRepository.save(intygDraft)).thenReturn(intygDraft);
 
-        WebCertUser user = new WebCertUser();
-        user.setHsaId("hsaId");
-        user.setNamn("namn");
+        WebCertUser user = createUser();
 
         when(userService.getWebCertUser()).thenReturn(user);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
-        
+
+        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelHolder("{}"));
+
         DraftValidation res = draftService.saveAndValidateDraft(request);
 
         verify(intygRepository).save(any(Intyg.class));
@@ -154,7 +157,22 @@ public class IntygDraftServiceImplTest {
         assertFalse("Validation should fail", res.isDraftValid());
         assertEquals("Validation should have 1 message", 1, res.getMessages().size());
     }
-    
+
+    private WebCertUser createUser() {
+        WebCertUser user = new WebCertUser();
+        user.setHsaId("hsaId");
+        user.setNamn("namn");
+        Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setId("vardgivarid");
+        vardgivare.setNamn("vardgivarnamn");
+        user.setValdVardgivare(vardgivare);
+        Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setId("enhetid");
+        vardenhet.setNamn("enhetnamn");
+        user.setValdVardenhet(vardenhet);
+        return user;
+    }
+
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftThatIsSigned() {
         
@@ -164,7 +182,7 @@ public class IntygDraftServiceImplTest {
         
         verify(intygRepository).findOne(INTYG_ID);
     }
-    
+
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftWithExceptionInModule() throws Exception {
     

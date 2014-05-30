@@ -109,7 +109,10 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
             // only add enhet if it is currently active
             if (isActive(vardenhet.getStart(), vardenhet.getEnd())) {
-                updateWithContactInformation(vardenhet, client.callGetHsaunit(careUnit.getHsaIdentity()));
+                GetHsaUnitResponseType response = client.callGetHsaunit(careUnit.getHsaIdentity());
+                // TODO WEBCERT-726 Arbetsplatskod skall hämtas från HSA
+                vardenhet.setArbetsplatskod("12345678");
+                updateWithContactInformation(vardenhet, response);
                 attachMottagningar(vardenhet);
                 vardenheter.add(vardenhet);
             } else {
@@ -163,6 +166,8 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         for (String mottagningsId : mottagningsIds) {
             Mottagning mottagning = fetchMottagning(mottagningsId);
             if (isActive(mottagning.getStart(), mottagning.getEnd())) {
+                // TODO WEBCERT-726 Arbetsplatskod skall hämtas från HSA
+                mottagning.setArbetsplatskod("mottagning123456");
                 vardenhet.getMottagningar().add(mottagning);
             } else {
                 LOG.debug("Mottagning '{}' is not active right now", mottagningsId);
