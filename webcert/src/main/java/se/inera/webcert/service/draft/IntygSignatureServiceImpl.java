@@ -69,6 +69,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         LOG.debug("Hash for clientsignature of draft '{}'", intygId);
 
         Intyg intyg = getIntygForSignering(intygId);
+        updateIntygForSignering(intyg);
 
         String payload = intyg.getModel();
         SignatureTicket statusTicket = createSignatureTicket(intyg.getIntygsId(), payload);
@@ -104,6 +105,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         }
 
         Intyg intyg = getIntygForSignering(ticket.getIntygsId());
+        updateIntygForSignering(intyg);
         String payload = intyg.getModel();
 
         if (!ticket.getHash().equals(createHash(payload))) {
@@ -129,6 +131,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         LOG.debug("Signera utkast '{}'", intygId);
 
         Intyg intyg = getIntygForSignering(intygId);
+        updateIntygForSignering(intyg);
 
         String payload = intyg.getModel();
         SignatureTicket statusTicket = createSignatureTicket(intyg.getIntygsId(), payload);
@@ -149,7 +152,6 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
     private Intyg getIntygForSignering(String intygId) {
         Intyg intyg = intygRepository.findOne(intygId);
-
         if (intyg == null) {
             LOG.warn("Intyg '{}' was not found", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
@@ -157,6 +159,10 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
             LOG.warn("Intyg '{}' med status '{}' kunde inte signeras", intygId, intyg.getStatus());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "The intyg was not in state " + IntygsStatus.DRAFT_COMPLETE);
         }
+        return intyg;
+    }
+
+    private Intyg updateIntygForSignering(Intyg intyg) {
         // Update senastSparat av, även i modellen
         WebCertUser user = webCertUserService.getWebCertUser();
         intyg.getSenastSparadAv().setHsaId(user.getHsaId());

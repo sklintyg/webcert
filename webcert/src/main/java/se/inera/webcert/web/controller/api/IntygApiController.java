@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.repository.IntygFilter;
@@ -13,12 +12,9 @@ import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
-import se.inera.webcert.service.dto.Vardenhet;
-import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
@@ -97,7 +93,6 @@ public class IntygApiController extends AbstractApiController {
     }
 
     private CreateNewDraftRequest createServiceRequest(CreateNewIntygRequest req) {
-
         CreateNewDraftRequest srvReq = new CreateNewDraftRequest();
 
         srvReq.setIntygType(req.getIntygType());
@@ -108,26 +103,8 @@ public class IntygApiController extends AbstractApiController {
         pat.setEfterNamn(req.getPatientEfternamn());
         srvReq.setPatient(pat);
 
-        HoSPerson hosp = createHoSPersonFromUser();
-        srvReq.setHosPerson(hosp);
-
-        Vardgivare vgiv = new Vardgivare();
-        vgiv.setHsaId(req.getVardGivareHsaId());
-        vgiv.setNamn(req.getVardGivareNamn());
-
-        Vardenhet venh = new Vardenhet();
-        venh.setVardgivare(vgiv);
-        venh.setHsaId(req.getVardEnhetHsaId());
-        venh.setNamn(req.getVardEnhetNamn());
-        // TODO detta borde komma från HSA
-        venh.setEpost("epost@server.invalid");
-        venh.setPostadress("Storgatan 12");
-        venh.setPostnummer("12345");
-        venh.setPostort("Ankeborg");
-        venh.setTelefonnummer("010-12345678");
-        venh.setArbetsplatskod("0123456789");
-
-        srvReq.setVardenhet(venh);
+        srvReq.setHosPerson(createHoSPersonFromUser());
+        srvReq.setVardenhet(createVardenhetFromUser());
 
         return srvReq;
     }
