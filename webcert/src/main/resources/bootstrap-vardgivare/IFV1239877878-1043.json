@@ -8,7 +8,7 @@
             "epost" : "enhet1@webcert.invalid.se",
             "telefonnummer" : "0101234567890",
             "postadress" : "Storgatan 1",
-            "postnummer" : "012345",
+            "postnummer" : "12345",
             "postort" : "Småmåla",
             "arbetsplatskod" : "1234567890",
             "mottagningar" : [
@@ -18,7 +18,7 @@
                     "epost" : "underenhet1@webcert.invalid.se",
                     "telefonnummer" : "0101234567890",
                     "postadress" : "Storgatan 1",
-                    "postnummer" : "012345",
+                    "postnummer" : "12345",
                     "postort" : "Småmåla",
                     "arbetsplatskod" : "1234567890"
                 },
@@ -28,7 +28,7 @@
                     "epost" : "underenhet2@webcert.invalid.se",
                     "telefonnummer" : "0101234567890",
                     "postadress" : "Storgatan 1",
-                    "postnummer" : "012345",
+                    "postnummer" : "12345",
                     "postort" : "Småmåla",
                     "arbetsplatskod" : "1234567890"
                 }
@@ -39,7 +39,7 @@
             "epost" : "WebCert-Enhet3",
             "telefonnummer" : "0101234567890",
             "postadress" : "Storgatan 1",
-            "postnummer" : "012345",
+            "postnummer" : "12345",
             "postort" : "Småmåla",
             "arbetsplatskod" : "1234567890"
         }

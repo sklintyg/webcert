@@ -8,10 +8,11 @@
         },
         {
             "id" : "IFV1239877878-103F",
+            "namn" : "OrgEnhet1",
             "epost" : "enhet1@webcert.invalid.se",
             "telefonnummer" : "0101234567890",
             "postadress" : "Storgatan 1",
-            "postnummer" : "012345",
+            "postnummer" : "12345",
             "postort" : "Småmåla",
             "arbetsplatskod" : "1234567890"
         },
@@ -31,7 +32,7 @@
             "epost" : "enhet1@webcert.invalid.se",
             "telefonnummer" : "0101234567890",
             "postadress" : "Storgatan 1",
-            "postnummer" : "012345",
+            "postnummer" : "12345",
             "postort" : "Småmåla",
             "arbetsplatskod" : "1234567890",
             "mottagningar" : [
@@ -41,7 +42,7 @@
                     "epost" : "enhet1@webcert.invalid.se",
                     "telefonnummer" : "0101234567890",
                     "postadress" : "Storgatan 1",
-                    "postnummer" : "012345",
+                    "postnummer" : "12345",
                     "postort" : "Småmåla",
                     "arbetsplatskod" : "1234567890"
                 }
@@ -53,7 +54,7 @@
             "epost" : "enhet1@webcert.invalid.se",
             "telefonnummer" : "0101234567890",
             "postadress" : "Storgatan 1",
-            "postnummer" : "012345",
+            "postnummer" : "12345",
             "postort" : "Småmåla",
             "arbetsplatskod" : "1234567890"
         }
