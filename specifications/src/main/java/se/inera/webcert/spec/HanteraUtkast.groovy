@@ -144,4 +144,125 @@ class HanteraUtkast {
             }
         }
     }
+
+    String postadress() {
+        def result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.enhetsPostadress.value()
+        }
+        result
+    }
+
+    String postnummer() {
+        def result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.enhetsPostnummer.value()
+        }
+        result
+    }
+
+    String postort() {
+        def result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.enhetsPostort.value()
+        }
+        result
+    }
+
+    String telefonnummer() {
+        def result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.enhetsTelefonnummer.value()
+        }
+        result
+    }
+
+    String epost() {
+        def result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.enhetsEpost.value()
+        }
+        result
+    }
+
+    boolean andraPostadress(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsPostadress = value
+        }
+        true
+    }
+
+    boolean andraPostnummer(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsPostnummer = value
+        }
+        true
+    }
+
+    boolean andraPostort(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsPostort = value
+        }
+        true
+    }
+
+    boolean andraTelefonnummer(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsTelefonnummer = value
+        }
+        true
+    }
+
+    boolean andraEpost(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsEpost = value
+        }
+        true
+    }
+
+    boolean sparaUtkast() {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            waitFor {
+                page.sparaBtn.click()
+            }
+        }
+    }
+
+    boolean wait4it() {
+        Thread.sleep(5000)
+        true
+    }
 }
