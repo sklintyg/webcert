@@ -63,6 +63,33 @@ define([
                             $log.error('error ' + status);
                             onError(data);
                         });
+                    },
+
+                    copyIntygToDraft: function(cert, onSuccess, onError) {
+                        $log.debug('_copyIntygToDraft ' + cert.intygType + ', ' + cert.intygId);
+
+                        var payload = {};
+                        payload.sourceIntygId = cert.intygId;
+                        payload.patientPersonnummer = this.personnummer;
+                        payload.patientFornamn = this.firstname;
+                        payload.patientEfternamn = this.lastname;
+                        payload.intygType = this.intygType;
+                        payload.postadress = this.address;
+                        payload.vardEnhetHsaId = this.vardEnhetHsaId;
+                        payload.vardEnhetNamn = this.vardEnhetNamn;
+                        payload.vardGivareHsaId = this.vardGivareHsaId;
+                        payload.vardGivareNamn = this.vardGivareNamn;
+
+                        var restPath = '/api/intyg/copy';
+                        $http.post(restPath, payload).success(function(data) {
+                            $log.debug('got callback data: ' + data);
+                            onSuccess(data);
+                            statService.refreshStat();
+
+                        }).error(function(data, status) {
+                            $log.error('error ' + status);
+                            onError(data);
+                        });
                     }
                 };
             }

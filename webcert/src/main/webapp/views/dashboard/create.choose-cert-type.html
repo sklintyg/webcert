@@ -88,7 +88,7 @@
                   <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert)" id="showBtn-{{cert.intygId}}">Visa</button>
                 </td>
                 <td>
-                  <button class="btn btn-info" title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert.intygId)" id="copyBtn-{{cert.intygId}}">
+                  <button ng-show="cert.status != 'CANCELLED'" class="btn btn-info" title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert)" id="copyBtn-{{cert.intygId}}">
                     Kopiera
                   </button>
                 </td>
