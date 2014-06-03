@@ -1,6 +1,8 @@
 package se.inera.webcert.spec
 
 import se.inera.webcert.pages.IndexPage
+import se.inera.webcert.pages.SokSkrivFyllINamnPage
+import se.inera.webcert.pages.SokSkrivValjIntygTypPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.WelcomePage
 
@@ -14,6 +16,64 @@ class SokSkrivIntyg {
                 at WelcomePage
             }
             page.loginAs(id)
+        }
+    }
+
+    boolean sokSkrivIntygSidanVisas() {
+        sokSkrivIntygSidanVisasSaSmaningom()
+    }
+
+    boolean sokSkrivIntygSidanVisasSaSmaningom() {
+        Browser.drive {
+            waitFor (60, 10) {
+                at SokSkrivaIntygPage
+            }
+        }
+    }
+
+    def valjPatient(String personNummer) {
+        Browser.drive {
+            page.personnummer = personNummer
+            page.personnummerFortsattKnapp.click()
+        }
+    }
+
+    boolean fyllINamnSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at SokSkrivFyllINamnPage
+            }
+        }
+    }
+
+    def gePatientFornamnEfternamn(String firstname, String lastname) {
+        Browser.drive {
+            page.firstname = firstname
+            page.lastname = lastname
+            page.namnFortsattKnapp.click()
+        }
+    }
+
+    boolean valjIntygstypSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+        }
+    }
+
+    def kopieraIntyg(String intygId) {
+        Browser.drive {
+            page.copy(intygId)
+        }
+    }
+
+    public void loggaInIndex() {
+        Browser.drive {
+            waitFor {
+                at IndexPage
+            }
+            page.startLogin()
         }
     }
 
@@ -40,31 +100,6 @@ class SokSkrivIntyg {
             waitFor {
                 page.selectCareUnit(careUnit);
             }
-        }
-    }
-
-    boolean sokSkrivIntygSidanVisas() {
-        Browser.drive {
-            waitFor {
-                at SokSkrivaIntygPage
-            }
-        }
-    }
-
-    boolean sokSkrivIntygSidanVisasSaSmaningom() {
-        Browser.drive {
-            waitFor (60, 10) {
-                at SokSkrivaIntygPage
-            }
-        }
-    }
-
-    public void loggaInIndex() {
-        Browser.drive {
-            waitFor {
-                at IndexPage
-            }
-            page.startLogin()
         }
     }
 }
