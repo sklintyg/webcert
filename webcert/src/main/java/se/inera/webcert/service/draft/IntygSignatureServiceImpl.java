@@ -69,10 +69,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         LOG.debug("Hash for clientsignature of draft '{}'", intygId);
 
         Intyg intyg = getIntygForSignering(intygId);
-        WebCertUser user = webCertUserService.getWebCertUser();
-
-        intyg.getSenastSparadAv().setHsaId(user.getHsaId());
-        intyg.getSenastSparadAv().setNamn(user.getNamn());
+        updateIntygForSignering(intyg);
 
         String payload = intyg.getModel();
         SignatureTicket statusTicket = createSignatureTicket(intyg.getIntygsId(), payload);
@@ -101,14 +98,14 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         try {
             String signature = objectMapper.readTree(rawSignatur).get("signatur").textValue();
             if (!signatureService.validateSiths(userId, ticket.getHash(), signature)) {
-                throw new RuntimeException("Kunde inte validera intyget");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Kunde inte validera intyget");
             }
         } catch (IOException e) {
-            // TODO Handle correctly
-            throw new RuntimeException(e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Kunde inte validera intyget", e);
         }
 
         Intyg intyg = getIntygForSignering(ticket.getIntygsId());
+        updateIntygForSignering(intyg);
         String payload = intyg.getModel();
 
         if (!ticket.getHash().equals(createHash(payload))) {
@@ -123,7 +120,6 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
         ticket = ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
 
-        // TODO hantera fallet att skicka misslyckas.
         intygService.storeIntyg(intyg);
 
         return ticket;
@@ -135,24 +131,20 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         LOG.debug("Signera utkast '{}'", intygId);
 
         Intyg intyg = getIntygForSignering(intygId);
-
-        WebCertUser user = webCertUserService.getWebCertUser();
-        String userId = user.getHsaId();
-
-        intyg.getSenastSparadAv().setHsaId(userId);
-        intyg.getSenastSparadAv().setNamn(user.getNamn());
+        updateIntygForSignering(intyg);
 
         String payload = intyg.getModel();
         SignatureTicket statusTicket = createSignatureTicket(intyg.getIntygsId(), payload);
 
         intyg.setStatus(IntygsStatus.SIGNED);
         intygRepository.save(intyg);
-        Signatur signatur = new Signatur(new LocalDateTime(), userId, intygId, payload, statusTicket.getHash(), "Signatur");
+
+        WebCertUser user = webCertUserService.getWebCertUser();
+        Signatur signatur = new Signatur(new LocalDateTime(), user.getHsaId(), intygId, payload, statusTicket.getHash(), "Signatur");
         signaturRepository.save(signatur);
 
         ticketTracker.updateStatus(statusTicket.getId(), SignatureTicket.Status.SIGNERAD);
 
-        // TODO hantera fallet att skicka misslyckas.
         intygService.storeIntyg(intyg);
 
         return statusTicket;
@@ -160,7 +152,6 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
     private Intyg getIntygForSignering(String intygId) {
         Intyg intyg = intygRepository.findOne(intygId);
-
         if (intyg == null) {
             LOG.warn("Intyg '{}' was not found", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
@@ -168,6 +159,14 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
             LOG.warn("Intyg '{}' med status '{}' kunde inte signeras", intygId, intyg.getStatus());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "The intyg was not in state " + IntygsStatus.DRAFT_COMPLETE);
         }
+        return intyg;
+    }
+
+    private Intyg updateIntygForSignering(Intyg intyg) {
+        // Update senastSparat av, även i modellen
+        WebCertUser user = webCertUserService.getWebCertUser();
+        intyg.getSenastSparadAv().setHsaId(user.getHsaId());
+        intyg.getSenastSparadAv().setNamn(user.getNamn());
         return intyg;
     }
 
@@ -180,7 +179,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
             return statusTicket;
         } catch (IllegalStateException e) {
             LOG.error("Fel vid hashgenerering intyg {}. {}", intygId, e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Internal error signing intyg");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Internal error signing intyg", e);
         }
     }
 

@@ -5,23 +5,43 @@
         {
             "id" : "IFV1239877878-1045",
             "namn" : "WebCert-Enhet2",
-            "mail" : "enhet1@webcert.invalid.se",
+            "epost" : "enhet1@webcert.invalid.se",
+            "telefonnummer" : "0101234567890",
+            "postadress" : "Storgatan 1",
+            "postnummer" : "12345",
+            "postort" : "Småmåla",
+            "arbetsplatskod" : "1234567890",
             "mottagningar" : [
                 {
                     "id" : "IFV1239877878-1046",
                     "namn" : "WebCert-Underenhet1",
-                    "mail" : "underenhet1@webcert.invalid.se"
+                    "epost" : "underenhet1@webcert.invalid.se",
+                    "telefonnummer" : "0101234567890",
+                    "postadress" : "Storgatan 1",
+                    "postnummer" : "12345",
+                    "postort" : "Småmåla",
+                    "arbetsplatskod" : "1234567890"
                 },
                 {
                     "id" : "IFV1239877878-104C",
                     "namn" : "WebCert-Underenhet2",
-                    "mail" : "underenhet2@webcert.invalid.se"
+                    "epost" : "underenhet2@webcert.invalid.se",
+                    "telefonnummer" : "0101234567890",
+                    "postadress" : "Storgatan 1",
+                    "postnummer" : "12345",
+                    "postort" : "Småmåla",
+                    "arbetsplatskod" : "1234567890"
                 }
             ]
         },
         {
             "id" : "IFV1239877878-104D",
-            "namn" : "WebCert-Enhet3"
+            "epost" : "WebCert-Enhet3",
+            "telefonnummer" : "0101234567890",
+            "postadress" : "Storgatan 1",
+            "postnummer" : "12345",
+            "postort" : "Småmåla",
+            "arbetsplatskod" : "1234567890"
         }
     ]
 }

@@ -207,7 +207,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signera/server/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse serverSigneraUtkast(@PathParam("intygsId") String intygsId) {
-        SignatureTicket biljett = signatureService.serverSignature(intygsId);
+        SignatureTicket biljett = draftService.serverSignature(intygsId);
         return new BiljettResponse(biljett);
     }
 
@@ -240,7 +240,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signeringshash/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse signeraUtkast(@PathParam("intygsId") String intygsId) {
-        SignatureTicket biljett = signatureService.createDraftHash(intygsId);
+        SignatureTicket biljett = draftService.createDraftHash(intygsId);
         return new BiljettResponse(biljett);
     }
 

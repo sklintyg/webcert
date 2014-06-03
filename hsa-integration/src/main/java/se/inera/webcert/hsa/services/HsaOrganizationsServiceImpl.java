@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import se.inera.ifv.hsawsresponder.v3.AddressType;
 import se.inera.ifv.hsawsresponder.v3.AttributeListType;
 import se.inera.ifv.hsawsresponder.v3.AttributeValuePairType;
 import se.inera.ifv.hsawsresponder.v3.CareUnitType;
@@ -23,6 +24,7 @@ import se.inera.ifv.hsawsresponder.v3.LookupHsaObjectType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.ifv.hsawsresponder.v3.SearchOperatorExact;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
+import se.inera.webcert.hsa.model.AbstractVardenhet;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -107,6 +109,10 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
             // only add enhet if it is currently active
             if (isActive(vardenhet.getStart(), vardenhet.getEnd())) {
+                GetHsaUnitResponseType response = client.callGetHsaunit(careUnit.getHsaIdentity());
+                // TODO WEBCERT-726 Arbetsplatskod skall hämtas från HSA
+                vardenhet.setArbetsplatskod("12345678");
+                updateWithContactInformation(vardenhet, response);
                 attachMottagningar(vardenhet);
                 vardenheter.add(vardenhet);
             } else {
@@ -160,6 +166,8 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         for (String mottagningsId : mottagningsIds) {
             Mottagning mottagning = fetchMottagning(mottagningsId);
             if (isActive(mottagning.getStart(), mottagning.getEnd())) {
+                // TODO WEBCERT-726 Arbetsplatskod skall hämtas från HSA
+                mottagning.setArbetsplatskod("mottagning123456");
                 vardenhet.getMottagningar().add(mottagning);
             } else {
                 LOG.debug("Mottagning '{}' is not active right now", mottagningsId);
@@ -171,8 +179,34 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
         GetHsaUnitResponseType response = client.callGetHsaunit(mottagningsHsaId);
         LOG.debug("Fetching details for mottagning '{}'", mottagningsHsaId);
-        return new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(),
-                response.getEndDate());
+        Mottagning mottagning = new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(), response.getEndDate());
+        updateWithContactInformation(mottagning, response);
+        return mottagning;
+    }
+
+    private void updateWithContactInformation(AbstractVardenhet vardenhet, GetHsaUnitResponseType response) {
+        vardenhet.setEpost(response.getEmail());
+        if (response.getTelephoneNumbers() != null && !response.getTelephoneNumbers().getTelephoneNumber().isEmpty()) {
+            vardenhet.setTelefonnummer(response.getTelephoneNumbers().getTelephoneNumber().get(0));
+        }
+        AddressType address = response.getPostalAddress();
+        if (address == null) {
+            return;
+        }
+        StringBuilder postaAddress = new StringBuilder();
+        List<String> lines = address.getAddressLine();
+        for (int i = 0; i < lines.size() - 1; i++) {
+            postaAddress.append(lines.get(i).trim());
+        }
+        vardenhet.setPostadress(postaAddress.toString());
+        String lastLine = lines.get(lines.size() - 1);
+        if (lastLine.length() > 7 && Character.isDigit(lastLine.charAt(0))) {
+            vardenhet.setPostnummer(lastLine.substring(0, 6).trim());
+            vardenhet.setPostort(lastLine.substring(6).trim());
+        } else {
+            vardenhet.setPostnummer("XXXXX");
+            vardenhet.setPostort(lastLine.trim());
+        }
     }
 
     private List<String> fetchMottagningsHsaId(Vardenhet vardenhet) {
@@ -212,8 +246,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
     private Vardgivare convert(List<MiuInformationType> miuInformationTypes) {
 
-        Vardgivare vardgivare = new Vardgivare(miuInformationTypes.get(0).getCareGiver(), miuInformationTypes.get(0)
-                .getCareGiverName());
+        Vardgivare vardgivare = new Vardgivare(miuInformationTypes.get(0).getCareGiver(), miuInformationTypes.get(0).getCareGiverName());
 
         for (MiuInformationType miuInformationType : miuInformationTypes) {
             vardgivare.getVardenheter().addAll(fetchAllEnheter(vardgivare, miuInformationType));

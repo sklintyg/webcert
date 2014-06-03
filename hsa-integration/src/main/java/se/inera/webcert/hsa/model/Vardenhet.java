@@ -11,8 +11,6 @@ import org.joda.time.LocalDateTime;
  */
 public class Vardenhet extends AbstractVardenhet implements Serializable {
 
-    private String mail;
-
     private LocalDateTime start;
     private LocalDateTime end;
 
@@ -40,14 +38,6 @@ public class Vardenhet extends AbstractVardenhet implements Serializable {
 
     public void setMottagningar(List<Mottagning> mottagningar) {
         this.mottagningar = mottagningar;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
     }
 
     public List<String> getHsaIds() {

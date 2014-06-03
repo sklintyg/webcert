@@ -1,5 +1,6 @@
 package se.inera.webcert.service.dto;
 
+import se.inera.webcert.hsa.model.WebCertUser;
 
 public class HoSPerson {
 
@@ -47,4 +48,12 @@ public class HoSPerson {
         this.befattning = befattning;
     }
 
+    public static HoSPerson create(WebCertUser user) {
+        HoSPerson person = new HoSPerson();
+        person.setHsaId(user.getHsaId());
+        person.setNamn(user.getNamn());
+        person.setForskrivarkod(user.getForskrivarkod());
+        // TODO Sätt befattning
+        return person;
+    }
 }

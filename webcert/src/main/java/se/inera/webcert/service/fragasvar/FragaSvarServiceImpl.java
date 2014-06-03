@@ -27,6 +27,8 @@ import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.modules.IntygModule;
+import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -93,6 +95,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Autowired
     private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     @Value("${sendquestiontofk.logicaladdress}")
     private String sendQuestionToFkLogicalAddress;
 
@@ -104,7 +109,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Override
     public void processIncomingQuestion(FragaSvar fragaSvar) {
 
-        // TODO - validation: does certificate exist
+        validateAcceptsQuestions(fragaSvar);
 
         // persist the question
         fragaSvarRepository.save(fragaSvar);
@@ -343,6 +348,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
         return saved;
 
+    }
+
+    private void validateAcceptsQuestions(FragaSvar fragaSvar) {
+        String intygsTyp = fragaSvar.getIntygsReferens().getIntygsTyp();
+        IntygModule module = moduleRegistry.getIntygModule(intygsTyp);
+        if (!module.isFragaSvarAvailable()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Intygstyp '" + intygsTyp + "' stödjer ej fragasvar.");
+        }
     }
 
     private boolean isRevoked(List<IntygStatus> statuses) {

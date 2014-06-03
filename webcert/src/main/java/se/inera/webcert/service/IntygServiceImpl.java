@@ -267,7 +267,7 @@ public class IntygServiceImpl implements IntygService {
             return writer.toString();
         } catch (JAXBException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Failed to marshall intyg coming from intygstjanst");
+                    "Failed to marshall intyg coming from intygstjanst", e);
         }
     }
 

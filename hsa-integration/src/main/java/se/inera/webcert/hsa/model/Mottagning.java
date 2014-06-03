@@ -11,8 +11,6 @@ import org.joda.time.LocalDateTime;
  */
 public class Mottagning extends AbstractVardenhet implements Serializable {
 
-    private String mail;
-
     private LocalDateTime start;
     private LocalDateTime end;
 
@@ -44,14 +42,6 @@ public class Mottagning extends AbstractVardenhet implements Serializable {
 
     public void setEnd(LocalDateTime end) {
         this.end = end;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
     }
 
     @Override

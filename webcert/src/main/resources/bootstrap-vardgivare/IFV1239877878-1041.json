@@ -5,7 +5,12 @@
         {
             "id" : "IFV1239877878-1042",
             "namn" : "WebCert-Enhet1",
-            "mail" : "enhet1@webcert.invalid.se"
+            "epost" : "enhet1@webcert.invalid.se",
+            "telefonnummer" : "0101234567890",
+            "postadress" : "Storgatan 1",
+            "postnummer" : "12345",
+            "postort" : "Småmåla",
+            "arbetsplatskod" : "1234567890"
         }
     ]
 }
