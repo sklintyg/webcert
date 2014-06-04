@@ -67,13 +67,18 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
            return '';
        }
 
+       function isIE() {
+         return ((navigator.appName == 'Microsoft Internet Explorer') ||
+             ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null)));
+       }
+
        classInstance.startup = function() {
-           if (navigator.appName.indexOf("Explorer") == -1) {
-               explorer = false;
-               plugin = navigator.mimeTypes["application/x-iid"];
+         if (isIE()) {
+             explorer = true;
+             plugin = ControlExists("IID.iIDCtl");
            } else {
-               explorer = true;
-               plugin = ControlExists("IID.iIDCtl");
+             explorer = false;
+             plugin = navigator.mimeTypes["application/x-iid"];
            }
            if (plugin) {
                if (explorer) {
@@ -92,7 +97,5 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
 
 
 <% } else { %>
-
-
 
 <% } %>
