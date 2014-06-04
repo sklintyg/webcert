@@ -27,7 +27,7 @@ define([], function() {
             //certificate types
             'certificatetypes.fk7263.typename': 'Läkarintyg FK 7263',
             'certificatetypes.rli.typename': 'Intyg vid avbeställd resa',
-            'certificatetypes.ts-bas.typename': 'Transportstyrelsens läkarintyg, bas',
+            'certificatetypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
             'certificatetypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
 
             //certificate help texts
