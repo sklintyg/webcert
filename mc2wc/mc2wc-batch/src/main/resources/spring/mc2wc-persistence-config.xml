@@ -13,7 +13,6 @@
   
   <bean id="mc2wcEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" >
     <property name="dataSource" ref="mc2wcDataSource" />
-    <property name="packagesToScan" value="se.inera.certificate.mc2wc.jpa"/>
     <property name="persistenceUnitName" value="jpa.migration.mc2wc" />
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
@@ -35,17 +34,11 @@
   
   <bean id="mc2wcDAO" class="se.inera.certificate.mc2wc.jpa.Mc2wcDAO" />
 
-  <beans profile="!dev">
-    <bean id="mc2wcDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+  <bean id="mc2wcDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
       <property name="driverClassName" value="org.h2.Driver" />
-      <property name="url" value="jdbc:h2:file:${mc2wc.database.export.file}" />
+      <property name="url" value="${mc2wc.database.url}" />
       <property name="username" value="sa" />
       <property name="password" value="" />
-    </bean>
-  </beans>
+  </bean>
   
-  <beans profile="dev">
-    <jdbc:embedded-database id="mc2wcDataSource" type="H2"/>
-  </beans>
-
 </beans>

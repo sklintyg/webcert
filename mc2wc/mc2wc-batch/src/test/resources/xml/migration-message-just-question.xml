@@ -1,0 +1,28 @@
+<migrationMessage xmlns="urn:inera:certificates:mc2wc:1">
+  <certificateId>certificate020</certificateId>
+  <questions>
+    <certificateId>certificate020</certificateId>
+    <certificateType>FK7263</certificateType>
+    <patient>
+      <personId>19460623-3411</personId>
+      <fullName>Choo, Jimmy Annas</fullName>
+    </patient>
+    <carePerson>
+      <personId>SE5565189692-1002Q</personId>
+      <fullName>Johanna Persson</fullName>
+      <prescriptionCode>9000001</prescriptionCode>
+      <careUnit>
+        <id>SE5565189692-101J6</id>
+        <name>Ortopedmottagningen</name>
+        <careGiver>
+          <id>SE5565189692-0001</id>
+          <name>Capio AB</name>
+        </careGiver>
+      </careUnit>
+    </carePerson>
+    <subject>OTHER</subject>
+    <originator>CARE</originator>
+    <status>SENT</status>
+    <questionText>Det är frågan</questionText>
+  </questions>
+</migrationMessage>

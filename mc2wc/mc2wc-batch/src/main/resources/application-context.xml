@@ -10,17 +10,31 @@
   <import resource="classpath:/spring/batch-infrastructure-context.xml" />
   <import resource="classpath:/spring/beans-context.xml" />
   <import resource="classpath:/spring/mc2wc-persistence-config.xml" />
-  <import resource="classpath:/spring/persistence-context.xml" />
-  <import resource="classpath:/spring/migration-job-context.xml" />
+  <import resource="classpath:/spring/medcert-persistence-context.xml" />
+  <import resource="classpath:/spring/webcert-persistence-context.xml" />
+  <import resource="classpath:/spring/export-job-context.xml" />
+  <import resource="classpath:/spring/import-job-context.xml" />
 
   <context:annotation-config />
 
   <bean id="migrationJobExecutor" class="se.inera.certificate.mc2wc.batch.MigrationJobExecutor" />
 
-  <beans profile="!dev">
+  <beans profile="prod">
     <context:property-placeholder location="file:${configFile}"
       ignore-resource-not-found="false" ignore-unresolvable="false"
       order="0" />
   </beans>
-
+  
+  <beans profile="export-unittest">
+    <context:property-placeholder location="classpath:/export-unit-testing.properties"
+      ignore-resource-not-found="false" ignore-unresolvable="false"
+      order="0" />
+  </beans>
+  
+  <beans profile="import-unittest">
+    <context:property-placeholder location="classpath:/import-unit-testing.properties"
+      ignore-resource-not-found="false" ignore-unresolvable="false"
+      order="0" />
+  </beans>
+  
 </beans>

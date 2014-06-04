@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migrationMessage xmlns="urn:inera:certificates:mc2wc:1">
+    <certificateId>certificate007</certificateId>
+    <certificate>
+        <certificateId>certificate007</certificateId>
+        <certificateType>FK7263</certificateType>
+        <careUnitId>SE2321000016-A1P9</careUnitId>
+        <patient>
+            <personId>19600802-1039</personId>
+            <fullName>Micke Testare 3</fullName>
+        </patient>
+        <sent>2011-06-16T09:02:03.000</sent>
+        <created>2011-06-16T08:57:47.000</created>
+        <origin>APPLICATION</origin>
+        <migratedFrom>aa</migratedFrom>
+        <contents>ewogICJjZXJ0aWZpY2F0ZUlkIiA6ICIwMzlhYzc0Zi1iMWEwLTQwOGMtODZhYi1kNGFiZjkxZTBiYWIiLAogICJwYXRpZW50SW5mbyIgOiB7CiAgICAic3NuIiA6ICIxOTYwMDgwMi0xMDM5IiwKICAgICJuYW1lIiA6ICJNaWNrZSBUZXN0YXJlIDMiCiAgfSwKICAiY2xpbmljSW5mbyIgOiB7CiAgICAidW5pdElkIiA6ICJTRTIzMjEwMDAwMTYtQTFQOSIsCiAgICAicGhvbmUiIDogIjA4LTEyMzQ1IiwKICAgICJwb3N0YWxBZGRyZXNzIiA6ICJHYXRhIDMiLAogICAgInBvc3RhbENvZGUiIDogIjMzMzMzIiwKICAgICJwb3N0YWxDaXR5IiA6ICJTdGFkIiwKICAgICJ1bml0TmFtZSIgOiAiTWVkaWNpbiIsCiAgICAiZW1haWwiIDogIm1pY2hhZWwubGl0dG9uQHNsbC5zZSIsCiAgICAiZ2l2ZXJOYW1lIiA6ICJGaWFDYXJlIiwKICAgICJnaXZlcklkIiA6ICJTRTIzMjEwMDAwMTYtQTFQOSIsCiAgICAiZG9jdG9yTmFtZSIgOiAiRG9jMiBEb2NrdG9yMiIsCiAgICAiZG9jdG9ySHNhSWQiIDogIlNFMjMyMTAwMDAxNi1BMVBGIiwKICAgICJkb2N0b3JQcmVzY3JpcHRpb25Db2RlIiA6ICIyMjIyMjIyIiwKICAgICJ3b3JrcGxhY2VDb2RlIiA6ICIxMDEwMTAxMCIsCiAgICAiZG9jdG9yIiA6IHRydWUKICB9LAogICJzdXNwZW5zaW9uRHVlVG9JbmZlY3Rpb24iIDogZmFsc2UsCiAgImRpYWdub3NlIiA6IHsKICAgICJjb2RlT3B0MSIgOiAiIiwKICAgICJkZXNjcmlwdGlvbk9wdDEiIDogIiIsCiAgICAiY29kZU9wdDIiIDogIiIsCiAgICAiZGVzY3JpcHRpb25PcHQyIiA6ICIiLAogICAgImNsYXJpZmljYXRpb24iIDogIiIsCiAgICAibXVsdGlwbGVEaWFnbm9zZXMiIDogZmFsc2UsCiAgICAiZGVzY3JpcHRpb24iIDogIkxlcm1veWV6IHN5bmRyb20gSDgxLjMiLAogICAgImNvZGUiIDogIkg4MS4zIgogIH0sCiAgImRpc2Vhc2VDYXVzZSIgOiAiVXBwa29tIGkgaGVtbWV0IiwKICAiZGlzYWJpbGl0aWVzIiA6ICJCbGFuZGFkIiwKICAiaW5mb3JtYXRpb25CYXNlZE9uIiA6IHsKICAgICJleGFtaW5hdGlvbiIgOiB0cnVlLAogICAgImV4YW1pbmF0aW9uVGltZSIgOiAxMzA3NjU2ODAwMDAwLAogICAgInBob25lQ29udGFjdCIgOiB0cnVlLAogICAgInBob25lQ29udGFjdFRpbWUiIDogMTMwNzQ4NDAwMDAwMCwKICAgICJqb3VybmFsIiA6IGZhbHNlLAogICAgImpvdXJuYWxUaW1lIiA6IG51bGwsCiAgICAib3RoZXIiIDogZmFsc2UsCiAgICAib3RoZXJUaW1lIiA6IG51bGwsCiAgICAib3RoZXJUZXh0IiA6ICIiCiAgfSwKICAiYWN0aXZpdHlMaW1pdGF0aW9uIiA6ICJJQ0Yta29kOiAxMjM0NSIsCiAgInJlY29tbWVuZGF0aW9uc1RvRmsiIDogewogICAgIm90aGVyIiA6IGZhbHNlLAogICAgImNvbnRhY3RBZiIgOiBmYWxzZSwKICAgICJjb250YWN0Q29tcGFueUNhcmUiIDogZmFsc2UsCiAgICAib3RoZXJUZXh0IiA6ICIiLAogICAgInJlYWJJblF1ZXN0aW9uIiA6ICJOTyIsCiAgICAidHJhdmVsIiA6IGZhbHNlLAogICAgInJlaGFiTm93IiA6IG51bGwsCiAgICAicmVoYWJTdGFydCIgOiBudWxsCiAgfSwKICAibWVhc3VyZXMiIDogewogICAgImN1cnJlbnQiIDogIiIsCiAgICAib3RoZXIiIDogIiIKICB9LAogICJiYXNlZE9uV29yayIgOiAiQ1VSUkVOVCIsCiAgImN1cnJlbnRXb3JrIiA6ICJBc3Ryb25hdXQiLAogICJjYXBhY2l0eUZvcldvcmsiIDogewogICAgIndvcmsyNSIgOiBmYWxzZSwKICAgICJ3b3JrMjVmcm9tIiA6IG51bGwsCiAgICAid29yazI1dG8iIDogbnVsbCwKICAgICJ3b3JrNTAiIDogdHJ1ZSwKICAgICJ3b3JrNTBmcm9tIiA6IDEzMDk0NzEyMDAwMDAsCiAgICAid29yazUwdG8iIDogMTMxMTgwNDAwMDAwMCwKICAgICJ3b3JrNzUiIDogdHJ1ZSwKICAgICJ3b3JrNzVmcm9tIiA6IDEzMDgyNjE2MDAwMDAsCiAgICAid29yazc1dG8iIDogMTMwOTM4NDgwMDAwMCwKICAgICJ3b3JrRnVsbCIgOiBmYWxzZSwKICAgICJ3b3JrRnVsbEZyb20iIDogbnVsbCwKICAgICJ3b3JrRnVsbFRvIiA6IG51bGwsCiAgICAiZm9yZWNhc3QiIDogIllFUyIsCiAgICAicmVjMjVMb25nZXJXb3JraW5nSG91cnMiIDogIiIsCiAgICAicmVjNTBMb25nZXJXb3JraW5nSG91cnMiIDogIiIsCiAgICAicmVjNzVMb25nZXJXb3JraW5nSG91cnMiIDogIiIsCiAgICAiZm9yZWNhc3RUZXh0IiA6ICIiLAogICAgImFjdHVhbFdvcmtpbmdIb3Vyc1BlcldlZWsiIDogIiIsCiAgICAidGV4dCIgOiAiIgogIH0sCiAgImNvbnRhY3RXaXRoRmtSZXF1ZXN0ZWQiIDogZmFsc2UsCiAgIm90aGVySW5mb3JtYXRpb24iIDogIkluZ2EgZsO2cnR5ZGxpZ2FuZGVuIiwKICAicGF0aWVudEFncmVlc1RvU2VuZGluZyIgOiB0cnVlCn0=</contents>
+        <status>SIGNED_AND_SENT</status>
+    </certificate>
+    <questions>
+        <certificateId>certificate007</certificateId>
+        <certificateType>FK7263</certificateType>
+        <externalReference>110135131980</externalReference>
+        <patient>
+            <personId>19600802-1039</personId>
+            <fullName>Test Testorsson</fullName>
+        </patient>
+        <carePerson>
+            <personId>SE2321000016-A1PF</personId>
+            <fullName>Doc2 Docktor2</fullName>
+            <careUnit>
+                <id>SE2321000016-A1P9</id>
+                <name>Medicin</name>
+                <careGiver>
+                    <id>SE2321000016-A1P9</id>
+                    <name>FiaCare</name>
+                </careGiver>
+            </careUnit>
+        </carePerson>
+        <subject>OTHER</subject>
+        <caption>Fritext #3</caption>
+        <sent>2011-06-16T10:53:16.000</sent>
+        <signed>2011-06-16T10:53:16.000</signed>
+        <originator>FK</originator>
+        <status>SENT</status>
+        <questionText>Du har utfärdat ett läkarintyg för Micke Testare 3, 19600802-1039 den 16 juni 2011.
+SSSSSSSSSSSSSSSSSSSS
+SSSSSSSSSSSSSS
+SSSSSSSSSSSS
+
+Försäkringskassan behöver få ditt svar senast den 30 juni 2011.
+
+Med vänlig hälsning
+Försäkringskassan
+Simo Dzeletovic</questionText>
+        <answer>
+            <text>Massa S.
+
+Nullam urna turpis, mollis ac lobortis venenatis, elementum in enim. Maecenas venenatis, dui quis luctus malesuada, orci nisl iaculis nibh, ut ullamcorper massa risus eget purus. Duis porta tincidunt justo, sit amet venenatis elit aliquam sit amet. Mauris ornare augue sit amet ante bibendum convallis. In hac habitasse platea dictumst. Nunc hendrerit neque tellus. Aenean vitae odio justo, non feugiat neque. Vivamus id lacus ac diam malesuada ultricies. Fusce a convallis sapien. Aenean a ipsum nec enim pretium vehicula. Duis iaculis sapien a metus malesuada vitae molestie diam hendrerit. Cras a nisl vitae tortor condimentum dapibus. Proin non augue nibh, nec consectetur libero. Cras et nulla vulputate tellus bibendum posuere. Aliquam ac velit ac quam sodales fringilla. Vestibulum adipiscing nibh quis sapien dignissim vestibulum. Sed eget erat ante, eu bibendum sem. Pellentesque pulvinar varius orci id tempor. Aenean tortor quam, mollis at dapibus eu, viverra ut tellus. 
+
+</text>
+            <signed>2011-06-16T10:54:08.000</signed>
+            <sent>2011-06-16T10:54:08.000</sent>
+            <status>SENT</status>
+        </answer>
+    </questions>
+    <questions>
+        <certificateId>certificate007</certificateId>
+        <certificateType>FK7263</certificateType>
+        <externalReference>110135131980</externalReference>
+        <patient>
+            <personId>19600802-1039</personId>
+            <fullName>Test Testorsson</fullName>
+        </patient>
+        <carePerson>
+            <personId>SE2321000016-A1PF</personId>
+            <fullName>Doc2 Docktor2</fullName>
+            <careUnit>
+                <id>SE2321000016-A1P9</id>
+                <name>Medicin</name>
+                <careGiver>
+                    <id>SE2321000016-A1P9</id>
+                    <name>FiaCare</name>
+                </careGiver>
+            </careUnit>
+        </carePerson>
+        <subject>OTHER</subject>
+        <caption>Fritext #2</caption>
+        <sent>2011-06-16T10:33:03.000</sent>
+        <signed>2011-06-16T10:33:03.000</signed>
+        <originator>FK</originator>
+        <status>SENT</status>
+        <questionText>Du har utfärdat ett läkarintyg för Micke Testare 3, 19600802-1039 den 16 juni 2011.
+Nytt försök med fritext fråga?
+AAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAa
+AAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+Slut på fråga?
+Försäkringskassan behöver få ditt svar senast den 30 juni 2011.
+
+Med vänlig hälsning
+Försäkringskassan
+Simo Dzeletovic</questionText>
+        <answer>
+            <text>Långt svar:
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur commodo dignissim facilisis. Nulla ut diam ac orci vestibulum imperdiet. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean elementum pellentesque ipsum sed pharetra. Vivamus consequat feugiat tortor non accumsan. Nullam vestibulum porta purus sed rhoncus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ligula nunc, fermentum quis aliquet id, mattis at risus. Vestibulum turpis purus, ullamcorper a porttitor sit amet, posuere vitae ante. Pellentesque metus risus, hendrerit vitae porta in, consectetur a diam. Mauris ac lacus elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Mauris dignissim convallis tortor, sed iaculis augue interdum in. Nunc dui odio, venenatis sit amet tempus eget, sagittis ut ante. Donec tempor enim molestie purus mollis vitae imperdiet nisi malesuada. Donec suscipit lorem nec mauris rhoncus cursus. 
+
+Nullam urna turpis, mollis ac lobortis venenatis, elementum in enim. Maecenas venenatis, dui quis luctus malesuada, orci nisl iaculis nibh, ut ullamcorper massa risus eget purus. Duis porta tincidunt justo, sit amet venenatis elit aliquam sit amet. Mauris ornare augue sit amet ante bibendum convallis. In hac habitasse platea dictumst. Nunc hendrerit neque tellus. Aenean vitae odio justo, non feugiat neque. Vivamus id lacus ac diam malesuada ultricies. Fusce a convallis sapien. Aenean a ipsum nec enim pretium vehicula. Duis iaculis sapien a metus malesuada vitae molestie diam hendrerit. Cras a nisl vitae tortor condimentum dapibus. Proin non augue nibh, nec consectetur libero. Cras et nulla vulputate tellus bibendum posuere. Aliquam ac velit ac quam sodales fringilla. Vestibulum adipiscing nibh quis sapien dignissim vestibulum. Sed eget erat ante, eu bibendum sem. Pellentesque pulvinar varius orci id tempor. Aenean tortor quam, mollis at dapibus eu, viverra ut tellus. 
+
+Pellentesque pharetra venenatis auctor. Donec nec ante dui, at lobortis velit. Nunc rhoncus vehicula feugiat. Donec felis justo, eleifend sed luctus in, aliquam viverra erat. Donec malesuada porttitor mi, eget tempus metus euismod ullamcorper. Phasellus vehicula ultrices mauris sit amet luctus. Aliquam condimentum est at mi varius non tincidunt lorem semper. In et est sit amet nisl malesuada dignissim id vitae diam. Nam non mi tellus. Vivamus neque nunc, feugiat non tempor at, placerat sit amet nisi. Fusce eu nulla turpis, ac cursus tellus. Maecenas ullamcorper elit et diam tristique sit amet varius ipsum congue. Donec turpis velit, egestas sed convallis et, posuere nec lorem. In sed tortor purus, ut posuere mi. Aliquam at eros ipsum. Pellentesque lacinia, nulla a pulvinar auctor, tellus ligula dapibus nunc, vitae tempor nisl nibh nec arcu. Quisque tempus lacinia tortor eu faucibus. Phasellus eget tristique nisl. Aenean nisi elit, venenatis a aliquam quis, congue nec diam. 
+
+Sed posuere porta tellus in pretium. Maecenas auctor rhoncus urna. Duis vel est tortor. Vivamus eu lacus non sem venenatis euismod ut nec mi. Aenean neque justo, posuere nec volutpat sit amet, suscipit vitae felis. Aliquam tincidunt euismod ornare. Nam consequat lacinia ornare. Quisque mauris dui, dapibus sed sollicitudin vitae, tincidunt nec erat. Nulla facilisi. Etiam pretium orci augue, quis dictum mauris. Maecenas sit amet felis ut erat consequat ultrices. Sed ut felis nisl. Praesent lectus tortor, laoreet sit amet pulvinar at, euismod vel ligula. Morbi vitae scelerisque nulla. Aliquam adipiscing, tellus et bibendum vestibulum, elit sem venenatis dolor, in cursus odio risus a lorem. Praesent ornare lacus vel magna euismod vehicula. Nunc in augue mattis nisi interdum mollis. Donec interdum consectetur urna id suscipit. 
+
+Sed pellentesque ipsum ut nibh iaculis eu tempor turpis volutpat. Etiam lectus sem, mollis eget eleifend ut, condimentum nec erat. Aliquam vitae velit sit amet dui ultricies varius et lobortis enim. Nulla quis urna sit amet dolor gravida egestas non et tortor. Donec viverra neque in libero auctor in vehicula orci ornare. Cras vel dictum tellus. Etiam dignissim hendrerit enim, non pretium massa rhoncus eu. Morbi ornare dictum egestas. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas vestibulum rutrum pellentesque. Aenean pretium mi vel lacus sodales aliquam. Fusce vitae nisi quis turpis suscipit semper. Etiam at facilisis nibh. Aenean placerat nisl libero. 
+
+</text>
+            <signed>2011-06-16T10:46:04.000</signed>
+            <sent>2011-06-16T10:46:04.000</sent>
+            <status>SENT</status>
+        </answer>
+    </questions>
+    <questions>
+        <certificateId>certificate007</certificateId>
+        <certificateType>FK7263</certificateType>
+        <externalReference>110135131980</externalReference>
+        <patient>
+            <personId>19600802-1039</personId>
+            <fullName>Test Testorsson</fullName>
+        </patient>
+        <carePerson>
+            <personId>SE2321000016-A1PF</personId>
+            <fullName>Doc2 Docktor2</fullName>
+            <careUnit>
+                <id>SE2321000016-A1P9</id>
+                <name>Medicin</name>
+                <careGiver>
+                    <id>SE2321000016-A1P9</id>
+                    <name>FiaCare</name>
+                </careGiver>
+            </careUnit>
+        </carePerson>
+        <subject>OTHER</subject>
+        <caption>Astronaut ?</caption>
+        <sent>2011-06-16T09:04:57.000</sent>
+        <signed>2011-06-16T09:04:57.000</signed>
+        <originator>FK</originator>
+        <status>SENT</status>
+        <questionText>Du har utfärdat ett läkarintyg för Micke Testare 3, 19600802-1039 den 16 juni 2011.
+Kan vi.................?
+
+Försäkringskassan behöver få ditt svar senast den 30 juni 2011.
+
+Med vänlig hälsning
+Försäkringskassan
+Simo Dzeletovic</questionText>
+        <answer>
+            <text>Jajamensan, ................. vore trevligt! Ser dock inte rubriken "Astronaut"</text>
+            <signed>2011-06-16T10:25:48.000</signed>
+            <sent>2011-06-16T10:25:48.000</sent>
+            <status>SENT</status>
+        </answer>
+    </questions>
+    <questions>
+        <certificateId>certificate007</certificateId>
+        <certificateType>FK7263</certificateType>
+        <patient>
+            <personId>19600802-1039</personId>
+            <fullName>Micke Testare 3</fullName>
+        </patient>
+        <carePerson>
+            <personId>SE2321000016-A1PF</personId>
+            <fullName>Doc2 Docktor2</fullName>
+            <prescriptionCode>2222222</prescriptionCode>
+            <careUnit>
+                <id>SE2321000016-A1P9</id>
+                <name>Medicin</name>
+                <phone>08-12345</phone>
+                <email>michael.litton@sll.se</email>
+                <postalAddress>Gata 3</postalAddress>
+                <postalNumber>33333</postalNumber>
+                <postalCity>Stad</postalCity>
+                <careGiver>
+                    <id>SE2321000016-A1P9</id>
+                    <name>FiaCare</name>
+                </careGiver>
+            </careUnit>
+        </carePerson>
+        <subject>WORK_PROLONGING</subject>
+        <originator>CARE</originator>
+        <status>EDITED</status>
+        <questionText>test - svara ej</questionText>
+    </questions>
+</migrationMessage>

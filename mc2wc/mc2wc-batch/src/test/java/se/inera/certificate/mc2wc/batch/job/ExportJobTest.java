@@ -16,6 +16,7 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.test.context.ActiveProfiles;
 
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
 import se.inera.certificate.mc2wc.dbunit.CustomFlatXmlDataSetLoader;
@@ -26,9 +27,10 @@ import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
 @DbUnitConfiguration(databaseConnection = "medcertDataSource", dataSetLoader = CustomFlatXmlDataSetLoader.class)
 @DatabaseSetup({"/data/certificate_dataset_25.xml"})
-public class MigrationJobTest extends AbstractDbUnitSpringTest {
+@ActiveProfiles({"export","export-unittest"})
+public class ExportJobTest extends AbstractDbUnitSpringTest {
 
-    private Logger logger = LoggerFactory.getLogger(MigrationJobTest.class);
+    private Logger logger = LoggerFactory.getLogger(ExportJobTest.class);
 
     @Autowired
     private JobLauncher jobLauncher;
