@@ -4,11 +4,11 @@
   <groupId>se.inera.webcert</groupId>
   <artifactId>webcert-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.5-RC7</version>
+  <version>0.5-RC8-SNAPSHOT</version>
   <name>Inera Webcert</name>
   <scm>
     <connection>scm:git:https://code.google.com/p/inera-webcert/</connection>
-    <tag>webcert-0.5-RC7</tag>
+    <tag>HEAD</tag>
   </scm>
   <distributionManagement>
     <repository>
@@ -353,27 +353,27 @@
       <dependency>
         <groupId>se.inera.certificate</groupId>
         <artifactId>certificate-specifications</artifactId>
-        <version>1.2-RC3</version>
+        <version>1.2-RC4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>se.inera.certificate</groupId>
         <artifactId>module-api</artifactId>
-        <version>1.2-RC3</version>
+        <version>1.2-RC4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>se.inera.certificate</groupId>
         <artifactId>schemas</artifactId>
-        <version>1.2-RC3</version>
+        <version>1.2-RC4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>se.inera.certificate</groupId>
         <artifactId>integration-util</artifactId>
-        <version>1.2-RC3</version>
+        <version>1.2-RC4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>se.inera.certificate.proxy</groupId>
         <artifactId>reverse-proxy</artifactId>
-        <version>1.2-RC3</version>
+        <version>1.2-RC4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
