@@ -27,12 +27,12 @@ define([], function() {
             //certificate types
             'certificatetypes.fk7263.typename': 'Läkarintyg FK 7263',
             'certificatetypes.rli.typename': 'Intyg vid avbeställd resa',
-            'certificatetypes.ts-bas.typename': 'Transportstyrelsens läkarintyg, bas',
+            'certificatetypes.ts-bas.typename': 'Transportstyrelsens läkarintyg',
             'certificatetypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
 
             //certificate help texts
             'certificatetypes.ts-bas.helptext': 'Läkarintyg, bas ska användas vid förlängd giltighet av högre behörighet från 45 år, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation. Läkarintyg, bas kan även användas när Transportstyrelsen i annat fall begärt ett allmänt läkarintyg avseende lämplighet att inneha körkort.<br/><br/> Specialistintyg finns bl. a för alkohol, narkotika, läkemedel, synfunktion, Alkolås m.m. Se: <a href="http://www.transportstyrelsen.se">www.transportstyrelsen.se</a>. Därefter \'Väg\' och \'Trafikmedicin\'',
-            'certificatetypes.ts-diabetes.helptext': 'Läkarintyg, diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.',
+            'certificatetypes.ts-diabetes.helptext': 'Läkarintyg, diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.<br/><br/> Information om Transportstyrelsens föreskrifter finns under länken \'Väg\' och sedan länken \'Trafikmedicin\' på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>',
             'certificatetypes.fk7263.helptext': 'Här ska det finnas lite info om FK7263',
             'certificatetypes.rli.helptext': 'Här ska det ligga en text om intyg vid avbeställd resa',
 
