@@ -3,7 +3,8 @@
        xmlns:batch="http://www.springframework.org/schema/batch" xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="
           http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
-          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+          profile="export">
 
   <batch:job id="exportJob" job-repository="migrationJobRepository" restartable="false">
     <batch:step id="clearPreviousExportStep" next="storeExportManifestStep">

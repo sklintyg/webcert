@@ -9,6 +9,7 @@ import javax.persistence.TypedQuery;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
 import se.inera.certificate.mc2wc.dbunit.CustomFlatXmlDataSetLoader;
@@ -18,6 +19,7 @@ import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
 @DbUnitConfiguration(databaseConnection = "mc2wcDataSource", dataSetLoader = CustomFlatXmlDataSetLoader.class)
 @DatabaseSetup({"/data/mc2wc.xml"})
+@ActiveProfiles({"export","export-unittest"})
 public class Mc2wcJpaTest extends AbstractDbUnitSpringTest {
 
 	@PersistenceContext(unitName="jpa.migration.mc2wc")

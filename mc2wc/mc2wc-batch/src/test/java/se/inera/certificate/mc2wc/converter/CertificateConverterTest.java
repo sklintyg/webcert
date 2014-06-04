@@ -5,6 +5,8 @@ import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
+
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
 import se.inera.certificate.mc2wc.dbunit.CustomFlatXmlDataSetLoader;
 import se.inera.certificate.mc2wc.medcert.jpa.model.Certificate;
@@ -18,6 +20,7 @@ import static org.junit.Assert.*;
 
 @DbUnitConfiguration(databaseConnection = "medcertDataSource", dataSetLoader = CustomFlatXmlDataSetLoader.class)
 @DatabaseSetup({"/data/certificate_dataset_25.xml"})
+@ActiveProfiles({"export","export-unittest"})
 public class CertificateConverterTest extends AbstractDbUnitSpringTest {
 
     private static final String CERT_WITH_ALL = "certificate010";

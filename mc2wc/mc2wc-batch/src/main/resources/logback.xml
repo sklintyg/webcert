@@ -3,6 +3,8 @@
   
   <property name="LOG_FILE_DIR" value="${logFile}" />
   
+  <timestamp key="LOG_FILE_TS" datePattern="yyyyMMdd-HHmmss"/>
+  
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <Pattern>%d{HH:mm:ss.SSS}: %msg%n
@@ -11,7 +13,7 @@
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <File>${LOG_FILE_DIR}/mc2wc-batch.log</File>
+    <File>${LOG_FILE_DIR}/mc2wc-${LOG_FILE_TS}.log</File>
     <encoder>
       <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
       </Pattern>

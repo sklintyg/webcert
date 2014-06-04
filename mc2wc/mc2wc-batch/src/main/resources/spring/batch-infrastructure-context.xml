@@ -9,11 +9,15 @@
 
   <bean id="executor" class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
 
-  <batch:job-repository id="migrationJobRepository"
-                        data-source="batchDataSource" transaction-manager="batchTransactionManager" />
+  <!--  batch:job-repository id="migrationJobRepository"
+                        data-source="batchDataSource" transaction-manager="batchTransactionManager" / -->
 
-  <bean id="jobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
-    <property name="dataSource" ref="batchDataSource" />
+  <bean id="migrationJobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+    <property name="transactionManager" ref="batchTransactionManager" />
+  </bean>
+
+  <bean id="jobExplorer" class="org.springframework.batch.core.explore.support.MapJobExplorerFactoryBean">
+    <property name="repositoryFactory" ref="&amp;migrationJobRepository" />
   </bean>
 
   <bean id="migrationJobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
@@ -21,8 +25,7 @@
     <property name="taskExecutor" ref="executor" />
   </bean>
 
-  <bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry">
-  </bean>
+  <bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry"/>
 
   <bean id="jobRegistryBeanPostProcessor" class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
     <property name="jobRegistry" ref="jobRegistry" />
@@ -33,18 +36,17 @@
     <property name="jobLauncher" ref="migrationJobLauncher" />
     <property name="jobRegistry" ref="jobRegistry" />
     <property name="jobRepository" ref="migrationJobRepository" />
-
   </bean>
 
   <bean id="batchTransactionManager"
-        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    <property name="dataSource" ref="batchDataSource" />
-  </bean>
-
+        class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/>
+  
+  <!--  
   <jdbc:initialize-database data-source="batchDataSource" ignore-failures="ALL">
     <jdbc:script location="classpath:/org/springframework/batch/core/schema-h2.sql" />
   </jdbc:initialize-database>
+  -->
 
-  <jdbc:embedded-database id="batchDataSource" type="H2" />
+  <!--  jdbc:embedded-database id="batchDataSource" type="H2" /-->
 
 </beans>

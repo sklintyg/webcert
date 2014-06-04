@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:batch="http://www.springframework.org/schema/batch" xmlns="http://www.springframework.org/schema/beans"
+  xsi:schemaLocation="
+          http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+          profile="import">
+
+  <batch:job id="importJob" job-repository="migrationJobRepository"
+    restartable="false">
+    <batch:step id="importCertificatesStep">
+      <batch:tasklet transaction-manager="webcertTransactionManager">
+        <batch:chunk reader="mc2wcMigratedCertificateJpaReader" processor="migrationMessageUnmarshallingProcessor" 
+          writer="webcertRepositoryJpaWriter"
+          commit-interval="5" />
+      </batch:tasklet>
+    </batch:step>
+  </batch:job>
+
+  <bean id="mc2wcMigratedCertificateJpaReader" class="org.springframework.batch.item.database.JpaPagingItemReader">
+    <property name="entityManagerFactory" ref="mc2wcEntityManagerFactory" />
+    <property name="queryString"
+      value="select mc from MigratedCertificate mc order by mc.id" />
+    <property name="pageSize" value="25" />
+  </bean>
+  
+  <bean id="webcertRepositoryJpaWriter" class="se.inera.certificate.mc2wc.batch.writer.WebcertRepositoryJpaWriter"/>
+  
+  <bean id="fragaSvarConverter" class="se.inera.certificate.mc2wc.converter.FragaSvarConverterImpl"/>
+  
+  <bean id="medcertIntygConverter" class="se.inera.certificate.mc2wc.converter.MedcertIntygConverterImpl"/>
+  
+  <bean id="migrationMessageUnmarshallingProcessor" class="se.inera.certificate.mc2wc.batch.processors.MigrationMessageUnmarshallingProcessor"/>
+
+</beans>

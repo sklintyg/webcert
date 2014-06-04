@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migrationMessage xmlns="urn:inera:certificates:mc2wc:1">
+  <certificateId>certificate010</certificateId>
+  <certificate>
+    <certificateId>certificate010</certificateId>
+    <certificateType>FK7263</certificateType>
+    <careUnitId>SE2321000016-A1P9</careUnitId>
+    <patient>
+      <personId>19600906-6934</personId>
+      <fullName>Ofullständig Testare</fullName>
+    </patient>
+    <sent>2011-06-17T10:31:36.000</sent>
+    <created>2011-06-17T10:31:02.000</created>
+    <origin>APPLICATION</origin>
+    <migratedFrom>aa</migratedFrom>
+    <contents>ewogICJjZXJ0aWZpY2F0ZUlkIiA6ICIwNGFhOGNhNi02MmMxLTQ2NjItYTM4ZS1hODg4NDQ0OWI0ZGEiLAogICJwYXRpZW50SW5mbyIgOiB7CiAgICAic3NuIiA6ICIxOTYwMDkwNi02OTM0IiwKICAgICJuYW1lIiA6ICJPZnVsbHN0w6RuZGlnIFRlc3RhcmUiCiAgfSwKICAiY2xpbmljSW5mbyIgOiB7CiAgICAidW5pdElkIiA6ICJTRTIzMjEwMDAwMTYtQTFQOSIsCiAgICAicGhvbmUiIDogIjA4LTEyMzQ1IiwKICAgICJwb3N0YWxBZGRyZXNzIiA6ICJHYXRhIDUiLAogICAgInBvc3RhbENvZGUiIDogIjU1NTU1IiwKICAgICJwb3N0YWxDaXR5IiA6ICJTdGFkIiwKICAgICJ1bml0TmFtZSIgOiAiTWVkaWNpbiIsCiAgICAiZW1haWwiIDogIm1pY2hhZWwubGl0dG9uQHNsbC5zZSIsCiAgICAiZ2l2ZXJOYW1lIiA6ICJGaWFDYXJlIiwKICAgICJnaXZlcklkIiA6ICJTRTIzMjEwMDAwMTYtQTFQOSIsCiAgICAiZG9jdG9yTmFtZSIgOiAiRG9jMiBEb2NrdG9yMiIsCiAgICAiZG9jdG9ySHNhSWQiIDogIlNFMjMyMTAwMDAxNi1BMVBGIiwKICAgICJkb2N0b3JQcmVzY3JpcHRpb25Db2RlIiA6ICIyMjIyMjIyIiwKICAgICJ3b3JrcGxhY2VDb2RlIiA6ICIxMDEwMTAxMCIsCiAgICAiZG9jdG9yIiA6IHRydWUKICB9LAogICJzdXNwZW5zaW9uRHVlVG9JbmZlY3Rpb24iIDogZmFsc2UsCiAgImRpYWdub3NlIiA6IHsKICAgICJjb2RlT3B0MSIgOiAiIiwKICAgICJkZXNjcmlwdGlvbk9wdDEiIDogIiIsCiAgICAiY29kZU9wdDIiIDogIiIsCiAgICAiZGVzY3JpcHRpb25PcHQyIiA6ICIiLAogICAgImNsYXJpZmljYXRpb24iIDogIlZpIGhhciBzdsOlcnQgYXR0IGbDtnJ0eWRsaWdhIiwKICAgICJtdWx0aXBsZURpYWdub3NlcyIgOiBmYWxzZSwKICAgICJkZXNjcmlwdGlvbiIgOiAiVsOkbGRpZ3Qgb2tsYXJ0IHZhZCBwYXRpZW50ZW4gZWdlbnRsaWdlbiBsaWRlciBhdiIsCiAgICAiY29kZSIgOiAiWFhYIgogIH0sCiAgImRpc2Vhc2VDYXVzZSIgOiAiIiwKICAiZGlzYWJpbGl0aWVzIiA6ICJBbGxhIG3DtmpsaWdhIG5lZHPDpHR0bmluZ2FyIiwKICAiaW5mb3JtYXRpb25CYXNlZE9uIiA6IHsKICAgICJleGFtaW5hdGlvbiIgOiB0cnVlLAogICAgImV4YW1pbmF0aW9uVGltZSIgOiAxMzA4MTc1MjAwMDAwLAogICAgInBob25lQ29udGFjdCIgOiBmYWxzZSwKICAgICJwaG9uZUNvbnRhY3RUaW1lIiA6IG51bGwsCiAgICAiam91cm5hbCIgOiBmYWxzZSwKICAgICJqb3VybmFsVGltZSIgOiBudWxsLAogICAgIm90aGVyIiA6IGZhbHNlLAogICAgIm90aGVyVGltZSIgOiBudWxsLAogICAgIm90aGVyVGV4dCIgOiAiIgogIH0sCiAgImFjdGl2aXR5TGltaXRhdGlvbiIgOiAiIiwKICAicmVjb21tZW5kYXRpb25zVG9GayIgOiB7CiAgICAib3RoZXIiIDogZmFsc2UsCiAgICAiY29udGFjdEFmIiA6IGZhbHNlLAogICAgImNvbnRhY3RDb21wYW55Q2FyZSIgOiBmYWxzZSwKICAgICJvdGhlclRleHQiIDogIiIsCiAgICAicmVhYkluUXVlc3Rpb24iIDogIk5PIiwKICAgICJ0cmF2ZWwiIDogZmFsc2UsCiAgICAicmVoYWJOb3ciIDogbnVsbCwKICAgICJyZWhhYlN0YXJ0IiA6IG51bGwKICB9LAogICJtZWFzdXJlcyIgOiB7CiAgICAiY3VycmVudCIgOiAiIiwKICAgICJvdGhlciIgOiAiIgogIH0sCiAgImJhc2VkT25Xb3JrIiA6ICJQQVJFTlRBTF9MRUFWRSIsCiAgImN1cnJlbnRXb3JrIiA6ICIiLAogICJjYXBhY2l0eUZvcldvcmsiIDogewogICAgIndvcmsyNSIgOiBmYWxzZSwKICAgICJ3b3JrMjVmcm9tIiA6IG51bGwsCiAgICAid29yazI1dG8iIDogbnVsbCwKICAgICJ3b3JrNTAiIDogZmFsc2UsCiAgICAid29yazUwZnJvbSIgOiBudWxsLAogICAgIndvcms1MHRvIiA6IG51bGwsCiAgICAid29yazc1IiA6IGZhbHNlLAogICAgIndvcms3NWZyb20iIDogbnVsbCwKICAgICJ3b3JrNzV0byIgOiBudWxsLAogICAgIndvcmtGdWxsIiA6IHRydWUsCiAgICAid29ya0Z1bGxGcm9tIiA6IDEzMDgxNzUyMDAwMDAsCiAgICAid29ya0Z1bGxUbyIgOiAxNjIzNzk0NDAwMDAwLAogICAgImZvcmVjYXN0IiA6ICJZRVMiLAogICAgInJlYzI1TG9uZ2VyV29ya2luZ0hvdXJzIiA6ICIiLAogICAgInJlYzUwTG9uZ2VyV29ya2luZ0hvdXJzIiA6ICIiLAogICAgInJlYzc1TG9uZ2VyV29ya2luZ0hvdXJzIiA6ICIiLAogICAgImZvcmVjYXN0VGV4dCIgOiAiIiwKICAgICJhY3R1YWxXb3JraW5nSG91cnNQZXJXZWVrIiA6ICIiLAogICAgInRleHQiIDogIiIKICB9LAogICJjb250YWN0V2l0aEZrUmVxdWVzdGVkIiA6IGZhbHNlLAogICJvdGhlckluZm9ybWF0aW9uIiA6ICJueXR0IiwKICAicGF0aWVudEFncmVlc1RvU2VuZGluZyIgOiB0cnVlCn0=
+    </contents>
+    <status>SIGNED_AND_SENT</status>
+  </certificate>
+  <questions>
+    <certificateId>certificate010</certificateId>
+    <certificateType>FK7263</certificateType>
+    <externalReference>110135131984</externalReference>
+    <patient>
+      <personId>19600906-6934</personId>
+      <fullName>Test Testorsson</fullName>
+    </patient>
+    <carePerson>
+      <personId>SE2321000016-A1PF</personId>
+      <fullName>Doc2 Docktor2</fullName>
+      <careUnit>
+        <id>SE2321000016-A1P9</id>
+        <name>Medicin</name>
+        <careGiver>
+          <id>SE2321000016-A1P9</id>
+          <name>FiaCare</name>
+        </careGiver>
+      </careUnit>
+    </carePerson>
+    <subject>KOMPLEMENTING</subject>
+    <caption>Begäran om komplettering av läkarintyg för bedömning av
+      rätten till sjukpenning</caption>
+    <sent>2011-06-17T10:33:53.000</sent>
+    <signed>2011-06-17T10:33:53.000</signed>
+    <originator>FK</originator>
+    <status>SENT</status>
+    <questionText>Du har utfärdat ett läkarintyg för Ofullständig
+      Testare, 19600906-6934 den 17 juni 2011.
+      Det saknas vissa uppgifter i intyget och därför måste det kompletteras.
+      Försäkringskassan behöver få din komplettering senast den 1 juli
+      2011.
+
+      Uppgifterna behövs för att vi ska kunna utreda om din patient har rätt till
+      sjukpenning.
+      Följande uppgifter behöver kompletteras:
+      2. Diagnos/diagnoser för sjukdom/symtom som orsakar nedsatt
+      arbetsförmåga
+      Diagnosen är fel ..................
+
+      Som stöd för dig som är sjukskrivande läkare har Socialstyrelsen
+      utfärdat ett försäkringsmedicinskt beslutsstöd. Det innehåller
+      både övergripande principer och specifika rekommendationer för
+      sjukskrivning vid olika sjukdomstillstånd. Se
+      www.socialstyrelsen.se
+      Försäkringskassan har skickat en kopia av den här skrivelsen till patienten för
+      kännedom.
+
+      Med vänlig hälsning
+      Försäkringskassan
+      Simo Dzeletovic
+    </questionText>
+    <answer>
+      <text>test-svar
+        2011-11-09
+
+        Tack för feedback Simo. Jag ser inte vad felet kan vara. Diagnos är
+        ställd med rätt..........
+        osv.
+
+        slut på svar
+      </text>
+      <signed>2011-11-09T09:28:52.000</signed>
+      <sent>2011-11-09T09:28:52.000</sent>
+      <status>SENT</status>
+    </answer>
+  </questions>
+</migrationMessage>

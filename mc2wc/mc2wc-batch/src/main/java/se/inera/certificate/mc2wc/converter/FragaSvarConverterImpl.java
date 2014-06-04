@@ -1,14 +1,31 @@
 package se.inera.certificate.mc2wc.converter;
 
-import se.inera.certificate.mc2wc.message.*;
-import se.inera.webcert.persistence.fragasvar.model.*;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class FragaSvarConverterImpl implements FragaSvarConverter {
+import se.inera.certificate.mc2wc.message.AnswerType;
+import se.inera.certificate.mc2wc.message.CareGiverType;
+import se.inera.certificate.mc2wc.message.CarePersonType;
+import se.inera.certificate.mc2wc.message.CareUnitType;
+import se.inera.certificate.mc2wc.message.QuestionOriginatorType;
+import se.inera.certificate.mc2wc.message.QuestionSubjectType;
+import se.inera.certificate.mc2wc.message.QuestionType;
+import se.inera.certificate.mc2wc.message.StatusType;
+import se.inera.certificate.mc2wc.message.SupplementType;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.Id;
+import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.webcert.persistence.fragasvar.model.Status;
+import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 
+public class FragaSvarConverterImpl implements FragaSvarConverter {
+    
+    private static final String PERSONNUMMER_OID = "1.2.752.129.2.1.3.1";
+    private static final String SAMORDNINGSNUMMER_OID = "1.2.752.129.2.1.3.3";
+    
     @Override
     public FragaSvar toFragaSvar(QuestionType qa) {
 
@@ -17,7 +34,10 @@ public class FragaSvarConverterImpl implements FragaSvarConverter {
         IntygsReferens intygsRef = new IntygsReferens();
         intygsRef.setIntygsId(qa.getCertificateId());
         intygsRef.setIntygsTyp(qa.getCertificateType()); // TODO: hardcode ?
-        intygsRef.setPatientId(new Id(qa.getPatient().getPersonId()));
+        
+        Id patientId = toPatientId(qa.getPatient().getPersonId());
+        
+        intygsRef.setPatientId(patientId);
         intygsRef.setPatientNamn(qa.getPatient().getFullName());
         intygsRef.setSigneringsDatum(qa.getCertificateSigned());
 
@@ -53,6 +73,11 @@ public class FragaSvarConverterImpl implements FragaSvarConverter {
         //fs.setExternaKontakter(externaKontakter);
 
         return fs;
+    }
+
+    private Id toPatientId(String patientId) {
+        String patientIdRoot = FragaSvarUtils.detectIfSamordningsNummer(patientId) ? SAMORDNINGSNUMMER_OID : PERSONNUMMER_OID; 
+        return new Id(patientIdRoot, patientId);
     }
 
     private String toFrageStallare(QuestionOriginatorType originator) {

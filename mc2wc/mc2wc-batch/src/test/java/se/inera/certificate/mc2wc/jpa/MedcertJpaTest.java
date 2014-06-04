@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.junit.Test;
+import org.springframework.test.context.ActiveProfiles;
 
 import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
 import se.inera.certificate.mc2wc.dbunit.CustomFlatXmlDataSetLoader;
@@ -18,6 +19,7 @@ import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 
 @DbUnitConfiguration(databaseConnection = "medcertDataSource", dataSetLoader = CustomFlatXmlDataSetLoader.class)
 @DatabaseSetup({"/data/question.xml"})
+@ActiveProfiles({"export","export-unittest"})
 public class MedcertJpaTest extends AbstractDbUnitSpringTest {
 
     @PersistenceContext(unitName="jpa.migration.medcert")
