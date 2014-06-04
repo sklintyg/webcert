@@ -77,6 +77,10 @@ class SokSkrivIntyg {
 
     def visaIntyg(String intygId) {
         Browser.drive {
+            waitFor {
+                page.intygLista.isDisplayed()
+            }
+
             page.show(intygId)
         }
     }

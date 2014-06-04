@@ -9,6 +9,7 @@ class SokSkrivValjIntygTypPage extends Page {
     static content = {
         intygtypFortsattKnapp { $("#intygTypeFortsatt") }
         intygTyp { $("#intygType") }
+        intygLista { $("#intygLista") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
     }
 
