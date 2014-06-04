@@ -135,8 +135,8 @@ define([
         for (var artifactId in modulesMap) {
             modulesIds.push(modulesMap[artifactId].id);
             modulesNames.push('webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath + '.js');
-            modulesMinUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
-            modulesUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath + '.min');
+            modulesMinUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath + '.min');
+            modulesUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
             loadCssFromUrl('/web' + '/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].cssPath);
         }
 
@@ -148,7 +148,7 @@ define([
                 });
             });
         } else {
-            require({ baseUrl: '/web/webjars/' }, modulesUrls, function() {
+            require({ baseUrl: '/web/webjars/' }, modulesMinUrls, function() {
                 require(modulesNames, function() {
                     var modules = arguments;
                     angular.element().ready(function() {
