@@ -53,14 +53,14 @@
    Global JS config/constants for this app, to be used by scripts
    **/
   var MODULE_CONFIG = {
-    USERCONTEXT : <sec:authentication property="principal.asJson" htmlEscape="false"/>
+    USERCONTEXT : <sec:authentication property="principal.asJson" htmlEscape="false"/>,
+    REQUIRE_DEV_MODE : '<c:out value="${requireDevMode}"/>'
   }
 </script>
 
 </head>
 
 <body>
-
     <%-- ng-view that holds dynamic content managed by angular app --%>
     <div id="view" ng-view></div>
 
@@ -74,7 +74,14 @@
         </div>
     </noscript>
 
-    <script type="text/javascript" data-main="/js/main" src="<c:url value="/web/webjars/requirejs/2.1.10/require.js"/>"></script>
+    <c:choose>
+      <c:when test="${requireDevMode == 'true'}">
+        <script type="text/javascript" data-main="/js/main" src="<c:url value="/web/webjars/requirejs/2.1.10/require.js"/>"></script>
+      </c:when>
+      <c:otherwise>
+        <script type="text/javascript" data-main="/js/main.min" src="<c:url value="/web/webjars/requirejs/2.1.10/require.js"/>"></script>
+      </c:otherwise>
+    </c:choose>
     <script type="text/javascript" src="<c:url value="/siths.jsp"/>"></script>
 </body>
 </html>

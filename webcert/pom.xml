@@ -373,7 +373,7 @@
         <executions>
           <execution>
             <id>unpack-webjar-dependencies</id>
-            <phase>process-test-resources</phase>
+            <phase>process-resources</phase>
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
@@ -401,6 +401,46 @@
                   <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/common">
                   </fileset>
                 </copy>
+                <copy todir="${project.build.directory}/webjardependencies/fk7263" verbose="false">
+                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
+                  </fileset>
+                </copy>
+                <copy todir="${project.build.directory}/webjardependencies/ts-bas" verbose="false">
+                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
+                  </fileset>
+                </copy>
+                <copy todir="${project.build.directory}/webjardependencies/ts-diabetes" verbose="false">
+                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-diabetes">
+                  </fileset>
+                </copy>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>copy-javascript-for-optimization</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <target>
+                <copy todir="${project.build.directory}/requirebuild" verbose="false">
+                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources">
+                  </fileset>
+                </copy>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>copy-optimized-javascript</id>
+            <phase>compile</phase>
+            <configuration>
+              <target>
+                <copy file="${project.build.directory}/requirebuild/main.min.js"
+                    todir="${project.basedir}/src/main/webapp/js"/>
               </target>
             </configuration>
             <goals>
@@ -409,6 +449,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
@@ -445,6 +486,26 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.bringking</groupId>
+        <artifactId>requirejs-maven-plugin</artifactId>
+        <version>2.0.4</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>optimize</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <runner>nodejs</runner>
+          <nodeExecutable>${basedir}/node/node</nodeExecutable>
+          <configFile>${basedir}/src/main/config/buildconfig.js</configFile>
+          <optimizerFile>${basedir}/node_modules/requirejs/bin/r.js</optimizerFile>
+        </configuration>
       </plugin>
     </plugins>
   </build>

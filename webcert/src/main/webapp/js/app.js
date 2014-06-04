@@ -127,19 +127,36 @@ define([
 
         var modulesMap = JSON.parse(modules);
 
+        var modulesIds = [];
+        var modulesNames = [];
+        var modulesMinUrls = [];
         var modulesUrls = [];
+
         for (var artifactId in modulesMap) {
+            modulesIds.push(modulesMap[artifactId].id);
+            modulesNames.push('webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath + '.js');
+            modulesMinUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath + '.min');
             modulesUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
-            loadCssFromUrl('/web/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].cssPath);
+            loadCssFromUrl('/web' + '/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].cssPath);
         }
 
-        require({ baseUrl: '/web/webjars/' }, modulesUrls, function() {
-            var modules = arguments;
-
-            angular.element().ready(function() {
-                angular.resumeBootstrap([app.name].concat(Array.prototype.slice.call(modules, 0)));
+        if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
+            require({ baseUrl: '/web/webjars/' }, modulesUrls, function() {
+                var modules = arguments;
+                angular.element().ready(function() {
+                    angular.resumeBootstrap([app.name].concat(Array.prototype.slice.call(modules, 0)));
+                });
             });
-        });
+        } else {
+            require({ baseUrl: '/web/webjars/' }, modulesMinUrls, function() {
+                require(modulesNames, function() {
+                    var modules = arguments;
+                    angular.element().ready(function() {
+                        angular.resumeBootstrap([app.name].concat(Array.prototype.slice.call(modules, 0)));
+                    });
+                });
+            });
+        }
     });
 
     function loadCssFromUrl(url) {

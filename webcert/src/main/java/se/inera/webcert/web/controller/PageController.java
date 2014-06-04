@@ -21,6 +21,7 @@ package se.inera.webcert.web.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +36,9 @@ import se.inera.webcert.web.service.WebCertUserService;
 @Controller
 @RequestMapping(value = "")
 public class PageController {
+
+    @Autowired
+    private Environment environment;
 
     public static final String ADMIN_VIEW = "dashboard#/unhandled-qa";
     public static final String ADMIN_VIEW_REDIRECT = "redirect:/web/" + ADMIN_VIEW;
@@ -70,7 +74,9 @@ public class PageController {
 
     @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     public ModelAndView displayDashBoard() {
-        return new ModelAndView(DASHBOARD_VIEW);
+        ModelAndView modelAndView = new ModelAndView(DASHBOARD_VIEW);
+        modelAndView.addObject("requireDevMode",environment.getProperty("webcert.require.devmode", "false"));
+        return modelAndView;
     }
 
     @RequestMapping(value = "/adminview", method = RequestMethod.GET)
