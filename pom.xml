@@ -33,6 +33,7 @@
     <module>hsa-integration</module>
     <module>eid-integration</module>
     <module>persistence</module>
+    <module>overvakning</module>
   </modules>
 
   <properties>
@@ -340,16 +341,21 @@
         <artifactId>persistence</artifactId>
         <version>${project.version}</version>
       </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>hsa-integration</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>eid-integration</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>overvakning</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>hsa-integration</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>eid-integration</artifactId>
+          <version>${project.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>com.google.guava</groupId>

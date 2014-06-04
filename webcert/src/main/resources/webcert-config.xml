@@ -66,6 +66,14 @@
         </list>
       </property>
     </bean>
+    <bean class="org.springframework.web.context.support.ServletContextAttributeExporter">
+      <property name="attributes">
+        <map>
+          <entry key="healthcheck" value-ref="healthcheck"/>
+        </map>
+      </property>
+    </bean>
+    <bean id="healthcheck" class="se.inera.webcert.overvakning.HealthCheck"/>
 
     <!-- Mail configuration -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -93,10 +101,10 @@
 
     <!-- Handlers for REST services -->
     <bean id="webcertRestExceptionHandler" class="se.inera.webcert.web.handlers.WebcertRestExceptionHandler" />
-    
+
     <bean id="localDateTimeHandler" class="se.inera.webcert.web.handlers.LocalDateTimeHandler" />
 
-    <!-- ws clients -->
+      <!-- ws clients -->
     <jaxws:client id="getCertificateForCareResponder"
                   serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface"
                   address="${intygstjanst.getcertificateforcare.endpoint.url}">

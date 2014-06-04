@@ -31,17 +31,21 @@
 
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>schemas</artifactId>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>schemas</artifactId>
     </dependency>
-      <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>hsa-integration</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>eid-integration</artifactId>
-      </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>overvakning</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>hsa-integration</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>eid-integration</artifactId>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>fk-stub</artifactId>
