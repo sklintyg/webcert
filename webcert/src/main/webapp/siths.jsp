@@ -12,40 +12,35 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
 
        var currentHsaId = '<sec:authentication property="principal.hsaId" htmlEscape="false"/>';
 
+       var issuers = ['2.5.4.6=SE, 2.5.4.10=Carelink, 2.5.4.3=SITHS CA v3',
+                      '2.5.4.6=SE, 2.5.4.10=SITHS CA, 2.5.4.3=SITHS CA TEST v3',
+                      '2.5.4.6=SE, 2.5.4.10=SITHS CA, 2.5.4.3=SITHS CA TEST v4',
+                      '2.5.4.6=SE, 2.5.4.10=Inera AB, 2.5.4.3=SITHS Type 1 CA v1 PP',
+                      '2.5.4.6=SE, 2.5.4.10=Inera AB, 2.5.4.3=SITHS Type 1 CA v1'];
+
        function CheckNewEvent() {
            if (document.iID.GetProperty('EventPresent') == "true") {
                OnNewEvent();
-
-           }
-           else {
+           } else {
                setTimeout(CheckNewEvent, 1000);
            }
        }
 
        function OnNewEvent() {
-
            if (!isCardPresent()) {
                window.location.href = "/saml/logout";
-           }
-           else {
+           } else {
                CheckNewEvent();
            }
        }
 
        function isCardPresent() {
-           var index = 0;
-
-           while (index < 10) {
-
+           for (var index = 0; index < 10; index++) {
                var hsaId = getHcc(index);
-
-               if (hsaId == currentHsaId) {
+               if (hsaId === currentHsaId) {
                    return true;
                }
-
-               index++;
            }
-
            return false;
        }
 
@@ -56,29 +51,7 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
                    var certParts = cert.split(';');
                    var issuer = certParts[4];
                    var subject = certParts[5];
-                   if (issuer == '2.5.4.6=SE, 2.5.4.10=Carelink, 2.5.4.3=SITHS CA v3' && issuer != subject) {
-                       // Remember to remove the CA certificate, check if subject and issuer is the same
-
-                       // Find where the serialnumber starts and remove everything before
-                       var subjectSerial = subject.substring(subject.indexOf("2.5.4.5=") + 8);
-
-                       // Find where the serialnumber ends and remove everything after
-                       subjectSerial = subjectSerial.substring(0, subjectSerial.indexOf(","));
-                       return subjectSerial;
-                   }
-
-                   else if (issuer == '2.5.4.6=SE, 2.5.4.10=SITHS CA, 2.5.4.3=SITHS CA TEST v3' && issuer != subject) {
-                       // Remember to remove the CA certificate, check if subject and issuer is the same
-
-                       // Find where the serialnumber starts and remove everything before
-                       var subjectSerial = subject.substring(subject.indexOf("2.5.4.5=") + 8);
-
-                       // Find where the serialnumber ends and remove everything after
-                       subjectSerial = subjectSerial.substring(0, subjectSerial.indexOf(","));
-                       return subjectSerial;
-                   }
-
-                   else if (issuer == '2.5.4.6=SE, 2.5.4.10=SITHS CA, 2.5.4.3=SITHS CA TEST v4' && issuer != subject) {
+                   if (issuers.indexOf(issuer) !== -1 && issuer !== subject) {
                        // Remember to remove the CA certificate, check if subject and issuer is the same
 
                        // Find where the serialnumber starts and remove everything before
@@ -98,21 +71,19 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
            if (navigator.appName.indexOf("Explorer") == -1) {
                explorer = false;
                plugin = navigator.mimeTypes["application/x-iid"];
-           }
-           else {
+           } else {
                explorer = true;
                plugin = ControlExists("IID.iIDCtl");
            }
            if (plugin) {
-               if (explorer)
+               if (explorer) {
                    document.writeln("<OBJECT NAME='iID' CLASSID='CLSID:5BF56AD2-E297-416E-BC49-00B327C4426E' WIDTH=0 HEIGHT=0></OBJECT>");
-               else
+               } else {
                    document.writeln("<OBJECT NAME='iID' TYPE='application/x-iid' WIDTH=0 HEIGHT=0></OBJECT>");
+               }
            }
-
            OnNewEvent();
          };
-
 
        return classInstance;
    })();
