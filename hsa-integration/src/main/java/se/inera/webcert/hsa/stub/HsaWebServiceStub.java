@@ -1,5 +1,6 @@
 package se.inera.webcert.hsa.stub;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -290,7 +291,10 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
     @Override
     public PingResponseType ping(AttributedURIType logicalAddress, AttributedURIType id, PingType parameters)
             throws HsaWsFault {
-        return null;
+        PingResponseType result = new PingResponseType();
+        result.setResponseTime(BigInteger.TEN);
+        result.setMessage("Fake ping response.");
+        return result;
     }
 
     @Override
