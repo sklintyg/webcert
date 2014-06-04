@@ -17,4 +17,8 @@ class SokSkrivValjIntygTypPage extends Page {
         sleep(300)
         kopieraDialogKopieraKnapp.click()
     }
+
+    def show(String intygId) {
+        $("#showBtn-${intygId}").click()
+    }
 }

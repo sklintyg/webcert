@@ -3,40 +3,41 @@ define([
     'services/CreateCertificateDraft',
     'services/ManageCertificate',
     'webjars/common/webcert/js/services/dialogService',
-    'webjars/common/webcert/js/services/User'
-], function(angular, CreateCertificateDraft, ManageCertificate, dialogService, User) {
+    'webjars/common/webcert/js/services/User',
+    'webjars/common/webcert/js/services/ManageCertView'
+], function(angular, CreateCertificateDraft, ManageCertificate, dialogService, User, ManageCertView) {
     'use strict';
 
     var moduleName = 'wc.ChooseCertTypeCtrl';
 
-    angular.module(moduleName, [ CreateCertificateDraft, dialogService, ManageCertificate, User ]).
+    angular.module(moduleName, [ CreateCertificateDraft, dialogService, ManageCertificate, User, ManageCertView ]).
         controller(moduleName, [ '$filter', '$location', '$log', '$scope', '$cookieStore', CreateCertificateDraft, dialogService,
-            ManageCertificate, User,
-            function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft, dialogService, ManageCertificate, User) {
+            ManageCertificate, User, ManageCertView,
+            function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft, dialogService, ManageCertificate, User, ManageCertView) {
                 if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.firstname ||
                     !CreateCertificateDraft.lastname) {
                     $location.url('/create/index', true);
                 }
 
+                // Copy dialog setup
                 var COPY_DIALOG_COOKIE = 'wc.dontShowCopyDialog';
+                var copyDialog = {
+                    isOpen: false
+                };
+                $scope.dialog = {
+                    acceptprogressdone: true,
+                    focus: false,
+                    errormessageid: 'error.failedtocopyintyg',
+                    showerror: false,
+                    dontShowCopyInfo: $cookieStore.get(COPY_DIALOG_COOKIE)
+                };
 
+                // Page setup
                 $scope.widgetState = {
                     doneLoading: true,
                     activeErrorMessageKey: null,
                     createErrorMessageKey: null,
                     currentList: undefined,
-                    dontShowCopyInfo: $cookieStore.get(COPY_DIALOG_COOKIE)
-                };
-
-                var copyDialog = {
-                    isOpen: false
-                };
-
-                $scope.dialog = {
-                    acceptprogressdone: true,
-                    focus: false,
-                    errormessageid: 'error.failedtocopyintyg',
-                    showerror: false
                 };
 
                 $scope.filterForm = {
@@ -95,33 +96,6 @@ define([
                     }, function(error) {
                         $log.debug('Create draft failed: ' + error.message);
                         $scope.widgetState.createErrorMessageKey = 'error.failedtocreateintyg';
-                    });
-                }
-
-                function _copyIntyg(cert) {
-                    var valdVardenhet = User.getValdVardenhet();
-                    CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
-                    CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
-                    CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
-                    CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
-                    CreateCertificateDraft.intygType = cert.intygType;
-
-                    $scope.dialog.showerror = false;
-                    $scope.dialog.acceptprogressdone = false;
-                    $scope.widgetState.activeErrorMessageKey = null;
-                    CreateCertificateDraft.copyIntygToDraft(cert, function(data) {
-                        $scope.dialog.acceptprogressdone = true;
-                        $scope.widgetState.createErrorMessageKey = undefined;
-                        copyDialog.close();
-                        $location.url('/' + CreateCertificateDraft.intygType + '/edit/' + data, true);
-                        CreateCertificateDraft.reset();
-                    }, function(error) {
-                        $log.debug('Create copy failed: ' + error.message);
-                        $scope.dialog.acceptprogressdone = true;
-                        $scope.dialog.showerror = true;
-                        if (!copyDialog.isOpen && $cookieStore.get(COPY_DIALOG_COOKIE)) {
-                            $scope.widgetState.activeErrorMessageKey = 'error.failedtocopyintyg';
-                        }
                     });
                 }
 
@@ -193,35 +167,7 @@ define([
                 };
 
                 $scope.copyIntyg = function(cert) {
-
-                    if ($cookieStore.get(COPY_DIALOG_COOKIE)) {
-                        $log.debug('copy cert without dialog' + cert);
-                        _copyIntyg(cert);
-                    } else {
-                        copyDialog = dialogService.showDialog($scope, {
-                            dialogId: 'copy-dialog',
-                            titleId: 'label.copycert',
-                            templateUrl: '/views/partials/check-dialog.html',
-                            model: $scope.widgetState,
-                            bodyText: 'När du kopierar detta intyg får du upp ett nytt intyg av samma typ och med ' +
-                                'samma information som finns i det intyg som du kopierar. Du får möjlighet att redigera ' +
-                                'informationen innan du signerar det nya intyget.',
-                            button1click: function() {
-                                $log.debug('copy cert from dialog' + cert);
-                                _copyIntyg(cert);
-                            },
-                            button1text: 'common.copy',
-                            button2text: 'common.cancel',
-                            autoClose: false
-                        });
-
-                        copyDialog.opened.then(function() {
-                            copyDialog.isOpen = true;
-                        }, function() {
-                            copyDialog.isOpen = false;
-                        });
-                    }
-
+                    copyDialog = ManageCertificate.copy($scope, cert, copyDialog, COPY_DIALOG_COOKIE);
                 };
             }
         ]);

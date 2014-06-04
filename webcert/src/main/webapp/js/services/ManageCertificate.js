@@ -1,14 +1,16 @@
 define([
     'angular',
-    'angularUiBootstrap'
-], function(angular) {
+    'webjars/common/webcert/js/services/dialogService',
+    'webjars/common/webcert/js/services/User',
+    'services/CreateCertificateDraft'
+], function(angular, dialogService, User, CreateCertificateDraft) {
     'use strict';
 
     var moduleName = 'wc.ManageCertificate';
 
-    angular.module(moduleName, []).
-        factory(moduleName, [ '$http', '$log', '$window', '$modal',
-            function($http, $log, $window, $modal) {
+    angular.module(moduleName, [User, CreateCertificateDraft, dialogService]).
+        factory(moduleName, [ '$http', '$log', '$location', '$window', '$modal', '$cookieStore', CreateCertificateDraft, User, dialogService,
+            function($http, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService) {
 
                 /**
                  * Load list of all certificates types
@@ -235,6 +237,66 @@ define([
                     });
                 }
 
+                function _createCopyDraft($scope, copyDialog, COPY_DIALOG_COOKIE, cert) {
+                    var valdVardenhet = User.getValdVardenhet();
+                    CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
+                    CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
+                    CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
+                    CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
+                    CreateCertificateDraft.intygType = cert.intygType;
+
+                    $scope.dialog.showerror = false;
+                    $scope.dialog.acceptprogressdone = false;
+                    $scope.widgetState.activeErrorMessageKey = null;
+                    CreateCertificateDraft.copyIntygToDraft(cert, function(data) {
+                        $scope.dialog.acceptprogressdone = true;
+                        $scope.widgetState.createErrorMessageKey = undefined;
+                        copyDialog.close();
+                        $location.url('/' + CreateCertificateDraft.intygType + '/edit/' + data, true);
+                        CreateCertificateDraft.reset();
+                    }, function(error) {
+                        $log.debug('Create copy failed: ' + error.message);
+                        $scope.dialog.acceptprogressdone = true;
+                        $scope.dialog.showerror = true;
+                        if (!copyDialog.isOpen && $cookieStore.get(COPY_DIALOG_COOKIE)) {
+                            $scope.widgetState.activeErrorMessageKey = 'error.failedtocopyintyg';
+                        }
+                    });
+                }
+
+                function _copy($scope, cert, copyDialog, COPY_DIALOG_COOKIE) {
+
+                    if ($cookieStore.get(COPY_DIALOG_COOKIE)) {
+                        $log.debug('copy cert without dialog' + cert);
+                        _createCopyDraft($scope, copyDialog, COPY_DIALOG_COOKIE, cert);
+                    } else {
+                        copyDialog = dialogService.showDialog($scope, {
+                            dialogId: 'copy-dialog',
+                            titleId: 'label.copycert',
+                            templateUrl: '/views/partials/check-dialog.html',
+                            model: $scope.dialog,
+                            bodyText: 'När du kopierar detta intyg får du upp ett nytt intyg av samma typ och med ' +
+                                'samma information som finns i det intyg som du kopierar. Du får möjlighet att redigera ' +
+                                'informationen innan du signerar det nya intyget.',
+                            button1click: function() {
+                                $log.debug('copy cert from dialog' + cert);
+                                _createCopyDraft($scope, copyDialog, COPY_DIALOG_COOKIE, cert);
+                            },
+                            button1text: 'common.copy',
+                            button2text: 'common.cancel',
+                            autoClose: false
+                        });
+
+                        copyDialog.opened.then(function() {
+                            copyDialog.isOpen = true;
+                        }, function() {
+                            copyDialog.isOpen = false;
+                        });
+                    }
+
+                    return copyDialog;
+                }
+
                 // Return public API for the service
                 return {
                     getCertTypes: _getCertTypes,
@@ -245,7 +307,8 @@ define([
                     getCertificateSavedByList: _getCertificateSavedByList,
                     setForwardedState: _setForwardedState,
                     handleForwardedToggle: _handleForwardedToggle,
-                    buildMailToLink: _buildMailToLink
+                    buildMailToLink: _buildMailToLink,
+                    copy: _copy
                 };
             }
         ]);

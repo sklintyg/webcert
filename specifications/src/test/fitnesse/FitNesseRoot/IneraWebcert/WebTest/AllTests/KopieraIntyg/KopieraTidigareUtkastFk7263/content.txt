@@ -17,7 +17,7 @@ Detta test ska visa på att man kan kopiera ett utkast av ett fk-intyg och få e
 !3 Kopiera intyget
 
 | script | !-SokSkrivIntyg-! |
-| kopiera intyg | webcert-fitnesse-kopiera-1 |
+| kopiera tidigare intyg | webcert-fitnesse-kopiera-1 |
 
 #| Kopiera Utkast |
 #| intygsId | kopiaReferens? |

@@ -4,6 +4,7 @@ import se.inera.webcert.pages.IndexPage
 import se.inera.webcert.pages.SokSkrivFyllINamnPage
 import se.inera.webcert.pages.SokSkrivValjIntygTypPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
+import se.inera.webcert.pages.VisaIntygPage
 import se.inera.webcert.pages.WelcomePage
 
 class SokSkrivIntyg {
@@ -62,9 +63,33 @@ class SokSkrivIntyg {
         }
     }
 
-    def kopieraIntyg(String intygId) {
+    def kopieraTidigareIntyg(String intygId) {
         Browser.drive {
             page.copy(intygId)
+        }
+    }
+
+    def kopieraVisatIntyg() {
+        Browser.drive {
+            page.copy()
+        }
+    }
+
+    def visaIntyg(String intygId) {
+        Browser.drive {
+            page.show(intygId)
+        }
+    }
+
+    boolean visaSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaIntygPage
+            }
+
+            waitFor {
+                page.intygVy.isDisplayed()
+            }
         }
     }
 
