@@ -47,20 +47,23 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
        function getHcc(index) {
            try {
                var cert = document.iID.EnumProperty('Certificate', index);
-               if (cert != '') {
-                   var certParts = cert.split(';');
-                   var issuer = certParts[4];
-                   var subject = certParts[5];
-                   if (issuers.indexOf(issuer) !== -1 && issuer !== subject) {
-                       // Remember to remove the CA certificate, check if subject and issuer is the same
+               if (cert !== '') {
+                 var certParts = cert.split(';');
+                 var issuer = certParts[4];
+                 var subject = certParts[5];
+                 for (var i = 0; i < issuers.length; i++) {
+                   if (issuers[i] === issuer && issuer !== subject) {
+                     // Remember to remove the CA certificate, check if subject and issuer is the same
 
-                       // Find where the serialnumber starts and remove everything before
-                       var subjectSerial = subject.substring(subject.indexOf("2.5.4.5=") + 8);
+                     // Find where the serialnumber starts and remove everything before
+                     var subjectSerial = subject.substring(subject.indexOf("2.5.4.5=") + 8);
 
-                       // Find where the serialnumber ends and remove everything after
-                       subjectSerial = subjectSerial.substring(0, subjectSerial.indexOf(","));
-                       return subjectSerial;
+                     // Find where the serialnumber ends and remove everything after
+                     subjectSerial = subjectSerial.substring(0, subjectSerial.indexOf(","));
+
+                     return subjectSerial;
                    }
+                 }
                }
            } catch (e) {
            }
