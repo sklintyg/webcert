@@ -55,7 +55,8 @@ define([], function() {
             'error.unsignedcerts.couldnotbeloaded': '<strong>Kunde inte hämta ej signerade intyg.</strong>',
             'error.unansweredcerts.couldnotbeloaded': '<strong>Kunde inte hämta listan med ej hanterade frågor och svar.</strong>',
             'error.readytosigncerts.couldnotbeloaded': '<strong>Kunde inte hämta intyg klara för signering.</strong>',
-            'error.failedtocreateintyg': 'Kunde inte skapa intyget.'
+            'error.failedtocreateintyg': 'Kunde inte skapa intyget. Försök igen senare.',
+            'error.failedtocopyintyg': 'Kunde inte kopiera intyget. Försök igen senare.'
         },
         'en': {
             'webcert.header': 'Webcert Application (en)'

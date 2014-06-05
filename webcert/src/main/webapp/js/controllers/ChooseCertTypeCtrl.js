@@ -3,20 +3,46 @@ define([
     'services/CreateCertificateDraft',
     'services/ManageCertificate',
     'webjars/common/webcert/js/services/dialogService',
-    'webjars/common/webcert/js/services/User'
-], function(angular, CreateCertificateDraft, ManageCertificate, dialogService, User) {
+    'webjars/common/webcert/js/services/User',
+    'webjars/common/webcert/js/services/ManageCertView'
+], function(angular, CreateCertificateDraft, ManageCertificate, dialogService, User, ManageCertView) {
     'use strict';
 
     var moduleName = 'wc.ChooseCertTypeCtrl';
 
-    angular.module(moduleName, [ CreateCertificateDraft, dialogService, ManageCertificate, User ]).
-        controller(moduleName, [ '$filter', '$location', '$log', '$scope', CreateCertificateDraft, dialogService,
-            ManageCertificate, User,
-            function($filter, $location, $log, $scope, CreateCertificateDraft, dialogService, ManageCertificate, User) {
+    angular.module(moduleName, [ CreateCertificateDraft, dialogService, ManageCertificate, User, ManageCertView ]).
+        controller(moduleName, [ '$filter', '$location', '$log', '$scope', '$cookieStore', CreateCertificateDraft, dialogService,
+            ManageCertificate, User, ManageCertView,
+            function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft, dialogService, ManageCertificate, User, ManageCertView) {
                 if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.firstname ||
                     !CreateCertificateDraft.lastname) {
                     $location.url('/create/index', true);
                 }
+
+                // Copy dialog setup
+                var COPY_DIALOG_COOKIE = 'wc.dontShowCopyDialog';
+                var copyDialog = {
+                    isOpen: false
+                };
+                $scope.dialog = {
+                    acceptprogressdone: true,
+                    focus: false,
+                    errormessageid: 'error.failedtocopyintyg',
+                    showerror: false,
+                    dontShowCopyInfo: $cookieStore.get(COPY_DIALOG_COOKIE)
+                };
+
+                // Page setup
+                $scope.widgetState = {
+                    doneLoading: true,
+                    activeErrorMessageKey: null,
+                    createErrorMessageKey: null,
+                    currentList: undefined,
+                };
+
+                $scope.filterForm = {
+                    intygFilter: 'current'
+                };
 
                 $scope.personnummer = CreateCertificateDraft.personnummer;
                 $scope.firstname = CreateCertificateDraft.firstname;
@@ -37,6 +63,26 @@ define([
                     $scope.intygType = CreateCertificateDraft.intygType;
                 });
 
+                $scope.updateCertList = function() {
+                    $scope.widgetState.currentList =
+                        $filter('wc.TidigareIntygFilter')($scope.widgetState.certListUnhandled, $scope.filterForm.intygFilter);
+                };
+
+                ManageCertificate.getCertificatesForPerson($scope.personnummer, function(data) {
+                    $scope.widgetState.doneLoading = false;
+                    $scope.widgetState.certListUnhandled = data;
+                    $scope.updateCertList();
+                }, function(errorData) {
+                    $scope.widgetState.doneLoading = false;
+                    $log.debug('Query Error' + errorData);
+                    $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
+                });
+
+                /**
+                 * Private functions
+                 * @private
+                 */
+
                 function _createDraft() {
                     var valdVardenhet = User.getValdVardenhet();
                     CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
@@ -52,6 +98,10 @@ define([
                         $scope.widgetState.createErrorMessageKey = 'error.failedtocreateintyg';
                     });
                 }
+
+                /**
+                 * Exposed to scope
+                 */
 
                 $scope.lookupAddress = function() {
                     CreateCertificateDraft.intygType = $scope.intygType;
@@ -95,38 +145,16 @@ define([
                     $location.path('/create/edit-patient-name/index');
                 };
 
-                // List of old certificates.
-
-                $scope.widgetState = {
-                    doneLoading: false,
-                    activeErrorMessageKey: null,
-                    currentList: undefined
-                };
-
-                $scope.filterForm = {
-                    intygFilter: 'current'
-                };
-
                 $scope.$watch('filterForm.intygFilter', function() {
                     $scope.updateCertList();
                 });
 
-                $scope.updateCertList = function() {
-                    $scope.widgetState.currentList =
-                        $filter('wc.TidigareIntygFilter')($scope.widgetState.certListUnhandled, $scope.filterForm.intygFilter);
-                };
-
-                $scope.widgetState.activeErrorMessageKey = null;
-                $scope.widgetState.doneLoading = true;
-
-                ManageCertificate.getCertificatesForPerson($scope.personnummer, function(data) {
-                    $scope.widgetState.doneLoading = false;
-                    $scope.widgetState.certListUnhandled = data;
-                    $scope.updateCertList();
-                }, function(errorData) {
-                    $scope.widgetState.doneLoading = false;
-                    $log.debug('Query Error' + errorData);
-                    $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
+                $scope.$watch('widgetState.dontShowCopyInfo', function(newVal, oldVal) {
+                    if (newVal) {
+                        $cookieStore.put(COPY_DIALOG_COOKIE, newVal);
+                    } else {
+                        $cookieStore.remove(COPY_DIALOG_COOKIE);
+                    }
                 });
 
                 $scope.openIntyg = function(cert) {
@@ -139,21 +167,7 @@ define([
                 };
 
                 $scope.copyIntyg = function(cert) {
-                    //CreateCertificateDraft.reset();
-                    dialogService.showDialog($scope, {
-                        dialogId: 'copy-dialog',
-                        titleId: 'label.copycert',
-                        bodyText: '<p>När du kopierar detta intyg får du upp ett nytt intyg av samma typ och med ' +
-                            'samma information som finns i det intyg som du kopierar. Du får möjlighet att redigera ' +
-                            'informationen innan du signerar det nya intyget.</p><div class=\'form-inline\'>' +
-                            '<input id=\'dontShowAgain\' type=\'checkbox\' ng-model=\'dontShowCopyInfo\'> ' +
-                            '<label for=\'dontShowAgain\'>Visa inte denna information igen</label></div>',
-                        button1click: function() {
-                            $log.debug('copy cert' + cert);
-                        },
-                        button1text: 'common.copy',
-                        button2text: 'common.cancel'
-                    });
+                    copyDialog = ManageCertificate.copy($scope, cert, copyDialog, COPY_DIALOG_COOKIE);
                 };
             }
         ]);

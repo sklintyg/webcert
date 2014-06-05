@@ -100,12 +100,9 @@ class HanteraUtkast {
             waitFor {
                 at EditeraIntygPage
             }
-            waitFor {
-                page.signeraBtn.click()
-            }
-            waitFor {
-                page.konfirmeraSignera.click()
-            }
+            page.signeraBtn.click()
+            sleep(300)
+            page.konfirmeraSignera.click()
         }
     }
 
@@ -153,6 +150,7 @@ class HanteraUtkast {
             }
             result = page.enhetsPostadress.value()
         }
+        sleep(300)
         result
     }
 
@@ -164,6 +162,7 @@ class HanteraUtkast {
             }
             result = page.enhetsPostnummer.value()
         }
+        sleep(300)
         result
     }
 
@@ -175,6 +174,7 @@ class HanteraUtkast {
             }
             result = page.enhetsPostort.value()
         }
+        sleep(300)
         result
     }
 
@@ -186,6 +186,7 @@ class HanteraUtkast {
             }
             result = page.enhetsTelefonnummer.value()
         }
+        sleep(300)
         result
     }
 
@@ -197,6 +198,7 @@ class HanteraUtkast {
             }
             result = page.enhetsEpost.value()
         }
+        sleep(300)
         result
     }
 
@@ -207,6 +209,7 @@ class HanteraUtkast {
             }
             page.enhetsPostadress = value
         }
+        sleep(300)
         true
     }
 
@@ -217,6 +220,7 @@ class HanteraUtkast {
             }
             page.enhetsPostnummer = value
         }
+        sleep(300)
         true
     }
 
@@ -227,6 +231,7 @@ class HanteraUtkast {
             }
             page.enhetsPostort = value
         }
+        sleep(300)
         true
     }
 
@@ -237,6 +242,7 @@ class HanteraUtkast {
             }
             page.enhetsTelefonnummer = value
         }
+        sleep(300)
         true
     }
 
@@ -247,6 +253,7 @@ class HanteraUtkast {
             }
             page.enhetsEpost = value
         }
+        sleep(300)
         true
     }
 

@@ -1,0 +1,20 @@
+Detta test ska visa på att man kan kopiera ett signerat ts-bas-intyg och få ett nytt utkast baserat på det.
+
+!3 Välj patient
+
+| script | !-SokSkrivIntyg-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+| sok skriv intyg sidan visas sa smaningom |
+| valj patient | 19121212-1212 |
+| valj intygstyp sidan visas |
+
+!3 Kopiera intyget
+
+| script | !-SokSkrivIntyg-! |
+| kopiera tidigare intyg | intyg-fit-4 |
+
+!3 Författarstöd visas
+
+# OBS! Lägg tillbaka detta när kopiera är implementerat
+#| script | !-HanteraUtkast-! |
+#| editera sidan visas |
