@@ -2,15 +2,16 @@ define([
     'angular',
     'webjars/common/webcert/js/services/dialogService',
     'webjars/common/webcert/js/services/User',
+    'webjars/common/webcert/js/services/CertificateService',
     'services/CreateCertificateDraft'
-], function(angular, dialogService, User, CreateCertificateDraft) {
+], function(angular, dialogService, User, CertificateService, CreateCertificateDraft) {
     'use strict';
 
     var moduleName = 'wc.ManageCertificate';
 
-    angular.module(moduleName, [User, CreateCertificateDraft, dialogService]).
-        factory(moduleName, [ '$http', '$log', '$location', '$window', '$modal', '$cookieStore', CreateCertificateDraft, User, dialogService,
-            function($http, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService) {
+    angular.module(moduleName, [User, CreateCertificateDraft, dialogService, CertificateService]).
+        factory(moduleName, [ '$http', '$log', '$location', '$window', '$modal', '$cookieStore', CreateCertificateDraft, User, dialogService, CertificateService,
+            function($http, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService, CertificateService) {
 
                 /**
                  * Load list of all certificates types
@@ -297,6 +298,60 @@ define([
                     return copyDialog;
                 }
 
+
+                // Send dialog setup
+                var sendDialog = {
+                    isOpen: false
+                };
+
+                function _initSend($scope) {
+                    $scope.dialogSend = {
+                        acceptprogressdone: true,
+                        focus: false,
+                        errormessageid: 'error.failedtosendintyg',
+                        showerror: false,
+                        patientConsent: false
+                    };
+                }
+
+                function _sendSigneratIntyg(cert, dialogModel, sendDialog) {
+                    dialogModel.showerror = false;
+                    dialogModel.acceptprogressdone = false;
+                    CertificateService.sendSigneratIntyg(cert.intygId, function(data) {
+                        dialogModel.acceptprogressdone = true;
+                        sendDialog.close();
+                    }, function(error) {
+                        $log.debug('Create copy failed: ' + error.message);
+                        dialogModel.acceptprogressdone = true;
+                        dialogModel.showerror = true;
+                    });
+                }
+
+                function _send($scope, cert, titleId) {
+
+                    sendDialog = dialogService.showDialog($scope, {
+                        dialogId: 'send-dialog',
+                        titleId: titleId,
+                        templateUrl: '/views/partials/send-dialog.html',
+                        model: $scope.dialogSend,
+                        button1click: function() {
+                            $log.debug('send cert from dialog' + cert);
+                            _sendSigneratIntyg(cert, $scope.dialogSend, sendDialog);
+                        },
+                        button1text: 'common.send',
+                        button2text: 'common.cancel',
+                        autoClose: false
+                    });
+
+                    sendDialog.opened.then(function() {
+                        sendDialog.isOpen = true;
+                    }, function() {
+                        sendDialog.isOpen = false;
+                    });
+
+                    return sendDialog;
+                }
+
                 // Return public API for the service
                 return {
                     getCertTypes: _getCertTypes,
@@ -308,6 +363,8 @@ define([
                     setForwardedState: _setForwardedState,
                     handleForwardedToggle: _handleForwardedToggle,
                     buildMailToLink: _buildMailToLink,
+                    initSend: _initSend,
+                    send: _send,
                     copy: _copy
                 };
             }
