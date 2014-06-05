@@ -12,7 +12,7 @@
 </div>
 <div class="modal-footer">
   <div class="form-inline">
-    <button id="{{button1id}}" class="btn btn-success" ng-disabled="!model.acceptprogressdone" ng-click="button1click()">
+    <button id="{{button1id}}" class="btn btn-success" ng-disabled="!model.patientConsent || !model.acceptprogressdone" ng-click="button1click()">
       <img ng-hide="model.acceptprogressdone" ng-src="/img/ajax-loader-small-green.gif"/>
       <span message key="{{button1text}}"></span>
     </button>
