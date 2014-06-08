@@ -18,6 +18,20 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
                       '2.5.4.6=SE, 2.5.4.10=Inera AB, 2.5.4.3=SITHS Type 1 CA v1 PP',
                       '2.5.4.6=SE, 2.5.4.10=Inera AB, 2.5.4.3=SITHS Type 1 CA v1'];
 
+       function log(message) {
+           try {
+              console.log(message);
+           } catch (e) {}
+
+           logServer(message);
+       }
+
+       function logServer(message) {
+           var http = new XMLHttpRequest();
+           http.open('POST', '/api/jslog/debug');
+           http.send(message);
+       }
+
        function CheckNewEvent() {
            if (document.iID.GetProperty('EventPresent') == "true") {
                OnNewEvent();
@@ -28,6 +42,7 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
 
        function OnNewEvent() {
            if (!isCardPresent()) {
+               log('No card present, logging out');
                window.location.href = "/saml/logout";
            } else {
                CheckNewEvent();
@@ -51,7 +66,12 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
                  var certParts = cert.split(';');
                  var issuer = certParts[4];
                  var subject = certParts[5];
+                 log('Issuer: ' + issuer);
+                 log('Subject: ' + subject);
+
                  for (var i = 0; i < issuers.length; i++) {
+                   log('Issuers[' + i + ']: ' + issuers[i]);
+
                    if (issuers[i] === issuer && issuer !== subject) {
                      // Remember to remove the CA certificate, check if subject and issuer is the same
 
@@ -61,18 +81,27 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
                      // Find where the serialnumber ends and remove everything after
                      subjectSerial = subjectSerial.substring(0, subjectSerial.indexOf(","));
 
+                     log('SubjectSerial: ' + subjectSerial);
+
                      return subjectSerial;
                    }
                  }
                }
            } catch (e) {
+               log('Error: ' + e.message);
            }
            return '';
        }
 
        function isIE() {
-         return ((navigator.appName == 'Microsoft Internet Explorer') ||
-             ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null)));
+           var isIE = ((navigator.appName == 'Microsoft Internet Explorer') ||
+               ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null)));
+
+           log('Browser AppName: ' + navigator.appName);
+           log('Browser UserAgent: ' + navigator.userAgent);
+           log('Browser is IE: ' + isIE);
+
+           return isIE;
        }
 
        classInstance.startup = function() {
@@ -84,11 +113,14 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
              plugin = navigator.mimeTypes["application/x-iid"];
            }
            if (plugin) {
+               log("Browser plugin detected");
                if (explorer) {
                    document.writeln("<OBJECT NAME='iID' CLASSID='CLSID:5BF56AD2-E297-416E-BC49-00B327C4426E' WIDTH=0 HEIGHT=0></OBJECT>");
                } else {
                    document.writeln("<OBJECT NAME='iID' TYPE='application/x-iid' WIDTH=0 HEIGHT=0></OBJECT>");
                }
+           } else {
+             log("Browser plugin missing");
            }
            OnNewEvent();
          };
@@ -97,7 +129,6 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
    })();
 
    siths.startup();
-
 
 <% } else { %>
 
