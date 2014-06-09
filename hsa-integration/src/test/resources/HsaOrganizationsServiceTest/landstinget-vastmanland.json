@@ -6,14 +6,17 @@
             "id" : "centrum-vast",
             "namn" : "Vårdcentrum i Väst",
             "epost" : "nagon@nagonstans.invalid",
+            "arbetsplatskod" : "arbetsplatskod_centrum-vast",
             "mottagningar" : [
                 {
                     "id" : "dialys",
-                    "namn" : "Dialys"
+                    "namn" : "Dialys",
+                    "arbetsplatskod" : "arbetsplatskod_centrum-vast-dialys"
                 },
                 {
                     "id" : "akuten",
-                    "namn" : "Akuten"
+                    "namn" : "Akuten",
+                    "arbetsplatskod" : "arbetsplatskod_centrum-vast-akuten"
                 }
             ]
         },
@@ -21,17 +24,20 @@
             "id" : "centrum-ost",
             "namn" : "Vårdcentrum i Öst",
             "epost" : "nagon@nagonstans.invalid",
+            "arbetsplatskod" : "arbetsplatskod_centrum-ost",
             "mottagningar" : [
                 {
                     "id" : "nagel",
                     "namn" : "Nagelmottagningen",
-                    "epost" : "nagon@nagonstans.invalid"
+                    "epost" : "nagon@nagonstans.invalid",
+                    "arbetsplatskod" : "arbetsplatskod_centrum-ost-nagel"
                 }
             ]
         },
         {
             "id" : "centrum-norr",
-            "namn" : "Vårdcentrum i Norr"
+            "namn" : "Vårdcentrum i Norr",
+            "arbetsplatskod" : "arbetsplatskod_centrum-norr"
         }
     ]
 }

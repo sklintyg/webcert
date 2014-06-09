@@ -2,8 +2,10 @@ package se.inera.webcert.hsa.stub;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.Collections2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
 
@@ -47,8 +49,6 @@ import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 /**
  * @author johannesc
@@ -154,16 +154,17 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
 
         HsawsSimpleLookupResponseType response = new HsawsSimpleLookupResponseType();
 
-        if (parameters.getLookup().getSearchAttribute().equals("hsaIdentity")) {
-            response.getResponseValues().add(createAttributeValueListForEnhet(parameters.getLookup().getValue()));
+        String attribute = parameters.getLookup().getSearchAttribute();
+        String enhetsId = parameters.getLookup().getValue();
+        if (attribute.equals("hsaIdentity")) {
+            response.getResponseValues().add(createAttributeValueListForEnhet(enhetsId));
+        } else if (attribute.equals("unitPrescriptionCode")) {
+            response.getResponseValues().add(createAttributeValueListForEnhet(enhetsId));
         }
-
         return response;
     }
 
     private AttributeValueListType createAttributeValueListForEnhet(String enhetsId) {
-        Vardenhet vardenhet = hsaService.getVardenhet(enhetsId);
-
         AttributeValueListType attributeList = new AttributeValueListType();
         attributeList.setDN(enhetsId);
 
@@ -172,19 +173,29 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         identityValue.getValue().add(enhetsId);
         attributeList.getResponse().add(identityValue);
 
-        Iterable<String> mottagningsId = Iterables.transform(vardenhet.getMottagningar(),
-                new Function<Mottagning, String>() {
-                    public String apply(Mottagning mottagning) {
-                        return mottagning.getId();
+        Vardenhet vardenhet = hsaService.getVardenhet(enhetsId);
+        if (vardenhet == null) {
+            // hsaService.getMottagning(enhetsId);
+        } else {
+            Collection<String> mottagningsId = Collections2.transform(vardenhet.getMottagningar(),
+                    new Function<Mottagning, String>() {
+                        public String apply(Mottagning mottagning) {
+                            return mottagning.getId();
+                        }
                     }
-                }
-        );
+            );
 
-        AttributeValuePairType membersAttribute = new AttributeValuePairType();
-        membersAttribute.setAttribute("hsaHealthCareUnitMember");
-        membersAttribute.getValue().addAll(Lists.newArrayList(mottagningsId));
-        attributeList.getResponse().add(membersAttribute);
+            AttributeValuePairType membersAttribute = new AttributeValuePairType();
+            membersAttribute.setAttribute("hsaHealthCareUnitMember");
+            membersAttribute.getValue().addAll(mottagningsId);
+            attributeList.getResponse().add(membersAttribute);
 
+            AttributeValuePairType arbetsplatskod = new AttributeValuePairType();
+            arbetsplatskod.setAttribute("unitPrescriptionCode");
+            arbetsplatskod.getValue().add(vardenhet.getArbetsplatskod());
+            attributeList.getResponse().add(arbetsplatskod);
+
+        }
         return attributeList;
     }
 

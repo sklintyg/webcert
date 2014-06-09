@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import se.inera.ifv.hsawsresponder.v3.AddressType;
 import se.inera.ifv.hsawsresponder.v3.AttributeListType;
+import se.inera.ifv.hsawsresponder.v3.AttributeValueListType;
 import se.inera.ifv.hsawsresponder.v3.AttributeValuePairType;
 import se.inera.ifv.hsawsresponder.v3.CareUnitType;
 import se.inera.ifv.hsawsresponder.v3.ExactType;
@@ -110,8 +111,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
             // only add enhet if it is currently active
             if (isActive(vardenhet.getStart(), vardenhet.getEnd())) {
                 GetHsaUnitResponseType response = client.callGetHsaunit(careUnit.getHsaIdentity());
-                // TODO WEBCERT-726 Arbetsplatskod skall hämtas från HSA
-                vardenhet.setArbetsplatskod("12345678");
+                vardenhet.setArbetsplatskod(getWorkplaceCode(vardenhet.getId()));
                 updateWithContactInformation(vardenhet, response);
                 attachMottagningar(vardenhet);
                 vardenheter.add(vardenhet);
@@ -166,13 +166,44 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         for (String mottagningsId : mottagningsIds) {
             Mottagning mottagning = fetchMottagning(mottagningsId);
             if (isActive(mottagning.getStart(), mottagning.getEnd())) {
-                // TODO WEBCERT-726 Arbetsplatskod skall hämtas från HSA
-                mottagning.setArbetsplatskod("mottagning123456");
+                mottagning.setArbetsplatskod(getWorkplaceCode(mottagning.getId()));
                 vardenhet.getMottagningar().add(mottagning);
             } else {
                 LOG.debug("Mottagning '{}' is not active right now", mottagningsId);
             }
         }
+    }
+
+    private String getWorkplaceCode(String careUnitHsaId) {
+        LOG.debug("Calling HSA in getWorkplaceCode");
+
+        HsawsSimpleLookupType parameters = new HsawsSimpleLookupType();
+
+        ExactType lookupValue = new ExactType();
+        lookupValue.setSearchAttribute("hsaIdentity");
+        lookupValue.setSearchOperator(SearchOperatorExact.EXACT);
+        lookupValue.setValue(careUnitHsaId);
+        parameters.setLookup(lookupValue);
+
+        AttributeListType attributes = new AttributeListType();
+        attributes.getAttribute().add("unitPrescriptionCode");
+
+        parameters.setAttributes(attributes);
+
+        HsawsSimpleLookupResponseType response = client.callHsawsSimpleLookup(parameters);
+
+        // Read response and pick values
+        for (AttributeValueListType attValList : response.getResponseValues()) {
+            for (AttributeValuePairType attValue : attValList.getResponse()) {
+                if (attValue.getAttribute().equalsIgnoreCase("unitPrescriptionCode")) {
+                    if (!attValue.getValue().isEmpty()) {
+                        return attValue.getValue().get(0);
+                    }
+                }
+            }
+        }
+
+        return "";
     }
 
     private Mottagning fetchMottagning(String mottagningsHsaId) {

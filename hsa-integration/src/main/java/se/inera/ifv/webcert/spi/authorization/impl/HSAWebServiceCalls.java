@@ -141,8 +141,7 @@ public class HSAWebServiceCalls {
      */
     public HsawsSimpleLookupResponseType callHsawsSimpleLookup(HsawsSimpleLookupType parameters) {
         try {
-            HsawsSimpleLookupResponseType response = serverInterface.hsawsSimpleLookup(logicalAddressHeader, messageId,
-                    parameters);
+            HsawsSimpleLookupResponseType response = serverInterface.hsawsSimpleLookup(logicalAddressHeader, messageId, parameters);
             return response;
         } catch (Throwable ex) {
             LOG.error("Failed to call hsawsSimpleLookup", ex);

@@ -71,6 +71,7 @@ public class HsaOrganizationsServiceTest {
         assertEquals("centrum-norr", enhet.getId());
         assertEquals("Vårdcentrum i Norr", enhet.getNamn());
         assertTrue(enhet.getMottagningar().isEmpty());
+        assertEquals("arbetsplatskod_centrum-norr", enhet.getArbetsplatskod());
     }
 
     @Test
@@ -102,8 +103,7 @@ public class HsaOrganizationsServiceTest {
         
         return (results.isPresent()) ? results.get() : null;
     }
-    
-    
+
     @Test
     public void testMultipleVardgivare() throws IOException {
         
