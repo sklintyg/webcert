@@ -79,7 +79,7 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
                      var subjectSerial = subject.substring(subject.indexOf("2.5.4.5=") + 8);
 
                      // Find where the serialnumber ends and remove everything after
-                     subjectSerial = subjectSerial.substring(0, subjectSerial.indexOf(","));
+                     subjectSerial = subjectSerial.split(',')[0];
 
                      log('SubjectSerial: ' + subjectSerial);
 
