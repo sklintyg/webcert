@@ -339,6 +339,7 @@ define([
                             _sendSigneratIntyg(cert, $scope.dialogSend, sendDialog);
                         },
                         button1text: 'common.send',
+                        button1id: 'button1send-dialog',
                         button2text: 'common.cancel',
                         autoClose: false
                     });

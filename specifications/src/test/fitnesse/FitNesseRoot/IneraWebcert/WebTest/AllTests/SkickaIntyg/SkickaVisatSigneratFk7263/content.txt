@@ -1,0 +1,18 @@
+Detta test ska visa på att man kan skicka ett signerat fk-intyg.
+
+!3 Välj patient och visa intyget
+
+| script | !-SokSkrivIntyg-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+| sok skriv intyg sidan visas sa smaningom |
+| valj patient | 19121212-1212 |
+| valj intygstyp sidan visas |
+| visa intyg | intyg-fit-1 |
+| visa sidan visas |
+
+!3 Skicka intyget
+
+| script | !-SokSkrivIntyg-! |
+| skicka visat intyg |
+
+#| Skicka status visas |

@@ -69,6 +69,12 @@ class SokSkrivIntyg {
         }
     }
 
+    def skickaVisatIntyg() {
+        Browser.drive {
+            page.send()
+        }
+    }
+
     def kopieraVisatIntyg() {
         Browser.drive {
             page.copy()

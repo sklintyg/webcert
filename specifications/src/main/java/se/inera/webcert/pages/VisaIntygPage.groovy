@@ -11,11 +11,21 @@ class VisaIntygPage extends Page {
         copyButton { $("#copyBtn") }
         intygVy { $('#intyg-vy-laddad') }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
+        skickaDialogCheck { $("#patientSamtycke") }
+        skickaDialogSkickaKnapp { $("#button1send-dialog") }
     }
 
     def copy() {
         $("#copyBtn").click()
         sleep(300)
         kopieraDialogKopieraKnapp.click()
+    }
+
+    def send() {
+        $("#sendBtn").click()
+        sleep(300)
+        skickaDialogCheck.click()
+        sleep(100)
+        skickaDialogSkickaKnapp.click()
     }
 }
