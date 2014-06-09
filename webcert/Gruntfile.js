@@ -21,7 +21,8 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     jshintrc: '../src/main/resources/.jshintrc',
-                    force: true
+                    force: true,
+                    ignores: ['src/main/webapp/js/main.min.js']
                 },
                 src: [ 'Gruntfile.js', 'src/main/webapp/js/**/*.js', 'src/test/**/*.js' ]
             }
