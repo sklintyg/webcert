@@ -57,12 +57,11 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         parameters.setHsaIdentity(hosPersonHsaId);
         GetMiuForPersonResponseType response = client.callMiuRights(parameters);
 
-        LOG.debug("User with HSA-Id '{}' has a total of {} medarbetaruppdrag", hosPersonHsaId, response
-                .getMiuInformation().size());
+        List<MiuInformationType> miuInformation = response.getMiuInformation();
+        LOG.debug("User with HSA-Id '{}' has a total of {} medarbetaruppdrag", hosPersonHsaId, miuInformation.size());
 
-        // filter by syfte. Only 'Vård och behandling' assignments are relevant
-        // for WebCert.
-        Iterable<MiuInformationType> filteredMius = Iterables.filter(response.getMiuInformation(),
+        // filter by syfte. Only 'Vård och behandling' assignments are relevant for WebCert.
+        Iterable<MiuInformationType> filteredMius = Iterables.filter(miuInformation,
                 new Predicate<MiuInformationType>() {
                     @Override
                     public boolean apply(MiuInformationType miuInformationType) {
@@ -165,7 +164,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         List<String> mottagningsIds = fetchMottagningsHsaId(vardenhet);
         for (String mottagningsId : mottagningsIds) {
             Mottagning mottagning = fetchMottagning(mottagningsId);
-            if (isActive(mottagning.getStart(), mottagning.getEnd())) {
+            if (mottagning != null && isActive(mottagning.getStart(), mottagning.getEnd())) {
                 mottagning.setArbetsplatskod(getWorkplaceCode(mottagning.getId()));
                 vardenhet.getMottagningar().add(mottagning);
             } else {
@@ -207,12 +206,16 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
     }
 
     private Mottagning fetchMottagning(String mottagningsHsaId) {
-
         GetHsaUnitResponseType response = client.callGetHsaunit(mottagningsHsaId);
         LOG.debug("Fetching details for mottagning '{}'", mottagningsHsaId);
-        Mottagning mottagning = new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(), response.getEndDate());
-        updateWithContactInformation(mottagning, response);
-        return mottagning;
+        if (response == null) {
+            LOG.error("Mottagning '{}' hittades ej i HSA. Inkonsistent data i HSA", mottagningsHsaId);
+            return null;
+        } else {
+            Mottagning mottagning = new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(), response.getEndDate());
+            updateWithContactInformation(mottagning, response);
+            return mottagning;
+        }
     }
 
     private void updateWithContactInformation(AbstractVardenhet vardenhet, GetHsaUnitResponseType response) {
@@ -259,15 +262,15 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         HsawsSimpleLookupResponseType lookupResponse = client.callHsawsSimpleLookup(lookupType);
 
         if (lookupResponse.getResponseValues().isEmpty()) {
+            LOG.debug("Enhet '{}' has 0 mottagningar", vardenhet.getId());
             return ids;
         }
 
         List<AttributeValuePairType> attributes = lookupResponse.getResponseValues().get(0).getResponse();
 
-        LOG.debug("Enhet '{}' has {} mottagningar", vardenhet.getId(), attributes.size());
-
         for (AttributeValuePairType attribute : attributes) {
             if ("hsaHealthCareUnitMember".equals(attribute.getAttribute())) {
+                LOG.debug("Enhet '{}' has {} mottagningar", vardenhet.getId(), attribute.getValue().size());
                 ids.addAll(attribute.getValue());
             }
         }

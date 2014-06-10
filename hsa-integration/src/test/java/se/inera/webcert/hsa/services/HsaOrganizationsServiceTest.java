@@ -187,4 +187,18 @@ public class HsaOrganizationsServiceTest {
         // no authorized vardgivere should be returned
         assertTrue(vardgivareList.isEmpty());
     }
+
+    @Test
+    public void mottagningListasMenFinnsEj() throws IOException {
+        // WEBCERT-749
+
+        addVardgivare("HsaOrganizationsServiceTest/landstinget-inkonsistent.json");
+
+        addMedarbetaruppdrag(PERSON_HSA_ID, asList("enhet1"));
+
+        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+
+        assertEquals(1, vardgivare.size());
+        assertTrue(vardgivare.get(0).getVardenheter().get(0).getMottagningar().isEmpty());
+    }
 }

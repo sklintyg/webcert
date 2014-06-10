@@ -61,6 +61,10 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
     @Override
     public GetHsaUnitResponseType getHsaUnit(AttributedURIType logicalAddress, AttributedURIType id,
                                              LookupHsaObjectType parameters) throws HsaWsFault {
+        if (parameters.getHsaIdentity().endsWith("-finns-ej")) {
+            return null;
+        }
+
         GetHsaUnitResponseType response = new GetHsaUnitResponseType();
 
         Vardenhet enhet = hsaService.getVardenhet(parameters.getHsaIdentity());

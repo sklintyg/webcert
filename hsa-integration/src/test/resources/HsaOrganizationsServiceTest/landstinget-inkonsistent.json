@@ -1,0 +1,16 @@
+{
+    "id" : "landsting-inkonsistent",
+    "namn" : "Landstinget inkonsistent",
+    "vardenheter" : [
+        {
+            "id" : "enhet1",
+            "namn" : "Enhet1",
+            "mottagningar" : [
+                {
+                    "id" : "mottagning-finns-ej",
+                    "namn" : "Finns ej"
+                }
+           ]
+        }
+    ]
+}
