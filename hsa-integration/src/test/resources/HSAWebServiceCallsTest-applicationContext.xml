@@ -19,27 +19,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:sec="http://cxf.apache.org/configuration/security"
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
-       xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
        xmlns:cxf="http://cxf.apache.org/core" xmlns:contex="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/context 
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
-        http://www.springframework.org/schema/mvc 
-        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
-        http://www.springframework.org/schema/aop 
-        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
-		http://cxf.apache.org/core                           
-		http://cxf.apache.org/schemas/core.xsd
-	    http://cxf.apache.org/configuration/security         
-	    http://cxf.apache.org/schemas/configuration/security.xsd
-        http://cxf.apache.org/transports/http/configuration  
+        http://cxf.apache.org/core
+        http://cxf.apache.org/schemas/core.xsd
+        http://cxf.apache.org/transports/http/configuration
         http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
   <import resource="classpath:META-INF/cxf/cxf.xml"/>
@@ -58,17 +47,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   <bean name="props" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <!--
-    <value>file:${webcert.home}/services.properties</value>
-    -->
         <value>classpath:services.properties</value>
 
       </list>
     </property>
   </bean>
-  <!--
-<bean id="organisationInfoService" class="se.inera.ifv.webcert.spi.organisation.impl.GetOrganisationInfoServiceImplHSA"/>
-
-<bean id="authorizationService" class="se.inera.ifv.webcert.spi.authorization.impl.GetAuthorizationServiceImplHSA"/>
-  -->
 </beans>
