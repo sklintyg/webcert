@@ -101,10 +101,9 @@ public class HSAWebServiceCalls {
      * @throws Exception
      */
     public GetCareUnitResponseType callGetCareunit(String hsaId) {
-        LookupHsaObjectType parameters = new LookupHsaObjectType();
-        parameters.setHsaIdentity(hsaId);
-
         try {
+            LookupHsaObjectType parameters = new LookupHsaObjectType();
+            parameters.setHsaIdentity(hsaId);
             GetCareUnitResponseType response = serverInterface.getCareUnit(logicalAddressHeader, messageId, parameters);
             return response;
         } catch (Throwable ex) {
@@ -120,10 +119,9 @@ public class HSAWebServiceCalls {
      * @param hsaId
      */
     public GetHsaUnitResponseType callGetHsaunit(String hsaId) {
-        LookupHsaObjectType parameters = new LookupHsaObjectType();
-        parameters.setHsaIdentity(hsaId);
-
         try {
+            LookupHsaObjectType parameters = new LookupHsaObjectType();
+            parameters.setHsaIdentity(hsaId);
             return serverInterface.getHsaUnit(logicalAddressHeader, messageId, parameters);
         } catch (Throwable ex) {
             LOG.error("Failed to call getHsaUnit", ex);

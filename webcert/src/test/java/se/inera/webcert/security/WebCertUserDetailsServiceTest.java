@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +33,7 @@ import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
 
 import se.inera.auth.WebCertUserDetailsService;
+import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -141,6 +144,14 @@ public class WebCertUserDetailsServiceTest {
         userDetailsService.loadUserBySAML(samlCredential);
     }
 
+    @Test(expected = HsaServiceException.class)
+    public void unexpectedExceptionWhenprocessingData() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
+        when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(anyString())).thenThrow(new NullPointerException());
+        userDetailsService.loadUserBySAML(samlCredential);
+        fail("Expected exception");
+    }
+
     private SAMLCredential createSamlCredential(String filename) throws Exception {
         Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
                 "WebCertUserDetailsServiceTest/" + filename).getInputStream()));
@@ -151,5 +162,4 @@ public class WebCertUserDetailsServiceTest {
         NameID nameId = assertion.getSubject().getNameID();
         return new SAMLCredential(nameId, assertion, "remoteId", "localId");
     }
-
 }
