@@ -159,7 +159,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         List<String> mottagningsIds = fetchMottagningsHsaId(vardenhet);
         for (String mottagningsId : mottagningsIds) {
             Mottagning mottagning = fetchMottagning(mottagningsId);
-            if (isActive(mottagning.getStart(), mottagning.getEnd())) {
+            if (mottagning != null && isActive(mottagning.getStart(), mottagning.getEnd())) {
                 vardenhet.getMottagningar().add(mottagning);
             } else {
                 LOG.debug("Mottagning '{}' is not active right now", mottagningsId);
@@ -171,8 +171,11 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
         GetHsaUnitResponseType response = client.callGetHsaunit(mottagningsHsaId);
         LOG.debug("Fetching details for mottagning '{}'", mottagningsHsaId);
-        return new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(),
-                response.getEndDate());
+        if (response == null) {
+            return null;
+        } else {
+            return new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(), response.getEndDate());
+        }
     }
 
     private List<String> fetchMottagningsHsaId(Vardenhet vardenhet) {

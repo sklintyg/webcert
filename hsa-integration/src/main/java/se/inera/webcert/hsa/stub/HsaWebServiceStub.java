@@ -56,7 +56,12 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
             LookupHsaObjectType parameters) throws HsaWsFault {
         GetHsaUnitResponseType response = new GetHsaUnitResponseType();
 
-        Vardenhet enhet = hsaService.getVardenhet(parameters.getHsaIdentity());
+        String hsaIdentity = parameters.getHsaIdentity();
+        if (hsaIdentity.endsWith("-finns-ej")) {
+            return null;
+        }
+
+        Vardenhet enhet = hsaService.getVardenhet(hsaIdentity);
         if (enhet != null) {
             response.setHsaIdentity(enhet.getId());
             response.setName(enhet.getNamn());
@@ -66,7 +71,7 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
             return response;
         }
 
-        Mottagning mottagning = hsaService.getMottagning(parameters.getHsaIdentity());
+        Mottagning mottagning = hsaService.getMottagning(hsaIdentity);
         if (mottagning != null) {
             response.setHsaIdentity(mottagning.getId());
             response.setName(mottagning.getNamn());
