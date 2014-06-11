@@ -2,7 +2,6 @@ package se.inera.webcert.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -64,6 +63,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarServiceImpl;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -722,32 +722,11 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test
-    public void testMailNotificationFailsForQuestion() throws MessagingException {
-        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
-        Mockito.doThrow(new MessagingException("MessagingExceptionCause")).when(mailNotificationService).sendMailForIncomingQuestion(fraga);
-        service.processIncomingQuestion(fraga);
-        ArgumentCaptor<String> capture = ArgumentCaptor.forClass(String.class);
-        verify(logger).error(capture.capture());
-        assertTrue("An error should have been logged", capture.getValue().matches(".*Notification mail.*couldn't be sent.*MessagingExceptionCause"));
-    }
-
-    @Test
     public void testMailNotificationForAnswer() throws MessagingException {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
         service.processIncomingAnswer(1L, "svarsText", new LocalDateTime());
         verify(mailNotificationService).sendMailForIncomingAnswer(fragaSvar);
-    }
-
-    @Test
-    public void testMailNotificationFailsForAnswer() throws MessagingException {
-        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
-        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
-        Mockito.doThrow(new MessagingException("MessagingExceptionCause")).when(mailNotificationService).sendMailForIncomingAnswer(fragaSvar);
-        service.processIncomingAnswer(1L, "svarsText", new LocalDateTime());
-        ArgumentCaptor<String> capture = ArgumentCaptor.forClass(String.class);
-        verify(logger).error(capture.capture());
-        assertTrue("An error should have been logged", capture.getValue().matches(".*Notification mail.*couldn't be sent.*MessagingExceptionCause"));
     }
 
     @Test(expected = WebCertServiceException.class)

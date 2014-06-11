@@ -41,8 +41,9 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="se.inera.webcert"/>
-    <task:annotation-driven scheduler="scheduler"/>
+    <task:annotation-driven scheduler="scheduler" executor="threadPoolTaskExecutor"/>
     <task:scheduler id="scheduler" pool-size="1"/>
+    <task:executor id="threadPoolTaskExecutor" pool-size="10" queue-capacity="100" rejection-policy="CALLER_RUNS" />
 
     <import resource="classpath:repository-context.xml"/>
     <import resource="security/securityContext.xml"/>
