@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
+import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -36,26 +37,34 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         LOG.info("User authentication was successful. SAML credential is " + credential);
 
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(credential.getAuthenticationAssertion());
+        try {
+            WebCertUser webCertUser = createWebCertUser(assertion);
 
-        WebCertUser webCertUser = createWebCertUser(assertion);
+            // if user has authenticated with other contract than 'Vård och
+            // behandling', we have to reject her
+            if (!VARD_OCH_BEHANDLING.equals(assertion.getMedarbetaruppdragType())) {
+                throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
+            }
 
-        // if user has authenticated with other contract than 'Vård och behandling', we have to reject her
-        if (!VARD_OCH_BEHANDLING.equals(assertion.getMedarbetaruppdragType())) {
-            throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
+            List<Vardgivare> authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId());
+
+            // if user does not have access to any vardgivare, we have to reject
+            // authentication
+            if (authorizedVardgivare.isEmpty()) {
+                throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
+            }
+
+            webCertUser.setVardgivare(authorizedVardgivare);
+
+            setDefaultSelectedVardenhetOnUser(webCertUser, assertion);
+
+            return webCertUser;
+        } catch (MissingMedarbetaruppdragException e) {
+            throw e;
+        } catch (Exception e) {
+            LOG.error("Error building user " + assertion.getHsaId(), e);
+            throw new HsaServiceException(assertion.getHsaId(), e);
         }
-
-        List<Vardgivare> authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId());
-
-        // if user does not have access to any vardgivare, we have to reject authentication
-        if (authorizedVardgivare.isEmpty()) {
-            throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
-        }
-
-        webCertUser.setVardgivare(authorizedVardgivare);
-        
-        setDefaultSelectedVardenhetOnUser(webCertUser, assertion);
-        
-        return webCertUser;
     }
 
     private WebCertUser createWebCertUser(SakerhetstjanstAssertion assertion) {
