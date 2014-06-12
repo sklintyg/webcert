@@ -17,8 +17,8 @@
 
 !3 så ska det finnas en fråga med svar
 | Fragor och svar |
-| internReferens | finns? | svar? |
-| $internReferens | true | Ett svar |
+| internReferens | finns? | svar? | status? |
+| $internReferens | true | Ett svar | ANSWERED |
 
 !2 Undantagsflöden
 

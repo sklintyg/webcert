@@ -137,6 +137,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSigneringsDatum(svarSigneringsDatum);
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
+        fragaSvar.setStatus(Status.ANSWERED);
 
         // update the FragaSvar
         fragaSvarRepository.save(fragaSvar);
