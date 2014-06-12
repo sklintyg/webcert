@@ -68,8 +68,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT, Amne.OVRIGT);
 
-    
-
     @Autowired
     private MailNotificationService mailNotificationService;
 
@@ -138,6 +136,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSigneringsDatum(svarSigneringsDatum);
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
+        fragaSvar.setStatus(Status.ANSWERED);
 
         // update the FragaSvar
         fragaSvarRepository.save(fragaSvar);
