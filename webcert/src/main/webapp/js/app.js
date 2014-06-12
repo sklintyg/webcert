@@ -107,6 +107,7 @@ define([
         closeOnDateSelection: true,
         appendToBody: false,
         showWeeks: true,
+        startingDay: 1,
         closeText: 'OK',
         currentText: 'Idag',
         toggleWeeksText: 'Visa Veckor',
