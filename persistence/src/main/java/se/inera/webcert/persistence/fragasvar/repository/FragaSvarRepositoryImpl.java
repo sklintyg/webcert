@@ -50,7 +50,7 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         }
 
         if (filter.getChangedTo() != null) {
-            pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDate>get("senasteHandelse"), filter.getChangedTo()));
+            pred = builder.and(pred, builder.lessThan(root.<LocalDate>get("senasteHandelse"), filter.getChangedTo()));
         }
 
         if (filter.getReplyLatest() != null) {

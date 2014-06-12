@@ -445,7 +445,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         filter.setChangedFrom(params.getChangedFrom());
-        filter.setChangedTo(params.getChangedTo());
+        if (params.getChangedTo() != null) {
+            filter.setChangedTo(params.getChangedTo().plusDays(1));
+        }
         filter.setHsaId(params.getHsaId());
         filter.setQuestionFromFK(getSafeBooleanValue(params.getQuestionFromFK()));
         filter.setQuestionFromWC(getSafeBooleanValue(params.getQuestionFromWC()));
