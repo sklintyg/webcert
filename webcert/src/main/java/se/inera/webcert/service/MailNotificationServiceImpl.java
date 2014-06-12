@@ -146,8 +146,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         return response;
     }
 
-    private String intygsUrl(FragaSvar fragaSvar) {
+    public String intygsUrl(FragaSvar fragaSvar) {
         return webCertHostUrl + "/m/" + fragaSvar.getIntygsReferens().getIntygsTyp().toLowerCase() + "/webcert/intyg/"
-                + fragaSvar.getInternReferens() + "#/view";
+                + fragaSvar.getIntygsReferens().getIntygsId() + "#/view";
     }
 }

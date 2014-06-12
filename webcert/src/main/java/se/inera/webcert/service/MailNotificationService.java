@@ -11,4 +11,5 @@ public interface MailNotificationService {
 
     void sendMailForIncomingQuestion(FragaSvar fragaSvar) throws MessagingException;
     void sendMailForIncomingAnswer(FragaSvar fragaSvar) throws MessagingException;
+    public String intygsUrl(FragaSvar fragaSvar);
 }
