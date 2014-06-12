@@ -824,7 +824,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
   dayTitleFormat: 'MMMM yyyy',
   monthTitleFormat: 'yyyy',
   showWeeks: true,
-  startingDay: 0,
+  startingDay: 1,
   yearRange: 20,
   minDate: null,
   maxDate: null
