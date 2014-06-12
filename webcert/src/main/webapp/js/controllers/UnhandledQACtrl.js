@@ -14,14 +14,12 @@ define([
      */
     angular.module(moduleName, [ dialogService, fragaSvarCommonService, ManageCertificate, QuestionAnswer ]).
         controller(moduleName, [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window',
-            'datepickerPopupConfig', dialogService, fragaSvarCommonService, ManageCertificate, QuestionAnswer,
-            function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, datepickerPopupConfig,
+            dialogService, fragaSvarCommonService, ManageCertificate, QuestionAnswer,
+            function($cookieStore, $filter, $location, $log, $scope, $timeout, $window,
                 dialogService, fragaSvarCommonService, ManageCertificate, QuestionAnswer) {
 
                 var PAGE_SIZE = 10;
                 var enhetId = 'wc-all';
-
-               // $scope.datepickerPopupConfig = datepickerPopupConfig;
 
                 $scope.widgetState = {
                     doneLoading: true,
