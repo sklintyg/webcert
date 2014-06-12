@@ -70,46 +70,57 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
     private WebCertUser createWebCertUser(SakerhetstjanstAssertion assertion) {
         WebCertUser webcertUser = new WebCertUser();
         webcertUser.setHsaId(assertion.getHsaId());
-        webcertUser.setNamn(assertion.getFornamn() + " " + assertion.getMellanOchEfternamn());
+        String namn = null;
+        if (StringUtils.isNotBlank(assertion.getFornamn())) {
+            namn = assertion.getFornamn();
+        }
+        if (StringUtils.isNotBlank(assertion.getMellanOchEfternamn())) {
+            if (namn == null) {
+                namn = assertion.getMellanOchEfternamn();
+            } else {
+                namn += " " + assertion.getMellanOchEfternamn();
+            }
+        }
+        webcertUser.setNamn(namn);
         webcertUser.setForskrivarkod(assertion.getForskrivarkod());
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
-    
+
         // lakare flag is calculated by checking for lakare profession in title and title code
         webcertUser.setLakare(LAKARE.equals(assertion.getTitel()) || LAKARE_CODE.equals(assertion.getTitelKod()));
-        
+
         return webcertUser;
     }
 
     private void setDefaultSelectedVardenhetOnUser(WebCertUser user, SakerhetstjanstAssertion assertion) {
-        
+
         // Get HSA id for the selected MIU
         String medarbetaruppdragHsaId = assertion.getEnhetHsaId();
-        
+
         boolean changeSuccess = false;
-        
+
         if (StringUtils.isNotBlank(medarbetaruppdragHsaId)) {
             changeSuccess = user.changeValdVardenhet(medarbetaruppdragHsaId);
         } else {
             LOG.error("Assertion did not contain a medarbetaruppdrag, defaulting to use one of the Vardenheter present in the user");
             changeSuccess = setFirstVardenhetOnFirstVardgivareAsDefault(user);
         }
-        
+
         if (!changeSuccess) {
             LOG.error("When logging in user '{}', unit with HSA-id {} could not be found in users MIUs", user.getHsaId(), medarbetaruppdragHsaId);
             throw new MissingMedarbetaruppdragException(user.getHsaId());
         }
-        
+
         LOG.debug("Setting care unit '{}' as default unit on user '{}'", user.getValdVardenhet().getId(), user.getHsaId());
     }
-    
+
     private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
-        
+
         Vardgivare firstVardgivare = user.getVardgivare().get(0);
         user.setValdVardgivare(firstVardgivare);
-        
+
         Vardenhet firstVardenhet = firstVardgivare.getVardenheter().get(0);
         user.setValdVardenhet(firstVardenhet);
-        
+
         return true;
     }
 }

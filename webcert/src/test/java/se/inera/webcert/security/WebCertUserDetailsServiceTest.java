@@ -73,9 +73,9 @@ public class WebCertUserDetailsServiceTest {
         assertEquals("vg", webCertUser.getVardgivare().get(0).getId());
 
         assertEquals(vardgivare, webCertUser.getVardgivare().get(0));
-        
-        assertEquals(vardgivare, webCertUser.getValdVardgivare());        
-        
+
+        assertEquals(vardgivare, webCertUser.getValdVardgivare());
+
         assertNotNull(webCertUser.getValdVardenhet());
         assertEquals(ENHET_HSA_ID, webCertUser.getValdVardenhet().getId());
 
@@ -86,7 +86,7 @@ public class WebCertUserDetailsServiceTest {
         vardgivare = new Vardgivare("vg", "Landstinget Ingenmansland");
         vardgivare.getVardenheter().add(new Vardenhet("vardcentralen", "Vårdcentralen"));
         vardgivare.getVardenheter().add(new Vardenhet(ENHET_HSA_ID, "TestVårdEnhet2A VårdEnhet2A"));
-               
+
         List<Vardgivare> vardgivareList = Collections.singletonList(vardgivare);
 
         when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID)).thenReturn(
@@ -115,6 +115,14 @@ public class WebCertUserDetailsServiceTest {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertFalse(webCertUser.isLakare());
+    }
+
+    @Test
+    public void testNoGivenName() throws Exception {
+        setupHsaOrganizationService();
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-givenname.xml");
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+        assertEquals("Gran", webCertUser.getNamn());
     }
 
     @Test(expected = MissingMedarbetaruppdragException.class)
