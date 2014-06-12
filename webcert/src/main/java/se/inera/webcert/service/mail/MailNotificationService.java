@@ -9,4 +9,5 @@ public interface MailNotificationService {
 
     void sendMailForIncomingQuestion(FragaSvar fragaSvar);
     void sendMailForIncomingAnswer(FragaSvar fragaSvar);
+    public String intygsUrl(FragaSvar fragaSvar);
 }

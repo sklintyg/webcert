@@ -194,6 +194,13 @@ public class MailNotificationServiceTest {
         assertEquals(expectationFromFile("incoming-question-body-cityakuten.html"), mail.getBody());
     }
 
+    @Test
+    public void linkHasCorrectId() {
+        String url = mailNotificationService.intygsUrl(fragaSvar("enhet"));
+
+        assertEquals("https://www.webcert.se/m/fk7263/webcert/intyg/1#/view", url);
+    }
+
     @After
     public void cleanMailStore() {
         mailStore.getMails().clear();
@@ -203,9 +210,9 @@ public class MailNotificationServiceTest {
         FragaSvar fragaSvar = new FragaSvar();
         fragaSvar.setVardperson(new Vardperson());
         fragaSvar.getVardperson().setEnhetsId(enhetsId);
-        fragaSvar.setInternReferens(1L);
+        fragaSvar.setInternReferens(2L);
         fragaSvar.setIntygsReferens(new IntygsReferens());
-        fragaSvar.getIntygsReferens().setIntygsId("1L");
+        fragaSvar.getIntygsReferens().setIntygsId("1");
         fragaSvar.getIntygsReferens().setIntygsTyp("FK7263");
         return fragaSvar;
     }
