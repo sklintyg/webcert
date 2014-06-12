@@ -83,14 +83,15 @@
                               Från
                               <input type="text" class="form-control" id="filter-changedate-from" datepicker-popup
                                           ng-model="filterQuery.changedFrom" is-open="widgetState.dpFromOpen.open"
-                                          datepicker-options="{{datepickerConfig}}"/>
+                                          datepicker-options="{{datepickerPopupConfig}}"/>
                               <button class="btn btn-default" ng-click="toggleDatePickerInstance(widgetState.dpFromOpen)">
                                 <i class="glyphicon glyphicon-calendar"></i>
                               </button>
                               till
+                              {{datepickerPopupConfig}}
                               <input type="text" class="form-control" id="filter-changedate-to" datepicker-popup
                                           ng-model="filterQuery.changedTo" is-open="widgetState.dpToOpen.open"
-                                          datepicker-options="{{datepickerConfig}}"/>
+                                          datepicker-options="{{datepickerPopupConfig}}"/>
                               <button class="btn btn-default" ng-click="toggleDatePickerInstance(widgetState.dpToOpen)">
                                 <i class="glyphicon glyphicon-calendar"></i>
                               </button>
