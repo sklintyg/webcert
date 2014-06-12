@@ -198,7 +198,7 @@ public class MailNotificationServiceTest {
     public void linkHasCorrectId() {
         String url = mailNotificationService.intygsUrl(fragaSvar("enhet"));
 
-        assertEquals("https://www.webcert.se/m/fk7263/webcert/intyg/1#/view", url);
+        assertEquals("https://www.webcert.se/webcert/web/user/certificate/1/questions", url);
     }
 
     @After
