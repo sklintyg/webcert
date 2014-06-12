@@ -1,17 +1,11 @@
 package se.inera.auth;
 
-import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
-
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
-
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.webcert.hsa.model.Vardenhet;
@@ -19,6 +13,10 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
+
+import java.util.List;
+
+import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
 /**
  * @author andreaskaltenbach
@@ -72,7 +70,18 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
     private WebCertUser createWebCertUser(SakerhetstjanstAssertion assertion) {
         WebCertUser webcertUser = new WebCertUser();
         webcertUser.setHsaId(assertion.getHsaId());
-        webcertUser.setNamn(assertion.getFornamn() + " " + assertion.getMellanOchEfternamn());
+        String namn = null;
+        if (StringUtils.isNotBlank(assertion.getFornamn())) {
+            namn = assertion.getFornamn();
+        }
+        if (StringUtils.isNotBlank(assertion.getMellanOchEfternamn())) {
+            if (namn == null) {
+                namn = assertion.getMellanOchEfternamn();
+            } else {
+                namn += " " + assertion.getMellanOchEfternamn();
+            }
+        }
+        webcertUser.setNamn(namn);
         webcertUser.setForskrivarkod(assertion.getForskrivarkod());
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
 
