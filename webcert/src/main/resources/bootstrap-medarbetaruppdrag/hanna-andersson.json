@@ -1,0 +1,17 @@
+{
+    "hsaId": "TST5565594230-106C",
+	"forNamn": "Hanna",
+	"efterNamn": "Andersson",
+    "uppdrag":[
+    	{
+    		"enhet": "IFV1239877878-103F"
+    	},
+    	{
+    		"enhet": "IFV1239877878-103H"
+    	},
+    	{
+    		"enhet": "IFV1239877878-103D"
+
+    	}
+    ]
+}
