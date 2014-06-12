@@ -26,9 +26,16 @@ angular.module('wc.common.fragasvarmodule').factory('fragaSvarCommonService', [ 
         var baseURL = $window.location.protocol + "//" + $window.location.hostname + ($window.location.port ? ':' + $window.location.port : '');
         var url = baseURL + "/m/fk7263/webcert/intyg/" + qa.intygsReferens.intygsId + "#/view";
         var recipient = "";
-        var subject = "Du har blivit tilldelad ett Fråga&Svar ärende i Webcert";
+        var subject = "Du har blivit tilldelad ett Fråga&Svar-ärende i Webcert";
+        if (qa.vardperson.enhetsnamn !== undefined) {
+        	subject += " på enhet " + qa.vardperson.enhetsnamn;
+        	if (qa.vardperson.vardgivarnamn !== undefined) {
+        		subject += " för vårdgivare " + qa.vardperson.vardgivarnamn; 
+        	}
+        }
+        
         var body = "Klicka länken för att gå till ärendet:\n" + url;
-        var link = "mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+        var link = "mailto:" + recipient + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);        
         $log.debug(link);
         return link;
     }
