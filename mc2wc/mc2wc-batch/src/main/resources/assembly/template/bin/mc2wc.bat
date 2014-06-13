@@ -1,5 +1,2 @@
-DIR=%~dp0
-pushd $DIR
-COMMAND_STRING="java -DconfigFile=$DIR/conf/prod.properties -DlogFile=log/ -DexportDir=$DIR/export/ -jar lib/mc2wc.one-jar.jar -e"
-eval $COMMAND_STRING
-popd
+set COMMAND_STRING=-DconfigFile=..\conf\prod.properties -DlogFile=..\log\ -DexportDir=..\export\ -jar ..\lib\mc2wc.one-jar.jar -e
+java %COMMAND_STRING%
