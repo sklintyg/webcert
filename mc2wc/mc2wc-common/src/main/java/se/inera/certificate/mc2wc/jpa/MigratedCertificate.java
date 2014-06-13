@@ -24,6 +24,12 @@ public class MigratedCertificate {
 
     @Column(name = "DOCUMENT")
     private byte[] document;
+    
+    @Column(name = "QUESTIONS")
+    private int nbrOfQuestions;
+    
+    @Column(name = "ANSWERED_QUESTIONS")
+    private int nbrOfAnsweredQuestions;
 
     public Long getId() {
         return id;
@@ -47,6 +53,22 @@ public class MigratedCertificate {
 
     public void setDocument(byte[] document) {
         this.document = document;
+    }
+
+    public int getNbrOfQuestions() {
+        return nbrOfQuestions;
+    }
+
+    public void setNbrOfQuestions(int nbrOfQuestions) {
+        this.nbrOfQuestions = nbrOfQuestions;
+    }
+
+    public int getNbrOfAnsweredQuestions() {
+        return nbrOfAnsweredQuestions;
+    }
+
+    public void setNbrOfAnsweredQuestions(int nbrOfAnsweredQuestions) {
+        this.nbrOfAnsweredQuestions = nbrOfAnsweredQuestions;
     }
 
 }

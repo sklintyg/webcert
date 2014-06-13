@@ -24,37 +24,46 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
      * boolean)
      */
     @Override
-    public MigrationMessage toMigrationMessage(Certificate mcCert, String sender) {
+    public MigrationMessage toMigrationMessage(Certificate cert, String sender) {
+                
+        MigrationMessage migrationMessage = new MigrationMessage();
+        migrationMessage.setCertificateId(cert.getId());
 
-        log.debug("Processing Certificate {}", mcCert.getId());
-
-        MigrationMessage msg = new MigrationMessage();
-        msg.setCertificateId(mcCert.getId());
-
-        if (shouldCertBeMigrated(mcCert)) {
-            CertificateType wcCert = toWCCertificate(mcCert, sender);
-            msg.setCertificate(wcCert);
+        if (hasCertAnyContents(cert)) {
+            CertificateType wcCert = toWCCertificate(cert, sender);
+            migrationMessage.setCertificate(wcCert);
+        }
+        
+        if (hasCertAnyQuestions(cert)) {
+            addQuestionsToMigrationMessage(migrationMessage, cert);
         }
 
+        return migrationMessage;
+    }
+
+    private void addQuestionsToMigrationMessage(MigrationMessage msg, Certificate mcCert) {
         Set<Question> questions = mcCert.getQuestions();
 
         log.debug("Certificate {} has {} questions", mcCert.getId(), questions.size());
 
         for (Question mcQuestion : questions) {
             if (mcQuestion.getState() == State.CREATED || mcQuestion.getSubject() == null || mcQuestion.getText() == null) {
+                log.info("Question {}, belonging to certificate {} will not be migrated since it either has state CREATED or lacks subject or text", mcQuestion.getId(), mcCert.getId());
                 continue;
             }
             QuestionType wcQuestionAnswer = toWCQuestionAnswer(mcCert.getId(), mcQuestion);
             msg.getQuestions().add(wcQuestionAnswer);
         }
-
-        return msg;
     }
-
-    private boolean shouldCertBeMigrated(Certificate cert) {
+    
+    private boolean hasCertAnyContents(Certificate cert) {
         return (cert.getDocument() != null && cert.getDocument().length > 0);
     }
-
+    
+    private boolean hasCertAnyQuestions(Certificate cert) {
+        return (cert.getQuestions() != null && cert.getQuestions().size() > 0);
+    }
+    
     private CertificateType toWCCertificate(Certificate mcCert, String sender) {
 
         log.debug("Converting the contents of Certificate {}", mcCert.getId());
@@ -62,7 +71,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         CertificateType wcCert = new CertificateType();
 
         wcCert.setCertificateId(mcCert.getId());
-        wcCert.setCertificateType("FK7263");
+        wcCert.setCertificateType(INTYGS_TYP);
         wcCert.setCareUnitId(mcCert.getCareUnitId());
         wcCert.setOrigin(mcCert.getOrigin().toString());
 

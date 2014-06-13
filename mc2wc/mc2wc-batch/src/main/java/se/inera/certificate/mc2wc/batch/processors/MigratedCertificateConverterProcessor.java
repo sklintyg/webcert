@@ -13,6 +13,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import se.inera.certificate.mc2wc.jpa.MigratedCertificate;
 import se.inera.certificate.mc2wc.message.MigrationMessage;
+import se.inera.certificate.mc2wc.message.QuestionType;
 
 public class MigratedCertificateConverterProcessor implements
         ItemProcessor<MigrationMessage, MigratedCertificate> {
@@ -26,20 +27,49 @@ public class MigratedCertificateConverterProcessor implements
     @Override
     public MigratedCertificate process(MigrationMessage migrationMessage) throws Exception {
 
-        log.debug("Preparing MigratedCertificate entity for certficate '{}'", migrationMessage.getCertificateId());
+        String certificateId = migrationMessage.getCertificateId();
+        
+        log.debug("Preparing MigratedCertificate entity for certficate '{}'", certificateId);
 
         MigratedCertificate migratedCertificate = new MigratedCertificate();
-        String certificateId = migrationMessage.getCertificateId();
-
-        byte[] certificateDocument = convertMigrationMessageToXML(migrationMessage);
-        log.debug("Adding payload of {} bytes", certificateDocument.length);
-
         migratedCertificate.setCertificateId(certificateId);
-        migratedCertificate.setDocument(certificateDocument);
 
+        addCertificateDocument(migratedCertificate, migrationMessage);
+        
+        addCountOfNbrOfQuestions(migratedCertificate, migrationMessage);
+        
         return migratedCertificate;
     }
-
+    
+    private void addCertificateDocument(MigratedCertificate migratedCertificate, MigrationMessage migrationMessage) throws JAXBException {
+        
+        byte[] certificateDocument = convertMigrationMessageToXML(migrationMessage);
+        migratedCertificate.setDocument(certificateDocument);
+        
+        log.debug("Adding certificate document of {} bytes", certificateDocument.length);
+    }
+    
+    private void addCountOfNbrOfQuestions(MigratedCertificate migrCert, MigrationMessage migrationMessage) {
+        
+        int nbrOfQuestions = 0;
+        
+        int nbrOfAnsweredQuestions  = 0;
+        
+        if (migrationMessage.getQuestions() == null) {
+            return;
+        }
+        
+        for (QuestionType qt : migrationMessage.getQuestions()) {
+            nbrOfQuestions++;
+            nbrOfAnsweredQuestions += (qt.getAnswer() != null) ? 1 : 0;
+        }
+        
+        migrCert.setNbrOfQuestions(nbrOfQuestions);
+        migrCert.setNbrOfAnsweredQuestions(nbrOfAnsweredQuestions);
+        
+        log.debug("Migrated certificate has {} questions, {} with answers", nbrOfQuestions, nbrOfAnsweredQuestions);
+    }
+    
     private byte[] convertMigrationMessageToXML(MigrationMessage migrationMessage) throws JAXBException {
         ByteArrayOutputStream xmlBaos = new ByteArrayOutputStream();
         marshaller.marshal(migrationMessage, xmlBaos);
