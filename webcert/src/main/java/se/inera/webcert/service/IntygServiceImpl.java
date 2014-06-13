@@ -28,9 +28,9 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificat
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateResponderInterface;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateResponseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateStatusType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
@@ -84,7 +84,7 @@ public class IntygServiceImpl implements IntygService {
 
     static {
         try {
-            JAXBContext context = JAXBContext.newInstance(UtlatandeType.class, RegisterMedicalCertificateType.class);
+            JAXBContext context = JAXBContext.newInstance(UtlatandeType.class, RegisterCertificateType.class);
             marshaller = context.createMarshaller();
             unmarshaller = context.createUnmarshaller();
         } catch (JAXBException e) {
@@ -100,7 +100,7 @@ public class IntygServiceImpl implements IntygService {
     private ListCertificatesForCareResponderInterface listCertificateService;
 
     @Autowired
-    private RegisterMedicalCertificateResponderInterface intygSender;
+    private RegisterCertificateResponderInterface intygSender;
 
     @Autowired
     private OmsandningRepository omsandningRepository;
@@ -363,11 +363,11 @@ public class IntygServiceImpl implements IntygService {
             request.setSigneringsdatum(intyg.getSenastSparadDatum());
             request.setSkickatdatum(new LocalDateTime());
 
-            RegisterMedicalCertificateType data = new RegisterMedicalCertificateType();
+            RegisterCertificateType data = new RegisterCertificateType();
             data.setUtlatande(request);
             LOG.info("Förbered registrera intyg intyg på {}", intygSender);
-            RegisterMedicalCertificateResponseType registerMedicalCertificateResponseType = intygSender.registerMedicalCertificate("", data);
-            ResultType result = registerMedicalCertificateResponseType.getResult();
+            RegisterCertificateResponseType registerCertificateResponseType = intygSender.registerCertificate("", data);
+            ResultType result = registerCertificateResponseType.getResult();
             if (result.getResultCode() == ResultCodeType.ERROR) {
                 LOG.error("Register intyg {} {} {}", new Object[] {result.getResultCode(), result.getErrorId(), result.getResultText()});
                 omsandning.setNastaForsok(new LocalDateTime().plusHours(1));

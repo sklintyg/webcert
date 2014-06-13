@@ -29,9 +29,9 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificat
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateResponderInterface;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateResponseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.registerMedicalCertificate.v1.RegisterMedicalCertificateType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
@@ -88,7 +88,7 @@ public class IntygServiceTest {
     private OmsandningRepository omsandningRepository;
 
     @Mock
-    private RegisterMedicalCertificateResponderInterface intygSender;
+    private RegisterCertificateResponderInterface intygSender;
 
     @InjectMocks
     private IntygServiceImpl intygService = new IntygServiceImpl();
@@ -375,11 +375,11 @@ public class IntygServiceTest {
         when(externalModelResponse.getExternalModelJson()).thenReturn("{}");
         when(intygRepository.findOne(anyString())).thenReturn(intyg);
         when(moduleApi.marshall(any(ExternalModelHolder.class), any(TransportModelVersion.class))).thenReturn(new TransportModelResponse("<Utlatande/>"));
-        RegisterMedicalCertificateResponseType responseType = new RegisterMedicalCertificateResponseType();
+        RegisterCertificateResponseType responseType = new RegisterCertificateResponseType();
         ResultType result = new ResultType();
         responseType.setResult(result);
         result.setResultCode(ResultCodeType.OK);
-        when(intygSender.registerMedicalCertificate(anyString(), any(RegisterMedicalCertificateType.class))).thenReturn(responseType);
+        when(intygSender.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenReturn(responseType);
 
         intygService.storeIntyg(intyg, omsandning);
 
@@ -398,11 +398,11 @@ public class IntygServiceTest {
         when(externalModelResponse.getExternalModelJson()).thenReturn("{}");
         when(intygRepository.findOne(anyString())).thenReturn(intyg);
         when(moduleApi.marshall(any(ExternalModelHolder.class), any(TransportModelVersion.class))).thenReturn(new TransportModelResponse("<Utlatande/>"));
-        RegisterMedicalCertificateResponseType responseType = new RegisterMedicalCertificateResponseType();
+        RegisterCertificateResponseType responseType = new RegisterCertificateResponseType();
         ResultType result = new ResultType();
         responseType.setResult(result);
         result.setResultCode(ResultCodeType.ERROR);
-        when(intygSender.registerMedicalCertificate(anyString(), any(RegisterMedicalCertificateType.class))).thenReturn(responseType);
+        when(intygSender.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenReturn(responseType);
 
         intygService.storeIntyg(intyg, omsandning);
 
