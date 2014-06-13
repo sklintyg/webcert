@@ -282,6 +282,30 @@ class SvaraOchFraga {
         }
     }
 
+    def valjDatumFran(String datumText) {
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            waitFor {
+                page.advancedFilterChangeDateFrom.isDisplayed()
+            }
+            page.advancedFilterChangeDateFrom = datumText
+        }
+    }
+
+    def valjDatumTill(String datumText) {
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            waitFor {
+                page.advancedFilterChangeDateTo.isDisplayed()
+            }
+            page.advancedFilterChangeDateTo = datumText
+        }
+    }
+
     def valjVardenhet(String careUnit) {
         Browser.drive {
             waitFor {

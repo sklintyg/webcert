@@ -1,0 +1,8 @@
+!contents -R2 -g -p -f -h
+
+|health check|
+|endpoint|status?|
+|health-check|=~/OK[0-9]+/|
+|health-check-db|=~/OK[0-9]+/|
+|health-check-hsa|=~/OK[0-9]+/|
+|health-check-signatur-queue-size|OK0|

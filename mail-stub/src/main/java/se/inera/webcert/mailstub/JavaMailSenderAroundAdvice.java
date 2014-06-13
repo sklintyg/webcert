@@ -36,6 +36,7 @@ public class JavaMailSenderAroundAdvice {
             for (Object argument : pjp.getArgs()) {
                 if (argument instanceof MimeMessage) {
                     mailStore.getMails().add(new OutgoingMail((MimeMessage) argument));
+                    mailStore.waitToContinue();
                 }
             }
             return null;

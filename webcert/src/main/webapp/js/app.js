@@ -102,15 +102,31 @@ define([
 
     // Global config of default date picker config (individual attributes can be
     // overridden per directive usage)
-    app.constant('datepickerPopupConfig', {
-        dateFormat: 'yyyy-MM-dd',
+    app.constant('datepickerConfig', {
         closeOnDateSelection: true,
         appendToBody: false,
         showWeeks: true,
+        startingDay: 1,
+        dayFormat: 'dd',
+        monthFormat: 'MMMM',
+        yearFormat: 'yyyy',
+        dayHeaderFormat: 'EEE',
+        dayTitleFormat: 'MMMM yyyy',
+        monthTitleFormat: 'yyyy',
+        yearRange: 20,
+        minDate: null,
+        maxDate: null
+    });
+
+    app.constant('datepickerPopupConfig', {
         closeText: 'OK',
         currentText: 'Idag',
-        toggleWeeksText: 'Visa Veckor',
-        clearText: 'Rensa'
+        clearText: 'Rensa',
+        dateFormat: 'yyyy-MM-dd',
+        toggleWeeksText: 'Visa veckor',
+        closeOnDateSelection: true,
+        appendToBody: false,
+        showButtonBar: false
     });
 
     // Inject language resources

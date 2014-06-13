@@ -46,7 +46,7 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkTyp
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.webcert.service.IntygService;
-import se.inera.webcert.service.MailNotificationService;
+import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.IntygStatus;
 import se.inera.webcert.service.dto.Lakare;
@@ -115,18 +115,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvarRepository.save(fragaSvar);
 
         // send mail to enhet to inform about new question
-        try {
-            mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
-        } catch (MailSendException | MessagingException e) {
-            Long frageId = fragaSvar.getInternReferens();
-            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
-            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
-            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
-            LOG.error("Notification mail for question '" + frageId
-                      +  "' concerning certificate '" + intygsId
-                      + "' couldn't be sent to " + enhetsId
-                      + " (" + enhetsNamn + "): " + e.getMessage());
-        }
+        mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
     }
 
     @Override
@@ -148,23 +137,13 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarsText(svarsText);
         fragaSvar.setSvarSigneringsDatum(svarSigneringsDatum);
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
+        fragaSvar.setStatus(Status.ANSWERED);
 
         // update the FragaSvar
         fragaSvarRepository.save(fragaSvar);
 
         // send mail to enhet to inform about new question
-        try {
-            mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
-        } catch (MailSendException | MessagingException e) {
-            Long svarsId = fragaSvar.getInternReferens();
-            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
-            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
-            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
-            LOG.error("Notification mail for answer '" + svarsId
-                    +  "' concerning certificate '" + intygsId
-                    + "' couldn't be sent to " + enhetsId
-                    + " (" + enhetsNamn + "): " + e.getMessage());
-        }
+        mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
     }
 
     @Override
@@ -466,7 +445,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         filter.setChangedFrom(params.getChangedFrom());
-        filter.setChangedTo(params.getChangedTo());
+        if (params.getChangedTo() != null) {
+            filter.setChangedTo(params.getChangedTo().plusDays(1));
+        }
         filter.setHsaId(params.getHsaId());
         filter.setQuestionFromFK(getSafeBooleanValue(params.getQuestionFromFK()));
         filter.setQuestionFromWC(getSafeBooleanValue(params.getQuestionFromWC()));

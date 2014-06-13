@@ -116,7 +116,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
         
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
         
-        Assert.assertEquals(9, fsList.size());
+        Assert.assertEquals(8, fsList.size());
         
     }
     
@@ -134,7 +134,7 @@ public class FragaSvarFilteredRepositoryCustomTest {
 
         List<FragaSvar> fsList = fragasvarRepository.filterFragaSvar(filter);
         
-        Assert.assertEquals(9, fsList.size());
+        Assert.assertEquals(8, fsList.size());
     }
         
     @Test

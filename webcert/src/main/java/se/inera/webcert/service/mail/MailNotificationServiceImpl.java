@@ -1,4 +1,4 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.mail;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import se.inera.certificate.logging.LogMarkers;
@@ -24,7 +26,7 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 @Service
 public class MailNotificationServiceImpl implements MailNotificationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
 
     private static final String INCOMING_QUESTION_SUBJECT = "Inkommen fråga från Försäkringskassan";
     private static final String INCOMING_ANSWER_SUBJECT = "Försäkringskassan har svarat på en fråga";
@@ -42,27 +44,49 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private HSAWebServiceCalls hsaClient;
 
     @Override
-    public void sendMailForIncomingQuestion(FragaSvar fragaSvar) throws MessagingException {
+    @Async("threadPoolTaskExecutor")
+    public void sendMailForIncomingQuestion(FragaSvar fragaSvar) {
 
         String careUnitId = fragaSvar.getVardperson().getEnhetsId();
 
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
 
-        sendNotificationMailToEnhet(fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar),
-                recipient);
-        LOGGER.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming question '{}'", careUnitId, fragaSvar.getInternReferens());
+        try {
+            sendNotificationMailToEnhet(fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar), recipient);
+            LOG.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming question '{}'", careUnitId, fragaSvar.getInternReferens());
+        } catch (MailSendException | MessagingException e) {
+            Long frageId = fragaSvar.getInternReferens();
+            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
+            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
+            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
+            LOG.error("Notification mail for question '" + frageId
+                    + "' concerning certificate '" + intygsId
+                    + "' couldn't be sent to " + enhetsId
+                    + " (" + enhetsNamn + "): " + e.getMessage());
+        }
     }
 
     @Override
-    public void sendMailForIncomingAnswer(FragaSvar fragaSvar) throws MessagingException {
+    @Async("threadPoolTaskExecutor")
+    public void sendMailForIncomingAnswer(FragaSvar fragaSvar) {
 
         String careUnitId = fragaSvar.getVardperson().getEnhetsId();
 
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
 
-        sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar),
-                recipient);
-        LOGGER.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming answer on question '{}'", careUnitId, fragaSvar.getInternReferens());
+        try {
+            sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar), recipient);
+            LOG.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming answer on question '{}'", careUnitId, fragaSvar.getInternReferens());
+        } catch (MailSendException | MessagingException e) {
+            Long svarsId = fragaSvar.getInternReferens();
+            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
+            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
+            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
+            LOG.error("Notification mail for answer '" + svarsId
+                    + "' concerning certificate '" + intygsId
+                    + "' couldn't be sent to " + enhetsId
+                    + " (" + enhetsNamn + "): " + e.getMessage());
+        }
     }
 
     public void setAdminMailAddress(String adminMailAddress) {
@@ -140,7 +164,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         body.append("</p>");
         message.setText(body.toString());
-        LOGGER.info(body.toString());
+        LOG.info(body.toString());
 
         mailSender.send(message);
 
@@ -154,8 +178,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         return response;
     }
 
-    private String intygsUrl(FragaSvar fragaSvar) {
-        return webCertHostUrl + "/m/" + fragaSvar.getIntygsReferens().getIntygsTyp().toLowerCase() + "/webcert/intyg/"
-                + fragaSvar.getInternReferens() + "#/view";
+    public String intygsUrl(FragaSvar fragaSvar) {
+        String url = webCertHostUrl + "/webcert/web/user/certificate/" + fragaSvar.getIntygsReferens().getIntygsId() + "/questions";
+        LOG.debug("Intygsurl: " + url);
+        return url;
     }
 }

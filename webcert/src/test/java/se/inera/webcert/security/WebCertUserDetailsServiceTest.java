@@ -1,20 +1,5 @@
 package se.inera.webcert.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.cxf.helpers.XMLUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,7 +16,6 @@ import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
-
 import se.inera.auth.WebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
@@ -40,6 +24,20 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
+
+import javax.xml.transform.stream.StreamSource;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author andreaskaltenbach
@@ -55,10 +53,10 @@ public class WebCertUserDetailsServiceTest {
 
     @Mock
     private HsaOrganizationsService hsaOrganizationsService;
-    
+
     @Mock
-    private HsaPersonService hsaPersonService; 
-    
+    private HsaPersonService hsaPersonService;
+
     private Vardgivare vardgivare;
 
     @BeforeClass
@@ -81,12 +79,12 @@ public class WebCertUserDetailsServiceTest {
         assertEquals("vg", webCertUser.getVardgivare().get(0).getId());
 
         assertEquals(vardgivare, webCertUser.getVardgivare().get(0));
-        
-        assertEquals(vardgivare, webCertUser.getValdVardgivare());        
-        
+
+        assertEquals(vardgivare, webCertUser.getValdVardgivare());
+
         assertNotNull(webCertUser.getValdVardenhet());
         assertEquals(ENHET_HSA_ID, webCertUser.getValdVardenhet().getId());
-        
+
         assertEquals(2, webCertUser.getSpecialiseringar().size());
 
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
@@ -97,14 +95,14 @@ public class WebCertUserDetailsServiceTest {
         vardgivare = new Vardgivare("vg", "Landstinget Ingenmansland");
         vardgivare.getVardenheter().add(new Vardenhet("vardcentralen", "Vårdcentralen"));
         vardgivare.getVardenheter().add(new Vardenhet(ENHET_HSA_ID, "TestVårdEnhet2A VårdEnhet2A"));
-               
+
         List<Vardgivare> vardgivareList = Collections.singletonList(vardgivare);
 
         when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID)).thenReturn(
                 vardgivareList);
-        
+
         List<String> specList = Arrays.asList("Kirurgi","Ortopedi");
-        
+
         when(hsaPersonService.getSpecialitiesForHsaPerson(PERSONAL_HSA_ID)).thenReturn(specList);
     }
 
@@ -130,6 +128,14 @@ public class WebCertUserDetailsServiceTest {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertFalse(webCertUser.isLakare());
+    }
+
+    @Test
+    public void testNoGivenName() throws Exception {
+        setupHsaOrganizationService();
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-givenname.xml");
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+        assertEquals("Gran", webCertUser.getNamn());
     }
 
     @Test(expected = MissingMedarbetaruppdragException.class)

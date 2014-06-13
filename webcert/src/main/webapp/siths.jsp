@@ -43,7 +43,7 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
        function OnNewEvent() {
            if (!isCardPresent()) {
                log('No card present, logging out');
-               window.location.href = "/saml/logout";
+               window.location.href = "/saml/logout/";
            } else {
                CheckNewEvent();
            }

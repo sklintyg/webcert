@@ -5,6 +5,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -21,20 +26,14 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
     private static final Logger LOG = LoggerFactory.getLogger(FakeAuthenticationFilter.class);
 
-    @Value("${spring.profiles.active}")
-    private String profiles;
-
     protected FakeAuthenticationFilter() {
         super("/fake");
+        LOG.error("FakeAuthentication enabled. DO NOT USE IN PRODUCTION");
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
-
-        if (!"dev".equals(profiles) && !"demo".equals(profiles) && !"test".equals(profiles) && !"qa".equals(profiles)) {
-            return null;
-        }
 
         String parameter = request.getParameter("userJsonDisplay");
         // we manually encode the json parameter
