@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class ImportJobTest {
     @Qualifier("importJob")
     private Job importJob;
         
+    @Ignore
     @Test
     public void testRunImportJob() throws Exception {
         
