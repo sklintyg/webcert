@@ -80,7 +80,7 @@ define([
                         payload.vardGivareHsaId = this.vardGivareHsaId;
                         payload.vardGivareNamn = this.vardGivareNamn;
 
-                        var restPath = '/api/intyg/copy';
+                        var restPath = '/api/intyg/signed/kopiera';
                         $http.post(restPath, payload).success(function(data) {
                             $log.debug('got callback data: ' + data);
                             onSuccess(data);

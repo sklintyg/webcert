@@ -97,7 +97,7 @@
                     </button>
                   </td>
                   <td>
-                    <button ng-show="cert.status != 'CANCELLED'" class="btn btn-info"
+                    <button ng-show="cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'" class="btn btn-info"
                             title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert)"
                             id="copyBtn-{{cert.intygId}}">
                       Kopiera
