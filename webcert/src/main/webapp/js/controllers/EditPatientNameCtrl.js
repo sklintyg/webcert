@@ -15,10 +15,12 @@ define([
 
                 $scope.personnummer = CreateCertificateDraft.personnummer;
                 $scope.firstname = CreateCertificateDraft.firstname;
+                $scope.middlename = CreateCertificateDraft.middlename;
                 $scope.lastname = CreateCertificateDraft.lastname;
 
                 $scope.chooseCertType = function() {
                     CreateCertificateDraft.firstname = $scope.firstname;
+                    CreateCertificateDraft.middlename = $scope.middlename;
                     CreateCertificateDraft.lastname = $scope.lastname;
                     $location.path('/create/choose-cert-type/index');
                 };

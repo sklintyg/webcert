@@ -1,7 +1,7 @@
 <div id="wcHeader" wc-header></div>
 <div class="container-fluid">
   <div class="row">
-    <div id="sok-skriv-fyll-i-namn" class="col-xs-12 webcert-col webcert-col-single">
+    <div id="sok-skriv-fyll-i-namn" class="col-xs-12 col-lg-7 webcert-col webcert-col-single">
       <form name="nameForm" ng-submit="chooseCertType()" novalidate autocomplete="off">
         <!--a class="backlink" href="#/create/choose-patient/index"><span message key="common.goback"></span></a-->
         <h1>Sök/skriv intyg</h1>
@@ -13,13 +13,26 @@
           <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
         </div>
 
-        <div class="webcert-col-section">
+        <div class="webcert-col-section webcert-top-padding-section">
+
+          <div class="alert alert-warning">
+            Observera att nedanstående uppgifter är inhämtade från personuppgiftstjänsten. Vill du ändra dem kan du göra det här, men dessa ändringar kommer endast gälla för de nya intyg som utfärdas och namnuppgifterna kommer inte att sparas till nästa gång du loggar in i tjänsten. Tänk på att basera inmatade uppgifter på patientens legitimationsuppgifter.
+          </div>
+
           <div class="form-group">
             <label for="firstname" class="control-label">Förnamn</label>
             <input id="firstname" class="form-control" name="firstname" type="text" ng-model="firstname" required
                    wc-visited />
             <div ng-show="nameForm.firstname.$invalid && (nameForm.firstname.$visited || nameForm.submitted)">
               <span class="error">Du måste ange ett förnamn</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="middlename" class="control-label">Mellannamn</label>
+            <input id="middlename" class="form-control" name="middlename" type="text" ng-model="middlename" required
+                   wc-visited />
+            <div ng-show="nameForm.middlename.$invalid && (nameForm.middlename.$visited || nameForm.submitted)">
+              <span class="error">Du måste ange ett mellannamn</span>
             </div>
           </div>
           <div class="form-group">
