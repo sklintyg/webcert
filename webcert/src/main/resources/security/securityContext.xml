@@ -20,6 +20,7 @@
   <security:http security="none" pattern="/welcome.jsp"/>
   <security:http security="none" pattern="/version.jsp"/>
   <security:http security="none" pattern="/index.jsp"/>
+  <security:http security="none" pattern="/"/>
   <security:http security="none" pattern="/error.jsp"/>
   <security:http security="none" pattern="/health-check/health-check.jsp"/>
   <security:http security="none" pattern="/health-check/health-check-hsa.jsp"/>

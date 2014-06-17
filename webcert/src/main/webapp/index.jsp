@@ -60,7 +60,7 @@
             <p>
                 Tjänsten kräver inloggning med SITHS-kort samt medarbetaruppdrag på vårdenhet med syfte Vård- och behandling.
             </p>
-	        <p><a href="/web/start" class="btn btn-success" id="loginBtn">Logga in</a></p>
+	        <p><a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a></p>
 	      </div>
 	    </div>
     </div>
