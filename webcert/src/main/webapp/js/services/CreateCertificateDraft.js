@@ -23,20 +23,30 @@ define([
                         this.vardGivareHsaNamn = null;
                     },
 
-                    getNameAndAddress: function(personnummer, onSuccess) {
+                    getNameAndAddress: function(personnummer, onSuccess, onNotFound, onError) {
                         $log.debug('CreateCertificateDraft getNameAndAddress');
 
-                        this.personnummer = personnummer;
-                        if (this.personnummer === '19121212-1212' || this.personnummer === '20121212-1212') {
-                            this.firstname = 'Test';
-                            this.lastname = 'Testsson';
-                            this.address = 'Storgatan 23';
-                        } else {
-                            this.firstname = null;
-                            this.lastname = null;
-                            this.address = null;
-                        }
-                        onSuccess();
+                        var that = this;
+                        that.personnummer = personnummer;
+
+                        var restPath = '/api/person/' + personnummer;
+                        $http.get(restPath).success(function(data) {
+                            $log.debug(data);
+
+                            if (data.status === 'FOUND' && data.personuppgifter) {
+                                that.firstname = data.personuppgifter.fornamn;
+                                that.lastname = data.personuppgifter.efternamn;
+                                that.address = data.personuppgifter.adress;
+                                onSuccess();
+                            } else {
+                                $log.debug('Personen hittades inte i PU-tjänsten, manuell inmatning krävs');
+                                onNotFound();
+                            }
+
+                        }).error(function() {
+                            $log.warn('PU-tjänsten kunde inte kontaktas, manuell inmatning krävs');
+                            onError();
+                        });
                     },
 
                     createDraft: function(onSuccess, onError) {

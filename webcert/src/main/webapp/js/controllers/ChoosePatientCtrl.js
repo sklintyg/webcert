@@ -12,13 +12,19 @@ define([
                 $scope.personnummer = CreateCertificateDraft.personnummer;
 
                 $scope.lookupPatient = function() {
-                    CreateCertificateDraft.getNameAndAddress($scope.personnummer, function() {
-                        if (CreateCertificateDraft.firstname && CreateCertificateDraft.lastname) {
-                            $location.path('/create/choose-cert-type/index');
-                        } else {
-                            $location.path('/create/edit-patient-name/index');
-                        }
-                    });
+
+                    var onSuccess = function() {
+                        $location.path('/create/choose-cert-type/index');
+                    };
+
+                    var onNotFound = function() {
+                        $location.path('/create/edit-patient-name/index');
+                    };
+
+                    var onError = onNotFound;
+
+                    CreateCertificateDraft.getNameAndAddress($scope.personnummer,
+                        onSuccess, onNotFound, onError);
                 };
             }
         ]);

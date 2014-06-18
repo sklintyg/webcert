@@ -41,26 +41,70 @@ define([
 
         describe('#getNameAndAddress', function() {
 
-            it('should set name and address to null for unknown patients', function() {
+            var personnummer = '19121212-1212';
+
+            it('should call onSuccess with correct data if patient is known', function() {
                 var onSuccess = jasmine.createSpy('onSuccess');
 
-                CreateCertificateDraft.getNameAndAddress('19401010-1014', onSuccess);
+                $httpBackend.expectGET('/api/person/' + personnummer).
+                    respond(200, {
+                        status: 'FOUND',
+                        personuppgifter: {
+                            personnummer: personnummer,
+                            fornamn: 'Test',
+                            efternamn: 'Testsson',
+                            adress: 'Storgatan 23'
+                        }
+                    });
 
-                expect(CreateCertificateDraft.firstname).toBeNull();
-                expect(CreateCertificateDraft.lastname).toBeNull();
-                expect(CreateCertificateDraft.address).toBeNull();
+                CreateCertificateDraft.reset();
+                CreateCertificateDraft.getNameAndAddress(personnummer, onSuccess, null);
+                $httpBackend.flush();
+
                 expect(onSuccess).toHaveBeenCalled();
-            });
-
-            it('should set name and address for known patients', function() {
-                var onSuccess = jasmine.createSpy('onSuccess');
-
-                CreateCertificateDraft.getNameAndAddress('19121212-1212', onSuccess);
-
+                expect(CreateCertificateDraft.personnummer).toEqual(personnummer);
                 expect(CreateCertificateDraft.firstname).toEqual('Test');
                 expect(CreateCertificateDraft.lastname).toEqual('Testsson');
                 expect(CreateCertificateDraft.address).toEqual('Storgatan 23');
-                expect(onSuccess).toHaveBeenCalled();
+            });
+
+            it('should call onSuccess without data if the patient is unknown', function() {
+                var onSuccess = jasmine.createSpy('onSuccess');
+                var onNotFound = jasmine.createSpy('onNotFound');
+
+                $httpBackend.expectGET('/api/person/' + personnummer).
+                    respond(200, {
+                        status: 'NOT_FOUND',
+                        personuppgifter: null
+                    });
+
+                CreateCertificateDraft.reset();
+                CreateCertificateDraft.getNameAndAddress(personnummer, onSuccess, onNotFound);
+                $httpBackend.flush();
+
+                expect(onSuccess).not.toHaveBeenCalled();
+                expect(onNotFound).toHaveBeenCalled();
+                expect(CreateCertificateDraft.personnummer).toEqual(personnummer);
+                expect(CreateCertificateDraft.firstname).toBeNull();
+                expect(CreateCertificateDraft.lastname).toBeNull();
+                expect(CreateCertificateDraft.address).toBeNull();
+            });
+
+            it('should call onError if the request fails', function() {
+                var onSuccess = jasmine.createSpy('onSuccess');
+                var onNotFound = jasmine.createSpy('onNotFound');
+                var onError = jasmine.createSpy('onError');
+
+                $httpBackend.expectGET('/api/person/' + personnummer).
+                    respond(500);
+
+                CreateCertificateDraft.reset();
+                CreateCertificateDraft.getNameAndAddress(personnummer, onSuccess, onNotFound, onError);
+                $httpBackend.flush();
+
+                expect(onSuccess).not.toHaveBeenCalled();
+                expect(onNotFound).not.toHaveBeenCalled();
+                expect(onError).toHaveBeenCalled();
             });
         });
 

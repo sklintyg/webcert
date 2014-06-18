@@ -32,6 +32,7 @@
       <bean class="se.inera.webcert.web.controller.api.FragaSvarApiController" />
       <bean class="se.inera.webcert.web.controller.api.IntygApiController" />
       <bean class="se.inera.webcert.web.controller.api.JsLogApiController" />
+      <bean class="se.inera.webcert.web.controller.api.PersonApiController" />
       <bean class="se.inera.webcert.web.controller.api.UserApiController" />
       <bean class="se.inera.webcert.web.controller.api.ModuleApiController" />
     </jaxrs:serviceBeans>
