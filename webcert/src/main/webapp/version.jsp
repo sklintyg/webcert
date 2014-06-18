@@ -1,5 +1,3 @@
-<%@ page import="java.util.Date" %>
-<%@ page import="java.text.SimpleDateFormat" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <!DOCTYPE html>
 <html>
@@ -17,9 +15,10 @@
     <h4 style="padding-bottom:5px;">Configuration info</h4>
 
     <div>Application version: <span class="label label-warning"><spring:message code="project.version"/></span></div>
+    <div>Build number: <span class="label label-warning"><spring:message code="buildNumber"/></span></div>
+    <div>Build time: <span class="label label-warning"><spring:message code="buildTime"/></span></div>
     <div>Spring profiles: <span class="label label-warning"><%= System.getProperty("spring.profiles.active") %></span></div>
   </div>
-  <div class="text-muted">Nu: <%= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) %></div>
 </div>
 </body>
 </html>
