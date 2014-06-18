@@ -32,4 +32,18 @@ public class Komplettering {
         this.text = text;
     }
 
+    @Override
+    public int hashCode() {
+        return falt.hashCode() + text.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Komplettering)) {
+            return false;
+        } else {
+            Komplettering other = (Komplettering) obj;
+            return falt.equals(other.falt) && text.equals(other.text);
+        }
+    }
 }
