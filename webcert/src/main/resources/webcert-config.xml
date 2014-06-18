@@ -14,13 +14,15 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xmlns:sec="http://cxf.apache.org/configuration/security"
+       xmlns:task="http://www.springframework.org/schema/task"
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
+        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
   <beans profile="qa,prod">
     <!-- Config file must be present in qa and prod -->
@@ -43,6 +45,9 @@
 
     <context:annotation-config />
     <context:component-scan base-package="se.inera.webcert" />
+    <task:annotation-driven scheduler="scheduler" executor="threadPoolTaskExecutor"/>
+    <task:scheduler id="scheduler" pool-size="1"/>
+    <task:executor id="threadPoolTaskExecutor" pool-size="10" queue-capacity="100" rejection-policy="CALLER_RUNS" />
 
     <import resource="classpath:repository-context.xml" />
     <import resource="security/securityContext.xml" />

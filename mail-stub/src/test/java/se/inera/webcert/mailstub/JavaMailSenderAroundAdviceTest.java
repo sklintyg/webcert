@@ -15,6 +15,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -34,13 +35,12 @@ public class JavaMailSenderAroundAdviceTest {
     @Mock
     private ProceedingJoinPoint pjp;
 
-    private JavaMailSenderAroundAdvice advice;
+    @InjectMocks
+    private JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice();
     
     @Before
     public void setUp() throws Exception {
-        advice = new JavaMailSenderAroundAdvice();
         when(mailStore.getMails()).thenReturn(mails);
-        advice.mailStore = mailStore;
         when(message.getAllRecipients()).thenReturn(new Address[] {});
         when(message.getSubject()).thenReturn("subject");
         when(message.getContent()).thenReturn("body");

@@ -8,8 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.MessagingException;
-
 import org.apache.cxf.common.util.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -46,6 +44,7 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCert
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -64,7 +63,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     private static final String SENT_STATUS_TYPE = "SENT";
     private static final String REVOKED_STATUS_TYPE = "CANCELLED";
-    
+
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT, Amne.OVRIGT);
 
@@ -81,10 +80,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private WebCertUserService webCertUserService;
 
     @Autowired
-    SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
+    private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
 
     @Autowired
-    SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
+    private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
 
     @Value("${sendquestiontofk.logicaladdress}")
     private String sendQuestionToFkLogicalAddress;
@@ -105,7 +104,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
-        } catch (MailSendException | MessagingException e) {
+        } catch (MailSendException e) {
             Long frageId = fragaSvar.getInternReferens();
             String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
             String enhetsId = fragaSvar.getVardperson().getEnhetsId();
@@ -144,7 +143,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
-        } catch (MailSendException | MessagingException e) {
+        } catch (MailSendException e) {
             Long svarsId = fragaSvar.getInternReferens();
             String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
             String enhetsId = fragaSvar.getVardperson().getEnhetsId();
@@ -290,7 +289,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-001: Certificate must be sent to FK first before sending question!");
         }
-        
+
         // Verify that certificate is not revoked
         if (isRevoked(utlatandeHolder.getCertificateContentMeta().getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
@@ -310,7 +309,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fraga.setIntygsReferens(intygsReferens);
         fraga.setVardperson(vardPerson);
         fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
-        
+
         WebCertUser user = webCertUserService.getWebCertUser();
         fraga.setVardAktorHsaId(user.getHsaId());
         fraga.setVardAktorNamn(user.getNamn());
@@ -391,12 +390,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     "Could not find FragaSvar with id:" + frageSvarId);
         }
 
-       //Enforce business rule FS-011
-       if (!FRAGE_STALLARE_WEBCERT.equals(fragaSvar.getFrageStallare()) && !StringUtils.isEmpty(fragaSvar.getSvarsText())) {
-           throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                   "FS-011: Cant revert status for question " + frageSvarId);
-       }
-       
+        //Enforce business rule FS-011
+        if (!FRAGE_STALLARE_WEBCERT.equals(fragaSvar.getFrageStallare()) && !StringUtils.isEmpty(fragaSvar.getSvarsText())) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "FS-011: Cant revert status for question " + frageSvarId);
+        }
+
         if (fragaSvar.getSvarsText() != null && !fragaSvar.getSvarsText().isEmpty()) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
@@ -449,19 +448,19 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds) {
         return fragaSvarRepository.countUnhandledForEnhetsIds(vardenheterIds);
     }
-    
+
     public Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds) {
-        
+
         Map<String, Long> resultsMap = new HashMap<String, Long>();
-        
+
         List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIds(vardenheterIds);
-        
+
         for (Object[] resArr : results) {
-            String id = (String) resArr[0]; 
+            String id = (String) resArr[0];
             Long nbr = (Long) resArr[1];
             resultsMap.put(id, nbr);
         }
-        
+
         return resultsMap;
     }
 }

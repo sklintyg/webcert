@@ -57,6 +57,7 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCert
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.webcert.service.dto.UtlatandeCommonModelHolder;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -690,31 +691,10 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test
-    public void testMailNotificationFailsForQuestion() throws MessagingException {
-        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
-        Mockito.doThrow(new MessagingException("MessagingExceptionCause")).when(mailNotificationService).sendMailForIncomingQuestion(fraga);
-        service.processIncomingQuestion(fraga);
-        ArgumentCaptor<String> capture = ArgumentCaptor.forClass(String.class);
-        verify(logger).error(capture.capture());
-        assertTrue("An error should have been logged", capture.getValue().matches(".*Notification mail.*couldn't be sent.*MessagingExceptionCause"));
-    }
-
-    @Test
     public void testMailNotificationForAnswer() throws MessagingException {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
         service.processIncomingAnswer(1L, "svarsText", new LocalDateTime());
         verify(mailNotificationService).sendMailForIncomingAnswer(fragaSvar);
-    }
-
-    @Test
-    public void testMailNotificationFailsForAnswer() throws MessagingException {
-        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
-        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
-        Mockito.doThrow(new MessagingException("MessagingExceptionCause")).when(mailNotificationService).sendMailForIncomingAnswer(fragaSvar);
-        service.processIncomingAnswer(1L, "svarsText", new LocalDateTime());
-        ArgumentCaptor<String> capture = ArgumentCaptor.forClass(String.class);
-        verify(logger).error(capture.capture());
-        assertTrue("An error should have been logged", capture.getValue().matches(".*Notification mail.*couldn't be sent.*MessagingExceptionCause"));
     }
 }

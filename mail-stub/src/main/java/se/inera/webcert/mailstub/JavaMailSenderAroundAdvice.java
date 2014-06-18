@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class JavaMailSenderAroundAdvice {
 
     @Autowired
-    MailStore mailStore;
+    private MailStore mailStore;
 
     private String mailHost;
 
@@ -36,6 +36,7 @@ public class JavaMailSenderAroundAdvice {
             for (Object argument : pjp.getArgs()) {
                 if (argument instanceof MimeMessage) {
                     mailStore.getMails().add(new OutgoingMail((MimeMessage) argument));
+                    mailStore.waitToContinue();
                 }
             }
             return null;

@@ -13,15 +13,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
   <context:annotation-config/>
-
-  <bean class="se.inera.webcert.service.MailNotificationServiceImpl">
-
-  </bean>
+  <context:property-placeholder location="classpath:MailNotificationServiceTest/test.properties" ignore-unresolvable="false" ignore-resource-not-found="false" />
+  <context:component-scan base-package="se.inera.webcert.service.mail"/>
 
   <!-- Intercept JavaMailSender calls and put outgoing mails into MailStore -->
   <aop:aspectj-autoproxy/>
@@ -33,4 +33,8 @@
   <bean class="se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>
   <bean class="se.inera.webcert.hsa.stub.HsaWebServiceStub"/>
   <bean class="se.inera.webcert.hsa.stub.HsaServiceStub"/>
+
+  <task:executor id="threadPoolTaskExecutor" pool-size="10" queue-capacity="100" rejection-policy="CALLER_RUNS" />
+  <task:annotation-driven executor="threadPoolTaskExecutor"/>
+
 </beans>
