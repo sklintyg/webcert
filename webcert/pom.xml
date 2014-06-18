@@ -25,6 +25,8 @@
     <inera.certificates.basedir>${project.basedir}/../../inera-certificate-modules</inera.certificates.basedir>
     <intygstjanst.getcertificateforcare.endpoint.url>http://localhost:8080/inera-certificate/get-certificate-for-care/v1.0</intygstjanst.getcertificateforcare.endpoint.url>
     <intygstjanst.listcertificatesforcare.endpoint.url>http://localhost:8080/inera-certificate/list-certificates-for-care/v1.0</intygstjanst.listcertificatesforcare.endpoint.url>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+    <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
   </properties>
   <packaging>war</packaging>
 
@@ -226,6 +228,25 @@
         </excludes>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.3</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
   <profiles>
