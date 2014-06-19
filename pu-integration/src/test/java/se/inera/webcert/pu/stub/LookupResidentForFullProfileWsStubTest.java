@@ -27,7 +27,7 @@ public class LookupResidentForFullProfileWsStubTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void nullParametersThrowsException() {
-        ws.lookupResidentForFullProfile("address", defaultRequest());
+        ws.lookupResidentForFullProfile("address", null);
         fail();
     }
 
