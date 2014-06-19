@@ -14,7 +14,6 @@ import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.Lookup
 import se.inera.webcert.pu.model.Person;
 
 import javax.xml.ws.soap.SOAPFaultException;
-import java.util.Arrays;
 
 public class PUServiceImpl implements PUService {
 
@@ -70,5 +69,6 @@ public class PUServiceImpl implements PUService {
             }
         }
         return builder.toString();
+
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.util.StringUtils;
 import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
 import se.inera.population.residentmaster.v1.PersonpostTYPE;
 import se.inera.population.residentmaster.v1.ResidentType;
+import se.inera.population.residentmaster.v1.SvenskAdressTYPE;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
 
