@@ -29,6 +29,7 @@ var commonMessageResources = {
         "qa.amne.kontakt" : "Kontakt",
         "qa.amne.avstamningsmote" : "Avstämningsmöte",
         "qa.amne.komplettering_av_lakarintyg" : "Komplettering av läkarintyg",
+        "qa.amne.makulering_av_lakarintyg": "Rättning av läkarintyg",
         "qa.amne.ovrigt" : "Övrigt",
         
         "qa.measure.svarfranvarden" : "Svara",
