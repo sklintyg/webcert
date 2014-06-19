@@ -1,5 +1,7 @@
 package se.inera.webcert.pu.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
@@ -16,6 +18,8 @@ import java.util.Arrays;
 
 public class PUServiceImpl implements PUService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PUServiceImpl.class);
+
     @Autowired
     private LookupResidentForFullProfileResponderInterface service;
 
@@ -26,6 +30,7 @@ public class PUServiceImpl implements PUService {
     public Person getPerson(String personId) {
         String normalizedId = normalizeId(personId);
 
+        LOG.debug("Looking up person '{}'({})", normalizedId, personId);
         LookupResidentForFullProfileType parameters = new LookupResidentForFullProfileType();
         parameters.setLookUpSpecification(new LookUpSpecificationType());
         parameters.getPersonId().add(normalizedId);
@@ -37,9 +42,11 @@ public class PUServiceImpl implements PUService {
             SvenskAdressTYPE adress = resident.getPersonpost().getFolkbokforingsadress();
 
             String adressRader = buildAdress(adress);
-            Person person = new Person(namn.getFornamn(), namn.getEfternamn(), adressRader, adress.getPostNr(), adress.getPostort());
+            Person person = new Person(personId, namn.getFornamn(), namn.getEfternamn(), adressRader, adress.getPostNr(), adress.getPostort());
+            LOG.debug("Person '{}' found", normalizedId);
             return person;
         } catch (SOAPFaultException e) {
+            LOG.warn("No person '{}'({}) found", normalizedId, personId);
             throw e;
         }
     }

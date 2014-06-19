@@ -1,13 +1,15 @@
 package se.inera.webcert.pu.model;
 
 public class Person {
+    private final String personnummer;
     private final String fornamn;
     private final String efternamn;
     private final String postadress;
     private final String postnummer;
     private final String postort;
 
-    public Person(String fornamn, String efternamn, String postadress, String postnummer, String postort) {
+    public Person(String personnummer, String fornamn, String efternamn, String postadress, String postnummer, String postort) {
+        this.personnummer = personnummer;
         this.fornamn = fornamn;
         this.efternamn = efternamn;
         this.postadress = postadress;
@@ -33,5 +35,9 @@ public class Person {
 
     public String getPostort() {
         return postort;
+    }
+
+    public String getPersonnummer() {
+        return personnummer;
     }
 }

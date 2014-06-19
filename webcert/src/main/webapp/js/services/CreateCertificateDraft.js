@@ -33,10 +33,10 @@ define([
                         $http.get(restPath).success(function(data) {
                             $log.debug(data);
 
-                            if (data.status === 'FOUND' && data.personuppgifter) {
-                                that.firstname = data.personuppgifter.fornamn;
-                                that.lastname = data.personuppgifter.efternamn;
-                                that.address = data.personuppgifter.adress;
+                            if (data.status === 'FOUND' && data.person) {
+                                that.firstname = data.person.fornamn;
+                                that.lastname = data.person.efternamn;
+                                that.address = data.person.postadress;
                                 onSuccess();
                             } else {
                                 $log.debug('Personen hittades inte i PU-tjänsten, manuell inmatning krävs');

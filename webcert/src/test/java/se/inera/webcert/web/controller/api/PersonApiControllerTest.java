@@ -29,9 +29,10 @@ public class PersonApiControllerTest {
 
     @Test
     public void testGetPersonuppgifter() {
-        when(puService.getPerson(anyString())).thenReturn(new Person("fnamn", "enamn", "paddr", "pnr", "port"));
+        String personnummer = "19121212-1212";
+        when(puService.getPerson(anyString())).thenReturn(new Person(personnummer, "fnamn", "enamn", "paddr", "pnr", "port"));
 
-        Response response = personCtrl.getPersonuppgifter("19121212-1212");
+        Response response = personCtrl.getPersonuppgifter(personnummer);
 
         assertNotNull(response);
         assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
