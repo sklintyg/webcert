@@ -1,0 +1,14 @@
+{
+    "personId" : "191212121212",
+    "namn" :  {
+        "fornamn": "Tolvan",
+        "efternamn": "Tolvansson"
+    },
+    "folkbokforingsadress" : {
+        "careOf" : "C/O",
+        "utdelningsadress1" : "rad1",
+        "utdelningsadress2" : "rad2",
+        "postNr" :  12345,
+        "postort" : "Småmåla"
+    }
+}

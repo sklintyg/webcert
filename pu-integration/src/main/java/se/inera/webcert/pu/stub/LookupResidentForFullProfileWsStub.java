@@ -5,27 +5,31 @@ import se.inera.population.residentmaster.v1.LookupResidentForFullProfileRespond
 import se.inera.population.residentmaster.v1.NamnTYPE;
 import se.inera.population.residentmaster.v1.PersonpostTYPE;
 import se.inera.population.residentmaster.v1.ResidentType;
+import se.inera.population.residentmaster.v1.SvenskAdressTYPE;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LookupResidentForFullProfileWsStub implements LookupResidentForFullProfileResponderInterface {
+
+    private final Map<String, PersonpostTYPE> personer = new HashMap<>();
+
+    public void addUser(PersonpostTYPE personPost) {
+        personer.put(personPost.getPersonId(), personPost);
+    }
 
     @Override
     public LookupResidentForFullProfileResponseType lookupResidentForFullProfile(String logicalAddress, LookupResidentForFullProfileType parameters) {
         validate(logicalAddress, parameters);
         LookupResidentForFullProfileResponseType response = new LookupResidentForFullProfileResponseType();
-        for(String id: parameters.getPersonId()) {
+        for (String id : parameters.getPersonId()) {
+            PersonpostTYPE personPost = personer.get(id);
+
             ResidentType resident = new ResidentType();
-            PersonpostTYPE personPost = new PersonpostTYPE();
-            NamnTYPE namn = new NamnTYPE();
-            namn.setFornamn("Karl Bertil");
-            namn.setTilltalsnamnsmarkering(10);
-            namn.setMellannamn("Karlsson");
-            namn.setEfternamn("Johnsson");
-            personPost.setNamn(namn);
             resident.setPersonpost(personPost);
             response.getResident().add(resident);
         }
