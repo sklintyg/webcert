@@ -5,7 +5,7 @@
        xsi:schemaLocation="
          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
          http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"
-       profile="dev,test">
+       profile="dev,local,test">
 
     <jaxws:endpoint address="/signature" implementor="se.inera.webcert.eid.stub.OsifWebServiceStub"/>
 </beans>

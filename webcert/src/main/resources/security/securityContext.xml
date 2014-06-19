@@ -66,7 +66,7 @@
   <!-- =============================================================== -->
   <!-- Dev and demo profile only supports Fake login                   -->
   <!-- =============================================================== -->
-  <beans profile="dev,demo">
+  <beans profile="dev,demo,local">
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -120,7 +120,7 @@
     </security:authentication-manager>
   </beans>
 
-  <beans profile="dev,demo,test,qa">
+  <beans profile="dev,demo,local,test,qa">
     <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>

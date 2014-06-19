@@ -41,6 +41,7 @@ import se.inera.certificate.model.Patient;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.Vardenhet;
 import se.inera.certificate.model.Vardgivare;
+import se.inera.certificate.modules.support.ApplicationOrigin;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
@@ -213,7 +214,7 @@ public class IntygServiceImpl implements IntygService {
 
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
 
-            PdfResponse pdfResponse = moduleApi.pdf(new ExternalModelHolder(intygAsExternal.getContents()));
+            PdfResponse pdfResponse = moduleApi.pdf(new ExternalModelHolder(intygAsExternal.getContents()), ApplicationOrigin.WEBCERT);
 
             LogRequest logRequest = createLogRequest(intygAsExternal.getExternalModel());
             logService.logPrintOfIntyg(logRequest);

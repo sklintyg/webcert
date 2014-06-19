@@ -27,7 +27,7 @@
       location="file:${credentials.file}, file:${webcert.config.file}" order="1"
       ignore-resource-not-found="false" ignore-unresolvable="true"/>
   </beans>
-  <beans profile="dev,test">
+  <beans profile="dev,test,local">
     <!-- Config file could be missing in dev and test -->
     <context:property-placeholder
       location="file:${credentials.file}, file:${webcert.config.file}" order="1"
