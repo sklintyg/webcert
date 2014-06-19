@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xmlns:jaxws="http://cxf.apache.org/jaxws"
        xsi:schemaLocation="
-        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://cxf.apache.org/transports/http/configuration
         http://cxf.apache.org/schemas/configuration/http-conf.xsd
