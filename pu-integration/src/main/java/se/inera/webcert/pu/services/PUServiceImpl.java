@@ -1,6 +1,5 @@
 package se.inera.webcert.pu.services;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
@@ -50,6 +49,19 @@ public class PUServiceImpl implements PUService {
     }
 
     private String buildAdress(SvenskAdressTYPE adress) {
-        return StringUtils.join(Arrays.asList(adress.getCareOf(), adress.getUtdelningsadress1(), adress.getUtdelningsadress2()), '\n').trim();
+        return joinIgnoreNulls(",", adress.getCareOf(), adress.getUtdelningsadress1(), adress.getUtdelningsadress2());
+    }
+
+    private String joinIgnoreNulls(String separator, String...values) {
+        StringBuilder builder = new StringBuilder();
+        for (String value: values) {
+            if (value != null) {
+                if (builder.length() > 0) {
+                    builder.append(separator);
+                }
+                builder.append(value);
+            }
+        }
+        return builder.toString();
     }
 }
