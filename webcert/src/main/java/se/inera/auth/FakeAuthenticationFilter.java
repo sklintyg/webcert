@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -23,6 +25,8 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
     @Value("${spring.profiles.active}")
     private String profiles;
+    
+    private List<String> allowedProfiles = new ArrayList<String>();
 
     protected FakeAuthenticationFilter() {
         super("/fake");
@@ -32,7 +36,7 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
 
-        if (!"dev".equals(profiles) && !"demo".equals(profiles) && !"test".equals(profiles) && !"qa".equals(profiles)) {
+        if (!checkAllowedProfile(profiles)) {
             return null;
         }
 
@@ -53,4 +57,13 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
             throw new RuntimeException(message, e);
         }
     }
+    
+    public boolean checkAllowedProfile(String profile) {
+        return (this.allowedProfiles.contains(profile));
+    }
+    
+    public void setAllowedProfiles(List<String> allowedProfiles) {
+        this.allowedProfiles = allowedProfiles;
+    }
+    
 }

@@ -277,7 +277,7 @@
                     <artifactItem>
                       <groupId>se.inera.certificate.modules</groupId>
                       <artifactId>fk7263</artifactId>
-                      <version>WC-0.5-RC2</version>
+                      <version>WC-0.5-RC3-SNAPSHOT</version>
                       <type>war</type>
                       <outputDirectory>${project.build.directory}/fk7263.war</outputDirectory>
                     </artifactItem>
@@ -359,6 +359,16 @@
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jms_1.1_spec</artifactId>
                 <version>1.1.1</version>
+              </dependency>
+              <dependency>
+                <groupId>org.apache.commons</groupId>
+	            <artifactId>commons-dbcp2</artifactId>
+	            <version>2.0</version>
+              </dependency>
+              <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>5.1.24</version>
               </dependency>
             </dependencies>
           </plugin>
