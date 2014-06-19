@@ -20,7 +20,7 @@ public class PUBootstrapBean {
     private static final Logger LOG = LoggerFactory.getLogger(PUBootstrapBean.class);
 
     @Autowired
-    private LookupResidentForFullProfileWsStub stub;
+    private PersonStore personStore;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -30,7 +30,11 @@ public class PUBootstrapBean {
         List<Resource> files = getResourceListing("bootstrap-personer/*.json");
         LOG.debug("Bootstrapping {} personer for PU stub ...", files.size());
         for (Resource res : files) {
-            addPersoner(res);
+            try {
+                addPersoner(res);
+            } catch (Exception e) {
+                LOG.error("PUBootstrap", e);
+            }
         }
     }
 
@@ -45,8 +49,8 @@ public class PUBootstrapBean {
 
     private void addPersoner(Resource res) throws IOException {
         LOG.debug("Loading personer from " + res.getFilename());
-        PersonpostTYPE person = objectMapper.readValue(res.getFile(), PersonpostTYPE.class);
-        stub.addUser(person);
+        PersonpostTYPE person = objectMapper.readValue(res.getInputStream(), PersonpostTYPE.class);
+        personStore.addUser(person);
         LOG.debug("Loaded person " + person.getPersonId());
     }
 }

@@ -1,26 +1,20 @@
 package se.inera.webcert.pu.stub;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface;
-import se.inera.population.residentmaster.v1.NamnTYPE;
 import se.inera.population.residentmaster.v1.PersonpostTYPE;
 import se.inera.population.residentmaster.v1.ResidentType;
-import se.inera.population.residentmaster.v1.SvenskAdressTYPE;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class LookupResidentForFullProfileWsStub implements LookupResidentForFullProfileResponderInterface {
 
-    private final Map<String, PersonpostTYPE> personer = new HashMap<>();
-
-    public void addUser(PersonpostTYPE personPost) {
-        personer.put(personPost.getPersonId(), personPost);
-    }
+    @Autowired
+    private PersonStore personer;
 
     @Override
     public LookupResidentForFullProfileResponseType lookupResidentForFullProfile(String logicalAddress, LookupResidentForFullProfileType parameters) {
