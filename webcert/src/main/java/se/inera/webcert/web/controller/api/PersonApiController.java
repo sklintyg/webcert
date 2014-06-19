@@ -2,8 +2,10 @@ package se.inera.webcert.web.controller.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.webcert.pu.model.Person;
+import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.Personuppgifter;
 import se.inera.webcert.web.controller.api.dto.PersonuppgifterResponse;
 
 import javax.ws.rs.GET;
@@ -21,6 +23,9 @@ public class PersonApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(PersonApiController.class);
 
+    @Autowired
+    private PUService puService;
+
     @GET
     @Path("/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -28,16 +33,10 @@ public class PersonApiController extends AbstractApiController {
 
         LOG.debug("Hämtar personuppgifter för: {}", personnummer);
 
-        // TODO: Hämta information från PU-tjänsten.
-        if ("19121212-1212".equals(personnummer) || "20121212-1212".equals(personnummer)) {
+        Person person = puService.getPerson(personnummer);
 
-            Personuppgifter personuppgifter = new Personuppgifter();
-            personuppgifter.setPersonnummer(personnummer);
-            personuppgifter.setFornamn("Test");
-            personuppgifter.setEfternamn("Testsson");
-            personuppgifter.setAdress("Storgatan 23");
-
-            return Response.ok(new PersonuppgifterResponse(FOUND, personuppgifter)).build();
+        if (person != null) {
+            return Response.ok(new PersonuppgifterResponse(FOUND, person)).build();
         } else {
             return Response.ok(new PersonuppgifterResponse(NOT_FOUND)).build();
         }

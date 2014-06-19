@@ -2,47 +2,48 @@ package se.inera.webcert.web.controller.api.dto;
 
 public class Personuppgifter {
 
-    private String personnummer;
+    private final String personnummer;
 
-    private String fornamn;
+    private final String fornamn;
 
-    private String efternamn;
+    private final String efternamn;
 
-    private String adress;
+    private final String postadress;
 
-    public Personuppgifter() {
+    private final String postnummer;
 
+    private final String postort;
+
+    public Personuppgifter(String personnummer, String fornamn, String efternamn, String postadress, String postnummer, String postort) {
+        this.personnummer = personnummer;
+        this.fornamn = fornamn;
+        this.efternamn = efternamn;
+        this.postadress = postadress;
+        this.postnummer = postnummer;
+        this.postort = postort;
     }
 
     public String getPersonnummer() {
         return personnummer;
     }
 
-    public void setPersonnummer(String personnummer) {
-        this.personnummer = personnummer;
-    }
-
     public String getFornamn() {
         return fornamn;
-    }
-
-    public void setFornamn(String fornamn) {
-        this.fornamn = fornamn;
     }
 
     public String getEfternamn() {
         return efternamn;
     }
 
-    public void setEfternamn(String efternamn) {
-        this.efternamn = efternamn;
+    public String getPostadress() {
+        return postadress;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getPostnummer() {
+        return postnummer;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public String getPostort() {
+        return postort;
     }
 }

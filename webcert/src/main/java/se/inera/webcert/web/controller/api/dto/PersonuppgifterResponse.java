@@ -1,5 +1,7 @@
 package se.inera.webcert.web.controller.api.dto;
 
+import se.inera.webcert.pu.model.Person;
+
 public class PersonuppgifterResponse {
 
     public enum Status {
@@ -7,22 +9,22 @@ public class PersonuppgifterResponse {
     }
 
     private Status status;
-    private Personuppgifter personuppgifter;
+    private Person person;
 
     public PersonuppgifterResponse(Status status) {
         this.status = status;
     }
 
-    public PersonuppgifterResponse(Status status, Personuppgifter personuppgifter) {
+    public PersonuppgifterResponse(Status status, Person person) {
         this.status = status;
-        this.personuppgifter = personuppgifter;
+        this.person = person;
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public Personuppgifter getPersonuppgifter() {
-        return personuppgifter;
+    public Person getPerson() {
+        return person;
     }
 }
