@@ -25,7 +25,7 @@
   <bean id="webcertEntityManagerFactory"
     class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="dataSource" ref="webcertDataSource" />
-    <property name="persistenceUnitName" value="jpa.webcert" />
+    <property name="persistenceUnitName" value="jpa.migration.webcert" />
     <property name="jpaVendorAdapter">
       <bean
         class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">

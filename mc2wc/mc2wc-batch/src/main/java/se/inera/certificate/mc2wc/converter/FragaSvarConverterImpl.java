@@ -60,6 +60,9 @@ public class FragaSvarConverterImpl implements FragaSvarConverter {
 
         Vardperson vardperson = convertToVardperson(qa.getCarePerson());
         fs.setVardperson(vardperson);
+        
+        fs.setVardAktorHsaId(vardperson.getHsaId());
+        fs.setVardAktorNamn(vardperson.getNamn());
 
         fs.setExternReferens(qa.getExternalReference());
 

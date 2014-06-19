@@ -21,7 +21,7 @@ public class WebcertRepositoryJpaWriter implements ItemWriter<MigrationMessage> 
     
     private static Logger log = LoggerFactory.getLogger(WebcertRepositoryJpaWriter.class);
     
-    @PersistenceContext(unitName = "jpa.webcert")
+    @PersistenceContext(unitName = "jpa.migration.webcert")
     private EntityManager em;
 
     @Autowired

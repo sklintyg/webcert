@@ -6,7 +6,7 @@ import javax.persistence.Query;
 
 public class WebcertDAO {
     
-    @PersistenceContext(unitName = "jpa.webcert")
+    @PersistenceContext(unitName = "jpa.migration.webcert")
     private EntityManager entityManager;
     
     public long countNbrOfFragaSvar() {

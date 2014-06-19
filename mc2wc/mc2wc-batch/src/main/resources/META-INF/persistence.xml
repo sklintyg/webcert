@@ -20,4 +20,10 @@
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
   </persistence-unit>
   
+  <persistence-unit name="jpa.migration.webcert" transaction-type="RESOURCE_LOCAL">
+    <class>se.inera.webcert.persistence.legacy.model.MigreratMedcertIntyg</class>
+    <class>se.inera.webcert.persistence.fragasvar.model.FragaSvar</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+  </persistence-unit>
+  
 </persistence>
