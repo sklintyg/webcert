@@ -31,6 +31,7 @@ define([
                 expect(CreateCertificateDraft.intygType).toEqual('default');
                 expect(CreateCertificateDraft.firstname).toBeNull();
                 expect(CreateCertificateDraft.lastname).toBeNull();
+                expect(CreateCertificateDraft.lastname).toBeNull();
                 expect(CreateCertificateDraft.address).toBeNull();
                 expect(CreateCertificateDraft.vardEnhetHsaId).toBeNull();
                 expect(CreateCertificateDraft.vardEnhetNamn).toBeNull();
@@ -49,11 +50,11 @@ define([
                 $httpBackend.expectGET('/api/person/' + personnummer).
                     respond(200, {
                         status: 'FOUND',
-                        personuppgifter: {
+                        person: {
                             personnummer: personnummer,
                             fornamn: 'Test',
                             efternamn: 'Testsson',
-                            adress: 'Storgatan 23'
+                            postadress: 'Storgatan 23'
                         }
                     });
 
@@ -75,7 +76,7 @@ define([
                 $httpBackend.expectGET('/api/person/' + personnummer).
                     respond(200, {
                         status: 'NOT_FOUND',
-                        personuppgifter: null
+                        person: null
                     });
 
                 CreateCertificateDraft.reset();
