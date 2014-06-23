@@ -63,6 +63,18 @@ class SokSkrivIntyg {
         }
     }
 
+    boolean kopieraKnappVisasForIntyg(boolean expected = true, String intygId) {
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            waitFor {
+                expected == page.copyBtn(intygId).isDisplayed()
+            }
+        }
+        true
+    }
+
     def kopieraTidigareIntyg(String intygId) {
         Browser.drive {
             page.copy(intygId)

@@ -13,9 +13,13 @@ class SokSkrivValjIntygTypPage extends Page {
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
     }
 
+    def copyBtn(String intygId) {
+        $("#copyBtn-${intygId}")
+    }
+
     def copy(String intygId) {
-        $("#copyBtn-${intygId}").click()
-        sleep(300)
+        copyBtn(intygId).click()
+        sleep(500)
         kopieraDialogKopieraKnapp.click()
     }
 
