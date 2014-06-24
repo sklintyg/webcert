@@ -3,17 +3,16 @@ define([
     'services/CreateCertificateDraft',
     'services/ManageCertificate',
     'webjars/common/webcert/js/services/dialogService',
-    'webjars/common/webcert/js/services/User',
-    'webjars/common/webcert/js/services/ManageCertView'
-], function(angular, CreateCertificateDraft, ManageCertificate, dialogService, User, ManageCertView) {
+    'webjars/common/webcert/js/services/User'
+], function(angular, CreateCertificateDraft, ManageCertificate, dialogService, User) {
     'use strict';
 
     var moduleName = 'wc.ChooseCertTypeCtrl';
 
-    angular.module(moduleName, [ CreateCertificateDraft, dialogService, ManageCertificate, User, ManageCertView ]).
+    angular.module(moduleName, [ CreateCertificateDraft, dialogService, ManageCertificate, User ]).
         controller(moduleName, [ '$filter', '$location', '$log', '$scope', '$cookieStore', CreateCertificateDraft, dialogService,
-            ManageCertificate, User, ManageCertView,
-            function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft, dialogService, ManageCertificate, User, ManageCertView) {
+            ManageCertificate, User,
+            function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft, dialogService, ManageCertificate, User) {
                 if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.firstname ||
                     !CreateCertificateDraft.lastname) {
                     $location.url('/create/index', true);
@@ -37,7 +36,7 @@ define([
                     doneLoading: true,
                     activeErrorMessageKey: null,
                     createErrorMessageKey: null,
-                    currentList: undefined,
+                    currentList: undefined
                 };
 
                 $scope.filterForm = {
@@ -149,7 +148,7 @@ define([
                     $scope.updateCertList();
                 });
 
-                $scope.$watch('widgetState.dontShowCopyInfo', function(newVal, oldVal) {
+                $scope.$watch('widgetState.dontShowCopyInfo', function(newVal) {
                     if (newVal) {
                         $cookieStore.put(COPY_DIALOG_COOKIE, newVal);
                     } else {

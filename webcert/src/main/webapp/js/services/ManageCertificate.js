@@ -10,8 +10,11 @@ define([
     var moduleName = 'wc.ManageCertificate';
 
     angular.module(moduleName, [User, CreateCertificateDraft, dialogService, CertificateService]).
-        factory(moduleName, [ '$http', '$log', '$location', '$window', '$modal', '$cookieStore', CreateCertificateDraft, User, dialogService, CertificateService,
-            function($http, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService, CertificateService) {
+        factory(moduleName,
+        [ '$http', '$log', '$location', '$window', '$modal', '$cookieStore', CreateCertificateDraft, User,
+            dialogService, CertificateService,
+            function($http, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
+                CertificateService) {
 
                 /**
                  * Load list of all certificates types
@@ -46,7 +49,7 @@ define([
 
                         var intygTypeMeta = {};
                         for (var i = 0; i < types.length; i++) {
-                            if (types[i].id === intygType){
+                            if (types[i].id === intygType) {
                                 intygTypeMeta = types[i];
                                 break;
                             }
@@ -317,7 +320,7 @@ define([
                 function _sendSigneratIntyg(cert, dialogModel, sendDialog) {
                     dialogModel.showerror = false;
                     dialogModel.acceptprogressdone = false;
-                    CertificateService.sendSigneratIntyg(cert.intygId, function(data) {
+                    CertificateService.sendSigneratIntyg(cert.intygId, function() {
                         dialogModel.acceptprogressdone = true;
                         sendDialog.close();
                     }, function(error) {
