@@ -20,6 +20,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
@@ -147,7 +148,7 @@ public class IntygDraftServiceImplTest {
         when(userService.getWebCertUser()).thenReturn(user);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
 
-        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelHolder("{}"));
+        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelResponse("{}"));
 
         DraftValidation res = draftService.saveAndValidateDraft(request);
 

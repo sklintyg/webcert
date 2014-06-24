@@ -417,8 +417,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         try {
             InternalModelHolder internalModel = new InternalModelHolder(draftAsJson);
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intyg.getIntygsTyp());
-            InternalModelHolder holder = moduleApi.updateInternal(internalModel, hosPerson);
-            intyg.setModel(holder.getInternalModel());
+            InternalModelResponse updatedInternal = moduleApi.updateInternal(internalModel, hosPerson);
+            intyg.setModel(updatedInternal.getInternalModel());
         } catch (ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
         }
