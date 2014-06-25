@@ -63,7 +63,7 @@
 
 <body>
     <%-- ng-view that holds dynamic content managed by angular app --%>
-    <div id="view" ng-view></div>
+    <div id="view" ng-view autoscroll="true"></div>
 
     <%-- No script to show at least something when javascript is off --%>
     <noscript>
