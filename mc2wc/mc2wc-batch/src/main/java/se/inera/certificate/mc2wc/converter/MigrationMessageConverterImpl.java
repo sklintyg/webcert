@@ -1,20 +1,44 @@
 package se.inera.certificate.mc2wc.converter;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.certificate.mc2wc.medcert.jpa.model.*;
-import se.inera.certificate.mc2wc.message.*;
-
-import java.util.Date;
-import java.util.Set;
+import se.inera.certificate.mc2wc.medcert.jpa.model.AddressCare;
+import se.inera.certificate.mc2wc.medcert.jpa.model.Answer;
+import se.inera.certificate.mc2wc.medcert.jpa.model.Certificate;
+import se.inera.certificate.mc2wc.medcert.jpa.model.CreatorOrigin;
+import se.inera.certificate.mc2wc.medcert.jpa.model.Patient;
+import se.inera.certificate.mc2wc.medcert.jpa.model.Question;
+import se.inera.certificate.mc2wc.medcert.jpa.model.State;
+import se.inera.certificate.mc2wc.medcert.jpa.model.Subject;
+import se.inera.certificate.mc2wc.message.AnswerType;
+import se.inera.certificate.mc2wc.message.CareGiverType;
+import se.inera.certificate.mc2wc.message.CarePersonType;
+import se.inera.certificate.mc2wc.message.CareUnitType;
+import se.inera.certificate.mc2wc.message.CertificateType;
+import se.inera.certificate.mc2wc.message.MigrationMessage;
+import se.inera.certificate.mc2wc.message.PatientType;
+import se.inera.certificate.mc2wc.message.QuestionOriginatorType;
+import se.inera.certificate.mc2wc.message.QuestionSubjectType;
+import se.inera.certificate.mc2wc.message.QuestionType;
+import se.inera.certificate.mc2wc.message.StatusType;
 
 public class MigrationMessageConverterImpl implements MigrationMessageConverter {
 
     private static final String INTYGS_TYP = "FK7263";
     private static Logger log = LoggerFactory.getLogger(MigrationMessageConverter.class);
+    
+    private static final List<State> UNMIGRATABLE_CERTIFICATE_STATES = Arrays.asList(State.CREATED, State.EDITED, State.PRINTED);
+    
+    private static final List<State> UNMIGRATABLE_QUESTION_STATES = Arrays.asList(State.CREATED, State.EDITED, State.PRINTED);
 
     /*
      * (non-Javadoc)
@@ -25,9 +49,11 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
      */
     @Override
     public MigrationMessage toMigrationMessage(Certificate cert, String sender) {
-                
+        
         MigrationMessage migrationMessage = new MigrationMessage();
         migrationMessage.setCertificateId(cert.getId());
+        migrationMessage.setCertificateOrigin(cert.getOrigin().toString());
+        migrationMessage.setCertificateState(cert.getState().toString());
 
         if (hasCertAnyContents(cert)) {
             CertificateType wcCert = toWCCertificate(cert, sender);
@@ -37,23 +63,38 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         if (hasCertAnyQuestions(cert)) {
             addQuestionsToMigrationMessage(migrationMessage, cert);
         }
-
+        
         return migrationMessage;
     }
-
+    
     private void addQuestionsToMigrationMessage(MigrationMessage msg, Certificate mcCert) {
         Set<Question> questions = mcCert.getQuestions();
 
         log.debug("Certificate {} has {} questions", mcCert.getId(), questions.size());
 
         for (Question mcQuestion : questions) {
-            if (mcQuestion.getState() == State.CREATED || mcQuestion.getSubject() == null || mcQuestion.getText() == null) {
+            if (!isQuestionToBeMigrated(mcQuestion)) {
                 log.info("Question {}, belonging to certificate {} will not be migrated since it either has state CREATED or lacks subject or text", mcQuestion.getId(), mcCert.getId());
                 continue;
             }
             QuestionType wcQuestionAnswer = toWCQuestionAnswer(mcCert.getId(), mcQuestion);
             msg.getQuestions().add(wcQuestionAnswer);
         }
+    }
+    
+    private boolean isQuestionToBeMigrated(Question q) {
+        
+        if (UNMIGRATABLE_QUESTION_STATES.contains(q.getState())) {
+            log.info("Question {} has state {}", q.getId(), q.getState());
+            return false;
+        }
+        
+        if (q.getSubject() == null || StringUtils.isBlank(q.getText())) {
+            log.info("Question {} is missing subject or text", q.getId());
+            return false;
+        }
+        
+        return true;
     }
     
     private boolean hasCertAnyContents(Certificate cert) {

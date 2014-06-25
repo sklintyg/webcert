@@ -19,12 +19,15 @@
 
   <complexType name="migrationMessageType">
     <sequence>
+
       <element name="certificateId" type="string"></element>
+      <element name="certificateState" type="string"></element>
+      <element name="certificateOrigin" type="string"></element>
       <element name="certificate" type="tns:certificateType"
-               maxOccurs="1" minOccurs="0">
+        maxOccurs="1" minOccurs="0">
       </element>
       <element name="questions" type="tns:questionType"
-               maxOccurs="unbounded" minOccurs="0">
+        maxOccurs="unbounded" minOccurs="0">
       </element>
     </sequence>
   </complexType>

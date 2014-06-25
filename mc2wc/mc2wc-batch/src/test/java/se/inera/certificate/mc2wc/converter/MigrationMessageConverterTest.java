@@ -21,9 +21,12 @@ import static org.junit.Assert.*;
 @DbUnitConfiguration(databaseConnection = "medcertDataSource", dataSetLoader = CustomFlatXmlDataSetLoader.class)
 @DatabaseSetup({"/data/certificate_dataset_25.xml"})
 @ActiveProfiles({"export","export-unittest"})
-public class CertificateConverterTest extends AbstractDbUnitSpringTest {
+public class MigrationMessageConverterTest extends AbstractDbUnitSpringTest {
 
+    private static final String INERA = "INERA";
+    
     private static final String CERT_WITH_ALL = "certificate010";
+    private static final String CERT_THAT_IS_WIP = "certificate003";
     private static final String CERT_WITH_NOTHING = "certificate001";
     private static final String CERT_WITH_JUST_CONTENT = "certificate009";
     private static final String CERT_WITH_JUST_QUESTION = "certificate020";
@@ -41,19 +44,33 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
         Certificate certificate = getCertificateById(CERT_WITH_ALL);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, INERA);
         assertNotNull(migrationMessage);
         assertNotNull(migrationMessage.getCertificate());
         assertEquals(1, migrationMessage.getQuestions().size());
     }
+    
+    @Test
+    public void convertCertThatIsWIP() {
 
+        Certificate certificate = getCertificateById(CERT_THAT_IS_WIP);
+        assertNotNull(certificate);
+
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, INERA);
+        assertNotNull(migrationMessage);
+        assertEquals("APPLICATION", migrationMessage.getCertificateOrigin());
+        assertEquals("CREATED", migrationMessage.getCertificateState());
+        assertNull(migrationMessage.getCertificate());
+        assertTrue(migrationMessage.getQuestions().isEmpty());
+    }
+    
     @Test
     public void convertCertWithNothing() {
 
         Certificate certificate = getCertificateById(CERT_WITH_NOTHING);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, INERA);
         assertNotNull(migrationMessage);
         assertNull(migrationMessage.getCertificate());
         assertTrue(migrationMessage.getQuestions().isEmpty());
@@ -65,7 +82,7 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
         Certificate certificate = getCertificateById(CERT_WITH_JUST_CONTENT);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, INERA);
         assertNotNull(migrationMessage);
         assertNotNull(migrationMessage.getCertificate());
         assertTrue(migrationMessage.getQuestions().isEmpty());
@@ -77,7 +94,7 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
         Certificate certificate = getCertificateById(CERT_WITH_JUST_QUESTION);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, INERA);
         assertNotNull(migrationMessage);
         assertNull(migrationMessage.getCertificate());
         assertEquals(1, migrationMessage.getQuestions().size());
@@ -89,10 +106,10 @@ public class CertificateConverterTest extends AbstractDbUnitSpringTest {
         Certificate certificate = getCertificateById(CERT_WITH_QUESTIONS_ANSWERS);
         assertNotNull(certificate);
 
-        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, "aa");
+        MigrationMessage migrationMessage = converter.toMigrationMessage(certificate, INERA);
         assertNotNull(migrationMessage);
         assertNotNull(migrationMessage.getCertificate());
-        assertEquals(4, migrationMessage.getQuestions().size());
+        assertEquals(3, migrationMessage.getQuestions().size());
     }
 
     private Certificate getCertificateById(String certId) {

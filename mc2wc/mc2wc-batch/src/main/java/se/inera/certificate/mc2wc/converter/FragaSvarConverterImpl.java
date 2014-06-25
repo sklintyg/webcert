@@ -154,17 +154,17 @@ public class FragaSvarConverterImpl implements FragaSvarConverter {
 
         if (originator.equals(QuestionOriginatorType.CARE)) {
             if (gotAnswer) {
-                return Status.ANSWERED;
+                return Status.CLOSED;
             }
 
             return Status.PENDING_EXTERNAL_ACTION;
 
         } else if (originator.equals(QuestionOriginatorType.FK)) {
             if (gotAnswer) {
-                return Status.PENDING_INTERNAL_ACTION;
+                return Status.CLOSED;
             }
 
-            return Status.ANSWERED;
+            return Status.PENDING_INTERNAL_ACTION;
         }
 
         return null;

@@ -20,30 +20,10 @@ public class CertificateConverterProcessor implements ItemProcessor<Certificate,
     private String sender;
 
     @Override
-    public MigrationMessage process(Certificate cert) throws Exception {
-        
-        String mcCertId = cert.getId();
-        
-        if (!checkIfCertCanBeMigrated(cert)) {
-            log.info("Certificate {} has neither contents nor questions and will not be migrated", mcCertId);
-            return null;
-        }
-        
+    public MigrationMessage process(Certificate cert) throws Exception {   
         return converter.toMigrationMessage(cert, sender);
     }
-    
-    private boolean checkIfCertCanBeMigrated(Certificate cert) {
-        return hasCertAnyContents(cert) || hasCertAnyQuestions(cert);
-    }
-    
-    private boolean hasCertAnyContents(Certificate cert) {
-        return (cert.getDocument() != null && cert.getDocument().length > 0);
-    }
-    
-    private boolean hasCertAnyQuestions(Certificate cert) {
-        return (cert.getQuestions() != null && cert.getQuestions().size() > 0);
-    }
-    
+        
     public void setSender(String sender) {
         this.sender = sender;
     }

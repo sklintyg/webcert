@@ -2,6 +2,8 @@
 <migrationMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:inera:certificates:mc2wc:1"
                   xsi:schemaLocation="urn:inera:certificates:mc2wc:1 mc2wc-schema.xsd">
   <certificateId>certificateId</certificateId>
+  <certificateState>SIGNED_AND_SENT</certificateState>
+  <certificateOrigin>APPLICATION</certificateOrigin>
   <certificate>
     <certificateId>certificateId</certificateId>
     <certificateType>certificateType</certificateType>

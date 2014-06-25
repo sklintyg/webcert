@@ -57,8 +57,8 @@ public class ExportJobTest extends AbstractDbUnitSpringTest {
             }
         });
 
-        assertEquals("Migrated certs", 13L, mc2wcDAO.countMigratedCertificates().longValue());
-        assertEquals("Migrated questions", 12L, mc2wcDAO.sumNbrOfMigratedQuestions().longValue());
+        assertEquals("Migrated certs", 11L, mc2wcDAO.countMigratedCertificates().longValue());
+        assertEquals("Migrated questions", 9L, mc2wcDAO.sumNbrOfMigratedQuestions().longValue());
         assertEquals("Migrated questions with answers", 5L, mc2wcDAO.sumNbrOfMigratedAnsweredQuestions().longValue());
     }
 }
