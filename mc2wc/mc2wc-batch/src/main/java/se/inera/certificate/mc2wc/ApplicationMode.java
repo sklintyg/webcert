@@ -2,7 +2,8 @@ package se.inera.certificate.mc2wc;
 
 public enum ApplicationMode {
     IMPORT("import", "importJob"),
-    EXPORT("export", "exportJob");
+    EXPORT("export", "exportJob"),
+    ROLLBACK("import", "rollbackImportJob");
 
     private String mode;
 

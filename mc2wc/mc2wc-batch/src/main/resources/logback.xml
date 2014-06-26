@@ -24,7 +24,7 @@
     <appender-ref ref="STDOUT" />
   </logger>
 
-  <logger name="se.inera.certificate.mc2wc" level="DEBUG">
+  <logger name="se.inera.certificate.mc2wc" level="DEBUG" additivity="false">
     <appender-ref ref="FILE" />
   </logger>
 

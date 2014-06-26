@@ -33,20 +33,20 @@ public class MigratedCertificateConverterProcessor implements
 
         MigratedCertificate migratedCertificate = new MigratedCertificate();
         migratedCertificate.setCertificateId(certificateId);
-
-        addCertificateDocument(migratedCertificate, migrationMessage);
-        
-        addCountOfNbrOfQuestions(migratedCertificate, migrationMessage);
-        
-        return migratedCertificate;
-    }
-    
-    private void addCertificateDocument(MigratedCertificate migratedCertificate, MigrationMessage migrationMessage) throws JAXBException {
+            
+        if (migrationMessage.getCertificate() != null) {
+            migratedCertificate.setHasLegacyCertificate(true);
+            log.debug("MigratedCertficate contains a legacy certificate");
+         }
         
         byte[] certificateDocument = convertMigrationMessageToXML(migrationMessage);
         migratedCertificate.setDocument(certificateDocument);
         
         log.debug("Adding certificate document of {} bytes", certificateDocument.length);
+        
+        addCountOfNbrOfQuestions(migratedCertificate, migrationMessage);
+        
+        return migratedCertificate;
     }
     
     private void addCountOfNbrOfQuestions(MigratedCertificate migrCert, MigrationMessage migrationMessage) {
@@ -69,7 +69,7 @@ public class MigratedCertificateConverterProcessor implements
         
         log.debug("Migrated certificate has {} questions, {} with answers", nbrOfQuestions, nbrOfAnsweredQuestions);
     }
-    
+        
     private byte[] convertMigrationMessageToXML(MigrationMessage migrationMessage) throws JAXBException {
         ByteArrayOutputStream xmlBaos = new ByteArrayOutputStream();
         marshaller.marshal(migrationMessage, xmlBaos);

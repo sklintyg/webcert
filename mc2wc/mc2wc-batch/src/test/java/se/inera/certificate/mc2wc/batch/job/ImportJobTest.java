@@ -38,8 +38,7 @@ public class ImportJobTest {
 
     @Autowired
     @Qualifier("importJob")
-    private Job importJob;
-        
+    private Job importJob;  
     
     @Test
     public void testRunImportJob() throws Exception {
@@ -55,7 +54,8 @@ public class ImportJobTest {
             }
         });
         
-        assertEquals(12, webcertDao.countNbrOfFragaSvar());
+        assertEquals(9, webcertDao.countNbrOfFragaSvar());
+        assertEquals(10, webcertDao.countNbrOfMigreratMedcertIntyg());
     }
     
 }

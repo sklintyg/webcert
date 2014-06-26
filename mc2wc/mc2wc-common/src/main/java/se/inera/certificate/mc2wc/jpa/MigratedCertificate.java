@@ -30,6 +30,9 @@ public class MigratedCertificate {
     
     @Column(name = "ANSWERED_QUESTIONS")
     private int nbrOfAnsweredQuestions;
+    
+    @Column(name = "HAS_LEGACY_CERTIFICATE")
+    private boolean hasLegacyCertificate;
 
     public Long getId() {
         return id;
@@ -69,6 +72,14 @@ public class MigratedCertificate {
 
     public void setNbrOfAnsweredQuestions(int nbrOfAnsweredQuestions) {
         this.nbrOfAnsweredQuestions = nbrOfAnsweredQuestions;
+    }
+
+    public boolean isHasLegacyCertificate() {
+        return hasLegacyCertificate;
+    }
+
+    public void setHasLegacyCertificate(boolean hasLegacyCertificate) {
+        this.hasLegacyCertificate = hasLegacyCertificate;
     }
 
 }

@@ -16,9 +16,10 @@ public class Main {
     private static final String CONTEXT_LOCATION = "/application-context.xml";
     private static final String CONFIG_PARAM = "configFile";
     private static final String LOGGER_PARAM = "logFile";
-    private static final String VALID_MODES = "ei";
+    private static final String VALID_MODES = "eir";
     private static final String MODE_IMPORT_PARAM = "i";
     private static final String MODE_EXPORT_PARAM = "e";
+    private static final String MODE_ROLLBACK_PARAM = "r";
 
     private static Logger log = LoggerFactory.getLogger(ApplicationConsoleLogger.NAME);
 
@@ -71,6 +72,8 @@ public class Main {
             return ApplicationMode.EXPORT;
         } else if (options.has(MODE_IMPORT_PARAM)) {
             return ApplicationMode.IMPORT;
+        } else if (options.has(MODE_ROLLBACK_PARAM)) {
+            return ApplicationMode.ROLLBACK;
         } else {
             log.error("Invalid mode in argument, valid modes are [-{}]...", VALID_MODES);
             exitApplication();
