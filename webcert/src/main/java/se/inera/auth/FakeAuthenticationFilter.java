@@ -42,7 +42,7 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
         String parameter = request.getParameter("userJsonDisplay");
         // we manually encode the json parameter
-        String json = URLDecoder.decode(parameter, "ISO-8859-1");
+        String json = URLDecoder.decode(parameter, "UTF-8");
         if (json == null) {
             return null;
         }

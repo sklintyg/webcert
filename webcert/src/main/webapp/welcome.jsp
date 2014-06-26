@@ -217,7 +217,6 @@
                 "hsaId" : "hansolo",
                 "enhetId" : "centrum-norr",
                 "lakare" : false
-
             }
         ];
 
@@ -232,7 +231,7 @@
     </script>
 </head>
 <body onLoad="updateJsonInput()">
-<form id="loginForm" action="/fake" method="POST" class="form-inline">
+<form id="loginForm" action="/fake" method="POST" class="form-inline" accept-charset="UTF-8">
     <div class="container">
 
         <div id="content-container">
