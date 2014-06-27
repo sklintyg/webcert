@@ -2,10 +2,10 @@
     "hsaId": "staffan",
 	"forNamn": "Staffan",
 	"efterNamn": "Stafett",
+	"titel" : "Läkare",
+	"legitimeradeYrkesgrupper" : [
+		"Läkare"],
 	"specialiseringar": [{
-		"kod": "100",
-		"namn": "Kirurgi"
-	},{
 		"kod": "200",
 		"namn": "Ortopedi"
 	}],

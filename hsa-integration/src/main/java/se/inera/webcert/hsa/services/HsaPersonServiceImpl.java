@@ -1,7 +1,6 @@
 package se.inera.webcert.hsa.services;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -24,27 +23,6 @@ public class HsaPersonServiceImpl implements HsaPersonService {
 
     @Autowired
     private HSAWebServiceCalls client;
-
-    /* (non-Javadoc)
-     * @see se.inera.webcert.hsa.services.HsaPersonService#getSpecialitiesForHsaPerson(java.lang.String)
-     */
-    @Override
-    public List<String> getSpecialitiesForHsaPerson(String personHsaId) {
-
-        LOG.debug("Getting specialities for person '{}'", personHsaId);
-
-        List<GetHsaPersonHsaUserType> personHsaInfos = getHsaPersonInfo(personHsaId);
-
-        if (personHsaInfos.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<String> userSpecialities = extractSpecialitiesFromUsers(personHsaInfos);
-
-        LOG.debug("Person '{}' has {} specialities", personHsaId, userSpecialities.size());
-
-        return userSpecialities;
-    }
 
     /* (non-Javadoc)
      * @see se.inera.webcert.hsa.services.HsaPersonService#getHsaPersonInfo(java.lang.String)
@@ -71,17 +49,4 @@ public class HsaPersonServiceImpl implements HsaPersonService {
         return hsaUserTypeList;
     }
 
-    private List<String> extractSpecialitiesFromUsers(List<GetHsaPersonHsaUserType> userTypeList) {
-
-        List<String> specialities = new ArrayList<String>();
-
-        for (GetHsaPersonHsaUserType userType : userTypeList) {
-            List<String> userSpecNames = userType.getSpecialityNames().getSpecialityName();
-            specialities.addAll(userSpecNames);
-        }
-
-        Collections.sort(specialities);
-
-        return specialities;
-    }
 }

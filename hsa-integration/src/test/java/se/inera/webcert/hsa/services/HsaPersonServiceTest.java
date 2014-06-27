@@ -1,6 +1,5 @@
 package se.inera.webcert.hsa.services;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -69,16 +68,6 @@ public class HsaPersonServiceTest {
 
         assertNotNull(res);
         assertTrue(res.isEmpty());
-    }
-
-    @Test
-    public void testGetSpecialitiesForHsaPersonWithValidPerson() {
-
-        List<String> res = hsaPersonService.getSpecialitiesForHsaPerson(VALID_HSA_ID);
-
-        assertNotNull(res);
-        assertFalse(res.isEmpty());
-        assertEquals(3, res.size());
     }
 
     private GetHsaPersonResponseType buildResponse() {

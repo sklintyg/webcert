@@ -2,12 +2,15 @@
     "hsaId": "eva",
 	"forNamn": "Eva",
 	"efterNamn": "Holgersson",
+	"titel" : "Leg. Ögonläkare",
+	"legitimeradeYrkesgrupper" : [
+		"Läkare"],
 	"specialiseringar": [{
 		"kod": "100",
 		"namn": "Kirurgi"
 	},{
 		"kod": "200",
-		"namn": "Ortopedi"
+		"namn": "Oftalmologi"
 	}],
     "uppdrag":[
     	{

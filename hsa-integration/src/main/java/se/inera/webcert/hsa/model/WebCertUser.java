@@ -24,6 +24,10 @@ public class WebCertUser implements Serializable {
     private List<Vardgivare> vardgivare;
 
     private List<String> specialiseringar;
+    
+    private String titel;
+    
+    private List<String> legitimeradeYrkesgrupper;
 
     private SelectableVardenhet valdVardenhet;
 
@@ -67,11 +71,37 @@ public class WebCertUser implements Serializable {
     }
 
     public List<String> getSpecialiseringar() {
+        
+        if (specialiseringar == null) {
+            specialiseringar = Collections.emptyList();
+        }
+        
         return specialiseringar;
     }
 
     public void setSpecialiseringar(List<String> specialiseringar) {
         this.specialiseringar = specialiseringar;
+    }
+
+    public String getTitel() {
+        return titel;
+    }
+
+    public void setTitel(String titel) {
+        this.titel = titel;
+    }
+
+    public List<String> getLegitimeradeYrkesgrupper() {
+        
+        if (legitimeradeYrkesgrupper == null) {
+            legitimeradeYrkesgrupper = Collections.emptyList();
+        }
+                
+        return legitimeradeYrkesgrupper;
+    }
+
+    public void setLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
+        this.legitimeradeYrkesgrupper = legitimeradeYrkesgrupper;
     }
 
     public SelectableVardenhet getValdVardenhet() {

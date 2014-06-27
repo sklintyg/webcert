@@ -21,6 +21,7 @@ import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHospPersonResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHospPersonType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.HsaTitles;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityCodes;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonResponseType;
@@ -293,6 +294,14 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
 
         user.setSpecialityCodes(userSpecCodes);
         user.setSpecialityNames(userSpecNames);
+        
+        user.setTitle(hsaPerson.getTitel());
+        
+        HsaTitles userHsaTitles = new HsaTitles();
+        
+        userHsaTitles.getHsaTitle().addAll(hsaPerson.getLegitimeradeYrkesgrupper());
+        
+        user.setHsaTitles(userHsaTitles);
 
         UserInformations userInfos = new UserInformations();
         userInfos.getUserInformation().add(user);

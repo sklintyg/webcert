@@ -1,5 +1,20 @@
 package se.inera.webcert.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.cxf.helpers.XMLUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,28 +31,18 @@ import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
+
 import se.inera.auth.WebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.HsaTitles;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
-
-import javax.xml.transform.stream.StreamSource;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * @author andreaskaltenbach
@@ -47,6 +52,7 @@ public class WebCertUserDetailsServiceTest {
 
     private static final String PERSONAL_HSA_ID = "TST5565594230-106J";
     private static final String ENHET_HSA_ID = "IFV1239877878-103H";
+    private static final String HEAD_DOCTOR = "Överläkare";
 
     @InjectMocks
     private WebCertUserDetailsService userDetailsService = new WebCertUserDetailsService();
@@ -67,7 +73,8 @@ public class WebCertUserDetailsServiceTest {
     @Test
     public void testPopulatingWebCertUser() throws Exception {
 
-        setupHsaOrganizationService();
+        setupCallToAuthorizedEnheterForHosPerson();
+        setupCallToGetHsaPersonInfo();
 
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
 
@@ -85,13 +92,47 @@ public class WebCertUserDetailsServiceTest {
         assertNotNull(webCertUser.getValdVardenhet());
         assertEquals(ENHET_HSA_ID, webCertUser.getValdVardenhet().getId());
 
-        assertEquals(2, webCertUser.getSpecialiseringar().size());
+        assertEquals(3, webCertUser.getSpecialiseringar().size());
+        assertEquals(2, webCertUser.getLegitimeradeYrkesgrupper().size());
+        
+        assertEquals(HEAD_DOCTOR, webCertUser.getTitel());
 
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
-        verify(hsaPersonService).getSpecialitiesForHsaPerson(PERSONAL_HSA_ID);
+        verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSA_ID);
     }
 
-    private void setupHsaOrganizationService() {
+    @Test
+    public void testPopulatingWebCertUserWithTwoUserTypes() throws Exception {
+
+        setupCallToAuthorizedEnheterForHosPerson();
+                
+        GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel1", 
+                Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Arrays.asList("Läkare"));
+        
+        GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel2", 
+                Arrays.asList("Kirurgi", "Reumatologi"), Arrays.asList("Psykoterapeut"));
+        
+        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(userType1, userType2);
+
+        when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSA_ID)).thenReturn(userTypes);
+
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
+
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertEquals(PERSONAL_HSA_ID, webCertUser.getHsaId());
+        assertEquals("Markus Gran", webCertUser.getNamn());
+        
+        assertEquals(3, webCertUser.getSpecialiseringar().size());
+        assertEquals(2, webCertUser.getLegitimeradeYrkesgrupper().size());
+        
+        assertEquals("Titel1, Titel2", webCertUser.getTitel());
+
+        verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
+        verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSA_ID);
+    }
+    
+    private void setupCallToAuthorizedEnheterForHosPerson() {
         vardgivare = new Vardgivare("vg", "Landstinget Ingenmansland");
         vardgivare.getVardenheter().add(new Vardenhet("vardcentralen", "Vårdcentralen"));
         vardgivare.getVardenheter().add(new Vardenhet(ENHET_HSA_ID, "TestVårdEnhet2A VårdEnhet2A"));
@@ -100,15 +141,22 @@ public class WebCertUserDetailsServiceTest {
 
         when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID)).thenReturn(
                 vardgivareList);
-
-        List<String> specList = Arrays.asList("Kirurgi","Ortopedi");
-
-        when(hsaPersonService.getSpecialitiesForHsaPerson(PERSONAL_HSA_ID)).thenReturn(specList);
     }
+    
+    private void setupCallToGetHsaPersonInfo() {
+        
+        List<String> specs = Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar", "Reumatologi");
+        List<String> titles = Arrays.asList("Läkare", "Psykoterapeut");
+        
+        List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, HEAD_DOCTOR, specs, titles));
 
+        when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSA_ID)).thenReturn(userTypes);
+    }
+    
     @Test
     public void testLakareTitle() throws Exception {
-        setupHsaOrganizationService();
+        setupCallToAuthorizedEnheterForHosPerson();
+        setupCallToGetHsaPersonInfo();
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertTrue(webCertUser.isLakare());
@@ -116,7 +164,7 @@ public class WebCertUserDetailsServiceTest {
 
     @Test
     public void testLakareTitleCode() throws Exception {
-        setupHsaOrganizationService();
+        setupCallToAuthorizedEnheterForHosPerson();
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertTrue(webCertUser.isLakare());
@@ -124,7 +172,7 @@ public class WebCertUserDetailsServiceTest {
 
     @Test
     public void testNoLakare() throws Exception {
-        setupHsaOrganizationService();
+        setupCallToAuthorizedEnheterForHosPerson();
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertFalse(webCertUser.isLakare());
@@ -132,7 +180,7 @@ public class WebCertUserDetailsServiceTest {
 
     @Test
     public void testNoGivenName() throws Exception {
-        setupHsaOrganizationService();
+        setupCallToAuthorizedEnheterForHosPerson();
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-givenname.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertEquals("Gran", webCertUser.getNamn());
@@ -167,5 +215,22 @@ public class WebCertUserDetailsServiceTest {
         Assertion assertion = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
         NameID nameId = assertion.getSubject().getNameID();
         return new SAMLCredential(nameId, assertion, "remoteId", "localId");
+    }
+    
+    private GetHsaPersonHsaUserType buildGetHsaPersonHsaUserType(String hsaId, String title, List<String> specialities, List<String> titles) {
+
+        GetHsaPersonHsaUserType type = new GetHsaPersonHsaUserType();
+        type.setHsaIdentity(hsaId);
+        type.setTitle(title);
+        
+        HsaTitles hsaTitles = new HsaTitles();
+        hsaTitles.getHsaTitle().addAll(titles);
+        type.setHsaTitles(hsaTitles);
+
+        SpecialityNames specNames = new SpecialityNames();
+        specNames.getSpecialityName().addAll(specialities);
+        type.setSpecialityNames(specNames);
+        
+        return type;
     }
 }

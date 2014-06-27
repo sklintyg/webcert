@@ -1,22 +1,27 @@
 package se.inera.auth;
 
+import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
-
-import java.util.List;
-
-import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
 /**
  * @author andreaskaltenbach
@@ -24,6 +29,9 @@ import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserDetailsService.class);
+
+    private static final String COMMA = ", ";
+    private static final String SPACE = " ";
 
     private static final String LAKARE = "Läkare";
     private static final String LAKARE_CODE = "204010";
@@ -36,7 +44,8 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     @Override
     public Object loadUserBySAML(SAMLCredential credential) {
-        LOG.info("User authentication was successful. SAML credential is " + credential);
+
+        LOG.info("User authentication was successful. SAML credential is: {}", credential);
 
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(credential.getAuthenticationAssertion());
         try {
@@ -68,30 +77,104 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
     }
 
     private WebCertUser createWebCertUser(SakerhetstjanstAssertion assertion) {
+
         WebCertUser webcertUser = new WebCertUser();
+
         webcertUser.setHsaId(assertion.getHsaId());
-        String namn = null;
-        if (StringUtils.isNotBlank(assertion.getFornamn())) {
-            namn = assertion.getFornamn();
-        }
-        if (StringUtils.isNotBlank(assertion.getMellanOchEfternamn())) {
-            if (namn == null) {
-                namn = assertion.getMellanOchEfternamn();
-            } else {
-                namn += " " + assertion.getMellanOchEfternamn();
-            }
-        }
-        webcertUser.setNamn(namn);
+        webcertUser.setNamn(compileName(assertion));
         webcertUser.setForskrivarkod(assertion.getForskrivarkod());
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
 
         // lakare flag is calculated by checking for lakare profession in title and title code
         webcertUser.setLakare(LAKARE.equals(assertion.getTitel()) || LAKARE_CODE.equals(assertion.getTitelKod()));
 
-        List<String> specialities = hsaPersonService.getSpecialitiesForHsaPerson(assertion.getHsaId());
-        webcertUser.setSpecialiseringar(specialities);
+        decorateWebCertUserWithAdditionalInfo(webcertUser);
 
         return webcertUser;
+    }
+
+    private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser) {
+
+        String userHsaId = webcertUser.getHsaId();
+
+        List<GetHsaPersonHsaUserType> hsaPersonInfo = hsaPersonService.getHsaPersonInfo(userHsaId);
+
+        if (hsaPersonInfo == null || hsaPersonInfo.isEmpty()) {
+            LOG.info("getHsaPersonInfo did not return any info for user '{}'", userHsaId);
+            return;
+        }
+
+        List<String> specialiseringar = extractSpecialiseringar(hsaPersonInfo);
+        webcertUser.setSpecialiseringar(specialiseringar);
+
+        List<String> legitimeradeYrkesgrupper = extractLegitimeradeYrkesgrupper(hsaPersonInfo);
+        webcertUser.setLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
+
+        String titel = extractTitel(hsaPersonInfo);
+        webcertUser.setTitel(titel);
+    }
+
+    private String extractTitel(List<GetHsaPersonHsaUserType> hsaUserTypes) {
+
+        List<String> titlar = new ArrayList<String>();
+
+        for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
+            if (StringUtils.isNotBlank(userType.getTitle())) {
+                titlar.add(userType.getTitle());
+            }
+        }
+
+        return StringUtils.join(titlar, COMMA);
+    }
+
+    private List<String> extractLegitimeradeYrkesgrupper(List<GetHsaPersonHsaUserType> hsaUserTypes) {
+
+        Set<String> lygSet = new TreeSet<>();
+
+        for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
+            if (userType.getHsaTitles() != null) {
+                List<String> hsaTitles = userType.getHsaTitles().getHsaTitle();
+                lygSet.addAll(hsaTitles);
+            }
+        }
+
+        List<String> list = new ArrayList<String>(lygSet);
+
+        return list;
+    }
+
+    private List<String> extractSpecialiseringar(List<GetHsaPersonHsaUserType> hsaUserTypes) {
+
+        Set<String> specSet = new TreeSet<>();
+
+        for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
+            if (userType.getSpecialityNames() != null) {
+                List<String> specialityNames = userType.getSpecialityNames().getSpecialityName();
+                specSet.addAll(specialityNames);
+            }
+        }
+
+        List<String> list = new ArrayList<String>(specSet);
+
+        return list;
+    }
+
+    private String compileName(SakerhetstjanstAssertion assertion) {
+
+        StringBuilder sb = new StringBuilder();
+
+        if (StringUtils.isNotBlank(assertion.getFornamn())) {
+            sb.append(assertion.getFornamn());
+        }
+
+        if (StringUtils.isNotBlank(assertion.getMellanOchEfternamn())) {
+            if (sb.length() > 0) {
+                sb.append(SPACE);
+            }
+            sb.append(assertion.getMellanOchEfternamn());
+        }
+
+        return sb.toString();
     }
 
     private void setDefaultSelectedVardenhetOnUser(WebCertUser user, SakerhetstjanstAssertion assertion) {

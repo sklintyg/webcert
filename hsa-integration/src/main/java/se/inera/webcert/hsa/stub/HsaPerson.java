@@ -14,6 +14,10 @@ public class HsaPerson {
     private List<HsaSpecialicering> specialiseringar = new ArrayList<HsaSpecialicering>();
 
     private List<String> enhetIds = new ArrayList<String>();
+    
+    private String titel;
+    
+    private List<String> legitimeradeYrkesgrupper = new ArrayList<String>();
 
     public HsaPerson() {
         super();
@@ -64,6 +68,22 @@ public class HsaPerson {
 
     public void setEnhetIds(List<String> enhetIds) {
         this.enhetIds = enhetIds;
+    }
+
+    public String getTitel() {
+        return titel;
+    }
+
+    public void setTitel(String titel) {
+        this.titel = titel;
+    }
+
+    public List<String> getLegitimeradeYrkesgrupper() {
+        return legitimeradeYrkesgrupper;
+    }
+
+    public void setLegitimeradeYrkesgrupper(List<String> legitimeradeYrkesgrupper) {
+        this.legitimeradeYrkesgrupper = legitimeradeYrkesgrupper;
     }
 
 }
