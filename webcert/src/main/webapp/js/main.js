@@ -10,6 +10,8 @@ require.config({
         angularSwedish: '/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se',
         angularUiBootstrap: '/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls',
 
+        moment: '/web/webjars/momentjs/2.7.0/moment',
+
         text: '/web/webjars/requirejs-text/2.0.10/text'
     },
     shim: {

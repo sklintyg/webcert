@@ -5,6 +5,7 @@ define([
     'angularSanitize',
     'angularSwedish',
     'angularUiBootstrap',
+    'moment',
     'directives',
     'filters',
     'messages',
@@ -22,7 +23,7 @@ define([
     'webjars/common/webcert/js/services/httpRequestInterceptorCacheBuster',
     'webjars/common/webcert/js/services/messageService',
     'webjars/common/webcert/js/services/User'
-], function(angular, angularCookies, angularRoute, angularSanitize, angularSwedish, angularUiBootstrap, directives,
+], function(angular, angularCookies, angularRoute, angularSanitize, angularSwedish, angularUiBootstrap, moment, directives,
     filters, messages, AboutWebcertCtrl, ChooseCertTypeCtrl, ChoosePatientCtrl, EditPatientNameCtrl, InitCertCtrl,
     UnhandledQACtrl, UnsignedCertCtrl, ViewCertCtrl, commonMessages, commonDirectives, http403ResponseInterceptor,
     httpRequestInterceptorCacheBuster, messageService, User) {
