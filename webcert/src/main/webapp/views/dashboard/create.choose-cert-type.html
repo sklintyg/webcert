@@ -10,7 +10,7 @@
             <div class="form-group">
               <label class="control-label">Patientuppgifter</label>
               <div class="form-group">
-                {{firstname}} {{lastname}}<br />
+                {{fornamn}} {{efternamn}}<br />
                 {{personnummer}}
               </div>
               <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
@@ -46,7 +46,7 @@
 
       <!-- Tidigare intyg table -->
       <div class="webcert-col-section">
-        <h2 class="col-head">{{firstname}} {{lastname}}s tidigare intyg</h2>
+        <h2 class="col-head">{{fornamn}} {{efternamn}}s tidigare intyg</h2>
         <div class="form-group">
           <label class="radio-inline">
             <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"

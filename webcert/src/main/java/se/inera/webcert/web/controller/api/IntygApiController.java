@@ -98,9 +98,12 @@ public class IntygApiController extends AbstractApiController {
         srvReq.setIntygType(req.getIntygType());
 
         Patient pat = new Patient();
-        pat.setPersonNummer(req.getPatientPersonnummer());
-        pat.setForNamn(req.getPatientFornamn());
-        pat.setEfterNamn(req.getPatientEfternamn());
+        pat.setPersonnummer(req.getPatientPersonnummer());
+        pat.setFornamn(req.getPatientFornamn());
+        pat.setEfternamn(req.getPatientEfternamn());
+        pat.setPostadress(req.getPatientPostadress());
+        pat.setPostnummer(req.getPatientPostnummer());
+        pat.setPostort(req.getPatientPostort());
         srvReq.setPatient(pat);
 
         srvReq.setHosPerson(createHoSPersonFromUser());

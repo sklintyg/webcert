@@ -14,9 +14,11 @@ define([
                     reset: function() {
                         this.personnummer = null;
                         this.intygType = 'default';
-                        this.firstname = null;
-                        this.lastname = null;
-                        this.address = null;
+                        this.fornamn = null;
+                        this.efternamn = null;
+                        this.postadress = null;
+                        this.postnummer = null;
+                        this.postort = null;
                         this.vardEnhetHsaId = null;
                         this.vardEnhetNamn = null;
                         this.vardGivareHsaId = null;
@@ -34,9 +36,11 @@ define([
                             $log.debug(data);
 
                             if (data.status === 'FOUND' && data.person) {
-                                that.firstname = data.person.fornamn;
-                                that.lastname = data.person.efternamn;
-                                that.address = data.person.postadress;
+                                that.fornamn = data.person.fornamn;
+                                that.efternamn = data.person.efternamn;
+                                that.postadress = data.person.postadress;
+                                that.postnummer = data.person.postnummer;
+                                that.postort = data.person.postort;
                                 onSuccess();
                             } else {
                                 $log.debug('Personen hittades inte i PU-tjänsten, manuell inmatning krävs');
@@ -53,11 +57,13 @@ define([
                         $log.debug('_createDraft');
 
                         var payload = {};
-                        payload.patientPersonnummer = this.personnummer;
-                        payload.patientFornamn = this.firstname;
-                        payload.patientEfternamn = this.lastname;
                         payload.intygType = this.intygType;
-                        payload.postadress = this.address;
+                        payload.patientPersonnummer = this.personnummer;
+                        payload.patientFornamn = this.fornamn;
+                        payload.patientEfternamn = this.efternamn;
+                        payload.patientPostadress = this.postadress;
+                        payload.patientPostnummer = this.postnummer;
+                        payload.patientPostort = this.postort;
                         payload.vardEnhetHsaId = this.vardEnhetHsaId;
                         payload.vardEnhetNamn = this.vardEnhetNamn;
                         payload.vardGivareHsaId = this.vardGivareHsaId;
@@ -80,11 +86,13 @@ define([
 
                         var payload = {};
                         payload.sourceIntygId = cert.intygId;
-                        payload.patientPersonnummer = this.personnummer;
-                        payload.patientFornamn = this.firstname;
-                        payload.patientEfternamn = this.lastname;
                         payload.intygType = this.intygType;
-                        payload.postadress = this.address;
+                        payload.patientPersonnummer = this.personnummer;
+                        payload.patientFornamn = this.fornamn;
+                        payload.patientEfternamn = this.efternamn;
+                        payload.patientPostadress = this.postadress;
+                        payload.patientPostnummer = this.postnummer;
+                        payload.patientPostort = this.postort;
                         payload.vardEnhetHsaId = this.vardEnhetHsaId;
                         payload.vardEnhetNamn = this.vardEnhetNamn;
                         payload.vardGivareHsaId = this.vardGivareHsaId;

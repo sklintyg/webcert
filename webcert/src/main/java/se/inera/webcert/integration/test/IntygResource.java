@@ -45,9 +45,9 @@ public class IntygResource {
 
         se.inera.webcert.service.dto.Patient patient = request.getPatient();
 
-        draft.setPatientPersonnummer(patient.getPersonNummer());
-        draft.setPatientFornamn(patient.getForNamn());
-        draft.setPatientEfternamn(patient.getEfterNamn());
+        draft.setPatientPersonnummer(patient.getPersonnummer());
+        draft.setPatientFornamn(patient.getFornamn());
+        draft.setPatientEfternamn(patient.getEfternamn());
 
         draft.setIntygsId(request.getIntygId());
         draft.setIntygsTyp(request.getIntygType());

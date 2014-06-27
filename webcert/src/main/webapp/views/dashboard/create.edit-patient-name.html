@@ -20,26 +20,18 @@
           </div>
 
           <div class="form-group">
-            <label for="firstname" class="control-label">Förnamn</label>
-            <input id="firstname" class="form-control" name="firstname" type="text" ng-model="firstname" required
+            <label for="fornamn" class="control-label">Förnamn</label>
+            <input id="fornamn" class="form-control" name="fornamn" type="text" ng-model="fornamn" required
                    wc-visited />
-            <div ng-show="nameForm.firstname.$invalid && (nameForm.firstname.$visited || nameForm.submitted)">
+            <div ng-show="nameForm.fornamn.$invalid && (nameForm.fornamn.$visited || nameForm.submitted)">
               <span class="error">Du måste ange ett förnamn</span>
             </div>
           </div>
           <div class="form-group">
-            <label for="middlename" class="control-label">Mellannamn</label>
-            <input id="middlename" class="form-control" name="middlename" type="text" ng-model="middlename" required
+            <label for="efternamn" class="control-label">Efternamn</label>
+            <input id="efternamn" class="form-control" name="efternamn" type="text" ng-model="efternamn" required
                    wc-visited />
-            <div ng-show="nameForm.middlename.$invalid && (nameForm.middlename.$visited || nameForm.submitted)">
-              <span class="error">Du måste ange ett mellannamn</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="lastname" class="control-label">Efternamn</label>
-            <input id="lastname" class="form-control" name="lastname" type="text" ng-model="lastname" required
-                   wc-visited />
-            <div ng-show="nameForm.lastname.$invalid && (nameForm.lastname.$visited || nameForm.submitted)">
+            <div ng-show="nameForm.efternamn.$invalid && (nameForm.efternamn.$visited || nameForm.submitted)">
               <span class="error">Du måste ange ett efternamn</span>
             </div>
           </div>

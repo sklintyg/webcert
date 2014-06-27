@@ -55,7 +55,7 @@ public class PUServiceImpl implements PUService {
     }
 
     private String buildAdress(SvenskAdressTYPE adress) {
-        return joinIgnoreNulls(",", adress.getCareOf(), adress.getUtdelningsadress1(), adress.getUtdelningsadress2());
+        return joinIgnoreNulls(", ", adress.getCareOf(), adress.getUtdelningsadress1(), adress.getUtdelningsadress2());
     }
 
     private String joinIgnoreNulls(String separator, String...values) {

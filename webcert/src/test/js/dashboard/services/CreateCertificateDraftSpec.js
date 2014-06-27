@@ -29,10 +29,12 @@ define([
 
                 expect(CreateCertificateDraft.personnummer).toBeNull();
                 expect(CreateCertificateDraft.intygType).toEqual('default');
-                expect(CreateCertificateDraft.firstname).toBeNull();
-                expect(CreateCertificateDraft.lastname).toBeNull();
-                expect(CreateCertificateDraft.lastname).toBeNull();
-                expect(CreateCertificateDraft.address).toBeNull();
+                expect(CreateCertificateDraft.fornamn).toBeNull();
+                expect(CreateCertificateDraft.efternamn).toBeNull();
+                expect(CreateCertificateDraft.efternamn).toBeNull();
+                expect(CreateCertificateDraft.postadress).toBeNull();
+                expect(CreateCertificateDraft.postnummer).toBeNull();
+                expect(CreateCertificateDraft.postort).toBeNull();
                 expect(CreateCertificateDraft.vardEnhetHsaId).toBeNull();
                 expect(CreateCertificateDraft.vardEnhetNamn).toBeNull();
                 expect(CreateCertificateDraft.vardGivareHsaId).toBeNull();
@@ -54,7 +56,9 @@ define([
                             personnummer: personnummer,
                             fornamn: 'Test',
                             efternamn: 'Testsson',
-                            postadress: 'Storgatan 23'
+                            postadress: 'Storgatan 23',
+                            postnummer: '12345',
+                            postort: 'Staden'
                         }
                     });
 
@@ -64,9 +68,11 @@ define([
 
                 expect(onSuccess).toHaveBeenCalled();
                 expect(CreateCertificateDraft.personnummer).toEqual(personnummer);
-                expect(CreateCertificateDraft.firstname).toEqual('Test');
-                expect(CreateCertificateDraft.lastname).toEqual('Testsson');
-                expect(CreateCertificateDraft.address).toEqual('Storgatan 23');
+                expect(CreateCertificateDraft.fornamn).toEqual('Test');
+                expect(CreateCertificateDraft.efternamn).toEqual('Testsson');
+                expect(CreateCertificateDraft.postadress).toEqual('Storgatan 23');
+                expect(CreateCertificateDraft.postnummer).toEqual('12345');
+                expect(CreateCertificateDraft.postort).toEqual('Staden');
             });
 
             it('should call onSuccess without data if the patient is unknown', function() {
@@ -86,9 +92,9 @@ define([
                 expect(onSuccess).not.toHaveBeenCalled();
                 expect(onNotFound).toHaveBeenCalled();
                 expect(CreateCertificateDraft.personnummer).toEqual(personnummer);
-                expect(CreateCertificateDraft.firstname).toBeNull();
-                expect(CreateCertificateDraft.lastname).toBeNull();
-                expect(CreateCertificateDraft.address).toBeNull();
+                expect(CreateCertificateDraft.fornamn).toBeNull();
+                expect(CreateCertificateDraft.efternamn).toBeNull();
+                expect(CreateCertificateDraft.postadress).toBeNull();
             });
 
             it('should call onError if the request fails', function() {
@@ -113,10 +119,12 @@ define([
 
             it('should create a draft if the payload is correct', function() {
                 CreateCertificateDraft.personnummer = '19121212-1212';
-                CreateCertificateDraft.firstname = 'Test';
-                CreateCertificateDraft.lastname = 'Testsson';
+                CreateCertificateDraft.fornamn = 'Test';
+                CreateCertificateDraft.efternamn = 'Testsson';
                 CreateCertificateDraft.intygType = 'fk7263';
-                CreateCertificateDraft.address = 'Storgatan 23';
+                CreateCertificateDraft.postadress = 'Storgatan 23';
+                CreateCertificateDraft.postnummer = '12345';
+                CreateCertificateDraft.postort = 'Staden';
                 CreateCertificateDraft.vardEnhetHsaId = '1';
                 CreateCertificateDraft.vardEnhetNamn = 'A';
                 CreateCertificateDraft.vardGivareHsaId = '2';
@@ -126,11 +134,13 @@ define([
                 var onError = jasmine.createSpy('onError');
                 $httpBackend.
                     expectPOST('/api/intyg/create', {
+                        intygType: 'fk7263',
                         patientPersonnummer: '19121212-1212',
                         patientFornamn: 'Test',
                         patientEfternamn: 'Testsson',
-                        intygType: 'fk7263',
-                        postadress: 'Storgatan 23',
+                        patientPostadress: 'Storgatan 23',
+                        patientPostnummer: '12345',
+                        patientPostort: 'Staden',
                         vardEnhetHsaId: '1',
                         vardEnhetNamn: 'A',
                         vardGivareHsaId: '2',

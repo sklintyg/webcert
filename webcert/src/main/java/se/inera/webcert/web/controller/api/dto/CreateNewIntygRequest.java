@@ -12,6 +12,12 @@ public class CreateNewIntygRequest {
 
     private String patientEfternamn;
 
+    private String patientPostadress;
+
+    private String patientPostnummer;
+
+    private String patientPostort;
+
     private String vardEnhetHsaId;
 
     private String vardEnhetNamn;
@@ -71,6 +77,30 @@ public class CreateNewIntygRequest {
 
     public void setPatientEfternamn(String patientEfternamn) {
         this.patientEfternamn = patientEfternamn;
+    }
+
+    public String getPatientPostadress() {
+        return patientPostadress;
+    }
+
+    public void setPatientPostadress(String patientPostadress) {
+        this.patientPostadress = patientPostadress;
+    }
+
+    public String getPatientPostnummer() {
+        return patientPostnummer;
+    }
+
+    public void setPatientPostnummer(String patientPostnummer) {
+        this.patientPostnummer = patientPostnummer;
+    }
+
+    public String getPatientPostort() {
+        return patientPostort;
+    }
+
+    public void setPatientPostort(String patientPostort) {
+        this.patientPostort = patientPostort;
     }
 
     public String getVardEnhetHsaId() {

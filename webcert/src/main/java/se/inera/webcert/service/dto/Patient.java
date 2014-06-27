@@ -2,68 +2,67 @@ package se.inera.webcert.service.dto;
 
 public class Patient {
 
-    private String forNamn;
+    private String personnummer;
 
-    private String efterNamn;
+    private String fornamn;
 
-    private String personNummer;
+    private String efternamn;
 
-    private String postAdress;
+    private String postadress;
 
-    private String postNummer;
+    private String postnummer;
 
-    private String postOrt;
+    private String postort;
 
     public Patient() {
 
     }
 
-    public String getForNamn() {
-        return forNamn;
+    public String getPersonnummer() {
+        return personnummer;
     }
 
-    public void setForNamn(String forNamn) {
-        this.forNamn = forNamn;
+    public void setPersonnummer(String personnummer) {
+        this.personnummer = personnummer;
     }
 
-    public String getEfterNamn() {
-        return efterNamn;
+    public String getFornamn() {
+        return fornamn;
     }
 
-    public void setEfterNamn(String efterNamn) {
-        this.efterNamn = efterNamn;
+    public void setFornamn(String fornamn) {
+        this.fornamn = fornamn;
     }
 
-    public String getPersonNummer() {
-        return personNummer;
+    public String getEfternamn() {
+        return efternamn;
     }
 
-    public void setPersonNummer(String personNummer) {
-        this.personNummer = personNummer;
+    public void setEfternamn(String efternamn) {
+        this.efternamn = efternamn;
     }
 
-    public String getPostAdress() {
-        return postAdress;
+    public String getPostadress() {
+        return postadress;
     }
 
-    public void setPostAdress(String postAdress) {
-        this.postAdress = postAdress;
+    public void setPostadress(String postadress) {
+        this.postadress = postadress;
     }
 
-    public String getPostNummer() {
-        return postNummer;
+    public String getPostnummer() {
+        return postnummer;
     }
 
-    public void setPostNummer(String postNummer) {
-        this.postNummer = postNummer;
+    public void setPostnummer(String postnummer) {
+        this.postnummer = postnummer;
     }
 
-    public String getPostOrt() {
-        return postOrt;
+    public String getPostort() {
+        return postort;
     }
 
-    public void setPostOrt(String postOrt) {
-        this.postOrt = postOrt;
+    public void setPostort(String postort) {
+        this.postort = postort;
     }
-
 }

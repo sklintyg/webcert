@@ -13,8 +13,8 @@ define([
         controller(moduleName, [ '$filter', '$location', '$log', '$scope', '$cookieStore', CreateCertificateDraft, dialogService,
             ManageCertificate, User,
             function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft, dialogService, ManageCertificate, User) {
-                if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.firstname ||
-                    !CreateCertificateDraft.lastname) {
+                if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.fornamn ||
+                    !CreateCertificateDraft.efternamn) {
                     $location.url('/create/index', true);
                 }
 
@@ -44,8 +44,8 @@ define([
                 };
 
                 $scope.personnummer = CreateCertificateDraft.personnummer;
-                $scope.firstname = CreateCertificateDraft.firstname;
-                $scope.lastname = CreateCertificateDraft.lastname;
+                $scope.fornamn = CreateCertificateDraft.fornamn;
+                $scope.efternamn = CreateCertificateDraft.efternamn;
 
                 $scope.intygType = 'default';
                 $scope.certificateTypeText = '';
@@ -107,9 +107,18 @@ define([
 
                     // TODO: create a list with which intygTypes wants and address or not. FK7263 does not want an address,
                     // so hardcoded for now as it is the only one in the foreseeble future
-                    if (CreateCertificateDraft.intygType !== 'fk7263' && CreateCertificateDraft.address) {
+                    if (CreateCertificateDraft.intygType !== 'fk7263' && CreateCertificateDraft.postadress) {
                         var bodyText = 'Patienten har tidigare intyg där adressuppgifter har angivits. Vill du ' +
-                            'återanvända dessa i det nya intyget?<br><br>Adress: ' + CreateCertificateDraft.address;
+                            'återanvända dessa i det nya intyget?<br><br>Adress: ' + CreateCertificateDraft.postadress;
+                        if (CreateCertificateDraft.postnummer || CreateCertificateDraft.postort) {
+                            bodyText += '<br>';
+                            if (CreateCertificateDraft.postnummer) {
+                                bodyText += CreateCertificateDraft.postnummer + ' ';
+                            }
+                            if (CreateCertificateDraft.postort) {
+                                bodyText += CreateCertificateDraft.postort;
+                            }
+                        }
 
                         dialogService.showDialog($scope, {
                             dialogId: 'confirm-address-dialog',
@@ -122,7 +131,9 @@ define([
                             },
                             button2click: function() {
                                 $log.debug('confirm address no');
-                                CreateCertificateDraft.address = null;
+                                CreateCertificateDraft.postadress = null;
+                                CreateCertificateDraft.postnummer = null;
+                                CreateCertificateDraft.postort = null;
                                 _createDraft();
                             },
 
@@ -132,7 +143,9 @@ define([
                         });
                     } else {
                         // Address is not important
-                        CreateCertificateDraft.address = null;
+                        CreateCertificateDraft.postadress = null;
+                        CreateCertificateDraft.postnummer = null;
+                        CreateCertificateDraft.postort = null;
                         _createDraft();
                     }
                 };

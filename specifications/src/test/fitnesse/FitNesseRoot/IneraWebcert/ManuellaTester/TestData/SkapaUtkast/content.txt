@@ -1,7 +1,7 @@
 !3 Skapa kompletta utkast
 
 | skapa utkast |
-| intygId | intygTyp | personNummer | forNamn | efterNamn | hsaId | namn | enhetId | komplett |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
 | webcert-fitnesse-manuell-fk-1 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 | webcert-fitnesse-manuell-fk-2 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 | webcert-fitnesse-manuell-fk-3 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |

@@ -111,9 +111,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         se.inera.webcert.service.dto.Patient patient = request.getPatient();
 
-        draft.setPatientPersonnummer(patient.getPersonNummer());
-        draft.setPatientFornamn(patient.getForNamn());
-        draft.setPatientEfternamn(patient.getEfterNamn());
+        draft.setPatientPersonnummer(patient.getPersonnummer());
+        draft.setPatientFornamn(patient.getFornamn());
+        draft.setPatientEfternamn(patient.getEfternamn());
 
         draft.setIntygsId(request.getIntygId());
         draft.setIntygsTyp(request.getIntygType());
@@ -185,8 +185,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         Patient reqPatient = request.getPatient();
 
-        se.inera.certificate.modules.support.api.dto.Patient patient = new se.inera.certificate.modules.support.api.dto.Patient(reqPatient.getForNamn(),
-                reqPatient.getEfterNamn(), reqPatient.getPersonNummer(), reqPatient.getPostAdress(), reqPatient.getPostNummer(), reqPatient.getPostOrt());
+        se.inera.certificate.modules.support.api.dto.Patient patient = new se.inera.certificate.modules.support.api.dto.Patient(reqPatient.getFornamn(),
+                reqPatient.getEfternamn(), reqPatient.getPersonnummer(), reqPatient.getPostadress(), reqPatient.getPostnummer(), reqPatient.getPostort());
 
         return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }

@@ -14,14 +14,12 @@ define([
                 }
 
                 $scope.personnummer = CreateCertificateDraft.personnummer;
-                $scope.firstname = CreateCertificateDraft.firstname;
-                $scope.middlename = CreateCertificateDraft.middlename;
-                $scope.lastname = CreateCertificateDraft.lastname;
+                $scope.fornamn = CreateCertificateDraft.fornamn;
+                $scope.efternamn = CreateCertificateDraft.efternamn;
 
                 $scope.chooseCertType = function() {
-                    CreateCertificateDraft.firstname = $scope.firstname;
-                    CreateCertificateDraft.middlename = $scope.middlename;
-                    CreateCertificateDraft.lastname = $scope.lastname;
+                    CreateCertificateDraft.fornamn = $scope.fornamn;
+                    CreateCertificateDraft.efternamn = $scope.efternamn;
                     $location.path('/create/choose-cert-type/index');
                 };
 

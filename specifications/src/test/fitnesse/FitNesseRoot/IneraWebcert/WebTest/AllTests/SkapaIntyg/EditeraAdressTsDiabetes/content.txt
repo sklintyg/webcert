@@ -3,7 +3,7 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-diabetes int
 !3 Lägg till komplett utkast
 
 | skapa utkast |
-| intygId | intygTyp | personNummer | forNamn | efterNamn | hsaId | namn | enhetId | komplett |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
 | webcert-fitnesse-editera-1 | ts-diabetes | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 
 !3 Givet att det finns ett komplett utkast, verifiera att det står något i adressfälten
