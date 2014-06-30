@@ -1,0 +1,14 @@
+{
+    "personId": "192011189228",
+    "namn": {
+        "fornamn": "Maj",
+        "efternamn": "Pärsson"
+    },
+    "folkbokforingsadress": {
+        "careOf": "CAREOF 1",
+        "utdelningsadress1": "ADRESS 1",
+        "utdelningsadress2": "DROTTNINGGATANÅÄÖ 10 LGH 10",
+        "postNr": 41234,
+        "postort": "GÖTEBORG"
+    }
+}

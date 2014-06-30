@@ -21,7 +21,7 @@ public class PUServiceTest {
         Person person = service.getPerson("19121212-1212");
         assertEquals("Tolvan", person.getFornamn());
         assertEquals("Tolvansson", person.getEfternamn());
-        assertEquals("C/O, rad1, rad2", person.getPostadress());
+        assertEquals("Svensson, Storgatan 1, PL 1234", person.getPostadress());
         assertEquals("12345", person.getPostnummer());
         assertEquals("Småmåla", person.getPostort());
     }
@@ -31,7 +31,7 @@ public class PUServiceTest {
         Person person = service.getPerson("20121212-1212");
         assertEquals("Lilltolvan", person.getFornamn());
         assertEquals("Tolvansson", person.getEfternamn());
-        assertEquals("rad1", person.getPostadress());
+        assertEquals("Storgatan 1", person.getPostadress());
         assertEquals("12345", person.getPostnummer());
         assertEquals("Småmåla", person.getPostort());
     }

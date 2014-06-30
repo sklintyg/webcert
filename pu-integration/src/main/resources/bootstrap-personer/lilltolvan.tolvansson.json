@@ -1,0 +1,12 @@
+{
+    "personId": "201212121212",
+    "namn": {
+        "fornamn": "Lilltolvan",
+        "efternamn": "Tolvansson"
+    },
+    "folkbokforingsadress": {
+        "utdelningsadress1": "Storgatan 1",
+        "postNr": 12345,
+        "postort": "Småmåla"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "personId": "195205292260",
+    "namn": {
+        "fornamn": "Maria Lousie",
+        "efternamn": "Pärsson"
+    },
+    "folkbokforingsadress": {
+        "utdelningsadress2": "KUNGSGATAN 5",
+        "postNr": 41234,
+        "postort": "GÖTEBORG"
+    }
+}
