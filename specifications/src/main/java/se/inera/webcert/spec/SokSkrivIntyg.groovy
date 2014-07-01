@@ -47,10 +47,10 @@ class SokSkrivIntyg {
         }
     }
 
-    def gePatientFornamnEfternamn(String firstname, String lastname) {
+    def gePatientFornamnEfternamn(String fornamn, String efternamn) {
         Browser.drive {
-            page.firstname = firstname
-            page.lastname = lastname
+            page.fornamn = fornamn
+            page.efternamn = efternamn
             page.namnFortsattKnapp.click()
         }
     }
@@ -61,6 +61,18 @@ class SokSkrivIntyg {
                 at SokSkrivValjIntygTypPage
             }
         }
+    }
+
+    boolean patientensNamnAr(String expected) {
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            waitFor {
+                expected == page.patientNamn.text()
+            }
+        }
+        true
     }
 
     boolean kopieraKnappVisasForIntyg(boolean expected = true, String intygId) {

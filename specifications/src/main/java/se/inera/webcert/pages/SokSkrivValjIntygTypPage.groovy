@@ -7,6 +7,7 @@ class SokSkrivValjIntygTypPage extends Page {
     static at = { $("#valj-intyg-typ").isDisplayed() }
 
     static content = {
+        patientNamn { $("#patientNamn") }
         intygtypFortsattKnapp { $("#intygTypeFortsatt") }
         intygTyp { $("#intygType") }
         intygLista { $("#intygLista") }

@@ -7,8 +7,8 @@ class SokSkrivFyllINamnPage extends Page {
     static at = { $("#sok-skriv-fyll-i-namn").isDisplayed() }
 
     static content = {
-        firstName { $("#firstname") }
-        lastName { $("#lastname") }
+        fornamn { $("#fornamn") }
+        efternamn { $("#efternamn") }
         namnFortsattKnapp { $("#namnFortsatt") }
     }
 }
