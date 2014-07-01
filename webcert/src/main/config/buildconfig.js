@@ -37,6 +37,8 @@
         angularSwedish: 'webjars/angularjs/1.2.14/i18n/angular-locale_sv-se',
         angularUiBootstrap: 'webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls',
 
+        moment: 'webjars/momentjs/2.7.0/moment',
+
         text: 'webjars/requirejs-text/2.0.10/text'
     },
     wrapShim: true,
