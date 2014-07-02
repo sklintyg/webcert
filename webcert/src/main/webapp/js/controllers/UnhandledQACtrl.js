@@ -175,11 +175,6 @@ define([
 
                         $scope.widgetState.totalCount = successData.totalCount;
 
-                        // If we temporarily pulled a bigger batch to set an initial state, reset page size to normal
-                        if ($scope.filterQuery.pageSize > PAGE_SIZE) {
-                            $scope.filterQuery.pageSize = PAGE_SIZE;
-                        }
-
                         var qaListQuery = {};
                         if ($scope.filterQuery.startFrom === 0) {
                             // Get initial list
@@ -193,6 +188,13 @@ define([
                             for (var i = 0; i < successData.results.length; i++) {
                                 qaListQuery.push(successData.results[i]);
                             }
+                        }
+
+                        // If we temporarily pulled a bigger batch to set an initial state, reset page size to normal
+                        if ($scope.filterQuery.pageSize > PAGE_SIZE) {
+                            $scope.filterQuery.pageSize = PAGE_SIZE;
+                            $scope.filterQuery.startFrom = $scope.filterQuery.savedStartFrom;
+                            $scope.filterQuery.savedStartFrom = undefined;
                         }
 
                         decorateList($scope.widgetState.currentList);
@@ -236,6 +238,7 @@ define([
                         // If we saved an old query where we had fetched more load everything up to that page
                         if ($scope.filterQuery.startFrom > 0) {
                             $scope.filterQuery.pageSize = $scope.filterQuery.startFrom + $scope.filterQuery.pageSize;
+                            $scope.filterQuery.savedStartFrom = $scope.filterQuery.startFrom;
                             $scope.filterQuery.startFrom = 0;
                         }
 
