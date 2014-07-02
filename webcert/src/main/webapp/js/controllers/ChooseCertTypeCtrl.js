@@ -172,7 +172,6 @@ define([
                 $scope.openIntyg = function(cert) {
                     if (cert.source === 'WC') {
                         $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
-                        CreateCertificateDraft.reset();
                     } else {
                         $location.path('/intyg/' + cert.intygType + '/' + cert.intygId);
                     }
