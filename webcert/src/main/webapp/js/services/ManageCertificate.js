@@ -82,7 +82,6 @@ define([
                 function _getUnsignedCertificates(onSuccess, onError) {
                     $log.debug('_getUnsignedCertificates:');
                     var restPath = '/api/intyg/unsigned/'; // release version
-                    //var restPath = '/jsonmocks/intyg_unsigned.json'; // mocked version
                     $http.get(restPath).success(function(data) {
                         $log.debug('got data:' + data);
                         onSuccess(data);
