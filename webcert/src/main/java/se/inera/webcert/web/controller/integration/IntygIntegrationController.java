@@ -1,8 +1,10 @@
 package se.inera.webcert.web.controller.integration;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.webcert.service.IntygService;
+import se.inera.webcert.service.dto.IntygContentHolder;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,13 +14,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.webcert.service.IntygService;
-import se.inera.webcert.service.dto.IntygContentHolder;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -26,7 +24,7 @@ import se.inera.webcert.service.dto.IntygContentHolder;
  *
  * @author nikpet
  */
-@Path("/intyg")
+@Path("/certificate")
 public class IntygIntegrationController {
 
     private static final String PARAM_CERT_TYPE = "certType";
@@ -51,7 +49,7 @@ public class IntygIntegrationController {
      * @return
      */
     @GET
-    @Path("/visa/{intygId}")
+    @Path("/{intygId}/questions")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
 
         IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId);

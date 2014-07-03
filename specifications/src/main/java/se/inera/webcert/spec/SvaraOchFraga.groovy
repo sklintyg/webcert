@@ -386,7 +386,7 @@ class SvaraOchFraga {
 
     def gaTillIntygsvyViaUthoppMedIntygsid(String id) {
         Browser.drive {
-            go "/integration/intyg/visa/${id}"
+            go "/webcert/web/user/certificate/${id}/questions"
             waitFor {
                 at ViewCertQAPage
             }
