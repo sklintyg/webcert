@@ -85,5 +85,8 @@
     </c:choose>
       <script type="text/javascript" src="<c:url value="/vendor/netid.js"/>"></script>
       <script type="text/javascript" src="<c:url value="/siths.jsp"/>"></script>
+    <!--[if lte IE 8]>
+	    <script type="text/javascript" src="<c:url value="/web/webjars/respond/1.4.2/src/respond.js"/>"></script>
+	 <![endif]-->
 </body>
 </html>
