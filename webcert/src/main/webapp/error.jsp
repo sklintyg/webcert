@@ -10,6 +10,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <meta name="ROBOTS" content="nofollow, noindex" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title><spring:message code="application.name" /></title>
 

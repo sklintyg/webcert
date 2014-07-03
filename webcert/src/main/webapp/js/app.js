@@ -1,3 +1,4 @@
+/* global MODULE_CONFIG: false */
 define([
     'angular',
     'angularCookies',
@@ -153,7 +154,8 @@ define([
             modulesNames.push('webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath + '.js');
             modulesMinUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath + '.min');
             modulesUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
-            loadCssFromUrl('/web' + '/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].cssPath);
+            loadCssFromUrl('/web' + '/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].cssPath +
+                '?' + MODULE_CONFIG.BUILD_NUMBER);
         }
 
         if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
@@ -164,7 +166,7 @@ define([
                 });
             });
         } else {
-            require({ baseUrl: '/web/webjars/' }, modulesMinUrls, function() {
+            require({ baseUrl: '/web/webjars/', urlArgs: MODULE_CONFIG.BUILD_NUMBER }, modulesMinUrls, function() {
                 require(modulesNames, function() {
                     var modules = arguments;
                     angular.element().ready(function() {
