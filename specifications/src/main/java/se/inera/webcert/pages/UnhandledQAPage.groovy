@@ -21,6 +21,7 @@ class UnhandledQAPage extends Page {
         advancedFilterStatus { $("#qp-showStatus") }
         advancedFilterSearchBtn { $("#filter-qa-btn") }
         advancedFilterResetBtn { $("#reset-search-form") }
+        fetchMoreBtn { $("#hamtaFler") }
 
         logoutLink { $("#logoutLink") }
     }
@@ -47,6 +48,12 @@ class UnhandledQAPage extends Page {
 
     def resetAdvancedFilter() {
         advancedFilterResetBtn.click()
+    }
+
+    boolean hamtaFler() {
+        fetchMoreBtn.click()
+        sleep(1000)
+        return true
     }
 
     def logout() {

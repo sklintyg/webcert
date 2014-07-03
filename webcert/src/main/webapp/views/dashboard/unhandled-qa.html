@@ -202,7 +202,7 @@
                                 {{widgetState.totalCount}}
                             </div>
                             <div ng-show="widgetState.currentList.length < widgetState.totalCount">
-                                <button class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
+                                <button id="hamtaFler" class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
                                         ng-disabled="widgetState.fetchingMoreInProgress">
                                     <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
                                     fler träffar
