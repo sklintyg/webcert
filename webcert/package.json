@@ -7,7 +7,7 @@
         "grunt-contrib-csslint": "~0.2.0",
         "grunt-contrib-jshint": "~0.10.0",
         "karma": "~0.12.14",
-        "karma-jasmine": "~0.1.5",
+        "karma-jasmine": "~0.2.0",
         "karma-junit-reporter": "~0.2.2",
         "karma-requirejs": "~0.2.1",
         "karma-chrome-launcher": "~0.1.3",

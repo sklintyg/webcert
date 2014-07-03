@@ -1,9 +1,8 @@
 define([
     'angular',
     'angularMocks',
-    'directives/wcVisited',
-    'angularScenario'
-], function(angular, mocks, scenario, wcVisited) {
+    'directives/wcVisited'
+], function(angular, mocks, wcVisited) {
     'use strict';
 
     describe('wcVisited', function() {
@@ -27,7 +26,7 @@ define([
 
         it('should pass if element is focused and marked visited', function() {
             element = element.find('input');
-            browserTrigger(element, 'blur'); // jshint ignore:line
+            element.triggerHandler('blur');
             expect(element.hasClass('wc-visited')).toBeTruthy();
             expect($scope.form.test.$visited).toBeTruthy();
         });
