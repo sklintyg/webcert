@@ -1,11 +1,41 @@
-//-----------------------------------------------------------------------
+/******************************************************************************
+ Net iD Javascript API
+
+ @version: 1.0 - 2014-06-23
+ @copyright: SecMaker AB (http://www.secmaker.com/)
+
+ This script should work with all versions of Net iD plugin. The intention is
+ to hide all problems with different web-browser versions and/or OS platforms.
+ The only supported functions are:
+
+ - iid_GetProperty
+ - iid_SetProperty
+ - iid_EnumProperty
+ - iid_Invoke
+
+ Everything else may/will change with future updates. An update will replace the
+ existing file with a new version and only the functions listed above will
+ be guaranteed to exist.
+
+ USAGE: Add this script and start using the functions above:
+
+ <script type="text/javascript" src="_netid.js"></script>
+
+ ERROR: If the functions above isn't loading correct, i.e. new version of IE,
+ contact support@secmaker.com for an updated version of this script.
+
+ DISCLAIMER: The script is provided "as is" and SecMaker expressly disclaims any
+ warranties, including as regards fitness for purpose, freedom from errors and
+ bugs or that defects in the script will be corrected.
+ ******************************************************************************/
+
+//-----------------------------------------------------------------------------
 // Globals
-//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 var IID_NAME_OBJECT = "iid_object";
 var IID_NAME_PLACE = "iid_place_holder";
 var IID_DEVICE_INFO = null;
 var IID_AVAILABLE_CHECK = false;
-var IID_AVAILABLE = false;
 var IID_JS_BRIDGE = null;
 //-----------------------------------------------------------------------------
 // iid_SetProperty
@@ -16,7 +46,8 @@ function iid_SetProperty(name, value) {
         try {
             iid.SetProperty(name, value);
         }
-        catch (err) { }
+        catch (ex) {
+        }
     }
     return;
 }
@@ -30,7 +61,7 @@ function iid_GetProperty(name) {
         try {
             value = iid.GetProperty(name);
         }
-        catch (err) {
+        catch (ex) {
         }
     }
     return value;
@@ -45,7 +76,8 @@ function iid_EnumProperty(name, index) {
         try {
             value = iid.EnumProperty(name, index);
         }
-        catch (err) { }
+        catch (ex) {
+        }
     }
     return value;
 }
@@ -53,15 +85,33 @@ function iid_EnumProperty(name, index) {
 // iid_Invoke
 //-----------------------------------------------------------------------------
 function iid_Invoke(name) {
-    var value = "";
+    var rv = 0;
     var iid = iid_GetObject();
     if (iid != null) {
         try {
-            value = iid.Invoke(name);
+            rv = parseInt(iid.Invoke(name));
         }
-        catch (err) { }
+        catch (ex) {
+        }
     }
-    return value;
+    return rv;
+}
+//-----------------------------------------------------------------------------
+// iid_Application
+//-----------------------------------------------------------------------------
+function iid_Application(command) {
+    var rv = 0;
+    var iid = iid_GetObject();
+    if (iid != null) {
+        try {
+            if (typeof iid.Application == "function") {
+                result = parseInt(iid.Application(command));
+            }
+        }
+        catch (ex) {
+        }
+    }
+    return rv;
 }
 //-----------------------------------------------------------------------
 // iid_GetDeviceInfo
@@ -125,8 +175,8 @@ function iid_IsAvailable() {
         // Always use same div id as place holder for create of plugin
         name = IID_NAME_PLACE;
         if (document.getElementById(name) == null) {
-            // Not declared, so add our special tag last in body (not allowed for setup)
-            if (top.window.location.href.indexOf("setup.html") == -1) {
+            // Not declared, so add our special tag last in body
+            if (!iid_SkipDeclare()) {
                 elem2 = document.createElement("div");
                 elem2.setAttribute("id", name);
                 document.body.appendChild(elem2);
@@ -148,7 +198,19 @@ function iid_IsAvailable() {
             }
         }
     }
-    IID_AVAILABLE = available;
+    return available;
+}
+//-----------------------------------------------------------------------
+// iid_HasApplication
+//-----------------------------------------------------------------------
+function iid_HasApplication() {
+    var available = false;
+    var obj = null;
+    if ((obj = iid_GetObject()) != null) {
+        if (typeof obj.Application == "function") {
+            available = true;
+        }
+    }
     return available;
 }
 //-----------------------------------------------------------------------
@@ -167,6 +229,21 @@ function iid_HasJavascriptInterface() {
         }
     }
     return available;
+}
+//-----------------------------------------------------------------------
+// iid_GetJavascriptObject
+//-----------------------------------------------------------------------
+function iid_GetJavascriptObject() {
+    var obj = null;
+    if (typeof NetiD == "object") {
+        if ((typeof NetiD.SetProperty == "function") &&
+            (typeof NetiD.GetProperty == "function") &&
+            (typeof NetiD.EnumProperty == "function") &&
+            (typeof NetiD.Invoke == "function")) {
+            obj = NetiD;
+        }
+    }
+    return obj;
 }
 //-----------------------------------------------------------------------
 // iid_HasJavascriptBridge
@@ -218,7 +295,7 @@ function iid_GetObject() {
     if (!IID_AVAILABLE_CHECK) {
         iid_IsAvailable();
     }
-    if (IID_AVAILABLE) {
+    if ((obj = iid_GetJavascriptObject()) == null) {
         if (iid_HasJavascriptInterface()) {
             obj = window.JSInterface;
         }
@@ -245,30 +322,46 @@ function iid_Declare(name, explorer, live) {
         // Get object declaration
         iid_place.innerHTML = iid_GetDeclare(explorer, live);
         // Require plugin object return something useful
-        if ((iid_object = document.getElementById(IID_NAME_OBJECT)) != null) {
-            try {
-                version = iid_object.GetProperty("Version");
-                if ((version != null) && (version.length > 0)) {
-                    success = true;
-                }
-            }
-            catch (ex) {
+        version = iid_GetProperty("Version");
+        if ((version != null) && (version.length > 0)) {
+            success = true;
+        }
+        // Problem with dynamic loading for Firefox, so check for special object
+        if (!success && !explorer) {
+            if (IID_NAME_OBJECT.indexOf("ns_") == -1) {
+                IID_NAME_OBJECT = "ns_" + IID_NAME_OBJECT;
+                success = (iid_GetObject() != null);
             }
         }
     }
     return success;
 }
+//-----------------------------------------------------------------------
+// iid_SkipDeclare
+//-----------------------------------------------------------------------
+function iid_SkipDeclare() {
+    skip = false;
+    try {
+        // Not allowed for setup
+        if (window.location.href.indexOf("setup.html") != -1) {
+            skip = true;
+        }
+    }
+    catch (ex) {
+    }
+    return skip;
+}
 //-----------------------------------------------------------------------------
-// Javascript bridge 
+// Javascript bridge
 //-----------------------------------------------------------------------------
 function iid_GetJavascriptBridgeResponseValue() {
     var value = null;
     try {
-	    if (typeof localStorage == "object") {
-	        if (localStorage.getItem != null) {
-		    value = localStorage.getItem("iid_JavascriptBridgeResponseValue");
-	        }
-	    }
+        if (typeof localStorage == "object") {
+            if (localStorage.getItem != null) {
+                value = localStorage.getItem("iid_JavascriptBridgeResponseValue");
+            }
+        }
     }
     catch (ex) {
     }
@@ -276,11 +369,11 @@ function iid_GetJavascriptBridgeResponseValue() {
 }
 function iid_SetJavascriptBridgeResponseValue(value) {
     try {
-	if (typeof localStorage == "object") {
-	    if (localStorage.setItem != null) {
-		localStorage.setItem("iid_JavascriptBridgeResponseValue", value);
-	    }
-	}
+        if (typeof localStorage == "object") {
+            if (localStorage.setItem != null) {
+                localStorage.setItem("iid_JavascriptBridgeResponseValue", value);
+            }
+        }
     }
     catch (ex) {
     }
@@ -296,7 +389,7 @@ function IID_JavascriptBridge() {
     // Function Available
     this.Available = function() {
         if (this._available) {
-	    this._count += 1;
+            this._count += 1;
         }
         else {
             this._available = true;
@@ -340,36 +433,36 @@ function IID_JavascriptBridge() {
     }
     // Function Send
     this.Send = function(func, name, index, value) {
-	var result = null;
-	var info = "";
+        var result = null;
+        var info = "";
         var iframe = null;
         try {
-	    if ((func != null) && (name != null)) {
-		if (index == null) {
-		    index = "";
-		}
-		if (value == null) {
-		    value = "";
-		}
-		if ((iframe = document.createElement("iframe")) != null) {
-		    info = "iidjs://?count=" + this._count;
-		    info += "&func=" + func;
-		    info += "&name=" + IID_URL.encode(name);
-		    info += "&index=" + index;
-		    info += "&value=" + IID_URL.encode(value);
-		    info += "&response=iid_JavascriptBridgeResponse";
-		    iframe.src = info;
-		    iframe.style.display = "none";
-		    iframe.name = "iid_JavascriptBridgeFrame";
-		    iframe.id = "iid_JavascriptBridgeFrame";
-		    iframe.width = 0;
-		    iframe.height = 0;
-		    document.getElementsByTagName("body")[0].appendChild(iframe);
-		    iframe.parentNode.removeChild(iframe);
-		    iframe = null;
-		    result = iid_GetJavascriptBridgeResponseValue();
-		}
-	    }
+            if ((func != null) && (name != null)) {
+                if (index == null) {
+                    index = "";
+                }
+                if (value == null) {
+                    value = "";
+                }
+                if ((iframe = document.createElement("iframe")) != null) {
+                    info = "iidjs://?count=" + this._count;
+                    info += "&func=" + func;
+                    info += "&name=" + IID_URL.encode(name);
+                    info += "&index=" + index;
+                    info += "&value=" + IID_URL.encode(value);
+                    info += "&response=iid_JavascriptBridgeResponse";
+                    iframe.src = info;
+                    iframe.style.display = "none";
+                    iframe.name = "iid_JavascriptBridgeFrame";
+                    iframe.id = "iid_JavascriptBridgeFrame";
+                    iframe.width = 0;
+                    iframe.height = 0;
+                    document.getElementsByTagName("body")[0].appendChild(iframe);
+                    iframe.parentNode.removeChild(iframe);
+                    iframe = null;
+                    result = iid_GetJavascriptBridgeResponseValue();
+                }
+            }
         }
         catch (ex) {
         }
@@ -383,6 +476,7 @@ function iid_NameVersionInfo(name, version) {
     this.name = name;
     this.version = version;
     this.explorer = (name.indexOf("MSIE") >= 0);
+    this.language = (window.navigator.userLanguage || window.navigator.language);
 }
 //-----------------------------------------------------------------------------
 // iid_ParseBrowserInfo
@@ -417,7 +511,7 @@ function iid_ParseBrowserInfo(value) {
     }
     // Chrome/Chromium include WebKit, so take first (<name>/<version>)
     else if (((i = value.lastIndexOf("Chromium")) > 0) ||
-             ((i = value.lastIndexOf("Chrome")) > 0)) {
+        ((i = value.lastIndexOf("Chrome")) > 0)) {
         j = 0;
         while ((value.charAt(i + j) != 0) && (value.charAt(i + j) != '/')) {
             j++;
@@ -493,7 +587,7 @@ function iid_ParseDeviceInfo(value) {
             // Get eventual following version number
             k = 0;
             while ((part.length > (j + k)) &&
-                   ((part.charAt(j + k) < '0') || (part.charAt(j + k) > '9'))) {
+                ((part.charAt(j + k) < '0') || (part.charAt(j + k) > '9'))) {
                 k++;
             }
             // Set all except version number as name (Android may be specified with Linux too)
@@ -507,7 +601,7 @@ function iid_ParseDeviceInfo(value) {
                 part = part.replace(new RegExp("_", 'g'), ".");
                 k = 0;
                 while ((part.charAt(k) == '.') ||
-                       ((part.charAt(k) >= '0') && (part.charAt(k) <= '9'))) {
+                    ((part.charAt(k) >= '0') && (part.charAt(k) <= '9'))) {
                     k++;
                 }
                 version = part.substr(0, k);
@@ -517,7 +611,7 @@ function iid_ParseDeviceInfo(value) {
                 break;
             }
         }
-        // Linux only namn no version
+        // Linux only name no version
         else if ((j = part.indexOf("Linux")) >= 0) {
             name = "Linux";
         }
@@ -581,10 +675,12 @@ function iid_GetPartBy(text, pos, c) {
 var IID_URL = {
     encode: function(value) {
         if (value != null) {
-            // Replace all '+' with '%2B' to avoid problem below
-            value = ReplaceAll(value, "+", "%2B");
+            // Replace all '+' with '%2B' to avoid problem with unescape
+            value = ReplaceAll(value, "+", "___OOO___OOO___");
             // Convert all
             value = escape(value);
+            // Set URL coding for '+'
+            value = ReplaceAll(value, "___OOO___OOO___", "%2B");
         }
         return value;
     },
