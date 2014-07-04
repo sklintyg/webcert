@@ -27,7 +27,7 @@ define([
                     activeErrorMessageKey: null,
                     filteredYet: false,
                     totalCount: 0,
-                    currentList: {},
+                    currentList: [],
                     filterFormCollapsed: true,
                     dpFromOpen: {
                         open: false
@@ -175,7 +175,7 @@ define([
 
                         $scope.widgetState.totalCount = successData.totalCount;
 
-                        var qaListQuery = {};
+                        var qaListQuery = [];
                         if ($scope.filterQuery.startFrom === 0) {
                             // Get initial list
                             qaListQuery = successData.results;
