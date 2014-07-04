@@ -20,7 +20,7 @@ class SokSkrivValjIntygTypPage extends Page {
 
     def copy(String intygId) {
         copyBtn(intygId).click()
-        sleep(1000)
+        sleep(500)
         kopieraDialogKopieraKnapp.click()
     }
 

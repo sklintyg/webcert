@@ -51,8 +51,10 @@ class UnhandledQAPage extends Page {
     }
 
     boolean hamtaFler() {
-        fetchMoreBtn.click()
-        sleep(1000)
+        if (fetchMoreBtn.isDisplayed()) {
+            fetchMoreBtn.click()
+            sleep(1000)
+        }
         return true
     }
 

@@ -89,6 +89,9 @@ class SokSkrivIntyg {
 
     def kopieraTidigareIntyg(String intygId) {
         Browser.drive {
+            waitFor {
+                page.copyBtn(intygId).isDisplayed()
+            }
             page.copy(intygId)
         }
     }

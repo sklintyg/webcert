@@ -168,9 +168,6 @@ class SvaraOchFraga {
                 at UnhandledQAPage
             }
             waitFor {
-                page.fetchMoreBtn.isDisplayed()
-            }
-            waitFor {
                 page.hamtaFler()
             }
             waitFor {
