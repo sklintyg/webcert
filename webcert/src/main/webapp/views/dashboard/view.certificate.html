@@ -1,24 +1,25 @@
 <div id="wcHeader" wc-header default-active="index"></div>
 <div class="row webcert-multicol" id="viewCertAndQA">
+  <div class="webcert-multicol-background">
 
-  <!-- Left column -->
-  <div class="col-sm-6 webcert-col webcert-col-primary">
-    <a class="backlink-icon" href="/web/dashboard#/create/choose-cert-type/index" title="Tillbaka till Sök/skriv intyg"></a>
-    <h1 class="backlink-heading">
-      <span message key="{{widgetState.certificateType}}.label.certtitle"></span>
-    </h1>
-    <div wc-insert-certificate certificate-type="{{widgetState.certificateType}}"></div>
+    <!-- Left column -->
+    <div class="col-sm-6 webcert-col webcert-col-primary">
+      <a class="backlink-icon" href="/web/dashboard#/create/choose-cert-type/index"
+         title="Tillbaka till Sök/skriv intyg"></a>
+      <h1 class="backlink-heading">
+        <span message key="{{widgetState.certificateType}}.label.certtitle"></span>
+      </h1>
+      <div wc-insert-certificate certificate-type="{{widgetState.certificateType}}"></div>
+    </div>
+    <!-- Certificate Left side end -->
+
+    <!-- Right side -->
+    <div class="col-sm-6 webcert-col-secondary" ng-if="widgetState.fragaSvarAvailable">
+      <div class="webcert-col-shadow"></div>
+      <h2 class="col-head">
+        Fråga &amp; Svar </h2>
+      <div wc-insert-qa certificate-type="{{widgetState.certificateType}}"></div>
+    </div>
+
   </div>
-  <!-- Certificate Left side end -->
-
-  <!-- Right side -->
-  <div class="col-sm-6 webcert-col-secondary" ng-if="widgetState.fragaSvarAvailable">
-    <div class="webcert-col-shadow"></div>
-    <h2 class="col-head">
-      Fråga &amp; Svar
-    </h2>
-    <div wc-insert-qa certificate-type="{{widgetState.certificateType}}"></div>
-  </div>
-
-</div>
-<!-- Right side end -->
+</div><!-- Right side end -->
