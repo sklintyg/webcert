@@ -14,6 +14,10 @@ class FragaSkickadTillFk extends RestClientFixture {
         fragaJson.vardReferensId[0]
     }
 
+    public String intygsId() {
+        fragaJson.lakarutlatande.lakarutlatandeId[0]
+    }
+
     public void execute() {
         def restClient = createRestClient(baseUrl)
         fragaJson = restClient.get(path: "fk-stub/fragor/").data

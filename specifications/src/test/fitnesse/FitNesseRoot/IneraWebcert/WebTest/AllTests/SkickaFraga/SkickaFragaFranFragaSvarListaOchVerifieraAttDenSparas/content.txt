@@ -1,0 +1,62 @@
+Testet beskriver fallet när en användare skickar en ny fråga till Försäkringskassan och sedan går tillbaka till samma intyg.
+
+!3 Lägg till fråga
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
+| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1 | IFV1239877878-1049 | Jan Nilsson | IFV1239877878-1042 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
+
+!3 Verifiera att det går att visa frågan från listan med ohanterade frågor
+
+| script | !-SvaraOchFraga-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+| ga till svara och fraga |
+| ohanterade fragor sidan visas |
+| lista med ohanterade fragor visas |
+| visa fraga | $internReferens1 |
+| intyg med fraga svar sidan visas |
+
+!3 Verifiera att det går att skicka en ny fråga till försäkringskassan
+
+| script | !-SvaraOchFraga-! |
+| ny fraga knapp visas |
+| valj ny fraga |
+| ny fraga formular visas |
+| skicka fraga knapp aktiverad | false |
+| skicka fraga | En fråga från Fitnesse 1 | med amne | 1 |
+| fragan ar skickad till fk meddelande visas |
+| ny fraga formular visas | false |
+| fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
+
+!3 Verifiera att frågan har skickats till försäkringskassan (stub)
+
+| fraga skickad till fk |
+| fraga? | intygsId? |
+| En fråga från Fitnesse 1 | intyg-fit-1 |
+
+!3 Verifiera att det går att hitta frågan igen
+
+| script | !-SvaraOchFraga-! |
+| ga till svara och fraga |
+| ohanterade fragor sidan visas |
+| lista med ohanterade fragor visas |
+| visa fraga | $internReferens1 |
+| intyg med fraga svar sidan visas |
+| fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
+
+!3 Ta bort fråga från försäkringskassan (stub)
+
+| script | !-RensaFragorSvarTillFk-! |
+| rensa fragor |
+
+!3 Ta bort de frågor vi har skickat
+
+| ta bort fraga |
+| frageText |
+| En fråga från Fitnesse% |
+
+!3 Ta bort fråga
+
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |
