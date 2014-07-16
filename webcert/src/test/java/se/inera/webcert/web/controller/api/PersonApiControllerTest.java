@@ -30,7 +30,7 @@ public class PersonApiControllerTest {
     @Test
     public void testGetPersonuppgifter() {
         String personnummer = "19121212-1212";
-        when(puService.getPerson(anyString())).thenReturn(new Person(personnummer, "fnamn", "enamn", "paddr", "pnr", "port"));
+        when(puService.getPerson(anyString())).thenReturn(new Person(personnummer, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"));
 
         Response response = personCtrl.getPersonuppgifter(personnummer);
 
@@ -40,6 +40,7 @@ public class PersonApiControllerTest {
         PersonuppgifterResponse res = (PersonuppgifterResponse) response.getEntity();
         assertEquals(FOUND, res.getStatus());
         assertEquals("fnamn", res.getPerson().getFornamn());
+        assertEquals("mnamn", res.getPerson().getMellannamn());
         assertEquals("enamn", res.getPerson().getEfternamn());
         assertEquals("paddr", res.getPerson().getPostadress());
         assertEquals("pnr", res.getPerson().getPostnummer());

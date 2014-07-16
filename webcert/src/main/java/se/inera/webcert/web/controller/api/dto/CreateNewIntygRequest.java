@@ -10,6 +10,8 @@ public class CreateNewIntygRequest {
 
     private String patientFornamn;
 
+    private String patientMellannamn;
+
     private String patientEfternamn;
 
     private String patientPostadress;
@@ -69,6 +71,14 @@ public class CreateNewIntygRequest {
 
     public void setPatientFornamn(String patientFornamn) {
         this.patientFornamn = patientFornamn;
+    }
+
+    public String getPatientMellannamn() {
+        return patientMellannamn;
+    }
+
+    public void setPatientMellannamn(String patientMellannamn) {
+        this.patientMellannamn = patientMellannamn;
     }
 
     public String getPatientEfternamn() {

@@ -15,6 +15,7 @@ define([
                         this.personnummer = null;
                         this.intygType = 'default';
                         this.fornamn = null;
+                        this.mellannamn = null;
                         this.efternamn = null;
                         this.postadress = null;
                         this.postnummer = null;
@@ -37,6 +38,7 @@ define([
 
                             if (data.status === 'FOUND' && data.person) {
                                 that.fornamn = data.person.fornamn;
+                                that.mellannamn = data.person.mellannamn;
                                 that.efternamn = data.person.efternamn;
                                 that.postadress = data.person.postadress;
                                 that.postnummer = data.person.postnummer;
@@ -60,6 +62,7 @@ define([
                         payload.intygType = this.intygType;
                         payload.patientPersonnummer = this.personnummer;
                         payload.patientFornamn = this.fornamn;
+                        payload.patientMellannamn = this.mellannamn;
                         payload.patientEfternamn = this.efternamn;
                         payload.patientPostadress = this.postadress;
                         payload.patientPostnummer = this.postnummer;
@@ -89,6 +92,7 @@ define([
                         payload.intygType = this.intygType;
                         payload.patientPersonnummer = this.personnummer;
                         payload.patientFornamn = this.fornamn;
+                        payload.patientMellannamn = this.mellannamn;
                         payload.patientEfternamn = this.efternamn;
                         payload.patientPostadress = this.postadress;
                         payload.patientPostnummer = this.postnummer;

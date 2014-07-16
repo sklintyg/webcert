@@ -41,7 +41,7 @@ public class PUServiceImpl implements PUService {
             SvenskAdressTYPE adress = resident.getPersonpost().getFolkbokforingsadress();
 
             String adressRader = buildAdress(adress);
-            Person person = new Person(personId, namn.getFornamn(), namn.getEfternamn(), adressRader, adress.getPostNr(), adress.getPostort());
+            Person person = new Person(personId, namn.getFornamn(), namn.getMellannamn(), namn.getEfternamn(), adressRader, adress.getPostNr(), adress.getPostort());
             LOG.debug("Person '{}' found", normalizedId);
             return person;
         } catch (SOAPFaultException e) {

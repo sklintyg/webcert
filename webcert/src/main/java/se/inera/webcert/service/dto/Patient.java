@@ -6,12 +6,13 @@ public class Patient {
 
     private String fornamn;
 
+    private String mellannamn;
+
     private String efternamn;
 
     private String postadress;
 
     private String postnummer;
-
     private String postort;
 
     public Patient() {
@@ -36,6 +37,14 @@ public class Patient {
 
     public String getEfternamn() {
         return efternamn;
+    }
+
+    public String getMellannamn() {
+        return mellannamn;
+    }
+
+    public void setMellannamn(String mellannamn) {
+        this.mellannamn = mellannamn;
     }
 
     public void setEfternamn(String efternamn) {

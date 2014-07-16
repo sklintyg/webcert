@@ -45,6 +45,7 @@ define([
 
                 $scope.personnummer = CreateCertificateDraft.personnummer;
                 $scope.fornamn = CreateCertificateDraft.fornamn;
+                $scope.mellannamn = CreateCertificateDraft.mellannamn;
                 $scope.efternamn = CreateCertificateDraft.efternamn;
 
                 $scope.intygType = 'default';

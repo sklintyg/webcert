@@ -47,6 +47,7 @@ public class IntygResource {
 
         draft.setPatientPersonnummer(patient.getPersonnummer());
         draft.setPatientFornamn(patient.getFornamn());
+        draft.setPatientMellannamn(patient.getMellannamn());
         draft.setPatientEfternamn(patient.getEfternamn());
 
         draft.setIntygsId(request.getIntygId());

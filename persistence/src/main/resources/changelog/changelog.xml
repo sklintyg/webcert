@@ -225,6 +225,9 @@
       <column name="PATIENT_FORNAMN" type="varchar(255)">
         <constraints nullable="false" />
       </column>
+      <column name="PATIENT_MELLANNAMN" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
       <column name="PATIENT_EFTERNAMN" type="varchar(255)">
         <constraints nullable="false" />
       </column>

@@ -113,6 +113,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         draft.setPatientPersonnummer(patient.getPersonnummer());
         draft.setPatientFornamn(patient.getFornamn());
+        draft.setPatientMellannamn(patient.getMellannamn());
         draft.setPatientEfternamn(patient.getEfternamn());
 
         draft.setIntygsId(request.getIntygId());
@@ -186,7 +187,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         Patient reqPatient = request.getPatient();
 
         se.inera.certificate.modules.support.api.dto.Patient patient = new se.inera.certificate.modules.support.api.dto.Patient(reqPatient.getFornamn(),
-                reqPatient.getEfternamn(), reqPatient.getPersonnummer(), reqPatient.getPostadress(), reqPatient.getPostnummer(), reqPatient.getPostort());
+                reqPatient.getMellannamn(), reqPatient.getEfternamn(), reqPatient.getPersonnummer(), reqPatient.getPostadress(), reqPatient.getPostnummer(), reqPatient.getPostort());
 
         return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }
@@ -274,7 +275,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         logRequest.setIntygId(draft.getIntygsId());
         logRequest.setPatientId(draft.getPatientPersonnummer());
-        logRequest.setPatientName(draft.getPatientFornamn(), draft.getPatientEfternamn());
+        logRequest.setPatientName(draft.getPatientFornamn(), draft.getPatientMellannamn(), draft.getPatientEfternamn());
 
         logRequest.setIntygCareUnitId(draft.getEnhetsId());
         logRequest.setIntygCareUnitName(draft.getEnhetsNamn());

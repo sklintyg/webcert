@@ -1,12 +1,11 @@
 package se.inera.webcert.persistence.intyg.repository.util;
 
-import java.util.UUID;
-
 import org.joda.time.LocalDateTime;
-
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
+
+import java.util.UUID;
 
 public class IntygTestUtil {
 
@@ -25,6 +24,7 @@ public class IntygTestUtil {
 
     public static final String PERSON_NUMMER = "19121212-1212";
     public static final String PERSON_FORNAMN = "Tolvan";
+    public static final String PERSON_MELLANNAMN = "Svensson";
     public static final String PERSON_EFTERNAMN = "Tolvansson";
 
     public static final String INTYGSTYP_FK7263 = "FK7263";
@@ -34,42 +34,43 @@ public class IntygTestUtil {
 
     public static Intyg buildIntyg(String enhetsId) {
         return buildIntyg(enhetsId, IntygsStatus.DRAFT_INCOMPLETE, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN,
-                PERSON_NUMMER, PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL, null);
+                PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
-    
+
     public static Intyg buildIntyg(String enhetsId, IntygsStatus status) {
         return buildIntyg(enhetsId, status, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN, PERSON_NUMMER,
-                PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL, null);
+                PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
 
     public static Intyg buildIntyg(String intygsId, String enhetsId, IntygsStatus status) {
         return buildIntyg(intygsId, enhetsId, status, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN, PERSON_NUMMER,
-                PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL, null);
+                PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
-    
+
     public static Intyg buildIntyg(String enhetsId, String hoSPersonId, String hoSPersonNamn, IntygsStatus status,
             String sparadStr) {
         LocalDateTime sparad = LocalDateTime.parse(sparadStr);
         return buildIntyg(enhetsId, status, INTYGSTYP_FK7263, hoSPersonId, hoSPersonNamn, PERSON_NUMMER,
-                PERSON_FORNAMN, PERSON_EFTERNAMN, MODEL, sparad);
+                PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, sparad);
     }
 
     public static Intyg buildIntyg(String enhetsId, IntygsStatus status, String type, String hoSPersonId,
-            String hoSPersonNamn, String personNummer, String personFornamn, String personEfternamn, String model,
-            LocalDateTime senastSparadDatum) {
+            String hoSPersonNamn, String personNummer, String personFornamn, String personMellannamn,
+            String personEfternamn, String model, LocalDateTime senastSparadDatum) {
         return buildIntyg(UUID.randomUUID().toString(), enhetsId, status, type, hoSPersonId, hoSPersonNamn,
-                personNummer, personFornamn, personEfternamn, model, senastSparadDatum);
+                personNummer, personFornamn, personMellannamn, personEfternamn, model, senastSparadDatum);
     }
 
     public static Intyg buildIntyg(String intygsId, String enhetsId, IntygsStatus status, String type,
             String hoSPersonId, String hoSPersonNamn, String personNummer, String personFornamn,
-            String personEfternamn, String model, LocalDateTime senastSparadDatum) {
+            String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum) {
         Intyg intyg = new Intyg();
         intyg.setIntygsId(intygsId);
         intyg.setIntygsTyp(type);
         intyg.setEnhetsId(enhetsId);
         intyg.setPatientPersonnummer(personNummer);
         intyg.setPatientFornamn(personFornamn);
+        intyg.setPatientMellannamn(personMellannamn);
         intyg.setPatientEfternamn(personEfternamn);
         VardpersonReferens vardpersonReferens = new VardpersonReferens();
         vardpersonReferens.setHsaId(hoSPersonId);

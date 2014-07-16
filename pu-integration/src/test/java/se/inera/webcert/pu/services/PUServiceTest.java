@@ -35,4 +35,12 @@ public class PUServiceTest {
         assertEquals("12345", person.getPostnummer());
         assertEquals("Småmåla", person.getPostort());
     }
+
+    @Test
+    public void checkExistingPersonWithMellannamn() {
+        Person person = service.getPerson("19520614-2597");
+        assertEquals("Per Peter", person.getFornamn());
+        assertEquals("Pärsson", person.getEfternamn());
+        assertEquals("Svensson", person.getMellannamn());
+    }
 }

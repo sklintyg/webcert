@@ -100,6 +100,7 @@ public class IntygApiController extends AbstractApiController {
         Patient pat = new Patient();
         pat.setPersonnummer(req.getPatientPersonnummer());
         pat.setFornamn(req.getPatientFornamn());
+        pat.setMellannamn(req.getPatientMellannamn());
         pat.setEfternamn(req.getPatientEfternamn());
         pat.setPostadress(req.getPatientPostadress());
         pat.setPostnummer(req.getPatientPostnummer());

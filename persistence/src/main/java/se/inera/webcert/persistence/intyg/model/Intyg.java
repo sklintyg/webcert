@@ -54,6 +54,9 @@ public class Intyg {
     @Column(name = "PATIENT_FORNAMN")
     private String patientFornamn;
 
+    @Column(name = "PATIENT_MELLANNAMN")
+    private String patientMellannamn;
+
     @Column(name = "PATIENT_EFTERNAMN")
     private String patientEfternamn;
 
@@ -179,6 +182,14 @@ public class Intyg {
 
     public void setPatientFornamn(String patientFornamn) {
         this.patientFornamn = patientFornamn;
+    }
+
+    public String getPatientMellannamn() {
+        return patientMellannamn;
+    }
+
+    public void setPatientMellannamn(String patientMellannamn) {
+        this.patientMellannamn = patientMellannamn;
     }
 
     public String getPatientEfternamn() {
