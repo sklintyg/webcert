@@ -49,11 +49,28 @@
 
   <c:choose>
     <c:when test="${requireDevMode == 'true'}">
-      <script type="text/javascript" data-main="/js/main" src="/web/webjars/requirejs/2.1.10/require.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-cookies.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-route.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-sanitize.js"></script>
+      <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.js"></script>
+      <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.js"></script>
+      <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/moment.js"></script>
+
+      <script type="text/javascript" src="/js/app.js"></script>
     </c:when>
     <c:otherwise>
-      <script type="text/javascript" data-main="/js/main.min.js?<spring:message code="buildNumber" />"
-              src="/web/webjars/requirejs/2.1.10/require.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-cookies.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-route.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-sanitize.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/min/moment.min.js"></script>
+
+      <script type="text/javascript" src="/js/app.min.js?<spring:message code="buildNumber" />"></script>
     </c:otherwise>
   </c:choose>
   <script type="text/javascript" src="/vendor/netid-1.0.js"></script>

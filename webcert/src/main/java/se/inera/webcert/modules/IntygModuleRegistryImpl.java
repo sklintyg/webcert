@@ -35,7 +35,8 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
             moduleApiMap.put(entryPoint.getModuleId(), entryPoint.getModuleApi());
             IntygModule module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(),
                     entryPoint.getModuleDescription(), entryPoint.isModuleFragaSvarAvailable(),
-                    entryPoint.getModuleCssPath(WEBCERT), entryPoint.getModuleScriptPath(WEBCERT));
+                    entryPoint.getModuleCssPath(WEBCERT), entryPoint.getModuleScriptPath(WEBCERT),
+                    entryPoint.getModuleDependencyDefinitionPath(WEBCERT));
 
             moduleList.add(module);
         }

@@ -1,23 +1,15 @@
-define([
-    'angular'
-], function(angular) {
-    'use strict';
+angular.module('webcert').filter('QAEnhetsIdFilter',
+    function() {
+        'use strict';
 
-    var moduleName = 'wc.QAEnhetsIdFilter';
+        return function(enheter, enhetsId) {
+            var result = [];
 
-    angular.module(moduleName, []).
-        filter(moduleName, function() {
-            return function(enheter, enhetsId) {
-                var result = [];
-
-                angular.forEach(enheter, function(enhet) {
-                    if (enhet.vardperson.enhetsId === enhetsId) {
-                        result.push(enhet);
-                    }
-                });
-                return result;
-            };
-        });
-
-    return moduleName;
-});
+            angular.forEach(enheter, function(enhet) {
+                if (enhet.vardperson.enhetsId === enhetsId) {
+                    result.push(enhet);
+                }
+            });
+            return result;
+        };
+    });

@@ -1,4 +1,4 @@
-/* global module */
+/* global module, require */
 var baseConfig = require('./karma.conf.js');
 
 module.exports = function(config) {
@@ -9,14 +9,22 @@ module.exports = function(config) {
 
     // Override base config
     config.set({
-        singleRun: true,
         autoWatch: false,
+        logLevel: config.LOG_ERROR,
+        singleRun: true,
+
+        browsers: [ 'PhantomJS' ],
+
         plugins: [
             'karma-jasmine',
             'karma-junit-reporter',
-            'karma-phantomjs-launcher',
-            'karma-requirejs'
+            'karma-phantomjs-launcher'
         ],
-        browsers: ['PhantomJS']
+
+        reporters: [ 'dots', 'junit' ],
+
+        junitReporter: {
+            outputFile: 'target/surefire-reports/TEST-karma-test-results.xml'
+        }
     });
 };

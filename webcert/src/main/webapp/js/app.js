@@ -1,194 +1,196 @@
-/* global MODULE_CONFIG: false */
-define([
-    'angular',
-    'angularCookies',
-    'angularRoute',
-    'angularSanitize',
-    'angularSwedish',
-    'angularUiBootstrap',
-    'directives',
-    'filters',
-    'messages',
-    'controllers/AboutWebcertCtrl',
-    'controllers/ChooseCertTypeCtrl',
-    'controllers/ChoosePatientCtrl',
-    'controllers/EditPatientNameCtrl',
-    'controllers/InitCertCtrl',
-    'controllers/UnhandledQACtrl',
-    'controllers/UnsignedCertCtrl',
-    'controllers/ViewCertCtrl',
-    'webjars/common/webcert/js/messages',
-    'webjars/common/webcert/js/directives',
-    'webjars/common/webcert/js/services/http403ResponseInterceptor',
-    'webjars/common/webcert/js/services/httpRequestInterceptorCacheBuster',
-    'webjars/common/webcert/js/services/messageService',
-    'webjars/common/webcert/js/services/User'
-], function(angular, angularCookies, angularRoute, angularSanitize, angularSwedish, angularUiBootstrap, directives,
-    filters, messages, AboutWebcertCtrl, ChooseCertTypeCtrl, ChoosePatientCtrl, EditPatientNameCtrl, InitCertCtrl,
-    UnhandledQACtrl, UnsignedCertCtrl, ViewCertCtrl, commonMessages, commonDirectives, http403ResponseInterceptor,
-    httpRequestInterceptorCacheBuster, messageService, User) {
+window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
+
+var app = angular.module('webcert', [ 'ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize', 'common' ]);
+
+app.config(function($routeProvider) {
     'use strict';
 
-    var app = angular.module('webcert', [ 'ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize',
-        directives, commonDirectives, filters, AboutWebcertCtrl, ChooseCertTypeCtrl, ChoosePatientCtrl,
-        EditPatientNameCtrl, InitCertCtrl, UnhandledQACtrl, UnsignedCertCtrl, ViewCertCtrl, http403ResponseInterceptor,
-        httpRequestInterceptorCacheBuster, messageService, User ]);
+    $routeProvider.
+        when('/create/index', {
+            // Route to initialize the create flow, template will be ignored.
+            templateUrl: '/views/dashboard/create.choose-patient.html',
+            controller: 'webcert.InitCertCtrl'
+        }).
+        when('/create/choose-patient/index', {
+            templateUrl: '/views/dashboard/create.choose-patient.html',
+            controller: 'webcert.ChoosePatientCtrl'
+        }).
+        when('/create/edit-patient-name/index', {
+            templateUrl: '/views/dashboard/create.edit-patient-name.html',
+            controller: 'webcert.EditPatientNameCtrl'
+        }).
+        when('/create/choose-cert-type/index', {
+            templateUrl: '/views/dashboard/create.choose-cert-type.html',
+            controller: 'webcert.ChooseCertTypeCtrl'
+        }).
+        when('/unhandled-qa', {
+            templateUrl: '/views/dashboard/unhandled-qa.html',
+            controller: 'webcert.UnhandledQACtrl'
+        }).
+        when('/unsigned', {
+            templateUrl: '/views/dashboard/unsigned.html',
+            controller: 'webcert.UnsignedCertCtrl'
+        }).
+        when('/intyg/:certificateType/:certificateId', {
+            templateUrl: '/views/dashboard/view.certificate.html',
+            controller: 'webcert.ViewCertCtrl'
+        }).
+        when('/fragasvar/:certificateType/:certificateId', {
+            templateUrl: '/views/dashboard/view.qa.html',
+            controller: 'webcert.ViewCertCtrl'
+        }).
+        when('/support/about', {
+            templateUrl: '/views/dashboard/about.support.html',
+            controller: 'webcert.AboutWebcertCtrl'
+        }).
+        when('/certificates/about', {
+            templateUrl: '/views/dashboard/about.certificates.html',
+            controller: 'webcert.AboutWebcertCtrl'
+        }).
+        when('/faq/about', {
+            templateUrl: '/views/dashboard/about.faq.html',
+            controller: 'webcert.AboutWebcertCtrl'
+        }).
+        when('/cookies/about', {
+            templateUrl: '/views/dashboard/about.cookies.html',
+            controller: 'webcert.AboutWebcertCtrl'
+        }).
+        otherwise({
+            redirectTo: '/create/index'
+        });
+});
 
-    app.config(['$routeProvider', function($routeProvider) {
-        $routeProvider.
-            when('/create/index', {
-                // Route to initialize the create flow, template will be ignored.
-                templateUrl: '/views/dashboard/create.choose-patient.html',
-                controller: InitCertCtrl
-            }).
-            when('/create/choose-patient/index', {
-                templateUrl: '/views/dashboard/create.choose-patient.html',
-                controller: ChoosePatientCtrl
-            }).
-            when('/create/edit-patient-name/index', {
-                templateUrl: '/views/dashboard/create.edit-patient-name.html',
-                controller: EditPatientNameCtrl
-            }).
-            when('/create/choose-cert-type/index', {
-                templateUrl: '/views/dashboard/create.choose-cert-type.html',
-                controller: ChooseCertTypeCtrl
-            }).
-            when('/unhandled-qa', {
-                templateUrl: '/views/dashboard/unhandled-qa.html',
-                controller: UnhandledQACtrl
-            }).
-            when('/unsigned', {
-                templateUrl: '/views/dashboard/unsigned.html',
-                controller: UnsignedCertCtrl
-            }).
-            when('/intyg/:certificateType/:certificateId', {
-                templateUrl: '/views/dashboard/view.certificate.html',
-                controller: ViewCertCtrl
-            }).
-            when('/fragasvar/:certificateType/:certificateId', {
-                templateUrl: '/views/dashboard/view.qa.html',
-                controller: ViewCertCtrl
-            }).
-            when('/support/about', {
-                templateUrl: '/views/dashboard/about.support.html',
-                controller: AboutWebcertCtrl
-            }).
-            when('/certificates/about', {
-                templateUrl: '/views/dashboard/about.certificates.html',
-                controller: AboutWebcertCtrl
-            }).
-            when('/faq/about', {
-                templateUrl: '/views/dashboard/about.faq.html',
-                controller: AboutWebcertCtrl
-            }).
-            when('/cookies/about', {
-                templateUrl: '/views/dashboard/about.cookies.html',
-                controller: AboutWebcertCtrl
-            }).
-            otherwise({
-                redirectTo: '/create/index'
-            });
+app.config([ '$httpProvider', 'common.http403ResponseInterceptorProvider',
+    function($httpProvider, http403ResponseInterceptorProvider) {
+        'use strict';
+
+        // Add cache buster interceptor
+        $httpProvider.interceptors.push('common.httpRequestInterceptorCacheBuster');
+
+        // Configure 403 interceptor provider
+        http403ResponseInterceptorProvider.setRedirectUrl('/error.jsp?reason=denied');
+        $httpProvider.responseInterceptors.push('common.http403ResponseInterceptor');
     }]);
 
-    app.config([ '$httpProvider', http403ResponseInterceptor + 'Provider',
-        function($httpProvider, http403ResponseInterceptorProvider) {
+// Global config of default date picker config (individual attributes can be
+// overridden per directive usage)
+app.constant('datepickerConfig', {
+    closeOnDateSelection: true,
+    appendToBody: false,
+    showWeeks: true,
+    startingDay: 1,
+    dayFormat: 'dd',
+    monthFormat: 'MMMM',
+    yearFormat: 'yyyy',
+    dayHeaderFormat: 'EEE',
+    dayTitleFormat: 'MMMM yyyy',
+    monthTitleFormat: 'yyyy',
+    yearRange: 20,
+    minDate: null,
+    maxDate: null
+});
 
-            // Add cache buster interceptor
-            $httpProvider.interceptors.push(httpRequestInterceptorCacheBuster);
+app.constant('datepickerPopupConfig', {
+    closeText: 'OK',
+    currentText: 'Idag',
+    clearText: 'Rensa',
+    dateFormat: 'yyyy-MM-dd',
+    toggleWeeksText: 'Visa veckor',
+    closeOnDateSelection: true,
+    appendToBody: false,
+    showButtonBar: false
+});
 
-            // Configure 403 interceptor provider
-            http403ResponseInterceptorProvider.setRedirectUrl('/error.jsp?reason=denied');
-            $httpProvider.responseInterceptors.push(http403ResponseInterceptor);
-        }]);
+// Inject language resources
+app.run([ '$rootScope', 'common.messageService', 'common.User',
+    function($rootScope, messageService, User) {
+        'use strict';
 
-    // Global config of default date picker config (individual attributes can be
-    // overridden per directive usage)
-    app.constant('datepickerConfig', {
-        closeOnDateSelection: true,
-        appendToBody: false,
-        showWeeks: true,
-        startingDay: 1,
-        dayFormat: 'dd',
-        monthFormat: 'MMMM',
-        yearFormat: 'yyyy',
-        dayHeaderFormat: 'EEE',
-        dayTitleFormat: 'MMMM yyyy',
-        monthTitleFormat: 'yyyy',
-        yearRange: 20,
-        minDate: null,
-        maxDate: null
-    });
+        $rootScope.lang = 'sv';
+        $rootScope.DEFAULT_LANG = 'sv';
+        User.setUserContext(MODULE_CONFIG.USERCONTEXT);
+        messageService.addResources(wcMessages);
+    }]);
 
-    app.constant('datepickerPopupConfig', {
-        closeText: 'OK',
-        currentText: 'Idag',
-        clearText: 'Rensa',
-        dateFormat: 'yyyy-MM-dd',
-        toggleWeeksText: 'Visa veckor',
-        closeOnDateSelection: true,
-        appendToBody: false,
-        showButtonBar: false
-    });
+// Get a list of all modules to find all files to load.
+$.get('/api/modules/map').then(function(modules) {
+    'use strict';
 
-    // Inject language resources
-    app.run([ '$rootScope', messageService, User,
-        function($rootScope, messageService, User) {
-            $rootScope.lang = 'sv';
-            $rootScope.DEFAULT_LANG = 'sv';
-            User.setUserContext(MODULE_CONFIG.USERCONTEXT);
-            messageService.addResources(messages);
-            messageService.addResources(commonMessages);
-        }]);
+    var modulesIds = [];
+    var modulePromises = [];
 
-    require([ 'text!/api/modules/map' ], function(modules) {
+    if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
+        modulePromises.push($.getScript('/web/webjars/common/webcert/js/module.js'));
+        modulePromises.push($.get('/web/webjars/common/webcert/js/module-deps.json'));
+        modulePromises.push($.get('/js/app-deps.json'));
 
-        var modulesMap = JSON.parse(modules);
+        // Prevent jQuery from appending cache buster to the url to make it easier to debug.
+        $.ajaxSetup({
+            cache: true
+        });
 
-        var modulesIds = [];
-        var modulesNames = [];
-        var modulesMinUrls = [];
-        var modulesUrls = [];
+    } else {
+        modulePromises.push($.getScript('/web/webjars/common/webcert/js/module.min.js'));
+        // All dependencies in module-deps.json are included in module.min.js
+        // All dependencies in app-deps.json are included in app.min.js
+    }
 
-        for (var artifactId in modulesMap) {
-            modulesIds.push(modulesMap[artifactId].id);
-            modulesNames.push('webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].scriptPath + '.js');
-            modulesMinUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath + '.min');
-            modulesUrls.push(modulesMap[artifactId].id + modulesMap[artifactId].scriptPath);
-            loadCssFromUrl('/web' + '/webjars/' + modulesMap[artifactId].id + modulesMap[artifactId].cssPath +
-                '?' + MODULE_CONFIG.BUILD_NUMBER);
-        }
+    angular.forEach(modules, function(module) {
+        modulesIds.push(module.id);
+        loadCssFromUrl(module.cssPath + '?' + MODULE_CONFIG.BUILD_NUMBER);
 
         if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
-            require({ baseUrl: '/web/webjars/' }, modulesUrls, function() {
-                var modules = arguments;
-                angular.element().ready(function() {
-                    angular.resumeBootstrap([app.name].concat(Array.prototype.slice.call(modules, 0)));
-                });
-            });
+            modulePromises.push($.getScript(module.scriptPath + '.js'));
+            modulePromises.push($.get(module.dependencyDefinitionPath));
         } else {
-            require({ baseUrl: '/web/webjars/', urlArgs: MODULE_CONFIG.BUILD_NUMBER }, modulesMinUrls, function() {
-                require(modulesNames, function() {
-                    var modules = arguments;
-                    angular.element().ready(function() {
-                        angular.resumeBootstrap([app.name].concat(Array.prototype.slice.call(modules, 0)));
-                    });
-                });
-            });
+            modulePromises.push($.getScript(module.scriptPath + '.min.js'));
+            // All dependencies for the modules are included in module.min.js
         }
     });
 
-    function loadCssFromUrl(url) {
-        var link = createLinkElement(url);
-        document.getElementsByTagName('head')[0].appendChild(link);
-    }
+    // Wait for all modules and module dependency definitions to load.
+    $.when.apply(this, modulePromises).then(function() {
+        var dependencyPromises = [];
 
-    function createLinkElement(url) {
-        var link = document.createElement('link');
-        link.type = 'text/css';
-        link.rel = 'stylesheet';
-        link.href = url;
-        return link;
-    }
+        // Only needed for development since all dependencies are included in other files.
+        if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
+            angular.forEach(arguments, function(data) {
+                if (data[0] instanceof Array) {
+                    angular.forEach(data[0], function(depdendency) {
+                        dependencyPromises.push($.getScript(depdendency));
+                    });
+                }
+            });
+        }
 
-    return app;
+        // Wait for all dependencies to load (for production dependencies are empty which is resolved immediately)
+        $.when.apply(this, dependencyPromises).then(function() {
+            angular.element().ready(function() {
+
+                // Everything is loaded, bootstrap the application with all dependencies.
+                angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
+            });
+        }).fail(function(error) {
+            console.log(error);
+        });
+    }).fail(function(error) {
+        console.log(error);
+    });
 });
+
+function loadCssFromUrl(url) {
+    'use strict';
+
+    var link = createLinkElement(url);
+    document.getElementsByTagName('head')[0].appendChild(link);
+}
+
+function createLinkElement(url) {
+    'use strict';
+
+    var link = document.createElement('link');
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
+    link.href = url;
+    return link;
+}

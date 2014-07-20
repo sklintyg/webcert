@@ -2,25 +2,41 @@
 module.exports = function(config) {
     'use strict';
 
-    var WEBJAR_DEPENDENCIES = 'target/webjardependencies/';
+    var SRC_DIR = 'src/main/webapp/js/';
+    var TEST_DIR = 'src/test/js/';
+    var WEBJAR_DIR = 'target/webjardependencies/';
+
     config.set({
 
         // base path, that will be used to resolve files and exclude
-        basePath: '../../',
+        basePath: '../../../',
 
         // frameworks to use
-        frameworks: ['jasmine', 'requirejs'],
+        frameworks: [ 'jasmine' ],
 
         // list of files / patterns to load in the browser
         files: [
-            { pattern: WEBJAR_DEPENDENCIES + '**/*.*', included: false },
-            { pattern: 'src/main/webapp/js/**/*', included: false },
-            { pattern: 'src/test/js/**/*Spec.js', included: false },
-            'src/test/resources/test-main.js'
+
+            // Dependencies
+                WEBJAR_DIR + 'angularjs/angular.js',
+                WEBJAR_DIR + 'angularjs/angular-mocks.js',
+                WEBJAR_DIR + 'angularjs/1.2.14/angular-locale_sv-se.js',
+                WEBJAR_DIR + 'angularjs/angular-cookies.js',
+                WEBJAR_DIR + 'angularjs/angular-route.js',
+                WEBJAR_DIR + 'angularjs/angular-sanitize.js',
+                WEBJAR_DIR + 'angular-ui-bootstrap/ui-bootstrap-tpls.js',
+                WEBJAR_DIR + 'jquery/jquery.js',
+                WEBJAR_DIR + 'momentjs/moment.js',
+
+            // Load these first
+                SRC_DIR + 'messages.js',
+                TEST_DIR + 'app-test.js',
+
+            { pattern: SRC_DIR + '**/*' },
+            { pattern: TEST_DIR + '**/*Spec.js' }
         ],
 
-        // list of files to exclude
-        exclude: [ WEBJAR_DEPENDENCIES + '**/*require*.*' ],
+        exclude: [SRC_DIR + 'app.js', SRC_DIR + 'app.min.js'],
 
         // web server port
         port: 9876,
@@ -30,7 +46,7 @@ module.exports = function(config) {
 
         // level of logging
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-        logLevel: config.LOG_INFO,
+        logLevel: config.LOG_DEBUG,
 
         // enable / disable watching file and executing tests whenever any file changes
         autoWatch: true,
@@ -51,19 +67,13 @@ module.exports = function(config) {
         // Continuous Integration mode if true, it capture browsers, run tests and exit
         singleRun: false,
 
-        junitReporter: {
-            outputFile: 'target/surefire-reports/TEST-karma-test-results.xml'
-        },
-
         plugins: [
             'karma-jasmine',
-            'karma-junit-reporter',
             'karma-chrome-launcher',
             'karma-firefox-launcher',
-            'karma-phantomjs-launcher',
-            'karma-requirejs'
+            'karma-phantomjs-launcher'
         ],
 
-        reporters: [ 'progress', 'junit' ]
+        reporters: [ 'progress' ]
     });
 };

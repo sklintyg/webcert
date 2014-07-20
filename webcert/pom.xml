@@ -460,34 +460,6 @@
               <goal>run</goal>
             </goals>
           </execution>
-          <execution>
-            <id>copy-javascript-for-optimization</id>
-            <phase>process-resources</phase>
-            <configuration>
-              <target>
-                <copy todir="${project.build.directory}/requirebuild" verbose="false">
-                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources">
-                  </fileset>
-                </copy>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>copy-optimized-javascript</id>
-            <phase>compile</phase>
-            <configuration>
-              <target>
-                <copy file="${project.build.directory}/requirebuild/main.min.js"
-                    todir="${project.basedir}/src/main/webapp/js"/>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
         </executions>
       </plugin>
 
@@ -495,7 +467,6 @@
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
         <version>0.0.14</version>
-        <inherited>false</inherited>
         <executions>
           <execution>
             <id>install node and npm</id>
@@ -503,8 +474,8 @@
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v0.10.27</nodeVersion>
-              <npmVersion>1.4.8</npmVersion>
+              <nodeVersion>${node.version}</nodeVersion>
+              <npmVersion>${npm.version}</npmVersion>
             </configuration>
           </execution>
           <execution>
@@ -517,36 +488,21 @@
             </configuration>
           </execution>
           <execution>
+            <id>grunt build</id>
+            <goals>
+              <goal>grunt</goal>
+            </goals>
+          </execution>
+          <execution>
             <id>javascript tests</id>
             <goals>
               <goal>karma</goal>
             </goals>
-            <phase>process-test-classes</phase>
             <configuration>
-              <karmaConfPath>${project.basedir}/src/test/karma.conf.ci.js</karmaConfPath>
+              <karmaConfPath>${project.basedir}/src/test/resources/karma.conf.ci.js</karmaConfPath>
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>com.github.bringking</groupId>
-        <artifactId>requirejs-maven-plugin</artifactId>
-        <version>2.0.4</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>optimize</goal>
-            </goals>
-            <phase>process-resources</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <runner>nodejs</runner>
-          <nodeExecutable>${basedir}/node/node</nodeExecutable>
-          <configFile>${basedir}/src/main/config/buildconfig.js</configFile>
-          <optimizerFile>${basedir}/node_modules/requirejs/bin/r.js</optimizerFile>
-        </configuration>
       </plugin>
     </plugins>
   </build>

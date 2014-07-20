@@ -1,0 +1,22 @@
+[
+    "/js/messages.js",
+    "/js/controllers/AboutWebcertCtrl.js",
+    "/js/controllers/ChooseCertTypeCtrl.js",
+    "/js/controllers/ChoosePatientCtrl.js",
+    "/js/controllers/EditPatientNameCtrl.js",
+    "/js/controllers/InitCertCtrl.js",
+    "/js/controllers/UnhandledQACtrl.js",
+    "/js/controllers/UnsignedCertCtrl.js",
+    "/js/controllers/ViewCertCtrl.js",
+    "/js/directives/wcAbout.js",
+    "/js/directives/wcCareUnitClinicSelector.js",
+    "/js/directives/wcInsertCertificate.js",
+    "/js/directives/wcInsertQa.js",
+    "/js/directives/wcPersonNumber.js",
+    "/js/directives/wcVisited.js",
+    "/js/filters/QAEnhetsIdFilter.js",
+    "/js/filters/TidigareIntygFilter.js",
+    "/js/services/CreateCertificateDraft.js",
+    "/js/services/ManageCertificate.js",
+    "/js/services/QuestionAnswer.js"
+]

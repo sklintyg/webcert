@@ -1,33 +1,23 @@
-define([
-    'angular',
-    'services/CreateCertificateDraft'
-], function(angular, CreateCertificateDraft) {
-    'use strict';
+angular.module('webcert').controller('webcert.ChoosePatientCtrl',
+    [ '$location', '$scope', 'webcert.CreateCertificateDraft',
+        function($location, $scope, CreateCertificateDraft) {
+            'use strict';
 
-    var moduleName = 'wc.ChoosePatientCtrl';
+            $scope.personnummer = CreateCertificateDraft.personnummer;
 
-    angular.module(moduleName, [ CreateCertificateDraft ]).
-        controller(moduleName, [ '$location', '$scope', CreateCertificateDraft,
-            function($location, $scope, CreateCertificateDraft) {
-                $scope.personnummer = CreateCertificateDraft.personnummer;
+            $scope.lookupPatient = function() {
 
-                $scope.lookupPatient = function() {
-
-                    var onSuccess = function() {
-                        $location.path('/create/choose-cert-type/index');
-                    };
-
-                    var onNotFound = function() {
-                        $location.path('/create/edit-patient-name/index');
-                    };
-
-                    var onError = onNotFound;
-
-                    CreateCertificateDraft.getNameAndAddress($scope.personnummer,
-                        onSuccess, onNotFound, onError);
+                var onSuccess = function() {
+                    $location.path('/create/choose-cert-type/index');
                 };
-            }
-        ]);
 
-    return moduleName;
-});
+                var onNotFound = function() {
+                    $location.path('/create/edit-patient-name/index');
+                };
+
+                var onError = onNotFound;
+
+                CreateCertificateDraft.getNameAndAddress($scope.personnummer,
+                    onSuccess, onNotFound, onError);
+            };
+        }]);
