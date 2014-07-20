@@ -120,7 +120,7 @@ $.get('/api/modules/map').then(function(modules) {
     var modulePromises = [];
 
     if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
-        modulePromises.push($.getScript('/web/webjars/common/webcert/js/module.js'));
+        modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/js/module.js'));
         modulePromises.push($.get('/web/webjars/common/webcert/js/module-deps.json'));
         modulePromises.push($.get('/js/app-deps.json'));
 
@@ -130,7 +130,8 @@ $.get('/api/modules/map').then(function(modules) {
         });
 
     } else {
-        modulePromises.push($.getScript('/web/webjars/common/webcert/js/module.min.js'));
+        modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/js/module.min.js?' +
+            MODULE_CONFIG.BUILD_NUMBER));
         // All dependencies in module-deps.json are included in module.min.js
         // All dependencies in app-deps.json are included in app.min.js
     }
@@ -140,10 +141,10 @@ $.get('/api/modules/map').then(function(modules) {
         loadCssFromUrl(module.cssPath + '?' + MODULE_CONFIG.BUILD_NUMBER);
 
         if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
-            modulePromises.push($.getScript(module.scriptPath + '.js'));
+            modulePromises.push(loadScriptFromUrl(module.scriptPath + '.js'));
             modulePromises.push($.get(module.dependencyDefinitionPath));
         } else {
-            modulePromises.push($.getScript(module.scriptPath + '.min.js'));
+            modulePromises.push(loadScriptFromUrl(module.scriptPath + '.min.js?' + MODULE_CONFIG.BUILD_NUMBER));
             // All dependencies for the modules are included in module.min.js
         }
     });
@@ -155,9 +156,9 @@ $.get('/api/modules/map').then(function(modules) {
         // Only needed for development since all dependencies are included in other files.
         if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
             angular.forEach(arguments, function(data) {
-                if (data[0] instanceof Array) {
+                if (data !== undefined && data[0] instanceof Array) {
                     angular.forEach(data[0], function(depdendency) {
-                        dependencyPromises.push($.getScript(depdendency));
+                        dependencyPromises.push(loadScriptFromUrl(depdendency));
                     });
                 }
             });
@@ -181,16 +182,33 @@ $.get('/api/modules/map').then(function(modules) {
 function loadCssFromUrl(url) {
     'use strict';
 
-    var link = createLinkElement(url);
-    document.getElementsByTagName('head')[0].appendChild(link);
-}
-
-function createLinkElement(url) {
-    'use strict';
-
     var link = document.createElement('link');
     link.type = 'text/css';
     link.rel = 'stylesheet';
     link.href = url;
-    return link;
+    document.getElementsByTagName('head')[0].appendChild(link);
+}
+
+function loadScriptFromUrl(url) {
+    'use strict';
+
+    var result = $.Deferred();
+    var script = document.createElement('script');
+    script.async = 'async';
+    script.type = 'text/javascript';
+    script.src = url;
+    script.onload = script.onreadystatechange = function(_, isAbort) {
+        if (!script.readyState || /loaded|complete/.test(script.readyState)) {
+            if (isAbort) {
+                result.reject();
+            } else {
+                result.resolve();
+            }
+        }
+    };
+    script.onerror = function() {
+        result.reject();
+    };
+    document.getElementsByTagName('head')[0].appendChild(script);
+    return result.promise();
 }
