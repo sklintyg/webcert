@@ -35,6 +35,12 @@ public class PUServiceImpl implements PUService {
         parameters.getPersonId().add(normalizedId);
         try {
             LookupResidentForFullProfileResponseType response = service.lookupResidentForFullProfile(logicaladdress, parameters);
+            
+            if (response.getResident().isEmpty()) {
+                LOG.warn("No person '{}'({}) found", normalizedId, personId);
+                return null;
+            }
+            
             ResidentType resident = response.getResident().get(0);
             NamnTYPE namn = resident.getPersonpost().getNamn();
 
@@ -45,7 +51,7 @@ public class PUServiceImpl implements PUService {
             LOG.debug("Person '{}' found", normalizedId);
             return person;
         } catch (SOAPFaultException e) {
-            LOG.warn("No person '{}'({}) found", normalizedId, personId);
+            LOG.warn("Error occured, no person '{}'({}) found", normalizedId, personId);
             throw e;
         }
     }

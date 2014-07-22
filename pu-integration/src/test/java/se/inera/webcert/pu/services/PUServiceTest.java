@@ -43,4 +43,10 @@ public class PUServiceTest {
         assertEquals("Pärsson", person.getEfternamn());
         assertEquals("Svensson", person.getMellannamn());
     }
+    
+    @Test
+    public void checkNonExistingPerson() {
+        Person person = service.getPerson("19121212-7169");
+        assertNull(person);
+    }
 }

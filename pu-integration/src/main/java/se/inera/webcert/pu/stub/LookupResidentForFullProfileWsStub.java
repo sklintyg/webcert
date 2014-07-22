@@ -23,9 +23,11 @@ public class LookupResidentForFullProfileWsStub implements LookupResidentForFull
         for (String id : parameters.getPersonId()) {
             PersonpostTYPE personPost = personer.get(id);
 
-            ResidentType resident = new ResidentType();
-            resident.setPersonpost(personPost);
-            response.getResident().add(resident);
+            if (personPost != null) {
+                ResidentType resident = new ResidentType();
+                resident.setPersonpost(personPost);
+                response.getResident().add(resident);
+            }
         }
         return response;
     }
