@@ -8,6 +8,7 @@
 |Fragor och svar|
 |externReferens|finns?|
 |fitnesse|false|
+|fitnesse-2|false|
 |fitnesse-saknat-intyg|false|
 |fitnesse-fel-enhet|false|
 
@@ -18,11 +19,13 @@
 |Fk skickar fraga|
 |amne|externReferens|frageText|intygsId|vardpersonal|vardenhet|resultat?|
 |OVRIGT|fitnesse|En fråga|fitnesse-intyg-1|IFV1239877878-104B|IFV1239877878-1042|OK|
+|PAMINNELSE|fitnesse-2|En påminnelse|fitnesse-intyg-1|IFV1239877878-104B|IFV1239877878-1042|OK|
 
 !3 så ska det finnas en fråga med extern referens 'FK-1234' från Försäkringskassan som behöver svaras på
 |Fragor och svar|
-|externReferens|finns?|fraga?|
-|fitnesse|true|En fråga|
+|externReferens|finns?|fraga?|amne?|
+|fitnesse|true|En fråga|OVRIGT|
+|fitnesse-2|true|En påminnelse|PAMINNELSE|
 
 !2 Undantagsflöden
 
@@ -53,6 +56,7 @@
 |Ta bort fraga|
 |externReferens|
 |fitnesse|
+|fitnesse-2|
 |fitnesse-saknat-intyg|
 |fitnesse-fel-enhet|
 
