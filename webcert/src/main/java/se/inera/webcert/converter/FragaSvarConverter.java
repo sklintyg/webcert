@@ -2,6 +2,7 @@ package se.inera.webcert.converter;
 
 import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Component;
+import se.inera.certificate.integration.util.IdUtil;
 import se.inera.certificate.model.HosPersonal;
 import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.medcertqa.v1.FkKontaktType;
@@ -151,7 +152,7 @@ public class FragaSvarConverter {
      */
     public static IntygsReferens convertToIntygsReferens(Utlatande utlatande) {
         IntygsReferens intygsReferens = new IntygsReferens();
-        intygsReferens.setIntygsId(utlatande.getId().getExtension());
+        intygsReferens.setIntygsId(IdUtil.generateStringId(utlatande.getId().getRoot(), utlatande.getId().getExtension()));
         intygsReferens.setIntygsTyp(utlatande.getTyp().getCode());
         intygsReferens.setPatientId(toCommonId(utlatande.getPatient().getId()));
         intygsReferens.setPatientNamn(utlatande.getPatient().getFullstandigtNamn());
