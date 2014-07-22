@@ -101,6 +101,8 @@
       </property>
     </bean>
 
+    <jaxws:endpoint address="/ping-for-configuration/v1.0" implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl"/>
+
     <!-- Handlers for REST services -->
     <bean id="webcertRestExceptionHandler" class="se.inera.webcert.web.handlers.WebcertRestExceptionHandler" />
 
