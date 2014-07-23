@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
@@ -23,6 +24,7 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationStatus;
@@ -30,6 +32,7 @@ import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.dto.IntygContentHolder;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
@@ -62,6 +65,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
+
+    @Autowired
+    private IntygService intygService;
 
     @Autowired
     private LogService logService;
@@ -223,6 +229,40 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         updateWithUser(intyg);
         intygRepository.save(intyg);
         return signatureService.serverSignature(intygsId);
+    }
+
+    @Override
+    public String createNewDraftCopy(CreateNewDraftRequest request, String intygsId) {
+        populateRequestWithIntygId(request);
+
+        String intygType = request.getIntygType();
+
+        CreateNewDraftHolder draftRequest = createModuleRequest(request);
+
+        LOG.debug("Calling module '{}' to get populated model", intygType);
+
+        String modelAsJson;
+
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+
+        try {
+            IntygContentHolder template = intygService.fetchExternalIntygData(intygsId);
+            InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftRequest, new ExternalModelHolder(template.getContents()));
+
+            modelAsJson = draftResponse.getInternalModel();
+        } catch (ModuleException me) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
+
+        LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(modelAsJson), intygType);
+
+
+        Intyg persistedIntyg = persistNewDraft(request, modelAsJson);
+
+        LogRequest logRequest = createLogRequestFromDraft(persistedIntyg);
+        logService.logCreateOfDraft(logRequest);
+
+        return persistedIntyg.getIntygsId();
     }
 
     @Override

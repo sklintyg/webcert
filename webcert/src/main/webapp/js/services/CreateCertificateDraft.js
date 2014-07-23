@@ -81,7 +81,6 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     $log.debug('_copyIntygToDraft ' + cert.intygType + ', ' + cert.intygId);
 
                     var payload = {};
-                    payload.sourceIntygId = cert.intygId;
                     payload.intygType = this.intygType;
                     payload.patientPersonnummer = this.personnummer;
                     payload.patientFornamn = this.fornamn;
@@ -95,7 +94,7 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     payload.vardGivareHsaId = this.vardGivareHsaId;
                     payload.vardGivareNamn = this.vardGivareNamn;
 
-                    var restPath = '/api/intyg/signed/kopiera';
+                    var restPath = '/api/intyg/kopiera/' + cert.intygId;
                     $http.post(restPath, payload).success(function(data) {
                         $log.debug('got callback data: ' + data);
                         onSuccess(data);

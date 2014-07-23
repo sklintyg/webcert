@@ -31,4 +31,6 @@ public interface IntygDraftService {
     SignatureTicket createDraftHash(String intygsId);
 
     SignatureTicket serverSignature(String intygsId);
+
+    String createNewDraftCopy(CreateNewDraftRequest serviceRequest, String intygsId);
 }

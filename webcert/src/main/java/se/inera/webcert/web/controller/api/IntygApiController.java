@@ -92,6 +92,30 @@ public class IntygApiController extends AbstractApiController {
         return Response.ok().entity(idOfCreatedDraft).build();
     }
 
+    @POST
+    @Path("/kopiera/{intygsId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response createNewCopy(CreateNewIntygRequest request, @PathParam("intygsId") String intygsId) {
+
+        if (!request.isValid()) {
+            LOG.error("Request is invalid: " + request.toString());
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+
+        String intygType = request.getIntygType();
+
+        LOG.debug("Attempting to copy draft of type '{}' from {}", intygType, intygsId);
+
+        CreateNewDraftRequest serviceRequest = createServiceRequest(request);
+
+        String idOfCreatedDraft = intygDraftService.createNewDraftCopy(serviceRequest, intygsId);
+
+        LOG.debug("Created a new draft copy of type '{}' with id '{}'", intygType, idOfCreatedDraft);
+
+        return Response.ok().entity(idOfCreatedDraft).build();
+    }
+
     private CreateNewDraftRequest createServiceRequest(CreateNewIntygRequest req) {
         CreateNewDraftRequest srvReq = new CreateNewDraftRequest();
 
