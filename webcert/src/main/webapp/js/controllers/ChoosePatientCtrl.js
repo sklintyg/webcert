@@ -12,10 +12,12 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
                 };
 
                 var onNotFound = function() {
-                    $location.path('/create/edit-patient-name/index');
+                    $location.path('/create/edit-patient-name/notFound');
                 };
 
-                var onError = onNotFound;
+                var onError = function() {
+                    $location.path('/create/edit-patient-name/errorOccured');
+                };
 
                 CreateCertificateDraft.getNameAndAddress($scope.personnummer,
                     onSuccess, onNotFound, onError);

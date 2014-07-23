@@ -15,7 +15,7 @@ app.config(function($routeProvider) {
             templateUrl: '/views/dashboard/create.choose-patient.html',
             controller: 'webcert.ChoosePatientCtrl'
         }).
-        when('/create/edit-patient-name/index', {
+        when('/create/edit-patient-name/:mode', {
             templateUrl: '/views/dashboard/create.edit-patient-name.html',
             controller: 'webcert.EditPatientNameCtrl'
         }).
