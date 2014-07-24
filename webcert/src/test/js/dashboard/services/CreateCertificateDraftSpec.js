@@ -30,10 +30,6 @@ describe('CreateCertificateDraft', function() {
             expect(CreateCertificateDraft.postadress).toBeNull();
             expect(CreateCertificateDraft.postnummer).toBeNull();
             expect(CreateCertificateDraft.postort).toBeNull();
-            expect(CreateCertificateDraft.vardEnhetHsaId).toBeNull();
-            expect(CreateCertificateDraft.vardEnhetNamn).toBeNull();
-            expect(CreateCertificateDraft.vardGivareHsaId).toBeNull();
-            expect(CreateCertificateDraft.vardGivareHsaNamn).toBeNull();
         });
     });
 
@@ -124,10 +120,6 @@ describe('CreateCertificateDraft', function() {
             CreateCertificateDraft.postadress = 'Storgatan 23';
             CreateCertificateDraft.postnummer = '12345';
             CreateCertificateDraft.postort = 'Staden';
-            CreateCertificateDraft.vardEnhetHsaId = '1';
-            CreateCertificateDraft.vardEnhetNamn = 'A';
-            CreateCertificateDraft.vardGivareHsaId = '2';
-            CreateCertificateDraft.vardGivareNamn = 'B';
 
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
@@ -140,11 +132,7 @@ describe('CreateCertificateDraft', function() {
                     patientEfternamn: 'Testsson',
                     patientPostadress: 'Storgatan 23',
                     patientPostnummer: '12345',
-                    patientPostort: 'Staden',
-                    vardEnhetHsaId: '1',
-                    vardEnhetNamn: 'A',
-                    vardGivareHsaId: '2',
-                    vardGivareNamn: 'B'
+                    patientPostort: 'Staden'
                 }).
                 respond(200, '12345');
 

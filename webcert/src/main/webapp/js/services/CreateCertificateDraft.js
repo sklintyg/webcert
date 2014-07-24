@@ -13,10 +13,6 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     this.postadress = null;
                     this.postnummer = null;
                     this.postort = null;
-                    this.vardEnhetHsaId = null;
-                    this.vardEnhetNamn = null;
-                    this.vardGivareHsaId = null;
-                    this.vardGivareHsaNamn = null;
                 },
 
                 getNameAndAddress: function(personnummer, onSuccess, onNotFound, onError) {
@@ -60,10 +56,6 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     payload.patientPostadress = this.postadress;
                     payload.patientPostnummer = this.postnummer;
                     payload.patientPostort = this.postort;
-                    payload.vardEnhetHsaId = this.vardEnhetHsaId;
-                    payload.vardEnhetNamn = this.vardEnhetNamn;
-                    payload.vardGivareHsaId = this.vardGivareHsaId;
-                    payload.vardGivareNamn = this.vardGivareNamn;
 
                     var restPath = '/api/intyg/create';
                     $http.post(restPath, payload).success(function(data) {

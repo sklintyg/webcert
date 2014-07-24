@@ -20,14 +20,6 @@ public class CreateNewIntygRequest {
 
     private String patientPostort;
 
-    private String vardEnhetHsaId;
-
-    private String vardEnhetNamn;
-
-    private String vardGivareHsaId;
-
-    private String vardGivareNamn;
-
     public CreateNewIntygRequest() {
 
     }
@@ -111,38 +103,6 @@ public class CreateNewIntygRequest {
 
     public void setPatientPostort(String patientPostort) {
         this.patientPostort = patientPostort;
-    }
-
-    public String getVardEnhetHsaId() {
-        return vardEnhetHsaId;
-    }
-
-    public void setVardEnhetHsaId(String vardEnhetHsaId) {
-        this.vardEnhetHsaId = vardEnhetHsaId;
-    }
-
-    public String getVardEnhetNamn() {
-        return vardEnhetNamn;
-    }
-
-    public void setVardEnhetNamn(String vardEnhetNamn) {
-        this.vardEnhetNamn = vardEnhetNamn;
-    }
-
-    public String getVardGivareHsaId() {
-        return vardGivareHsaId;
-    }
-
-    public void setVardGivareHsaId(String vardGivareHsaId) {
-        this.vardGivareHsaId = vardGivareHsaId;
-    }
-
-    public String getVardGivareNamn() {
-        return vardGivareNamn;
-    }
-
-    public void setVardGivareNamn(String vardGivareNamn) {
-        this.vardGivareNamn = vardGivareNamn;
     }
 
 }

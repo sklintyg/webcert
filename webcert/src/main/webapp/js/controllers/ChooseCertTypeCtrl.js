@@ -1,8 +1,8 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
     [ '$filter', '$location', '$log', '$scope', '$cookieStore', 'webcert.CreateCertificateDraft',
-        'common.dialogService', 'webcert.ManageCertificate', 'common.User',
+        'common.dialogService', 'webcert.ManageCertificate',
         function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft, dialogService,
-            ManageCertificate, User) {
+            ManageCertificate) {
             'use strict';
 
             if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.fornamn ||
@@ -76,11 +76,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
              */
 
             function _createDraft() {
-                var valdVardenhet = User.getValdVardenhet();
-                CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
-                CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
-                CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
-                CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
                 CreateCertificateDraft.createDraft(function(data) {
                     $scope.widgetState.createErrorMessageKey = undefined;
                     $location.url('/' + CreateCertificateDraft.intygType + '/edit/' + data, true);
