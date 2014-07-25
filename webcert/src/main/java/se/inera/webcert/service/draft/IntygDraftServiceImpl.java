@@ -237,16 +237,17 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String intygType = request.getIntygType();
 
-        CreateNewDraftHolder draftRequest = createModuleRequest(request);
 
         LOG.debug("Calling module '{}' to get populated model", intygType);
 
         String modelAsJson;
 
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-
         try {
             IntygContentHolder template = intygService.fetchExternalIntygData(intygsId);
+            String type = template.getMetaData().getType();
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(type);
+            request.setIntygType(type);
+            CreateNewDraftHolder draftRequest = createModuleRequest(request);
             InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftRequest, new ExternalModelHolder(template.getContents()));
 
             modelAsJson = draftResponse.getInternalModel();
