@@ -15,6 +15,5 @@ Detta test ska visa på att man kan kopiera ett signerat ts-bas-intyg och få et
 
 !3 Författarstöd visas
 
-# OBS! Lägg tillbaka detta när kopiera är implementerat
-#| script | !-HanteraUtkast-! |
-#| editera sidan visas |
+| script | !-HanteraUtkast-! |
+| editera sidan visas |
