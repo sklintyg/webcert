@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.service.dto.IntygItem;
-import se.inera.webcert.service.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.web.controller.api.dto.IntygSource;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 

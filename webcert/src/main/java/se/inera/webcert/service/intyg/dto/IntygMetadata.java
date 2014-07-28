@@ -1,29 +1,24 @@
-package se.inera.webcert.service.dto;
+package se.inera.webcert.service.intyg.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 
-public class IntygItem {
+
+public class IntygMetadata {
 
     private String id;
 
     private String type;
 
+    private String patientId;
+
     private LocalDate fromDate;
 
     private LocalDate tomDate;
 
-    private List<IntygStatus> statuses;
-
-    private LocalDateTime signedDate;
-
-    private String signedBy;
-
-    public IntygItem() {
-
-    }
+    private List<IntygStatus> statuses = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -39,6 +34,14 @@ public class IntygItem {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public LocalDate getFromDate() {
@@ -61,24 +64,8 @@ public class IntygItem {
         return statuses;
     }
 
-    public void setStatuses(List<IntygStatus> status) {
-        this.statuses = status;
-    }
-
-    public LocalDateTime getSignedDate() {
-        return signedDate;
-    }
-
-    public void setSignedDate(LocalDateTime signedDate) {
-        this.signedDate = signedDate;
-    }
-
-    public String getSignedBy() {
-        return signedBy;
-    }
-
-    public void setSignedBy(String signedBy) {
-        this.signedBy = signedBy;
+    public void setStatuses(List<IntygStatus> statuses) {
+        this.statuses = statuses;
     }
 
 }

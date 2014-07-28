@@ -3,18 +3,19 @@ package se.inera.webcert.web.controller.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.repository.IntygFilter;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
@@ -32,6 +33,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import java.util.Arrays;
 import java.util.List;
 

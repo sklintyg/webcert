@@ -22,9 +22,9 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.webcert.modules.IntygModuleRegistry;
-import se.inera.webcert.service.IntygService;
-import se.inera.webcert.service.dto.IntygContentHolder;
-import se.inera.webcert.service.dto.IntygMetadata;
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.log.LogService;
 
 /**

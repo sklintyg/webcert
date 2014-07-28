@@ -3,8 +3,9 @@ package se.inera.webcert.web.controller.integration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.service.IntygService;
-import se.inera.webcert.service.dto.IntygContentHolder;
+
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;

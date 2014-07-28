@@ -1,6 +1,7 @@
 package se.inera.webcert.service.dto;
 
 import se.inera.certificate.model.Utlatande;
+import se.inera.webcert.service.intyg.dto.IntygMetadata;
 
 /**
  * Wrapper class for holding a common model {@link Utlatande} as well as the

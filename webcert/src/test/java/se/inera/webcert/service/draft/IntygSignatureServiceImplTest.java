@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.eid.services.SignatureService;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -15,10 +16,10 @@ import se.inera.webcert.persistence.intyg.model.Signatur;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.SignaturRepository;
-import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 

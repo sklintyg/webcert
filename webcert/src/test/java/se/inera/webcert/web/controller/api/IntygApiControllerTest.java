@@ -7,18 +7,20 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.repository.IntygFilter;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.service.IntygService;
-import se.inera.webcert.service.dto.IntygItem;
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.test.TestIntygFactory;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.service.WebCertUserService;
 
 import javax.ws.rs.core.Response;
+
 import java.util.Arrays;
 import java.util.List;
 

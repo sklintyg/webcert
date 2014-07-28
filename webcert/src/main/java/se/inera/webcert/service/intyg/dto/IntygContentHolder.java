@@ -1,4 +1,4 @@
-package se.inera.webcert.service.dto;
+package se.inera.webcert.service.intyg.dto;
 
 import se.inera.certificate.model.Utlatande;
 

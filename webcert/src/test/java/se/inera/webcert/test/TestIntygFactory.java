@@ -9,8 +9,8 @@ import org.joda.time.LocalDateTime;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
-import se.inera.webcert.service.dto.IntygItem;
-import se.inera.webcert.service.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygStatus;
 
 /**
  * Util for buildting test data

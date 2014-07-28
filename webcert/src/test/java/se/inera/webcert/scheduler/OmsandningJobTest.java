@@ -8,9 +8,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepositoryCustom;
-import se.inera.webcert.service.IntygService;
+import se.inera.webcert.service.intyg.IntygService;
 
 import java.util.ArrayList;
 import java.util.List;

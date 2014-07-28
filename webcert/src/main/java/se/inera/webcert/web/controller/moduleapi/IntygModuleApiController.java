@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.service.IntygService;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.IntygSignatureService;
 import se.inera.webcert.service.draft.dto.DraftValidation;
@@ -14,7 +14,8 @@ import se.inera.webcert.service.draft.dto.DraftValidationMessage;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
@@ -31,6 +32,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 

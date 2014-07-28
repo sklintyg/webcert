@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.service.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.test.TestIntygFactory;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 

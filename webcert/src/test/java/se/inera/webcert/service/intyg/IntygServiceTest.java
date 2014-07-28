@@ -1,4 +1,4 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.intyg;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -52,9 +52,10 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
-import se.inera.webcert.service.dto.IntygContentHolder;
-import se.inera.webcert.service.dto.IntygItem;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.intyg.IntygServiceImpl;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
 

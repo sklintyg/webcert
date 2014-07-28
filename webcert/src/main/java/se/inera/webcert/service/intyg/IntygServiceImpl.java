@@ -1,6 +1,7 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.intyg;
 
 import com.google.common.base.Throwables;
+
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
@@ -44,12 +46,12 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
-import se.inera.webcert.service.dto.IntygContentHolder;
-import se.inera.webcert.service.dto.IntygItem;
-import se.inera.webcert.service.dto.IntygMetadata;
-import se.inera.webcert.service.dto.IntygStatus;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygMetadata;
+import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -60,6 +62,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
