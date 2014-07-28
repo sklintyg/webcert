@@ -12,8 +12,8 @@
   <name>Inera Webcert FitNesse specifications</name>
 
   <properties>
-    <selenium.version>2.41.0</selenium.version>
     <groovy.version>2.3.4</groovy.version>
+    <selenium.version>2.42.2</selenium.version>
     <geb.env>firefox</geb.env>
     <fitnesse.port>9126</fitnesse.port>
     <fitnesse.working>${project.basedir}/src/test/fitnesse</fitnesse.working>
@@ -62,7 +62,7 @@
     <dependency>
       <groupId>org.gebish</groupId>
       <artifactId>geb-core</artifactId>
-      <version>0.9.2</version>
+      <version>0.9.3</version>
     </dependency>
 
     <dependency>
