@@ -1,6 +1,15 @@
 package se.inera.webcert.service.intyg;
 
-import com.google.common.base.Throwables;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -56,17 +65,7 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Throwables;
 
 /**
  * @author andreaskaltenbach
@@ -74,25 +73,13 @@ import java.util.List;
 @Service
 public class IntygServiceImpl implements IntygService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
+    
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
-    private static Marshaller marshaller;
-    private static Unmarshaller unmarshaller;
-    private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
-
-
-    static {
-        try {
-            JAXBContext context = JAXBContext.newInstance(UtlatandeType.class, RegisterCertificateType.class);
-            marshaller = context.createMarshaller();
-            unmarshaller = context.createUnmarshaller();
-        } catch (JAXBException e) {
-            LOG.error("Failed to initialize marshaller for GetCertificate interaction", e);
-            Throwables.propagate(e);
-        }
-    }
-
+    private JAXBContext jaxbContext;
+    
     @Autowired
     private GetCertificateForCareResponderInterface getCertificateService;
 
@@ -116,6 +103,16 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private LogService logService;
+    
+    @PostConstruct
+    public void initJaxbContext() {
+        try {
+            this.jaxbContext = JAXBContext.newInstance(UtlatandeType.class, RegisterCertificateType.class);
+        } catch (JAXBException e) {
+            LOG.error("Failed to initialize JAXB Context for GetCertificate interaction", e);
+            Throwables.propagate(e);
+        }
+    }
 
     @Override
     public IntygContentHolder fetchIntygData(String intygId) {
@@ -138,7 +135,7 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    protected void setLogicalAddress(String logicalAddress) {
+    public void setLogicalAddress(String logicalAddress) {
         this.logicalAddress = logicalAddress;
     }
 
@@ -263,7 +260,7 @@ public class IntygServiceImpl implements IntygService {
         StringWriter writer = new StringWriter();
         try {
             JAXBElement<UtlatandeType> jaxbElement = new ObjectFactory().createUtlatande(utlatandeTyp);
-            marshaller.marshal(jaxbElement, writer);
+            jaxbContext.createMarshaller().marshal(jaxbElement, writer);
             return writer.toString();
         } catch (JAXBException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
@@ -390,6 +387,6 @@ public class IntygServiceImpl implements IntygService {
         TransportModelResponse modelResponse = moduleApi.marshall(holder, TransportModelVersion.UTLATANDE_V1);
         LOG.info("{}", modelResponse.getTransportModel());
 
-        return unmarshaller.unmarshal(new StreamSource(new StringReader(modelResponse.getTransportModel())), UtlatandeType.class).getValue();
+        return jaxbContext.createUnmarshaller().unmarshal(new StreamSource(new StringReader(modelResponse.getTransportModel())), UtlatandeType.class).getValue();
     }
 }

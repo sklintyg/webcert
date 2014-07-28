@@ -157,6 +157,7 @@ public class IntygServiceTest {
     @Before
     public void setupLogicalAddress() {
         intygService.setLogicalAddress(LOGICAL_ADDRESS);
+        intygService.initJaxbContext();
     }
 
     @Test
