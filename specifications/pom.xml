@@ -152,14 +152,12 @@
       <plugin>
         <groupId>uk.co.javahelp.fitnesse</groupId>
         <artifactId>fitnesse-launcher-maven-plugin</artifactId>
-        <version>1.4.0-20131110</version>
+        <version>1.4.1</version>
         <configuration>
           <port>${fitnesse.port}</port>
           <workingDir>${fitnesse.working}</workingDir>
           <root>${fitnesse.root}</root>
           <createSymLink>false</createSymLink>
-          <createSymLink>false</createSymLink>
-          <markerFile>${project.build.directory}/fitnesse-launcher-plugin-marker</markerFile>
           <suite>${fitnesse.suite}</suite>
           <useProjectDependencies>
             <scope>compile</scope>
