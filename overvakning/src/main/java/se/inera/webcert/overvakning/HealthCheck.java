@@ -8,6 +8,8 @@ import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 public class HealthCheck {
     private static final int NANOS_PER_MS = 1_000_000;
 
+    private static final long startTime = System.currentTimeMillis();
+
     @Autowired
     private HSAWebServiceCalls hsaService;
 
@@ -18,15 +20,8 @@ public class HealthCheck {
     private OmsandningRepository omsandningRepository;
 
     public Status getPing() {
-        boolean ok;
-        long startTime = System.nanoTime();
-        try {
-            ok = true;
-        } catch (Exception e) {
-            ok = false;
-        }
-        long doneTime = System.nanoTime();
-        return createStatus(ok, startTime, doneTime);
+        long time = System.nanoTime();
+        return createStatus(true, time, time);
     }
 
     public Status getHsaStatus() {
@@ -65,6 +60,10 @@ public class HealthCheck {
             ok = false;
         }
         return new Status(size, ok);
+    }
+
+    public Status getUptime() {
+        return new Status(System.currentTimeMillis() - startTime, true);
     }
 
     private Status createStatus(boolean ok, long startTime, long doneTime) {

@@ -2,6 +2,7 @@
 
 |health check|
 |endpoint|status?|
+|health-check-overview|=~/Ping[0-9]+OK/|
 |health-check|=~/OK[0-9]+/|
 |health-check-db|=~/OK[0-9]+/|
 |health-check-hsa|=~/OK[0-9]+/|
