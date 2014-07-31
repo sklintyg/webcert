@@ -13,9 +13,9 @@
   <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
     destroy-method="close">
     <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-    <property name="url" value="${webcert.database.url}" />
-    <property name="username" value="${webcert.database.user}" />
-    <property name="password" value="${webcert.database.pwd}" />
+    <property name="url" value="jdbc:mysql://localhost:3306/webcert" />
+    <property name="username" value="statistik" />
+    <property name="password" value="statistik" />
   </bean>
 
   <bean id="entityManagerFactory"

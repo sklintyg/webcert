@@ -20,9 +20,18 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
     <property name="entityManagerFactory" ref="entityManagerFactory" />
   </bean>
 
-  <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
-    <property name="dataSource" ref="dataSource" />
-    <property name="changeLog" value="classpath:changelog/changelog.xml" />
-  </bean>
+  <beans profile="dev,demo">
+    <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
+      <property name="dataSource" ref="dataSource" />
+      <property name="changeLog" value="classpath:changelog/changelog.xml" />
+    </bean>
+  </beans>
+
+  <beans profile="!dev,!demo">
+    <bean id="liquibasecheck" class="se.inera.webcert.persistence.liquibase.DbChecker">
+      <constructor-arg ref="dataSource"/>
+      <constructor-arg value="classpath:changelog/changelog.xml"/>
+    </bean>
+  </beans>
 
 </beans>
