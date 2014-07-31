@@ -24,7 +24,6 @@
   <name>Inera Webcert Application</name>
   <properties>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
-    <inera.certificates.basedir>${project.basedir}/../../inera-certificate-modules</inera.certificates.basedir>
     <karma-plugin-version>1.6</karma-plugin-version>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
