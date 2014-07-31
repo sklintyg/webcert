@@ -324,7 +324,7 @@
                 </systemProperty>
                 <systemProperty>
                   <name>webcert.config.file</name>
-                  <value>${project.basedir}/config.properties</value>
+                  <value>${project.basedir}/webcert.properties</value>
                 </systemProperty>
                 <systemProperty>
                   <name>webcert.logback.file</name>
