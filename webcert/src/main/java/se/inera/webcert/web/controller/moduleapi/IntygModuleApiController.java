@@ -1,26 +1,7 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
-import se.inera.certificate.modules.support.api.dto.PdfResponse;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.service.draft.IntygDraftService;
-import se.inera.webcert.service.draft.IntygSignatureService;
-import se.inera.webcert.service.draft.dto.DraftValidation;
-import se.inera.webcert.service.draft.dto.DraftValidationMessage;
-import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.dto.SignatureTicket;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
-import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
-import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
-import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -33,8 +14,27 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.service.draft.IntygDraftService;
+import se.inera.webcert.service.draft.IntygSignatureService;
+import se.inera.webcert.service.draft.dto.DraftValidation;
+import se.inera.webcert.service.draft.dto.DraftValidationMessage;
+import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.draft.dto.SignatureTicket;
+import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
+import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
+import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
+import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
 
 /**
  * Controller exposing services to be used by modules.
@@ -190,15 +190,24 @@ public class IntygModuleApiController extends AbstractApiController {
 
         LOG.debug("Fetching signed intyg '{}' as PDF", intygId);
 
-        PdfResponse pdfResponse = intygService.fetchIntygAsPdf(intygId);
+        IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygId);
 
-        return Response.ok(pdfResponse.getPdfData()).header(CONTENT_DISPOSITION, buildPdfHeader(pdfResponse.getFilename())).build();
+        return Response.ok(intygPdfResponse.getPdfData()).header(CONTENT_DISPOSITION, buildPdfHeader(intygPdfResponse.getFilename())).build();
     }
 
     private String buildPdfHeader(String pdfFileName) {
         return "attachment; filename=\"" + pdfFileName + "\"";
     }
 
+    @PUT
+    @Path("/signed/{intygId}/send/{recipient}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public Response sendSignedIntyg(String intygId, String recipient) {
+        boolean sendSuccess = intygService.sendIntyg(intygId, recipient);
+        
+        return (sendSuccess) ? Response.ok().build() : Response.serverError().build();
+    }
+    
     /**
      * Signera utkast.
      *

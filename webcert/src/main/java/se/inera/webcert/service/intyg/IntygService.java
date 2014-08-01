@@ -7,6 +7,7 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygPdf;
 
 /**
  * @author andreaskaltenbach
@@ -44,9 +45,15 @@ public interface IntygService {
      * @param intygId
      * @return
      */
-    PdfResponse fetchIntygAsPdf(String intygId);
+    IntygPdf fetchIntygAsPdf(String intygId);
 
     boolean storeIntyg(Intyg intyg);
 
     boolean storeIntyg(Omsandning omsandning);
+    
+    boolean sendIntyg(Intyg intyg, String recipient);
+
+    boolean sendIntyg(Omsandning omsandning);
+    
+    boolean sendIntyg(String intygId, String recipient);
 }

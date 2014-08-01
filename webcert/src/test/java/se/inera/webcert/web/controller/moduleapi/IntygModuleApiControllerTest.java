@@ -25,6 +25,7 @@ import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
+import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.log.LogService;
 
 /**
@@ -73,7 +74,7 @@ public class IntygModuleApiControllerTest {
     @Test
     public void testGetCertificatePdf() throws Exception {
         
-        PdfResponse pdfResponse = new PdfResponse(PDF_DATA, PDF_NAME);
+        IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
         
         when(intygService.fetchIntygAsPdf(CERTIFICATE_ID)).thenReturn(pdfResponse);
 

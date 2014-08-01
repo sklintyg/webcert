@@ -304,6 +304,12 @@
           <column name="GALLRINGSDATUM" type="datetime">
               <constraints nullable="true"/>
           </column>
+          <column name="OPERATION" type="varchar(32)">
+          	<constraints nullable="false"/>
+          </column>
+          <column name="KONFIGURATION" type="clob">
+          	<constraints nullable="true"/>
+          </column>
       </createTable>
       <!-- Add auto incremented id column to table -->
       <addAutoIncrement columnDataType="bigint" columnName="OMSANDNING_ID"

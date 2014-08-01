@@ -3,11 +3,16 @@ package se.inera.webcert.persistence.intyg.model;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
@@ -17,7 +22,7 @@ public class Omsandning {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "OMSANDNING_ID")
-    private long id;
+    private Long id;
 
     @Column(name = "INTYG_ID")
     private String intygId;
@@ -32,12 +37,27 @@ public class Omsandning {
     @Column(name = "GALLRINGSDATUM")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime gallringsdatum;
+    
+    @Column(name = "OPERATION")
+    @Enumerated(EnumType.STRING)
+    private OmsandningOperation operation;
+    
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "KONFIGURATION")
+    private String configuration;
 
-    public long getId() {
+    public Omsandning(OmsandningOperation operation, String intygId) {
+        super();
+        this.intygId = intygId;
+        this.operation = operation;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -71,5 +91,21 @@ public class Omsandning {
 
     public void setGallringsdatum(LocalDateTime gallringsdatum) {
         this.gallringsdatum = gallringsdatum;
+    }
+
+    public OmsandningOperation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(OmsandningOperation operation) {
+        this.operation = operation;
+    }
+
+    public String getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(String configuration) {
+        this.configuration = configuration;
     }
 }

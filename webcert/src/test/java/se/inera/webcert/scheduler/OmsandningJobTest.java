@@ -10,6 +10,7 @@ import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.webcert.persistence.intyg.model.Omsandning;
+import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepositoryCustom;
 import se.inera.webcert.service.intyg.IntygService;
 
@@ -42,7 +43,7 @@ public class OmsandningJobTest {
     @Test
     public void testSandOm1Intyg() {
         List<Omsandning> list = new ArrayList<>();
-        list.add(new Omsandning());
+        list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1"));
         when(intygService.storeIntyg(any(Omsandning.class))).thenReturn(true);
         when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
 
@@ -54,8 +55,8 @@ public class OmsandningJobTest {
     @Test
     public void testSandOmAndFailHard() {
         List<Omsandning> list = new ArrayList<>();
-        for (int i = 0; i < OmsandningJob.MAX_OMSANDNING_PER_CYCLE + 1; i++) {
-            list.add(new Omsandning());
+        for (int i = 0; i < OmsandningJob.MAX_RESENDS_PER_CYCLE + 1; i++) {
+            list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-" + i));
         }
         when(intygService.storeIntyg(any(Omsandning.class))).thenReturn(false);
         when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);

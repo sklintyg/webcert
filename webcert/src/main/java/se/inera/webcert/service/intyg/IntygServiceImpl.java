@@ -1,15 +1,8 @@
 package se.inera.webcert.service.intyg;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -19,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
@@ -29,43 +23,35 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertifica
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateStatusType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ObjectFactory;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.model.Patient;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.Vardenhet;
 import se.inera.certificate.model.Vardgivare;
-import se.inera.certificate.modules.support.ApplicationOrigin;
-import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
-import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
-import se.inera.certificate.modules.support.api.dto.PdfResponse;
-import se.inera.certificate.modules.support.api.dto.TransportModelHolder;
-import se.inera.certificate.modules.support.api.dto.TransportModelResponse;
-import se.inera.certificate.modules.support.api.dto.TransportModelVersion;
-import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.modules.IntygModuleRegistry;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateRequestType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
+import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
+import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
+import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import com.google.common.base.Throwables;
 
 /**
  * @author andreaskaltenbach
@@ -74,12 +60,12 @@ import com.google.common.base.Throwables;
 public class IntygServiceImpl implements IntygService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
-    
+
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
-    private JAXBContext jaxbContext;
-    
+    private String sendCertLogicalAddress;
+
     @Autowired
     private GetCertificateForCareResponderInterface getCertificateService;
 
@@ -96,90 +82,58 @@ public class IntygServiceImpl implements IntygService {
     private IntygRepository intygRepository;
 
     @Autowired
-    private IntygModuleRegistry moduleRegistry;
-
-    @Autowired
     private WebCertUserService webCertUserService;
 
     @Autowired
     private LogService logService;
-    
-    @PostConstruct
-    public void initJaxbContext() {
-        try {
-            this.jaxbContext = JAXBContext.newInstance(UtlatandeType.class, RegisterCertificateType.class);
-        } catch (JAXBException e) {
-            LOG.error("Failed to initialize JAXB Context for GetCertificate interaction", e);
-            Throwables.propagate(e);
-        }
-    }
+
+    @Autowired
+    private SendMedicalCertificateResponderInterface sendService;
+
+    @Autowired
+    private IntygModuleFacade modelFacade;
+
+    @Autowired
+    private IntygServiceConverter serviceConverter;
 
     @Override
     public IntygContentHolder fetchIntygData(String intygId) {
-
-        IntygContentHolder intygAsExternal = fetchExternalIntygData(intygId);
-
-        IntygMetadata metaData = intygAsExternal.getMetaData();
-
         try {
+            IntygContentHolder intygAsExternal = fetchExternalIntygData(intygId);
 
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(metaData.getType());
+            IntygMetadata metaData = intygAsExternal.getMetaData();
 
-            ExternalModelHolder extHolder = new ExternalModelHolder(intygAsExternal.getContents());
-            InternalModelResponse internalModelReponse = moduleApi.convertExternalToInternal(extHolder);
+            String internalIntygJsonModel = modelFacade.convertFromExternalToInternal(metaData.getType(), intygAsExternal.getContents());
 
-            return new IntygContentHolder(internalModelReponse.getInternalModel(), metaData);
+            return new IntygContentHolder(internalIntygJsonModel, metaData);
 
-        } catch (ModuleException me) {
+        } catch (IntygModuleFacadeException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
-    }
-
-    public void setLogicalAddress(String logicalAddress) {
-        this.logicalAddress = logicalAddress;
     }
 
     @Override
     public IntygContentHolder fetchExternalIntygData(String intygId) {
         try {
 
-            GetCertificateForCareResponseType intyg = fetchIntygFromIntygstjanst(intygId);
+            GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygId);
 
-            verifyEnhetsAuth(intyg.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
+            verifyEnhetsAuth(intygResponse.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
-            String patientId = intyg.getCertificate().getPatient().getPersonId().getExtension();
-            IntygMetadata metaData = convertToCertificateContentMeta(patientId, intyg.getMeta());
+            String patientId = intygResponse.getCertificate().getPatient().getPersonId().getExtension();
+            IntygMetadata metaData = serviceConverter.convertToIntygMetadata(patientId, intygResponse.getMeta());
 
-            String intygType = metaData.getType();
+            ExternalModelResponse intygAsExternal = modelFacade.convertFromTransportToExternal(metaData.getType(), intygResponse.getCertificate());
 
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-
-            String xml = marshal(intyg.getCertificate());
-            ExternalModelResponse unmarshallResponse = moduleApi.unmarshall(new TransportModelHolder(xml));
-
-            LogRequest logRequest = createLogRequest(unmarshallResponse.getExternalModel());
+            LogRequest logRequest = createLogRequest(intygAsExternal.getExternalModel());
             logService.logReadOfIntyg(logRequest);
 
-            return new IntygContentHolder(unmarshallResponse.getExternalModelJson(),
-                    unmarshallResponse.getExternalModel(), metaData);
+            return new IntygContentHolder(intygAsExternal.getExternalModelJson(),
+                    intygAsExternal.getExternalModel(), metaData);
 
-        } catch (ModuleException me) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        } catch (IntygModuleFacadeException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
-    }
-
-    private IntygMetadata convertToCertificateContentMeta(String patientId, CertificateMetaType source) {
-
-        IntygMetadata metaData = new IntygMetadata();
-        metaData.setPatientId(patientId);
-        metaData.setId(source.getCertificateId());
-        metaData.setType(source.getCertificateType());
-        metaData.setFromDate(source.getValidFrom());
-        metaData.setTomDate(source.getValidTo());
-
-        metaData.setStatuses(convertStatus(source.getStatus()));
-
-        return metaData;
     }
 
     @Override
@@ -193,14 +147,14 @@ public class IntygServiceImpl implements IntygService {
 
         switch (response.getResult().getResultCode()) {
         case OK:
-            return convert(response.getMeta());
+            return serviceConverter.convertToListOfIntygItem(response.getMeta());
         default:
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                     "listCertificatesForCare WS call: ERROR :" + response.getResult().getResultText());
         }
     }
 
-    public PdfResponse fetchIntygAsPdf(String intygId) {
+    public IntygPdf fetchIntygAsPdf(String intygId) {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygId);
 
@@ -208,63 +162,15 @@ public class IntygServiceImpl implements IntygService {
 
             String intygType = intygAsExternal.getMetaData().getType();
 
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-
-            PdfResponse pdfResponse = moduleApi.pdf(new ExternalModelHolder(intygAsExternal.getContents()), ApplicationOrigin.WEBCERT);
+            IntygPdf intygPdf = modelFacade.convertFromExternalToPdfDocument(intygType, intygAsExternal.getContents());
 
             LogRequest logRequest = createLogRequest(intygAsExternal.getExternalModel());
             logService.logPrintOfIntyg(logRequest);
 
-            return pdfResponse;
+            return intygPdf;
 
-        } catch (ModuleException me) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
-    }
-
-    private List<IntygItem> convert(List<CertificateMetaType> source) {
-        List<IntygItem> intygItems = new ArrayList<>();
-        for (CertificateMetaType certificateMetaType : source) {
-            intygItems.add(convert(certificateMetaType));
-        }
-        return intygItems;
-    }
-
-    private IntygItem convert(CertificateMetaType source) {
-
-        IntygItem item = new IntygItem();
-        item.setId(source.getCertificateId());
-        item.setType(source.getCertificateType());
-        item.setFromDate(source.getValidFrom());
-        item.setTomDate(source.getValidTo());
-        item.setStatuses(convertStatus(source.getStatus()));
-        item.setSignedBy(source.getIssuerName());
-        item.setSignedDate(source.getSignDate());
-
-        return item;
-    }
-
-    private List<IntygStatus> convertStatus(List<CertificateStatusType> source) {
-        List<IntygStatus> status = new ArrayList<>();
-        for (CertificateStatusType certificateStatusType : source) {
-            status.add(convert(certificateStatusType));
-        }
-        return status;
-    }
-
-    private IntygStatus convert(CertificateStatusType source) {
-        return new IntygStatus(source.getType().value(), source.getTarget(), source.getTimestamp());
-    }
-
-    private String marshal(UtlatandeType utlatandeTyp) {
-        StringWriter writer = new StringWriter();
-        try {
-            JAXBElement<UtlatandeType> jaxbElement = new ObjectFactory().createUtlatande(utlatandeTyp);
-            jaxbContext.createMarshaller().marshal(jaxbElement, writer);
-            return writer.toString();
-        } catch (JAXBException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Failed to marshall intyg coming from intygstjanst", e);
+        } catch (IntygModuleFacadeException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
     }
 
@@ -330,18 +236,22 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public boolean storeIntyg(Intyg intyg) {
-        Omsandning omsandning = createOmsandning(intyg.getIntygsId());
+        Omsandning omsandning = createOmsandning(OmsandningOperation.STORE_INTYG, intyg.getIntygsId(), null);
         // Redan schedulerat för att skickas, men vi gör ett försök redan nu.
         return storeIntyg(intyg, omsandning);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Omsandning createOmsandning(String intygId) {
-        Omsandning omsandning = new Omsandning();
-        omsandning.setIntygId(intygId);
+    public Omsandning createOmsandning(OmsandningOperation operation, String intygId, String configuration) {
+        Omsandning omsandning = new Omsandning(operation, intygId);
         omsandning.setAntalForsok(0);
         omsandning.setGallringsdatum(new LocalDateTime().plusHours(24 * 7));
         omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
+
+        if (configuration != null) {
+            omsandning.setConfiguration(configuration);
+        }
+
         return omsandningRepository.save(omsandning);
     }
 
@@ -351,42 +261,135 @@ public class IntygServiceImpl implements IntygService {
 
     public boolean storeIntyg(Intyg intyg, Omsandning omsandning) {
         try {
-            LOG.info("Förbered registrera intyg intyg {}", intyg.getIntygsId());
-            UtlatandeType request = convertToUtlatande(intyg);
 
-            // TODO Hårdkoda vad som saknas i testintyg
-            request.setSigneringsdatum(intyg.getSenastSparadDatum());
-            request.setSkickatdatum(new LocalDateTime());
-
-            RegisterCertificateType data = new RegisterCertificateType();
-            data.setUtlatande(request);
-            LOG.info("Förbered registrera intyg intyg på {}", intygSender);
-            RegisterCertificateResponseType registerCertificateResponseType = intygSender.registerCertificate("", data);
-            ResultType result = registerCertificateResponseType.getResult();
-            if (result.getResultCode() == ResultCodeType.ERROR) {
-                LOG.error("Register intyg {} {} {}", new Object[] {result.getResultCode(), result.getErrorId(), result.getResultText()});
-                omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
-                omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
-                omsandningRepository.save(omsandning);
-            } else {
-                LOG.info("Register intyg {}", result.getResultCode());
-                omsandningRepository.delete(omsandning);
-                return true;
+            if (!registerIntyg(intyg)) {
+                scheduleResend(omsandning);
+                return false;
             }
-        } catch (Exception e) {
-            LOG.error("Error register intyg {}", e);
+
+            omsandningRepository.delete(omsandning);
+            return true;
+
+        } catch (IntygModuleFacadeException e) {
+            LOG.error("Module problems occured when trying to register intyg " + intyg.getIntygsId(), e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
-        return false;
     }
 
-    private UtlatandeType convertToUtlatande(Intyg intyg) throws ModuleException, JAXBException {
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intyg.getIntygsTyp());
-        ExternalModelResponse external = moduleApi.convertInternalToExternal(new InternalModelHolder(intyg.getModel()));
+    private boolean registerIntyg(Intyg intyg) throws IntygModuleFacadeException {
 
-        ExternalModelHolder holder = new ExternalModelHolder(external.getExternalModelJson());
-        TransportModelResponse modelResponse = moduleApi.marshall(holder, TransportModelVersion.UTLATANDE_V1);
-        LOG.info("{}", modelResponse.getTransportModel());
+        LOG.info("Attempting to register intyg {}", intyg.getIntygsId());
+        UtlatandeType utlatandeType = modelFacade.convertFromInternalToTransport(intyg.getIntygsTyp(), intyg.getModel());
 
-        return jaxbContext.createUnmarshaller().unmarshal(new StreamSource(new StringReader(modelResponse.getTransportModel())), UtlatandeType.class).getValue();
+        RegisterCertificateType registerCertRequest = new RegisterCertificateType();
+        registerCertRequest.setUtlatande(utlatandeType);
+
+        ResultType result;
+
+        try {
+            RegisterCertificateResponseType registerCertificateResponseType = intygSender.registerCertificate(sendCertLogicalAddress,
+                    registerCertRequest);
+            result = registerCertificateResponseType.getResult();
+        } catch (WebServiceException wse) {
+            LOG.error("A WebServiceException occured when trying to register intyg " + intyg.getIntygsId(), wse);
+            return false;
+        }
+
+        switch (result.getResultCode()) {
+        case OK:
+            LOG.debug("Successfully resgistered intyg {}", intyg.getIntygsId());
+            return true;
+        case ERROR:
+            LOG.error("Call to register intyg {} returned an ERROR; {}, error id; {}", new Object[] { intyg.getIntygsId(), result.getResultText(),
+                    result.getErrorId() });
+            return false;
+        case INFO:
+            LOG.warn("Call to register intyg {} returned an INFO; {}", intyg.getIntygsId(), result.getResultText());
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    private void scheduleResend(Omsandning omsandning) {
+        omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
+        omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
+        omsandningRepository.save(omsandning);
+    }
+
+    public boolean sendIntyg(Omsandning omsandning) {
+        return sendIntyg(intygRepository.findOne(omsandning.getIntygId()), omsandning);
+    }
+
+    public boolean sendIntyg(String intygId, String recipient) {
+        return sendIntyg(intygRepository.findOne(intygId), recipient);
+    }
+    
+    public boolean sendIntyg(Intyg intyg, String recipient) {
+        Omsandning omsandning = createOmsandning(OmsandningOperation.SEND_INTYG, intyg.getIntygsId(), recipient);
+        // Redan schedulerat för att skickas, men vi gör ett försök redan nu.
+        return sendIntyg(intyg, omsandning);
+    }
+
+    public boolean sendIntyg(Intyg intyg, Omsandning omsandning) {
+        try {
+            if (!performSendIntyg(intyg, omsandning.getConfiguration())) {
+                scheduleResend(omsandning);
+                return false;
+            }
+
+            omsandningRepository.delete(omsandning);
+            return true;
+
+        } catch (IntygModuleFacadeException e) {
+            LOG.error("Module problems occured when trying to send intyg " + intyg.getIntygsId(), e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+        }
+    }
+
+    private boolean performSendIntyg(Intyg intyg, String target) throws IntygModuleFacadeException {
+
+        LOG.info("Attempting to send intyg {} of type {} to recipient {}", new Object[] { intyg.getIntygsId(),
+                intyg.getIntygsTyp(), target });
+
+        Utlatande utlatande = modelFacade.convertFromInternalToExternal(intyg.getIntygsTyp(), intyg.getModel());
+
+        SendType sendType = serviceConverter.buildSendTypeFromUtlatande(utlatande);
+
+        SendMedicalCertificateRequestType request = new SendMedicalCertificateRequestType();
+        request.setSend(sendType);
+
+        AttributedURIType uri = new AttributedURIType();
+        uri.setValue(target);
+
+        SendMedicalCertificateResponseType response;
+
+        try {
+            response = sendService.sendMedicalCertificate(uri, request);
+        } catch (WebServiceException wse) {
+            LOG.error("A WebServiceException occured when trying to send intyg " + intyg.getIntygsId(), wse);
+            return false;
+        }
+
+        ResultOfCall resultOfCall = response.getResult();
+
+        switch (resultOfCall.getResultCode()) {
+        case OK:
+            LOG.debug("Successfully sent intyg {} of type {} to recipient {}", new Object[] { intyg.getIntygsId(), intyg.getIntygsTyp(), target });
+            return true;
+        case INFO:
+            LOG.warn("Call to send intyg {} returned an info message: {}", intyg.getIntygsId(), resultOfCall.getInfoText());
+            return true;
+        case ERROR:
+            LOG.error("Call to send intyg {} casused an error: {}, ErrorId: {}", new Object[] { intyg.getIntygsId(), resultOfCall.getErrorText(),
+                    resultOfCall.getErrorId() });
+            return false;
+        default:
+            return false;
+        }
+    }
+
+    public void setLogicalAddress(String logicalAddress) {
+        this.logicalAddress = logicalAddress;
     }
 }

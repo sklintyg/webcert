@@ -125,10 +125,13 @@
                   serviceClass="se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface"
                   address="${sendanswertofk.endpoint.url}">
     </jaxws:client>
-      <jaxws:client id="registerCertificate"
-                    serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface"
-                    address="${intygstjanst.registercertificate.endpoint.url}">
-      </jaxws:client>
+	<jaxws:client id="registerCertificate"
+				serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface"
+				address="${intygstjanst.registercertificate.endpoint.url}">
+	</jaxws:client>	
+	<jaxws:client id="sendCertificateClient"
+                serviceClass="se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface"
+                address="${intygstjanst.sendcertificate.endpoint.url}" />
   </beans>
 
   <!-- In dev and demo mode we bootstrap data -->

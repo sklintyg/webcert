@@ -15,8 +15,10 @@ import se.inera.webcert.service.intyg.IntygService;
 
 @Component
 public class OmsandningJob {
+    
     private static final Logger LOG = LoggerFactory.getLogger(OmsandningJob.class);
-    public static final int MAX_OMSANDNING_PER_CYCLE = 100;
+    
+    public static final int MAX_RESENDS_PER_CYCLE = 100;
 
     @Autowired
     private OmsandningRepositoryCustom omsandningRepository;
@@ -26,26 +28,37 @@ public class OmsandningJob {
 
     @Scheduled(cron = "${scheduler.omsandningJob.cron}")
     public void sandOm() {
-        LOG.info("<<<Schemalagd omsandning startar.");
+        LOG.info("<<<Scheduled resend starting.");
         int failures = 0;
-        for (Omsandning omsandning : omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(LocalDateTime.now(), LocalDateTime.now())) {
-            LOG.warn("Forsoker skicka om intyg: " + omsandning.getIntygId());
-            if (!sandOm(omsandning)) {
-                if (++failures >= MAX_OMSANDNING_PER_CYCLE) {
+        for (Omsandning omsandning : omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(LocalDateTime.now(),
+                LocalDateTime.now())) {
+            
+            if (!performOperation(omsandning)) {
+                if (++failures >= MAX_RESENDS_PER_CYCLE) {
                     logTooManyFailures();
                     break;
                 }
             }
         }
-        LOG.info(">>>Schemalagd omsandning klar.");
+        LOG.info(">>>Scheduled resend done.");
     }
 
     protected void logTooManyFailures() {
-        LOG.error("Avbryter omsandningscykel p g a for manga fel.");
+        LOG.error("Cancelling resend cycle due to too many faults!");
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private boolean sandOm(Omsandning omsandning) {
-        return intygService.storeIntyg(omsandning);
+    private boolean performOperation(Omsandning omsandning) {
+        
+        LOG.warn("Performing operation {} on intyg {}", omsandning.getOperation(), omsandning.getIntygId());
+        
+        switch (omsandning.getOperation()) {
+        case STORE_INTYG:
+            return intygService.storeIntyg(omsandning);
+        case SEND_INTYG:
+            return intygService.sendIntyg(omsandning);
+        default:
+            return false;
+        }
     }
 }
