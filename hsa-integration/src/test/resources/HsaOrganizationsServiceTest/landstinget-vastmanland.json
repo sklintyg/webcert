@@ -6,7 +6,6 @@
             "id" : "centrum-vast",
             "namn" : "Vårdcentrum i Väst",
             "epost" : "nagon@nagonstans.invalid",
-            "arbetsplatskod" : "arbetsplatskod_centrum-vast",
             "mottagningar" : [
                 {
                     "id" : "dialys",

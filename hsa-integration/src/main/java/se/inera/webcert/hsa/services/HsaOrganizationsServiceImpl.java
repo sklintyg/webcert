@@ -44,6 +44,7 @@ import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
 public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(HsaOrganizationsServiceImpl.class);
+    public static final String DEFAULT_ARBETSPLATSKOD = "0000000";
 
     @Autowired
     private HSAWebServiceCalls client;
@@ -196,13 +197,18 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
             for (AttributeValuePairType attValue : attValList.getResponse()) {
                 if (attValue.getAttribute().equalsIgnoreCase("unitPrescriptionCode")) {
                     if (!attValue.getValue().isEmpty()) {
-                        return attValue.getValue().get(0);
+                        String value = attValue.getValue().get(0);
+                        if (value != null && !value.isEmpty()) {
+                            return value;
+                        } else {
+                            return DEFAULT_ARBETSPLATSKOD;
+                        }
                     }
                 }
             }
         }
 
-        return "";
+        return DEFAULT_ARBETSPLATSKOD;
     }
 
     private Mottagning fetchMottagning(String mottagningsHsaId) {

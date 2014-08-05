@@ -75,6 +75,30 @@ public class HsaOrganizationsServiceTest {
     }
 
     @Test
+    public void ifEnhetHasNoArbetsplatskodThenDefaultShouldBeAssumed() {
+        addMedarbetaruppdrag(PERSON_HSA_ID, asList(CENTRUM_VAST));
+
+        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+        assertEquals(1, vardgivare.size());
+
+        Vardgivare vg = vardgivare.get(0);
+        Vardenhet enhet = vg.getVardenheter().get(0);
+        assertEquals("0000000", enhet.getArbetsplatskod());
+    }
+
+    @Test
+    public void fetchArbetsplatskod() {
+        addMedarbetaruppdrag(PERSON_HSA_ID, asList(CENTRUM_NORR));
+
+        List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
+        assertEquals(1, vardgivare.size());
+
+        Vardgivare vg = vardgivare.get(0);
+        Vardenhet enhet = vg.getVardenheter().get(0);
+        assertEquals("arbetsplatskod_centrum-norr", enhet.getArbetsplatskod());
+    }
+
+    @Test
     public void testMultipleEnheter() {
         
         // Load with 3 MIUs belonging to the same vårdgivare
