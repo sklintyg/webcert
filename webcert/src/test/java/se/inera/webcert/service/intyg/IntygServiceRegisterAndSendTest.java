@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.net.ConnectException;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.ws.WebServiceException;
 
 import org.junit.Test;
