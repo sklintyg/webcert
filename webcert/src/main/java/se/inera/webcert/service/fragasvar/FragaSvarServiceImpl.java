@@ -500,9 +500,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     public Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds) {
-
+        
         Map<String, Long> resultsMap = new HashMap<>();
 
+        if (vardenheterIds == null || vardenheterIds.isEmpty()) {
+            LOG.warn("No ids for Vardenheter was supplied");
+            return resultsMap;
+        }
+        
         List<Object[]> results = fragaSvarRepository.countUnhandledGroupedByEnhetIds(vardenheterIds);
 
         for (Object[] resArr : results) {
