@@ -281,13 +281,16 @@ public class IntygServiceImpl implements IntygService {
         LOG.info("Attempting to register intyg {}", intyg.getIntygsId());
         UtlatandeType utlatandeType = modelFacade.convertFromInternalToTransport(intyg.getIntygsTyp(), intyg.getModel());
 
+        utlatandeType.setSigneringsdatum(intyg.getSenastSparadDatum());
+        utlatandeType.setSkickatdatum(new LocalDateTime());
+        
         RegisterCertificateType registerCertRequest = new RegisterCertificateType();
         registerCertRequest.setUtlatande(utlatandeType);
 
         ResultType result;
 
         try {
-            RegisterCertificateResponseType registerCertificateResponseType = intygSender.registerCertificate(sendCertLogicalAddress,
+            RegisterCertificateResponseType registerCertificateResponseType = intygSender.registerCertificate(logicalAddress,
                     registerCertRequest);
             result = registerCertificateResponseType.getResult();
         } catch (WebServiceException wse) {
