@@ -18,6 +18,13 @@
       <url>dav:https://repository-callistasoftware.forge.cloudbees.com/release</url>
       <layout>default</layout>
     </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>cloudbees-private-snapshot-repository</id>
+      <name>Callista Software Snapshot Respository</name>
+      <url>dav:https://repository-callistasoftware.forge.cloudbees.com/snapshot</url>
+      <layout>default</layout>
+    </snapshotRepository>
   </distributionManagement>
 
   <modules>
