@@ -25,6 +25,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCerti
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
+import se.inera.certificate.model.Id;
 import se.inera.certificate.model.Patient;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.Vardenhet;
@@ -281,7 +282,7 @@ public class IntygServiceImpl implements IntygService {
 
         utlatandeType.setSigneringsdatum(utlatandeType.getSigneringsdatum());
         utlatandeType.setSkickatdatum(new LocalDateTime());
-        
+
         RegisterCertificateType registerCertRequest = new RegisterCertificateType();
         registerCertRequest.setUtlatande(utlatandeType);
 
@@ -319,41 +320,55 @@ public class IntygServiceImpl implements IntygService {
     }
 
     public boolean sendIntyg(Omsandning omsandning) {
-        return sendIntyg(intygRepository.findOne(omsandning.getIntygId()), omsandning);
+        return sendIntyg(omsandning.getIntygId(), omsandning);
     }
 
-    public boolean sendIntyg(String intygId, String recipient) {
-        return sendIntyg(intygRepository.findOne(intygId), recipient);
-    }
-    
-    public boolean sendIntyg(Intyg intyg, String recipient) {
-        Omsandning omsandning = createOmsandning(OmsandningOperation.SEND_INTYG, intyg.getIntygsId(), recipient);
-        // Redan schedulerat för att skickas, men vi gör ett försök redan nu.
-        return sendIntyg(intyg, omsandning);
+    public boolean sendIntyg(String intygsId, String recipient) {
+
+        Omsandning omsandning = createOmsandning(OmsandningOperation.SEND_INTYG, intygsId, recipient);
+
+        return sendIntyg(intygsId, omsandning);
     }
 
-    public boolean sendIntyg(Intyg intyg, Omsandning omsandning) {
+    public boolean sendIntyg(String intygsId, Omsandning omsandning) {
         try {
-            if (!performSendIntyg(intyg, omsandning.getConfiguration())) {
+            String recipient = omsandning.getConfiguration();
+
+            LOG.info("Sending intyg {} to recipient {}", new Object[] { intygsId, recipient });
+            
+            GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygsId);
+
+            UtlatandeType utlatandeType = intygResponse.getCertificate();
+            String intygsTyp = utlatandeType.getTypAvUtlatande().getCode();
+
+            ExternalModelResponse intygAsExternal = modelFacade.convertFromTransportToExternal(intygsTyp, intygResponse.getCertificate());
+
+            Utlatande utlatande = intygAsExternal.getExternalModel();
+
+            if (!performSendIntyg(utlatande, recipient)) {
+                LOG.info("Sending intyg {} to recipient {} failed, rescheduling send...");
                 scheduleResend(omsandning);
                 return false;
             }
 
             omsandningRepository.delete(omsandning);
+
             return true;
 
         } catch (IntygModuleFacadeException e) {
-            LOG.error("Module problems occured when trying to send intyg " + intyg.getIntygsId(), e);
+            LOG.error("Module problems occured when trying to send intyg " + intygsId, e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
     }
 
-    private boolean performSendIntyg(Intyg intyg, String target) throws IntygModuleFacadeException {
+    private boolean performSendIntyg(Utlatande utlatande, String recipient) {
 
-        LOG.info("Attempting to send intyg {} of type {} to recipient {}", new Object[] { intyg.getIntygsId(),
-                intyg.getIntygsTyp(), target });
+        String intygsId = extractIntygIdFromId(utlatande.getId());
 
-        Utlatande utlatande = modelFacade.convertFromInternalToExternal(intyg.getIntygsTyp(), intyg.getModel());
+        String intygsTyp = utlatande.getTyp().getCode();
+
+        LOG.debug("Attempting to send intyg {} of type {} to recipient {}", new Object[] { intygsId,
+                intygsTyp, recipient });
 
         SendType sendType = serviceConverter.buildSendTypeFromUtlatande(utlatande);
 
@@ -361,14 +376,14 @@ public class IntygServiceImpl implements IntygService {
         request.setSend(sendType);
 
         AttributedURIType uri = new AttributedURIType();
-        uri.setValue(target);
+        uri.setValue(recipient);
 
         SendMedicalCertificateResponseType response;
 
         try {
             response = sendService.sendMedicalCertificate(uri, request);
         } catch (WebServiceException wse) {
-            LOG.error("A WebServiceException occured when trying to send intyg " + intyg.getIntygsId(), wse);
+            LOG.error("A WebServiceException occured when trying to send intyg " + intygsId, wse);
             return false;
         }
 
@@ -376,18 +391,27 @@ public class IntygServiceImpl implements IntygService {
 
         switch (resultOfCall.getResultCode()) {
         case OK:
-            LOG.debug("Successfully sent intyg {} of type {} to recipient {}", new Object[] { intyg.getIntygsId(), intyg.getIntygsTyp(), target });
+            LOG.debug("Successfully sent intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
             return true;
         case INFO:
-            LOG.warn("Call to send intyg {} returned an info message: {}", intyg.getIntygsId(), resultOfCall.getInfoText());
+            LOG.warn("Call to send intyg {} returned an info message: {}", intygsId, resultOfCall.getInfoText());
             return true;
         case ERROR:
-            LOG.error("Call to send intyg {} casused an error: {}, ErrorId: {}", new Object[] { intyg.getIntygsId(), resultOfCall.getErrorText(),
+            LOG.error("Call to send intyg {} caused an error: {}, ErrorId: {}", new Object[] { intygsId, resultOfCall.getErrorText(),
                     resultOfCall.getErrorId() });
             return false;
         default:
             return false;
         }
+    }
+
+    private String extractIntygIdFromId(Id id) {
+
+        if (id.getExtension() != null) {
+            return id.getExtension();
+        }
+
+        return id.getRoot();
     }
 
     public void setLogicalAddress(String logicalAddress) {

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
 import riv.insuranceprocess.healthreporting.medcertqa._1.LakarutlatandeEnkelType;
@@ -106,8 +107,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         hosPersonalType.setPersonalId(hosPersonId);
         hosPersonalType.setFullstandigtNamn(utlatande.getSkapadAv().getNamn());
         hosPersonalType.setForskrivarkod(utlatande.getSkapadAv().getForskrivarkod());
-        
-        
+                
         VardAdresseringsType vardAdressType = new VardAdresseringsType();
         vardAdressType.setHosPersonal(hosPersonalType);
 
@@ -115,6 +115,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         sendType.setLakarutlatande(utlatandeType);
         sendType.setAdressVard(vardAdressType);
         sendType.setVardReferensId("WC");
+        sendType.setAvsantTidpunkt(LocalDateTime.now());
         
         return sendType;
     }

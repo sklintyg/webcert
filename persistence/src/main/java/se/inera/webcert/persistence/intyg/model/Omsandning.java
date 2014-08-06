@@ -47,6 +47,10 @@ public class Omsandning {
     @Column(name = "KONFIGURATION")
     private String configuration;
 
+    public Omsandning() {
+        super();
+    }
+    
     public Omsandning(OmsandningOperation operation, String intygId) {
         super();
         this.intygId = intygId;

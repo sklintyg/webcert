@@ -28,6 +28,8 @@ public class IntygServiceConverterTest {
         
         assertNotNull(res);
         
+        assertNotNull(res.getAvsantTidpunkt());
+        
         assertEquals("123", res.getLakarutlatande().getLakarutlatandeId());
         assertEquals("Test Testorsson", res.getLakarutlatande().getPatient().getFullstandigtNamn());
         assertEquals("19121212-1212", res.getLakarutlatande().getPatient().getPersonId().getExtension());

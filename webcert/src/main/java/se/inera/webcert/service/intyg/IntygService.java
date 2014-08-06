@@ -51,8 +51,6 @@ public interface IntygService {
 
     boolean storeIntyg(Omsandning omsandning);
     
-    boolean sendIntyg(Intyg intyg, String recipient);
-
     boolean sendIntyg(Omsandning omsandning);
     
     boolean sendIntyg(String intygId, String recipient);

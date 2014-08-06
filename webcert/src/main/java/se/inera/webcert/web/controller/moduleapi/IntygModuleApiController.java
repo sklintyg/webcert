@@ -202,7 +202,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @PUT
     @Path("/signed/{intygId}/send/{recipient}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    public Response sendSignedIntyg(String intygId, String recipient) {
+    public Response sendSignedIntyg(@PathParam("intygId") String intygId, @PathParam("recipient") String recipient) {
         boolean sendSuccess = intygService.sendIntyg(intygId, recipient);
         
         return (sendSuccess) ? Response.ok().build() : Response.serverError().build();
