@@ -8,7 +8,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -77,6 +79,8 @@ public class IntygDraftServiceImplTest {
         hoSPerson = new HoSPerson();
         hoSPerson.setHsaId("AAA");
         hoSPerson.setNamn("Dr Dengroth");
+        hoSPerson.setBefattning("Befattning");
+        hoSPerson.getSpecialiseringar().add("Ortoped");
 
         VardpersonReferens vardperson = new VardpersonReferens();
         vardperson.setHsaId(hoSPerson.getHsaId());
@@ -164,6 +168,10 @@ public class IntygDraftServiceImplTest {
         WebCertUser user = new WebCertUser();
         user.setHsaId("hsaId");
         user.setNamn("namn");
+        List<String> tmp = new ArrayList<String>();
+        tmp.add("Ortoped");
+        user.setSpecialiseringar(tmp);
+        user.setTitel("Befattning");
         Vardgivare vardgivare = new Vardgivare();
         vardgivare.setId("vardgivarid");
         vardgivare.setNamn("vardgivarnamn");

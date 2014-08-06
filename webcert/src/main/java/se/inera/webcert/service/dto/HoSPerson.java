@@ -1,5 +1,8 @@
 package se.inera.webcert.service.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import se.inera.webcert.hsa.model.WebCertUser;
 
 public class HoSPerson {
@@ -11,6 +14,8 @@ public class HoSPerson {
     private String forskrivarkod;
 
     private String befattning;
+
+    private List<String> specialiseringar;
 
     public HoSPerson() {
 
@@ -46,6 +51,13 @@ public class HoSPerson {
 
     public void setBefattning(String befattning) {
         this.befattning = befattning;
+    }
+
+    public List<String> getSpecialiseringar() {
+        if (specialiseringar == null) {
+            specialiseringar = new ArrayList<String>();
+        }
+        return specialiseringar;
     }
 
     public static HoSPerson create(WebCertUser user) {

@@ -190,7 +190,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         HoSPerson reqHosPerson = request.getHosPerson();
         HoSPersonal hosPerson = new HoSPersonal(reqHosPerson.getHsaId(), reqHosPerson.getNamn(),
-                reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), vardenhet);
+                reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), reqHosPerson.getSpecialiseringar(), vardenhet);
 
         Patient reqPatient = request.getPatient();
 
@@ -456,7 +456,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         se.inera.certificate.modules.support.api.dto.Vardgivare vardgivare = new se.inera.certificate.modules.support.api.dto.Vardgivare(valdVardgivare.getId(), valdVardgivare.getNamn());
         AbstractVardenhet valdVardenhet = (AbstractVardenhet) user.getValdVardenhet();
         se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(valdVardenhet.getId(), valdVardenhet.getNamn(), valdVardenhet.getPostadress(), valdVardenhet.getPostnummer(), valdVardenhet.getPostort(), valdVardenhet.getTelefonnummer(), valdVardenhet.getEpost(), valdVardenhet.getArbetsplatskod(), vardgivare);
-        HoSPersonal hosPerson = new HoSPersonal(user.getHsaId(), user.getNamn(), user.getForskrivarkod(), user.getTitel(), vardenhet);
+        HoSPersonal hosPerson = new HoSPersonal(user.getHsaId(), user.getNamn(), user.getForskrivarkod(), user.getTitel(), user.getSpecialiseringar(), vardenhet);
 
         try {
             InternalModelHolder internalModel = new InternalModelHolder(draftAsJson);
