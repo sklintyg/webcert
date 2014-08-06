@@ -95,4 +95,24 @@ public class Vardenhet {
     public void setArbetsplatskod(String arbetsplatskod) {
         this.arbetsplatskod = arbetsplatskod;
     }
+
+    public static Vardenhet create(se.inera.webcert.hsa.model.Vardenhet hsaVardenhet) {
+        Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setHsaId(hsaVardenhet.getId());
+        vardenhet.setNamn(hsaVardenhet.getNamn());
+        vardenhet.setArbetsplatskod(hsaVardenhet.getArbetsplatskod());
+        vardenhet.setPostadress(hsaVardenhet.getPostadress());
+        vardenhet.setPostnummer(hsaVardenhet.getPostnummer());
+        vardenhet.setPostort(hsaVardenhet.getPostort());
+        vardenhet.setTelefonnummer(hsaVardenhet.getTelefonnummer());
+        vardenhet.setEpost(hsaVardenhet.getEpost());
+        return vardenhet;
+    }
+
+    public static Vardenhet create(se.inera.webcert.hsa.model.Vardenhet hsaVardenhet, se.inera.webcert.hsa.model.Vardgivare hsaVardgivare) {
+        Vardgivare vardgivare = Vardgivare.create(hsaVardgivare);
+        Vardenhet vardenhet = create(hsaVardenhet);
+        vardenhet.setVardgivare(vardgivare);
+        return vardenhet;
+    }
 }

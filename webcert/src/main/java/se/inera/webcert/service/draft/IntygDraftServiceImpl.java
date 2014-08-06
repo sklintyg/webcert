@@ -1,6 +1,7 @@
 package se.inera.webcert.service.draft;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -455,12 +456,12 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         se.inera.certificate.modules.support.api.dto.Vardgivare vardgivare = new se.inera.certificate.modules.support.api.dto.Vardgivare(valdVardgivare.getId(), valdVardgivare.getNamn());
         AbstractVardenhet valdVardenhet = (AbstractVardenhet) user.getValdVardenhet();
         se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(valdVardenhet.getId(), valdVardenhet.getNamn(), valdVardenhet.getPostadress(), valdVardenhet.getPostnummer(), valdVardenhet.getPostort(), valdVardenhet.getTelefonnummer(), valdVardenhet.getEpost(), valdVardenhet.getArbetsplatskod(), vardgivare);
-        HoSPersonal hosPerson = new HoSPersonal(user.getHsaId(), user.getNamn(), user.getForskrivarkod(), null, vardenhet);
+        HoSPersonal hosPerson = new HoSPersonal(user.getHsaId(), user.getNamn(), user.getForskrivarkod(), user.getTitel(), vardenhet);
 
         try {
             InternalModelHolder internalModel = new InternalModelHolder(draftAsJson);
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intyg.getIntygsTyp());
-            InternalModelResponse updatedInternal = moduleApi.updateInternal(internalModel, hosPerson);
+            InternalModelResponse updatedInternal = moduleApi.updateInternal(internalModel, hosPerson, LocalDateTime.now());
             intyg.setModel(updatedInternal.getInternalModel());
         } catch (ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);

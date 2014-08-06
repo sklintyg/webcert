@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
+import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -148,7 +149,7 @@ public class IntygDraftServiceImplTest {
         when(userService.getWebCertUser()).thenReturn(user);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
 
-        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelResponse("{}"));
+        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(new InternalModelResponse("{}"));
 
         DraftValidation res = draftService.saveAndValidateDraft(request);
 
