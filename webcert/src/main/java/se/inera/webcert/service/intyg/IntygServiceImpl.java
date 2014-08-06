@@ -64,8 +64,6 @@ public class IntygServiceImpl implements IntygService {
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
-    private String sendCertLogicalAddress;
-
     @Autowired
     private GetCertificateForCareResponderInterface getCertificateService;
 
@@ -281,7 +279,7 @@ public class IntygServiceImpl implements IntygService {
         LOG.info("Attempting to register intyg {}", intyg.getIntygsId());
         UtlatandeType utlatandeType = modelFacade.convertFromInternalToTransport(intyg.getIntygsTyp(), intyg.getModel());
 
-        utlatandeType.setSigneringsdatum(intyg.getSenastSparadDatum());
+        utlatandeType.setSigneringsdatum(utlatandeType.getSigneringsdatum());
         utlatandeType.setSkickatdatum(new LocalDateTime());
         
         RegisterCertificateType registerCertRequest = new RegisterCertificateType();
