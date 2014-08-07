@@ -12,12 +12,16 @@ import org.joda.time.LocalDateTime;
  */
 public class AbstractLogMessage implements Serializable {
 
+    private static final String RESOURCE_TYPE = "Intyg";
+
     private String logId;
 
     private String systemId;
 
     private String activityLevel;
 
+    private String activityArgs;
+    
     private ActivityType activityType;
 
     private LocalDateTime timestamp;
@@ -48,6 +52,10 @@ public class AbstractLogMessage implements Serializable {
         this.purpose = purpose;
         this.resourceType = resourceType;
         this.timestamp = LocalDateTime.now();
+    }
+    
+    public AbstractLogMessage(ActivityType activityType) {
+        this(activityType, ActivityPurpose.CARE_TREATMENT, RESOURCE_TYPE);
     }
 
     public String getLogId() {
@@ -80,6 +88,14 @@ public class AbstractLogMessage implements Serializable {
 
     public void setActivityLevel(String activityLevel) {
         this.activityLevel = activityLevel;
+    }
+
+    public String getActivityArgs() {
+        return activityArgs;
+    }
+
+    public void setActivityArgs(String activityArgs) {
+        this.activityArgs = activityArgs;
     }
 
     public void setTimestamp(LocalDateTime timestamp) {

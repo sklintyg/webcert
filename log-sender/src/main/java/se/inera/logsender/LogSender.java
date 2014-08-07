@@ -9,10 +9,12 @@ import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
 import javax.xml.ws.WebServiceException;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.stereotype.Component;
+
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
 import se.inera.log.messages.Patient;
@@ -145,6 +148,11 @@ public class LogSender {
         activity.setStartDate(source.getTimestamp());
         activity.setPurpose(source.getPurpose().getType());
         activity.setActivityLevel(source.getActivityLevel());
+        
+        if (StringUtils.isNotEmpty(source.getActivityArgs())) {
+            activity.setActivityArgs(source.getActivityArgs());
+        }
+        
         logType.setActivity(activity);
 
         UserType user = new UserType();
