@@ -53,6 +53,8 @@ import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 
 @RunWith( MockitoJUnitRunner.class )
@@ -84,6 +86,9 @@ public class IntygServiceRegisterAndSendTest {
         
     @Mock
     private WebCertUserService webCertUserService;
+    
+    @Mock
+    private LogService logService;
     
     @InjectMocks
     private IntygServiceImpl intygService = new IntygServiceImpl();
@@ -225,7 +230,7 @@ public class IntygServiceRegisterAndSendTest {
         result.setResultCode(ResultCodeEnum.OK);
         response.setResult(result);
         when(sendService.sendMedicalCertificate(any(AttributedURIType.class), any(SendMedicalCertificateRequestType.class))).thenReturn(response);
-                
+                        
         Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, INTYG_ID);
         omsandning.setConfiguration("FK");
         
@@ -233,6 +238,7 @@ public class IntygServiceRegisterAndSendTest {
         assertTrue(res);
         
         verify(omsandningRepository).delete(omsandning);
+        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
     }
     
     @Test

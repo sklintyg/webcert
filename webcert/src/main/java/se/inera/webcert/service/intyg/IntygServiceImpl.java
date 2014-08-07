@@ -204,7 +204,7 @@ public class IntygServiceImpl implements IntygService {
     private LogRequest createLogRequest(Utlatande cert) {
 
         LogRequest logRequest = new LogRequest();
-        logRequest.setIntygId(cert.getId().getExtension());
+        logRequest.setIntygId(extractIntygIdFromId(cert.getId()));
 
         Patient patient = cert.getPatient();
 
@@ -352,6 +352,11 @@ public class IntygServiceImpl implements IntygService {
             }
 
             omsandningRepository.delete(omsandning);
+            
+            // send PDL log event
+            LogRequest logRequest = createLogRequest(utlatande);
+            logRequest.setAdditionalInfo(recipient);
+            logService.logSendIntygToRecipient(logRequest);
 
             return true;
 
