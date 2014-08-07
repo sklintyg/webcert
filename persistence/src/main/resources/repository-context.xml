@@ -28,9 +28,9 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
   </beans>
 
   <beans profile="!dev,!demo">
-    <bean id="liquibasecheck" class="se.inera.webcert.persistence.liquibase.DbChecker">
+    <bean id="liquibasecheck" class="se.inera.certificate.liquibase.DbChecker">
       <constructor-arg ref="dataSource"/>
-      <constructor-arg value="classpath:changelog/changelog.xml"/>
+      <constructor-arg value="changelog/changelog.xml"/>
     </bean>
   </beans>
 
