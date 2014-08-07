@@ -20,6 +20,8 @@ import se.inera.log.messages.Enhet;
 import se.inera.log.messages.IntygPrintMessage;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.log.messages.Patient;
+import se.inera.log.messages.SendIntygToRecipientMessage;
+import se.inera.log.messages.SignIntygMessage;
 import se.inera.log.messages.UpdateDraftMessage;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -76,7 +78,17 @@ public class LogServiceImpl implements LogService {
     public void logDeleteOfDraft(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new DeleteDraftMessage(logRequest.getIntygId())));
     }
-
+    
+    @Override
+    public void logSigningOfDraft(LogRequest logRequest) {
+        send(populateLogMessage(logRequest, new SignIntygMessage(logRequest.getIntygId())));
+    }
+    
+    @Override
+    public void logSendIntygToRecipient(LogRequest logRequest) {
+        send(populateLogMessage(logRequest, new SendIntygToRecipientMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo())));
+    }
+    
     private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg) {
 
         populateWithCurrentUserAndCareUnit(logMsg);

@@ -25,13 +25,37 @@ public interface LogService {
     void logPrintOfIntyg(LogRequest logRequest);
 
     /**
-     * Creates a log event when an user creates a new intyg.
+     * Creates a log event when an user creates a new draft.
      *
      * @param logRequest logRequest
      */
     void logCreateOfDraft(LogRequest logRequest);
 
+    /**
+     * Creates a log event when an user updates a draft.
+     *
+     * @param logRequest logRequest
+     */
     void logUpdateOfDraft(LogRequest logRequest);
-
+    
+    /**
+     * Creates a log event when an user deletes an unsigned draft.
+     *
+     * @param logRequest logRequest
+     */
     void logDeleteOfDraft(LogRequest logRequest);
+    
+    /**
+     * Creates a log event when an user signs a draft.
+     *
+     * @param logRequest logRequest
+     */
+    void logSigningOfDraft(LogRequest logRequest);
+    
+    /**
+     * Creates a log event when an user sends a signed intyg directly to a recipient.
+     *
+     * @param logRequest logRequest
+     */
+    void logSendIntygToRecipient(LogRequest logRequest);
 }

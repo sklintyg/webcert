@@ -15,6 +15,8 @@ public class LogRequest {
 
     private String intygCareGiverId;
     private String intygCareGiverName;
+    
+    private String additionalInfo;
 
     public LogRequest() {
         super();
@@ -78,5 +80,13 @@ public class LogRequest {
 
     public void setIntygCareGiverName(String intygCareGiverName) {
         this.intygCareGiverName = intygCareGiverName;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
     }
 }
