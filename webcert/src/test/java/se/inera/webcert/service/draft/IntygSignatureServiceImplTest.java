@@ -20,6 +20,8 @@ import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -55,9 +57,12 @@ public class IntygSignatureServiceImplTest {
 
     @Mock
     IntygService intygService;
+    
+    @Mock
+    private LogService logService;
 
     @InjectMocks
-    private IntygSignatureServiceImpl draftService = new IntygSignatureServiceImpl();
+    private IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
 
     private Intyg intygDraft;
 
@@ -85,8 +90,8 @@ public class IntygSignatureServiceImplTest {
         user.setNamn(hoSPerson.getNamn());
         user.setHsaId(hoSPerson.getHsaId());
         when(webcertUserService.getWebCertUser()).thenReturn(user);
-        ReflectionUtils.setTypedField(draftService, new TicketTracker());
-        ReflectionUtils.setTypedField(draftService, new CustomObjectMapper());
+        ReflectionUtils.setTypedField(intygSignatureService, new TicketTracker());
+        ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
     }
 
     private Intyg createIntyg(String intygId, String type, IntygsStatus status, String model, VardpersonReferens vardperson) {
@@ -103,21 +108,21 @@ public class IntygSignatureServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void getSignatureHashReturnsErrorIfIntygNotCompleted() {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
-        draftService.createDraftHash(INTYG_ID);
+        intygSignatureService.createDraftHash(INTYG_ID);
         fail();
     }
 
     @Test(expected = WebCertServiceException.class)
     public void getSignatureHashReturnsErrorIfIntygAlreadySigned() {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygSigned);
-        draftService.createDraftHash(INTYG_ID);
+        intygSignatureService.createDraftHash(INTYG_ID);
         fail();
     }
 
     @Test
     public void getSignatureHashReturnsTicket() {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygCompleted);
-        SignatureTicket ticket = draftService.createDraftHash(INTYG_ID);
+        SignatureTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
         assertEquals(INTYG_ID, ticket.getIntygsId());
         assertEquals(SignatureTicket.Status.BEARBETAR, ticket.getStatus());
     }
@@ -126,14 +131,14 @@ public class IntygSignatureServiceImplTest {
     public void clientSignatureFailsIfTicketDoesNotExist() {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygCompleted);
 
-        draftService.clientSignature("unknownId", "SIGNATURE");
+        intygSignatureService.clientSignature("unknownId", "SIGNATURE");
         fail();
     }
 
     @Test(expected = WebCertServiceException.class)
     public void clientSignatureFailsIfIntygWasModified() throws IOException {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygCompleted);
-        SignatureTicket ticket = draftService.createDraftHash(INTYG_ID);
+        SignatureTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
 
         intygCompleted.setModel("{}");
 
@@ -141,27 +146,28 @@ public class IntygSignatureServiceImplTest {
         when(signatureService.validateSiths(hoSPerson.getHsaId(), ticket.getHash(), "SIGNATURE")).thenReturn(true);
         when(signatureRepository.save(any(Signatur.class))).thenReturn(null);
 
-        draftService.clientSignature(ticket.getId(), signature);
+        intygSignatureService.clientSignature(ticket.getId(), signature);
         fail();
     }
 
     @Test
     public void clientSignatureSuccess() throws IOException {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygCompleted);
-        SignatureTicket ticket = draftService.createDraftHash(INTYG_ID);
+        SignatureTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
 
-        SignatureTicket status = draftService.ticketStatus(ticket.getId());
+        SignatureTicket status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignatureTicket.Status.BEARBETAR, status.getStatus());
 
         String signature = "{\"signatur\":\"SIGNATURE\"}";
         when(signatureService.validateSiths(hoSPerson.getHsaId(), ticket.getHash(), "SIGNATURE")).thenReturn(true);
         when(signatureRepository.save(any(Signatur.class))).thenReturn(null);
 
-        SignatureTicket signatureTicket = draftService.clientSignature(ticket.getId(), signature);
+        SignatureTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
         assertNotNull(signatureTicket);
         verify(intygService).storeIntyg(intygCompleted);
+        verify(logService).logSigningOfDraft(any(LogRequest.class));
 
-        status = draftService.ticketStatus(ticket.getId());
+        status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignatureTicket.Status.SIGNERAD, status.getStatus());
     }
 }

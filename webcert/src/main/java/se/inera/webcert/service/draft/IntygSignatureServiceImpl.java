@@ -21,6 +21,9 @@ import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.log.LogRequestFactory;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 
 import java.io.IOException;
@@ -51,6 +54,9 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
     @Autowired
     private SignatureService signatureService;
+    
+    @Autowired
+    private LogService logService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -123,6 +129,9 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         ticket = ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
 
         intygService.storeIntyg(intyg);
+        
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
+        logService.logSigningOfDraft(logRequest);
 
         return ticket;
     }
@@ -148,6 +157,9 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         ticketTracker.updateStatus(statusTicket.getId(), SignatureTicket.Status.SIGNERAD);
 
         intygService.storeIntyg(intyg);
+        
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
+        logService.logSigningOfDraft(logRequest);
 
         return statusTicket;
     }

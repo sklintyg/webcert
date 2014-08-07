@@ -41,6 +41,7 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -94,7 +95,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         Intyg persistedIntyg = persistNewDraft(request, intygJsonModel);
 
-        LogRequest logRequest = createLogRequestFromDraft(persistedIntyg);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(persistedIntyg);
         logService.logCreateOfDraft(logRequest);
 
         return persistedIntyg.getIntygsId();
@@ -211,7 +212,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
         }
 
-        LogRequest logRequest = createLogRequestFromDraft(intyg);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
         logService.logReadOfIntyg(logRequest);
 
         return intyg;
@@ -262,7 +263,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         Intyg persistedIntyg = persistNewDraft(request, modelAsJson);
 
-        LogRequest logRequest = createLogRequestFromDraft(persistedIntyg);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(persistedIntyg);
         logService.logCreateOfDraft(logRequest);
 
         return persistedIntyg.getIntygsId();
@@ -306,27 +307,10 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         LOG.debug("Draft '{}' updated", persistedDraft.getIntygsId());
 
-        LogRequest logRequest = createLogRequestFromDraft(persistedDraft);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(persistedDraft);
         logService.logUpdateOfDraft(logRequest);
 
         return draftValidation;
-    }
-
-    private LogRequest createLogRequestFromDraft(Intyg draft) {
-
-        LogRequest logRequest = new LogRequest();
-
-        logRequest.setIntygId(draft.getIntygsId());
-        logRequest.setPatientId(draft.getPatientPersonnummer());
-        logRequest.setPatientName(draft.getPatientFornamn(), draft.getPatientMellannamn(), draft.getPatientEfternamn());
-
-        logRequest.setIntygCareUnitId(draft.getEnhetsId());
-        logRequest.setIntygCareUnitName(draft.getEnhetsNamn());
-
-        logRequest.setIntygCareGiverId(draft.getVardgivarId());
-        logRequest.setIntygCareGiverName(draft.getVardgivarNamn());
-
-        return logRequest;
     }
 
     @Override
@@ -439,7 +423,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         intygRepository.delete(intyg);
 
-        LogRequest logRequest = createLogRequestFromDraft(intyg);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
         logService.logDeleteOfDraft(logRequest);
     }
 

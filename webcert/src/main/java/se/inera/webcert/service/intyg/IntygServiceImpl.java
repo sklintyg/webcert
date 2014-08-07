@@ -50,6 +50,7 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -124,7 +125,7 @@ public class IntygServiceImpl implements IntygService {
 
             ExternalModelResponse intygAsExternal = modelFacade.convertFromTransportToExternal(metaData.getType(), intygResponse.getCertificate());
 
-            LogRequest logRequest = createLogRequest(intygAsExternal.getExternalModel());
+            LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(intygAsExternal.getExternalModel());
             logService.logReadOfIntyg(logRequest);
 
             return new IntygContentHolder(intygAsExternal.getExternalModelJson(),
@@ -163,7 +164,7 @@ public class IntygServiceImpl implements IntygService {
 
             IntygPdf intygPdf = modelFacade.convertFromExternalToPdfDocument(intygType, intygAsExternal.getContents());
 
-            LogRequest logRequest = createLogRequest(intygAsExternal.getExternalModel());
+            LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(intygAsExternal.getExternalModel());
             logService.logPrintOfIntyg(logRequest);
 
             return intygPdf;
@@ -199,30 +200,6 @@ public class IntygServiceImpl implements IntygService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                     "getCertificateForCare WS call: ERROR :" + response.getResult().getResultText());
         }
-    }
-
-    private LogRequest createLogRequest(Utlatande cert) {
-
-        LogRequest logRequest = new LogRequest();
-        logRequest.setIntygId(extractIntygIdFromId(cert.getId()));
-
-        Patient patient = cert.getPatient();
-
-        logRequest.setPatientId(patient.getId().getExtension());
-
-        logRequest.setPatientName(patient.getFullstandigtNamn());
-
-        Vardenhet skapadAvVardenhet = cert.getSkapadAv().getVardenhet();
-
-        logRequest.setIntygCareUnitId(skapadAvVardenhet.getId().getExtension());
-        logRequest.setIntygCareUnitName(skapadAvVardenhet.getNamn());
-
-        Vardgivare skapadAvVardgivare = skapadAvVardenhet.getVardgivare();
-
-        logRequest.setIntygCareGiverId(skapadAvVardgivare.getId().getExtension());
-        logRequest.setIntygCareGiverName(skapadAvVardgivare.getNamn());
-
-        return logRequest;
     }
 
     protected void verifyEnhetsAuth(String enhetsId) {
@@ -354,7 +331,7 @@ public class IntygServiceImpl implements IntygService {
             omsandningRepository.delete(omsandning);
             
             // send PDL log event
-            LogRequest logRequest = createLogRequest(utlatande);
+            LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(utlatande);
             logRequest.setAdditionalInfo(recipient);
             logService.logSendIntygToRecipient(logRequest);
 
