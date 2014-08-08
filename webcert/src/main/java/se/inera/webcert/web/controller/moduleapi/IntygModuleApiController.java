@@ -30,6 +30,9 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.log.LogRequestFactory;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
@@ -55,6 +58,9 @@ public class IntygModuleApiController extends AbstractApiController {
 
     @Autowired
     private IntygSignatureService signatureService;
+    
+    @Autowired
+    private LogService logService;
 
     /**
      * Returns the draft certificate as JSON identified by the intygId.
@@ -199,9 +205,30 @@ public class IntygModuleApiController extends AbstractApiController {
         return "attachment; filename=\"" + pdfFileName + "\"";
     }
 
+    /**
+     * Creates a PDL log event that a persons draft has been printed.
+     * 
+     * @param intygId
+     * @return
+     */
+    @POST
+    @Path("/draft/logprint")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response logPrintOfDraft(String intygId) {
+        
+        LOG.debug("Logging printout of draft intyg '{}'", intygId);
+        
+        IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(intygId);
+        
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(externalIntygData.getExternalModel());
+        logService.logPrintOfIntygAsDraft(logRequest);
+        
+        return Response.ok().build();
+    }
+    
     @PUT
     @Path("/signed/{intygId}/send/{recipient}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygId") String intygId, @PathParam("recipient") String recipient) {
         boolean sendSuccess = intygService.sendIntyg(intygId, recipient);
         

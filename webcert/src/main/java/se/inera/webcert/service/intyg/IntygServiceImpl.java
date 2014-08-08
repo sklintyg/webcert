@@ -170,7 +170,7 @@ public class IntygServiceImpl implements IntygService {
             IntygPdf intygPdf = modelFacade.convertFromExternalToPdfDocument(intygType, intygAsExternal.getContents());
 
             LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(intygAsExternal.getExternalModel());
-            logService.logPrintOfIntyg(logRequest);
+            logService.logPrintOfIntygAsPDF(logRequest);
 
             return intygPdf;
 

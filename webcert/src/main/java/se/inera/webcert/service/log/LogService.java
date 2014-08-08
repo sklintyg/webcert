@@ -22,7 +22,14 @@ public interface LogService {
      *
      * @param logRequest logRequest
      */
-    void logPrintOfIntyg(LogRequest logRequest);
+    void logPrintOfIntygAsPDF(LogRequest logRequest);
+    
+    /**
+     * Creates a log event when an user requests a print-out of an intyg as draft.
+     *
+     * @param logRequest logRequest
+     */
+    void logPrintOfIntygAsDraft(LogRequest logRequest);
     
     /**
      * Creates a log event when an user sends a signed intyg directly to a recipient.

@@ -34,6 +34,9 @@ public class LogServiceImpl implements LogService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogServiceImpl.class);
 
+    private static final String PRINTED_AS_PDF = "Intyget utskrivet som PDF";
+    private static final String PRINTED_AS_DRAFT = "Intyget utskrivet som utkast";
+    
     @Autowired(required = false)
     private JmsTemplate jmsTemplate;
 
@@ -56,10 +59,15 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void logPrintOfIntyg(LogRequest logRequest) {
-        send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId())));
+    public void logPrintOfIntygAsPDF(LogRequest logRequest) {
+        send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_PDF)));
     }
     
+    @Override
+    public void logPrintOfIntygAsDraft(LogRequest logRequest) {
+        send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_DRAFT)));
+    }
+
     @Override
     public void logSendIntygToRecipient(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new SendIntygToRecipientMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo())));
