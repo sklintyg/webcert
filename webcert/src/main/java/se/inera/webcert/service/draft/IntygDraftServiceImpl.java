@@ -95,9 +95,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         Intyg persistedIntyg = persistNewDraft(request, intygJsonModel);
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(persistedIntyg);
-        logService.logCreateOfDraft(logRequest);
-
         return persistedIntyg.getIntygsId();
     }
 
@@ -201,7 +198,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }
 
-    public Intyg getDraft(String intygId) {
+    public Intyg getIntygAsDraft(String intygId) {
 
         LOG.debug("Fetching Intyg '{}'", intygId);
 
@@ -212,15 +209,20 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
         }
 
+        return intyg;
+    }
+    
+    @Override
+    public Intyg getDraft(String intygId) {
+        Intyg intyg = getIntygAsDraft(intygId);
         LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
         logService.logReadOfIntyg(logRequest);
-
         return intyg;
     }
 
     @Override
     public SignatureTicket createDraftHash(String intygsId) {
-        Intyg intyg = getDraft(intygsId);
+        Intyg intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         intygRepository.save(intyg);
         return signatureService.createDraftHash(intygsId);
@@ -228,7 +230,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Override
     public SignatureTicket serverSignature(String intygsId) {
-        Intyg intyg = getDraft(intygsId);
+        Intyg intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         intygRepository.save(intyg);
         return signatureService.serverSignature(intygsId);
@@ -239,7 +241,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         populateRequestWithIntygId(request);
 
         String intygType = request.getIntygType();
-
 
         LOG.debug("Calling module '{}' to get populated model", intygType);
 
@@ -260,11 +261,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(modelAsJson), intygType);
 
-
         Intyg persistedIntyg = persistNewDraft(request, modelAsJson);
-
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(persistedIntyg);
-        logService.logCreateOfDraft(logRequest);
 
         return persistedIntyg.getIntygsId();
     }
@@ -298,7 +295,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         IntygsStatus intygStatus = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE : IntygsStatus.DRAFT_INCOMPLETE;
 
-
         updateWithUser(intyg, draftAsJson);
 
         intyg.setStatus(intygStatus);
@@ -306,9 +302,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         Intyg persistedDraft = intygRepository.save(intyg);
 
         LOG.debug("Draft '{}' updated", persistedDraft.getIntygsId());
-
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(persistedDraft);
-        logService.logUpdateOfDraft(logRequest);
 
         return draftValidation;
     }
@@ -422,9 +415,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         }
 
         intygRepository.delete(intyg);
-
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
-        logService.logDeleteOfDraft(logRequest);
     }
 
     private void updateWithUser(Intyg intyg) {

@@ -26,10 +26,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCerti
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.model.Id;
-import se.inera.certificate.model.Patient;
 import se.inera.certificate.model.Utlatande;
-import se.inera.certificate.model.Vardenhet;
-import se.inera.certificate.model.Vardgivare;
 import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateRequestType;
@@ -99,7 +96,7 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygContentHolder fetchIntygData(String intygId) {
         try {
-            IntygContentHolder intygAsExternal = fetchExternalIntygData(intygId);
+            IntygContentHolder intygAsExternal = getIntygAsExternalModel(intygId);
 
             IntygMetadata metaData = intygAsExternal.getMetaData();
 
@@ -114,6 +111,16 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public IntygContentHolder fetchExternalIntygData(String intygId) {
+
+        IntygContentHolder intygAsExternal = getIntygAsExternalModel(intygId);
+
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(intygAsExternal.getExternalModel());
+        logService.logReadOfIntyg(logRequest);
+
+        return intygAsExternal;
+    }
+
+    private IntygContentHolder getIntygAsExternalModel(String intygId) {
         try {
 
             GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygId);
@@ -125,15 +132,13 @@ public class IntygServiceImpl implements IntygService {
 
             ExternalModelResponse intygAsExternal = modelFacade.convertFromTransportToExternal(metaData.getType(), intygResponse.getCertificate());
 
-            LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(intygAsExternal.getExternalModel());
-            logService.logReadOfIntyg(logRequest);
-
             return new IntygContentHolder(intygAsExternal.getExternalModelJson(),
                     intygAsExternal.getExternalModel(), metaData);
 
         } catch (IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
+
     }
 
     @Override
@@ -158,7 +163,7 @@ public class IntygServiceImpl implements IntygService {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygId);
 
-            IntygContentHolder intygAsExternal = fetchExternalIntygData(intygId);
+            IntygContentHolder intygAsExternal = getIntygAsExternalModel(intygId);
 
             String intygType = intygAsExternal.getMetaData().getType();
 
@@ -312,7 +317,7 @@ public class IntygServiceImpl implements IntygService {
             String recipient = omsandning.getConfiguration();
 
             LOG.info("Sending intyg {} to recipient {}", new Object[] { intygsId, recipient });
-            
+
             GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygsId);
 
             UtlatandeType utlatandeType = intygResponse.getCertificate();
@@ -329,7 +334,7 @@ public class IntygServiceImpl implements IntygService {
             }
 
             omsandningRepository.delete(omsandning);
-            
+
             // send PDL log event
             LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(utlatande);
             logRequest.setAdditionalInfo(recipient);

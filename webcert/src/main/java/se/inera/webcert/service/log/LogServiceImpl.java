@@ -14,15 +14,11 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
 import se.inera.log.messages.AbstractLogMessage;
-import se.inera.log.messages.CreateDraftMessage;
-import se.inera.log.messages.DeleteDraftMessage;
 import se.inera.log.messages.Enhet;
 import se.inera.log.messages.IntygPrintMessage;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.log.messages.Patient;
 import se.inera.log.messages.SendIntygToRecipientMessage;
-import se.inera.log.messages.SignIntygMessage;
-import se.inera.log.messages.UpdateDraftMessage;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
@@ -62,26 +58,6 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logPrintOfIntyg(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId())));
-    }
-
-    @Override
-    public void logCreateOfDraft(LogRequest logRequest) {
-        send(populateLogMessage(logRequest, new CreateDraftMessage(logRequest.getIntygId())));
-    }
-
-    @Override
-    public void logUpdateOfDraft(LogRequest logRequest) {
-        send(populateLogMessage(logRequest, new UpdateDraftMessage(logRequest.getIntygId())));
-    }
-
-    @Override
-    public void logDeleteOfDraft(LogRequest logRequest) {
-        send(populateLogMessage(logRequest, new DeleteDraftMessage(logRequest.getIntygId())));
-    }
-    
-    @Override
-    public void logSigningOfDraft(LogRequest logRequest) {
-        send(populateLogMessage(logRequest, new SignIntygMessage(logRequest.getIntygId())));
     }
     
     @Override

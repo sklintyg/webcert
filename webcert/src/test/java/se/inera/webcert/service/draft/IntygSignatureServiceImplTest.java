@@ -1,5 +1,14 @@
 package se.inera.webcert.service.draft;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,18 +30,8 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygSignatureServiceImplTest {
@@ -165,7 +164,6 @@ public class IntygSignatureServiceImplTest {
         SignatureTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
         assertNotNull(signatureTicket);
         verify(intygService).storeIntyg(intygCompleted);
-        verify(logService).logSigningOfDraft(any(LogRequest.class));
 
         status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignatureTicket.Status.SIGNERAD, status.getStatus());

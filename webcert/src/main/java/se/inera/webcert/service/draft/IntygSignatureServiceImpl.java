@@ -1,6 +1,10 @@
 package se.inera.webcert.service.draft;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.LocalDateTime;
@@ -21,16 +25,10 @@ import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class IntygSignatureServiceImpl implements IntygSignatureService {
@@ -130,9 +128,6 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
         intygService.storeIntyg(intyg);
         
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
-        logService.logSigningOfDraft(logRequest);
-
         return ticket;
     }
 
@@ -158,9 +153,6 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
         intygService.storeIntyg(intyg);
         
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
-        logService.logSigningOfDraft(logRequest);
-
         return statusTicket;
     }
 
