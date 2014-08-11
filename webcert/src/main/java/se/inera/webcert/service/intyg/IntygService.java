@@ -53,5 +53,5 @@ public interface IntygService {
     
     boolean sendIntyg(Omsandning omsandning);
     
-    boolean sendIntyg(String intygId, String recipient);
+    boolean sendIntyg(String intygId, String recipient, boolean hasPatientConsent);
 }

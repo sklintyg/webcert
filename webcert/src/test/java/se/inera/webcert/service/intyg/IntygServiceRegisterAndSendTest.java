@@ -50,6 +50,8 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
+import se.inera.webcert.service.intyg.config.SendIntygConfiguration;
+import se.inera.webcert.service.intyg.config.SendIntygConfigurationManager;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
@@ -60,11 +62,15 @@ import se.inera.webcert.web.service.WebCertUserService;
 @RunWith( MockitoJUnitRunner.class )
 public class IntygServiceRegisterAndSendTest {
 
+    private static final String CONFIG_AS_JSON = "{config-as-json}";
+
     private static final String INTYG_ID = "intyg-1";
     
     private static final String INTYG_TYP = "fk7263";
 
-    private static final String INTYG_INTERNAL_JSON_MODEL = "json";
+    private static final String INTYG_INTERNAL_JSON_MODEL = "{internal-model-as-json}";
+    
+    private static final String INTYG_EXTERNAL_JSON_MODEL = "{external-model-as-json}";
     
     @Mock
     private GetCertificateForCareResponderInterface getCertificateService;
@@ -90,6 +96,9 @@ public class IntygServiceRegisterAndSendTest {
     @Mock
     private LogService logService;
     
+    @Mock
+    private SendIntygConfigurationManager sendIntygConfigurationManager;
+    
     @InjectMocks
     private IntygServiceImpl intygService = new IntygServiceImpl();
     
@@ -98,6 +107,11 @@ public class IntygServiceRegisterAndSendTest {
     @Before
     public void setup() throws JAXBException {
         jaxbContext = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
+    }
+    
+    @Before
+    public void setupDefaultAuthorization() {
+        when(webCertUserService.isAuthorizedForUnit(anyString())).thenReturn(true);
     }
     
     @Test
@@ -218,7 +232,7 @@ public class IntygServiceRegisterAndSendTest {
         
         // setup module API behaviour
         Utlatande utlatande = makeUtlatande();
-        ExternalModelResponse unmarshallResponse = new ExternalModelResponse("<external-json/>", utlatande);
+        ExternalModelResponse unmarshallResponse = new ExternalModelResponse(INTYG_EXTERNAL_JSON_MODEL, utlatande);
         when(moduleFacade.convertFromTransportToExternal(eq(INTYG_TYP), any(UtlatandeType.class))).thenReturn(unmarshallResponse);
         
         // simulate conversion
@@ -232,9 +246,9 @@ public class IntygServiceRegisterAndSendTest {
         when(sendService.sendMedicalCertificate(any(AttributedURIType.class), any(SendMedicalCertificateRequestType.class))).thenReturn(response);
                         
         Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, INTYG_ID);
-        omsandning.setConfiguration("FK");
+        omsandning.setConfiguration(CONFIG_AS_JSON);
         
-        boolean res = intygService.sendIntyg(INTYG_ID, omsandning);
+        boolean res = intygService.sendIntyg(INTYG_ID, omsandning, new SendIntygConfiguration("FK", true));
         assertTrue(res);
         
         verify(omsandningRepository).delete(omsandning);
@@ -243,14 +257,14 @@ public class IntygServiceRegisterAndSendTest {
     
     @Test
     public void testSendIntygFailingWithErrorResponse() throws Exception {
-        
+                
         // simulate response from Intygstjanst
         GetCertificateForCareResponseType getCertResponse = makeIntygstjanstResponse();
         when(getCertificateService.getCertificateForCare(anyString(), any(GetCertificateForCareRequestType.class))).thenReturn(getCertResponse);
         
         // setup module API behaviour
         Utlatande utlatande = makeUtlatande();
-        ExternalModelResponse unmarshallResponse = new ExternalModelResponse("<external-json/>", utlatande);
+        ExternalModelResponse unmarshallResponse = new ExternalModelResponse(INTYG_EXTERNAL_JSON_MODEL, utlatande);
         when(moduleFacade.convertFromTransportToExternal(eq(INTYG_TYP), any(UtlatandeType.class))).thenReturn(unmarshallResponse);
         
         // simulate conversion
@@ -266,9 +280,9 @@ public class IntygServiceRegisterAndSendTest {
         when(sendService.sendMedicalCertificate(any(AttributedURIType.class), any(SendMedicalCertificateRequestType.class))).thenReturn(response);
                 
         Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, INTYG_ID);
-        omsandning.setConfiguration("FK");
+        omsandning.setConfiguration(CONFIG_AS_JSON);
         
-        boolean res = intygService.sendIntyg(INTYG_ID, omsandning);
+        boolean res = intygService.sendIntyg(INTYG_ID, omsandning, new SendIntygConfiguration("FK", true));
         assertFalse(res);
         
         verify(omsandningRepository).save(omsandning);
@@ -276,14 +290,14 @@ public class IntygServiceRegisterAndSendTest {
             
     @Test
     public void testSendIntygFailingWithException() throws Exception {
-        
+                
         // simulate response from Intygstjanst
         GetCertificateForCareResponseType getCertResponse = makeIntygstjanstResponse();
         when(getCertificateService.getCertificateForCare(anyString(), any(GetCertificateForCareRequestType.class))).thenReturn(getCertResponse);
         
         // setup module API behaviour
         Utlatande utlatande = makeUtlatande();
-        ExternalModelResponse unmarshallResponse = new ExternalModelResponse("<external-json/>", utlatande);
+        ExternalModelResponse unmarshallResponse = new ExternalModelResponse(INTYG_EXTERNAL_JSON_MODEL, utlatande);
         when(moduleFacade.convertFromTransportToExternal(eq(INTYG_TYP), any(UtlatandeType.class))).thenReturn(unmarshallResponse);
         
         // simulate conversion
@@ -293,10 +307,10 @@ public class IntygServiceRegisterAndSendTest {
         WebServiceException wse = new WebServiceException(new ConnectException("Could not connect..."));
         when(sendService.sendMedicalCertificate(any(AttributedURIType.class), any(SendMedicalCertificateRequestType.class))).thenThrow(wse);
         
-        Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, "intyg-2");
-        omsandning.setConfiguration("FK");
+        Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, INTYG_ID);
+        omsandning.setConfiguration(CONFIG_AS_JSON);
         
-        boolean res = intygService.sendIntyg(INTYG_ID, omsandning);
+        boolean res = intygService.sendIntyg(INTYG_ID, omsandning, new SendIntygConfiguration("FK", true));
         assertFalse(res);
         
         verify(omsandningRepository).save(omsandning);

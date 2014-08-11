@@ -38,6 +38,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
+import se.inera.webcert.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
 /**
  * Controller exposing services to be used by modules.
@@ -226,11 +227,11 @@ public class IntygModuleApiController extends AbstractApiController {
         return Response.ok().build();
     }
     
-    @PUT
-    @Path("/signed/{intygId}/send/{recipient}")
+    @POST
+    @Path("/signed/{intygId}/send")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response sendSignedIntyg(@PathParam("intygId") String intygId, @PathParam("recipient") String recipient) {
-        boolean sendSuccess = intygService.sendIntyg(intygId, recipient);
+    public Response sendSignedIntyg(@PathParam("intygId") String intygId, SendSignedIntygParameter param) {
+        boolean sendSuccess = intygService.sendIntyg(intygId, param.getRecipient(), param.isPatientConsent());
         
         return (sendSuccess) ? Response.ok().build() : Response.serverError().build();
     }

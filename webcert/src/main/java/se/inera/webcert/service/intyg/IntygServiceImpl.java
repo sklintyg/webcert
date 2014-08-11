@@ -40,6 +40,8 @@ import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.intyg.config.SendIntygConfiguration;
+import se.inera.webcert.service.intyg.config.SendIntygConfigurationManager;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
@@ -92,6 +94,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private IntygServiceConverter serviceConverter;
+
+    @Autowired
+    private SendIntygConfigurationManager sendIntygConfigurationManager;
 
     @Override
     public IntygContentHolder fetchIntygData(String intygId) {
@@ -302,24 +307,30 @@ public class IntygServiceImpl implements IntygService {
     }
 
     public boolean sendIntyg(Omsandning omsandning) {
-        return sendIntyg(omsandning.getIntygId(), omsandning);
+        SendIntygConfiguration sendConfig = sendIntygConfigurationManager.unmarshallSendConfig(omsandning.getConfiguration());
+        return sendIntyg(omsandning.getIntygId(), omsandning, sendConfig);
     }
 
-    public boolean sendIntyg(String intygsId, String recipient) {
+    public boolean sendIntyg(String intygsId, String recipient, boolean hasPatientConsent) {
+        
+        SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent);
+        String sendConfigAsJson = sendIntygConfigurationManager.marshallSendConfig(sendConfig);
 
-        Omsandning omsandning = createOmsandning(OmsandningOperation.SEND_INTYG, intygsId, recipient);
+        Omsandning omsandning = createOmsandning(OmsandningOperation.SEND_INTYG, intygsId, sendConfigAsJson);
 
-        return sendIntyg(intygsId, omsandning);
+        return sendIntyg(intygsId, omsandning, sendConfig);
     }
 
-    public boolean sendIntyg(String intygsId, Omsandning omsandning) {
+    public boolean sendIntyg(String intygsId, Omsandning omsandning, SendIntygConfiguration sendConfig) {
         try {
-            String recipient = omsandning.getConfiguration();
+            String recipient = sendConfig.getRecipient();
 
             LOG.info("Sending intyg {} to recipient {}", new Object[] { intygsId, recipient });
 
             GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygsId);
-
+            
+            verifyEnhetsAuth(intygResponse.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
+            
             UtlatandeType utlatandeType = intygResponse.getCertificate();
             String intygsTyp = utlatandeType.getTypAvUtlatande().getCode();
 
@@ -337,11 +348,11 @@ public class IntygServiceImpl implements IntygService {
 
             // send PDL log event
             LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(utlatande);
-            logRequest.setAdditionalInfo(recipient);
+            logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
             logService.logSendIntygToRecipient(logRequest);
 
             return true;
-
+            
         } catch (IntygModuleFacadeException e) {
             LOG.error("Module problems occured when trying to send intyg " + intygsId, e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
