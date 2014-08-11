@@ -2,21 +2,21 @@ package se.inera.webcert.hsa.model;
 
 public abstract class AbstractVardenhet implements SelectableVardenhet {
 
-    private String id;
+    protected String id;
 
-    private String namn;
+    protected String namn;
 
-    private String epost;
+    protected String epost;
 
-    private String postadress;
+    protected String postadress;
 
-    private String postnummer;
+    protected String postnummer;
 
-    private String postort;
+    protected String postort;
 
-    private String telefonnummer;
+    protected String telefonnummer;
 
-    private String arbetsplatskod;
+    protected String arbetsplatskod;
 
     public AbstractVardenhet() {
     }

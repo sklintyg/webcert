@@ -11,6 +11,8 @@ import org.joda.time.LocalDateTime;
  */
 public class Mottagning extends AbstractVardenhet implements Serializable {
 
+    private static final long serialVersionUID = 6427228467181041893L;
+    
     private LocalDateTime start;
     private LocalDateTime end;
 

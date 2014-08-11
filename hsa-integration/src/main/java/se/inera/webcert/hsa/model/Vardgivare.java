@@ -11,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Vardgivare implements SelectableVardenhet, Serializable {
 
+    private static final long serialVersionUID = 4462766290949153158L;
+
     private String id;
     private String namn;
 
