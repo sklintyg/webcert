@@ -385,6 +385,11 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     public Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds) {
 
         Map<String, Long> resultsMap = new HashMap<>();
+        
+        if (careUnitIds == null || careUnitIds.isEmpty()) {
+            LOG.warn("No ids for Vardenheter was supplied");
+            return resultsMap;
+        }
 
         List<Object[]> countResults = intygRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES);
 

@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.hsa.model.Mottagning;
@@ -31,7 +33,9 @@ import se.inera.webcert.web.controller.moduleapi.dto.VardgivareStats;
 public class StatModuleApiController extends AbstractApiController {
 
     private static final String SEPARATOR = " - ";
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(StatModuleApiController.class);
+    
     @Autowired
     private FragaSvarService fragaSvarService;
 
@@ -45,8 +49,13 @@ public class StatModuleApiController extends AbstractApiController {
 
         StatsResponse statsResponse = new StatsResponse();
 
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getWebCertUser();       
         List<String> allUnitIds = user.getIdsOfAllVardenheter();
+        
+        if (allUnitIds == null || allUnitIds.isEmpty()) {
+            LOG.warn("getStatistics was called by user {} that have no id:s of vardenheter present in the user context: {}", user.getHsaId(), user.getAsJson());
+            return Response.ok(statsResponse).build();
+        }
 
         Map<String, Long> fragaSvarStatsMap = fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(allUnitIds);
 
