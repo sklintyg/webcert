@@ -214,6 +214,7 @@ public class IntygModuleApiController extends AbstractApiController {
      */
     @POST
     @Path("/draft/logprint")
+    @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response logPrintOfDraft(String intygId) {
         
@@ -229,6 +230,7 @@ public class IntygModuleApiController extends AbstractApiController {
     
     @POST
     @Path("/signed/{intygId}/send")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygId") String intygId, SendSignedIntygParameter param) {
         boolean sendSuccess = intygService.sendIntyg(intygId, param.getRecipient(), param.isPatientConsent());
