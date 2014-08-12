@@ -15,6 +15,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  */
 public class WebCertUser implements Serializable {
 
+    private static final long serialVersionUID = -2624303818412468774L;
+
     private String hsaId;
     private String namn;
     private boolean lakare;

@@ -1,6 +1,5 @@
 package se.inera.webcert.hsa.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +8,9 @@ import org.joda.time.LocalDateTime;
 /**
  * @author andreaskaltenbach
  */
-public class Vardenhet extends AbstractVardenhet implements Serializable {
+public class Vardenhet extends AbstractVardenhet {
+
+    private static final long serialVersionUID = 460424685142490104L;
 
     private LocalDateTime start;
     private LocalDateTime end;

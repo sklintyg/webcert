@@ -1,22 +1,26 @@
 package se.inera.webcert.hsa.model;
 
-public abstract class AbstractVardenhet implements SelectableVardenhet {
+import java.io.Serializable;
 
-    protected String id;
+public abstract class AbstractVardenhet implements SelectableVardenhet, Serializable {
 
-    protected String namn;
+    private static final long serialVersionUID = 304219756695002501L;
 
-    protected String epost;
+    private String id;
 
-    protected String postadress;
+    private String namn;
 
-    protected String postnummer;
+    private String epost;
 
-    protected String postort;
+    private String postadress;
 
-    protected String telefonnummer;
+    private String postnummer;
 
-    protected String arbetsplatskod;
+    private String postort;
+
+    private String telefonnummer;
+
+    private String arbetsplatskod;
 
     public AbstractVardenhet() {
     }
