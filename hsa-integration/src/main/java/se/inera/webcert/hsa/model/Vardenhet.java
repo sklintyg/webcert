@@ -11,8 +11,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @author andreaskaltenbach
  */
-public class Vardenhet extends AbstractVardenhet implements Serializable {
-    
+public class Vardenhet extends AbstractVardenhet {
+
+    private static final long serialVersionUID = 8357146438862025306L;
+
     private String mail;
 
     private LocalDateTime start;

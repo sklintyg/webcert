@@ -1,6 +1,10 @@
 package se.inera.webcert.hsa.model;
 
-public abstract class AbstractVardenhet implements SelectableVardenhet {
+import java.io.Serializable;
+
+public abstract class AbstractVardenhet implements SelectableVardenhet, Serializable {
+
+    private static final long serialVersionUID = 5313273402235906664L;
 
     private String id;
     

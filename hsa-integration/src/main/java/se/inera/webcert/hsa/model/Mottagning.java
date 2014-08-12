@@ -9,7 +9,9 @@ import org.joda.time.LocalDateTime;
 /**
  * @author andreaskaltenbach
  */
-public class Mottagning extends AbstractVardenhet implements Serializable {
+public class Mottagning extends AbstractVardenhet {
+
+    private static final long serialVersionUID = 4534878881086899524L;
 
     private String mail;
 
