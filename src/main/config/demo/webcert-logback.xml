@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date{ISO8601} [%thread] %-5level %logger{10} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!--Daily rolling file appender -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <File>${catalina.base}/logs/webcert.log</File>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <FileNamePattern>${catalina.base}/logs/webcert.%d{yyyy-MM-dd}.log</FileNamePattern>
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>%date{ISO8601} [%thread] %-5level %logger{10} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.springframework.security.saml" level="debug" />
+  <logger name="org.opensaml" level="debug" />
+
+  <logger name="org.springframework" level="error" />
+
+  <logger name="org.hibernate" level="error" />
+
+  <logger name="org.apache.cxf.services" level="error" />
+
+  <logger name="se.inera" level="debug" />
+
+  <root>
+    <level value="error" />
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+  </root>
+</configuration>
+
