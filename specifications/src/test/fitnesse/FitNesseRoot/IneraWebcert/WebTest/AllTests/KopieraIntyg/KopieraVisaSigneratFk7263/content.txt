@@ -19,3 +19,6 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 
 | script | !-HanteraUtkast-! |
 | editera sidan visas |
+| radera utkast |
+| ej signerade intyg sidan visas |
+| inga ej signerade intyg visas |
