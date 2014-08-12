@@ -214,15 +214,16 @@ public class IntygModuleApiController extends AbstractApiController {
      */
     @POST
     @Path("/draft/logprint")
-    @Consumes(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response logPrintOfDraft(String intygId) {
         
         LOG.debug("Logging printout of draft intyg '{}'", intygId);
-        
-        IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(intygId);
-        
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromExternalModel(externalIntygData.getExternalModel());
+
+        Intyg draft = draftService.getDraft(intygId);
+
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(draft);
+
         logService.logPrintOfIntygAsDraft(logRequest);
         
         return Response.ok().build();
