@@ -7,12 +7,11 @@ Detta test ska visa på att man kan skicka ett signerat ts-intyg.
 | sok skriv intyg sidan visas sa smaningom |
 | valj patient | 19121212-1212 |
 | valj intygstyp sidan visas |
-| visa intyg | intyg-fit-4 |
+| visa intyg | intyg-fit-7 |
 | visa sidan visas |
 
-!3 Skicka intyget
+!3 Skicka intyget och kontrollera att intyget skickats
 
 | script | !-SokSkrivIntyg-! |
 | skicka visat intyg |
-
-#| Skicka status visas |
+| skicka status visas |

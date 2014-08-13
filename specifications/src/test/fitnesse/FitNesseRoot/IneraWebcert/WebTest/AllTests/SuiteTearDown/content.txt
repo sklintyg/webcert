@@ -11,3 +11,7 @@
 |intyg-fit-3-revoked|
 |intyg-fit-4|
 |intyg-fit-5|
+|intyg-fit-6|
+|intyg-fit-7|
+|intyg-fit-8|
+

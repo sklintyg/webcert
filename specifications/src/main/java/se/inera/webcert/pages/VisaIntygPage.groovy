@@ -8,6 +8,7 @@ class VisaIntygPage extends Page {
 
     static content = {
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
+        certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
         copyButton { $("#copyBtn") }
         intygVy { $('#intyg-vy-laddad') }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
@@ -23,7 +24,7 @@ class VisaIntygPage extends Page {
 
     def send() {
         $("#sendBtn").click()
-        sleep(300)
+        sleep(1000)
         skickaDialogCheck.click()
         sleep(100)
         skickaDialogSkickaKnapp.click()

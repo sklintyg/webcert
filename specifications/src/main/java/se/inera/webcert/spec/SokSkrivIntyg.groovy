@@ -102,6 +102,15 @@ class SokSkrivIntyg {
         }
     }
 
+    boolean skickaStatusVisas() {
+        Browser.drive {
+            waitFor {
+                page.certificateIsSentToRecipientMessage.isDisplayed()
+            }
+        }
+        true
+    }
+
     def kopieraVisatIntyg() {
         Browser.drive {
             page.copy()
