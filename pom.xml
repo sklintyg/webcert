@@ -42,6 +42,7 @@
     <module>pu-integration</module>
     <module>persistence</module>
     <module>overvakning</module>
+    <module>tools/LiquibaseRunnerForWebcert</module>
   </modules>
 
   <properties>
