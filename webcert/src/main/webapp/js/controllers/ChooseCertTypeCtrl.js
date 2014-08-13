@@ -75,7 +75,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
              * @private
              */
 
-            function _createDraft() {
+            $scope.createDraft = function() {
+                CreateCertificateDraft.intygType = $scope.intygType;
                 CreateCertificateDraft.createDraft(function(data) {
                     $scope.widgetState.createErrorMessageKey = undefined;
                     $location.url('/' + CreateCertificateDraft.intygType + '/edit/' + data, true);
@@ -89,54 +90,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             /**
              * Exposed to scope
              */
-
-            $scope.lookupAddress = function() {
-                CreateCertificateDraft.intygType = $scope.intygType;
-
-                // TODO: create a list with which intygTypes wants and address or not. FK7263 does not want an address,
-                // so hardcoded for now as it is the only one in the foreseeble future
-                if (CreateCertificateDraft.intygType !== 'fk7263' && CreateCertificateDraft.postadress) {
-                    var bodyText = 'Patienten har tidigare intyg där adressuppgifter har angivits. Vill du ' +
-                        'återanvända dessa i det nya intyget?<br><br>Adress: ' + CreateCertificateDraft.postadress;
-                    if (CreateCertificateDraft.postnummer || CreateCertificateDraft.postort) {
-                        bodyText += '<br>';
-                        if (CreateCertificateDraft.postnummer) {
-                            bodyText += CreateCertificateDraft.postnummer + ' ';
-                        }
-                        if (CreateCertificateDraft.postort) {
-                            bodyText += CreateCertificateDraft.postort;
-                        }
-                    }
-
-                    dialogService.showDialog($scope, {
-                        dialogId: 'confirm-address-dialog',
-                        titleId: 'label.confirmaddress',
-                        bodyText: bodyText,
-
-                        button1click: function() {
-                            $log.debug('confirm address yes');
-                            _createDraft();
-                        },
-                        button2click: function() {
-                            $log.debug('confirm address no');
-                            CreateCertificateDraft.postadress = null;
-                            CreateCertificateDraft.postnummer = null;
-                            CreateCertificateDraft.postort = null;
-                            _createDraft();
-                        },
-
-                        button1text: 'common.yes',
-                        button2text: 'common.no',
-                        button3text: 'common.cancel'
-                    });
-                } else {
-                    // Address is not important
-                    CreateCertificateDraft.postadress = null;
-                    CreateCertificateDraft.postnummer = null;
-                    CreateCertificateDraft.postort = null;
-                    _createDraft();
-                }
-            };
 
             $scope.changePatient = function() {
                 $location.path('/create/index');
