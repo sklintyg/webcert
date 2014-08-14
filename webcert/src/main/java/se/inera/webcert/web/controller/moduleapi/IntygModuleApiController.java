@@ -30,6 +30,7 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.intyg.dto.IntygRecipient;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
@@ -298,6 +299,14 @@ public class IntygModuleApiController extends AbstractApiController {
     public BiljettResponse biljettStatus(@PathParam("biljettId") String biljettId) {
         SignatureTicket biljett = signatureService.ticketStatus(biljettId);
         return new BiljettResponse(biljett);
+    }
+    
+    @GET
+    @Path("/mottagare/{intygType}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getListOfRecipientsForIntyg(@PathParam("intygType") String intygType) {
+        List<IntygRecipient> recipients = intygService.fetchListOfRecipientsForIntyg(intygType);
+        return Response.ok(recipients).build();
     }
 
 }

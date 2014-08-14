@@ -8,6 +8,7 @@ import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.intyg.dto.IntygRecipient;
 
 /**
  * @author andreaskaltenbach
@@ -54,4 +55,6 @@ public interface IntygService {
     boolean sendIntyg(Omsandning omsandning);
     
     boolean sendIntyg(String intygId, String recipient, boolean hasPatientConsent);
+    
+    List<IntygRecipient> fetchListOfRecipientsForIntyg(String intygType);
 }

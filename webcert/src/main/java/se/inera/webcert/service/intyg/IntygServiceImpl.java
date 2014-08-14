@@ -1,5 +1,6 @@
 package se.inera.webcert.service.intyg;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.ws.WebServiceException;
@@ -17,12 +18,17 @@ import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.RecipientType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.model.Id;
@@ -49,6 +55,7 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.intyg.dto.IntygRecipient;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
@@ -97,6 +104,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private SendIntygConfigurationManager sendIntygConfigurationManager;
+    
+    @Autowired
+    private GetRecipientsForCertificateResponderInterface getRecipientsForCertificateService;
 
     @Override
     public IntygContentHolder fetchIntygData(String intygId) {
@@ -164,6 +174,34 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
+    public List<IntygRecipient> fetchListOfRecipientsForIntyg(String intygType) {
+        
+        intygType = intygType.toLowerCase();
+        
+        LOG.debug("Fetching recipients for intyg type '{}'", intygType);
+        
+        List<IntygRecipient> recipientsList = new ArrayList<IntygRecipient>();
+        
+        GetRecipientsForCertificateType request = new GetRecipientsForCertificateType();
+        request.setCertificateType(intygType);
+        
+        GetRecipientsForCertificateResponseType response = getRecipientsForCertificateService.getRecipientsForCertificate(logicalAddress, request);
+        
+        ResultType resultType = response.getResult();
+        
+        if (resultType.getResultCode() != ResultCodeType.OK) {
+            LOG.error("Retrieving list of recipients for type '{}' failed with error id; {}, msg; {}", new Object[] { intygType, 
+                    resultType.getErrorId(), resultType.getResultText() });
+            return recipientsList;
+        }
+                
+        for (RecipientType recipientType : response.getRecipient()){
+            recipientsList.add(new IntygRecipient(recipientType.getId(), recipientType.getName()));
+        }
+                
+        return recipientsList;
+    }
+    
     public IntygPdf fetchIntygAsPdf(String intygId) {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygId);
