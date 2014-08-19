@@ -85,7 +85,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $log.debug('Create draft failed: ' + error.message);
                     $scope.widgetState.createErrorMessageKey = 'error.failedtocreateintyg';
                 });
-            }
+            };
 
             /**
              * Exposed to scope

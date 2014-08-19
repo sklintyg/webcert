@@ -15,9 +15,9 @@ angular.module('webcert').controller('webcert.EditPatientNameCtrl',
                 $scope.efternamn = CreateCertificateDraft.efternamn;
             }
             
-            $scope.personNotFound = ($routeParams.mode == 'notFound');
+            $scope.personNotFound = ($routeParams.mode === 'notFound');
             
-            $scope.errorOccured = ($routeParams.mode == 'errorOccured');
+            $scope.errorOccured = ($routeParams.mode === 'errorOccured');
             
             $scope.chooseCertType = function() {
                 CreateCertificateDraft.fornamn = $scope.fornamn;
