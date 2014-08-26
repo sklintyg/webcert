@@ -80,7 +80,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 CreateCertificateDraft.createDraft(function(data) {
                     $scope.widgetState.createErrorMessageKey = undefined;
                     $location.url('/' + CreateCertificateDraft.intygType + '/edit/' + data, true);
-                    CreateCertificateDraft.reset();
                 }, function(error) {
                     $log.debug('Create draft failed: ' + error.message);
                     $scope.widgetState.createErrorMessageKey = 'error.failedtocreateintyg';
