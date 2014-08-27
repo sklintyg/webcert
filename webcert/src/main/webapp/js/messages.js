@@ -21,6 +21,10 @@ var wcMessages = {
         'label.confirmsign': 'Signera intyget',
         'label.copycert': 'Kopiera intyg',
 
+        'print.label.signed': 'Observera! Detta är en webbutskrift av intyget och är därför inte giltigt som intyg.',
+        'print.label.draft': 'Observera! Intyget är ett utkast och är därför inte giltigt.',
+        'print.label.revoked': 'Observera! Intyget är makulerat och därför inte giltigt.',
+
         //certificate types
         'certificatetypes.fk7263.typename': 'Läkarintyg FK 7263',
         'certificatetypes.rli.typename': 'Intyg vid avbeställd resa',

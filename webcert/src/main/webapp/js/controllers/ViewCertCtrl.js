@@ -13,5 +13,6 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
 
             ManageCertificate.getCertType($routeParams.certificateType, function(intygType) {
                 $scope.widgetState.fragaSvarAvailable = intygType.fragaSvarAvailable;
+                $scope.widgetState.printStatus = intygType.printStatus;
             });
         }]);

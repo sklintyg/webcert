@@ -1,9 +1,10 @@
-<div id="wcHeader" wc-header default-active="unhandled-qa"></div>
+<div id="wcHeader" class="print-hide" wc-header default-active="unhandled-qa"></div>
+
 <div class="row webcert-multicol" id="viewQAandCert">
   <div class="webcert-multicol-background">
 
     <!-- Left column -->
-    <div class="col-sm-6 webcert-col webcert-col-primary">
+    <div class="col-sm-6 webcert-col webcert-col-primary print-hide">
       <div ng-if="widgetState.fragaSvarAvailable">
         <a class="backlink-icon" href="/web/dashboard#/unhandled-qa" title="Tillbaka till Fråga och Svar"></a>
         <h1 class="backlink-heading">
@@ -15,10 +16,12 @@
 
     <!-- Right side -->
     <div class="col-sm-6 webcert-col-secondary">
-      <div class="webcert-col-shadow"></div>
-      <h2 class="col-head">
-        <span message key="{{widgetState.certificateType}}.label.certtitle"></span>
-      </h2>
+      <div class="print-hide">
+        <div class="webcert-col-shadow"></div>
+        <h2 class="col-head">
+          <span message key="{{widgetState.certificateType}}.label.certtitle"></span>
+        </h2>
+      </div>
       <div wc-insert-certificate certificate-type="{{widgetState.certificateType}}"></div>
     </div>
 
