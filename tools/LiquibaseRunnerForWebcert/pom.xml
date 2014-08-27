@@ -19,35 +19,102 @@
   </properties>
 
   <dependencies>
-
-      <dependency>
+    <dependency>
+      <groupId>se.inera.certificate</groupId>
+      <artifactId>liquibase-runner</artifactId>
+      <version>${certificate.runner.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.webcert</groupId>
+      <artifactId>persistence</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
           <groupId>se.inera.certificate</groupId>
-          <artifactId>liquibase-runner</artifactId>
-          <version>${certificate.runner.version}</version>
-      </dependency>
-
-      <dependency>
-          <groupId>se.inera.webcert</groupId>
-          <artifactId>persistence</artifactId>
-          <version>${project.version}</version>
-      </dependency>
-
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>se.inera.certificate.modules</groupId>
+          <artifactId>module-support</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework.data</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.hibernate</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.hibernate.javax.persistence</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jadira.usertype</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.liquibase</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-lang</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>joda-time</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <transformers>
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>se.inera.certificate.liquibase.Runner</mainClass>
+                </transformer>
+              </transformers>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.springframework:*</exclude>
+                  <exclude>org.hibernate.*:*</exclude>
+                  <exclude>org.jadira.usertype:*</exclude>
+                  <exclude>com.google.guava:*</exclude>
+                  <exclude>com.h2database:*</exclude>
+                </excludes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>se.inera.certificate.liquibase.Runner</mainClass>
-            </manifest>
-          </archive>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-        </configuration>
         <executions>
           <execution>
             <id>make-assembly</id>
@@ -55,6 +122,9 @@
             <goals>
               <goal>single</goal>
             </goals>
+            <configuration>
+              <descriptor>src/main/assembly/manifest.xml</descriptor>
+            </configuration>
           </execution>
         </executions>
       </plugin>
