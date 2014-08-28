@@ -28,7 +28,7 @@
   var MODULE_CONFIG = {
     BUILD_NUMBER: '<spring:message code="buildNumber" />',
     USERCONTEXT: <sec:authentication property="principal.asJson" htmlEscape="false"/>,
-    REQUIRE_DEV_MODE: '<c:out value="${requireDevMode}"/>'
+    USE_MINIFIED_JAVASCRIPT: '<c:out value="${useMinifiedJavaScript}"/>'
   }
 </script>
 
@@ -48,19 +48,7 @@
   </noscript>
 
   <c:choose>
-    <c:when test="${requireDevMode == 'true'}">
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-cookies.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-route.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-sanitize.js"></script>
-      <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.js"></script>
-      <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.js"></script>
-      <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/moment.js"></script>
-
-      <script type="text/javascript" src="/js/app.js"></script>
-    </c:when>
-    <c:otherwise>
+    <c:when test="${useMinifiedJavaScript == 'true'}">
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-cookies.min.js"></script>
@@ -69,12 +57,23 @@
       <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
       <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.min.js"></script>
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/min/moment.min.js"></script>
-
       <script type="text/javascript" src="/js/app.min.js?<spring:message code="buildNumber" />"></script>
+    </c:when>
+    <c:otherwise>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-cookies.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-route.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular-sanitize.js"></script>
+      <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.js"></script>
+      <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.js"></script>
+      <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/moment.js"></script>
+      <script type="text/javascript" src="/js/app.js"></script>
     </c:otherwise>
   </c:choose>
   <script type="text/javascript" src="/vendor/netid-1.0.js"></script>
   <script type="text/javascript" src="/siths.jsp"></script>
+
   <!--[if lte IE 8]>
   <script type="text/javascript" src="/web/webjars/respond/1.4.2/src/respond.js"></script>
   <![endif]-->

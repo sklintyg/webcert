@@ -1,4 +1,4 @@
-/* jshint maxlen: false */
+/* jshint maxlen: false, unused: false */
 var wcMessages = {
     'sv': {
         'webcert.header': 'Webcert',

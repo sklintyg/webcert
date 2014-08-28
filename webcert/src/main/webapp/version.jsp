@@ -21,23 +21,23 @@
     <div class="page-header" style="margin-top: 0;">
       <h3><spring:message code="application.name" /></h3>
     </div>
-    <div class="alert alert-warning">
+    <div class="alert alert-info">
       <h4>Configuration info</h4>
       <div>
         Application version:
-        <span class="label label-warning"><spring:message code="project.version" /></span>
+        <span class="label label-info"><spring:message code="project.version" /></span>
       </div>
       <div>
         Build number:
-        <span class="label label-warning"><spring:message code="buildNumber" /></span>
+        <span class="label label-info"><spring:message code="buildNumber" /></span>
       </div>
       <div>
         Build time:
-        <span class="label label-warning"><spring:message code="buildTime" /></span>
+        <span class="label label-info"><spring:message code="buildTime" /></span>
       </div>
       <div>
         Spring profiles:
-        <span class="label label-warning"><%= System.getProperty("spring.profiles.active") %></span>
+        <span class="label label-info"><%= System.getProperty("spring.profiles.active") %></span>
       </div>
     </div>
   </div>

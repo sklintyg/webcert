@@ -1,3 +1,4 @@
+/* global MODULE_CONFIG, wcMessages */
 window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
 var app = angular.module('webcert', [ 'ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize', 'common' ]);
@@ -119,7 +120,13 @@ $.get('/api/modules/map').then(function(modules) {
     var modulesIds = [];
     var modulePromises = [];
 
-    if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
+    if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'true') {
+        modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/js/module.min.js?' +
+            MODULE_CONFIG.BUILD_NUMBER));
+        // All dependencies in module-deps.json are included in module.min.js
+        // All dependencies in app-deps.json are included in app.min.js
+
+    } else {
         modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/js/module.js'));
         modulePromises.push($.get('/web/webjars/common/webcert/js/module-deps.json'));
         modulePromises.push($.get('/js/app-deps.json'));
@@ -128,24 +135,18 @@ $.get('/api/modules/map').then(function(modules) {
         $.ajaxSetup({
             cache: true
         });
-
-    } else {
-        modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/js/module.min.js?' +
-            MODULE_CONFIG.BUILD_NUMBER));
-        // All dependencies in module-deps.json are included in module.min.js
-        // All dependencies in app-deps.json are included in app.min.js
     }
 
     angular.forEach(modules, function(module) {
         modulesIds.push(module.id);
         loadCssFromUrl(module.cssPath + '?' + MODULE_CONFIG.BUILD_NUMBER);
 
-        if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
-            modulePromises.push(loadScriptFromUrl(module.scriptPath + '.js'));
-            modulePromises.push($.get(module.dependencyDefinitionPath));
-        } else {
+        if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'true') {
             modulePromises.push(loadScriptFromUrl(module.scriptPath + '.min.js?' + MODULE_CONFIG.BUILD_NUMBER));
             // All dependencies for the modules are included in module.min.js
+        } else {
+            modulePromises.push(loadScriptFromUrl(module.scriptPath + '.js'));
+            modulePromises.push($.get(module.dependencyDefinitionPath));
         }
     });
 
@@ -154,7 +155,7 @@ $.get('/api/modules/map').then(function(modules) {
         var dependencyPromises = [];
 
         // Only needed for development since all dependencies are included in other files.
-        if (MODULE_CONFIG.REQUIRE_DEV_MODE === 'true') {
+        if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'false') {
             angular.forEach(arguments, function(data) {
                 if (data !== undefined && data[0] instanceof Array) {
                     angular.forEach(data[0], function(depdendency) {

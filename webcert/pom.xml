@@ -24,7 +24,6 @@
   <name>Inera Webcert Application</name>
   <properties>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
-    <karma-plugin-version>1.6</karma-plugin-version>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
   </properties>
@@ -32,24 +31,24 @@
 
   <dependencies>
     <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>schemas</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>schemas</artifactId>
     </dependency>
     <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>overvakning</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>overvakning</artifactId>
     </dependency>
     <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>hsa-integration</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>hsa-integration</artifactId>
     </dependency>
     <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>eid-integration</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>eid-integration</artifactId>
     </dependency>
     <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>pu-integration</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>pu-integration</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -133,16 +132,6 @@
       <version>3.1.1</version>
     </dependency>
     <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>requirejs</artifactId>
-      <version>2.1.10</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>requirejs-text</artifactId>
-      <version>2.0.10-1</version>
-    </dependency>
-	<dependency>
       <groupId>org.webjars</groupId>
       <artifactId>respond</artifactId>
       <version>1.4.2</version>

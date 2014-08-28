@@ -26,7 +26,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -75,7 +74,7 @@ public class PageController {
     @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     public ModelAndView displayDashBoard() {
         ModelAndView modelAndView = new ModelAndView(DASHBOARD_VIEW);
-        modelAndView.addObject("requireDevMode",environment.getProperty("webcert.require.devmode", "false"));
+        populateUseMinifiedJavaScript(modelAndView);
         return modelAndView;
     }
 
@@ -84,4 +83,7 @@ public class PageController {
         return new ModelAndView(ADMIN_VIEW);
     }
 
+    public void populateUseMinifiedJavaScript(ModelAndView model) {
+        model.addObject("useMinifiedJavaScript", environment.getProperty("webcert.useMinifiedJavaScript", "true"));
+    }
 }

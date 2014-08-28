@@ -21,7 +21,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
 
         csslint: {
-            dev: {
+            webcert: {
                 options: {
                     csslintrc: '../src/main/resources/.csslintrc',
                     force: true
@@ -38,7 +38,7 @@ module.exports = function(grunt) {
         },
 
         jshint: {
-            dev: {
+            webcert: {
                 options: {
                     jshintrc: '../src/main/resources/.jshintrc',
                     force: true
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
         },
 
         karma: {
-            unit: {
+            webcert: {
                 configFile: 'src/test/resources/karma.conf.ci.js'
             }
         },
