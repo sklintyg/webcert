@@ -31,6 +31,9 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
 
+        if (request.getCharacterEncoding() == null) {
+            request.setCharacterEncoding("UTF-8");
+        }
         String parameter = request.getParameter("userJsonDisplay");
         // we manually encode the json parameter
         String json = URLDecoder.decode(parameter, "UTF-8");
