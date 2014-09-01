@@ -36,7 +36,7 @@ module.exports = function(config) {
             { pattern: TEST_DIR + '**/*Spec.js' }
         ],
 
-        exclude: [SRC_DIR + 'app.js', SRC_DIR + 'app.min.js'],
+        exclude: [ SRC_DIR + 'app.js', SRC_DIR + 'app.min.js' ],
 
         // web server port
         port: 9876,
@@ -71,7 +71,8 @@ module.exports = function(config) {
             'karma-jasmine',
             'karma-chrome-launcher',
             'karma-firefox-launcher',
-            'karma-phantomjs-launcher'
+            'karma-phantomjs-launcher',
+            'karma-mocha-reporter'
         ],
 
         reporters: [ 'progress' ]

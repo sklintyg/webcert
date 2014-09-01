@@ -49,7 +49,8 @@ module.exports = function(grunt) {
 
         karma: {
             webcert: {
-                configFile: 'src/test/resources/karma.conf.ci.js'
+                configFile: 'src/test/resources/karma.conf.ci.js',
+                reporters: [ 'mocha' ]
             }
         },
 
