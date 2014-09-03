@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import se.sll.www.osif.v2_1.Osif;
 import se.sll.www.osif.v2_1.Property;
 import se.sll.www.osif.v2_1.Status;
@@ -18,7 +19,7 @@ public class SignatureServiceImpl implements SignatureService {
     @Autowired
     private Osif osif;
 
-    @Value("${osif.policy}")
+    @Value("${eid.osif.policy}")
     private String policy;
 
     @Override
@@ -32,8 +33,10 @@ public class SignatureServiceImpl implements SignatureService {
         if (!isOk(response)) {
             Status status = response.getStatus();
             LOG.error("Kunde inte verifiera signatur för {}, response code:{} description:{} group:{} groupDescription{}",
-                    new Object[]{userId, status.getErrorCode(), status.getErrorCodeDescription(), status.getErrorGroup(),
-                            status.getErrorGroupDescription()});
+                    new Object[] {
+                            userId, status.getErrorCode(), status.getErrorCodeDescription(), status.getErrorGroup(),
+                            status.getErrorGroupDescription()
+                    });
             return false;
         } else {
             return userId.equals(getUserId(response));
