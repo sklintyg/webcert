@@ -14,6 +14,9 @@
           processor="migrationMessageUnmarshallingProcessor" writer="webcertRepositoryJpaWriter"
           commit-interval="5" />
       </batch:tasklet>
+      <batch:listeners>
+        <batch:listener ref="importCertificatesStepExecutionListener" />
+      </batch:listeners>
     </batch:step>
   </batch:job>
 
@@ -34,9 +37,13 @@
       value="select mc from MigratedCertificate mc order by mc.id" />
     <property name="pageSize" value="25" />
   </bean>
-
+  
+  <bean id="importCertificatesStepExecutionListener" class="se.inera.certificate.mc2wc.batch.listener.ImportCertificatesStepExecutionListener" />
+  
   <bean id="webcertRepositoryJpaWriter"
-    class="se.inera.certificate.mc2wc.batch.writer.WebcertRepositoryJpaWriter" />
+    class="se.inera.certificate.mc2wc.batch.writer.WebcertRepositoryJpaWriter" scope="step">
+    <property name="stepExecution" value="#{stepExecution}"/>
+  </bean> 
 
   <bean id="webcertRepositoryJpaDeleter"
     class="se.inera.certificate.mc2wc.batch.writer.WebcertRepositoryJpaDeleter" />

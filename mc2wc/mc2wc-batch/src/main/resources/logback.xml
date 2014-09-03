@@ -24,7 +24,15 @@
     <appender-ref ref="STDOUT" />
   </logger>
 
-  <logger name="se.inera.certificate.mc2wc" level="DEBUG" additivity="false">
+<logger name="org.springframework.batch.item.database.JpaPagingItemReader" level="INFO" additivity="false">
+  <appender-ref ref="FILE" />
+</logger>
+
+<logger name="org.springframework.batch.item.database.JpaItemWriter" level="INFO" additivity="false">
+  <appender-ref ref="FILE" /> 
+</logger>
+
+  <logger name="se.inera.certificate.mc2wc" level="INFO" additivity="false">
     <appender-ref ref="FILE" />
   </logger>
 

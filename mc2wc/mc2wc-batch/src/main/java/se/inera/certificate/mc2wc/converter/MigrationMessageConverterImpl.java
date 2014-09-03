@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import se.inera.certificate.mc2wc.medcert.jpa.model.AddressCare;
 import se.inera.certificate.mc2wc.medcert.jpa.model.Answer;
 import se.inera.certificate.mc2wc.medcert.jpa.model.Certificate;
-import se.inera.certificate.mc2wc.medcert.jpa.model.CreatorOrigin;
 import se.inera.certificate.mc2wc.medcert.jpa.model.Patient;
 import se.inera.certificate.mc2wc.medcert.jpa.model.Question;
 import se.inera.certificate.mc2wc.medcert.jpa.model.State;
@@ -34,10 +34,9 @@ import se.inera.certificate.mc2wc.message.StatusType;
 public class MigrationMessageConverterImpl implements MigrationMessageConverter {
 
     private static final String INTYGS_TYP = "FK7263";
+    
     private static Logger log = LoggerFactory.getLogger(MigrationMessageConverter.class);
-    
-    private static final List<State> UNMIGRATABLE_CERTIFICATE_STATES = Arrays.asList(State.CREATED, State.EDITED, State.PRINTED);
-    
+        
     private static final List<State> UNMIGRATABLE_QUESTION_STATES = Arrays.asList(State.CREATED, State.EDITED, State.PRINTED);
 
     /*
@@ -49,6 +48,8 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
      */
     @Override
     public MigrationMessage toMigrationMessage(Certificate cert, String sender) {
+        
+        log.info("Converting Certificate {} to MigrationMessage", cert.getId());
         
         MigrationMessage migrationMessage = new MigrationMessage();
         migrationMessage.setCertificateId(cert.getId());
@@ -74,23 +75,26 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
 
         for (Question mcQuestion : questions) {
             if (!isQuestionToBeMigrated(mcQuestion)) {
-                log.info("Question {}, belonging to certificate {} will not be migrated since it either has state CREATED or lacks subject or text", mcQuestion.getId(), mcCert.getId());
+                log.info("Question {}, belonging to certificate {} will not be migrated since it either has state {} or lacks subject or text", 
+                        new Object[]{mcQuestion.getId(), mcCert.getId(), mcQuestion.getState()});
                 continue;
             }
             QuestionType wcQuestionAnswer = toWCQuestionAnswer(mcCert.getId(), mcQuestion);
             msg.getQuestions().add(wcQuestionAnswer);
         }
+        
+        log.info("Added {} questions of {} to certificate {}", new Object[]{msg.getQuestions().size(), questions.size(), msg.getCertificateId()});
     }
     
     private boolean isQuestionToBeMigrated(Question q) {
         
         if (UNMIGRATABLE_QUESTION_STATES.contains(q.getState())) {
-            log.info("Question {} has state {}", q.getId(), q.getState());
+            log.debug("Question {} has state {}", q.getId(), q.getState());
             return false;
         }
         
         if (q.getSubject() == null || StringUtils.isBlank(q.getText())) {
-            log.info("Question {} is missing subject or text", q.getId());
+            log.debug("Question {} is missing subject or text", q.getId());
             return false;
         }
         
@@ -98,7 +102,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
     }
     
     private boolean hasCertAnyContents(Certificate cert) {
-        return (cert.getDocument() != null && cert.getDocument().length > 0);
+        return ArrayUtils.isNotEmpty(cert.getDocument());
     }
     
     private boolean hasCertAnyQuestions(Certificate cert) {
@@ -151,19 +155,22 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         qa.setSubject(toQuestionSubject(mcQuestion.getSubject()));
 
         qa.setQuestionText(mcQuestion.getText());
-        qa.setCaption(mcQuestion.getCaption());
+        qa.setCaption(limitLength(mcQuestion.getCaption(), 254));
 
         qa.setPatient(toPatient(mcQuestion.getPatient()));
         qa.setCarePerson(toCarePerson(mcQuestion.getAddressCare()));
 
         if (mcQuestion.getAnswer() != null) {
-            log.debug("Converting Answer for Question {}", mcQuestion.getId());
             qa.setAnswer(toAnswer(mcQuestion.getAnswer()));
         }
 
         return qa;
     }
 
+    private String limitLength(String in, int limit) {
+        return StringUtils.left(in, limit);
+    }
+    
     private LocalDate toLocalDate(Date theDate) {
         return (theDate != null) ? LocalDate.fromDateFields(theDate) : null;
     }
@@ -217,10 +224,6 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
     }
 
     private AnswerType toAnswer(Answer answer) {
-
-        if (answer == null) {
-            return null;
-        }
 
         log.debug("Converting Answer {}", answer.getId());
 

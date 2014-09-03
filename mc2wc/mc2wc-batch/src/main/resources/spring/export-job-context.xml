@@ -20,13 +20,18 @@
                      commit-interval="5">
         </batch:chunk>
       </batch:tasklet>
+      <batch:listeners>
+        <batch:listener ref="exportCertificatesStepExecutionListener" />
+      </batch:listeners>
     </batch:step>
   </batch:job>
+  
+  <bean id="exportCertificatesStepExecutionListener" class="se.inera.certificate.mc2wc.batch.listener.ExportCertificatesStepExecutionListener" />
   
   <bean id="clearPreviousExportTasklet" class="se.inera.certificate.mc2wc.batch.tasklets.ClearPreviousExportTasklet" />
   
   <bean id="storeMigrationManifestTasklet" class="se.inera.certificate.mc2wc.batch.tasklets.StoreMigrationManifestTasklet" />
-
+  
   <bean id="migrationMessageCompositeProcessor" class="org.springframework.batch.item.support.CompositeItemProcessor">
     <property name="delegates">
       <list>
@@ -49,7 +54,9 @@
   </bean>
 
   <bean id="certificateConverterProcessor"
-        class="se.inera.certificate.mc2wc.batch.processors.CertificateConverterProcessor" scope="step" />
+        class="se.inera.certificate.mc2wc.batch.processors.CertificateConverterProcessor" scope="step">
+    <property name="stepExecution" value="#{stepExecution}" />          
+  </bean>       
   
   <bean id="migrationMessageValidationProcessor"
         class="se.inera.certificate.mc2wc.batch.processors.MigrationMessageValidationProcessor" scope="step" />

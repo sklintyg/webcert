@@ -22,8 +22,6 @@ public class MigratedCertificateConverterProcessor implements
 
     private JAXBContext context;
 
-    private Marshaller marshaller;
-
     @Override
     public MigratedCertificate process(MigrationMessage migrationMessage) throws Exception {
 
@@ -71,6 +69,8 @@ public class MigratedCertificateConverterProcessor implements
     }
         
     private byte[] convertMigrationMessageToXML(MigrationMessage migrationMessage) throws JAXBException {
+        Marshaller marshaller = this.context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
         ByteArrayOutputStream xmlBaos = new ByteArrayOutputStream();
         marshaller.marshal(migrationMessage, xmlBaos);
         return xmlBaos.toByteArray();
@@ -80,8 +80,6 @@ public class MigratedCertificateConverterProcessor implements
     private void initJaxbContext() {
         try {
             this.context = JAXBContext.newInstance(MigrationMessage.class);
-            this.marshaller = context.createMarshaller();
-            this.marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
         } catch (JAXBException e) {
             throw new RuntimeException("Could not create JAXB context: " + e.getMessage(), e);
         }

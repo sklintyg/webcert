@@ -12,6 +12,15 @@ public class Mc2wcDAO {
     private static final String COUNT_MIGRATED_CERTS = "SELECT COUNT(mc.id) FROM MigratedCertificate mc";
     
     private static final String COUNT_MIGRATED_CERTS_WITH_CONTENTS = "SELECT COUNT(mc.id) FROM MigratedCertificate mc WHERE mc.hasLegacyCertificate = true";
+    
+    private static final String COUNT_MIGRATED_CERTS_WITH_CONTENTS_WITHOUT_QUESTIONS = "SELECT COUNT(mc.id) FROM MigratedCertificate mc WHERE mc.hasLegacyCertificate = true"
+            + " AND mc.nbrOfQuestions = 0";
+    
+    private static final String COUNT_MIGRATED_CERTS_WITH_CONTENTS_WITH_QUESTIONS = "SELECT COUNT(mc.id) FROM MigratedCertificate mc WHERE mc.hasLegacyCertificate = true"
+            + " AND mc.nbrOfQuestions > 0";
+    
+    private static final String COUNT_MIGRATED_CERTS_WITHOUT_CONTENTS_WITH_QUESTIONS = "SELECT COUNT(mc.id) FROM MigratedCertificate mc WHERE mc.hasLegacyCertificate = false"
+            + " AND mc.nbrOfQuestions > 0";
 
     private static final String CLEAR_MIGRATED_CERTS = "DELETE FROM MigratedCertificate mc WHERE mc.certificateId IS NOT NULL";
     
@@ -29,13 +38,28 @@ public class Mc2wcDAO {
         return (Long) certificateQuery.getSingleResult();
     }
     
-    public Long countMigratedCertificatesWithContents() {
-        Query certificateQuery = entityManager.createQuery(COUNT_MIGRATED_CERTS_WITH_CONTENTS);
+    public Long countMigratedCertificatesWithContentsWithoutQuestions() {
+        Query certificateQuery = entityManager.createQuery(COUNT_MIGRATED_CERTS_WITH_CONTENTS_WITHOUT_QUESTIONS);
+        return (Long) certificateQuery.getSingleResult();
+    }
+    
+    public Long countMigratedCertificatesWithContentsWithQuestions() {
+        Query certificateQuery = entityManager.createQuery(COUNT_MIGRATED_CERTS_WITH_CONTENTS_WITH_QUESTIONS);
+        return (Long) certificateQuery.getSingleResult();
+    }
+    
+    public Long countMigratedCertificatesWithoutContentsWithQuestions() {
+        Query certificateQuery = entityManager.createQuery(COUNT_MIGRATED_CERTS_WITHOUT_CONTENTS_WITH_QUESTIONS);
         return (Long) certificateQuery.getSingleResult();
     }
     
     public Long sumNbrOfMigratedQuestions() {
         Query certificateQuery = entityManager.createQuery(SUM_MIGRATED_CERT_QUESTIONS);
+        return (Long) certificateQuery.getSingleResult();
+    }
+    
+    public Long countNbrOfMigratedLegacyCertificates() {
+        Query certificateQuery = entityManager.createQuery(COUNT_MIGRATED_CERTS_WITH_CONTENTS);
         return (Long) certificateQuery.getSingleResult();
     }
     

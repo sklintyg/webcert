@@ -21,8 +21,6 @@ public class MigrationMessageUnmarshallingProcessor implements
 
     private JAXBContext context;
 
-    private Unmarshaller unmarshaller;
-
     @Override
     public MigrationMessage process(MigratedCertificate migratedCertificate)
             throws Exception {
@@ -40,6 +38,7 @@ public class MigrationMessageUnmarshallingProcessor implements
 
     private MigrationMessage unmarshall(byte[] mcDoc) throws JAXBException {
         ByteArrayInputStream bis = new ByteArrayInputStream(mcDoc);
+        Unmarshaller unmarshaller = context.createUnmarshaller();
         return (MigrationMessage) unmarshaller.unmarshal(bis);
     }
 
@@ -47,7 +46,6 @@ public class MigrationMessageUnmarshallingProcessor implements
     private void initJaxbContext() {
         try {
             this.context = JAXBContext.newInstance(MigrationMessage.class);
-            this.unmarshaller = context.createUnmarshaller();
         } catch (JAXBException e) {
             throw new RuntimeException("Could not create JAXB context: "
                     + e.getMessage(), e);
