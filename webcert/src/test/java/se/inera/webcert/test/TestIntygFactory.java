@@ -11,6 +11,7 @@ import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.StatusType;
 
 /**
  * Util for buildting test data
@@ -44,9 +45,9 @@ public final class TestIntygFactory {
         it.setType("Type 1");
         
                 
-        IntygStatus is1 = new IntygStatus("RECEIVED","FK", signedDate);
-        IntygStatus is2 = new IntygStatus("SENT","MI", signedDate.minusSeconds(15));
-        IntygStatus is3 = new IntygStatus("SIGNED","WC", signedDate.minusHours(2));
+        IntygStatus is1 = new IntygStatus(StatusType.RECEIVED,"FK", signedDate);
+        IntygStatus is2 = new IntygStatus(StatusType.SENT, "MI", signedDate.minusSeconds(15));
+        IntygStatus is3 = new IntygStatus(StatusType.SIGNED, "WC", signedDate.minusHours(2));
         
         it.setStatuses(Arrays.asList(is1, is2, is3));
         

@@ -53,6 +53,7 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -68,8 +69,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static final String WEBCERT = "WC";
     private static final String FORSAKRINGSKASSAN = "FK";
 
-    private static final String SENT_STATUS_TYPE = "SENT";
-    private static final String REVOKED_STATUS_TYPE = "CANCELLED";
+    private static final StatusType SENT_STATUS_TYPE = StatusType.SENT;
+    private static final StatusType REVOKED_STATUS_TYPE = StatusType.CANCELLED;
 
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE,
             Amne.KONTAKT, Amne.OVRIGT);

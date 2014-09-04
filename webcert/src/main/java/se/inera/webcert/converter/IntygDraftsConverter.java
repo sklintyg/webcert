@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +14,7 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.web.controller.api.dto.IntygSource;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 
@@ -36,6 +39,17 @@ public final class IntygDraftsConverter {
         }
 
     };
+    
+    private static Predicate removeDeletedIntygStatusPredicate = new Predicate() {
+        @Override
+        public boolean evaluate(Object obj) {
+            if (obj instanceof IntygStatus) {
+                IntygStatus intygStatus = (IntygStatus) obj;
+                return !StatusType.DELETED.equals(intygStatus.getType());
+            }
+            return false;
+        }
+    };
 
     private IntygDraftsConverter() {
 
@@ -47,9 +61,20 @@ public final class IntygDraftsConverter {
 
         List<ListIntygEntry> allIntyg = new ArrayList<ListIntygEntry>();
 
-        addSignedIntyg(allIntyg, signedIntygList);
-        addDraftIntyg(allIntyg, draftIntygList);
-
+        ListIntygEntry intygEntry;
+        
+        // add all signed intyg
+        for (IntygItem cert : signedIntygList) {
+            intygEntry = convertIntygItemToListIntygEntry(cert);
+            allIntyg.add(intygEntry);
+        }
+        
+        // add alldrafts
+        for (Intyg intyg : draftIntygList) {
+            intygEntry = convertIntygToListIntygEntry(intyg);
+            allIntyg.add(intygEntry);
+        }
+        
         // sort according to signedUpdate date and then reverse so that last is on top.
         Collections.sort(allIntyg, intygEntryDateComparator);
         Collections.reverse(allIntyg);
@@ -74,27 +99,6 @@ public final class IntygDraftsConverter {
         return allIntyg;
     }
 
-    private static void addSignedIntyg(List<ListIntygEntry> allIntyg, List<IntygItem> signedIntygList) {
-
-        ListIntygEntry intygEntry;
-
-        for (IntygItem cert : signedIntygList) {
-            intygEntry = convert(cert);
-            allIntyg.add(intygEntry);
-        }
-    }
-
-    private static void addDraftIntyg(List<ListIntygEntry> allIntyg, List<Intyg> draftIntygList) {
-
-        ListIntygEntry intygEntry;
-
-        for (Intyg intyg : draftIntygList) {
-            intygEntry = convertIntygToListIntygEntry(intyg);
-            allIntyg.add(intygEntry);
-        }
-
-    }
-
     public static ListIntygEntry convertIntygToListIntygEntry(Intyg intyg) {
 
         ListIntygEntry ie = new ListIntygEntry();
@@ -107,19 +111,33 @@ public final class IntygDraftsConverter {
         ie.setPatientId(intyg.getPatientPersonnummer());
         ie.setForwarded(intyg.getVidarebefordrad());
 
-        IntygsStatus intygsStatus = intyg.getStatus();
-        ie.setStatus(intygsStatus.toString());
+        StatusType status = convertIntygsStatusToStatusType(intyg.getStatus());
+        ie.setStatus(status.toString());
 
         return ie;
     }
+    
+    private static StatusType convertIntygsStatusToStatusType(IntygsStatus intygsStatus) {
+        
+        switch (intygsStatus) {
+        case DRAFT_COMPLETE:
+            return StatusType.DRAFT_COMPLETE;
+        case DRAFT_INCOMPLETE:
+            return StatusType.DRAFT_INCOMPLETE;
+        case SIGNED:
+            return StatusType.SIGNED;
+        default:
+            return StatusType.UNKNOWN;
+        }
+    }
 
-    private static ListIntygEntry convert(IntygItem intygItem) {
+    public static ListIntygEntry convertIntygItemToListIntygEntry(IntygItem intygItem) {
 
         ListIntygEntry ie = new ListIntygEntry();
 
         ie.setIntygId(intygItem.getId());
         ie.setIntygType(intygItem.getType());
-        ie.setStatus(findLastStatus(intygItem));
+        ie.setStatus(findLatestStatus(intygItem.getStatuses()).toString());
         ie.setSource(IntygSource.IT);
         ie.setLastUpdatedSigned(intygItem.getSignedDate());
         ie.setUpdatedSignedBy(intygItem.getSignedBy());
@@ -127,17 +145,19 @@ public final class IntygDraftsConverter {
         return ie;
     }
 
-    private static String findLastStatus(IntygItem intygItem) {
+    public static StatusType findLatestStatus(List<IntygStatus> intygStatuses) {
 
-        List<IntygStatus> list = intygItem.getStatuses();
-
-        if (list == null || list.isEmpty()) {
-            LOG.debug("No statuses found in Intyg {}", intygItem.getId());
-            return "UNKNOWN";
+        if (intygStatuses == null || intygStatuses.isEmpty()) {
+            return StatusType.UNKNOWN;
         }
-
-        IntygStatus latestStatus = Collections.max(list, intygStatusComparator);
-
+        
+        CollectionUtils.filter(intygStatuses, removeDeletedIntygStatusPredicate);
+        
+        if (intygStatuses.isEmpty()) {
+            return StatusType.UNKNOWN;
+        }
+        
+        IntygStatus latestStatus = Collections.max(intygStatuses, intygStatusComparator);
         return latestStatus.getType();
     }
 

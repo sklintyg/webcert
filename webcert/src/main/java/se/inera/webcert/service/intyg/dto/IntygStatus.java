@@ -4,7 +4,7 @@ import org.joda.time.LocalDateTime;
 
 public class IntygStatus {
 
-    private String type;
+    private StatusType type;
 
     private String target;
 
@@ -14,17 +14,17 @@ public class IntygStatus {
 
     }
 
-    public IntygStatus(String type, String target, LocalDateTime timestamp) {
+    public IntygStatus(StatusType type, String target, LocalDateTime timestamp) {
         this.type = type;
         this.target = target;
         this.timestamp = timestamp;
     }
 
-    public String getType() {
+    public StatusType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(StatusType type) {
         this.type = type;
     }
 

@@ -14,7 +14,6 @@ import riv.insuranceprocess.healthreporting.medcertqa._1.VardAdresseringsType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateStatusType;
 import se.inera.certificate.model.Utlatande;
-import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
@@ -23,6 +22,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.StatusType;
 
 @Component
 public class IntygServiceConverterImpl implements IntygServiceConverter {
@@ -40,7 +40,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
 
         return metaData;
     }
-    
+
     public List<IntygItem> convertToListOfIntygItem(List<CertificateMetaType> source) {
         List<IntygItem> intygItems = new ArrayList<>();
         for (CertificateMetaType certificateMetaType : source) {
@@ -72,24 +72,44 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     }
 
     private IntygStatus convertToIntygStatus(CertificateStatusType source) {
-        return new IntygStatus(source.getType().value(), source.getTarget(), source.getTimestamp());
+        StatusType statusType = convertStatusType(source.getType());
+        return new IntygStatus(statusType, source.getTarget(), source.getTimestamp());
     }
-    
-    /* (non-Javadoc)
-     * @see se.inera.webcert.service.intyg.converter.IntygServiceConverter#buildSendTypeFromUtlatande(se.inera.certificate.model.Utlatande)
+
+    private StatusType convertStatusType(se.inera.certificate.clinicalprocess.healthcond.certificate.v1.StatusType statusType) {
+        switch (statusType) {
+        case RECEIVED:
+            return StatusType.RECEIVED;
+        case SENT:
+            return StatusType.SENT;
+        case CANCELLED:
+            return StatusType.CANCELLED;
+        case DELETED:
+            return StatusType.DELETED;
+        default:
+            return StatusType.UNKNOWN;
+        }
+    };
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.intyg.converter.IntygServiceConverter#buildSendTypeFromUtlatande(se.inera.certificate
+     * .model.Utlatande)
      */
     @Override
     public SendType buildSendTypeFromUtlatande(Utlatande utlatande) {
-                        
+
         // Lakarutlatande
         PatientType patientType = new PatientType();
         patientType.setFullstandigtNamn(concatPatientName(utlatande.getPatient().getFornamn(), utlatande.getPatient().getMellannamn(),
                 utlatande.getPatient().getEfternamn()));
-                
+
         II personId = new II();
         personId.setRoot(utlatande.getPatient().getId().getRoot());
         personId.setExtension(utlatande.getPatient().getId().getExtension());
-        
+
         patientType.setPersonId(personId);
 
         LakarutlatandeEnkelType utlatandeType = new LakarutlatandeEnkelType();
@@ -107,7 +127,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         hosPersonalType.setPersonalId(hosPersonId);
         hosPersonalType.setFullstandigtNamn(utlatande.getSkapadAv().getNamn());
         hosPersonalType.setForskrivarkod(utlatande.getSkapadAv().getForskrivarkod());
-                
+
         VardAdresseringsType vardAdressType = new VardAdresseringsType();
         vardAdressType.setHosPersonal(hosPersonalType);
 
@@ -116,10 +136,10 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         sendType.setAdressVard(vardAdressType);
         sendType.setVardReferensId("WC");
         sendType.setAvsantTidpunkt(LocalDateTime.now());
-        
+
         return sendType;
     }
-    
+
     private EnhetType buildEnhetFromUtlatande(Utlatande utlatande) {
 
         EnhetType enhet = new EnhetType();
@@ -153,11 +173,11 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     public String concatPatientName(List<String> fNames, List<String> mNames, String lName) {
         StringBuilder sb = new StringBuilder();
         sb.append(StringUtils.join(fNames, " "));
-        
+
         if (!mNames.isEmpty()) {
             sb.append(" ").append(StringUtils.join(mNames, " "));
         }
-        
+
         sb.append(" ").append(lName);
         return StringUtils.normalizeSpace(sb.toString());
     }

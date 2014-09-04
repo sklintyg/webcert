@@ -43,6 +43,7 @@ import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -297,7 +298,7 @@ public class IntygServiceTest {
         assertEquals("2012-02-02", meta.getTomDate().toString());
         assertEquals(1, meta.getStatuses().size());
         assertEquals("FK", meta.getStatuses().get(0).getTarget());
-        assertEquals("SENT", meta.getStatuses().get(0).getType());
+        assertEquals(StatusType.SENT, meta.getStatuses().get(0).getType());
         assertEquals("2012-01-01T10:00:00.000", meta.getStatuses().get(0).getTimestamp().toString());
     }
 

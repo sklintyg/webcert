@@ -64,6 +64,7 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -256,7 +257,7 @@ public class FragaSvarServiceImplTest {
         
         when(intygService.fetchExternalIntygData(fraga.getIntygsReferens().getIntygsId())).thenReturn(
                 utlatandeCommonModelHolder);
-        List<IntygStatus> list = Arrays.asList(new IntygStatus("SENT", "FK", null));
+        List<IntygStatus> list = Arrays.asList(new IntygStatus(StatusType.SENT, "FK", null));
         when(intygMetadataMock.getStatuses()).thenReturn(list);
         
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
@@ -322,7 +323,7 @@ public class FragaSvarServiceImplTest {
         when(intygService.fetchExternalIntygData(fraga.getIntygsReferens().getIntygsId())).thenReturn(
                 getIntygContentHolder());
 
-        List<IntygStatus> list = Arrays.asList(new IntygStatus("SENT", "FK", null));
+        List<IntygStatus> list = Arrays.asList(new IntygStatus(StatusType.SENT, "FK", null));
         when(intygMetadataMock.getStatuses()).thenReturn(list);
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
@@ -343,7 +344,7 @@ public class FragaSvarServiceImplTest {
                 getIntygContentHolder());
 
 
-        List<IntygStatus> list = Arrays.asList(new IntygStatus("SENT", "FK", null), new IntygStatus("CANCELLED", "FK", null));
+        List<IntygStatus> list = Arrays.asList(new IntygStatus(StatusType.SENT, "FK", null), new IntygStatus(StatusType.CANCELLED, "FK", null));
         when(intygMetadataMock.getStatuses()).thenReturn(list);
 
         when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
@@ -380,7 +381,7 @@ public class FragaSvarServiceImplTest {
         when(intygService.fetchExternalIntygData(fragaSvar.getIntygsReferens().getIntygsId())).thenReturn(
                 getIntygContentHolder());
        
-        List<IntygStatus> list = Arrays.asList(new IntygStatus("SENT", "FK", null));
+        List<IntygStatus> list = Arrays.asList(new IntygStatus(StatusType.SENT, "FK", null));
         when(intygMetadataMock.getStatuses()).thenReturn(list);
 
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
@@ -444,7 +445,7 @@ public class FragaSvarServiceImplTest {
         when(intygService.fetchExternalIntygData(fragaSvar.getIntygsReferens().getIntygsId())).thenReturn(
                 getIntygContentHolder());
 
-        List<IntygStatus> list = Arrays.asList(new IntygStatus("SENT", "FK", null));
+        List<IntygStatus> list = Arrays.asList(new IntygStatus(StatusType.SENT, "FK", null));
         when(intygMetadataMock.getStatuses()).thenReturn(list);
         
         when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
