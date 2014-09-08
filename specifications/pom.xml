@@ -295,7 +295,17 @@
       <properties>
         <geb.env>saucelabssafari</geb.env>
       </properties>
+
+<!-- Used for running fitnesse against the demo-server -->
     </profile>
+       <profile>
+      <id>test-server</id>
+        <properties>
+          <webcert.baseUrl>https://test.webcert.intygstjanster.se/services/</webcert.baseUrl>
+          <certificate.baseUrl>http://10.250.34.20:8080/inera-certificate/</certificate.baseUrl>
+        </properties>
+    </profile>
+
     <profile>
       <id>wiki</id>
       <!--
