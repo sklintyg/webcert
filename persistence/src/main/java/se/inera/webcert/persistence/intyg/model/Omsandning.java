@@ -57,6 +57,12 @@ public class Omsandning {
         this.operation = operation;
     }
 
+    @Override
+    public String toString() {
+        return "Omsandning [id=" + id + ", intygId=" + intygId + ", nastaForsok=" + nastaForsok + ", antalForsok=" + antalForsok
+                + ", gallringsdatum=" + gallringsdatum + ", operation=" + operation + "]";
+    }
+
     public Long getId() {
         return id;
     }

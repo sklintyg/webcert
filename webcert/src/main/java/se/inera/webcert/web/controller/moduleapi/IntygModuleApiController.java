@@ -31,6 +31,7 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.intyg.dto.IntygRecipient;
+import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
@@ -38,6 +39,7 @@ import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
+import se.inera.webcert.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
@@ -230,14 +232,39 @@ public class IntygModuleApiController extends AbstractApiController {
         return Response.ok().build();
     }
     
+    /**
+     * Issues a request to Intygstjanst to send the signed intyg to a recipient
+     * 
+     * @param intygId
+     * @param param
+     * @return
+     */
     @POST
     @Path("/signed/{intygId}/send")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygId") String intygId, SendSignedIntygParameter param) {
-        boolean sendSuccess = intygService.sendIntyg(intygId, param.getRecipient(), param.isPatientConsent());
+        IntygServiceResult sendResult = intygService.sendIntyg(intygId, param.getRecipient(), param.isPatientConsent());
+        return Response.ok(sendResult).build();        
+    }
+    
+    /**
+     * Issues a request to Intygstjanst to revoke the signed intyg.
+     * 
+     * @param intygId
+     * @param param
+     * @return
+     */
+    @POST
+    @Path("/signed/{intygId}/revoke")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response revokeSignedIntyg(@PathParam("intygId") String intygId, RevokeSignedIntygParameter param) {
         
-        return (sendSuccess) ? Response.ok().build() : Response.serverError().build();
+        String revokeMessage = (param != null) ? param.getRevokeMessage(): null;
+        
+        IntygServiceResult revokeResult = intygService.revokeIntyg(intygId, revokeMessage);
+        return Response.ok(revokeResult).build();
     }
     
     /**
@@ -301,6 +328,12 @@ public class IntygModuleApiController extends AbstractApiController {
         return new BiljettResponse(biljett);
     }
     
+    /**
+     * Retrieves a list of recipients from Intygtjanst for the specified intygs type.
+     * 
+     * @param intygType
+     * @return
+     */
     @GET
     @Path("/mottagare/{intygType}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)

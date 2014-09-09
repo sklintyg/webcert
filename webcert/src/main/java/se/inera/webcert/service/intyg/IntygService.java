@@ -9,6 +9,7 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.intyg.dto.IntygRecipient;
+import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 
 /**
  * @author andreaskaltenbach
@@ -16,7 +17,7 @@ import se.inera.webcert.service.intyg.dto.IntygRecipient;
 public interface IntygService {
 
     /**
-     * Fetches the intyg data from the intygstjanst and returns the intyg content in internal model representation.
+     * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
      *
      * @throws se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException if there occurs a problem fetching intyg data from the intygstjanst
      * @throws se.inera.certificate.integration.rest.exception.ModuleCallFailedException        if a call to the module API fails
@@ -24,7 +25,7 @@ public interface IntygService {
     IntygContentHolder fetchIntygData(String intygId);
 
     /**
-     * Fetches the intyg data from the intygstjanst and returns the intyg content in external model representation.
+     * Fetches the intyg data from the Intygstjanst and returns the intyg content in external model representation.
      *
      * @throws se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException if there occurs a problem fetching intyg data from the intygstjanst
      * @throws se.inera.certificate.integration.rest.exception.ModuleCallFailedException        if a call to the module API fails
@@ -48,13 +49,39 @@ public interface IntygService {
      */
     IntygPdf fetchIntygAsPdf(String intygId);
 
-    boolean storeIntyg(Intyg intyg);
-
-    boolean storeIntyg(Omsandning omsandning);
+    /**
+     * Registers a given certificate in the Intygstjanst
+     * 
+     * @param intyg
+     * @return
+     */
+    IntygServiceResult storeIntyg(Intyg intyg);
     
-    boolean sendIntyg(Omsandning omsandning);
+    /**
+     * Instructs Intygstjanst to deliver the given certifiate to an external recipient.
+     * 
+     * @param intygId
+     * @param recipient
+     * @param hasPatientConsent
+     * @return
+     */
+    IntygServiceResult sendIntyg(String intygId, String recipient, boolean hasPatientConsent);
     
-    boolean sendIntyg(String intygId, String recipient, boolean hasPatientConsent);
-    
+    /**
+     * Retrieves a list over available recipients for a particular type of certificate.
+     * 
+     * @param intygType
+     * @return
+     */
     List<IntygRecipient> fetchListOfRecipientsForIntyg(String intygType);
+    
+    /**
+     * Instructs Intygstjanst to revoke the given certificate.
+     * 
+     * @param intygId
+     * @param revokeMessage
+     * @return
+     */
+    IntygServiceResult revokeIntyg(String intygId, String revokeMessage);
+    
 }

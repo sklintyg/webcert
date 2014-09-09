@@ -11,20 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepositoryCustom;
+import se.inera.webcert.service.intyg.IntygOmsandningService;
 import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 
 @Component
 public class OmsandningJob {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(OmsandningJob.class);
-    
+
     public static final int MAX_RESENDS_PER_CYCLE = 100;
 
     @Autowired
     private OmsandningRepositoryCustom omsandningRepository;
 
     @Autowired
-    private IntygService intygService;
+    private IntygOmsandningService intygService;
 
     @Scheduled(cron = "${scheduler.omsandningJob.cron}")
     public void sandOm() {
@@ -32,7 +34,7 @@ public class OmsandningJob {
         int failures = 0;
         for (Omsandning omsandning : omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(LocalDateTime.now(),
                 LocalDateTime.now())) {
-            
+
             if (!performOperation(omsandning)) {
                 if (++failures >= MAX_RESENDS_PER_CYCLE) {
                     logTooManyFailures();
@@ -49,16 +51,25 @@ public class OmsandningJob {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     private boolean performOperation(Omsandning omsandning) {
-        
-        LOG.warn("Performing operation {} on intyg {}", omsandning.getOperation(), omsandning.getIntygId());
+
+        IntygServiceResult res = null;
         
         switch (omsandning.getOperation()) {
         case STORE_INTYG:
-            return intygService.storeIntyg(omsandning);
+            res = intygService.storeIntyg(omsandning);
+            break;
         case SEND_INTYG:
-            return intygService.sendIntyg(omsandning);
+            res = intygService.sendIntyg(omsandning);
+            break;
+        case REVOKE_INTYG:
+            res = intygService.revokeIntyg(omsandning);
+            break;
         default:
-            return false;
+            res = IntygServiceResult.FAILED;
         }
+        
+        LOG.warn("Performed operation {} on intyg {} with result {}", new Object[]{omsandning.getOperation(), omsandning.getIntygId(), res});
+        
+        return (IntygServiceResult.OK.equals(res));
     }
 }

@@ -2,10 +2,13 @@ package se.inera.webcert.service.intyg.converter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -13,6 +16,7 @@ import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.common.MinimalUtlatande;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
+import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl.Operation;
 
 public class IntygServiceConverterTest {
 
@@ -30,6 +34,8 @@ public class IntygServiceConverterTest {
         
         assertNotNull(res.getAvsantTidpunkt());
         
+        assertThat(res.getVardReferensId(), containsString("SEND-123-"));
+                
         assertEquals("123", res.getLakarutlatande().getLakarutlatandeId());
         assertEquals("Test Testorsson", res.getLakarutlatande().getPatient().getFullstandigtNamn());
         assertEquals("19121212-1212", res.getLakarutlatande().getPatient().getPersonId().getExtension());
@@ -67,6 +73,17 @@ public class IntygServiceConverterTest {
         String name = converter.concatPatientName(fNames, mNames, lName);
         
         assertEquals("Adam Bertil Eriksson", name);
+    }
+    
+    @Test
+    public void testBuildVardRefId() {
+        
+        LocalDateTime ts = LocalDateTime.parse("2014-01-01T12:34:56.123");
+        
+        String res = converter.buildVardReferensId(Operation.REVOKE, "ABC123", ts);
+        
+        assertNotNull(res);
+        assertEquals(res, "REVOKE-ABC123-20140101T123456.123");
     }
     
     private Utlatande createUtlatandeFromJson() throws Exception {

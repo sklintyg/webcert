@@ -7,13 +7,16 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.stereotype.Component;
 
 import riv.insuranceprocess.healthreporting.medcertqa._1.LakarutlatandeEnkelType;
 import riv.insuranceprocess.healthreporting.medcertqa._1.VardAdresseringsType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateStatusType;
+import se.inera.certificate.model.Id;
 import se.inera.certificate.model.Utlatande;
+import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
@@ -101,7 +104,45 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     @Override
     public SendType buildSendTypeFromUtlatande(Utlatande utlatande) {
 
+        String utlatandeId = extractUtlatandeId(utlatande);
+
         // Lakarutlatande
+        LakarutlatandeEnkelType utlatandeType = new LakarutlatandeEnkelType();
+        utlatandeType.setLakarutlatandeId(utlatandeId);
+        utlatandeType.setPatient(buildPatientTypeFromUtlatande(utlatande));
+        utlatandeType.setSigneringsTidpunkt(utlatande.getSigneringsdatum());
+
+        // Vardadress
+        VardAdresseringsType vardAdressType = new VardAdresseringsType();
+        vardAdressType.setHosPersonal(buildHosPersonalTypeFromUtlatande(utlatande));
+
+        SendType sendType = new SendType();
+        sendType.setLakarutlatande(utlatandeType);
+        sendType.setAdressVard(vardAdressType);
+        sendType.setVardReferensId(buildVardReferensId(Operation.SEND, utlatandeId));
+        sendType.setAvsantTidpunkt(LocalDateTime.now());
+
+        return sendType;
+    }
+
+    private HosPersonalType buildHosPersonalTypeFromUtlatande(Utlatande utlatande) {
+
+        HosPersonalType hosPersonalType = new HosPersonalType();
+
+        II hosPersonId = new II();
+        hosPersonId.setExtension(utlatande.getSkapadAv().getId().getExtension());
+        hosPersonId.setRoot(utlatande.getSkapadAv().getId().getRoot());
+
+        hosPersonalType.setPersonalId(hosPersonId);
+        hosPersonalType.setEnhet(buildEnhetFromUtlatande(utlatande));
+        hosPersonalType.setFullstandigtNamn(utlatande.getSkapadAv().getNamn());
+        hosPersonalType.setForskrivarkod(utlatande.getSkapadAv().getForskrivarkod());
+
+        return hosPersonalType;
+    }
+
+    private PatientType buildPatientTypeFromUtlatande(Utlatande utlatande) {
+
         PatientType patientType = new PatientType();
         patientType.setFullstandigtNamn(concatPatientName(utlatande.getPatient().getFornamn(), utlatande.getPatient().getMellannamn(),
                 utlatande.getPatient().getEfternamn()));
@@ -112,32 +153,35 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
 
         patientType.setPersonId(personId);
 
+        return patientType;
+    }
+
+    @Override
+    public RevokeType buildRevokeTypeFromUtlatande(Utlatande utlatande, String revokeMessage) {
+
+        String utlatandeId = extractUtlatandeId(utlatande);
+
+        // Lakarutlatande
         LakarutlatandeEnkelType utlatandeType = new LakarutlatandeEnkelType();
-        utlatandeType.setLakarutlatandeId((utlatande.getId().getExtension() != null ? utlatande.getId().getExtension() :
-                utlatande.getId().getRoot()));
-        utlatandeType.setPatient(patientType);
+        utlatandeType.setLakarutlatandeId(utlatandeId);
+        utlatandeType.setPatient(buildPatientTypeFromUtlatande(utlatande));
         utlatandeType.setSigneringsTidpunkt(utlatande.getSigneringsdatum());
 
         // Vardadress
-        HosPersonalType hosPersonalType = new HosPersonalType();
-        hosPersonalType.setEnhet(buildEnhetFromUtlatande(utlatande));
-        II hosPersonId = new II();
-        hosPersonId.setExtension(utlatande.getSkapadAv().getId().getExtension());
-        hosPersonId.setRoot(utlatande.getSkapadAv().getId().getRoot());
-        hosPersonalType.setPersonalId(hosPersonId);
-        hosPersonalType.setFullstandigtNamn(utlatande.getSkapadAv().getNamn());
-        hosPersonalType.setForskrivarkod(utlatande.getSkapadAv().getForskrivarkod());
-
         VardAdresseringsType vardAdressType = new VardAdresseringsType();
-        vardAdressType.setHosPersonal(hosPersonalType);
+        vardAdressType.setHosPersonal(buildHosPersonalTypeFromUtlatande(utlatande));
 
-        SendType sendType = new SendType();
-        sendType.setLakarutlatande(utlatandeType);
-        sendType.setAdressVard(vardAdressType);
-        sendType.setVardReferensId("WC");
-        sendType.setAvsantTidpunkt(LocalDateTime.now());
+        RevokeType revokeType = new RevokeType();
+        revokeType.setLakarutlatande(utlatandeType);
+        revokeType.setAdressVard(vardAdressType);
+        revokeType.setVardReferensId(buildVardReferensId(Operation.REVOKE, utlatandeId));
+        revokeType.setAvsantTidpunkt(LocalDateTime.now());
 
-        return sendType;
+        if (revokeMessage != null) {
+            revokeType.setMeddelande(revokeMessage);
+        }
+
+        return revokeType;
     }
 
     private EnhetType buildEnhetFromUtlatande(Utlatande utlatande) {
@@ -170,6 +214,18 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return enhet;
     }
 
+    public String extractUtlatandeId(Utlatande utlatande) {
+
+        if (utlatande == null) {
+            return null;
+        }
+
+        Id id = utlatande.getId();
+
+        return (id.getExtension() != null) ? id.getExtension() : id.getRoot();
+
+    }
+
     public String concatPatientName(List<String> fNames, List<String> mNames, String lName) {
         StringBuilder sb = new StringBuilder();
         sb.append(StringUtils.join(fNames, " "));
@@ -180,5 +236,19 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
 
         sb.append(" ").append(lName);
         return StringUtils.normalizeSpace(sb.toString());
+    }
+
+    public String buildVardReferensId(Operation op, String intygId) {
+        return buildVardReferensId(op, intygId, LocalDateTime.now());
+    }
+
+    public String buildVardReferensId(Operation op, String intygId, LocalDateTime ts) {
+        String time = ts.toString(ISODateTimeFormat.basicDateTime());
+        return StringUtils.join(new Object[] { op, intygId, time }, "-");
+    }
+
+    public enum Operation {
+        SEND,
+        REVOKE;
     }
 }
