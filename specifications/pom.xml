@@ -3,38 +3,40 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
+  
   <parent>
     <groupId>se.inera.webcert</groupId>
     <artifactId>webcert-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
+  
   <artifactId>webcert-specifications</artifactId>
   <packaging>jar</packaging>
   <name>Inera Webcert FitNesse specifications</name>
 
   <properties>
-    <groovy.version>2.3.4</groovy.version>
-    <selenium.version>2.42.2</selenium.version>
     <geb.env>firefox</geb.env>
+    
+    <!-- URLs to services -->
+    <webcert.web.baseUrl>http://localhost:9088</webcert.web.baseUrl>
+    <webcert.baseUrl>http://localhost:9088/services/</webcert.baseUrl>
+    <logsender.baseUrl>http://localhost:9090/log-sender/</logsender.baseUrl>
+    <certificate.baseUrl>http://localhost:8080/inera-certificate/</certificate.baseUrl>
+
     <fitnesse.port>9126</fitnesse.port>
     <fitnesse.working>${project.basedir}/src/test/fitnesse</fitnesse.working>
     <fitnesse.root>FitNesseRoot</fitnesse.root>
     <fitnesse.project.root>IneraWebcert</fitnesse.project.root>
     <fitnesse.suite>${fitnesse.project.root}</fitnesse.suite>
+    
+    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
+
     <!-- This example has no unit tests, just integration tests -->
     <skipTests>true</skipTests>
-    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
-    <webcert.web.baseUrl>http://localhost:9088</webcert.web.baseUrl>
-    <webcert.baseUrl>http://localhost:9088/services/</webcert.baseUrl>
-    <logsender.baseUrl>http://localhost:9090/log-sender/</logsender.baseUrl>
-    <certificate.baseUrl>http://localhost:8080/inera-certificate/</certificate.baseUrl>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>se.inera.certificate</groupId>
-      <artifactId>certificate-specifications</artifactId>
-    </dependency>
+    <!-- Project dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>log-messages</artifactId>
@@ -48,69 +50,72 @@
       <artifactId>hsa-integration</artifactId>
     </dependency>
 
+    <!-- Dependencies to Intygstjansten -->
     <dependency>
-      <groupId>org.fitnesse</groupId>
-      <artifactId>fitnesse</artifactId>
-      <version>20131110</version>
+      <groupId>se.inera.certificate</groupId>
+      <artifactId>certificate-specifications</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>${groovy.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.fitnesse</groupId>
+      <artifactId>fitnesse</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.gebish</groupId>
       <artifactId>geb-core</artifactId>
-      <version>0.9.3</version>
     </dependency>
 
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-server</artifactId>
-      <version>${selenium.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-firefox-driver</artifactId>
-      <version>${selenium.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-support</artifactId>
-      <version>${selenium.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-chrome-driver</artifactId>
-      <version>${selenium.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-safari-driver</artifactId>
-      <version>${selenium.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-remote-driver</artifactId>
-      <version>${selenium.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-htmlunit-driver</artifactId>
-      <version>${selenium.version}</version>
     </dependency>
 
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${exec-maven-plugin.version}</version>
+          <configuration>
+            <classpathScope>test</classpathScope>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -122,18 +127,17 @@
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-eclipse-compiler</artifactId>
-            <version>2.9.0-01</version>
+            <version>${groovy-eclipse-compiler.version}</version>
           </dependency>
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-eclipse-batch</artifactId>
-            <version>2.3.4-01</version>
+            <version>${groovy-eclipse-batch.version}</version>
           </dependency>
         </dependencies>
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>2.5</version>
         <configuration>
           <filesets>
             <fileset>
@@ -153,7 +157,6 @@
       <plugin>
         <groupId>uk.co.javahelp.fitnesse</groupId>
         <artifactId>fitnesse-launcher-maven-plugin</artifactId>
-        <version>1.4.1</version>
         <configuration>
           <port>${fitnesse.port}</port>
           <workingDir>${fitnesse.working}</workingDir>
@@ -166,47 +169,7 @@
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings
-          only. It has no influence on the Maven build itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <versionRange>[2.0,)</versionRange>
-                    <goals>
-                      <goal>compile</goal>
-                      <goal>testCompile</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <configurator>
-                      <id>org.eclipse.m2e.jdt.javaConfigurator</id>
-                    </configurator>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>1.2.1</version>
-          <configuration>
-            <classpathScope>test</classpathScope>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+    
   </build>
 
   <profiles>

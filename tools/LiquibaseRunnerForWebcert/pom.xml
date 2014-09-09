@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>liquibase-runner-for-webcert</artifactId>
-  <name>Liquibase runner for webcert(standalone)</name>
+  <name>Liquibase runner for Webcert (standalone)</name>
   <packaging>jar</packaging>
 
   <properties>

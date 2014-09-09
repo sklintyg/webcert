@@ -12,7 +12,6 @@
   <name>Inera WebCert Log Messages</name>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
   </properties>
 

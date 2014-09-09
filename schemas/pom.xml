@@ -12,23 +12,31 @@
   <name>Inera WebCert Schemas</name>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <schema.path>${basedir}/src/main/resources/schemas</schema.path>
     <target.path>${basedir}/target/generated/src/main/java</target.path>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
   </properties>
+
   <dependencies>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-frontend-jaxws</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
     <dependency>
       <groupId>se.inera.certificate.modules</groupId>
       <artifactId>integration-util</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>velocity</groupId>
+          <artifactId>velocity</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -42,7 +50,6 @@
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
     </dependency>
-
     <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-jaxb-annotations</artifactId>
@@ -54,7 +61,6 @@
       <plugin>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-codegen-plugin</artifactId>
-        <version>${cxf.version}</version>
         <executions>
           <execution>
             <id>generate-sources</id>
@@ -185,8 +191,6 @@
                       <wsdl>${schema.path}/ehr/interactions/StoreLogInteraction/StoreLogInteraction_1.0_RIVTABP21.wsdl</wsdl>
                   </wsdlOption>
               </wsdlOptions>
-
-
             </configuration>
             <goals>
               <goal>wsdl2java</goal>
@@ -197,7 +201,7 @@
           <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
             <artifactId>jaxb2-basics</artifactId>
-            <version>0.6.4</version>
+            <version>${jaxb.commons.version}</version>
           </dependency>
         </dependencies>
       </plugin>
