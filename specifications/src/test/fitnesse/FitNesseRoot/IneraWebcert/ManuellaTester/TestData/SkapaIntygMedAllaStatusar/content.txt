@@ -1,0 +1,43 @@
+!contents -R2 -g -p -f -h
+
+!3 Skapa kompletta utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-manuell-fk-1 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-1 | ts-bas | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-1 | ts-diabetes | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+
+!3 Skapa ej kompletta utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-ejkomplett-fk-1 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+| webcert-fitnesse-ejkomplett-bas-1 | ts-bas | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+| webcert-fitnesse-ejkomplett-diabetes-1 | ts-diabetes | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+
+!3 Intyg
+
+!4 Mottaget
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | mall |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104N | IFV1239877878-1045 | IFV1239877878-103F | FK7263 | mottaget-intyg-fk-1 | M |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104N | IFV1239877878-1045 | IFV1239877878-103F | ts-bas | mottaget-intyg-bas-1 | L |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104N | IFV1239877878-1045 | IFV1239877878-103F | ts-diabetes | mottaget-intyg-diabetes-1 | L |
+
+!4 Skickat
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | mall | skickat |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104N | IFV1239877878-1045 | IFV1239877878-103F | FK7263 | skickat-intyg-fk-1 | M | ja |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104N | IFV1239877878-1045 | IFV1239877878-103F | ts-bas | skickat-intyg-bas-1 | L | ja |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104N | IFV1239877878-1045 | IFV1239877878-103F | ts-diabetes | skickat-intyg-diabetes-1 | L | ja |
+
+!4 Rättat
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | mall | rättat |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104N | IFV1239877878-1045 | IFV1239877878-103F | FK7263 | rattat-intyg-fk-1 | M | ja |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104N | IFV1239877878-1045 | IFV1239877878-103F | ts-bas | rattat-intyg-bas-1 | L | ja |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104N | IFV1239877878-1045 | IFV1239877878-103F | ts-diabetes | rattat-intyg-diabetes-1 | L | ja |
