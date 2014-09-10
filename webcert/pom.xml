@@ -14,6 +14,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
     xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>se.inera.webcert</groupId>
     <artifactId>webcert-parent</artifactId>
@@ -21,15 +22,19 @@
   </parent>
 
   <artifactId>webcert</artifactId>
+  <packaging>war</packaging>
   <name>Inera Webcert Application</name>
+
   <properties>
-    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
+    <modules-fk7263.version>1.0-SNAPSHOT</modules-fk7263.version>
+    <modules-ts.version>1.0-SNAPSHOT</modules-ts.version>
+  
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
   </properties>
-  <packaging>war</packaging>
 
   <dependencies>
+    <!-- Project dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>schemas</artifactId>
@@ -70,35 +75,57 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>log-messages</artifactId>
     </dependency>
+    
+    <!-- Dependencies to Intygstjansten -->
+    <dependency>
+      <groupId>se.inera.certificate</groupId>
+      <artifactId>logback-util</artifactId>
+    </dependency>
+    
+    <!-- Dependencies to Intygstjansten's modules -->
     <dependency>
       <groupId>se.inera.certificate.modules</groupId>
       <artifactId>module-support</artifactId>
-      <version>1.3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>se.inera.certificate.modules</groupId>
       <artifactId>common-webjar</artifactId>
-      <version>1.3-SNAPSHOT</version>
     </dependency>
-
-    <dependency>
-      <groupId>se.inera.certificate.modules</groupId>
-      <artifactId>ts-bas</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
-      <groupId>se.inera.certificate.modules</groupId>
-      <artifactId>ts-diabetes</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-
     <dependency>
       <groupId>se.inera.certificate.modules</groupId>
       <artifactId>fk7263</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${modules-fk7263.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.certificate.modules</groupId>
+      <artifactId>ts-bas</artifactId>
+      <version>${modules-ts.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.certificate.modules</groupId>
+      <artifactId>ts-diabetes</artifactId>
+      <version>${modules-ts.version}</version>
     </dependency>
 
+    <!-- AMQ -->
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-kahadb-store</artifactId>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -111,47 +138,85 @@
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
     </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-    </dependency>
 
+    <!-- Webjars -->
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>angularjs</artifactId>
-      <version>1.2.14</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>angular-ui-bootstrap</artifactId>
-      <version>0.10.0-1</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>bootstrap</artifactId>
-      <version>3.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>respond</artifactId>
-      <version>1.4.2</version>
+    </dependency>
+    
+    <!-- AOP -->
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.certificate</groupId>
-      <artifactId>logback-util</artifactId>
-      <version>1.1.2</version>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+    </dependency>
+
+    <!-- Utility libs -->
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-config</artifactId>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <!-- Misc -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-web</artifactId>
+      <groupId>jstl</groupId>
+      <artifactId>jstl</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-taglibs</artifactId>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jms_1.1_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+       
+    <!-- XML -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+    </dependency>
+
+    <!-- Spring family -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -171,63 +236,53 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-tx</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-transports-http</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>jstl</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.2</version>
-      <scope>provided</scope>
+      <artifactId>spring-jms</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-aop</artifactId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-taglibs</artifactId>
     </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.2.1</version>
-    </dependency>
+    
+    <!-- Authentication -->
     <dependency>
       <groupId>org.springframework.security.extensions</groupId>
       <artifactId>spring-security-saml2-core</artifactId>
     </dependency>
+
+     <dependency>
+      <groupId>org.opensaml</groupId>
+      <artifactId>opensaml</artifactId>
+    </dependency>
+  
     <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>1.4.01</version>
+      <groupId>org.opensaml</groupId>
+      <artifactId>openws</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.opensaml</groupId>
+      <artifactId>xmltooling</artifactId>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
@@ -246,46 +301,18 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.kubek2k</groupId>
       <artifactId>springockito</artifactId>
-      <version>1.0.8</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
     </dependency>
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <version>2.7.1</version>
-    </dependency>
 
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-spring</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-kahadb-store</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jms_1.1_spec</artifactId>
-      <version>1.1.1</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -310,7 +337,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.3</version>
         <executions>
           <execution>
             <phase>validate</phase>
@@ -327,7 +353,6 @@
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.1.1.v20140108</version>
         <configuration>
           <webAppConfig>
             <contextPath>/</contextPath>
@@ -371,34 +396,33 @@
           <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-broker</artifactId>
-            <version>5.8.0</version>
+            <version>${activemq.version}</version>
           </dependency>
           <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-kahadb-store</artifactId>
-            <version>5.8.0</version>
+            <version>${activemq.version}</version>
           </dependency>
           <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <version>1.1.1</version>
+            <version>${geronimo-jms-specs.version}</version>
           </dependency>
           <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
-            <version>2.0</version>
+            <version>${commons-dbcp2.version}</version>
           </dependency>
           <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.24</version>
+            <version>${mysql.connector.version}</version>
           </dependency>
         </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.8</version>
         <executions>
           <execution>
             <id>unpack-webjar-dependencies</id>
@@ -415,7 +439,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
         <executions>
           <execution>
             <phase>process-test-resources</phase>
@@ -450,11 +473,9 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>${frontend.version}</version>
         <executions>
           <execution>
             <id>install node and npm</id>
