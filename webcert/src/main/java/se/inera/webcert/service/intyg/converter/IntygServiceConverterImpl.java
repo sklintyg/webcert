@@ -89,6 +89,8 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
             return StatusType.CANCELLED;
         case DELETED:
             return StatusType.DELETED;
+        case RESTORED:
+            return StatusType.RESTORED;
         default:
             return StatusType.UNKNOWN;
         }

@@ -1,6 +1,7 @@
 package se.inera.webcert.converter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -40,12 +41,15 @@ public final class IntygDraftsConverter {
 
     };
     
-    private static Predicate removeDeletedIntygStatusPredicate = new Predicate() {
+    private static Predicate removeArchivedIntygStatusesPredicate = new Predicate() {
+        
+        private final List<StatusType> archivedStatuses = Arrays.asList(StatusType.DELETED, StatusType.RESTORED);
+        
         @Override
         public boolean evaluate(Object obj) {
             if (obj instanceof IntygStatus) {
                 IntygStatus intygStatus = (IntygStatus) obj;
-                return !StatusType.DELETED.equals(intygStatus.getType());
+                return !archivedStatuses.contains(intygStatus.getType());
             }
             return false;
         }
@@ -151,7 +155,7 @@ public final class IntygDraftsConverter {
             return StatusType.UNKNOWN;
         }
         
-        CollectionUtils.filter(intygStatuses, removeDeletedIntygStatusPredicate);
+        CollectionUtils.filter(intygStatuses, removeArchivedIntygStatusesPredicate);
         
         if (intygStatuses.isEmpty()) {
             return StatusType.UNKNOWN;

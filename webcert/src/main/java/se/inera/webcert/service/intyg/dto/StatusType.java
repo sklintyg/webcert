@@ -38,6 +38,11 @@ public enum StatusType {
     DELETED,
     
     /**
+     * Un-archived by citizen
+     */
+    RESTORED,
+    
+    /**
      * Status is unknown
      */
     UNKNOWN;

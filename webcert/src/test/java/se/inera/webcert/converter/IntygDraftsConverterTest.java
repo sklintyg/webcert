@@ -108,6 +108,16 @@ public class IntygDraftsConverterTest {
         res = IntygDraftsConverter.findLatestStatus(statuses);
         assertEquals(StatusType.CANCELLED, res);
         
+        // test with DELETED and RESTORED in the list, which should be removed
+        statuses = new ArrayList<>();
+        statuses.add(new IntygStatus(StatusType.CANCELLED, "FK", defaultTime.minusHours(2)));
+        statuses.add(new IntygStatus(StatusType.SENT, "FK", defaultTime.minusHours(3)));
+        statuses.add(new IntygStatus(StatusType.RESTORED, "MI", defaultTime.minusMinutes(30)));
+        statuses.add(new IntygStatus(StatusType.DELETED, "MI", defaultTime.minusHours(1)));
+        statuses.add(new IntygStatus(StatusType.RECEIVED, "MI", defaultTime.minusHours(4)));
+        res = IntygDraftsConverter.findLatestStatus(statuses);
+        assertEquals(StatusType.CANCELLED, res);
+        
         // test with just DELETED, which will be removed and result in an empty list
         statuses = new ArrayList<>();
         statuses.add(new IntygStatus(StatusType.DELETED, "MI", defaultTime.minusHours(1)));
