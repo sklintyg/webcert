@@ -12,6 +12,7 @@ class SokSkrivValjIntygTypPage extends Page {
         intygTyp { $("#intygType") }
         intygLista { $("#intygLista") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
+        fortsattKnapp { $("#intygTypeFortsatt") }
     }
 
     def copyBtn(String intygId) {
@@ -26,5 +27,15 @@ class SokSkrivValjIntygTypPage extends Page {
 
     def show(String intygId) {
         $("#showBtn-${intygId}").click()
+    }
+
+    def valjIntygstypFk7263() {
+        intygTyp.value("1")
+    }
+    def valjIntygstypTsBas() {
+        intygTyp.value("2")
+    }
+    def valjIntygstypTsDiabetes() {
+        intygTyp.value("3")
     }
 }
