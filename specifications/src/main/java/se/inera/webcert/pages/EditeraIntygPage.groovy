@@ -13,11 +13,11 @@ class EditeraIntygPage extends Page {
         konfirmeraSignera { $("#confirm-signera-utkast-button") }
         signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
-        enhetsPostadress(required: false) { $("#clinicInfo\\.postalAddress") }
-        enhetsPostnummer(required: false) { $("#clinicInfo\\.postalCode") }
-        enhetsPostort(required: false) { $("#clinicInfo\\.postalCity") }
-        enhetsTelefonnummer(required: false) { $("#clinicInfo\\.phone") }
-        enhetsEpost(required: false) { $("#clinicInfo\\.email") }
+        enhetsPostadress(required: false) { $("#clinicInfoPostalAddress") }
+        enhetsPostnummer(required: false) { $("#clinicInfoPostalCode") }
+        enhetsPostort(required: false) { $("#clinicInfoPostalCity") }
+        enhetsTelefonnummer(required: false) { $("#clinicInfoPhone") }
+        enhetsEpost(required: false) { $("#clinicInfoEmail") }
         sparaBtn(required: false) { $("#spara-utkast") }
     }
 }
