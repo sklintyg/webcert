@@ -2,6 +2,8 @@
 |se.inera.webcert.pages|
 |se.inera.webcert.pages.fk7263|
 |se.inera.webcert.spec|
+|se.inera.webcert.spec.ts_bas|
+|se.inera.webcert.spec.ts_diabetes|
 |se.inera.webcert.spec.util|
 |se.inera.certificate.spec|
 |se.inera.certificate.spec.util|

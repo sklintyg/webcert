@@ -2,7 +2,6 @@ package se.inera.webcert.spec
 
 import se.inera.webcert.pages.SokSkrivValjIntygTypPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
-import se.inera.webcert.pages.ts_bas.EditCertPage
 
 class SkrivIntyg {
 
@@ -33,7 +32,13 @@ class SkrivIntyg {
             page.fortsattKnapp.click();
 
             waitFor {
-                at EditCertPage
+                if (typ == "FK7263") {
+
+                } else if (typ == "ts-bas") {
+                    at se.inera.webcert.pages.ts_bas.EditCertPage
+                } else if (typ == "ts-diabetes") {
+                    at se.inera.webcert.pages.ts_diabetes.EditCertPage
+                }
             }
 
             intygsid = currentUrl.substring(currentUrl.lastIndexOf("/") + 1)
