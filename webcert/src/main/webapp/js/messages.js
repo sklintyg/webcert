@@ -25,6 +25,10 @@ var wcMessages = {
         'print.label.draft': 'Observera! Intyget är ett utkast och är därför inte giltigt.',
         'print.label.revoked': 'Observera! Intyget är makulerat och därför inte giltigt.',
 
+        'label.makulera': 'Rätta intyg',
+        'label.makulera.body' : 'Välj hur du vill rätta intyget.',
+        'label.makulera.confirmation': 'Kvittens - Rätta intyg',
+
         //certificate types
         'certificatetypes.fk7263.typename': 'Läkarintyg FK 7263',
         'certificatetypes.rli.typename': 'Intyg vid avbeställd resa',
@@ -57,6 +61,7 @@ var wcMessages = {
         'error.unansweredcerts.couldnotbeloaded': '<strong>Kunde inte hämta listan med ej hanterade frågor och svar.</strong>',
         'error.readytosigncerts.couldnotbeloaded': '<strong>Kunde inte hämta intyg klara för signering.</strong>',
         'error.failedtocreateintyg': 'Kunde inte skapa intyget. Försök igen senare.',
+        'error.failedtocancelintyg': 'Kunde inte rätta intyget. Försök igen senare.',
         'error.failedtocopyintyg': 'Kunde inte kopiera intyget. Försök igen senare.',
         'error.failedtosendintyg': 'Kunde inte skicka intyget. Försök igen senare.'
     },

@@ -46,7 +46,6 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
                     onSuccess(intygTypeMeta);
                 });
-
             }
 
             /*
@@ -313,14 +312,13 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     sendDialog.close();
                     onSuccess();
                 }, function(error) {
-                    $log.debug('Create copy failed: ' + error.message);
+                    $log.debug('Send cert failed: ' + error);
                     dialogModel.acceptprogressdone = true;
                     dialogModel.showerror = true;
                 });
             }
 
             function _send($scope, cert, recipientId, titleId, onSuccess) {
-
                 sendDialog = dialogService.showDialog($scope, {
                     dialogId: 'send-dialog',
                     titleId: titleId,
@@ -328,7 +326,8 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     model: $scope.dialogSend,
                     button1click: function() {
                         $log.debug('send cert from dialog' + cert);
-                        _sendSigneratIntyg(cert, recipientId, $scope.dialogSend.patientConsent, $scope.dialogSend, sendDialog, onSuccess);
+                        _sendSigneratIntyg(cert, recipientId, $scope.dialogSend.patientConsent, $scope.dialogSend,
+                            sendDialog, onSuccess);
                     },
                     button1text: 'common.send',
                     button1id: 'button1send-dialog',
@@ -345,6 +344,64 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 return sendDialog;
             }
 
+            // Makulera dialog setup
+            var makuleraDialog = {
+                isOpen: false
+            };
+
+            function _initMakulera($scope) {
+                $scope.dialogMakulera = {
+                    acceptprogressdone: true,
+                    focus: false,
+                    errormessageid: 'error.failedtomakuleraintyg',
+                    showerror: false
+                };
+            }
+
+            function _revokeSigneratIntyg(cert, dialogModel, makuleraDialog, onSuccess) {
+                dialogModel.showerror = false;
+                dialogModel.acceptprogressdone = false;
+                CertificateService.revokeSigneratIntyg(cert.id, function() {
+                    dialogModel.acceptprogressdone = true;
+                    makuleraDialog.close();
+                    onSuccess();
+                }, function(error) {
+                    $log.debug('Revoke failed: ' + error);
+                    dialogModel.acceptprogressdone = true;
+                    dialogModel.showerror = true;
+                });
+            }
+
+            function _makulera($scope, cert, confirmationMessage, onSuccess) {
+
+                var successCallback = function() {
+                    dialogService.showMessageDialog('label.makulera.confirmation', confirmationMessage,
+                        function() {
+                            onSuccess();
+                        });
+                };
+
+                makuleraDialog = dialogService.showDialog($scope, {
+                    dialogId: 'makulera-dialog',
+                    titleId: 'label.makulera',
+                    templateUrl: '/views/partials/makulera-dialog.html',
+                    model: $scope.dialogMakulera,
+                    button1click: function() {
+                        $log.debug('revoking cert from dialog' + cert);
+                        _revokeSigneratIntyg(cert, $scope.dialogMakulera, makuleraDialog, successCallback);
+                    },
+
+                    button1text: 'common.revoke',
+                    button1id: 'button1makulera-dialog',
+                    button2text: 'common.cancel',
+                    bodyTextId: 'label.makulera.body',
+                    autoClose: false
+                });
+
+                return makuleraDialog;
+            }
+
+
             // Return public API for the service
             return {
                 getCertTypes: _getCertTypes,
@@ -353,6 +410,8 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 getUnsignedCertificates: _getUnsignedCertificates,
                 getUnsignedCertificatesByQueryFetchMore: _getUnsignedCertificatesByQueryFetchMore,
                 getCertificateSavedByList: _getCertificateSavedByList,
+                initMakulera: _initMakulera,
+                makulera: _makulera,
                 setForwardedState: _setForwardedState,
                 handleForwardedToggle: _handleForwardedToggle,
                 buildMailToLink: _buildMailToLink,
