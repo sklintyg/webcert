@@ -277,7 +277,7 @@
                     <artifactItem>
                       <groupId>se.inera.certificate.modules</groupId>
                       <artifactId>fk7263</artifactId>
-                      <version>WC-0.5-RC3-SNAPSHOT</version>
+                      <version>WC-0.5-RC4-SNAPSHOT</version>
                       <type>war</type>
                       <outputDirectory>${project.build.directory}/fk7263.war</outputDirectory>
                     </artifactItem>
