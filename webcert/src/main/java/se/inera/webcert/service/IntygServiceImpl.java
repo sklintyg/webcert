@@ -50,13 +50,12 @@ public class IntygServiceImpl implements IntygService {
     @Value("${intygstjanst.logicaladdress}")
     String logicalAddress;
 
-    private static Marshaller marshaller;
+    private static JAXBContext context;
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
 
     static {
         try {
-            JAXBContext context = JAXBContext.newInstance(UtlatandeType.class);
-            marshaller = context.createMarshaller();
+            context = JAXBContext.newInstance(UtlatandeType.class);
         } catch (JAXBException e) {
             LOG.error("Failed to initialize marshaller for GetCertificate interaction", e);
             Throwables.propagate(e);
@@ -190,6 +189,7 @@ public class IntygServiceImpl implements IntygService {
         StringWriter writer = new StringWriter();
         try {
             JAXBElement<UtlatandeType> jaxbElement = new ObjectFactory().createUtlatande(intyg.getCertificate());
+            Marshaller marshaller = context.createMarshaller();
             marshaller.marshal(jaxbElement, writer);
             return writer.toString();
         } catch (JAXBException e) {
