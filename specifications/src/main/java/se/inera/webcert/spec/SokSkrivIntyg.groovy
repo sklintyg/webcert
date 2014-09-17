@@ -1,11 +1,6 @@
 package se.inera.webcert.spec
 
-import se.inera.webcert.pages.IndexPage
-import se.inera.webcert.pages.SokSkrivFyllINamnPage
-import se.inera.webcert.pages.SokSkrivValjIntygTypPage
-import se.inera.webcert.pages.SokSkrivaIntygPage
-import se.inera.webcert.pages.VisaIntygPage
-import se.inera.webcert.pages.WelcomePage
+import se.inera.webcert.pages.*
 
 class SokSkrivIntyg {
 
@@ -26,7 +21,7 @@ class SokSkrivIntyg {
 
     boolean sokSkrivIntygSidanVisasSaSmaningom() {
         Browser.drive {
-            waitFor (60, 10) {
+            waitFor(60, 10) {
                 at SokSkrivaIntygPage
             }
         }
@@ -115,6 +110,30 @@ class SokSkrivIntyg {
         Browser.drive {
             page.copy()
         }
+    }
+
+    def makuleraVisatIntyg() {
+        Browser.drive {
+            page.makulera()
+        }
+    }
+
+    def makuleraBekraftelseVisas() {
+        Browser.drive {
+            waitFor {
+                page.makuleraConfirmationOkButton.isDisplayed()
+            }
+            makuleraConfirmationOkButton.click()
+        }
+    }
+
+    boolean makuleradStatusVisas() {
+        Browser.drive {
+            waitFor {
+                page.certificateIsRevokedMessage.isDisplayed()
+            }
+        }
+        true
     }
 
     def visaIntyg(String intygId) {

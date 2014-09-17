@@ -9,9 +9,13 @@ class VisaIntygPage extends Page {
     static content = {
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
+        certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
         copyButton { $("#copyBtn") }
+        makuleraButton { $("#makuleraBtn") }
         intygVy { $('#intyg-vy-laddad') }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
+        makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
+        makuleraConfirmationOkButton { $("#confirmationOkButton") }
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
     }
@@ -20,6 +24,12 @@ class VisaIntygPage extends Page {
         $("#copyBtn").click()
         sleep(300)
         kopieraDialogKopieraKnapp.click()
+    }
+
+    def makulera() {
+        $("#makuleraBtn").click()
+        sleep(300)
+        makuleraDialogKopieraKnapp.click()
     }
 
     def send() {
