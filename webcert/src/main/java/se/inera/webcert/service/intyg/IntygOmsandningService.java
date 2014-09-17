@@ -20,13 +20,5 @@ public interface IntygOmsandningService {
      * @return
      */
     public abstract IntygServiceResult sendIntyg(Omsandning omsandning);
-    
-    /**
-     * Triggers a new attempt to issue a revoke for a given certificate.
-     * 
-     * @param omsandning
-     * @return
-     */
-    public abstract IntygServiceResult revokeIntyg(Omsandning omsandning);
-    
+        
 }

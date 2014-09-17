@@ -48,17 +48,4 @@ public class IntygServiceConfigurationManagerTest {
         assertThat(config.getPatientConsentMessage(), containsString("mottagare TS utan "));
     }
     
-    @Test
-    public void testMarshallAndUnmarshallForRevoke() {
-        
-        String revokeMessage = "This is revoked!";
-        
-        String configAsJson = configurationManager.marshallConfig(new RevokeIntygConfiguration(revokeMessage));
-        assertNotNull(configAsJson);
-        assertThat(configAsJson, containsString("\"revokeMessage\":"));
-                
-        RevokeIntygConfiguration revokeConfig = configurationManager.unmarshallConfig(configAsJson, RevokeIntygConfiguration.class);
-        assertNotNull(revokeConfig);
-        assertEquals(revokeMessage, revokeConfig.getRevokeMessage());
-    }
 }

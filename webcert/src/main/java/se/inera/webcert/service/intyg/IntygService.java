@@ -2,9 +2,7 @@ package se.inera.webcert.service.intyg;
 
 import java.util.List;
 
-import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygPdf;

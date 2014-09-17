@@ -64,12 +64,9 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, REVOKE_MSG);
         
         assertEquals(IntygServiceResult.OK, res);
-        
-        verify(omsandningRepository).save(any(Omsandning.class));
-        verify(omsandningRepository).delete(any(Omsandning.class));
     }
     
-    @Test
+    @Test(expected = WebCertServiceException.class)
     public void testRevokeIntygWithApplicationErrorOnRevoke() throws Exception {
         
         // simulate response from Intygstjanst
@@ -90,14 +87,11 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         
         when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenReturn(response);
         
-        IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, REVOKE_MSG);
+        intygService.revokeIntyg(INTYG_ID, REVOKE_MSG);
         
-        assertEquals(IntygServiceResult.RESCHEDULED, res);
-        
-        verify(omsandningRepository, times(2)).save(any(Omsandning.class));
     }
     
-    @Test
+    @Test(expected = WebServiceException.class)
     public void testRevokeIntygWithIOExceptionOnRevoke() throws Exception {
         
         // simulate response from Intygstjanst
@@ -113,27 +107,19 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenThrow(
                 new WebServiceException("WS exception", new ConnectException("IO exception")));
         
-        IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, REVOKE_MSG);
+        intygService.revokeIntyg(INTYG_ID, REVOKE_MSG);
         
-        assertEquals(IntygServiceResult.RESCHEDULED, res);
-        
-        // save omsandning two times, one for create and one for update when failure
-        verify(omsandningRepository, times(2)).save(any(Omsandning.class));
     }
     
-    @Test
+    @Test(expected = WebServiceException.class)
     public void testRevokeIntygWithIOExceptionOnFetch() throws Exception {
         
         // simulate an exception from Intygstjanst
         when(getCertificateService.getCertificateForCare(anyString(), any(GetCertificateForCareRequestType.class))).thenThrow(
                 new WebServiceException("WS exception", new ConnectException("IO exception")));
         
-        IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, REVOKE_MSG);
+        intygService.revokeIntyg(INTYG_ID, REVOKE_MSG);
         
-        assertEquals(IntygServiceResult.RESCHEDULED, res);
-        
-        // save omsandning two times, one for create and one for update when failure
-        verify(omsandningRepository, times(2)).save(any(Omsandning.class));
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -150,12 +136,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(getCertificateService.getCertificateForCare(anyString(), any(GetCertificateForCareRequestType.class))).thenReturn(getCertResponse);
         
         intygService.revokeIntyg(INTYG_ID, REVOKE_MSG);
-        
-        // save omsandning
-        verify(omsandningRepository).save(any(Omsandning.class));
-        
-        // since exception is thrown the omsandning should be deleted
-        verify(omsandningRepository).delete(any(Omsandning.class));
     }
 
 }

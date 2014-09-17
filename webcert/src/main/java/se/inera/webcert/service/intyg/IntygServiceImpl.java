@@ -51,7 +51,6 @@ import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
-import se.inera.webcert.service.intyg.config.RevokeIntygConfiguration;
 import se.inera.webcert.service.intyg.config.SendIntygConfiguration;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
@@ -262,6 +261,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     private void checkIfCertificateIsRevoked(GetCertificateForCareResponseType response) {
         if (ResultCodeType.ERROR.equals(response.getResult().getResultCode())) {
             if (ErrorIdType.REVOKED.equals(response.getResult().getErrorId())) {
+                LOG.info("Certificate is revoked");
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is revoked");
             }
         }
@@ -269,6 +269,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
     protected void verifyEnhetsAuth(String enhetsId) {
         if (!webCertUserService.isAuthorizedForUnit(enhetsId)) {
+            LOG.info("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);
         }
@@ -471,27 +472,13 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
-    public IntygServiceResult revokeIntyg(Omsandning omsandning) {
-        RevokeIntygConfiguration revokeConfig = configurationManager.unmarshallConfig(omsandning.getConfiguration(), RevokeIntygConfiguration.class);
-        return revokeIntyg(omsandning.getIntygId(), omsandning, revokeConfig);
-    }
-
+    /* (non-Javadoc)
+     * @see se.inera.webcert.service.intyg.IntygService#revokeIntyg(java.lang.String, java.lang.String)
+     */
     public IntygServiceResult revokeIntyg(String intygsId, String revokeMessage) {
-
-        RevokeIntygConfiguration revokeConfig = new RevokeIntygConfiguration(revokeMessage);
-        String revokeConfigAsJson = configurationManager.marshallConfig(revokeConfig);
-
-        Omsandning omsandning = createOmsandning(OmsandningOperation.REVOKE_INTYG, intygsId, revokeConfigAsJson);
-
-        return revokeIntyg(intygsId, omsandning, revokeConfig);
-
-    }
-
-    public IntygServiceResult revokeIntyg(String intygsId, Omsandning omsandning, RevokeIntygConfiguration revokeConfig) {
-
         try {
 
-            LOG.info("Revoking intyg {}", intygsId);
+            LOG.info("Attempting to revoke intyg {}", intygsId);
 
             GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygsId);
 
@@ -502,80 +489,38 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             UtlatandeType utlatandeType = intygResponse.getCertificate();
             String intygsTyp = utlatandeType.getTypAvUtlatande().getCode();
 
-            ExternalModelResponse intygAsExternal = modelFacade.convertFromTransportToExternal(intygsTyp, intygResponse.getCertificate());
+            ExternalModelResponse intygAsExternal = modelFacade.convertFromTransportToExternal(intygsTyp, utlatandeType);
 
-            Utlatande utlatande = intygAsExternal.getExternalModel();
+            RevokeType revokeType = serviceConverter.buildRevokeTypeFromUtlatande(intygAsExternal.getExternalModel(), revokeMessage);
 
-            if (!performRevokeIntyg(utlatande, revokeConfig.getRevokeMessage())) {
-                LOG.info("Revoking intyg {} failed, rescheduling revoke...", intygsId);
-                scheduleResend(omsandning);
-                return IntygServiceResult.RESCHEDULED;
+            RevokeMedicalCertificateRequestType request = new RevokeMedicalCertificateRequestType();
+            request.setRevoke(revokeType);
+
+            AttributedURIType uri = new AttributedURIType();
+            uri.setValue(logicalAddress);
+
+            RevokeMedicalCertificateResponseType response = revokeService.revokeMedicalCertificate(uri, request);
+
+            ResultOfCall resultOfCall = response.getResult();
+
+            switch (resultOfCall.getResultCode()) {
+            case OK:
+                LOG.info("Successfully revoked intyg {}", intygsId);
+                return IntygServiceResult.OK;
+            case INFO:
+                LOG.warn("Call to revoke intyg {} returned an info message: {}", intygsId, resultOfCall.getInfoText());
+                return IntygServiceResult.OK;
+            case ERROR:
+                LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}", new Object[] { intygsId, resultOfCall.getErrorText(),
+                        resultOfCall.getErrorId() });
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, resultOfCall.getErrorText());
+            default:
+                return IntygServiceResult.FAILED;
             }
-
-            omsandningRepository.delete(omsandning);
-
-            return IntygServiceResult.OK;
-
-        } catch (WebServiceException wse) {
-            // if connectivity problems should arise, we reschedule the revoke
-            LOG.error("WebServiceException occured when trying to fetch and revoke intyg: " + intygsId, wse);
-            scheduleResend(omsandning);
-            return IntygServiceResult.RESCHEDULED;
-        } catch (WebCertServiceException wcse) {
-            // removing omsandning since exception is thrown when fetching
-            LOG.error("WebCertServiceException occured when trying to revoke intyg: " + intygsId, wcse);
-            omsandningRepository.delete(omsandning);
-            throw wcse;
+            
         } catch (IntygModuleFacadeException imfe) {
-            // removing omsandning since a module-related exception is thrown
-            LOG.error("IntygModuleFacadeException occured when trying to revoke intyg: " + intygsId, imfe);
-            omsandningRepository.delete(omsandning);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, imfe);
         }
-    }
-
-    public boolean performRevokeIntyg(Utlatande utlatande, String revokeMessage) {
-
-        String intygsId = serviceConverter.extractUtlatandeId(utlatande);
-
-        String intygsTyp = utlatande.getTyp().getCode();
-
-        LOG.debug("Attempting to revoke intyg {} of type {}", intygsId, intygsTyp);
-
-        RevokeType revokeType = serviceConverter.buildRevokeTypeFromUtlatande(utlatande, revokeMessage);
-
-        RevokeMedicalCertificateRequestType request = new RevokeMedicalCertificateRequestType();
-        request.setRevoke(revokeType);
-
-        AttributedURIType uri = new AttributedURIType();
-        uri.setValue(logicalAddress);
-
-        RevokeMedicalCertificateResponseType response;
-
-        try {
-            response = revokeService.revokeMedicalCertificate(uri, request);
-        } catch (WebServiceException wse) {
-            LOG.error("A WebServiceException occured when trying to revoke intyg " + intygsId, wse);
-            return false;
-        }
-
-        ResultOfCall resultOfCall = response.getResult();
-
-        switch (resultOfCall.getResultCode()) {
-        case OK:
-            LOG.debug("Successfully revoked intyg {}", intygsId);
-            return true;
-        case INFO:
-            LOG.warn("Call to revoke intyg {} returned an info message: {}", intygsId, resultOfCall.getInfoText());
-            return true;
-        case ERROR:
-            LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}", new Object[] { intygsId, resultOfCall.getErrorText(),
-                    resultOfCall.getErrorId() });
-            return false;
-        default:
-            return false;
-        }
-
     }
 
     public void setLogicalAddress(String logicalAddress) {

@@ -251,8 +251,8 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Issues a request to Intygstjanst to revoke the signed intyg.
      * 
-     * @param intygId
-     * @param param
+     * @param intygId The id of the intyg to revoke
+     * @param param A JSON struct containing an optional message
      * @return
      */
     @POST

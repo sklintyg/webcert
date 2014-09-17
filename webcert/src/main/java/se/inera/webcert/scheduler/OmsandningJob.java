@@ -61,9 +61,6 @@ public class OmsandningJob {
         case SEND_INTYG:
             res = intygService.sendIntyg(omsandning);
             break;
-        case REVOKE_INTYG:
-            res = intygService.revokeIntyg(omsandning);
-            break;
         default:
             res = IntygServiceResult.FAILED;
         }
