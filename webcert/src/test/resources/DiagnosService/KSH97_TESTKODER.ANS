@@ -1,0 +1,100 @@
+A000   Kolera orsakad av Vibrio cholerae 01, biovar cholerae
+A001   Kolera orsakad av Vibrio cholerae 01, biovar el tor
+A009   Kolera, ospecificerad
+A010   Tyfoidfeber
+A011   Paratyfoidfeber A
+A012   Paratyfoidfeber B
+A013   Paratyfoidfeber C
+A014   Paratyfoidfeber, ospecificerad
+A020   Salmonellaenterit
+A021   Salmonellasepsis
+A022   Lokaliserade salmonellainfektioner
+A028   Andra specificerade salmonellainfektioner
+A029   Andra salmonellainfektioner, ospecificerade
+A030   Shigella dysenteriae
+A031   Shigella flexneri
+A032   Shigella boydii
+A033   Shigella sonnei
+A038   Annan specificerad shigellos
+A039   Shigellos, ospecificerad
+A040   Infektion med tarmpatogena Escherichia coli-bakterier
+A041   Infektion med tarmtoxiska Escherichia coli-bakterier
+A042   Infektion med tarminvasiva Escherichia coli-bakterier
+A043   Infektion med tarmhemorragiska Escherichia coli-bakterier
+A044   Annan tarminfektion med Escherichia coli
+A045   Enterit orsakad av Campylobacter
+A046   Enterit orsakad av Yersinia enterocolitica
+A047   Enterokolit orsakad av Clostridium difficile
+A048   Andra specificerade bakteriella tarminfektioner
+A049   Bakteriell tarminfektion, ospecificerad
+A050   Matförgiftning orsakad av stafylokocker
+A051   Botulism
+A052   Matförgiftning orsakad av Clostridium perfringens
+A053   Matförgiftning orsakad av Vibrio parahaemolyticus
+A054   Matförgiftning orsakad av Bacillus cereus
+A058   Andra specificerade matförgiftningar orsakade av bakterier
+A059   Matförgiftning orsakad av bakterier, ospecificerad
+A060   Akut amöbadysenteri
+A061   Kronisk intestinal amöbainfektion
+A062   Kolit orsakad av amöba
+A063   Amöbom i tarmen
+A064   Leverabscess orsakad av amöba
+A065   Lungabscess orsakad av amöba
+A066   Hjärnabscess orsakad av amöba
+A067   Sårbildning i huden orsakad av amöba
+A068   Amöbainfektion med annan lokalisation
+A069   Amöbainfektion, ospecificerad
+A070   Balantidiasis
+A071   Giardiasis
+A072   Infektion orsakad av Cryptosporidium
+A073   Isosporiasis
+A078   Andra specificerade tarmsjukdomar orsakade av protozoer
+A079   Protozosjukdom i tarmen, ospecificerad
+A080   Enterit orsakad av rotavirus
+A081   Akut gastroenteropati orsakad av Norwalk-faktor
+A082   Enterit orsakad av adenovirus
+A083   Enterit orsakad av annat specificerat virus
+A083A  Coxsackievirus-enterit
+A083B  Echovirus-enterit
+A083W  Enterit orsakad av annat specificerat virus
+A084   Enterit orsakad av icke specificerat virus
+A085   Andra specificerade tarminfektioner
+A090   Annan och ospecificerad gastroenterit och kolit av infektiös orsak
+A099   Gastroenterit och kolit av icke specificerad orsak
+A150   Lungtuberkulos, verifierad med mikroskopisk sputumundersökning, med eller utan odling
+A151   Lungtuberkulos, verifierad endast med odling
+A152   Lungtuberkulos, verifierad histologiskt
+A153   Lungtuberkulos, verifierad med icke angiven metod
+A154   Tuberkulos i intratorakala lymfkörtlar, verifierad bakteriologiskt och histologiskt
+A155   Tuberkulos i larynx, trakea och bronker, verifierad bakteriologiskt och histologiskt
+A156   Tuberkulös pleurit, verifierad bakteriologiskt och histologiskt
+A157   Primär tuberkulos i andningsorganen, verifierad bakteriologiskt och histologiskt
+A158   Annan tuberkulos i andningsorganen, verifierad bakteriologiskt och histologiskt
+A159   Tuberkulos i andningsorganen, ospecificerad, verifierad bakteriologiskt och histologiskt
+A160   Lungtuberkulos med bakteriologiskt och histologiskt negativt fynd
+A161   Lungtuberkulos, bakteriologisk och histologisk undersökning ej genomförd
+A162   Lungtuberkulos, utan uppgift om bakteriologisk eller histologisk verifikation
+A163   Tuberkulos i intratorakala lymfkörtlar, utan uppgift om bakteriologisk eller histologisk verifikation
+A164   Tuberkulos i larynx, trakea och bronk utan uppgift om bakteriologisk eller histologisk verifikation
+A165   Tuberkulös pleurit utan uppgift om bakteriologisk eller histologisk verifikation
+A167   Primär tuberkulos i andningsorganen utan uppgift om bakteriologisk eller histologisk verifikation
+A168   Annan tuberkulos i andningsorganen utan uppgift om bakteriologisk eller histologisk verifikation
+A169   Tuberkulos i icke specificerat andningsorgan utan uppgift om bakteriologisk eller histologisk verifikation
+A170   Tuberkulös meningit
+A171   Meningealt tuberkulom
+A178   Annan tuberkulos i nervsystemet
+A179   Tuberkulos i nervsystemet, ospecificerad
+A180   Tuberkulos i skelettet och lederna
+A181   Tuberkulos i urin- och könsorganen
+A182   Tuberkulös perifer lymfadenopati
+A183   Tuberkulos i tarmarna, peritoneum och mesenterialkörtlarna
+A184   Tuberkulos i hud och subkutan vävnad
+A184C  Lupus vulgaris UNS
+A184D  Scrofuloderma
+A184E  Tuberkulöst erythema induratum
+A184F  Tuberkulöst erythema nodosum
+A184G  Tuberkulöst hudsår
+A184H  Tuberculosis verrucosa cutis
+A184J  Acne scrofulosorum
+A184K  Lichen scrofulosorum
+A184L  Papulonekrotisk tuberkulid
