@@ -4,7 +4,7 @@
   <parent>
     <artifactId>webcert-parent</artifactId>
     <groupId>se.inera.webcert</groupId>
-    <version>0.5-RC15</version>
+    <version>0.5-RC16-SNAPSHOT</version>
   </parent>
 
   <artifactId>intygstjanst-stub</artifactId>
