@@ -1,6 +1,6 @@
 package se.inera.webcert.service.diagnos.model;
 
-public class Diagnos {
+public class Diagnos implements Comparable<Diagnos> {
     
     private String kod;
     
@@ -20,6 +20,11 @@ public class Diagnos {
 
     public void setBeskrivning(String beskrivning) {
         this.beskrivning = beskrivning;
+    }
+
+    @Override
+    public int compareTo(Diagnos d) {
+        return getKod().compareTo(d.getKod());
     }
     
 }
