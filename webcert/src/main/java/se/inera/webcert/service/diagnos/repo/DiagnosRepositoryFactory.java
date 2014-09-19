@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -14,6 +16,10 @@ import se.inera.webcert.service.diagnos.model.Diagnos;
 public class DiagnosRepositoryFactory {
     
     private static final String SPACE = " ";
+
+    private static final String UTF_8 = "UTF-8";
+    
+    private static Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
     
     private List<String> diagnosCodeFiles;
     
@@ -30,18 +36,27 @@ public class DiagnosRepositoryFactory {
                 populateRepoFromDiagnosisCodeFile(kodfile, diagnosRepoImpl);
             }
             
+            LOG.info("Created DiagnosRepository containing {} diagnoses", diagnosRepoImpl.nbrOfDiagosis());
+            
             return diagnosRepoImpl;
             
         } catch (IOException e) {
+            LOG.error("Exception occured when initiating DiagnosRepository");
             throw new RuntimeException("Exception occured when initiating repo", e);
         }
     }
     
     public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) throws IOException {
 
+        if (StringUtils.isBlank(fileUrl)) {
+            return;
+        }
+        
+        LOG.debug("Loading diagnosis file {}", fileUrl);
+        
         Resource fileRes = new ClassPathResource(fileUrl);
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(fileRes.getInputStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(fileRes.getInputStream(), UTF_8));
 
         while (reader.ready()) {
             String line = reader.readLine();

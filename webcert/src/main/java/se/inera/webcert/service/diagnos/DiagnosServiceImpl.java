@@ -13,9 +13,9 @@ import se.inera.webcert.service.diagnos.repo.DiagnosRepository;
 import se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory;
 
 @Service
-public class DiagnosServiceImpl {
+public class DiagnosServiceImpl implements DiagnosService {
 
-    @Value("${diagnso}")
+    @Value("${diagnos.code.files}")
     private String[] diagnosKodFiler;
     
     private DiagnosRepository diagnosRepo;
@@ -27,10 +27,18 @@ public class DiagnosServiceImpl {
         this.diagnosRepo = repoFactory.createAndInitDiagnosRepository();
     }
 
-    public Diagnos getDiagnosByCode(String code) {
+    /* (non-Javadoc)
+     * @see se.inera.webcert.service.diagnos.DiagnosService#getDiagnosisByCode(java.lang.String)
+     */
+    @Override
+    public Diagnos getDiagnosisByCode(String code) {
         return diagnosRepo.getDiagnosByCode(code);
     }
     
+    /* (non-Javadoc)
+     * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String)
+     */
+    @Override
     public List<Diagnos> searchDiagnosisByCode(String codeFragment) {
         return diagnosRepo.searchDiagnosisByCode(codeFragment);
     }

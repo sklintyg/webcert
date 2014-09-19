@@ -69,5 +69,17 @@
       <entry key="json" value="application/json" />
     </jaxrs:extensionMappings>
   </jaxrs:server>
-
+  <jaxrs:server address="/diagnos">
+    <jaxrs:serviceBeans>
+      <bean class="se.inera.webcert.web.controller.moduleapi.DiagnosModuleApiController" />
+    </jaxrs:serviceBeans>
+    <jaxrs:providers>
+      <ref bean="jacksonJsonProvider" />
+      <ref bean="webcertRestExceptionHandler"/>
+    </jaxrs:providers>
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json" />
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+  
 </beans>

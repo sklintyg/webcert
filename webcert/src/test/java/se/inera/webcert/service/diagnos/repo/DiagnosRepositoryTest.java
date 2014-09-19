@@ -45,6 +45,14 @@ public class DiagnosRepositoryTest {
     }
     
     @Test
+    public void testGetByCodeCheckEncoding() {
+        String code = "A062";
+        Diagnos res = repo.getDiagnosByCode(code);
+        assertEquals("A062", res.getKod());
+        assertEquals("Kolit orsakad av amöba", res.getBeskrivning());
+    }
+    
+    @Test
     public void testGetByCodeWithMalformedCode() {
         String code = " a 051  ";
         Diagnos res = repo.getDiagnosByCode(code);
