@@ -33,7 +33,7 @@ class SkrivIntyg {
 
             waitFor {
                 if (typ == "FK7263") {
-
+                    at se.inera.webcert.pages.fk7263.EditCertPage
                 } else if (typ == "ts-bas") {
                     at se.inera.webcert.pages.ts_bas.EditCertPage
                 } else if (typ == "ts-diabetes") {
