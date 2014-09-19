@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos;
+package se.inera.webcert.service.diagnos.repo;
 
 import java.util.ArrayList;
 import java.util.List;

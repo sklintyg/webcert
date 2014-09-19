@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos;
+package se.inera.webcert.service.diagnos.repo;
 
 import java.io.BufferedReader;
 import java.io.IOException;

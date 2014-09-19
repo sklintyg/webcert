@@ -1,4 +1,4 @@
-package se.inera.webcert.service.diagnos;
+package se.inera.webcert.service.diagnos.repo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,6 +12,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.inera.webcert.service.diagnos.model.Diagnos;
+import se.inera.webcert.service.diagnos.repo.DiagnosRepository;
+import se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory;
 
 public class DiagnosRepositoryTest {
     
