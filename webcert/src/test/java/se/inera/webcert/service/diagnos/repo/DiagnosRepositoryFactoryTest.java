@@ -5,14 +5,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import se.inera.webcert.service.diagnos.model.Diagnos;
-import se.inera.webcert.service.diagnos.repo.DiagnosRepository;
-import se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory;
 
 public class DiagnosRepositoryFactoryTest {
 
@@ -28,28 +25,24 @@ public class DiagnosRepositoryFactoryTest {
     private static final String FILE_1 = "/DiagnosService/KSH97_TESTKODER_1.ANS";
     private static final String FILE_2 = "/DiagnosService/KSH97_TESTKODER_2.ANS";
     
-    private DiagnosRepositoryFactory factory = new DiagnosRepositoryFactory();
+    private DiagnosRepositoryFactory factory;
 
     @Before
     public void setup() {
-        factory = new DiagnosRepositoryFactory();
-        List<String> diagnosKodFiler = Arrays.asList(FILE_1, FILE_2);
-        factory.setDiagnosKodFiler(diagnosKodFiler);
+        factory = new DiagnosRepositoryFactory(Arrays.asList(FILE_1, FILE_2));
     }
 
     @Test
     public void testCreateRepository() {
-                
-        DiagnosRepository repository = factory.createDiagnosRepository();
+        DiagnosRepositoryImpl repository = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository();
         assertNotNull(repository);
         assertEquals(150, repository.nbrOfDiagosis());
     }
 
     @Test
     public void testReadDiagnosFile() throws Exception {
-
-        DiagnosRepository diagnosRepository = new DiagnosRepository();
-        factory.readFile(FILE_1, diagnosRepository);
+        DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
+        factory.populateRepoFromDiagnosisCodeFile(FILE_1, diagnosRepository);
         assertEquals(100, diagnosRepository.nbrOfDiagosis());
     }
 

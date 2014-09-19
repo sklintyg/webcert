@@ -12,27 +12,32 @@ import org.springframework.core.io.Resource;
 import se.inera.webcert.service.diagnos.model.Diagnos;
 
 public class DiagnosRepositoryFactory {
-
+    
     private static final String SPACE = " ";
-
-    public List<String> diagnosKodFiler;
-
-    public DiagnosRepository createDiagnosRepository() {
+    
+    private List<String> diagnosCodeFiles;
+    
+    public DiagnosRepositoryFactory(List<String> diagnosCodeFiles) {
+        this.diagnosCodeFiles = diagnosCodeFiles;
+    }
+    
+    public DiagnosRepository createAndInitDiagnosRepository() {
         try {
-            DiagnosRepository repository = new DiagnosRepository();
+            
+            DiagnosRepositoryImpl diagnosRepoImpl = new DiagnosRepositoryImpl();
 
-            for (String kodfile : diagnosKodFiler) {
-                readFile(kodfile, repository);
+            for (String kodfile : diagnosCodeFiles) {
+                populateRepoFromDiagnosisCodeFile(kodfile, diagnosRepoImpl);
             }
-
-            return repository;
+            
+            return diagnosRepoImpl;
             
         } catch (IOException e) {
             throw new RuntimeException("Exception occured when initiating repo", e);
         }
     }
-
-    public void readFile(String fileUrl, DiagnosRepository diagnosRepository) throws IOException {
+    
+    public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) throws IOException {
 
         Resource fileRes = new ClassPathResource(fileUrl);
 
@@ -43,7 +48,8 @@ public class DiagnosRepositoryFactory {
             Diagnos diagnos = createDiagnosFromString(line);
             diagnosRepository.addDiagnos(diagnos);
         }
-
+        
+        reader.close();
     }
 
     public Diagnos createDiagnosFromString(String diagnosStr) {
@@ -51,7 +57,8 @@ public class DiagnosRepositoryFactory {
         if (StringUtils.isBlank(diagnosStr)) {
             return null;
         }
-
+        
+        // remove excess space in the string
         diagnosStr = StringUtils.normalizeSpace(diagnosStr);
 
         int firstSpacePos = diagnosStr.indexOf(SPACE);
@@ -64,18 +71,9 @@ public class DiagnosRepositoryFactory {
         String beskStr = diagnosStr.substring(firstSpacePos + 1);
 
         Diagnos d = new Diagnos();
-        d.setKod(kodStr);
+        d.setKod(kodStr.toUpperCase());
         d.setBeskrivning(beskStr);
 
         return d;
     }
-
-    public List<String> getDiagnosKodFiler() {
-        return diagnosKodFiler;
-    }
-
-    public void setDiagnosKodFiler(List<String> diagnosKodFiler) {
-        this.diagnosKodFiler = diagnosKodFiler;
-    }
-
 }

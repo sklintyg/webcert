@@ -12,8 +12,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import se.inera.webcert.service.diagnos.model.Diagnos;
-import se.inera.webcert.service.diagnos.repo.DiagnosRepository;
-import se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory;
 
 public class DiagnosRepositoryTest {
     
@@ -23,11 +21,10 @@ public class DiagnosRepositoryTest {
     
     @BeforeClass
     public static void setup() {
-        DiagnosRepositoryFactory factory = new DiagnosRepositoryFactory();
-        List<String> files= Arrays.asList(FILE_1);
-        factory.setDiagnosKodFiler(files);
-        repo = factory.createDiagnosRepository();
-        assertEquals(100, repo.nbrOfDiagosis());
+        DiagnosRepositoryFactory factory = new DiagnosRepositoryFactory(Arrays.asList(FILE_1));
+        DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository();
+        assertEquals(100, repoImpl.nbrOfDiagosis());
+        repo = repoImpl;
     }
     
     @Test
