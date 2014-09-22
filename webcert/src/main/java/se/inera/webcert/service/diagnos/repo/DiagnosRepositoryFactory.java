@@ -13,6 +13,12 @@ import org.springframework.core.io.Resource;
 
 import se.inera.webcert.service.diagnos.model.Diagnos;
 
+/**
+ * Factory responsible for creating the DiagnosRepository out of supplied code files.
+ * 
+ * @author npet
+ *
+ */
 public class DiagnosRepositoryFactory {
     
     private static final String SPACE = " ";

@@ -11,6 +11,12 @@ import org.apache.commons.lang.StringUtils;
 
 import se.inera.webcert.service.diagnos.model.Diagnos;
 
+/**
+ * Map-based repository holding diagnosises.
+ * 
+ * @author npet
+ *
+ */
 public class DiagnosRepositoryImpl implements DiagnosRepository {
     
     private Map<String, Diagnos> diagnoses = new TreeMap<String, Diagnos>();
@@ -24,7 +30,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
     public Diagnos getDiagnosByCode(String code) {
         return ((code = sanitizeCodeValue(code)) != null) ? diagnoses.get(code) : null;
     }
-
+        
     /* (non-Javadoc)
      * @see se.inera.webcert.service.diagnos.model.DiagnosRepository#searchDiagnosisByCode(java.lang.String)
      */
