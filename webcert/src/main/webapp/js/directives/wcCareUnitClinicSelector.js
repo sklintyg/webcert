@@ -11,7 +11,7 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                 controller: function($scope) {
 
                     $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
-                    $scope.units.unshift({id: 'wc-all', namn: 'Alla mottagningars frågor och svar'});
+                    $scope.units.unshift({id: 'wc-all', namn: 'Alla mottagningar på denna vårdenhet'});
                     $scope.selectedUnit = null;
 
                     $scope.$on('wc-stat-update', function(event, message) {
@@ -36,11 +36,19 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                             // If it's the all choice, we know we want the total of everything
                             if (unit.id === 'wc-all') {
                                 unit.fragaSvar = unitStats.fragaSvarValdEnhet;
+                                unit.tooltip =
+                                    'Totalt antal ej hanterade frågor och svar för den vårdenhet där du är inloggad. ' +
+                                    'Här visas samtliga frågor och svar på vårdenhetsnivå och på mottagningsnivå.';
                             } else {
                                 // Otherwise find the stats for the unit
                                 angular.forEach(valdVardenheterStats, function(unitStat) {
                                     if (unit.id === unitStat.id) {
                                         unit.fragaSvar = unitStat.fragaSvar;
+                                        unit.tooltip =
+                                            'Det totala antalet ej hanterade frågor och svar som finns registrerade på ' +
+                                            'vårdenheten. Det kan finnas frågor och svar som gäller denna vårdenhet men ' +
+                                                'som inte visas här. För säkerhets skull bör du även kontrollera frågor ' +
+                                                'och svar för övriga vårdenheter och mottagningar.';
                                     }
                                 });
                             }

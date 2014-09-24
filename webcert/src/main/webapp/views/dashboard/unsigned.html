@@ -13,6 +13,8 @@
                     <h2 class="col-head less-top-padding">{{widgetState.valdVardenhet.namn}}</h2>
 
                     <div class="webcert-bottom-padding-section">
+                      <span
+                          ng-if="!widgetState.filteredYet">Nedan visas alla ej signerade utkast.<br></span>
                         <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
                                 ng-click="widgetState.queryFormCollapsed = !widgetState.queryFormCollapsed"
                                 ng-switch="widgetState.queryFormCollapsed">
@@ -31,11 +33,11 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-sm-2 control-label">Intyg som är</label>
+                                <label class="col-sm-2 control-label">Utkast som är</label>
                                 <div class="col-sm-10">
                                   <label class="radio-inline">
                                     <input id="forwardedAll" name="forwarded" type="radio" ng-model="filterForm.forwarded"
-                                           value="default"> Båda
+                                           value="default"> Alla utkast
                                   </label>
                                   <label class="radio-inline">
                                     <input id="forwarded" name="forwarded" type="radio" value="true"
@@ -49,7 +51,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="col-sm-2 control-label">Senast sparat</label>
+                                <label class="col-sm-2 control-label">Sparat datum</label>
                                 <div class="col-sm-10 form-inline">
                                     Från
                                     <input type="text" class="form-control" id="filter-changedate-from" datepicker-popup
@@ -78,10 +80,10 @@
                                     </label>
                                     <label class="radio-inline">
                                         <input id="completeYes" name="complete" type="radio" value="true"
-                                               ng-model="filterForm.complete"> Kompletta utkast</label>
+                                               ng-model="filterForm.complete"> Utkast, ej signerade</label>
                                     <label class="radio-inline">
                                         <input id="completeNo" name="complete" type="radio" value="false"
-                                               ng-model="filterForm.complete"> Ej kompletta utkast
+                                               ng-model="filterForm.complete"> Utkast, uppgifter saknas
                                     </label>
                                 </div>
                             </div>
@@ -131,17 +133,15 @@
                                         <th></th>
                                         <th></th>
                                         <th class="center"
-                                            title="Markera om intyget är vidarebefordrat till den som ska signera det.">
+                                            title="Här markerar du om utkastet är vidarebefordrat till den som ska signera det.">
                                             Vidarebefordrad
                                         </th>
                                         <th title="Indikerar intygets status, komplett eller ej komplett.">Status
                                         </th>
-                                        <th title="Person som senast sparade intyget.">Sparat av</th>
-                                        <th title="Berörd patients personnummer.">Patient</th>
-                                        <th title="Datum då intyget senast sparades.">
-                                            Senast sparat
-                                        </th>
-                                        <th title="Typ av intyg">Intygstyp</th>
+                                        <th title="Person som senast sparade utkastet.">Sparat av</th>
+                                        <th title="Personnummer för patient som utkastet gäller.">Patient</th>
+                                        <th title="Datum då utkastet senast sparades.">Sparat datum</th>
+                                        <th title="Typ av intyg.">Typ av intyg</th>
                                     </tr>
                                     <tr ng-repeat="cert in widgetState.currentList">
                                         <td>
@@ -153,7 +153,7 @@
                                         <td>
                                             <button class="btn btn-default"
                                                     ng-class="{'btn-info': !cert.forwarded, 'btn-default btn-secondary' : cert.forwarded}"
-                                                    title="Skicka ett mejl med en länk till intyget för att informera den som ska signera det."
+                                                    title="Skicka mejl med en länk till utkastet för att informera den som ska signera det."
                                                     ng-click="openMailDialog(cert)">
                                                 <img ng-if="!cert.forwarded" src="/img/mail.png">
                                                 <img ng-if="cert.forwarded" src="/img/mail_dark.png">

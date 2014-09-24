@@ -11,6 +11,31 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             // Constant settings
             var PAGE_SIZE = 10;
 
+            // Exposed page state variables
+            $scope.widgetState = {
+
+                // User context
+                valdVardenhet: User.getValdVardenhet(),
+
+                // Loadíng states
+                doneLoading: true,
+                runningQuery: false,
+                fetchingMoreInProgress: false,
+                loadingSavedByList: false,
+
+                // Error state
+                activeErrorMessageKey: null,
+
+                // Search states
+                queryFormCollapsed: true,
+                filteredYet: false,
+                savedByList: [],
+
+                // List data
+                totalCount: 0,
+                currentList: undefined
+            };
+
             // Default API filter states
             var defaultSavedByChoice = {
                 name: 'Visa alla',
@@ -46,6 +71,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             function resetFilterState() {
                 $scope.filterForm = angular.copy(defaultFilterFormData);
+                $scope.widgetState.filteredYet = false;
             }
 
             function loadFilterForm() {
@@ -61,35 +87,10 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 }
             }
 
-            // Exposed page state variables
-            resetFilterState(); // Initializes $scope.filterForm from defaultFilterFormData
-            $scope.widgetState = {
-
-                // User context
-                valdVardenhet: User.getValdVardenhet(),
-
-                // Loadíng states
-                doneLoading: true,
-                runningQuery: false,
-                fetchingMoreInProgress: false,
-                loadingSavedByList: false,
-
-                // Error state
-                activeErrorMessageKey: null,
-
-                // Search states
-                queryFormCollapsed: true,
-                searchedYet: false,
-                savedByList: [],
-
-                // List data
-                totalCount: 0,
-                currentList: undefined
-            };
-
             /**
              *  Load initial data
              */
+            resetFilterState(); // Initializes $scope.filterForm from defaultFilterFormData
             loadFilterForm();
             $scope.widgetState.doneLoading = false;
 
@@ -158,6 +159,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             $scope.filterDrafts = function() {
                 $log.debug('filterDrafts');
                 $scope.widgetState.activeErrorMessageKey = null;
+                $scope.widgetState.filteredYet = true;
                 $scope.filterForm.lastFilterQuery.startFrom = 0;
                 var filterQuery = $scope.filterForm.lastFilterQuery;
                 $cookieStore.put('enhetsId', filterQuery.enhetsId);

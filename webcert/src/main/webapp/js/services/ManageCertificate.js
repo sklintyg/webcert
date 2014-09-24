@@ -149,18 +149,19 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 return document.cookie && document.cookie.indexOf('WCDontAskForForwardedToggle=1') !== -1;
             }
 
-            function _handleForwardedToggle(qa, onYesCallback) {
+            // This handles forwarding of Ej signerade utkast only
+            function _handleForwardedToggle(draft, onYesCallback) {
                 // Only ask about toggle if not already set AND not skipFlag cookie is
                 // set
-                if (!qa.forwarded && !_isSkipForwardedCookieSet()) {
+                if (!draft.forwarded && !_isSkipForwardedCookieSet()) {
                     _showForwardedPreferenceDialog('markforward',
-                        'Det verkar som att du har informerat den som ska hantera frågan-svaret. Vill du markera frågan-svaret som vidarebefordrad?',
+                        'Det verkar som att du har informerat den som ska signera utkastet. Vill du markera utkastet som vidarebefordrad?',
                         function() { // yes
                             $log.debug('yes');
-                            qa.forwarded = true;
+                            draft.forwarded = true;
                             if (onYesCallback) {
                                 // let calling scope handle yes answer
-                                onYesCallback(qa);
+                                onYesCallback(draft);
                             }
                         },
                         function() { // no
