@@ -36,7 +36,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     value: 'ALLA'
                 },
                 {
-                    label: 'Alla som kräver åtgärd',
+                    label: 'Visa alla ej hanterade',
                     value: 'ALLA_OHANTERADE'
                 },
                 {

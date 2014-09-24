@@ -5,10 +5,12 @@ var wcMessages = {
         'webcert.description': 'Välkommen till Webcert.',
         'dashboard.title': 'Mina andra enheter',
         'dashboard.unanswered.title': 'Frågor och svar',
-        'dashboard.unsigned.title': 'Ej signerade intyg',
+        'dashboard.unsigned.title': 'Ej signerade utkast',
         'dashboard.about.title': 'Om Webcert',
 
         //labels
+        'label.default-cert-type': 'Välj typ av intyg',
+
         'label.unsignedcerts': 'Ej signerade intyg',
         'label.unansweredcerts': 'Intyg med ej hanterad fråga',
         'label.readytosigncerts': 'Intyg färdiga att signera (massignering)',
@@ -36,8 +38,8 @@ var wcMessages = {
         'certificatetypes.ts-diabetes.typename': 'Transportstyrelsens läkarintyg, diabetes',
 
         //certificate help texts
-        'certificatetypes.ts-bas.helptext': 'Transportstyrelsens läkarintyg ska användas vid förlängd giltighet av högre behörighet från 45 år, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation. Transportstyrelsens läkarintyg kan även användas när Transportstyrelsen i annat fall begärt ett allmänt läkarintyg avseende lämplighet att inneha körkort.<br/><br/> Specialistintyg finns bl. a för alkohol, narkotika, läkemedel, synfunktion, Alkolås m.m. Se: <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>. Därefter \'Väg\' och \'Trafikmedicin\'',
-        'certificatetypes.ts-diabetes.helptext': 'Transportstyrelsens läkarintyg, diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.<br/><br/> Information om Transportstyrelsens föreskrifter finns under länken \'Väg\' och sedan länken \'Trafikmedicin\' på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>',
+        'certificatetypes.ts-bas.helptext': '<p>Transportstyrelsen läkarintyg ska användas vid förlängd giltighet av högre behörighet från 45 år, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation. Transportstyrelsen läkarintyg kan även användas när Transportstyrelsen i annat fall begärt ett allmänt läkarintyg avseende lämplighet att inneha körkort.</p><p>Specialistintyg finns bl.a. för alkohol, läkemedel, synfunktion, Alkolås m.m. Se <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a> därefter \"Väg\" och \"Trafikmedicin\".</p>',
+        'certificatetypes.ts-diabetes.helptext': '<p>Läkarintyg, diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.</p><p>Information om Transportstyrelsens föreskrifter finns under länken \"Väg\" och sedan länken \"Trafikmedicin\" på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a></p>.',
         'certificatetypes.fk7263.helptext': 'Här ska det finnas lite info om FK7263',
         'certificatetypes.rli.helptext': 'Här ska det ligga en text om intyg vid avbeställd resa',
 

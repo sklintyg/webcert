@@ -29,22 +29,73 @@
         <div class="col-xs-6">
           <h1>Välkommen till Webcert</h1>
           <p>
-            Webcert är en tjänst för elektroniska läkarintyg. I tjänsten kan du skriva intyg samt kommunicera med
-            Försäkringskassan kring läkarintyg FK 7263.</p>
-          <p>För närvarande stödjer tjänsten följande intyg:</p>
+            Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och
+            kommunicera med Försäkringskassan om läkarintyg FK 7263. För närvarande stödjer tjänsten följande
+            intyg: </p>
           <ul>
-            <li>Läkarintyg för sjukskrivning (FK 7263)</li>
+            <li>Läkarintyg FK 7263</li>
+            <li>Transportstyrelsens läkarintyg</li>
+            <li>Transportstyrelsens läkarintyg, diabetes</li>
           </ul>
           <p>
-            Tjänsten kräver inloggning med SITHS-kort samt medarbetaruppdrag på vårdenhet med syfte Vård- och
-            behandling.</p>
+            <a href="#" onclick="toggle('loginInfo'); return false;">Läs mer om inloggning</a>
+          </p>
+          <div class="bluebox" id="loginInfo">
+            <p>
+              För att kunna använda Webcerts funktioner behöver du någon av följande webbläsare:
+            </p>
+            <ul>
+              <li>Internet Explorer 8 eller efterföljande versioner.</li>
+              <li>Google Chrome 30 eller efterföljande versioner.</li>
+              <li>Safari 5 eller efterföljande versioner.</li>
+              <li>Firefox 24 eller efterföljande versioner.</li>
+            </ul>
+            <p>
+              Du måste även ha JavaScript aktiverat i din webbläsare för att kunna använda Webcert. </p>
+            <p>
+              För att logga in i Webcert behövs SITHS-kort eller e-legitimation. </p>
+            <p>
+              Om du arbetar för ett landsting eller en region ska du logga in med SITHS-kort, är du privatläkare väljer du
+              inloggning med e-legitimation. </p>
+            <p>
+              Inloggning med SITHS-kort kräver även medarbetaruppdrag ”Vård och behandling” i Hälso- och sjukvårdens
+              adressregister, HSA-katalogen. </p>
+            <p>
+              Inloggning med e-legitimation kräver att du är läkare enligt Socialstyrelsens register över legitimerad
+              hälso- och sjukvårdspersonal, HOSP.
+            </p>
+            <h3>Inloggning med SITHS-kort</h3>
+            <p>
+              Om du som arbetar för ett landsting eller en region inte kan logga in kan det bero på att HSA-katalogen
+              inte är uppdaterad och att du därmed saknar medarbetaruppdraget "Vård och behandling".
+            </p>
+            <h3>Privatläkare med e-legitimation</h3>
+            <p>
+              Om du som privatläkare inte kan logga in kan det bero på att information om din yrkeslegitimation ännu
+              inte har hämtas från Socialstyrelsens register över legitimerad hälso- och sjukvårdspersonal, HOSP.
+              Information inhämtas varannan vecka.
+            </p>
+            <h2>Support och kundservice</h2>
+            <p>Om du tror att något är fel kan du kontakta <a href="http://www.inera.se/KONTAKT_KUNDSERVICE/Felanmalan-och-support/">Ineras Nationella kundservice</a>. Kontrollera gärna följande
+              innan du kontaktar supporten.
+            </p>
+            <ul>
+              <li>att SITHS-kortet eller e-legitimationen sitter i kortläsaren</li>
+              <li>att du angett rätt lösenord</li>
+            </ul>
+            <h2>Om e-legitimation</h2>
+            <p>
+              Här hittar du <a href="https://minavardkontakter.se/C125755F00329208/p/KONT-8ZSGV8?opendocument">mer information om e-legitimation</a> och om hur du gör för att <a href="http://www.e-legitimation.se">skaffa en e-legitimation</a>.
+            </p>
+          </div>
           <p><a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a></p>
         </div>
       </div>
     </div>
 
     <div class="content-footer">
-      <p>Webcert använder kakor. <a href="#" onclick="toggle(); return false;">Läs mer om Kakor (cookies)</a></p>
+      <p>Webcert använder kakor. <a href="#" onclick="toggle('cookiejar'); return false;">Läs
+        mer om Kakor (cookies)</a></p>
       <div class="bluebox" id="cookiejar">
         <h3>Om Kakor (cookies)</h3>
         <p>
@@ -70,13 +121,16 @@
 
   <script>
     var cookiejar = document.getElementById('cookiejar');
-    cookiejar.style.visibility = 'hidden';
+    cookiejar.style.display = 'none';
+    var loginInfo = document.getElementById('loginInfo');
+    loginInfo.style.display = 'none';
 
-    function toggle() {
-      if (cookiejar.style.visibility === 'hidden') {
-        cookiejar.style.visibility = 'visible';
+    function toggle(elementId) {
+      var element = document.getElementById(elementId);
+      if (element.style.display === 'none') {
+        element.style.display = 'block';
       } else {
-        cookiejar.style.visibility = 'hidden';
+        element.style.display = 'none';
       }
     }
   </script>

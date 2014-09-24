@@ -1,8 +1,8 @@
 angular.module('webcert').factory('webcert.ManageCertificate',
     [ '$http', '$log', '$location', '$window', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
-        'common.User', 'common.dialogService', 'common.CertificateService',
+        'common.User', 'common.dialogService', 'common.messageService', 'common.CertificateService',
         function($http, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
-            CertificateService) {
+            messageService, CertificateService) {
             'use strict';
 
             /**
@@ -14,7 +14,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     $log.debug('got data:', data);
                     var sortValue = 0;
                     var types = [
-                        { sortValue: sortValue++, id: 'default', label: 'Välj intygstyp' }
+                        { sortValue: sortValue++, id: 'default', label: messageService.getProperty('label.default-cert-type') }
                     ];
                     for (var i = 0; i < data.length; i++) {
                         var m = data[i];
@@ -154,7 +154,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 // set
                 if (!qa.forwarded && !_isSkipForwardedCookieSet()) {
                     _showForwardedPreferenceDialog('markforward',
-                        'Det verkar som att du har informerat den som ska hantera ärendet. Vill du markera ärendet som vidarebefordrat?',
+                        'Det verkar som att du har informerat den som ska hantera frågan-svaret. Vill du markera frågan-svaret som vidarebefordrad?',
                         function() { // yes
                             $log.debug('yes');
                             qa.forwarded = true;
@@ -266,9 +266,9 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                         titleId: 'label.copycert',
                         templateUrl: '/views/partials/check-dialog.html',
                         model: $scope.dialog,
-                        bodyText: 'När du kopierar detta intyg får du upp ett nytt intyg av samma typ och med ' +
-                            'samma information som finns i det intyg som du kopierar. Du får möjlighet att redigera ' +
-                            'informationen innan du signerar det nya intyget.',
+                        bodyText: '<p>Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma ' +
+                            'information. I de fall patienten har nytt namn eller ny adress så ändras det.</p>' +
+                            'Uppgifterna i intygsutkastet går att ändra innan det signeras.',
                         button1click: function() {
                             $log.debug('copy cert from dialog' + cert);
                             _createCopyDraft($scope, copyDialog, COPY_DIALOG_COOKIE, cert);

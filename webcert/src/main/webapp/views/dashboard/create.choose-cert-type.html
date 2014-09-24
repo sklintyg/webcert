@@ -14,7 +14,6 @@
                 {{personnummer}}
               </div>
               <button class="btn btn-default" type="button" ng-click="changePatient()">Byt patient</button>
-              <button class="btn btn-default" type="button" ng-click="editPatientName()">Korrigera namn</button>
             </div>
 
             <!-- New cert -->
@@ -46,7 +45,7 @@
 
       <!-- Tidigare intyg table -->
       <div class="webcert-col-section">
-        <h2 class="col-head">{{fornamn}} {{efternamn}}s tidigare intyg</h2>
+        <h2 class="col-head">Tidigare intyg för {{fornamn}} {{efternamn}}</h2>
         <div class="form-group">
           <label class="radio-inline">
             <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
@@ -54,11 +53,11 @@
           </label>
           <label class="radio-inline">
             <input id="intygFilterRattade" name="intygFilter" type="radio" value="revoked"
-                   ng-model="filterForm.intygFilter" checked="checked"> Rättade intyg
+                   ng-model="filterForm.intygFilter" checked="checked"> Makulerade intyg
           </label>
           <label class="radio-inline">
             <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all"
-                   ng-model="filterForm.intygFilter" checked="checked"> Visa samtliga intyg
+                   ng-model="filterForm.intygFilter" checked="checked"> Samtliga intyg
           </label>
         </div>
 
@@ -85,10 +84,10 @@
                 <tr>
                   <th></th>
                   <th></th>
-                  <th title="">Intygstyp</th>
+                  <th title="">Typ av intyg</th>
                   <th title="">Status</th>
-                  <th title="">Ändringsdatum</th>
-                  <th title="">Signerat/Sparat av</th>
+                  <th title="">Sparat datum</th>
+                  <th title="">Sparat/signerat av</th>
                 </tr>
                 <tr ng-repeat="cert in widgetState.currentList">
                   <td>
@@ -98,7 +97,7 @@
                   </td>
                   <td>
                     <button ng-show="cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'" class="btn btn-info"
-                            title="Kopiera intyget till ett nytt utkast" ng-click="copyIntyg(cert)"
+                            title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras. Kopiera kan användas exempelvis vid förlängning av en sjukskrivning." ng-click="copyIntyg(cert)"
                             id="copyBtn-{{cert.intygId}}">
                       Kopiera
                     </button>

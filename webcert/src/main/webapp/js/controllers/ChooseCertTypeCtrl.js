@@ -44,10 +44,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.certificateTypeText = '';
 
             $scope.certTypes = [
-                {
+/*                {
                     id: 'default',
                     label: ''
-                }
+                }*/
             ];
 
             ManageCertificate.getCertTypes(function(types) {
@@ -92,9 +92,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.changePatient = function() {
                 $location.path('/create/index');
-            };
-            $scope.editPatientName = function() {
-                $location.path('/create/edit-patient-name/index');
             };
 
             $scope.$watch('filterForm.intygFilter', function() {
