@@ -13,7 +13,7 @@
   </properties>
   <modules>
     <module>mc2wc-common</module>
-    <module>mc2wc-receiver</module>
+    
     <module>mc2wc-batch</module>
   </modules>
   <pluginRepositories>
