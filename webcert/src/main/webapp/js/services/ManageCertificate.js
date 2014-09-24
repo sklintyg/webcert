@@ -268,8 +268,9 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                         templateUrl: '/views/partials/check-dialog.html',
                         model: $scope.dialog,
                         bodyText: '<p>Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma ' +
-                            'information. I de fall patienten har nytt namn eller ny adress så ändras det.</p>' +
-                            'Uppgifterna i intygsutkastet går att ändra innan det signeras.',
+                            'information. I de fall patienten har ändrat namn eller adress så uppdateras den informationen.</p>' +
+                            '<p>Uppgifterna i intygsutkastet går att ändra innan det signeras.</p>' +
+                            'Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.',
                         button1click: function() {
                             $log.debug('copy cert from dialog' + cert);
                             _createCopyDraft($scope, copyDialog, COPY_DIALOG_COOKIE, cert);
