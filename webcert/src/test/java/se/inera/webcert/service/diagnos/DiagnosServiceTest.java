@@ -1,7 +1,9 @@
 package se.inera.webcert.service.diagnos;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -66,4 +68,11 @@ public class DiagnosServiceTest {
         assertEquals("Should return codes A040-A049", 10, res.size());
     }
     
+    @Test
+    public void testValidateDiagnosService() {
+        assertFalse("Null should return false",service.validateDiagnosisCode("null", 3));
+        assertFalse("Empty string should return false", service.validateDiagnosisCode("", 3));
+        assertFalse("Too short should return false", service.validateDiagnosisCode("A0", 3));
+        assertTrue(service.validateDiagnosisCode("A04", 3));
+    }
 }

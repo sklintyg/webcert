@@ -36,5 +36,14 @@ public interface DiagnosService {
      * @return
      */
     public abstract List<Diagnos> searchDiagnosisByCode(String codeFragment, int nbrOfResults);
+    
+    /**
+     *  Validates the supplied code fragment.
+     * 
+     * @param codeFragment The code to be validated.
+     * @param minimumLength The minimum length that the code fragment needs to have to be validated.
+     * @return true if the code fragment matches any diagnosis codes.
+     */
+    public abstract boolean validateDiagnosisCode(String codeFragment, int minimumLength);
 
 }
