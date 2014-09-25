@@ -40,6 +40,10 @@ app.config(function($routeProvider) {
             templateUrl: '/views/dashboard/view.qa.html',
             controller: 'webcert.ViewCertCtrl'
         }).
+        when('/webcert/about', {
+            templateUrl: '/views/dashboard/about.webcert.html',
+            controller: 'webcert.AboutWebcertCtrl'
+        }).
         when('/support/about', {
             templateUrl: '/views/dashboard/about.support.html',
             controller: 'webcert.AboutWebcertCtrl'

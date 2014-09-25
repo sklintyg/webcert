@@ -15,9 +15,14 @@ angular.module('webcert').directive('wcAbout',
                 $scope.today = new Date();
                 $scope.menuItems = [
                     {
+                        id: 'about-webcert',
+                        link: '/web/dashboard#/webcert/about',
+                        label: 'Om Webcert'
+                    },
+                    {
                         id: 'about-support',
                         link: '/web/dashboard#/support/about',
-                        label: 'Support / kontaktinformation'
+                        label: 'Support och kontaktinformation'
                     },
                     {
                         id: 'about-intyg',

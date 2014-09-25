@@ -125,13 +125,13 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private String mailBodyForFraga(GetHsaUnitResponseType unit, FragaSvar fragaSvar) {
-        return "<p>Försäkringskassan har skickat en ny fråga till " + unit.getName()
-                + ".<br>Frågan kan besvaras i <a href=\"" + intygsUrl(fragaSvar) + "\">Webcert</a></p>";
+        return "<p>En ny fråga-svar har inkommit till " + unit.getName()
+                + " i Webcert.<br><a href=\"" + intygsUrl(fragaSvar) + "\">Svara i Webcert</a></p>";
     }
 
     private String mailBodyForSvar(GetHsaUnitResponseType unit, FragaSvar fragaSvar) {
-        return "<p>Försäkringskassan har besvarat en fråga från " + unit.getName()
-                + ".<br>Svaret är tillgängligt i <a href=\"" + intygsUrl(fragaSvar) + "\">Webcert</a></p>";
+        return "<p>En fråga-svar från " + unit.getName() + " har besvarats"
+                + ".<br><a href=\"" + intygsUrl(fragaSvar) + "\">Se Svaret i Webcert</a></p>";
     }
 
     private void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {
