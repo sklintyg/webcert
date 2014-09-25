@@ -62,7 +62,7 @@
   <jaxws:endpoint address="/ping-for-configuration/v1.0" implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl" />
   
   <!-- REST service for inserting questions directly into the database for testing purposes -->
-  <beans profile="dev,test,qa">
+  <beans profile="dev,local,test,qa">
       <jaxrs:server address="/questions">
           <jaxrs:serviceBeans>
               <ref bean="questionBean" />
