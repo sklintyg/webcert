@@ -51,7 +51,7 @@
 
 
 
-  <beans profile="dev,test,qa">
+  <beans profile="dev,local,test,qa">
     <jaxrs:server address="/questions">
       <jaxrs:serviceBeans>
         <ref bean="questionBean" />
