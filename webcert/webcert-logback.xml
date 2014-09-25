@@ -57,6 +57,7 @@
   <logger name="org.springframework" level="error" />
 
   <logger name="org.hibernate" level="error" />
+  <logger name="org.hibernate.engine.jdbc.spi.SqlExceptionHelper" level="off" />
 
   <logger name="org.apache.cxf.services" level="error" />
 
