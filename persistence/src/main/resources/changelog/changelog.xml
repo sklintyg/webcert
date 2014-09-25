@@ -199,4 +199,20 @@
     </createTable>
   </changeSet>
 
+  <changeSet id="3" author="bb">
+    <createIndex
+            indexName="IDX_FRAGASVAR_INTYGS_ID"
+            tableName="FRAGASVAR"
+            unique="false">
+        <column name="INTYGS_ID"/>
+    </createIndex>
+    <createIndex
+            indexName="IDX_FRAGASVAR_ENHETS_ID_STATUS"
+            tableName="FRAGASVAR"
+            unique="false">
+        <column name="ENHETS_ID"/>
+        <column name="STATUS"/>
+    </createIndex>
+  </changeSet>
+
 </databaseChangeLog>
