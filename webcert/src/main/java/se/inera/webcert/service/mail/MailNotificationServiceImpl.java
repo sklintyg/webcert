@@ -131,7 +131,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private String mailBodyForSvar(GetHsaUnitResponseType unit, FragaSvar fragaSvar) {
         return "<p>En fråga-svar från " + unit.getName() + " har besvarats"
-                + ".<br><a href=\"" + intygsUrl(fragaSvar) + "\">Se Svaret i Webcert</a></p>";
+                + ".<br><a href=\"" + intygsUrl(fragaSvar) + "\">Se svaret i Webcert</a></p>";
     }
 
     private void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {

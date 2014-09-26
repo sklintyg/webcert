@@ -10,13 +10,15 @@ describe('ManageCertificate', function() {
         $provide.value('common.statService', {});
         $provide.value('common.User', {});
         $provide.value('common.CertificateService', {});
+        $provide.value('common.messageService', {});
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.ManageCertificate', '$httpBackend',
-        function(_ManageCertificate_, _$httpBackend_) {
+    beforeEach(angular.mock.inject(['webcert.ManageCertificate', '$httpBackend', 'common.messageService',
+        function(_ManageCertificate_, _$httpBackend_, _messageService_) {
             ManageCertificate = _ManageCertificate_;
             $httpBackend = _$httpBackend_;
+            _messageService_.getProperty = function() { return "Välj typ av intyg"; };
         }]));
 
     describe('#getCertTypes', function() {
@@ -48,7 +50,7 @@ describe('ManageCertificate', function() {
                 {
                     sortValue: 0,
                     id: 'default',
-                    label: 'Välj intygstyp'
+                    label: 'Välj typ av intyg'
                 },
                 {
                     sortValue: 1,
