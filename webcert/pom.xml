@@ -251,6 +251,12 @@
 
   <profiles>
     <profile>
+      <id>local</id>
+      <properties>
+         <system.mode>local</system.mode>
+      </properties>
+    </profile>
+    <profile>
       <id>intygstjanst-stub</id>
       <properties>
         <intygstjanst.getcertificateforcare.endpoint.url>http://localhost:9088/services/get-certificate-for-care-stub</intygstjanst.getcertificateforcare.endpoint.url>
