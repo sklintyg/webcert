@@ -18,6 +18,11 @@ public class Browser {
         CachingDriverFactory.clearCache()
     }
 
+    public void laddaOm() {
+        if (!browser) throw new IllegalStateException("Browser not initialized")
+        browser.driver.navigate().refresh()
+    }
+
     static geb.Browser drive(Closure script) {
         if (!browser) throw new IllegalStateException("Browser not initialized")
         script.delegate = browser

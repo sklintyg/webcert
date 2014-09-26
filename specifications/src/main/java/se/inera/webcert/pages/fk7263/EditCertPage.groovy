@@ -15,7 +15,6 @@ class EditCertPage extends Page {
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
 
-        // Formulärfält
         smittskydd { $("#smittskydd") }
         baserasPa { module BaserasPaModule }
         diagnos { module DiagnosModule }
@@ -93,6 +92,11 @@ class ArbetsformagaModule extends Module {
         nedsattMed100 { $("#nedsattMed100") }
         nedsattMed100start { $("#nedsattMed100startdate") }
         nedsattMed100slut { $("#nedsattMed100enddate") }
+
+        period { $("#totalCertDays") }
+        arbetstid25 { $("#arbetstid25") }
+        arbetstid75 { $("#arbetstid50") }
+        arbetstid50 { $("#arbetstid75") }
     }
 }
 

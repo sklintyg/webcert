@@ -63,4 +63,41 @@ class SkrivIntyg {
         }
         true
     }
+
+    boolean verifieraAttSjukskrivningsperiodenAr(int expected) {
+        Browser.drive {
+            waitFor {
+                sleep(500)
+                expected == page.arbetsformaga.period.text().toInteger()
+            }
+        }
+        true
+    }
+
+    boolean verifieraAttArbetstid25Ar(String expected) {
+        Browser.drive {
+            waitFor {
+                expected == page.arbetsformaga.arbetstid25.text()
+            }
+        }
+        true
+    }
+
+    boolean verifieraAttArbetstid50Ar(String expected) {
+        Browser.drive {
+            waitFor {
+                expected == page.arbetsformaga.arbetstid50.text()
+            }
+        }
+        true
+    }
+
+    boolean verifieraAttArbetstid75Ar(String expected) {
+        Browser.drive {
+            waitFor {
+                expected == page.arbetsformaga.arbetstid75.text()
+            }
+        }
+        true
+    }
 }
