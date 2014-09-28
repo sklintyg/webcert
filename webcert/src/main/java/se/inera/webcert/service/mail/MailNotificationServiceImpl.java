@@ -79,7 +79,6 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         try {
             sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar), recipient);
-            LOG.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming answer on question '{}'", careUnitId, fragaSvar.getInternReferens());
         } catch (MailSendException | MessagingException e) {
             Long svarsId = fragaSvar.getInternReferens();
             String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
@@ -111,8 +110,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         if (recipientAddress != null) {
             sendNotificationToUnit(recipientAddress, subject, body);
+            LOG.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming answer on question '{}'", receivingEnhet.getHsaIdentity(), fragaSvar.getInternReferens());
         } else {
             sendAdminMailAboutMissingEmailAddress(receivingEnhet, fragaSvar);
+            LOG.info(LogMarkers.MONITORING, "Mail sent to admin on behalf of unit '{}' for incoming answer on question '{}'", receivingEnhet.getHsaIdentity(), fragaSvar.getInternReferens());
         }
     }
 
