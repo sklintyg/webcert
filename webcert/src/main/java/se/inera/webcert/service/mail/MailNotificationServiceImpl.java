@@ -134,9 +134,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         message.setFrom(new InternetAddress(fromAddress));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(mailAddress));
 
-        message.setContent(body, "text/html;charset=utf-8");
         message.setSubject(subject);
-        message.setText(body);
+        message.setContent(body, "text/html; charset=utf-8");
         mailSender.send(message);
     }
 
@@ -160,8 +159,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         body.append("<a href=\"").append(intygsUrl(fragaSvar)).append("\">Länk till frågan</a>");
 
         body.append("</p>");
-        message.setText(body.toString());
-        LOG.info(body.toString());
+        message.setContent(body.toString(), "text/html; charset=utf-8");
 
         mailSender.send(message);
 
