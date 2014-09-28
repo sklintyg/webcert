@@ -4,9 +4,9 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
-| OVRIGT | FIT-QA-1001 | FK | En fråga |intyg-fit-1| IFV1239877878-104B| Åsa Andersson |IFV1239877878-1045| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens2= |
-| OVRIGT | FIT-QA-1002 | FK | En andra fråga |intyg-fit-1| IFV1239877878-104K| Lars Andersson |IFV1239877878-1045| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens3= |
-| OVRIGT | FIT-QA-1000 | FK | En tredje fråga |intyg-fit-1| IFV1239877878-1049 | Jan Nilsson |IFV1239877878-1042| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
+| OVRIGT | FIT-QA-1001 | FK | En fråga |intyg-fit-1| IFV1239877878-104B| Åsa Andersson |IFV1239877878-1045| !today (yyyy-MM-dd) | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens2= |
+| OVRIGT | FIT-QA-1002 | FK | En andra fråga |intyg-fit-1| IFV1239877878-104K| Lars Andersson |IFV1239877878-1045| !today (yyyy-MM-dd) | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens3= |
+| OVRIGT | FIT-QA-1000 | FK | En tredje fråga |intyg-fit-1| IFV1239877878-1049 | Jan Nilsson |IFV1239877878-1042| !today (yyyy-MM-dd) | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
 
 !3 Givet att det finns frågor, verifiera att filtreringen på läkare fungerar
 
