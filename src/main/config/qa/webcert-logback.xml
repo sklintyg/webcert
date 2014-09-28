@@ -62,6 +62,8 @@
   <logger name="org.apache.cxf.services" level="error" />
 
   <logger name="se.inera" level="error" />
+  <logger name="se.inera.webcert.integration" level="info" />
+  <logger name="se.inera.webcert.service.mail" level="info" />
 
   <root>
     <level value="error" />
