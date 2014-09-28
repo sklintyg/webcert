@@ -90,9 +90,9 @@
       <property name="defaultEncoding" value="${mail.defaultEncoding}" />
       <property name="javaMailProperties">
         <props>
-          <prop key="mail.smtps.auth">true</prop>
-          <prop key="mail.smtps.starttls.enable">true</prop>
-          <prop key="mail.smtps.debug">true</prop>
+          <prop key="mail.smtps.auth">${mail.smtps.auth}</prop>
+          <prop key="mail.smtps.starttls.enable">${mail.smtps.starttls.enable}</prop>
+          <prop key="mail.smtps.debug">${mail.smtps.debug}</prop>
         </props>
       </property>
     </bean>
