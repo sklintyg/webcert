@@ -59,8 +59,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
 
         try {
-            sendNotificationMailToEnhet(fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar), recipient);
-            LOG.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming question '{}'", careUnitId, fragaSvar.getInternReferens());
+            String reason = "incoming question '" + fragaSvar.getInternReferens() + "'";
+            sendNotificationMailToEnhet(fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar), recipient, reason);
         } catch (MailSendException | MessagingException e) {
             Long frageId = fragaSvar.getInternReferens();
             String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
@@ -82,7 +82,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
 
         try {
-            sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar), recipient);
+            String reason = "incoming answer on question '" + fragaSvar.getInternReferens() + "'";
+            sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar), recipient, reason);
         } catch (MailSendException | MessagingException e) {
             Long svarsId = fragaSvar.getInternReferens();
             String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
@@ -103,8 +104,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         this.webCertHostUrl = webCertHostUrl;
     }
 
-    private void sendNotificationMailToEnhet(FragaSvar fragaSvar, String subject, String body,
-                                             GetHsaUnitResponseType receivingEnhet) throws MessagingException {
+    private void sendNotificationMailToEnhet(FragaSvar fragaSvar, String subject, String body, GetHsaUnitResponseType receivingEnhet, String reason) throws MessagingException {
+
         String recipientAddress = receivingEnhet.getEmail();
 
         // if recipient unit does not have a mail address configured, we try to lookup the unit's parent
@@ -114,10 +115,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         if (recipientAddress != null) {
             sendNotificationToUnit(recipientAddress, subject, body);
-            LOG.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for incoming answer on question '{}'", receivingEnhet.getHsaIdentity(), fragaSvar.getInternReferens());
+            LOG.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for {}", receivingEnhet.getHsaIdentity(), reason);
         } else {
             sendAdminMailAboutMissingEmailAddress(receivingEnhet, fragaSvar);
-            LOG.info(LogMarkers.MONITORING, "Mail sent to admin on behalf of unit '{}' for incoming answer on question '{}'", receivingEnhet.getHsaIdentity(), fragaSvar.getInternReferens());
+            LOG.info(LogMarkers.MONITORING, "Mail sent to admin on behalf of unit '{}' for {}", receivingEnhet.getHsaIdentity(), reason);
         }
     }
 
