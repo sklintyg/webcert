@@ -27,12 +27,6 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 | ny fraga formular visas | false |
 | fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
 
-!3 Verifiera att frågan har skickats till försäkringskassan (stub)
-
-| fraga skickad till fk |
-| fraga? |
-| En fråga från Fitnesse 1 |
-
 !3 Verifiera att det även går att använda de övriga ämnena
 
 | script | !-SvaraOchFraga-! |
@@ -48,11 +42,6 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 | skicka fraga | En fråga från Fitnesse 4 | med amne | 4 |
 | fraga med text | En fråga från Fitnesse 4 | visas  i listan med ohanterade fragor |
 | fragan ar skickad till fk meddelande visas |
-
-!3 Ta bort fråga från försäkringskassan (stub)
-
-| script | !-RensaFragorSvarTillFk-! |
-| rensa fragor |
 
 !3 Ta bort de frågor vi har skickat
 

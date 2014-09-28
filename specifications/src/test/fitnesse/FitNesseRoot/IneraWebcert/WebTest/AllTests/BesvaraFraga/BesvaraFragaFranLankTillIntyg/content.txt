@@ -22,17 +22,6 @@ Testet beskriver fallet när en användare besvarar en fråga från försäkring
 | fraga | $internReferens1 | visas i listan med ohanterade fragor | false |
 | fraga | $internReferens1 | visas i listan med hanterade fragor |
 
-!3 Verifera att svaret har skickats till försäkringskassan (stub)
-
-| svar skickad till fk |
-| svar? |
-| Här svarar Fitnesse på frågan |
-
-!3 Ta bort svar till försäkringskassan (stub)
-
-| script | !-RensaFragorSvarTillFk-! |
-| rensa svar |
-
 !3 Ta bort fråga
 
 | ta bort fraga |
