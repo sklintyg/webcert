@@ -21,9 +21,13 @@ class FkSkickarFraga extends WsClientFixture {
     String externReferens
     String frageText
     String intygsId
+    String patientId
+    String patientNamn
     String vardpersonal
+    String vardpersonalNamn
     String vardenhet
-
+    String vardgivare
+    
     public FkSkickarFraga() {
         this(WsClientFixture.LOGICAL_ADDRESS)
     }
@@ -35,6 +39,19 @@ class FkSkickarFraga extends WsClientFixture {
         questionResponder = createClient(ReceiveMedicalCertificateQuestionResponderInterface.class, url)
     }
 
+    public void reset() {
+        amne = null
+        externReferens = null
+        frageText = null
+        intygsId = null
+        patientId = null
+        patientNamn = null
+        vardpersonal = null
+        vardpersonalNamn = null
+        vardenhet = null
+        vardgivare = null
+    }
+
     def resultat() {
         // read request template from file
         JAXBContext jaxbContext = JAXBContext.newInstance(ReceiveMedicalCertificateQuestionType.class);
@@ -44,8 +61,12 @@ class FkSkickarFraga extends WsClientFixture {
         question.fkReferensId = externReferens
         question.fraga.meddelandeText = frageText
         question.lakarutlatande.lakarutlatandeId = intygsId
+        if (patientId) question.lakarutlatande.patient.personId.extension = patientId
+        if (patientNamn) question.lakarutlatande.patient.fullstandigtNamn = patientNamn
         question.adressVard.hosPersonal.personalId.extension = vardpersonal
+        if (vardpersonalNamn) question.adressVard.hosPersonal.fullstandigtNamn = vardpersonalNamn
         question.adressVard.hosPersonal.enhet.enhetsId.extension = vardenhet
+        if (vardgivare) question.adressVard.hosPersonal.enhet.vardgivare.vardgivareId.extension = vardgivare
 
         def request = new ReceiveMedicalCertificateQuestionType();
         request.question = question
