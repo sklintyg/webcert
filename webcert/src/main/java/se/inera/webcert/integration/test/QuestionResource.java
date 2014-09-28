@@ -1,5 +1,7 @@
 package se.inera.webcert.integration.test;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -8,21 +10,36 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.webcert.service.FragaSvarService;
+import se.inera.webcert.service.FragaSvarServiceImpl;
+import se.inera.webcert.service.IntygService;
+import se.inera.webcert.service.IntygServiceImpl;
+import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
+import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * Created by Pehr Assarsson on 9/24/13.
@@ -40,6 +57,8 @@ public class QuestionResource {
         this.transactionTemplate = new TransactionTemplate(txManager); 
     }
 
+    @Autowired
+    private FragaSvarService fragaSvarService;
 
     @Autowired
     private FragaSvarRepository fragasvarRepository;
@@ -64,6 +83,38 @@ public class QuestionResource {
     public Response insertQuestion(FragaSvar question) {
         fragasvarRepository.save(question);
         return Response.ok(question).build();
+    }
+
+    @PUT
+    @Path("/svara/{vardgivare}/{enhet}/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public Response answer(@PathParam("vardgivare") final String vardgivarId, 
+            @PathParam("enhet") final String enhetsId, @PathParam("id") final Long frageSvarId, String svarsText) {
+        SecurityContext originalContext = SecurityContextHolder.getContext();
+        SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
+        try {
+            FragaSvar fragaSvarResponse =  fragaSvarService.saveSvar(frageSvarId, svarsText);
+            return Response.ok(fragaSvarResponse).build();
+        } finally {
+            SecurityContextHolder.setContext(originalContext);
+        }
+    }
+
+    @POST
+    @Path("/skickafraga/{vardgivare}/{enhet}/{intygId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    public Response askQuestion(@PathParam("vardgivare") final String vardgivarId, 
+            @PathParam("enhet") final String enhetsId, @PathParam("intygId") final String intygId, CreateQuestionParameter parameter) {
+        SecurityContext originalContext = SecurityContextHolder.getContext();
+        SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
+        try {
+            FragaSvar fragaSvarResponse =  fragaSvarService.saveNewQuestion(intygId, parameter.getAmne(), parameter.getFrageText());
+            return Response.ok(fragaSvarResponse).build();
+        } finally {
+            SecurityContextHolder.setContext(originalContext);
+        }
     }
 
     @DELETE
@@ -124,4 +175,68 @@ public class QuestionResource {
             }
         });
     }
+
+    // Create a fake SecurityContext for a user which is authorized for the given care giver and unit
+    @SuppressWarnings("serial")
+    private SecurityContext getSecurityContext(final String vardgivarId, final String enhetsId) {
+        final WebCertUser user = getWebCertUser(vardgivarId, enhetsId);
+        return new SecurityContext() {
+            @Override
+            public void setAuthentication(Authentication authentication) {
+            }
+            @Override
+            public Authentication getAuthentication() {
+                return new Authentication() {
+                    @Override
+                    public Object getPrincipal() {
+                        return user;
+                    }
+                    @Override
+                    public boolean isAuthenticated() {
+                        return true;
+                    }
+                    @Override
+                    public String getName() {
+                        return "questionResource";
+                    }
+                    @Override
+                    public Collection<? extends GrantedAuthority> getAuthorities() {
+                        return null;
+                    }
+                    @Override
+                    public Object getCredentials() {
+                        return null;
+                    }
+                    @Override
+                    public Object getDetails() {
+                        return null;
+                    }
+                    @Override
+                    public void setAuthenticated(boolean isAuthenticated) {
+                    }
+                };
+            }
+        };
+    }
+    
+    // Create a fake WebCertUser which is authorized for the given care giver and unit
+    private static WebCertUser getWebCertUser(String vardgivarId, String enhetsId) {
+        WebCertUser user = new WebCertUser();
+        user.setHsaId("questionResource");
+        user.setNamn("questionResource");
+        user.setLakare(true);
+        user.setForskrivarkod("questionResource");
+        Vardenhet enhet = new Vardenhet(enhetsId, "questionResource");
+        Vardgivare vardgivare = new Vardgivare(vardgivarId, "questionResource");
+        List<Vardenhet> vardenheter = new ArrayList<>();
+        vardenheter.add(enhet);
+        vardgivare.setVardenheter(vardenheter);
+        List<Vardgivare> vardgivarList = new ArrayList<>();
+        vardgivarList.add(vardgivare);
+        user.setVardgivare(vardgivarList);
+        user.setValdVardgivare(vardgivare);
+        user.setValdVardenhet(enhet);
+        return user;
+    }
+
 }
