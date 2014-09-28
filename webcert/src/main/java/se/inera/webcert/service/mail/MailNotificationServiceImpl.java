@@ -34,6 +34,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Value("${mail.admin}")
     private String adminMailAddress;
 
+    @Value("${mail.from}")
+    private String fromAddress;
+
     @Value("${mail.webcert.host.url}")
     private String webCertHostUrl;
 
@@ -128,6 +131,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
+        message.setFrom(new InternetAddress(fromAddress));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(mailAddress));
 
         message.setContent(body, "text/html;charset=utf-8");
@@ -140,6 +144,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
+        message.setFrom(new InternetAddress(fromAddress));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(adminMailAddress));
 
         message.setSubject("Fråga/svar Webcert: Enhet utan mailadress eller koppling");
