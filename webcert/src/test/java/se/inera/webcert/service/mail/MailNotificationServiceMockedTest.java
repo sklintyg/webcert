@@ -1,5 +1,14 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.mail;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -7,20 +16,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
+
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.webcert.service.mail.MailNotificationServiceImpl;
-
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceMockedTest {
@@ -34,11 +35,17 @@ public class MailNotificationServiceMockedTest {
     @InjectMocks
     private MailNotificationServiceImpl mailNotificationService;
 
+    @Before
+    public void setUp() {
+        mailNotificationService.setFromAddress("no-reply@webcert.intygstjanster.se");
+    }
+
     @Test
     public void sendMailForIncomingQuestionWithTimeoutThrowsNoException() throws Exception {
         doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
         GetHsaUnitResponseType getHsaUnitResponseType = new GetHsaUnitResponseType();
         getHsaUnitResponseType.setEmail("test@test.invalid");
+        getHsaUnitResponseType.setHsaIdentity("enhetsid");
         when(hsaClient.callGetHsaunit(anyString())).thenReturn(getHsaUnitResponseType);
         when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
         mailNotificationService.sendMailForIncomingQuestion(fragaSvar("enhetsid"));
@@ -49,6 +56,7 @@ public class MailNotificationServiceMockedTest {
         doThrow(new MailSendException("Timeout")).when(mailSender).send(any(MimeMessage.class));
         GetHsaUnitResponseType getHsaUnitResponseType = new GetHsaUnitResponseType();
         getHsaUnitResponseType.setEmail("test@test.invalid");
+        getHsaUnitResponseType.setHsaIdentity("enhetsid");
         when(hsaClient.callGetHsaunit(anyString())).thenReturn(getHsaUnitResponseType);
         when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session)null));
         mailNotificationService.sendMailForIncomingAnswer(fragaSvar("enhetsid"));

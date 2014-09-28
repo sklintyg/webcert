@@ -1,4 +1,4 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.mail;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
