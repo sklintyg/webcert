@@ -36,6 +36,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Value("${mail.from}")
     private String fromAddress;
+    // package scope for testability
+    void setFromAddress(String fromAddress) {
+        this.fromAddress = fromAddress;
+    }
 
     @Value("${mail.webcert.host.url}")
     private String webCertHostUrl;
