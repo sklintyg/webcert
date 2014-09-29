@@ -8,15 +8,15 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import javax.mail.Address;
-import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,14 +34,14 @@ public class JavaMailSenderAroundAdviceTest {
     @Mock
     private ProceedingJoinPoint pjp;
 
-    private JavaMailSenderAroundAdvice advice;
+    @InjectMocks
+    private JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice();
     
     @Before
     public void setUp() throws Exception {
-        advice = new JavaMailSenderAroundAdvice();
         when(mailStore.getMails()).thenReturn(mails);
-        advice.mailStore = mailStore;
-        when(message.getAllRecipients()).thenReturn(new Address[] {});
+        when(message.getFrom()).thenReturn(new Address[] {new InternetAddress("from")});
+        when(message.getAllRecipients()).thenReturn(new Address[] {new InternetAddress("to")});
         when(message.getSubject()).thenReturn("subject");
         when(message.getContent()).thenReturn("body");
     }
