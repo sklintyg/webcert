@@ -65,6 +65,7 @@ public class MailNotificationServiceTest {
         OutgoingMail mail = mailStore.getMails().get(0);
 
         assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
         assertEquals("cityakuten@testland.se", mail.getRecipients().get(0));
         assertEquals("Inkommen fråga från Försäkringskassan", mail.getSubject());
         assertEquals(expectationFromFile("incoming-question-body-cityakuten.html"), mail.getBody());
@@ -80,6 +81,7 @@ public class MailNotificationServiceTest {
         OutgoingMail mail = mailStore.getMails().get(0);
 
         assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
         assertEquals("cityakuten@testland.se", mail.getRecipients().get(0));
         assertEquals("Försäkringskassan har svarat på en fråga", mail.getSubject());
         assertEquals(expectationFromFile("incoming-answer-body-cityakuten.html"), mail.getBody());
@@ -95,6 +97,7 @@ public class MailNotificationServiceTest {
         OutgoingMail mail = mailStore.getMails().get(0);
 
         assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
         assertEquals("vansterakuten@testland.se", mail.getRecipients().get(0));
         assertEquals("Inkommen fråga från Försäkringskassan", mail.getSubject());
         assertEquals(expectationFromFile("incoming-question-body-vansterakuten.html"), mail.getBody());
@@ -110,6 +113,7 @@ public class MailNotificationServiceTest {
         OutgoingMail mail = mailStore.getMails().get(0);
 
         assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
         assertEquals("vansterakuten@testland.se", mail.getRecipients().get(0));
         assertEquals("Försäkringskassan har svarat på en fråga", mail.getSubject());
         assertEquals(expectationFromFile("incoming-answer-body-vansterakuten.html"), mail.getBody());
@@ -125,6 +129,7 @@ public class MailNotificationServiceTest {
         OutgoingMail mail = mailStore.getMails().get(0);
 
         assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
         assertEquals("admin@sverige.se", mail.getRecipients().get(0));
         assertEquals("Fråga/svar Webcert: Enhet utan mailadress eller koppling", mail.getSubject());
         assertEquals(expectationFromFile("admin-body.html"), mail.getBody());
@@ -140,6 +145,7 @@ public class MailNotificationServiceTest {
         OutgoingMail mail = mailStore.getMails().get(0);
 
         assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
         assertEquals("admin@sverige.se", mail.getRecipients().get(0));
         assertEquals("Fråga/svar Webcert: Enhet utan mailadress eller koppling", mail.getSubject());
         assertEquals(expectationFromFile("admin-body.html"), mail.getBody());
@@ -155,6 +161,7 @@ public class MailNotificationServiceTest {
         OutgoingMail mail = mailStore.getMails().get(0);
 
         assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
         assertEquals("sjocentralen@testland.se", mail.getRecipients().get(0));
         assertEquals("Inkommen fråga från Försäkringskassan", mail.getSubject());
         assertEquals(expectationFromFile("incoming-question-body-kustakuten.html"), mail.getBody());
@@ -170,6 +177,7 @@ public class MailNotificationServiceTest {
         OutgoingMail mail = mailStore.getMails().get(0);
 
         assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
         assertEquals("sjocentralen@testland.se", mail.getRecipients().get(0));
         assertEquals("Försäkringskassan har svarat på en fråga", mail.getSubject());
         assertEquals(expectationFromFile("incoming-answer-body-kustakuten.html"), mail.getBody());
@@ -189,6 +197,7 @@ public class MailNotificationServiceTest {
         OutgoingMail mail = mailStore.getMails().get(0);
 
         assertEquals(1, mail.getRecipients().size());
+        assertEquals("no-reply@webcert.intygstjanster.se", mail.getFrom());
         assertEquals("cityakuten@testland.se", mail.getRecipients().get(0));
         assertEquals("Inkommen fråga från Försäkringskassan", mail.getSubject());
         assertEquals(expectationFromFile("incoming-question-body-cityakuten.html"), mail.getBody());
