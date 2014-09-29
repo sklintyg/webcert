@@ -367,7 +367,11 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
     public IntygServiceResult sendIntyg(Omsandning omsandning) {
         SendIntygConfiguration sendConfig = configurationManager.unmarshallConfig(omsandning.getConfiguration(), SendIntygConfiguration.class);
-        return sendIntyg(omsandning.getIntygId(), omsandning, sendConfig);
+
+        GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(omsandning.getIntygId());
+        UtlatandeType utlatandeType = intygResponse.getCertificate();
+
+        return sendIntyg(omsandning, sendConfig, utlatandeType);
     }
 
     public IntygServiceResult sendIntyg(String intygsId, String recipient, boolean hasPatientConsent) {
@@ -377,28 +381,28 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
         Omsandning omsandning = createOmsandning(OmsandningOperation.SEND_INTYG, intygsId, sendConfigAsJson);
 
-        return sendIntyg(intygsId, omsandning, sendConfig);
+        GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygsId);
+        UtlatandeType utlatandeType = intygResponse.getCertificate();
+
+        verifyEnhetsAuth(utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension());
+
+        return sendIntyg(omsandning, sendConfig, utlatandeType);
     }
 
-    public IntygServiceResult sendIntyg(String intygsId, Omsandning omsandning, SendIntygConfiguration sendConfig) {
+    public IntygServiceResult sendIntyg(Omsandning omsandning, SendIntygConfiguration sendConfig, UtlatandeType utlatandeType) {
+
+        String intygsId = omsandning.getIntygId();
+        String recipient = sendConfig.getRecipient();
+        String intygsTyp = utlatandeType.getTypAvUtlatande().getCode();
+        
         try {
-            String recipient = sendConfig.getRecipient();
+            LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
 
-            LOG.info("Sending intyg {} to recipient {}", new Object[] { intygsId, recipient });
-
-            GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygsId);
-
-            verifyEnhetsAuth(intygResponse.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
-
-            UtlatandeType utlatandeType = intygResponse.getCertificate();
-            String intygsTyp = utlatandeType.getTypAvUtlatande().getCode();
-
-            ExternalModelResponse intygAsExternal = modelFacade.convertFromTransportToExternal(intygsTyp, intygResponse.getCertificate());
-
+            ExternalModelResponse intygAsExternal = modelFacade.convertFromTransportToExternal(intygsTyp, utlatandeType);
             Utlatande utlatande = intygAsExternal.getExternalModel();
 
             if (!performSendIntyg(utlatande, recipient)) {
-                LOG.info("Sending intyg {} to recipient {} failed, rescheduling send...");
+                LOG.info("Sending intyg {} to recipient {} failed, rescheduling send...", intygsId, recipient);
                 scheduleResend(omsandning);
                 return IntygServiceResult.RESCHEDULED;
             }
@@ -472,7 +476,9 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see se.inera.webcert.service.intyg.IntygService#revokeIntyg(java.lang.String, java.lang.String)
      */
     public IntygServiceResult revokeIntyg(String intygsId, String revokeMessage) {
@@ -517,7 +523,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             default:
                 return IntygServiceResult.FAILED;
             }
-            
+
         } catch (IntygModuleFacadeException imfe) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, imfe);
         }
