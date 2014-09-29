@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class OutgoingMail {
     
+    private String from;
     private List<String> recipients = new ArrayList<>();
     private String subject;
     private String body;
@@ -22,8 +23,13 @@ public class OutgoingMail {
             recipients.add(address.toString());
         }
 
+        from = message.getFrom()[0].toString();
         subject = message.getSubject();
         body = message.getContent().toString();
+    }
+
+    public String getFrom() {
+        return from;
     }
 
     public List<String> getRecipients() {
