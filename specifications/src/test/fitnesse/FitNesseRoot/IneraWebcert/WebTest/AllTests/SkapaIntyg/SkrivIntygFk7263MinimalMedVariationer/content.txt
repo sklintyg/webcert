@@ -33,7 +33,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 
 | script | !-SkrivIntyg-! |
 | sparaUtkast |
-| verifiera att sjukskrivningsperioden ar | 41 |
+#| verifiera att sjukskrivningsperioden ar | 41 |
 
 | script | Browser |
 | ladda om |

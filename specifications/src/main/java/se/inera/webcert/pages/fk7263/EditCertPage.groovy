@@ -95,8 +95,8 @@ class ArbetsformagaModule extends Module {
 
         period { $("#totalCertDays") }
         arbetstid25 { $("#arbetstid25") }
-        arbetstid75 { $("#arbetstid50") }
-        arbetstid50 { $("#arbetstid75") }
+        arbetstid50 { $("#arbetstid50") }
+        arbetstid75 { $("#arbetstid75") }
     }
 }
 
