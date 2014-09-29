@@ -15,7 +15,7 @@
 
 |Mail|
 |mottagare?|amne?|innehall?|
-|!-[enhet1@webcert.invalid.se]-!|!-Inkommen fråga från Försäkringskassan-!|=~/Försäkringskassan har skickat en ny fråga till !-WebCert-Enhet1-!/|
+|!-[enhet1@webcert.invalid.se]-!|!-Inkommen fråga från Försäkringskassan-!|=~/En ny fråga-svar har inkommit till !-WebCert-Enhet1-!/|
 
 
 !3 Ta bort intyg, frågor och mail
