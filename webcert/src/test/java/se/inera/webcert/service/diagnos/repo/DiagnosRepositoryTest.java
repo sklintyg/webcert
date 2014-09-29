@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +30,30 @@ public class DiagnosRepositoryTest {
     }
     
     @Test
+    public void testSanitizeCodeValue() {
+        DiagnosRepositoryImpl repoImpl = new DiagnosRepositoryImpl();
+        assertNull("null should return null", repoImpl.sanitizeCodeValue(null));
+        assertNull("emptry string should return null", repoImpl.sanitizeCodeValue(""));
+        assertNull("spaces should return null", repoImpl.sanitizeCodeValue("  "));
+        assertNull(". should return null", repoImpl.sanitizeCodeValue("."));
+        assertNull(". and spaces should return null", repoImpl.sanitizeCodeValue(". "));
+        assertEquals("A", repoImpl.sanitizeCodeValue("A"));
+        assertEquals("A", repoImpl.sanitizeCodeValue("a"));
+        assertEquals("A", repoImpl.sanitizeCodeValue(" A "));
+        assertEquals("A1", repoImpl.sanitizeCodeValue("A1"));
+        assertEquals("A1", repoImpl.sanitizeCodeValue(" A1 "));
+        assertEquals("A1", repoImpl.sanitizeCodeValue(" A 1 "));
+        assertEquals("A1", repoImpl.sanitizeCodeValue("A.1"));
+        assertEquals("A11", repoImpl.sanitizeCodeValue("A1.1"));
+        assertEquals("A11", repoImpl.sanitizeCodeValue(" A1 1"));
+        assertEquals("A111", repoImpl.sanitizeCodeValue("A11.1"));
+        assertEquals("A111", repoImpl.sanitizeCodeValue(" A11.1 "));
+        assertEquals("A111", repoImpl.sanitizeCodeValue("a11.1"));
+        assertEquals("A111", repoImpl.sanitizeCodeValue("A11.1"));
+        assertEquals("A111", repoImpl.sanitizeCodeValue("A 11.1"));
+    }
+    
+    @Test
     public void testGetByCodeWithNullAndEmpty() {
         Diagnos res = repo.getDiagnosByCode(null);
         assertNull(res);
@@ -37,51 +63,67 @@ public class DiagnosRepositoryTest {
     }
     
     @Test
-    public void testGetByCode() {
-        String code = "A051";
+    public void testGetByCodeFour() {
+        String code = "A184";
         Diagnos res = repo.getDiagnosByCode(code);
-        assertEquals("A051", res.getKod());
-        assertEquals("Botulism", res.getBeskrivning());
+        assertEquals("A184", res.getKod());
+        assertThat(res.getBeskrivning(), containsString("Tuberkulos"));
     }
     
     @Test
-    public void testGetByCodeCheckEncoding() {
-        String code = "A062";
+    public void testGetByCodeFourAndDot() {
+        String code = "A18.4";
         Diagnos res = repo.getDiagnosByCode(code);
-        assertEquals("A062", res.getKod());
-        assertEquals("Kolit orsakad av amöba", res.getBeskrivning());
+        assertEquals("A184", res.getKod());
+        assertThat(res.getBeskrivning(), containsString("Tuberkulos"));
     }
     
+    @Test
+    public void testGetByCodeFive() {
+        String code = "A184E";
+        Diagnos res = repo.getDiagnosByCode(code);
+        assertEquals("A184E", res.getKod());
+        assertThat(res.getBeskrivning(), containsString("Tuberkulöst"));
+    }
+    
+    @Test
+    public void testGetByCodeFiveAndDot() {
+        String code = "A18.4E";
+        Diagnos res = repo.getDiagnosByCode(code);
+        assertEquals("A184E", res.getKod());
+        assertThat(res.getBeskrivning(), containsString("Tuberkulöst"));
+    }
+        
     @Test
     public void testGetByCodeWithMalformedCode() {
         String code = " a 051  ";
         Diagnos res = repo.getDiagnosByCode(code);
+        assertNotNull(res);
         assertEquals("A051", res.getKod());
-        assertEquals("Botulism", res.getBeskrivning());
-    }
-    
-    @Test
-    public void testSearchingWithFragmentOne() {
-        
-        String codeFragment = "A";
-        List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment);
-        assertEquals(100, res.size());
-    }
-    
-    @Test
-    public void testSearchingWithFragmentTwo() {
-        
-        String codeFragment = "A0";
-        List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment);
-        assertEquals(63, res.size());
     }
     
     @Test
     public void testSearchingWithFragmentThree() {
         
-        String codeFragment = "A07";
+        String codeFragment = "A08";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment);
-        assertEquals(6, res.size());
+        assertEquals(9, res.size());
+    }
+    
+    @Test
+    public void testSearchingWithFragmentFour() {
+        
+        String codeFragment = "A083";
+        List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment);
+        assertEquals(4, res.size());
+    }
+    
+    @Test
+    public void testSearchingWithFragmentFourAndDot() {
+        
+        String codeFragment = "A08.3";
+        List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment);
+        assertEquals(4, res.size());
     }
     
     @Test
@@ -91,11 +133,19 @@ public class DiagnosRepositoryTest {
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment);
         assertEquals(1, res.size());
     }
+    
+    @Test
+    public void testSearchingWithFullCodeAndDot() {
+        
+        String codeFragment = "A08.3B";
+        List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment);
+        assertEquals(1, res.size());
+    }
         
     @Test
     public void testSearchingWithNonExistingFragment() {
         
-        String codeFragment = "B1";
+        String codeFragment = "X01";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment);
         assertNotNull(res);
         assertTrue(res.isEmpty());

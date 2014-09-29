@@ -1,7 +1,5 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,10 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.service.diagnos.DiagnosService;
-import se.inera.webcert.service.diagnos.model.Diagnos;
+import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.DiagnosParameter;
-import se.inera.webcert.web.controller.moduleapi.dto.DiagnosResponse;
 
 /**
  * Controller exposing diagnosis services to be used by modules.
@@ -46,18 +43,8 @@ public class DiagnosModuleApiController extends AbstractApiController {
 
         LOG.debug("Getting diagnosis using code: {}", code);
 
-        DiagnosResponse response = new DiagnosResponse();
-
-        Diagnos diagnos = diagnosService.getDiagnosisByCode(code);
-
-        if (diagnos != null) {
-            response.setDiagnos(diagnos);
-        } else {
-            LOG.debug("Diagnosis was not found using code: {}", code);
-            response.setResultatNotFound();
-        }
-
-        return Response.ok(response).build();
+        DiagnosResponse diagnosResponse = diagnosService.getDiagnosisByCode(code);
+        return Response.ok(diagnosResponse).build();
     }
     
     /**
@@ -77,17 +64,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
         
         LOG.debug("Searching for diagnosises using code fragment: {}", parameter.getCodeFragment());
 
-        DiagnosResponse response = new DiagnosResponse();
-
-        List<Diagnos> results = diagnosService.searchDiagnosisByCode(parameter.getCodeFragment(), parameter.getNbrOfResults());
-
-        if (results.isEmpty()) {
-            LOG.debug("Diagnosis was not found using code: {}", parameter.getCodeFragment());
-            response.setResultatNotFound();
-        } else {
-            response.setDiagnoser(results);
-        }
-
-        return Response.ok(response).build();
+        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByCode(parameter.getCodeFragment(), parameter.getNbrOfResults());
+        return Response.ok(diagnosResponse).build();
     }
 }
