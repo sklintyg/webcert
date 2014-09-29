@@ -158,8 +158,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
             function getQA() {
                 $scope.widgetState.activeErrorMessageKey = null;
                 $cookieStore.put('enhetsId', enhetId);
-                $cookieStore.put('savedFilterQuery', $scope.filterQuery);
                 var preparedQuery = prepareFilterQuery(enhetId, $scope.filterQuery);
+                $cookieStore.put('savedFilterQuery', preparedQuery);
+                $scope.filterQuery = preparedQuery;
 
                 QuestionAnswer.getQA(preparedQuery, function(successData) {
 
