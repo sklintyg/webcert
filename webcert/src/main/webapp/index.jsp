@@ -32,13 +32,13 @@
 <script type="text/javascript">
   angular.module('webcertIndex', [])
       .controller('IndexController', ['$scope', '$sce', function ($scope, $sce) {
-        $scope.showLoginDescText =  $sce.trustAsHtml('<span class="glyphicon glyphicon-chevron-down"></span>Läs mer om inloggning här');
+        $scope.showLoginDescText =  $sce.trustAsHtml('<span class="glyphicon glyphicon-chevron-down"></span> Visa mer om inloggning');
         $scope.toggleShowLoginDesc = function() {
           $scope.showLoginDesc = !$scope.showLoginDesc;
           if ($scope.showLoginDesc)
-            $scope.showLoginDescText =  $sce.trustAsHtml('<span class="glyphicon glyphicon-chevron-up"></span>Visa mindre');
+            $scope.showLoginDescText =  $sce.trustAsHtml('<span class="glyphicon glyphicon-chevron-up"></span> Visa mindre');
           else
-            $scope.showLoginDescText =  $sce.trustAsHtml('<span class="glyphicon glyphicon-chevron-down"></span>Läs mer om inloggning här');
+            $scope.showLoginDescText =  $sce.trustAsHtml('<span class="glyphicon glyphicon-chevron-down"></span> Visa mer om inloggning');
         }
       }]);
 </script>
@@ -87,7 +87,7 @@
             </ul>
             <p>Du måste även ha JavaScript aktiverat i din webbläsare för att kunna använda Webcert.</p>
           </div>
-          <p><a href="#" ng-click="toggleShowLoginDesc()" ng-bind-html="showLoginDescText"><span class="glyphicon glyphicon-chevron-down"></span>Läs mer om inloggning här</a>.</p>
+          <p><a href="#" ng-click="toggleShowLoginDesc()" ng-bind-html="showLoginDescText"><span class="glyphicon glyphicon-chevron-down"></span> Visa mer om inloggning</a></p>
           <p><a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a></p>
         </div>
       </div>
