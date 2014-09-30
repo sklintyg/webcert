@@ -17,7 +17,6 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | check | postnummer | 12345 |
 | check | postort | Ankeborg |
 | check | telefonnummer | 123456789 |
-| check | epost | enhet1@webcert.se.invalid |
 
 !3 Editera adressfälten och spara
 
@@ -26,7 +25,6 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | andra postnummer | 12344 |
 | andra postort | Bankeborg |
 | andra telefonnummer | 223456789 |
-| andra epost | enhet2@webcert.se.invalid |
 | spara utkast |
 
 !3 Verifiera ändringar i adressfälten
@@ -37,7 +35,6 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | check | postnummer | 12344 |
 | check | postort | Bankeborg |
 | check | telefonnummer | 223456789 |
-| check | epost | enhet2@webcert.se.invalid |
 
 !3 Ta bort utkast
 
