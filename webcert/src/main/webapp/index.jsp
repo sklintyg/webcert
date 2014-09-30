@@ -22,15 +22,17 @@
   <c:when test="${useMinifiedJavaScript == 'true'}">
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular.min.js"></script>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
   </c:when>
   <c:otherwise>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular.js"></script>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.js"></script>
   </c:otherwise>
 </c:choose>
 
 <script type="text/javascript">
-  angular.module('webcertIndex', [])
+  angular.module('webcertIndex', [ 'ui.bootstrap' ])
       .controller('IndexController', ['$scope', '$sce', function ($scope, $sce) {
         $scope.showLoginDescText =  $sce.trustAsHtml('<span class="glyphicon glyphicon-chevron-down"></span> Visa mer om inloggning');
         $scope.toggleShowLoginDesc = function() {
@@ -45,7 +47,6 @@
 
 </head>
 <body class="start" id="indexPage" ng-controller="IndexController">
-
   <div class="container-fluid">
     <div class="content-container">
       <div class="row">
@@ -61,10 +62,10 @@
             <li>Transportstyrelsens läkarintyg, diabetes</li>
           </ul>
           <p>För att logga in i Webcert behövs SITHS-kort eller e-legitimation.</p>
-          <div class="ng-hide" ng-show="showLoginDesc">
+          <div collapse="!showLoginDesc" class="collapse">
             <h2>Om inloggning</h2>
             <p>Om du arbetar för ett landsting eller en region ska du logga in med SITHS-kort, är du privatläkare väljer du inloggning med e-legitimation.</p>
-            <p>Inloggning med SITHS-kort kräver även medarbetaruppdrag ”Vård och behandling” i Hälso- och sjukvårdens adressregister, HSA-katalogen.</p>
+            <p>Inloggning med SITHS-kort kräver även medarbetaruppdrag "Vård och behandling" i Hälso- och sjukvårdens adressregister, HSA-katalogen.</p>
             <p>Inloggning med e-legitimation kräver att du är läkare enligt Socialstyrelsens register över legitimerad hälso- och sjukvårdspersonal, HOSP.</p>
             <h3>Inloggning med SITHS-kort</h3>
             <p>Om du som arbetar för ett landsting eller en region inte kan logga in kan det bero på att HSA-katalogen inte är uppdaterad och att du därmed saknar medarbetaruppdraget ”Vård och behandling”.</p>
@@ -95,7 +96,7 @@
 
     <div class="content-footer">
       <p>Webcert använder kakor. <a href="#" ng-click="showCookieText = !showCookieText">Läs mer om Kakor (cookies)</a></p>
-      <div class="bluebox ng-hide" id="cookiejar" ng-show="showCookieText">
+      <div collapse="!showCookieText" class="bluebox">
         <h3>Om Kakor (cookies)</h3>
         <p>
           Så kallade kakor (cookies) används för att underlätta för besökaren på webbplatsen. En kaka är en textfil som
