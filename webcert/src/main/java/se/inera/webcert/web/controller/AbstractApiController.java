@@ -30,33 +30,22 @@ public abstract class AbstractApiController {
     }
 
     protected Vardenhet createVardenhetFromUser() {
-
+        Vardenhet enhet = new Vardenhet();
         WebCertUser user = webCertUserService.getWebCertUser();
         AbstractVardenhet valdEnhet = getValdEnhet(user);
-
-        Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setHsaId(user.getValdVardgivare().getId());
-        vardgivare.setNamn(user.getValdVardgivare().getNamn());
-
-        // Populate Vardenhet
-        Vardenhet enhet = new Vardenhet();
         enhet.setHsaId(valdEnhet.getId());
         enhet.setNamn(valdEnhet.getNamn());
-
-        /**
-         * The communication between a Vardenhet and a Vardperson shall not be done via e-mail.
-         * Set epost to empty string for now
-         */
-        enhet.setEpost("");
-
+        enhet.setEpost(valdEnhet.getEpost());
         enhet.setTelefonnummer(valdEnhet.getTelefonnummer());
         enhet.setPostadress(valdEnhet.getPostadress());
         enhet.setPostnummer(valdEnhet.getPostnummer());
         enhet.setPostort(valdEnhet.getPostort());
         enhet.setArbetsplatskod(valdEnhet.getArbetsplatskod());
         enhet.setArbetsplatskod(valdEnhet.getArbetsplatskod());
+        Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setHsaId(user.getValdVardgivare().getId());
+        vardgivare.setNamn(user.getValdVardgivare().getNamn());
         enhet.setVardgivare(vardgivare);
-
         return enhet;
     }
 
