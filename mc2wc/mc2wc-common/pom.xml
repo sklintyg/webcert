@@ -3,7 +3,7 @@
   <parent>
     <groupId>se.inera.webcert</groupId>
     <artifactId>mc2wc-parent</artifactId>
-    <version>0.5.4-SNAPSHOT</version>
+    <version>0.5.4</version>
   </parent>
   <artifactId>mc2wc-common</artifactId>
   <build>
