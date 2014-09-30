@@ -12,12 +12,6 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
 
        var currentHsaId = '<sec:authentication property="principal.hsaId" htmlEscape="false"/>';
 
-       var issuers = ['2.5.4.6=SE, 2.5.4.10=Carelink, 2.5.4.3=SITHS CA v3',
-                      '2.5.4.6=SE, 2.5.4.10=SITHS CA, 2.5.4.3=SITHS CA TEST v3',
-                      '2.5.4.6=SE, 2.5.4.10=SITHS CA, 2.5.4.3=SITHS CA TEST v4',
-                      '2.5.4.6=SE, 2.5.4.10=Inera AB, 2.5.4.3=SITHS Type 1 CA v1 PP',
-                      '2.5.4.6=SE, 2.5.4.10=Inera AB, 2.5.4.3=SITHS Type 1 CA v1'];
-
        function log(message) {
            try {
               console.log(message);
@@ -64,28 +58,18 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
                var cert = document.iID.EnumProperty('Certificate', index);
                if (cert !== '') {
                  var certParts = cert.split(';');
-                 var issuer = certParts[4];
                  var subject = certParts[5];
-                 log('Issuer: ' + issuer);
                  log('Subject: ' + subject);
 
-                 for (var i = 0; i < issuers.length; i++) {
-                   log('Issuers[' + i + ']: ' + issuers[i]);
+                 // Find where the serialnumber starts and remove everything before
+                 var subjectSerial = subject.substring(subject.indexOf("2.5.4.5=") + 8);
 
-                   if (issuers[i] === issuer && issuer !== subject) {
-                     // Remember to remove the CA certificate, check if subject and issuer is the same
+                 // Find where the serialnumber ends and remove everything after
+                 subjectSerial = subjectSerial.split(',')[0];
 
-                     // Find where the serialnumber starts and remove everything before
-                     var subjectSerial = subject.substring(subject.indexOf("2.5.4.5=") + 8);
+                 log('SubjectSerial: ' + subjectSerial);
 
-                     // Find where the serialnumber ends and remove everything after
-                     subjectSerial = subjectSerial.split(',')[0];
-
-                     log('SubjectSerial: ' + subjectSerial);
-
-                     return subjectSerial;
-                   }
-                 }
+                 return subjectSerial;
                }
            } catch (e) {
                log('Error: ' + e.message);
