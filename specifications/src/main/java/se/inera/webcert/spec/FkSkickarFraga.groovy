@@ -1,14 +1,16 @@
 package se.inera.webcert.spec
 
+import javax.xml.bind.JAXBContext
+import javax.xml.bind.Unmarshaller
+import javax.xml.transform.stream.StreamSource
+
+import org.joda.time.LocalDateTime
 import org.springframework.core.io.ClassPathResource
+
 import se.inera.webcert.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType
 import se.inera.webcert.spec.util.WsClientFixture
-
-import javax.xml.bind.JAXBContext
-import javax.xml.bind.Unmarshaller
-import javax.xml.transform.stream.StreamSource
 
 /**
  * @author andreaskaltenbach
@@ -20,13 +22,20 @@ class FkSkickarFraga extends WsClientFixture {
     String amne
     String externReferens
     String frageText
+    String rubrik
+    String signeringsTidpunkt
+    String avsantTidpunkt
     String intygsId
     String patientId
     String patientNamn
     String vardpersonal
     String vardpersonalNamn
+    String forskrivarKod
     String vardenhet
+    String vardenhetNamn
+    String arbetsplatsKod
     String vardgivare
+    String vardgivarNamn
     
     public FkSkickarFraga() {
         this(WsClientFixture.LOGICAL_ADDRESS)
@@ -42,13 +51,20 @@ class FkSkickarFraga extends WsClientFixture {
         amne = null
         externReferens = null
         frageText = null
+        rubrik = null
+        signeringsTidpunkt = null
+        avsantTidpunkt = null
         intygsId = null
         patientId = null
         patientNamn = null
         vardpersonal = null
         vardpersonalNamn = null
+        forskrivarKod = null
         vardenhet = null
+        vardenhetNamn = null
+        arbetsplatsKod = null
         vardgivare = null
+        vardgivarNamn = null
     }
 
     def resultat() {
@@ -57,16 +73,25 @@ class FkSkickarFraga extends WsClientFixture {
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         def question = unmarshaller.unmarshal(new StreamSource(new ClassPathResource("fraga.xml").getInputStream()), QuestionFromFkType.class).getValue()
         question.amne = amne
+        if (rubrik) question.fkMeddelanderubrik = rubrik
         question.fkReferensId = externReferens
         question.fraga.meddelandeText = frageText
+        if (!signeringsTidpunkt) signeringsTidpunkt = LocalDateTime.now().toString()
+        question.fraga.signeringsTidpunkt = LocalDateTime.parse(signeringsTidpunkt)
+        if (!avsantTidpunkt) avsantTidpunkt = LocalDateTime.now().toString()
+        question.avsantTidpunkt = LocalDateTime.parse(avsantTidpunkt)
         question.lakarutlatande.lakarutlatandeId = intygsId
         if (patientId) question.lakarutlatande.patient.personId.extension = patientId
         if (patientNamn) question.lakarutlatande.patient.fullstandigtNamn = patientNamn
         question.adressVard.hosPersonal.personalId.extension = vardpersonal
         if (vardpersonalNamn) question.adressVard.hosPersonal.fullstandigtNamn = vardpersonalNamn
+        if (forskrivarKod) question.adressVard.hosPersonal.forskrivarkod = forskrivarKod
         question.adressVard.hosPersonal.enhet.enhetsId.extension = vardenhet
+        if (vardenhetNamn) question.adressVard.hosPersonal.enhet.enhetsnamn = vardenhetNamn
+        if (arbetsplatsKod) question.adressVard.hosPersonal.enhet.arbetsplatskod.extension = arbetsplatsKod
         if (vardgivare) question.adressVard.hosPersonal.enhet.vardgivare.vardgivareId.extension = vardgivare
-
+        if (vardgivarNamn) question.adressVard.hosPersonal.enhet.vardgivare.vardgivarnamn = vardgivarNamn
+        
         def request = new ReceiveMedicalCertificateQuestionType();
         request.question = question
 
