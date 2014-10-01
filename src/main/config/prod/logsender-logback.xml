@@ -24,7 +24,7 @@
 
   <logger name="org.apache.cxf.services" level="error" />
 
-  <logger name="se.inera" level="debug" />
+  <logger name="se.inera" level="warn" />
 
   <root>
     <level value="error" />
