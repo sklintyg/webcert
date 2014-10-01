@@ -12,7 +12,7 @@
   <name>Inera Webcert FitNesse specifications</name>
 
   <properties>
-    <groovy.version>2.3.4</groovy.version>
+    <groovy.version>2.3.6</groovy.version>
     <selenium.version>2.42.2</selenium.version>
     <geb.env>firefox</geb.env>
     <fitnesse.port>9126</fitnesse.port>
@@ -126,7 +126,7 @@
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-eclipse-batch</artifactId>
-            <version>2.3.4-01</version>
+            <version>2.3.6-01</version>
           </dependency>
         </dependencies>
       </plugin>
