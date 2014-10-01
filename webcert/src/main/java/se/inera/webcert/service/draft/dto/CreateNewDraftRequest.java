@@ -1,6 +1,5 @@
 package se.inera.webcert.service.draft.dto;
 
-
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
@@ -19,6 +18,15 @@ public class CreateNewDraftRequest {
 
     public CreateNewDraftRequest() {
 
+    }
+
+    public CreateNewDraftRequest(String intygId, String intygType, HoSPerson hosPerson, Vardenhet vardenhet,
+            Patient patient) {
+        this.intygId = intygId;
+        this.intygType = intygType;
+        this.hosPerson = hosPerson;
+        this.vardenhet = vardenhet;
+        this.patient = patient;
     }
 
     public String getIntygId() {

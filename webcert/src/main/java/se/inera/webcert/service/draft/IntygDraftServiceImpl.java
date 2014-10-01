@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
@@ -26,6 +25,9 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.pu.model.Person;
+import se.inera.webcert.pu.services.PUService;
+import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationStatus;
@@ -80,6 +82,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Autowired
     private IntygSignatureService signatureService;
+
+    @Autowired
+    private PUService personUppgiftsService;
 
     @Override
     @Transactional
@@ -184,16 +189,20 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         Vardenhet reqVardenhet = request.getVardenhet();
         se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(
                 reqVardenhet.getHsaId(), reqVardenhet.getNamn(), reqVardenhet.getPostadress(),
-                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(), reqVardenhet.getArbetsplatskod(), vardgivare);
+                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(),
+                reqVardenhet.getArbetsplatskod(), vardgivare);
 
         HoSPerson reqHosPerson = request.getHosPerson();
-        HoSPersonal hosPerson = new HoSPersonal(reqHosPerson.getHsaId(), reqHosPerson.getNamn(),
-                reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), reqHosPerson.getSpecialiseringar(), vardenhet);
+        se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = new se.inera.certificate.modules.support.api.dto.HoSPersonal(
+                reqHosPerson.getHsaId(),
+                reqHosPerson.getNamn(), reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), reqHosPerson.getSpecialiseringar(), vardenhet);
 
         Patient reqPatient = request.getPatient();
 
-        se.inera.certificate.modules.support.api.dto.Patient patient = new se.inera.certificate.modules.support.api.dto.Patient(reqPatient.getFornamn(),
-                reqPatient.getMellannamn(), reqPatient.getEfternamn(), reqPatient.getPersonnummer(), reqPatient.getPostadress(), reqPatient.getPostnummer(), reqPatient.getPostort());
+        se.inera.certificate.modules.support.api.dto.Patient patient = new se.inera.certificate.modules.support.api.dto.Patient(
+                reqPatient.getFornamn(),
+                reqPatient.getMellannamn(), reqPatient.getEfternamn(), reqPatient.getPersonnummer(), reqPatient.getPostadress(),
+                reqPatient.getPostnummer(), reqPatient.getPostort());
 
         return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }
@@ -237,33 +246,91 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    public String createNewDraftCopy(CreateNewDraftRequest request, String intygsId) {
-        populateRequestWithIntygId(request);
-
-        String intygType = request.getIntygType();
-
-        LOG.debug("Calling module '{}' to get populated model", intygType);
-
-        String modelAsJson;
-
+    public String createNewDraftCopy(CreateNewDraftCopyRequest copyRequest) {
         try {
-            IntygContentHolder template = intygService.fetchExternalIntygData(intygsId);
-            String type = template.getMetaData().getType();
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(type);
-            request.setIntygType(type);
-            CreateNewDraftHolder draftRequest = createModuleRequest(request);
-            InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(draftRequest, new ExternalModelHolder(template.getContents()));
 
-            modelAsJson = draftResponse.getInternalModel();
+            String orgIntygsId = copyRequest.getOriginalIntygId();
+
+            LOG.debug("Creating a new draft based on intyg '{}'", orgIntygsId);
+
+            IntygContentHolder template = intygService.fetchExternalIntygData(orgIntygsId);
+
+            String intygType = template.getMetaData().getType();
+            String patientPersonnummer = template.getMetaData().getPatientId();
+
+            if (copyRequest.containsNyttPatientPersonnummer()) {
+                patientPersonnummer = copyRequest.getNyttPatientPersonnummer();
+                LOG.debug("Request contained a new personnummer ({}) to use for the copy of '{}'", patientPersonnummer, orgIntygsId);
+            }
+
+            LOG.debug("Refreshing person data to use for the copy of '{}'", orgIntygsId);
+            Person person = personUppgiftsService.getPerson(patientPersonnummer);
+
+            if (person == null) {
+                LOG.error("No person data was found using {}", patientPersonnummer);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "No person data found using '"
+                        + patientPersonnummer + "'");
+            }
+
+            String newDraftIntygId = intygsIdStrategy.createId();
+            LOG.debug("Assigning the new draft copy id '{}'", newDraftIntygId);
+            
+            CreateNewDraftHolder moduleRequest = createModuleRequestForCopying(newDraftIntygId, copyRequest, person);
+
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(moduleRequest,
+                    new ExternalModelHolder(template.getContents()));
+            String newDraftModelAsJson = draftResponse.getInternalModel();
+
+            LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(newDraftModelAsJson), intygType);
+
+            CreateNewDraftRequest newDraftRequest = createNewDraftRequestForCopying(newDraftIntygId, intygType, copyRequest, person);
+            Intyg persistedIntyg = persistNewDraft(newDraftRequest, newDraftModelAsJson);
+
+            return persistedIntyg.getIntygsId();
+
         } catch (ModuleException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
+    }
 
-        LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(modelAsJson), intygType);
+    private CreateNewDraftHolder createModuleRequestForCopying(String newDraftIntygId, CreateNewDraftCopyRequest copyRequest, Person person) {
 
-        Intyg persistedIntyg = persistNewDraft(request, modelAsJson);
+        Vardgivare reqVardgivare = copyRequest.getVardenhet().getVardgivare();
+        se.inera.certificate.modules.support.api.dto.Vardgivare vardgivare = new se.inera.certificate.modules.support.api.dto.Vardgivare(
+                reqVardgivare.getHsaId(), reqVardgivare.getNamn());
 
-        return persistedIntyg.getIntygsId();
+        Vardenhet reqVardenhet = copyRequest.getVardenhet();
+        se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(
+                reqVardenhet.getHsaId(), reqVardenhet.getNamn(), reqVardenhet.getPostadress(),
+                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(),
+                reqVardenhet.getArbetsplatskod(), vardgivare);
+
+        HoSPerson reqHosPerson = copyRequest.getHosPerson();
+        se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = new se.inera.certificate.modules.support.api.dto.HoSPersonal(
+                reqHosPerson.getHsaId(),
+                reqHosPerson.getNamn(), reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), reqHosPerson.getSpecialiseringar(), vardenhet);
+
+        se.inera.certificate.modules.support.api.dto.Patient patient = new se.inera.certificate.modules.support.api.dto.Patient(person.getFornamn(),
+                person.getMellannamn(), person.getEfternamn(), person.getPersonnummer(), person.getPostadress(), person.getPostnummer(),
+                person.getPostort());
+
+        return new CreateNewDraftHolder(newDraftIntygId, hosPerson, patient);
+    }
+
+    private CreateNewDraftRequest createNewDraftRequestForCopying(String newDraftIntygId, String intygType, CreateNewDraftCopyRequest request,
+            Person person) {
+
+        Patient patient = new Patient();
+        patient.setPersonnummer(person.getPersonnummer());
+        patient.setFornamn(person.getFornamn());
+        patient.setMellannamn(person.getMellannamn());
+        patient.setEfternamn(person.getEfternamn());
+        patient.setPostadress(person.getPostadress());
+        patient.setPostnummer(person.getPostnummer());
+        patient.setPostort(person.getPostort());
+
+        return new CreateNewDraftRequest(newDraftIntygId, intygType, request.getHosPerson(), request.getVardenhet(), patient);
     }
 
     @Override
@@ -284,7 +351,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         // check that the draft is still a draft
         if (!isTheDraftStillADraft(intyg.getStatus())) {
             LOG.error("Intyg '{}' can not be updated since it is no longer a draft", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "This intyg can not be updated since it is no longer a draft");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "This intyg can not be updated since it is no longer a draft");
         }
 
         String intygType = intyg.getIntygsTyp();
@@ -410,7 +478,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         // check that the draft exists
         if (intyg == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be deleted since it could not be found");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "The intyg could not be deleted since it could not be found");
         }
 
         // check that the draft is still unsigned
@@ -432,10 +501,17 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         intyg.setSenastSparadAv(vardPersonRef);
 
         SelectableVardenhet valdVardgivare = user.getValdVardgivare();
-        se.inera.certificate.modules.support.api.dto.Vardgivare vardgivare = new se.inera.certificate.modules.support.api.dto.Vardgivare(valdVardgivare.getId(), valdVardgivare.getNamn());
+        se.inera.certificate.modules.support.api.dto.Vardgivare vardgivare = new se.inera.certificate.modules.support.api.dto.Vardgivare(
+                valdVardgivare.getId(), valdVardgivare.getNamn());
+
         AbstractVardenhet valdVardenhet = (AbstractVardenhet) user.getValdVardenhet();
-        se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(valdVardenhet.getId(), valdVardenhet.getNamn(), valdVardenhet.getPostadress(), valdVardenhet.getPostnummer(), valdVardenhet.getPostort(), valdVardenhet.getTelefonnummer(), valdVardenhet.getEpost(), valdVardenhet.getArbetsplatskod(), vardgivare);
-        HoSPersonal hosPerson = new HoSPersonal(user.getHsaId(), user.getNamn(), user.getForskrivarkod(), user.getTitel(), user.getSpecialiseringar(), vardenhet);
+        se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(
+                valdVardenhet.getId(), valdVardenhet.getNamn(), valdVardenhet.getPostadress(), valdVardenhet.getPostnummer(),
+                valdVardenhet.getPostort(), valdVardenhet.getTelefonnummer(), valdVardenhet.getEpost(), valdVardenhet.getArbetsplatskod(), vardgivare);
+
+        se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = new se.inera.certificate.modules.support.api.dto.HoSPersonal(
+                user.getHsaId(),
+                user.getNamn(), user.getForskrivarkod(), user.getTitel(), user.getSpecialiseringar(), vardenhet);
 
         try {
             InternalModelHolder internalModel = new InternalModelHolder(draftAsJson);

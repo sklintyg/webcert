@@ -11,12 +11,14 @@ import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.repository.IntygFilter;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.draft.IntygDraftService;
+import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.api.dto.CopyIntygRequest;
 import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
@@ -98,26 +100,34 @@ public class IntygApiController extends AbstractApiController {
     @Path("/kopiera/{intygsId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createNewCopy(CreateNewIntygRequest request, @PathParam("intygsId") String intygsId) {
+    public Response createNewCopy(CopyIntygRequest request, @PathParam("intygsId") String orgIntygsId) {
 
-        if (!request.isValid()) {
-            LOG.error("Request is invalid: " + request.toString());
-            return Response.status(Status.BAD_REQUEST).build();
-        }
+        LOG.debug("Attempting to create a draft copy of '{}'", orgIntygsId);
 
-        String intygType = request.getIntygType();
+        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, request);
 
-        LOG.debug("Attempting to copy draft of type '{}' from {}", intygType, intygsId);
+        String draftCopyIntygsId = intygDraftService.createNewDraftCopy(serviceRequest);
 
-        CreateNewDraftRequest serviceRequest = createServiceRequest(request);
+        LOG.debug("Created a new draft copy from '{}' with id '{}'", orgIntygsId, draftCopyIntygsId);
 
-        String idOfCreatedDraft = intygDraftService.createNewDraftCopy(serviceRequest, intygsId);
-
-        LOG.debug("Created a new draft copy of type '{}' with id '{}'", intygType, idOfCreatedDraft);
-
-        return Response.ok().entity(idOfCreatedDraft).build();
+        return Response.ok().entity(draftCopyIntygsId).build();
     }
-
+    
+    private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, CopyIntygRequest copyRequest) {
+        
+        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest();
+        req.setOriginalIntygId(originalIntygId);
+        
+        req.setHosPerson(createHoSPersonFromUser());
+        req.setVardenhet(createVardenhetFromUser());
+        
+        if (copyRequest != null && copyRequest.containsNewPersonnummer()) {
+            req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
+        }
+                
+        return req;
+    }
+    
     private CreateNewDraftRequest createServiceRequest(CreateNewIntygRequest req) {
         CreateNewDraftRequest srvReq = new CreateNewDraftRequest();
 

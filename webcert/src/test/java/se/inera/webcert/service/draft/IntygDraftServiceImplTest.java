@@ -18,9 +18,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import se.inera.certificate.modules.support.api.ModuleApi;
+import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
@@ -36,10 +41,18 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.pu.model.Person;
+import se.inera.webcert.pu.services.PUService;
+import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.draft.util.CreateIntygsIdAsUUIDStrategy;
+import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -51,6 +64,8 @@ public class IntygDraftServiceImplTest {
     private static final String INTYG_JSON = "A bit of text representing json";
 
     private static final String INTYG_TYPE = "fk7263";
+
+    private static final String PATIENT_SSN = "19121212-1212";
 
     @Mock
     private IntygRepository intygRepository;
@@ -64,6 +79,20 @@ public class IntygDraftServiceImplTest {
     @Mock
     private WebCertUserService userService;
 
+    @Mock
+    private IntygService intygService;
+
+    @Mock
+    private PUService puService;
+
+    @Spy
+    private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
+        @Override
+        public String createId() {
+            return "def567";
+        }
+    };
+
     @InjectMocks
     private IntygDraftService draftService = new IntygDraftServiceImpl();
 
@@ -72,7 +101,9 @@ public class IntygDraftServiceImplTest {
     private Intyg intygSigned;
 
     private HoSPerson hoSPerson;
-    
+
+    private se.inera.webcert.service.dto.Vardenhet vardenhet;
+
     @Before
     public void setup() {
         hoSPerson = new HoSPerson();
@@ -80,6 +111,21 @@ public class IntygDraftServiceImplTest {
         hoSPerson.setNamn("Dr Dengroth");
         hoSPerson.setBefattning("Befattning");
         hoSPerson.getSpecialiseringar().add("Ortoped");
+
+        se.inera.webcert.service.dto.Vardgivare vardgivare = new se.inera.webcert.service.dto.Vardgivare();
+        vardgivare.setHsaId("SE234234");
+        vardgivare.setNamn("Vårdgivaren");
+
+        vardenhet = new se.inera.webcert.service.dto.Vardenhet();
+        vardenhet.setArbetsplatskod("00000");
+        vardenhet.setNamn("Vårdenheten");
+        vardenhet.setHsaId("SE234897348");
+        vardenhet.setPostadress("Sjukvägen 1");
+        vardenhet.setPostnummer("12345");
+        vardenhet.setNamn("Knäckebröhult");
+        vardenhet.setTelefonnummer("0123-456789");
+        vardenhet.setEpost("ingen@ingen.se");
+        vardenhet.setVardgivare(vardgivare);
 
         VardpersonReferens vardperson = new VardpersonReferens();
         vardperson.setHsaId(hoSPerson.getHsaId());
@@ -102,45 +148,45 @@ public class IntygDraftServiceImplTest {
 
     @Test
     public void testDeleteDraftThatIsUnsigned() {
-        
+
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
-                
+
         draftService.deleteUnsignedDraft(INTYG_ID);
-        
+
         verify(intygRepository).findOne(INTYG_ID);
         verify(intygRepository).delete(intygDraft);
     }
-    
+
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatIsSigned() {
-        
+
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygSigned);
-                
+
         draftService.deleteUnsignedDraft(INTYG_ID);
-        
+
         verify(intygRepository).findOne(INTYG_ID);
     }
-    
+
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatDoesNotExist() {
-        
+
         when(intygRepository.findOne(INTYG_ID)).thenReturn(null);
-                
+
         draftService.deleteUnsignedDraft(INTYG_ID);
-        
+
         verify(intygRepository).findOne(INTYG_ID);
     }
-    
+
     @Test
     public void testSaveAndValidateDraft() throws Exception {
 
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
-        
+
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-        
+
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", "This is soooo wrong!");
-        
+
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
 
@@ -151,7 +197,8 @@ public class IntygDraftServiceImplTest {
         when(userService.getWebCertUser()).thenReturn(user);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
 
-        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(new InternalModelResponse("{}"));
+        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(
+                new InternalModelResponse("{}"));
 
         DraftValidation res = draftService.saveAndValidateDraft(request);
 
@@ -183,19 +230,19 @@ public class IntygDraftServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftThatIsSigned() {
-        
+
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygSigned);
-        
+
         draftService.saveAndValidateDraft(buildSaveAndValidateRequest());
-        
+
         verify(intygRepository).findOne(INTYG_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftWithExceptionInModule() throws Exception {
-    
+
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
-    
+
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
 
@@ -211,6 +258,46 @@ public class IntygDraftServiceImplTest {
         request.setDraftAsJson(INTYG_JSON);
         request.setSavedBy(hoSPerson);
         return request;
+    }
+
+    @Test
+    public void testCreateNewDraftCopy() throws ModuleException {
+
+        IntygMetadata metaData = new IntygMetadata();
+        metaData.setPatientId(PATIENT_SSN);
+        metaData.setType(INTYG_TYPE);
+        IntygContentHolder ich = new IntygContentHolder(INTYG_JSON, metaData);
+
+        when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
+
+        Person person = new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga");
+        when(puService.getPerson(PATIENT_SSN)).thenReturn(person);
+
+        ModuleApi mockModuleApi = mock(ModuleApi.class);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+
+        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(ExternalModelHolder.class))).thenReturn(imr);
+
+        when(intygRepository.save(any(Intyg.class))).thenAnswer(new Answer<Intyg>() {
+            @Override
+            public Intyg answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (Intyg) args[0];
+            }
+        });
+
+        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
+        String copyId = draftService.createNewDraftCopy(copyReq);
+        assertNotNull(copyId);
+    }
+
+    private CreateNewDraftCopyRequest buildCopyRequest() {
+        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest();
+        req.setOriginalIntygId(INTYG_ID);
+        req.setHosPerson(hoSPerson);
+        req.setVardenhet(vardenhet);
+        return req;
     }
 
 }

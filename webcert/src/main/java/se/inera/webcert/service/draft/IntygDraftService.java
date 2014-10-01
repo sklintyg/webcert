@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
@@ -32,5 +33,5 @@ public interface IntygDraftService {
 
     SignatureTicket serverSignature(String intygsId);
 
-    String createNewDraftCopy(CreateNewDraftRequest serviceRequest, String intygsId);
+    String createNewDraftCopy(CreateNewDraftCopyRequest request);
 }
