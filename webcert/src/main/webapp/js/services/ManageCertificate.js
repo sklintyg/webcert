@@ -229,7 +229,22 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _createCopyDraft($scope, copyDialog, COPY_DIALOG_COOKIE, cert) {
+            var COPY_DIALOG_COOKIE = 'wc.dontShowCopyDialog';
+            var copyDialog = {
+                isOpen: false
+            };
+
+            function _initCopyDialog($scope) {
+                copyDialog.isOpen = false;
+
+                if($scope) {
+                    $scope.dialog = {
+                        errormessageid: 'error.failedtocopyintyg'
+                    };
+                }
+            }
+
+            function _createCopyDraft($scope, dialogModel, cert, onSuccess, onError) {
                 var valdVardenhet = User.getValdVardenhet();
                 CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
                 CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
@@ -237,43 +252,69 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
                 CreateCertificateDraft.intygType = cert.intygType;
 
-                $scope.dialog.showerror = false;
-                $scope.dialog.acceptprogressdone = false;
-                $scope.widgetState.activeErrorMessageKey = null;
                 CreateCertificateDraft.copyIntygToDraft(cert, function(data) {
-                    $scope.dialog.acceptprogressdone = true;
-                    $scope.widgetState.createErrorMessageKey = undefined;
-                    copyDialog.close();
-                    $location.url('/' + CreateCertificateDraft.intygType + '/edit/' + data, true);
-                    CreateCertificateDraft.reset();
+                    $log.debug('Successfully requested copy draft');
+                    if(onSuccess) {
+                        onSuccess(data);
+                    }
                 }, function(error) {
                     $log.debug('Create copy failed: ' + error.message);
-                    $scope.dialog.acceptprogressdone = true;
-                    $scope.dialog.showerror = true;
-                    if (!copyDialog.isOpen && $cookieStore.get(COPY_DIALOG_COOKIE)) {
-                        $scope.widgetState.activeErrorMessageKey = 'error.failedtocopyintyg';
+                    if (onError) {
+                        onError();
                     }
                 });
             }
 
-            function _copy($scope, cert, copyDialog, COPY_DIALOG_COOKIE) {
+            function _copy($scope, cert) {
+
+                function goToDraft(type, intygId) {
+                    $location.url('/' + type + '/edit/' + intygId, true);
+                }
+
+                // Create cookie and model representative
+                var dialogModel = {
+                    dontShowCopyInfo: false
+                };
+                if($cookieStore.get(COPY_DIALOG_COOKIE) === undefined) {
+                    $cookieStore.put(COPY_DIALOG_COOKIE, dialogModel.dontShowCopyInfo);
+                }
 
                 if ($cookieStore.get(COPY_DIALOG_COOKIE)) {
                     $log.debug('copy cert without dialog' + cert);
-                    _createCopyDraft($scope, copyDialog, COPY_DIALOG_COOKIE, cert);
+                    $scope.widgetState.activeErrorMessageKey = null;
+                    _createCopyDraft($scope, dialogModel, cert, function(data) {
+                        goToDraft(CreateCertificateDraft.intygType, data);
+                    }, function() {
+                        $scope.widgetState.activeErrorMessageKey = 'error.failedtocopyintyg';
+                    });
                 } else {
+
                     copyDialog = dialogService.showDialog($scope, {
                         dialogId: 'copy-dialog',
                         titleId: 'label.copycert',
                         templateUrl: '/views/partials/check-dialog.html',
-                        model: $scope.dialog,
+                        model: dialogModel,
                         bodyText: '<p>Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma ' +
                             'information. I de fall patienten har ändrat namn eller adress så uppdateras den informationen.</p>' +
                             '<p>Uppgifterna i intygsutkastet går att ändra innan det signeras.</p>' +
                             'Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.',
                         button1click: function() {
                             $log.debug('copy cert from dialog' + cert);
-                            _createCopyDraft($scope, copyDialog, COPY_DIALOG_COOKIE, cert);
+                            if (dialogModel.dontShowCopyInfo) {
+                                $cookieStore.put(COPY_DIALOG_COOKIE, dialogModel.dontShowCopyInfo);
+                            }
+
+                            $scope.dialog.showerror = false;
+                            $scope.dialog.acceptprogressdone = false;
+                            _createCopyDraft($scope, dialogModel, cert, function(data) {
+                                $scope.dialog.acceptprogressdone = true;
+                                $scope.widgetState.createErrorMessageKey = undefined;
+                                copyDialog.close();
+                                goToDraft(CreateCertificateDraft.intygType, data);
+                            }, function() {
+                                $scope.dialog.acceptprogressdone = true;
+                                $scope.dialog.showerror = true;
+                            });
                         },
                         button1text: 'common.copy',
                         button2text: 'common.cancel',
@@ -419,6 +460,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 buildMailToLink: _buildMailToLink,
                 initSend: _initSend,
                 send: _send,
+                initCopyDialog: _initCopyDialog,
                 copy: _copy
             };
         }]);
