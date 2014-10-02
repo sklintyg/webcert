@@ -44,6 +44,7 @@ import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
+import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.draft.util.CreateIntygsIdAsUUIDStrategy;
@@ -60,12 +61,15 @@ import se.inera.webcert.web.service.WebCertUserService;
 public class IntygDraftServiceImplTest {
 
     private static final String INTYG_ID = "abc123";
+    private static final String INTYG_COPY_ID = "def456";
 
     private static final String INTYG_JSON = "A bit of text representing json";
 
     private static final String INTYG_TYPE = "fk7263";
 
     private static final String PATIENT_SSN = "19121212-1212";
+    
+    private static final String PATIENT_NEW_SSN = "19121212-1414";
 
     @Mock
     private IntygRepository intygRepository;
@@ -89,7 +93,7 @@ public class IntygDraftServiceImplTest {
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
         @Override
         public String createId() {
-            return "def567";
+            return INTYG_COPY_ID;
         }
     };
 
@@ -122,7 +126,7 @@ public class IntygDraftServiceImplTest {
         vardenhet.setHsaId("SE234897348");
         vardenhet.setPostadress("Sjukvägen 1");
         vardenhet.setPostnummer("12345");
-        vardenhet.setNamn("Knäckebröhult");
+        vardenhet.setNamn("Testberga");
         vardenhet.setTelefonnummer("0123-456789");
         vardenhet.setEpost("ingen@ingen.se");
         vardenhet.setVardgivare(vardgivare);
@@ -288,8 +292,69 @@ public class IntygDraftServiceImplTest {
         });
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
-        String copyId = draftService.createNewDraftCopy(copyReq);
-        assertNotNull(copyId);
+        CreateNewDraftCopyResponse copyResp = draftService.createNewDraftCopy(copyReq);
+        assertNotNull(copyResp);
+        assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
+        assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
+        
+        verify(mockIdStrategy).createId();
+        verify(intygRepository).save(any(Intyg.class));
+    }
+    
+    @Test(expected = WebCertServiceException.class)
+    public void testCreateNewDraftCopyPUtjanstFailed() throws ModuleException {
+
+        IntygMetadata metaData = new IntygMetadata();
+        metaData.setPatientId(PATIENT_SSN);
+        metaData.setType(INTYG_TYPE);
+        IntygContentHolder ich = new IntygContentHolder(INTYG_JSON, metaData);
+
+        when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
+
+        when(puService.getPerson(PATIENT_SSN)).thenReturn(null);
+
+        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
+        draftService.createNewDraftCopy(copyReq);
+        
+    }
+    
+    @Test
+    public void testCreateNewDraftCopyWithNewPersonnummer() throws ModuleException {
+
+        IntygMetadata metaData = new IntygMetadata();
+        metaData.setPatientId(PATIENT_SSN);
+        metaData.setType(INTYG_TYPE);
+        IntygContentHolder ich = new IntygContentHolder(INTYG_JSON, metaData);
+
+        when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
+
+        Person person = new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga");
+        when(puService.getPerson(PATIENT_NEW_SSN)).thenReturn(person);
+
+        ModuleApi mockModuleApi = mock(ModuleApi.class);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+
+        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(ExternalModelHolder.class))).thenReturn(imr);
+
+        when(intygRepository.save(any(Intyg.class))).thenAnswer(new Answer<Intyg>() {
+            @Override
+            public Intyg answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (Intyg) args[0];
+            }
+        });
+
+        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
+        copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
+        
+        CreateNewDraftCopyResponse copyResp = draftService.createNewDraftCopy(copyReq);
+        assertNotNull(copyResp);
+        assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
+        assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
+        
+        verify(mockIdStrategy).createId();
+        verify(intygRepository).save(any(Intyg.class));
     }
 
     private CreateNewDraftCopyRequest buildCopyRequest() {

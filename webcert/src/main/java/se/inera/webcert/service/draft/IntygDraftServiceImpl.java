@@ -28,6 +28,7 @@ import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
+import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.DraftValidationStatus;
@@ -246,12 +247,13 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    public String createNewDraftCopy(CreateNewDraftCopyRequest copyRequest) {
+    public CreateNewDraftCopyResponse createNewDraftCopy(CreateNewDraftCopyRequest copyRequest) {
+
+        String orgIntygsId = copyRequest.getOriginalIntygId();
+
+        LOG.debug("Creating a new draft based on intyg '{}'", orgIntygsId);
+
         try {
-
-            String orgIntygsId = copyRequest.getOriginalIntygId();
-
-            LOG.debug("Creating a new draft based on intyg '{}'", orgIntygsId);
 
             IntygContentHolder template = intygService.fetchExternalIntygData(orgIntygsId);
 
@@ -267,14 +269,14 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             Person person = personUppgiftsService.getPerson(patientPersonnummer);
 
             if (person == null) {
-                LOG.error("No person data was found using {}", patientPersonnummer);
+                LOG.error("No person data was found using '{}'", patientPersonnummer);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "No person data found using '"
                         + patientPersonnummer + "'");
             }
 
             String newDraftIntygId = intygsIdStrategy.createId();
             LOG.debug("Assigning the new draft copy id '{}'", newDraftIntygId);
-            
+
             CreateNewDraftHolder moduleRequest = createModuleRequestForCopying(newDraftIntygId, copyRequest, person);
 
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
@@ -287,9 +289,10 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             CreateNewDraftRequest newDraftRequest = createNewDraftRequestForCopying(newDraftIntygId, intygType, copyRequest, person);
             Intyg persistedIntyg = persistNewDraft(newDraftRequest, newDraftModelAsJson);
 
-            return persistedIntyg.getIntygsId();
+            return new CreateNewDraftCopyResponse(intygType, persistedIntyg.getIntygsId());
 
         } catch (ModuleException me) {
+            LOG.error("Module exception occured when trying to make a copy of " + orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
     }
