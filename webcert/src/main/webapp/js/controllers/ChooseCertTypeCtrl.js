@@ -10,19 +10,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 $location.url('/create/index', true);
             }
 
-            // Copy dialog setup
-            var COPY_DIALOG_COOKIE = 'wc.dontShowCopyDialog';
-            var copyDialog = {
-                isOpen: false
-            };
-            $scope.dialog = {
-                acceptprogressdone: true,
-                focus: false,
-                errormessageid: 'error.failedtocopyintyg',
-                showerror: false,
-                dontShowCopyInfo: $cookieStore.get(COPY_DIALOG_COOKIE)
-            };
-
             // Page setup
             $scope.widgetState = {
                 doneLoading: true,
@@ -98,14 +85,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 $scope.updateCertList();
             });
 
-            $scope.$watch('widgetState.dontShowCopyInfo', function(newVal) {
-                if (newVal) {
-                    $cookieStore.put(COPY_DIALOG_COOKIE, newVal);
-                } else {
-                    $cookieStore.remove(COPY_DIALOG_COOKIE);
-                }
-            });
-
             $scope.openIntyg = function(cert) {
                 if (cert.source === 'WC') {
                     $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
@@ -114,7 +93,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 }
             };
 
+            ManageCertificate.initCopyDialog($scope);
             $scope.copyIntyg = function(cert) {
-                copyDialog = ManageCertificate.copy($scope, cert, copyDialog, COPY_DIALOG_COOKIE);
+                ManageCertificate.copy($scope, cert);
             };
         }]);
