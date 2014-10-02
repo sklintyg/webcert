@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @author andreaskaltenbach
  */
-public class Vardgivare implements SelectableVardenhet, Serializable {
+public class Vardgivare implements SelectableVardenhet, Comparable<Vardgivare>, Serializable {
 
     private static final long serialVersionUID = 4462766290949153158L;
 
@@ -102,5 +102,15 @@ public class Vardgivare implements SelectableVardenhet, Serializable {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public int compareTo(Vardgivare annanVardgivare) {
+        return getNamn().compareTo(annanVardgivare.getNamn());
+    }
+    
+    @Override
+    public String toString() {
+        return new StringBuilder(getNamn()).append(":").append(getId()).toString();
     }
 }

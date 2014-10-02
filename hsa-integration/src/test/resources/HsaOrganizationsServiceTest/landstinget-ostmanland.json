@@ -1,0 +1,10 @@
+{
+    "id" : "ostmanland",
+    "namn" : "Landstinget Östmanland",
+    "vardenheter" : [
+        {
+            "id" : "vardcentrum-1",
+            "namn" : "Vårdcentrum 1"
+        }
+    ]
+}
