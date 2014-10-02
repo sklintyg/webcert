@@ -32,50 +32,19 @@
   </cxf:bus>
 
   <context:annotation-config />
+  
   <context:component-scan base-package="se.inera.webcert.web.controller.api" />
-  <jaxrs:server address="/intyg">
+  
+  <jaxrs:server address="/">
     <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.web.controller.moduleapi.IntygModuleApiController" />
-    </jaxrs:serviceBeans>
-    <jaxrs:providers>
-      <ref bean="jacksonJsonProvider" />
-      <ref bean="webcertRestExceptionHandler" />
-    </jaxrs:providers>
-    <jaxrs:extensionMappings>
-      <entry key="json" value="application/json" />
-    </jaxrs:extensionMappings>
-  </jaxrs:server>
-  <jaxrs:server address="/fragasvar">
-    <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.web.controller.moduleapi.FragaSvarModuleApiController" />
-    </jaxrs:serviceBeans>
-    <jaxrs:providers>
-      <ref bean="jacksonJsonProvider" />
-      <ref bean="webcertRestExceptionHandler" />
-    </jaxrs:providers>
-    <jaxrs:extensionMappings>
-      <entry key="json" value="application/json" />
-    </jaxrs:extensionMappings>
-  </jaxrs:server>
-  <jaxrs:server address="/stat">
-    <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.web.controller.moduleapi.StatModuleApiController" />
-    </jaxrs:serviceBeans>
-    <jaxrs:providers>
-      <ref bean="jacksonJsonProvider" />
-      <ref bean="webcertRestExceptionHandler"/>
-    </jaxrs:providers>
-    <jaxrs:extensionMappings>
-      <entry key="json" value="application/json" />
-    </jaxrs:extensionMappings>
-  </jaxrs:server>
-  <jaxrs:server address="/diagnos">
-    <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.web.controller.moduleapi.DiagnosModuleApiController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
-      <ref bean="webcertRestExceptionHandler"/>
+      <ref bean="webcertRestExceptionHandler" />
     </jaxrs:providers>
     <jaxrs:extensionMappings>
       <entry key="json" value="application/json" />

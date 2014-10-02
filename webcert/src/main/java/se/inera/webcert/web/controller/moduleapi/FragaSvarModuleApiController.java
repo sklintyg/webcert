@@ -20,6 +20,7 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
 
+@Path("/fragasvar")
 public class FragaSvarModuleApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarModuleApiController.class);

@@ -48,6 +48,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.SendSignedIntygParameter;
  *
  * @author nikpet
  */
+@Path("/intyg")
 public class IntygModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygModuleApiController.class);

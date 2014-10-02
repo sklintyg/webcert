@@ -22,6 +22,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.DiagnosParameter;
  * @author npet
  *
  */
+@Path("/diagnos")
 public class DiagnosModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosModuleApiController.class);

@@ -30,6 +30,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.VardgivareStats;
 /**
  * @author marced
  */
+@Path("/stat")
 public class StatModuleApiController extends AbstractApiController {
 
     private static final String SEPARATOR = " - ";
