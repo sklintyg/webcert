@@ -282,8 +282,8 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 if ($cookieStore.get(COPY_DIALOG_COOKIE)) {
                     $log.debug('copy cert without dialog' + cert);
                     $scope.widgetState.activeErrorMessageKey = null;
-                    _createCopyDraft($scope, dialogModel, cert, function(data) {
-                        goToDraft(CreateCertificateDraft.intygType, data);
+                    _createCopyDraft($scope, dialogModel, cert, function(draftResponse) {
+                        goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                     }, function() {
                         $scope.widgetState.activeErrorMessageKey = 'error.failedtocopyintyg';
                     });
@@ -306,11 +306,11 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
                             $scope.dialog.showerror = false;
                             $scope.dialog.acceptprogressdone = false;
-                            _createCopyDraft($scope, dialogModel, cert, function(data) {
+                            _createCopyDraft($scope, dialogModel, cert, function(draftResponse) {
                                 $scope.dialog.acceptprogressdone = true;
                                 $scope.widgetState.createErrorMessageKey = undefined;
                                 copyDialog.close();
-                                goToDraft(CreateCertificateDraft.intygType, data);
+                                goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                             }, function() {
                                 $scope.dialog.acceptprogressdone = true;
                                 $scope.dialog.showerror = true;

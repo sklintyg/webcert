@@ -73,22 +73,8 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     var id = (typeof cert.intygId === 'undefined') ? cert.id : cert.intygId;
                     $log.debug('_copyIntygToDraft ' + cert.intygType + ', ' + id);
 
-                    var payload = {};
-                    payload.intygType = 'dontcare';
-                    payload.patientPersonnummer = this.personnummer;
-                    payload.patientFornamn = this.fornamn;
-                    payload.patientMellannamn = this.mellannamn;
-                    payload.patientEfternamn = this.efternamn;
-                    payload.patientPostadress = this.postadress;
-                    payload.patientPostnummer = this.postnummer;
-                    payload.patientPostort = this.postort;
-                    payload.vardEnhetHsaId = this.vardEnhetHsaId;
-                    payload.vardEnhetNamn = this.vardEnhetNamn;
-                    payload.vardGivareHsaId = this.vardGivareHsaId;
-                    payload.vardGivareNamn = this.vardGivareNamn;
-
                     var restPath = '/api/intyg/kopiera/' + id;
-                    $http.post(restPath, payload).success(function(data) {
+                    $http.post(restPath, {}).success(function(data) {
                         $log.debug('got callback data: ' + data);
                         onSuccess(data);
                         statService.refreshStat();
