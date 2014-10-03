@@ -2,7 +2,7 @@ package se.inera.webcert.hsa.model;
 
 import java.io.Serializable;
 
-public abstract class AbstractVardenhet implements SelectableVardenhet, Serializable {
+public abstract class AbstractVardenhet implements SelectableVardenhet, Comparable<AbstractVardenhet>, Serializable {
 
     private static final long serialVersionUID = 304219756695002501L;
 
@@ -92,5 +92,15 @@ public abstract class AbstractVardenhet implements SelectableVardenhet, Serializ
 
     public void setArbetsplatskod(String arbetsplatskod) {
         this.arbetsplatskod = arbetsplatskod;
+    }
+
+    @Override
+    public int compareTo(AbstractVardenhet annanVardenhet) {
+        return getNamn().compareTo(annanVardenhet.getNamn());
+    }
+    
+    @Override
+    public String toString() {
+        return new StringBuilder(getNamn()).append(":").append(getId()).toString();
     }
 }

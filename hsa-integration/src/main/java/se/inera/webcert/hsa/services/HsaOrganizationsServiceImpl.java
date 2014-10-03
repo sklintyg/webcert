@@ -1,6 +1,7 @@
 package se.inera.webcert.hsa.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
@@ -35,6 +36,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimaps;
+
 import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
 
 /**
@@ -59,7 +61,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         GetMiuForPersonResponseType response = client.callMiuRights(parameters);
 
         List<MiuInformationType> miuInformation = response.getMiuInformation();
-        LOG.debug("User with HSA-Id '{}' has a total of {} medarbetaruppdrag", hosPersonHsaId, miuInformation.size());
+        LOG.debug("User '{}' has a total of {} medarbetaruppdrag", hosPersonHsaId, miuInformation.size());
 
         // filter by syfte. Only 'Vård och behandling' assignments are relevant for WebCert.
         Iterable<MiuInformationType> filteredMius = Iterables.filter(miuInformation,
@@ -80,15 +82,17 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                     }
                 });
 
-        LOG.debug("User with HSA-Id '{}' has {} VoB medarbetaruppdrag for {} vårdgivare", new Object[]{hosPersonHsaId,
-                vardgivareIdToMiuInformation.size(), vardgivareIdToMiuInformation.keySet().size()});
+        LOG.debug("User '{}' has {} VoB medarbetaruppdrag for {} vårdgivare", new Object[] { hosPersonHsaId,
+                vardgivareIdToMiuInformation.size(), vardgivareIdToMiuInformation.keySet().size() });
 
         for (String vardgivareId : vardgivareIdToMiuInformation.keySet()) {
-            Vardgivare vardgivare = convert(vardgivareIdToMiuInformation.get(vardgivareId));
+            Vardgivare vardgivare = createVardgivareFromMIU(vardgivareIdToMiuInformation.get(vardgivareId));
             if (vardgivare != null) {
                 vardgivareList.add(vardgivare);
             }
         }
+
+        Collections.sort(vardgivareList);
 
         return vardgivareList;
     }
@@ -100,7 +104,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         String enhetHsaId = miuInformationType.getCareUnitHsaIdentity();
 
         String enhetDn = fetchDistinguishedName(enhetHsaId);
-        LOG.debug("DN for enhet '{}' is '{}'", enhetHsaId, enhetDn);
+        LOG.debug("DN for unit '{}' is '{}'", enhetHsaId, enhetDn);
 
         List<CareUnitType> careUnits = fetchSubEnheter(vardgivare, enhetDn);
 
@@ -116,7 +120,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
                 attachMottagningar(vardenhet);
                 vardenheter.add(vardenhet);
             } else {
-                LOG.debug("Enhet '{}' is not active right now", enhetHsaId);
+                LOG.debug("Vårdenhet '{}' is not active right now", enhetHsaId);
             }
         }
 
@@ -168,14 +172,17 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
             if (mottagning != null && isActive(mottagning.getStart(), mottagning.getEnd())) {
                 mottagning.setArbetsplatskod(getWorkplaceCode(mottagning.getId()));
                 vardenhet.getMottagningar().add(mottagning);
+                LOG.debug("Attached mottagning '{}'", mottagning);
             } else {
-                LOG.debug("Mottagning '{}' is not active right now", mottagningsId);
+                LOG.debug("Mottagning '{}' is not active just now", mottagning);
             }
         }
+
+        Collections.sort(vardenhet.getMottagningar());
     }
 
     private String getWorkplaceCode(String careUnitHsaId) {
-        LOG.debug("Calling HSA in getWorkplaceCode");
+        LOG.debug("Fetching arbetsplatskod from HSA for enhet '{}'", careUnitHsaId);
 
         HsawsSimpleLookupType parameters = new HsawsSimpleLookupType();
 
@@ -212,16 +219,20 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
     }
 
     private Mottagning fetchMottagning(String mottagningsHsaId) {
+        
         GetHsaUnitResponseType response = client.callGetHsaunit(mottagningsHsaId);
-        LOG.debug("Fetching details for mottagning '{}'", mottagningsHsaId);
+        
+        LOG.debug("Fetching data for mottagning '{}'", mottagningsHsaId);
+        
         if (response == null) {
-            LOG.error("Mottagning '{}' hittades ej i HSA. Inkonsistent data i HSA", mottagningsHsaId);
+            LOG.error("Mottagning '{}' was not found in HSA. Inconsistent data in HSA", mottagningsHsaId);
             return null;
-        } else {
-            Mottagning mottagning = new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(), response.getEndDate());
-            updateWithContactInformation(mottagning, response);
-            return mottagning;
         }
+        
+        Mottagning mottagning = new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(), response.getEndDate());
+        updateWithContactInformation(mottagning, response);
+        
+        return mottagning;
     }
 
     private void updateWithContactInformation(AbstractVardenhet vardenhet, GetHsaUnitResponseType response) {
@@ -250,7 +261,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
     }
 
     private List<String> fetchMottagningsHsaId(Vardenhet vardenhet) {
-        List<String> ids = new ArrayList<>();
+        List<String> mottagningIds = new ArrayList<>();
 
         HsawsSimpleLookupType lookupType = new HsawsSimpleLookupType();
 
@@ -268,23 +279,24 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         HsawsSimpleLookupResponseType lookupResponse = client.callHsawsSimpleLookup(lookupType);
 
         if (lookupResponse.getResponseValues().isEmpty()) {
-            LOG.debug("Enhet '{}' has 0 mottagningar", vardenhet.getId());
-            return ids;
+            LOG.debug("Vardenhet '{}' has 0 mottagningar", vardenhet.getId());
+            return mottagningIds;
         }
 
         List<AttributeValuePairType> attributes = lookupResponse.getResponseValues().get(0).getResponse();
 
         for (AttributeValuePairType attribute : attributes) {
             if ("hsaHealthCareUnitMember".equals(attribute.getAttribute())) {
-                LOG.debug("Enhet '{}' has {} mottagningar", vardenhet.getId(), attribute.getValue().size());
-                ids.addAll(attribute.getValue());
+                mottagningIds.addAll(attribute.getValue());
             }
         }
 
-        return ids;
+        LOG.debug("Vardenhet '{}' has {} mottagningar", vardenhet.getId(), mottagningIds.size());
+
+        return mottagningIds;
     }
 
-    private Vardgivare convert(List<MiuInformationType> miuInformationTypes) {
+    private Vardgivare createVardgivareFromMIU(List<MiuInformationType> miuInformationTypes) {
 
         Vardgivare vardgivare = new Vardgivare(miuInformationTypes.get(0).getCareGiver(), miuInformationTypes.get(0).getCareGiverName());
 
@@ -292,9 +304,13 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
             vardgivare.getVardenheter().addAll(fetchAllEnheter(vardgivare, miuInformationType));
         }
 
+        Collections.sort(vardgivare.getVardenheter());
+
         if (vardgivare.getVardenheter().isEmpty()) {
             return null;
         }
+
+        LOG.debug("Created Vardgivare {}", vardgivare);
 
         return vardgivare;
     }

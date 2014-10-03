@@ -3,9 +3,12 @@ package se.inera.webcert.hsa.services;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -113,6 +116,17 @@ public class HsaOrganizationsServiceTest {
         // Assert that mottagningar was loaded for 'centrum-ost'
         Vardenhet centrumOst = getVardenhetById(CENTRUM_OST, vg.getVardenheter());
         assertEquals(1, centrumOst.getMottagningar().size());
+        
+        // Assert that vårdenheter is sorted alphabetically
+        List<String> correct = Arrays.asList("Vårdcentrum i Norr","Vårdcentrum i Väst","Vårdcentrum i Öst");
+        
+        List<String> vardenheterNames = new ArrayList<String>();
+        for(Vardenhet ve : vg.getVardenheter()) {
+            vardenheterNames.add(ve.getNamn());
+        }
+        
+        assertThat(vardenheterNames, is(correct));
+        
     }
 
     private Vardenhet getVardenhetById(final String vardenhetId, List<Vardenhet> vardenheter) {
@@ -132,14 +146,24 @@ public class HsaOrganizationsServiceTest {
     public void testMultipleVardgivare() throws IOException {
         
         // Load with another vardgivare, which gives two vardgivare available
-        addVardgivare("HsaOrganizationsServiceTest/landstinget-kings-landing.json");
+        addVardgivare("HsaOrganizationsServiceTest/landstinget-ostmanland.json");
 
         // Assign Gunilla one MIU from each vardgivare 
-        addMedarbetaruppdrag("Gunilla", asList(CENTRUM_NORR, "red-keep"));
+        addMedarbetaruppdrag("Gunilla", asList(CENTRUM_NORR, "vardcentrum-1"));
 
         List<Vardgivare> vardgivare = service.getAuthorizedEnheterForHosPerson(PERSON_HSA_ID);
         
         assertEquals(2, vardgivare.size());
+        
+        // Assert that vardgivare is sorted alphabetically
+        List<String> correct = Arrays.asList("Landstinget Västmanland","Landstinget Östmanland");
+        
+        List<String> vardgivareNames = new ArrayList<String>();
+        for(Vardgivare vg : vardgivare) {
+            vardgivareNames.add(vg.getNamn());
+        }
+        
+        assertThat(vardgivareNames, is(correct));
     }
 
     private void addMedarbetaruppdrag(String hsaId, List<String> enhetIds) {
