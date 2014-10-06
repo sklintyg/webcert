@@ -37,7 +37,7 @@
     <!-- Project dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>schemas</artifactId>
+      <artifactId>webcert-schemas</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
