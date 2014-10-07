@@ -31,6 +31,9 @@ var wcMessages = {
         'label.makulera.body' : 'Välj hur du vill makulera intyget.',
         'label.makulera.confirmation': 'Kvittens - Återtaget intyg',
 
+        'label.qaonlywarning' : 'Du lämnar nu frågor och svar',
+        'label.qaonlywarning.body' : 'Tänk på att intyg ska skrivas och utfärdas från journalsystemet och inte i Webcert.',
+
         //certificate types
         'certificatetypes.fk7263.typename': 'Läkarintyg FK 7263',
         'certificatetypes.rli.typename': 'Intyg vid avbeställd resa',

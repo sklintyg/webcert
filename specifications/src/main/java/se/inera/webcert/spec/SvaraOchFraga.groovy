@@ -8,12 +8,20 @@ import se.inera.webcert.pages.WelcomePage
 
 class SvaraOchFraga {
 
-    def gaTillSvaraOchFraga() {
+    def gaTillSvaraOchFraga(boolean wait = true) {
         Browser.drive {
             go "/web/dashboard#/unhandled-qa"
-            waitFor {
-                at UnhandledQAPage
+            if (wait) {
+                waitFor {
+                    at UnhandledQAPage
+                }
             }
+        }
+    }
+
+    boolean svaraOchFragaSidanVisas() {
+        Browser.drive {
+            at UnhandledQAPage
         }
     }
 
@@ -71,7 +79,7 @@ class SvaraOchFraga {
     }
 
     boolean fraganArSkickadTillFkMeddelandeVisas(boolean expected = true) {
-        def result = false
+            def result = false
         Browser.drive {
             waitFor {
                 at ViewCertQAPage
@@ -420,6 +428,41 @@ class SvaraOchFraga {
         true
     }
 
+    boolean kopieraKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                expected == page.kopieraBtn.isDisplayed()
+            }
+        }
+        true
+    }
+
+    boolean makuleraKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                expected == page.makuleraBtn.isDisplayed()
+            }
+        }
+        true
+    }
+
+    boolean skickaTillFkKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                expected == page.skickaTillFkBtn.isDisplayed()
+            }
+        }
+        true
+    }
 
     public boolean arFragaHanterad(String internId) {
         def result = false
@@ -879,4 +922,37 @@ class SvaraOchFraga {
         }
     }
 
+    boolean lamnaFragaSvarVarningVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                expected == page.qaOnlyDialog.isDisplayed()
+            }
+        }
+        true
+    }
+
+    def lamnaFragaSvarFortsatt() {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.qaOnlyDialogFortsatt.click()
+            }
+        }
+    }
+
+    def lamnaFragaSvarAvbryt() {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            waitFor {
+                page.qaOnlyDialogCancel.click()
+            }
+        }
+    }
 }

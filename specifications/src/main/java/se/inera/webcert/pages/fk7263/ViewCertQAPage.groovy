@@ -13,6 +13,13 @@ class ViewCertQAPage extends Page {
         newQuestionTopic { $("#new-question-topic") }
         sendQuestionBtn { $("#sendQuestionBtn") }
         cancelQuestionBtn { $("#cancelQuestionBtn") }
+        kopieraBtn(required: false){ $("#copyBtn") }
+        makuleraBtn(required: false){ $("#makuleraBtn") }
+        skickaTillFkBtn(required: false){ $("#sendBtn") }
+
+        qaOnlyDialog(required: false) { $("#qa-only-warning-dialog") }
+        qaOnlyDialogFortsatt(required: false) { $("#button1continue-dialog") }
+        qaOnlyDialogCancel(required: false) { $("#button2qa-only-warning-dialog") }
 
         unhandledQAList { $("#unhandledQACol") }
 
