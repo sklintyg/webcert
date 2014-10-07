@@ -28,7 +28,7 @@
       </dependency>
       <dependency>
         <groupId>se.inera.webcert</groupId>
-        <artifactId>persistence</artifactId>
+        <artifactId>webcert-persistence</artifactId>
         <version>${project.version}</version>
       </dependency>
 
