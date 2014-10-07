@@ -1,10 +1,10 @@
-package se.inera.webcert.pages.fk7263
+package se.inera.webcert.pages
 
 import geb.Page
 
-class ViewCertQAPage extends Page {
+class VisaFragaSvarPage extends Page {
 
-    static at = { $("#viewQAandCert").isDisplayed() }
+    static at = { $("#viewQAAndCert").isDisplayed() }
 
     static content = {
         newQuestionBtn(required: false) { $("#askQuestionBtn") }
@@ -21,29 +21,38 @@ class ViewCertQAPage extends Page {
         certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
         certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
         certificateIsNotSentToFkMessage(required: false) { $("#certificate-is-not-sent-to-fk-message-text") }
-        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
 
-        field1yes { $("#field1yes") }
-        field1no { $("#field1no") }
-        field2 { $("#field2") }
-        field3 { $("#field3") }
-        field4 { $("#field4") }
-        field4b { $("#field4b") }
-        field5 { $("#field5") }
-        field6a { $("#field6a") }
-        field6b { $("#field6b") }
-        field7 { $("#field7") }
-        field8a { $("#field8") }
-        field8b { $("#field8b") }
-        field9 { $("#field9") }
-        field10 { $("#field10") }
-        field11 { $("#field11") }
-        field12 { $("#field12") }
-        field13 { $("#field13") }
-        field17 { $("#field17") }
-        field_vardperson_namn { $("#vardperson_namn") }
-        field_vardperson_enhetsnamn { $("#vardperson_enhetsnamn") }
-        intygSaknas { $("#cert-load-error") }
+        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
+        certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
+        certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+        copyButton { $("#copyBtn") }
+        makuleraButton { $("#makuleraBtn") }
+        intygVy { $('#intyg-vy-laddad') }
+        kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
+        makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
+        makuleraConfirmationOkButton { $("#confirmationOkButton") }
+        skickaDialogCheck { $("#patientSamtycke") }
+        skickaDialogSkickaKnapp { $("#button1send-dialog") }
+    }
+
+    def copy() {
+        $("#copyBtn").click()
+        sleep(300)
+        kopieraDialogKopieraKnapp.click()
+    }
+
+    def makulera() {
+        $("#makuleraBtn").click()
+        sleep(300)
+        makuleraDialogKopieraKnapp.click()
+    }
+
+    def send() {
+        $("#sendBtn").click()
+        sleep(1000)
+        skickaDialogCheck.click()
+        sleep(100)
+        skickaDialogSkickaKnapp.click()
     }
 
     def showNewQuestionForm() {
@@ -129,4 +138,5 @@ class ViewCertQAPage extends Page {
     def qaSvarstext(String internid) {
         $("#answerText-${internid}")
     }
+
 }

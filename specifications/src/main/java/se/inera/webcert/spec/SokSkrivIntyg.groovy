@@ -1,6 +1,7 @@
 package se.inera.webcert.spec
 
 import se.inera.webcert.pages.*
+import se.inera.webcert.pages.fk7263.VisaFk7263Page
 
 class SokSkrivIntyg {
 
@@ -146,10 +147,11 @@ class SokSkrivIntyg {
         }
     }
 
+    // BEGIN these go to the same page but for different classes. should be merged in the future
     boolean visaSidanVisas() {
         Browser.drive {
             waitFor {
-                at VisaIntygPage
+                at VisaFragaSvarPage
             }
 
             waitFor {
@@ -157,6 +159,19 @@ class SokSkrivIntyg {
             }
         }
     }
+
+    boolean visaIntygSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+
+            waitFor {
+                page.intygLaddat.isDisplayed()
+            }
+        }
+    }
+    // END
 
     public void loggaInIndex() {
         Browser.drive {

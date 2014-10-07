@@ -2,7 +2,7 @@ package se.inera.webcert.spec
 import se.inera.webcert.pages.EditeraIntygPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnsignedIntygPage
-import se.inera.webcert.pages.VisaIntygPage
+import se.inera.webcert.pages.VisaFragaSvarPage
 import se.inera.webcert.pages.WelcomePage
 
 class HanteraUtkast {
@@ -129,7 +129,7 @@ class HanteraUtkast {
     boolean visaSidanVisas() {
         Browser.drive {
             waitFor {
-                at VisaIntygPage
+                at VisaFragaSvarPage
             }
         }
     }
