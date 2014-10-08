@@ -22,15 +22,13 @@ public class BootstrapBean {
     @Autowired
     private IntygStore intygStore;
 
-    private Unmarshaller unmarshaller;
+    private JAXBContext jaxbContext;
 
     @PostConstruct
     public void initData() {
         try {
             LOG.debug("Intygstjanst Stub : initializing intyg data...");
-            JAXBContext jaxbContext = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
-
-            unmarshaller = jaxbContext.createUnmarshaller();
+            jaxbContext = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
 
             List<Resource> files = getResourceListing("bootstrap-intyg/*.xml");
             for (Resource res : files) {
@@ -53,7 +51,7 @@ public class BootstrapBean {
     }
 
     private void addIntyg(Resource res) throws JAXBException, IOException {
-        GetCertificateForCareResponseType response = unmarshaller.unmarshal(new StreamSource(res.getInputStream()),
+        GetCertificateForCareResponseType response = jaxbContext.createUnmarshaller().unmarshal(new StreamSource(res.getInputStream()),
                 GetCertificateForCareResponseType.class).getValue();
 
         intygStore.addIntyg(response);
