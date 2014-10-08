@@ -17,7 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,12 +33,8 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.service.FragaSvarService;
-import se.inera.webcert.service.FragaSvarServiceImpl;
-import se.inera.webcert.service.IntygService;
-import se.inera.webcert.service.IntygServiceImpl;
+import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
-import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * Bean for inserting questions directly into the database.
