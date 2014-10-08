@@ -8,13 +8,13 @@ Detta test visar att man kan makulera ett signerat ts-bas intyg från visa-vyn o
 | valj patient | 19121212-1212 |
 | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-5 |
-| visa sidan visas |
+| visa intyg sidan visas |
 
 !3 Makulera intyget
 
 | script | !-SokSkrivIntyg-! |
 | makulera visat intyg |
 | makulera bekraftelse visas |
-| visa sidan visas |
+| visa intyg sidan visas |
 | makulerad status visas |
 

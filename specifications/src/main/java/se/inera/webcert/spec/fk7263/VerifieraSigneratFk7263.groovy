@@ -20,13 +20,13 @@ class VerifieraSigneratFk7263 {
     // rekommendationKontaktForetagshalsovard | rekommendationOvrigt | rekommendationOvrigtBeskrivning |
     // arbetslivsinriktadRehabilitering | kontaktFk | ovrigt | vardenhetPostadress | vardenhetPostnummer |
     // vardenhetPostort | vardenhetTelefonnummer |
-    def getCurrentMethodName(){
+    static def getCurrentMethodName(){
         def marker = new Throwable()
         return StackTraceUtils.sanitize(marker).stackTrace[1].methodName
     }
 
     boolean getBooleanResult(field) {
-        def result
+        def result = false
         Browser.drive {
             result = page."$field".isDisplayed()
         }
@@ -34,15 +34,27 @@ class VerifieraSigneratFk7263 {
     }
 
     String getStringResult(field) {
-        def result
+        def result = ''
         Browser.drive {
-            result = page."$field".text()
+            if (!page."$field".isDisplayed()) {
+                result = "notshown"
+            } else {
+                result = page."$field".text()
+            }
+        }
+        result
+    }
+
+    boolean getNonEmptyStringResult(field) {
+        def result = false
+        Browser.drive {
+            result = (page."$field".text() != '')
         }
         result
     }
 
     boolean smittskydd() {
-        getBooleanResult("field1yes")
+        getBooleanResult(getCurrentMethodName())
     }
 
     String diagnosKod() {
@@ -71,5 +83,187 @@ class VerifieraSigneratFk7263 {
 
     boolean samsjuklighet() {
         getBooleanResult(getCurrentMethodName())
+    }
+
+    String sjukdomsforlopp() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String funktionsnedsattning() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    boolean undersokningAvPatienten() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
+    boolean telefonkontaktMedPatienten() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
+    boolean journaluppgifter() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
+    String annanReferensBeskrivning() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String aktivitetsbegransning() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    boolean rekommendationKontaktArbetsformedlingen() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
+    boolean rekommendationKontaktForetagshalsovarden() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
+    boolean rekommendationOvrigt() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    boolean atgardInomSjukvarden() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    boolean annanAtgard() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String rehabilitering() {
+        def result = ''
+        Browser.drive {
+            if (page.rehabiliteringAktuell.isDisplayed()) result = "AKTUELL"
+            if (page.rehabiliteringEjAktuell.isDisplayed()) result = "EJAKTUELL"
+            if (page.rehabiliteringGarInteAttBedoma.isDisplayed()) result = "GARINTEATTBEDOMA"
+        }
+        result
+    }
+
+    String nuvarandeArbetsuppgifter() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    boolean arbetsloshet() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
+    boolean foraldrarledighet() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
+    String nedsattMed25from() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed25tom() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed25Beskrivning() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed50from() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed50tom() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed50Beskrivning() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed75from() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed75tom() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed75Beskrivning() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed100from() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String nedsattMed100tom() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String arbetsformagaPrognos() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String prognos10() {
+        def result = ''
+        Browser.drive {
+            if (page.arbetsformagaPrognosJa.isDisplayed()) result = "JA"
+            if (page.arbetsformagaPrognosJaDelvis.isDisplayed()) result = "JADELVIS"
+            if (page.arbetsformagaPrognosNej.isDisplayed()) result = "NEJ"
+            if (page.arbetsformagaPrognosGarInteAttBedoma.isDisplayed()) result = "GARINTEATTBEDOMA"
+        }
+        result
+    }
+
+    String arbetsformagaPrognosGarInteAttBedomaBeskrivning() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String ressattTillArbeteAktuellt() {
+        def result = null
+        Browser.drive {
+            if (page.ressattTillArbeteAktuellt.isDisplayed()) result = true
+            if (page.ressattTillArbeteEjAktuellt.isDisplayed()) result = false
+        }
+        result
+    }
+
+    boolean kontaktMedFk() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
+    String kommentar() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String forskrivarkodOchArbetsplatskod() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String signeringsdatum() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String vardperson_namn() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String vardperson_enhetsnamn() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String vardperson_postadress() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String vardperson_postnummer() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String vardperson_postort() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String vardperson_telefonnummer() {
+        getStringResult(getCurrentMethodName())
     }
 }

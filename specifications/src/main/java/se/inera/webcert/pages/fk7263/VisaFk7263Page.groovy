@@ -11,12 +11,22 @@ class VisaFk7263Page extends Page {
         intygSaknas { $("#cert-load-error") }
         intygLaddat { $('#intyg-vy-laddad') }
 
+        copyButton { $("#copyBtn") }
+        makuleraButton { $("#makuleraBtn") }
+        kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
+        makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
+        makuleraConfirmationOkButton { $("#confirmationOkButton") }
+        skickaDialogCheck { $("#patientSamtycke") }
+        skickaDialogSkickaKnapp { $("#button1send-dialog") }
+
+        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
+        certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
+        certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+
         // smittskydd
-        field1yes { $("#field1yes") }
-        field1no { $("#field1no") }
+        smittskydd { $("#smittskydd") }
 
         // diagnos
-        field2 { $("#field2") }
         diagnosKod { $("#diagnosKod") }
         diagnosBeskrivning { $("#diagnosBeskrivning") }
         diagnosKod2 { $("#diagnosKod2") }
@@ -25,23 +35,100 @@ class VisaFk7263Page extends Page {
         diagnosBeskrivning3 { $("#diagnosBeskrivning3") }
         samsjuklighet { $("#samsjuklighet") }
 
-        //field3 { $("#field3") }
+        // 3
+        sjukdomsforlopp { $("#sjukdomsforlopp") }
 
-        field4 { $("#field4") }
-        field4b { $("#field4b") }
-        field5 { $("#field5") }
-        field6a { $("#field6a") }
-        field6b { $("#field6b") }
-        field7 { $("#field7") }
-        field8a { $("#field8") }
-        field8b { $("#field8b") }
-        field9 { $("#field9") }
-        field10 { $("#field10") }
-        field11 { $("#field11") }
-        field12 { $("#field12") }
-        field13 { $("#field13") }
-        field17 { $("#field17") }
-        field_vardperson_namn { $("#vardperson_namn") }
-        field_vardperson_enhetsnamn { $("#vardperson_enhetsnamn") }
+        // 4
+        funktionsnedsattning { $("#funktionsnedsattning") }
+        undersokningAvPatienten { $("#undersokningAvPatienten") }
+        telefonkontaktMedPatienten { $("#telefonkontaktMedPatienten") }
+        journaluppgifter { $("#journaluppgifter") }
+        annanReferensBeskrivning { $("#annanReferensBeskrivning") }
+
+        // 5
+        aktivitetsbegransning { $("#aktivitetsbegransning") }
+
+        // 6
+        rekommendationKontaktArbetsformedlingen { $("#rekommendationKontaktArbetsformedlingen") }
+        rekommendationKontaktForetagshalsovarden { $("#rekommendationKontaktForetagshalsovarden") }
+        rekommendationOvrigt { $("#rekommendationOvrigt") }
+        atgardInomSjukvarden { $("#atgardInomSjukvarden") }
+        annanAtgard { $("#annanAtgard") }
+
+        // 7
+        rehabiliteringAktuell { $("#rehabiliteringAktuell") }
+        rehabiliteringEjAktuell { $("#rehabiliteringEjAktuell") }
+        rehabiliteringGarInteAttBedoma { $("#rehabiliteringGarInteAttBedoma") }
+
+        // 8
+        nuvarandeArbetsuppgifter { $("#nuvarandeArbetsuppgifter") }
+        arbetsloshet { $("#arbetsloshet") }
+        foraldrarledighet { $("#foraldrarledighet") }
+        nedsattMed25from { $("#nedsattMed25from") }
+        nedsattMed25tom { $("#nedsattMed25tom") }
+        nedsattMed25Beskrivning { $("#nedsattMed25Beskrivning") }
+        nedsattMed50from { $("#nedsattMed50from") }
+        nedsattMed50tom { $("#nedsattMed50tom") }
+        nedsattMed50Beskrivning { $("#nedsattMed50Beskrivning") }
+        nedsattMed75from { $("#nedsattMed75from") }
+        nedsattMed75tom { $("#nedsattMed75tom") }
+        nedsattMed75Beskrivning { $("#nedsattMed75Beskrivning") }
+        nedsattMed100from { $("#nedsattMed100from") }
+        nedsattMed100tom { $("#nedsattMed100tom") }
+
+        // 9
+        arbetsformagaPrognos { $("#arbetsformagaPrognos") }
+
+        // 10
+        arbetsformagaPrognosJa { $("#arbetsformataPrognosJa") }
+        arbetsformagaPrognosJaDelvis { $("#arbetsformataPrognosJaDelvis") }
+        arbetsformagaPrognosNej { $("#arbetsformataPrognosNej") }
+        arbetsformagaPrognosGarInteAttBedoma { $("#arbetsformataPrognosGarInteAttBedoma") }
+        arbetsformagaPrognosGarInteAttBedomaBeskrivning { $("#arbetsformagaPrognosGarInteAttBedomaBeskrivning") }
+
+        // 11
+        ressattTillArbeteAktuellt { $("#ressattTillArbeteAktuellt")}
+        ressattTillArbeteEjAktuellt { $("#ressattTillArbeteEjAktuellt")}
+
+        // 12
+        kontaktMedFk { $("#kontaktMedFk") }
+
+        // 13
+        kommentar { $("#kommentar") }
+
+        // 17
+        forskrivarkodOchArbetsplatskod { $("#forskrivarkodOchArbetsplatskod") }
+
+        // 14
+        signeringsdatum { $("#signeringsdatum") }
+
+        // 15,16
+        vardperson_namn { $("#vardperson_namn") }
+        vardperson_enhetsnamn { $("#vardperson_enhetsnamn") }
+        vardperson_postadress { $("#vardperson_postadress") }
+        vardperson_postnummer { $("#vardperson_postnummer") }
+        vardperson_postort { $("#vardperson_postort") }
+        vardperson_telefonnummer { $("#vardperson_telefonnummer") }
     }
+
+    def copy() {
+        $("#copyBtn").click()
+        sleep(300)
+        kopieraDialogKopieraKnapp.click()
+    }
+
+    def makulera() {
+        $("#makuleraBtn").click()
+        sleep(300)
+        makuleraDialogKopieraKnapp.click()
+    }
+
+    def send() {
+        $("#sendBtn").click()
+        sleep(1000)
+        skickaDialogCheck.click()
+        sleep(100)
+        skickaDialogSkickaKnapp.click()
+    }
+
 }

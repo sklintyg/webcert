@@ -163,7 +163,7 @@ class SokSkrivIntyg {
     boolean visaIntygSidanVisas() {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFk7263Page
             }
 
             waitFor {

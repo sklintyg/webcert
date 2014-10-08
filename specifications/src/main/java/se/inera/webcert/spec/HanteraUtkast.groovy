@@ -4,6 +4,7 @@ import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnsignedIntygPage
 import se.inera.webcert.pages.VisaFragaSvarPage
 import se.inera.webcert.pages.WelcomePage
+import se.inera.webcert.pages.fk7263.VisaFk7263Page
 
 class HanteraUtkast {
 
@@ -56,6 +57,18 @@ class HanteraUtkast {
         Browser.drive {
             waitFor {
                 at EditeraIntygPage
+            }
+        }
+    }
+
+    boolean visaIntygSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+
+            waitFor {
+                page.intygLaddat.isDisplayed()
             }
         }
     }

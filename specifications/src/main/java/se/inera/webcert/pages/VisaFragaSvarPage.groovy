@@ -7,6 +7,10 @@ class VisaFragaSvarPage extends Page {
     static at = { $("#viewQAAndCert").isDisplayed() }
 
     static content = {
+
+        intygSaknas { $("#cert-load-error") }
+        intygVy { $('#intyg-vy-laddad') }
+
         newQuestionBtn(required: false) { $("#askQuestionBtn") }
         newQuestionForm { $("#newQuestionForm") }
         newQuestionText { $("#newQuestionText") }
@@ -22,12 +26,8 @@ class VisaFragaSvarPage extends Page {
         certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
         certificateIsNotSentToFkMessage(required: false) { $("#certificate-is-not-sent-to-fk-message-text") }
 
-        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
-        certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
-        certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
         copyButton { $("#copyBtn") }
         makuleraButton { $("#makuleraBtn") }
-        intygVy { $('#intyg-vy-laddad') }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
