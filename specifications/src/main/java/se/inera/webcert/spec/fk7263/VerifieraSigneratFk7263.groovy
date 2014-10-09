@@ -6,21 +6,9 @@ import se.inera.webcert.spec.Browser
 class VerifieraSigneratFk7263 {
 
     public VerifieraSigneratFk7263() {
-
     }
 
-    //| smittskydd | undersokning | undersokningDatum | telefonkontakt | telefonkontaktDatum | journal | journalDatum |
-    // other | otherDatum | otherText | diagnos1 | diagnos1Text | diagnos2 | diagnos2Text | diagnos3 | diagnos3Text |
-    // diagnosFortydligande | diagnosSamsjuklighet | sjukdomsforlopp | funktionsnedsattning | aktivitetsbegransning |
-    // nuvarandearbete | arbetsuppgifter | arbetslos | foraldraledig | tjanstgoringstid | nedsattMed25 |
-    // nedsattMed25start | nedsattMed25slut | nedsattMed25beskrivning | nedsattMed50 | nedsattMed50start |
-    // nedsattMed50slut | nedsattMed50beskrivning | nedsattMed75 | nedsattMed75start | nedsattMed75slut |
-    // nedsattMed75beskrivning | nedsattMed100 | nedsattMed100start | nedsattMed100slut | nedsattBeskrivning | prognos |
-    // prognosBeskrivning | atgardSjukvard | atgardAnnan | rekommendationRessatt | rekommendationKontaktAf |
-    // rekommendationKontaktForetagshalsovard | rekommendationOvrigt | rekommendationOvrigtBeskrivning |
-    // arbetslivsinriktadRehabilitering | kontaktFk | ovrigt | vardenhetPostadress | vardenhetPostnummer |
-    // vardenhetPostort | vardenhetTelefonnummer |
-    static def getCurrentMethodName(){
+    String getCurrentMethodName(){
         def marker = new Throwable()
         return StackTraceUtils.sanitize(marker).stackTrace[1].methodName
     }
@@ -41,14 +29,6 @@ class VerifieraSigneratFk7263 {
             } else {
                 result = page."$field".text()
             }
-        }
-        result
-    }
-
-    boolean getNonEmptyStringResult(field) {
-        def result = false
-        Browser.drive {
-            result = (page."$field".text() != '')
         }
         result
     }
@@ -121,15 +101,15 @@ class VerifieraSigneratFk7263 {
         getBooleanResult(getCurrentMethodName())
     }
 
-    boolean rekommendationOvrigt() {
+    String rekommendationOvrigt() {
         getStringResult(getCurrentMethodName())
     }
 
-    boolean atgardInomSjukvarden() {
+    String atgardInomSjukvarden() {
         getStringResult(getCurrentMethodName())
     }
 
-    boolean annanAtgard() {
+    String annanAtgard() {
         getStringResult(getCurrentMethodName())
     }
 

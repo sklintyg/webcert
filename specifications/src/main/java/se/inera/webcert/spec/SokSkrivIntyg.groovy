@@ -2,6 +2,7 @@ package se.inera.webcert.spec
 
 import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
+import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 
 class SokSkrivIntyg {
 
@@ -172,6 +173,18 @@ class SokSkrivIntyg {
         }
     }
     // END
+
+    boolean visaTsBasSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaTsBasPage
+            }
+
+            waitFor {
+                page.intygLaddat.isDisplayed()
+            }
+        }
+    }
 
     public void loggaInIndex() {
         Browser.drive {
