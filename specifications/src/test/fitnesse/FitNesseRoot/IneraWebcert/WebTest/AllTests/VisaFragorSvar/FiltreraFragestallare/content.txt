@@ -4,8 +4,8 @@ Testet beskriver fallet när en användare filtrerar frågor på frågeställare
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | internReferens? |
-| OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-1| eva | Eva Holgersson |IFV1239877878-1042| 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
-| OVRIGT | | WC | En fråga |intyg-fit-1| eva | Eva Holgersson |IFV1239877878-1042| 2013-01-01 | PENDING_EXTERNAL_ACTION | false | | | Övrig från FK | $internReferens2= |
+| OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-1| eva | Eva Holgersson |IFV1239877878-1042| !today (yyyy-MM-dd) | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
+| OVRIGT | | WC | En fråga |intyg-fit-1| eva | Eva Holgersson |IFV1239877878-1042| !today (yyyy-MM-dd) | PENDING_EXTERNAL_ACTION | false | | | Övrig från FK | $internReferens2= |
 
 !3 Givet att det finns frågor, verifiera att filtreringen på frågeställare fungerar
 

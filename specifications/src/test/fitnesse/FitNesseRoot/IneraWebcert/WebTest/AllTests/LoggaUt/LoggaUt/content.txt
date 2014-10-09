@@ -10,4 +10,4 @@ Testet beskriver fallet när en användare logga ut och försöker nå startsida
 | logga ut |
 | login sidan visas |
 | ga till startsidan |
-| access denied sidan visas |
+| startsidan visas inte |

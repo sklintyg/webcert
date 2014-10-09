@@ -20,14 +20,14 @@
   <dependencies>
     <!-- Project dependencies -->
     <dependency>
-      <groupId>se.inera.webcert</groupId>
-      <artifactId>schemas</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>webcert-schemas</artifactId>
     </dependency>
     
     <!-- Dependencies to Intygstjansten -->
     <dependency>
       <groupId>se.inera.certificate</groupId>
-      <artifactId>schemas</artifactId>
+      <artifactId>certificate-schemas</artifactId>
     </dependency>
 
     <!-- Dependencies to Intygstjansten's module project -->

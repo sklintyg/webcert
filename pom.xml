@@ -52,7 +52,7 @@
       <!-- Internal project dependencies -->
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>schemas</artifactId>
+        <artifactId>webcert-schemas</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -87,7 +87,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>persistence</artifactId>
+        <artifactId>webcert-persistence</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -119,7 +119,7 @@
       </dependency>
       <dependency>
         <groupId>se.inera.certificate</groupId>
-        <artifactId>schemas</artifactId>
+        <artifactId>certificate-schemas</artifactId>
         <version>${certificate.version}</version>
       </dependency>
       <dependency>

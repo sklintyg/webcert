@@ -3,7 +3,6 @@ package se.inera.webcert.web.controller.integration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 
@@ -15,7 +14,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +28,8 @@ import java.util.Map;
 public class IntygIntegrationController {
 
     private static final String PARAM_CERT_TYPE = "certType";
-
     private static final String PARAM_CERT_ID = "certId";
+    private static final String PARAM_QA_ONLY = "qaOnly";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -47,7 +45,8 @@ public class IntygIntegrationController {
      * the certificate. Can be used for all types of certificates.
      *
      * @param uriInfo
-     * @param intygId The id of the certificate to view.
+     * @param intygId
+     *            The id of the certificate to view.
      * @return
      */
     @GET
@@ -70,6 +69,7 @@ public class IntygIntegrationController {
         Map<String, Object> urlParams = new HashMap<String, Object>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
+        urlParams.put(PARAM_QA_ONLY, true);
 
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
@@ -83,5 +83,4 @@ public class IntygIntegrationController {
     public void setUrlFragmentTemplate(String urlFragmentTemplate) {
         this.urlFragmentTemplate = urlFragmentTemplate;
     }
-
 }

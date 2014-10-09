@@ -1,7 +1,9 @@
 package se.inera.webcert.spec
 
+import geb.waiting.WaitTimeoutException
 import se.inera.webcert.pages.AccessDeniedPage
 import se.inera.webcert.pages.LoginPage
+import se.inera.webcert.pages.UnhandledQAPage
 
 class LoggaUt {
 
@@ -9,6 +11,19 @@ class LoggaUt {
         Browser.drive {
             waitFor {
                 at AccessDeniedPage
+            }
+        }
+    }
+
+    boolean startsidanVisasInte() {
+        Browser.drive {
+            try {
+                waitFor {
+                    at UnhandledQAPage
+                }
+                false
+            } catch (WaitTimeoutException) {
+                true
             }
         }
     }

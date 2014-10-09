@@ -36,7 +36,7 @@ app.config(function($routeProvider) {
             templateUrl: '/views/dashboard/view.certificate.html',
             controller: 'webcert.ViewCertCtrl'
         }).
-        when('/fragasvar/:certificateType/:certificateId', {
+        when('/fragasvar/:certificateType/:certificateId/:qaOnly?', {
             templateUrl: '/views/dashboard/view.qa.html',
             controller: 'webcert.ViewCertCtrl'
         }).

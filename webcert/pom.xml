@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
-<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part
-  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
-  Inera Certificate Web is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published
-  by the Free Software Foundation, either version 3 of the License, or (at
-  your option) any later version. Inera Certificate Web is distributed in the
-  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU Affero General Public License for more details. You should have received
-  a copy of the GNU Affero General Public License along with this program.
+<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part 
+  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web). 
+  Inera Certificate Web is free software: you can redistribute it and/or modify 
+  it under the terms of the GNU Affero General Public License as published 
+  by the Free Software Foundation, either version 3 of the License, or (at 
+  your option) any later version. Inera Certificate Web is distributed in the 
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+  GNU Affero General Public License for more details. You should have received 
+  a copy of the GNU Affero General Public License along with this program. 
   If not, see <http://www.gnu.org/licenses/>. -->
 <project
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -28,7 +28,7 @@
   <properties>
     <modules-fk7263.version>1.0-SNAPSHOT</modules-fk7263.version>
     <modules-ts.version>1.0-SNAPSHOT</modules-ts.version>
-  
+
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
   </properties>
@@ -37,7 +37,7 @@
     <!-- Project dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>schemas</artifactId>
+      <artifactId>webcert-schemas</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -75,13 +75,13 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>log-messages</artifactId>
     </dependency>
-    
+
     <!-- Dependencies to Intygstjansten -->
     <dependency>
       <groupId>se.inera.certificate</groupId>
       <artifactId>logback-util</artifactId>
     </dependency>
-    
+
     <!-- Dependencies to Intygstjansten's modules -->
     <dependency>
       <groupId>se.inera.certificate.modules</groupId>
@@ -108,18 +108,12 @@
     </dependency>
 
     <!-- AMQ -->
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-spring</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-kahadb-store</artifactId>
-    </dependency>
+    <!-- <dependency> <groupId>org.apache.activemq</groupId> <artifactId>activemq-client</artifactId> 
+      </dependency> -->
+    <!-- <dependency> <groupId>org.apache.activemq</groupId> <artifactId>activemq-spring</artifactId> 
+      </dependency> -->
+    <!-- <dependency> <groupId>org.apache.activemq</groupId> <artifactId>activemq-kahadb-store</artifactId> 
+      </dependency> -->
 
     <!-- Logging -->
     <dependency>
@@ -156,7 +150,7 @@
       <groupId>org.webjars</groupId>
       <artifactId>respond</artifactId>
     </dependency>
-    
+
     <!-- AOP -->
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -197,7 +191,7 @@
       <artifactId>geronimo-jms_1.1_spec</artifactId>
       <scope>provided</scope>
     </dependency>
-       
+
     <!-- XML -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -255,18 +249,18 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-taglibs</artifactId>
     </dependency>
-    
+
     <!-- Authentication -->
     <dependency>
       <groupId>org.springframework.security.extensions</groupId>
       <artifactId>spring-security-saml2-core</artifactId>
     </dependency>
 
-     <dependency>
+    <dependency>
       <groupId>org.opensaml</groupId>
       <artifactId>opensaml</artifactId>
     </dependency>
-  
+
     <dependency>
       <groupId>org.opensaml</groupId>
       <artifactId>openws</artifactId>
@@ -357,6 +351,13 @@
           <webAppConfig>
             <contextPath>/</contextPath>
           </webAppConfig>
+<!--           <contextHandlers>
+            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
+              <war>../log-sender/target/inera-log-sender.war</war>
+              <contextPath>/log-sender</contextPath>
+            </contextHandler>
+          </contextHandlers> -->
+          <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-web.xml</contextXml>
           <systemProperties>
             <systemProperty>
               <name>spring.profiles.active</name>
@@ -387,7 +388,7 @@
               <value>${project.basedir}/webcert-logback.xml</value>
             </systemProperty>
             <systemProperty>
-              <name>fk7263.logback.file</name>
+              <name>logsender.config.file</name>
               <value>classpath:fk7263-logback.xml</value>
             </systemProperty>
           </systemProperties>
@@ -444,25 +445,40 @@
             <phase>process-test-resources</phase>
             <configuration>
               <target>
-                <copy todir="${project.build.directory}/webjardependencies" verbose="false">
-                  <regexpmapper from="^(.*)[/\\].*[/\\](.*)$$" to="\1/\2"/>
-                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/">
+                <copy todir="${project.build.directory}/webjardependencies"
+                  verbose="false">
+                  <regexpmapper from="^(.*)[/\\].*[/\\](.*)$$"
+                    to="\1/\2" />
+                  <fileset
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/">
                   </fileset>
                 </copy>
-                <copy todir="${project.build.directory}/webjardependencies/common" verbose="false">
-                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/common">
+                <copy
+                  todir="${project.build.directory}/webjardependencies/common"
+                  verbose="false">
+                  <fileset
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/common">
                   </fileset>
                 </copy>
-                <copy todir="${project.build.directory}/webjardependencies/fk7263" verbose="false">
-                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
+                <copy
+                  todir="${project.build.directory}/webjardependencies/fk7263"
+                  verbose="false">
+                  <fileset
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
                   </fileset>
                 </copy>
-                <copy todir="${project.build.directory}/webjardependencies/ts-bas" verbose="false">
-                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
+                <copy
+                  todir="${project.build.directory}/webjardependencies/ts-bas"
+                  verbose="false">
+                  <fileset
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
                   </fileset>
                 </copy>
-                <copy todir="${project.build.directory}/webjardependencies/ts-diabetes" verbose="false">
-                  <fileset dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-diabetes">
+                <copy
+                  todir="${project.build.directory}/webjardependencies/ts-diabetes"
+                  verbose="false">
+                  <fileset
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-diabetes">
                   </fileset>
                 </copy>
               </target>
@@ -515,4 +531,14 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>local</id>
+      <properties>
+        <system.mode>local</system.mode>
+      </properties>
+    </profile>
+  </profiles>
+  
 </project>

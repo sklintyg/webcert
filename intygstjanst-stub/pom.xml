@@ -21,13 +21,13 @@
     <!-- Project dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>persistence</artifactId>
+      <artifactId>webcert-persistence</artifactId>
     </dependency>
 
     <!-- Dependencies to Intygstjansten -->
     <dependency>
       <groupId>se.inera.certificate</groupId>
-      <artifactId>schemas</artifactId>
+      <artifactId>certificate-schemas</artifactId>
     </dependency>
     
     <dependency>

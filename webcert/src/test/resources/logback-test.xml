@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date{ISO8601} %-5level %logger{10} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="org.springframework" level="error" />
+
+  <logger name="org.hibernate" level="error" />
+
+  <logger name="org.apache.cxf.services" level="error" />
+
+  <logger name="se.inera.auth" level="debug" />
+  <logger name="se.inera.webcert" level="debug" />
+  <logger name="se.inera.certificate.modules" level="debug" />
+
+  <root>
+    <level value="error" />
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
