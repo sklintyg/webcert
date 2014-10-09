@@ -18,16 +18,25 @@
     </encoder>
   </appender>
 
-  <logger name="org.springframework.security.saml" level="debug" />
+  
   <logger name="org.opensaml" level="debug" />
 
   <logger name="org.springframework" level="error" />
-
+  <logger name="org.springframework.security.saml" level="debug" />
+  
   <logger name="org.hibernate" level="error" />
 
   <logger name="org.apache.cxf.services" level="error" />
 
-  <logger name="se.inera" level="debug" />
+  <logger name="se.inera.auth" level="debug" />
+  
+  <logger name="se.inera.webcert" level="debug" />
+  
+  <logger name="se.inera.certificate.modules.fk7263" level="debug" />
+  
+  <logger name="se.inera.certificate.modules.ts_bas" level="debug" />
+  
+  <logger name="se.inera.certificate.modules.ts_diabetes" level="debug" />
 
   <root>
     <level value="error" />
