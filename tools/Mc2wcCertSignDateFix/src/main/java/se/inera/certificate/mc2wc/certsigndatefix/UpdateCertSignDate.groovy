@@ -25,10 +25,12 @@ class UpdateCertSignDate {
         webcertSQL.eachRow("SELECT DISTINCT INTYGS_ID FROM FRAGASVAR WHERE SIGNERINGS_DATUM IS NULL") { row ->
             def intygsId = row.INTYGS_ID
 
-            def intyg = intygstjanstSQL.firstRow( "SELECT SIGNED_DATE FROM CERTIFICATE WHERE ID = :id" , [id : intygsId])
-
-            webcertSQL.executeUpdate("UPDATE FRAGASVAR SET SIGNERINGS_DATUM = :signDate WHERE INTYGS_ID = :intygsId AND SIGNERINGS_DATUM IS NOT NULL",
+            def intyg = intygstjanstSQL.firstRow("SELECT SIGNED_DATE FROM CERTIFICATE WHERE ID = :id" , [id : intygsId])
+            
+            if (intyg) {
+                webcertSQL.executeUpdate("UPDATE FRAGASVAR SET SIGNERINGS_DATUM = :signDate WHERE INTYGS_ID = :intygsId",
                     [signDate : intyg.SIGNED_DATE, intygsId : intygsId])
+            }
 
             if (++count % 100 == 0) {
                 println "+ ${count} fragasvar uppdaterade"
