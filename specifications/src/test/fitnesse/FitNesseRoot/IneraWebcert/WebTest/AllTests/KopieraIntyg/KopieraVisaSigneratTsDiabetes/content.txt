@@ -19,6 +19,8 @@ Detta test ska visa på att man kan kopiera ett signerat ts-diabetes-intyg från
 
 | script | !-HanteraUtkast-! |
 | editera sidan visas |
+| intyget komplett meddelande visas | true |
 | radera utkast |
 | ej signerade intyg sidan visas |
 | inga ej signerade intyg visas |
+

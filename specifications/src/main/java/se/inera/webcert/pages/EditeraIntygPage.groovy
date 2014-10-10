@@ -19,5 +19,6 @@ class EditeraIntygPage extends Page {
         enhetsTelefonnummer(required: false) { $("#clinicInfoPhone") }
         enhetsEpost(required: false) { $("#clinicInfoEmail") }
         sparaBtn(required: false) { $("#spara-utkast") }
+        intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
     }
 }

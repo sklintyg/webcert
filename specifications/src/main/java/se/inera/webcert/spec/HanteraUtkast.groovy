@@ -1,10 +1,7 @@
 package se.inera.webcert.spec
-import se.inera.webcert.pages.EditeraIntygPage
-import se.inera.webcert.pages.SokSkrivaIntygPage
-import se.inera.webcert.pages.UnsignedIntygPage
-import se.inera.webcert.pages.VisaFragaSvarPage
-import se.inera.webcert.pages.WelcomePage
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
+
+import se.inera.webcert.pages.*
 
 class HanteraUtkast {
 
@@ -134,6 +131,15 @@ class HanteraUtkast {
             asType EditeraIntygPage
             waitFor {
                 expected == page.certificateIsSentToITMessage.isDisplayed()
+            }
+        }
+        true
+    }
+
+    boolean intygetKomplettMeddelandeVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                expected == page.intygetSparatMeddelande.isDisplayed()
             }
         }
         true

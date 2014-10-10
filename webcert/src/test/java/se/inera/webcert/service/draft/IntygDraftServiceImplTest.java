@@ -1,17 +1,5 @@
 package se.inera.webcert.service.draft;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +10,6 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
@@ -47,7 +34,6 @@ import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.draft.dto.DraftValidation;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.util.CreateIntygsIdAsUUIDStrategy;
 import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
@@ -56,6 +42,18 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygDraftServiceImplTest {
@@ -68,7 +66,7 @@ public class IntygDraftServiceImplTest {
     private static final String INTYG_TYPE = "fk7263";
 
     private static final String PATIENT_SSN = "19121212-1212";
-    
+
     private static final String PATIENT_NEW_SSN = "19121212-1414";
 
     @Mock
@@ -283,6 +281,9 @@ public class IntygDraftServiceImplTest {
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(ExternalModelHolder.class))).thenReturn(imr);
 
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+
         when(intygRepository.save(any(Intyg.class))).thenAnswer(new Answer<Intyg>() {
             @Override
             public Intyg answer(InvocationOnMock invocation) throws Throwable {
@@ -296,11 +297,11 @@ public class IntygDraftServiceImplTest {
         assertNotNull(copyResp);
         assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
-        
+
         verify(mockIdStrategy).createId();
         verify(intygRepository).save(any(Intyg.class));
     }
-    
+
     @Test(expected = WebCertServiceException.class)
     public void testCreateNewDraftCopyPUtjanstFailed() throws ModuleException {
 
@@ -315,9 +316,9 @@ public class IntygDraftServiceImplTest {
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         draftService.createNewDraftCopy(copyReq);
-        
+
     }
-    
+
     @Test
     public void testCreateNewDraftCopyWithNewPersonnummer() throws ModuleException {
 
@@ -337,6 +338,9 @@ public class IntygDraftServiceImplTest {
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(ExternalModelHolder.class))).thenReturn(imr);
 
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+
         when(intygRepository.save(any(Intyg.class))).thenAnswer(new Answer<Intyg>() {
             @Override
             public Intyg answer(InvocationOnMock invocation) throws Throwable {
@@ -347,12 +351,12 @@ public class IntygDraftServiceImplTest {
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
-        
+
         CreateNewDraftCopyResponse copyResp = draftService.createNewDraftCopy(copyReq);
         assertNotNull(copyResp);
         assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
-        
+
         verify(mockIdStrategy).createId();
         verify(intygRepository).save(any(Intyg.class));
     }
