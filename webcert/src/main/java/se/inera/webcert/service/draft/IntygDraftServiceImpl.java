@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
@@ -92,6 +91,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     public String createNewDraft(CreateNewDraftRequest request) {
 
         populateRequestWithIntygId(request);
+        request.setStatus(IntygsStatus.DRAFT_INCOMPLETE);
 
         String intygType = request.getIntygType();
 
@@ -131,7 +131,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         draft.setIntygsId(request.getIntygId());
         draft.setIntygsTyp(request.getIntygType());
 
-        draft.setStatus(IntygsStatus.DRAFT_INCOMPLETE);
+        draft.setStatus(request.getStatus());
 
         draft.setModel(draftAsJson);
 
@@ -286,7 +286,10 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
             LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(newDraftModelAsJson), intygType);
 
-            CreateNewDraftRequest newDraftRequest = createNewDraftRequestForCopying(newDraftIntygId, intygType, copyRequest, person);
+            DraftValidation draftValidation = validateDraft(newDraftIntygId, intygType, newDraftModelAsJson);
+            IntygsStatus status = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE : IntygsStatus.DRAFT_INCOMPLETE;
+
+            CreateNewDraftRequest newDraftRequest = createNewDraftRequestForCopying(newDraftIntygId, intygType, status, copyRequest, person);
             Intyg persistedIntyg = persistNewDraft(newDraftRequest, newDraftModelAsJson);
 
             return new CreateNewDraftCopyResponse(intygType, persistedIntyg.getIntygsId());
@@ -321,8 +324,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return new CreateNewDraftHolder(newDraftIntygId, hosPerson, patient);
     }
 
-    private CreateNewDraftRequest createNewDraftRequestForCopying(String newDraftIntygId, String intygType, CreateNewDraftCopyRequest request,
-            Person person) {
+    private CreateNewDraftRequest createNewDraftRequestForCopying(String newDraftIntygId, String intygType, IntygsStatus status,
+            CreateNewDraftCopyRequest request, Person person) {
 
         Patient patient = new Patient();
         patient.setPersonnummer(person.getPersonnummer());
@@ -333,7 +336,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         patient.setPostnummer(person.getPostnummer());
         patient.setPostort(person.getPostort());
 
-        return new CreateNewDraftRequest(newDraftIntygId, intygType, request.getHosPerson(), request.getVardenhet(), patient);
+        return new CreateNewDraftRequest(newDraftIntygId, intygType, status, request.getHosPerson(), request.getVardenhet(), patient);
     }
 
     @Override
