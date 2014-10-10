@@ -125,6 +125,7 @@ class HanteraUtkast {
 
     boolean intygetKomplettMeddelandeVisas(boolean expected = true) {
         Browser.drive {
+            asType EditeraIntygPage
             waitFor {
                 expected == page.intygetSparatMeddelande.isDisplayed()
             }
