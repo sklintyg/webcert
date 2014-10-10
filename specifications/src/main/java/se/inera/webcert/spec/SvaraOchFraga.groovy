@@ -431,7 +431,7 @@ class SvaraOchFraga {
     boolean kopieraKnappVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.kopieraBtn.isDisplayed()
@@ -443,7 +443,7 @@ class SvaraOchFraga {
     boolean makuleraKnappVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.makuleraBtn.isDisplayed()
@@ -455,7 +455,7 @@ class SvaraOchFraga {
     boolean skickaTillFkKnappVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.skickaTillFkBtn.isDisplayed()
@@ -652,7 +652,7 @@ class SvaraOchFraga {
     boolean lamnaFragaSvarVarningVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.qaOnlyDialog.isDisplayed()
@@ -664,7 +664,7 @@ class SvaraOchFraga {
     def lamnaFragaSvarFortsatt() {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.qaOnlyDialogFortsatt.click()
@@ -675,7 +675,7 @@ class SvaraOchFraga {
     def lamnaFragaSvarAvbryt() {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.qaOnlyDialogCancel.click()
