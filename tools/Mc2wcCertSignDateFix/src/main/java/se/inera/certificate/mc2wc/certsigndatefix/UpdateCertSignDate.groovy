@@ -47,7 +47,7 @@ class UpdateCertSignDate {
 
             if (medcertSignDate) {
                 java.sql.Timestamp sqlSignDate = new java.sql.Timestamp(medcertSignDate.toDate().getTime())
-                int updates = webcertSQL.executeUpdate("UPDATE FRAGASVAR SET SIGNERINGS_DATUM = :signDate WHERE INTYGS_ID = :intygsId",
+                int updates = webcertSQL.executeUpdate("UPDATE FRAGASVAR SET SIGNERINGS_DATUM = :signDate, INTYGS_TYP = 'fk7263' WHERE INTYGS_ID = :intygsId",
                         [signDate : sqlSignDate, intygsId : intygsId])
                 updatedCount = updatedCount + updates
             } else {
