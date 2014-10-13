@@ -21,9 +21,11 @@ class UpdateCertSignDate {
         def config = new ConfigSlurper().parse(props)
 
         def medcertDataMap = [:]
-
-        List<String[]> medcertData = new CSVReader(
-                new InputStreamReader(this.getClass().getResourceAsStream("/kronoberg.txt"))).readAll()
+        List<String[]> medcertData
+        new File(config.file.medcert).withInputStream { stream ->
+            medcertData = new CSVReader(
+                new InputStreamReader(stream)).readAll()
+        }
 
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS")
 
@@ -32,7 +34,7 @@ class UpdateCertSignDate {
             medcertDataMap.put(row[0], certSignDate)
         }
 
-        println "Laddat ${medcertDataMap.size()} signeringsdatum från Medcert"
+        println "Laddat ${medcertDataMap.size()} signeringsdatum från fil ${config.file.medcert}"
 
         Sql webcertSQL = Sql.newInstance(config.dataSource.wc.url, config.dataSource.wc.username, config.dataSource.wc.password, config.dataSource.wc.driver)
 
