@@ -53,7 +53,8 @@
                 "efternamn": "Nilsson",
                 "hsaId": "IFV1239877878-1049",
                 "enhetId": "IFV1239877878-1042",
-                "lakare": true
+                "lakare": true,
+                "forskrivarKod": "2481632"
             },
 
             // Läkare, Vård och Behandling Webcert Enhet 1 (Webcert Vårdgivare 1)
@@ -62,7 +63,8 @@
                 "efternamn": "Andersson",
                 "hsaId": "IFV1239877878-104B",
                 "enhetId": "IFV1239877878-1042",
-                "lakare": true
+                "lakare": true,
+                "forskrivarKod": "2481632"
             },
 
             // Läkare, Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
@@ -71,7 +73,8 @@
                 "efternamn": "Andersson",
                 "hsaId": "IFV1239877878-104B",
                 "enhetId": "IFV1239877878-1045",
-                "lakare": true
+                "lakare": true,
+                "forskrivarKod": "2481632"
             },
 
             // Läkare, Statistik Webcert Enhet 3 (Webcert Vårdgivare 2) (Kan inte logga in)
@@ -80,7 +83,8 @@
                 "efternamn": "Andersson",
                 "hsaId": "IFV1239877878-104B",
                 "enhetId": "IFV1239877878-104D",
-                "lakare": true
+                "lakare": true,
+              "forskrivarKod": "2481632"
             },
 
             // Läkare, Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
@@ -89,7 +93,8 @@
                 "efternamn": "Andersson",
                 "hsaId": "IFV1239877878-104K",
                 "enhetId": "IFV1239877878-1045",
-                "lakare": true
+                "lakare": true,
+                "forskrivarKod": "2481632"
             },
 
             // Läkare, Vård och Behandling Webcert Enhet 3 (Webcert Vårdgivare 2)
@@ -98,7 +103,8 @@
                 "efternamn": "Andersson",
                 "hsaId": "IFV1239877878-104K",
                 "enhetId": "IFV1239877878-104D",
-                "lakare": true
+                "lakare": true,
+                "forskrivarKod": "2481632"
             },
 
             // Statistik Webcert Enhet 3 (Webcert Vårdgivare 2)
@@ -107,7 +113,8 @@
                 "efternamn": "Persson",
                 "hsaId": "IFV1239877878-104L",
                 "enhetId": "IFV1239877878-104D",
-                "lakare": false
+                "lakare": false,
+                "forskrivarKod": "2481632"
             },
 
             // AT Läkare Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
@@ -116,7 +123,8 @@
                 "efternamn": "Larsson",
                 "hsaId": "IFV1239877878-104M",
                 "enhetId": "IFV1239877878-1045",
-                "lakare": true
+                "lakare": true,
+                "forskrivarKod": "2481632"
             },
 
             // Vård och Behandling Webcert Enhet 2 (Webcert Vårdgivare 2)
@@ -125,7 +133,8 @@
                 "efternamn": "Karlsson",
                 "hsaId": "IFV1239877878-104N",
                 "enhetId": "IFV1239877878-1045",
-                "lakare": false
+                "lakare": false,
+                "forskrivarKod": "2481632"
             },
 
             //Markus Gran Testanvändare  @ VårdEnhet1A
@@ -134,7 +143,8 @@
                 "efternamn" : "Gran",
                 "hsaId" : "TST5565594230-106J",
                 "enhetId" : "IFV1239877878-103F",
-                "lakare" : true
+                "lakare" : true,
+                "forskrivarKod": "2481632"
             },
 
             //Markus Gran Testanvändare  @ VärdEnhet2A
@@ -143,7 +153,8 @@
                 "efternamn" : "Gran",
                 "hsaId" : "TST5565594230-106J",
                 "enhetId" : "IFV1239877878-103H",
-                "lakare" : true
+                "lakare" : true,
+                "forskrivarKod": "2481632"
             },
             //Markus Gran Testanvändare  @ VärdEnhetA
             {
@@ -151,8 +162,8 @@
                 "efternamn" : "Gran",
                 "hsaId" : "TST5565594230-106J",
                 "enhetId" : "IFV1239877878-103D",
-                "lakare" : true
-
+                "lakare" : true,
+                "forskrivarKod": "2481632"
             },
 
             //Läkare med flera enheter&mottagningar
@@ -161,8 +172,8 @@
                 "efternamn" : "Holgersson",
                 "hsaId" : "eva",
                 "enhetId" : "centrum-vast",
-                "lakare" : true
-
+                "lakare" : true,
+                "forskrivarKod": "2481632"
             },
             //Läkare med massor av enheter&mottagningar
             {
@@ -170,7 +181,8 @@
                 "efternamn" : "Stafett",
                 "hsaId" : "staffan",
                 "enhetId" : "linkoping",
-                "lakare" : true
+                "lakare" : true,
+                "forskrivarKod": "2481632"
             },
             //Admin personal med flera enheter&mottagningar
             {
@@ -178,7 +190,8 @@
                 "efternamn" : "Admin",
                 "hsaId" : "adam",
                 "enhetId" : "centrum-vast",
-                "lakare" : false
+                "lakare" : false,
+                "forskrivarKod": "2481632"
             },
             //Admin personal med 3 enheter och mottagningar
             {
@@ -186,7 +199,8 @@
                 "efternamn" : "Admin",
                 "hsaId" : "adamo",
                 "enhetId" : "centrum-vast",
-                "lakare" : false
+                "lakare" : false,
+                "forskrivarKod": "2481632"
             },
             //Admin personal med 3 enheter och mottagningar
             {
@@ -194,7 +208,8 @@
                 "efternamn" : "Admin",
                 "hsaId" : "adamo",
                 "enhetId" : "centrum-ost",
-                "lakare" : false
+                "lakare" : false,
+                "forskrivarKod": "2481632"
             },
 
             {
@@ -202,7 +217,8 @@
                 "efternamn" : "Testsson",
                 "hsaId" : "fitness1",
                 "enhetId" : "vardenhet-fit-1",
-                "lakare" : false
+                "lakare" : false,
+                "forskrivarKod": "2481632"
             },
             //FitNesse Admin personal med 1 enhet
             {
@@ -210,14 +226,16 @@
                 "efternamn" : "nesse",
                 "hsaId" : "fitness2",
                 "enhetId" : "vardenhet-fit-2",
-                "lakare" : false
+                "lakare" : false,
+                "forskrivarKod": "2481632"
             },
             {
                 "fornamn" : "Han",
                 "efternamn" : "Solo",
                 "hsaId" : "hansolo",
                 "enhetId" : "centrum-norr",
-                "lakare" : false
+                "lakare" : false,
+                "forskrivarKod": "2481632"
             }
         ];
 

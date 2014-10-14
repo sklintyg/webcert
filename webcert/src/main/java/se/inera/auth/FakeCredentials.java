@@ -12,6 +12,7 @@ public class FakeCredentials implements Serializable {
     private String efternamn;
     private boolean lakare;
     private String enhetId;
+    private String forskrivarKod;
 
     public FakeCredentials() {
     }
@@ -22,6 +23,7 @@ public class FakeCredentials implements Serializable {
         this.efternamn = efternamn;
         this.lakare = lakare;
         this.enhetId = enhetId;
+        this.forskrivarKod = "1234567";
     }
 
     public String getHsaId() {
@@ -63,6 +65,10 @@ public class FakeCredentials implements Serializable {
     public void setEnhetId(String enhetId) {
         this.enhetId = enhetId;
     }
+
+    public String getForskrivarKod() { return forskrivarKod; }
+
+    public void setForskrivarKod(String forskrivarKod) { this.forskrivarKod = forskrivarKod; }
 
     @Override
     public String toString() {
