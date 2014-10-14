@@ -71,15 +71,15 @@ class AnonymiseraWebCertDatabas {
                                           [patientNamn: patientNamn, personNr: personNr,
                                            frageStallare: frageStallare, frageText: frageText, svarsText: svarsText,
                                            forskrivarKod: forskrivarKod, hsaId: hsaId, namn: namn, vardAktorHsaId: vardAktorHsaId,
-                                           vardAktorNamn: vardAktorNamn])
+                                           vardAktorNamn: vardAktorNamn, id: id])
                     def kompletteringar = sql.rows( 'select TEXT from KOMPLETTERING where FRAGASVAR_ID = :id' , [id : id])
                     if (kompletteringar) {
                         kompletteringar.each {
-                            String orginalText = it.TEXT
-                            if (orginalText) {
-                                String text = AnonymizeString.anonymize(orginalText)
+                            String originalText = it.TEXT
+                            if (originalText) {
+                                String text = AnonymizeString.anonymize(originalText)
                                 sql.executeUpdate('update KOMPLETTERING set TEXT = :text where FRAGASVAR_ID = :id and TEXT = :originalText',
-                                                  [text: text, id : id, orginalText: orginalText])
+                                                  [text: text, id : id, originalText: originalText])
                             }
                         }
                     }
@@ -141,7 +141,8 @@ class AnonymiseraWebCertDatabas {
                                                                                  INTYGS_DATA = :document
                                           where INTYG_ID = :id''',
                                           [patientNamn: patientNamn, personNr: personNr,
-                                           document: anonymiseradJson.getBytes('UTF-8')])
+                                           document: anonymiseradJson.getBytes('UTF-8'),
+                                           id: id])
                     int current = count.addAndGet(1)
                     if (current % 1000 == 0) {
                         println "${current} imported certificates anonymized in ${(int)((System.currentTimeMillis()-start) / 1000)} seconds"
