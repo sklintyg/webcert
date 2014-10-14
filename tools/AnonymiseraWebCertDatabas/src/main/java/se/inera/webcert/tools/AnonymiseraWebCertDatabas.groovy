@@ -60,7 +60,7 @@ class AnonymiseraWebCertDatabas {
                     String forskrivarKod = fragasvar.FORSKRIVAR_KOD ? AnonymizeString.anonymize(fragasvar.FORSKRIVAR_KOD) : null
                     String hsaId = fragasvar.HSAID ? anonymiseraHsaId.anonymisera(fragasvar.HSAID) : null
                     String namn = fragasvar.NAMN ? AnonymizeString.anonymize(fragasvar.NAMN) : null
-                    String vardAktorHsaId = fragasvar.VARD_AKTOR_HSAID ? anonymiseraHsaId.anonymize(fragasvar.VARD_AKTOR_HSAID) : null
+                    String vardAktorHsaId = fragasvar.VARD_AKTOR_HSAID ? anonymiseraHsaId.anonymisera(fragasvar.VARD_AKTOR_HSAID) : null
                     String vardAktorNamn = fragasvar.VARD_AKTOR_NAMN ? AnonymizeString.anonymize(fragasvar.VARD_AKTOR_NAMN) : null
                     sql.executeUpdate('''update FRAGASVAR set PATIENT_NAMN = :patientNamn, PATIENT_ID_EXTENSION = :personNr, 
                                                               FRAGE_STALLARE = :frageStallare,
