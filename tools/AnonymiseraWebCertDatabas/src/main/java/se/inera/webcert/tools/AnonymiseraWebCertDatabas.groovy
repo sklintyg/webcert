@@ -122,9 +122,9 @@ class AnonymiseraWebCertDatabas {
         count.set(0)
         errorCount.set(0)
         GParsPool.withPool(numberOfThreads) {
-            output = questionAnswers.collectParallel {
+            output = certificateIds.collectParallel {
                 StringBuffer result = new StringBuffer()
-                def id = it.internReferens
+                def id = it.INTYG_ID
                 Sql sql = new Sql(dataSource)
                 try {
                     // Anonymisera alla befintliga frågor och svar
