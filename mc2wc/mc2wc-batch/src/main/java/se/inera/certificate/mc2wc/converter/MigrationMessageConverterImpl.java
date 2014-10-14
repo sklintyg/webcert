@@ -33,7 +33,7 @@ import se.inera.certificate.mc2wc.message.StatusType;
 
 public class MigrationMessageConverterImpl implements MigrationMessageConverter {
 
-    private static final String INTYGS_TYP = "FK7263";
+    private static final String INTYGS_TYP = "fk7263";
     
     private static Logger log = LoggerFactory.getLogger(MigrationMessageConverter.class);
         
@@ -79,7 +79,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
                         new Object[]{mcQuestion.getId(), mcCert.getId(), mcQuestion.getState()});
                 continue;
             }
-            QuestionType wcQuestionAnswer = toWCQuestionAnswer(mcCert.getId(), mcQuestion);
+            QuestionType wcQuestionAnswer = toWCQuestionAnswer(mcCert.getId(), mcCert.getSignedAt(), mcQuestion);
             msg.getQuestions().add(wcQuestionAnswer);
         }
         
@@ -136,7 +136,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         return wcCert;
     }
 
-    private QuestionType toWCQuestionAnswer(String certificateId, Question mcQuestion) {
+    private QuestionType toWCQuestionAnswer(String certificateId, Date certificateSignedDate, Question mcQuestion) {
 
         log.debug("Converting Question {}, part of Certificate {}", mcQuestion.getId(), certificateId);
 
@@ -145,6 +145,7 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         qa.setCertificateId(certificateId);
         qa.setCertificateType(INTYGS_TYP);
         qa.setExternalReference(mcQuestion.getFkReferenceId());
+        qa.setCertificateSigned(toLocalDateTime(certificateSignedDate));
 
         qa.setQuestionLastAnswerDate(toLocalDate(mcQuestion.getLastDateForAnswer()));
         qa.setSent(toLocalDateTime(mcQuestion.getSentAt()));
