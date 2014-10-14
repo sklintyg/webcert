@@ -12,7 +12,7 @@
     
   <groupId>se.inera.webcert.tools</groupId>
   <artifactId>anonymisera-webcert-databas</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
   <name>Anonymisering av intyg och frågor/svar i webcert</name>
 

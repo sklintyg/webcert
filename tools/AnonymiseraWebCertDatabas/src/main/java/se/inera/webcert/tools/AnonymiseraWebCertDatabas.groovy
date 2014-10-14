@@ -132,8 +132,11 @@ class AnonymiseraWebCertDatabas {
                                                  from MIGRERADE_INTYG_FRAN_MEDCERT where INTYG_ID = :id''' , [id : id])
                     String patientNamn = AnonymizeString.anonymize(fragasvar.PATIENT_NAMN)
                     String personNr = anonymiseraPersonId.anonymisera(fragasvar.PATIENT_SSN)
-                    String jsonDoc = new String(intyg.INTYGS_DATA, 'UTF-8')
-                    String anonymiseradJson = anonymiseraJson.anonymiseraIntygsJson(jsonDoc, personNr)
+                    // Utkommenterat, eftersom json-formatet för MedCert skiljer sig åt
+//                    String jsonDoc = new String(intyg.INTYGS_DATA, 'UTF-8')
+//                    String anonymiseradJson = anonymiseraJson.anonymiseraIntygsJson(jsonDoc, personNr)
+                    // Byt ut intygsdata mot en fix sträng istället
+                    String anonymiseradJson = "XXXXXXXXXX"
                     sql.executeUpdate('''update MIGRERADE_INTYG_FRAN_MEDCERT set PATIENT_NAMN = :patientNamn, PATIENT_SSN = :personNr,
                                                                                  INTYGS_DATA = :document
                                           where INTYG_ID = :id''',
