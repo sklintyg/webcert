@@ -42,6 +42,9 @@ public class LogServiceImpl implements LogService {
 
     @Value("${pdlLogging.systemId}")
     private String systemId;
+    
+    @Value("${pdlLogging.systemId}")
+    private String systemName;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -90,6 +93,7 @@ public class LogServiceImpl implements LogService {
         logMsg.setResourceOwner(resourceOwner);
 
         logMsg.setSystemId(systemId);
+        logMsg.setSystemName(systemName);
 
         return logMsg;
     }
