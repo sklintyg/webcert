@@ -1,11 +1,5 @@
 package se.inera.webcert.service;
 
-import java.util.Arrays;
-
-import javax.jms.Session;
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-
 import static org.joda.time.LocalDateTime.now;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,16 +9,19 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+
+import javax.jms.Session;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 
 import se.inera.log.messages.ActivityPurpose;
 import se.inera.log.messages.ActivityType;
@@ -50,10 +47,15 @@ public class LogServiceImplTest {
     @InjectMocks
     LogServiceImpl logService = new LogServiceImpl();
 
+    @Before
+    public void setup() {
+        logService.systemId = "webcert";
+        logService.systemName = "WebCert";
+    }
+    
     @Test
     public void serviceSendsDocumentAndIdForCreate() throws Exception {
-        logService.systemId = "webcert";
-
+        
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
         when(webCertUserService.getWebCertUser()).thenReturn(createWcUser());
@@ -95,12 +97,7 @@ public class LogServiceImplTest {
         assertTrue(intygReadMessage.getTimestamp().plusSeconds(10).isAfter(now()));
 
         assertEquals("webcert", intygReadMessage.getSystemId());
-    }
-
-    private GetCertificateForCareResponseType certificate() throws Exception {
-        return JAXBContext.newInstance(GetCertificateForCareResponseType.class).createUnmarshaller().unmarshal(
-                new StreamSource(new ClassPathResource("LogServiceTest/certificate.xml").getInputStream()),
-                GetCertificateForCareResponseType.class).getValue();
+        assertEquals("WebCert", intygReadMessage.getSystemName());
     }
 
     private WebCertUser createWcUser() {
@@ -111,9 +108,12 @@ public class LogServiceImplTest {
         vg.setVardenheter(Arrays.asList(ve));
         
         WebCertUser wcu = new WebCertUser();
+        wcu.setVardgivare(Arrays.asList(vg));
+        wcu.changeValdVardenhet("VARDENHET_ID");
+        
         wcu.setHsaId("HSAID");
         wcu.setNamn("Markus Gran");
-        wcu.setVardgivare(Arrays.asList(vg));
+        
         return wcu;
     }
 }

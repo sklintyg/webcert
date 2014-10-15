@@ -1,14 +1,10 @@
 package se.inera.webcert.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +13,12 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.PatientType;
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
 import se.inera.log.messages.IntygPrintMessage;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.log.messages.Patient;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -36,12 +29,17 @@ import se.inera.webcert.web.service.WebCertUserService;
 public class LogServiceImpl implements LogService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogServiceImpl.class);
+    
+    private static final String NOT_AVAILABLE = "-";
 
     @Autowired(required = false)
     JmsTemplate jmsTemplate;
 
     @Value("${pdlLogging.systemId}")
     String systemId;
+    
+    @Value("${pdlLogging.systemName}")
+    String systemName;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -81,52 +79,34 @@ public class LogServiceImpl implements LogService {
 
     private void populateLogMessage(String patientId, AbstractLogMessage logMsg) {
         
-        populateWithCurrentUser(logMsg);
-
-        populateWithVardgivareAndVardenhet(logMsg);
-        
         Patient patient = new Patient(patientId);
         logMsg.setPatient(patient);
 
         logMsg.setSystemId(systemId);
-    }
-    
-    private void populateWithCurrentUser(AbstractLogMessage logMsg) {
+        logMsg.setSystemName(systemName);
+
         WebCertUser user = webCertUserService.getWebCertUser();
+
         logMsg.setUserId(user.getHsaId());
         logMsg.setUserName(user.getNamn());
-
-        user.getVardgivare();
-    }
-
-    private void populateWithVardgivareAndVardenhet(AbstractLogMessage logMsg) {
-
-        WebCertUser user = webCertUserService.getWebCertUser();
-
-        List<Vardgivare> allVardgivare = user.getVardgivare();
-
-        // TODO: Here we use the first of the Vardgivare that the user have.
-        Vardgivare vardgivare = (allVardgivare.isEmpty()) ? null : allVardgivare.get(0);
+        
+        SelectableVardenhet vardgivare = user.getValdVardgivare();
 
         if (vardgivare == null) {
             LOGGER.error("Can not populate log message, vardgivare is null for user: {}", user.getAsJson());
-            return;
         }
 
-        String vardgivareId = vardgivare.getId();
-        String vardgivareNamn = vardgivare.getNamn();
+        String vardgivareId = (vardgivare != null) ? vardgivare.getId() : NOT_AVAILABLE;
+        String vardgivareNamn = (vardgivare != null) ? vardgivare.getNamn() : NOT_AVAILABLE;
 
-        List<Vardenhet> allVardenheterForVardgivare = vardgivare.getVardenheter();
-
-        Vardenhet enhet = (allVardenheterForVardgivare.isEmpty()) ? null : allVardenheterForVardgivare.get(0);
-
+        SelectableVardenhet enhet = user.getValdVardenhet();
+        
         if (enhet == null) {
             LOGGER.error("Can not populate log message, vardenhet is null for user: {}", user.getAsJson());
-            return;
         }
 
-        String enhetsId = enhet.getId();
-        String enhetsNamn = enhet.getNamn();
+        String enhetsId = (enhet != null) ? enhet.getId() : NOT_AVAILABLE;
+        String enhetsNamn = (enhet != null) ? enhet.getNamn() : NOT_AVAILABLE;
 
         logMsg.setEnhet(new Enhet(enhetsId, enhetsNamn, vardgivareId, vardgivareNamn));
     }
@@ -138,21 +118,6 @@ public class LogServiceImpl implements LogService {
         jmsTemplate.send(new MC(logMsg));
     }
     
-    private Patient fetchPatientFromIntyg(PatientType source) {
-        if (source == null) {
-            return null;
-        }
-        return new Patient(source.getPersonId().getExtension(), patientName(source));
-    }
-
-    private String patientName(PatientType source) {
-        List<String> names = new ArrayList<>();
-        names.addAll(source.getFornamn());
-        names.addAll(source.getMellannamn());
-        names.add(source.getEfternamn());
-        return StringUtils.join(names, " ");
-    }
-
     private static final class MC implements MessageCreator {
         private final AbstractLogMessage logMsg;
 
