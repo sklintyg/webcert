@@ -43,7 +43,7 @@ public class LogServiceImpl implements LogService {
     @Value("${pdlLogging.systemId}")
     private String systemId;
     
-    @Value("${pdlLogging.systemId}")
+    @Value("${pdlLogging.systemName}")
     private String systemName;
 
     @Autowired
