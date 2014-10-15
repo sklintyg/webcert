@@ -141,6 +141,7 @@ public class LogSender {
 
         SystemType system = new SystemType();
         system.setSystemId(source.getSystemId());
+        system.setSystemName(source.getSystemName());
         logType.setSystem(system);
 
         ActivityType activity = new ActivityType();
