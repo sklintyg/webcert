@@ -103,6 +103,7 @@ public class LogSenderTest {
     private AbstractLogMessage intygReadMessage(String timestamp) {
         IntygReadMessage intygReadMessage = new IntygReadMessage("abc123");
         intygReadMessage.setSystemId("webcert");
+        intygReadMessage.setSystemName("WebCert");
         intygReadMessage.setTimestamp(new LocalDateTime(timestamp));
         intygReadMessage.setUserId("user1");
         intygReadMessage.setUserName("Markus Gran");

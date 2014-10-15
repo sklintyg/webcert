@@ -16,6 +16,8 @@ public class AbstractLogMessage implements Serializable {
 
     private String systemId;
     
+    private String systemName;
+    
     private String activityLevel;
 
     private ActivityType activityType;
@@ -69,6 +71,14 @@ public class AbstractLogMessage implements Serializable {
 
     public void setSystemId(String systemId) {
         this.systemId = systemId;
+    }
+
+    public String getSystemName() {
+        return systemName;
+    }
+
+    public void setSystemName(String systemName) {
+        this.systemName = systemName;
     }
 
     public String getActivityLevel() {

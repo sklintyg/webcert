@@ -3,6 +3,7 @@
     <LogId>{ignore}</LogId>
     <System>
       <SystemId>webcert</SystemId>
+      <SystemName>WebCert</SystemName>
     </System>
     <Activity>
       <ActivityType>Läsa</ActivityType>
