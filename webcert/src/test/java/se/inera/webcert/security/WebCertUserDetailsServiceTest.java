@@ -43,6 +43,7 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
+import se.inera.webcert.service.feature.WebcertFeatureService;
 
 /**
  * @author andreaskaltenbach
@@ -62,6 +63,9 @@ public class WebCertUserDetailsServiceTest {
 
     @Mock
     private HsaPersonService hsaPersonService;
+    
+    @Mock
+    private WebcertFeatureService webcertFeatureService;
 
     private Vardgivare vardgivare;
 
@@ -75,6 +79,7 @@ public class WebCertUserDetailsServiceTest {
 
         setupCallToAuthorizedEnheterForHosPerson();
         setupCallToGetHsaPersonInfo();
+        setupCallToWebcertFeatureService();
 
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
 
@@ -96,9 +101,12 @@ public class WebCertUserDetailsServiceTest {
         assertEquals(2, webCertUser.getLegitimeradeYrkesgrupper().size());
         
         assertEquals(HEAD_DOCTOR, webCertUser.getTitel());
+        
+        assertFalse(webCertUser.getAktivaFunktioner().isEmpty());
 
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
         verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSA_ID);
+        verify(webcertFeatureService).getActiveFeatures();
     }
 
     @Test
@@ -151,6 +159,11 @@ public class WebCertUserDetailsServiceTest {
         List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, HEAD_DOCTOR, specs, titles));
 
         when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSA_ID)).thenReturn(userTypes);
+    }
+    
+    private void setupCallToWebcertFeatureService() {
+        List<String> availableFeatures = Arrays.asList("feature1", "feature2");
+        when(webcertFeatureService.getActiveFeatures()).thenReturn(availableFeatures);
     }
     
     @Test

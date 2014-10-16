@@ -23,6 +23,7 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
+import se.inera.webcert.service.feature.WebcertFeatureService;
 
 /**
  * @author andreaskaltenbach
@@ -42,6 +43,9 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     @Autowired
     private HsaPersonService hsaPersonService;
+    
+    @Autowired
+    private WebcertFeatureService webcertFeatureService;
 
     @Override
     public Object loadUserBySAML(SAMLCredential credential) {
@@ -119,9 +123,9 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
     
     private void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
         
-        String hanteraFragor = "hanteraFragor";
+        List<String> availableFeatures = webcertFeatureService.getActiveFeatures();
         
-        webcertUser.setAktivaFunktioner(Arrays.asList(hanteraFragor));
+        webcertUser.setAktivaFunktioner(availableFeatures);
     }
 
     private String extractTitel(List<GetHsaPersonHsaUserType> hsaUserTypes) {
