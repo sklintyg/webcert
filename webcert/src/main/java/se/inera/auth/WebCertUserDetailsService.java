@@ -3,6 +3,7 @@ package se.inera.auth;
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -89,6 +90,8 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         webcertUser.setLakare(LAKARE.equals(assertion.getTitel()) || LAKARE_CODE.equals(assertion.getTitelKod()));
 
         decorateWebCertUserWithAdditionalInfo(webcertUser);
+        
+        decorateWebCertUserWithAvailableFeatures(webcertUser);
 
         return webcertUser;
     }
@@ -112,6 +115,13 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
         String titel = extractTitel(hsaPersonInfo);
         webcertUser.setTitel(titel);
+    }
+    
+    private void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
+        
+        String hanteraFragor = "hanteraFragor";
+        
+        webcertUser.setAktivaFunktioner(Arrays.asList(hanteraFragor));
     }
 
     private String extractTitel(List<GetHsaPersonHsaUserType> hsaUserTypes) {

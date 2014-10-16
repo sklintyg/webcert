@@ -34,6 +34,8 @@ public class WebCertUser implements Serializable {
     private SelectableVardenhet valdVardenhet;
 
     private SelectableVardenhet valdVardgivare;
+    
+    private List<String> aktivaFunktioner;
 
     public String getHsaId() {
         return hsaId;
@@ -136,6 +138,14 @@ public class WebCertUser implements Serializable {
 
     public void setForskrivarkod(String forskrivarkod) {
         this.forskrivarkod = forskrivarkod;
+    }
+
+    public List<String> getAktivaFunktioner() {
+        return aktivaFunktioner;
+    }
+
+    public void setAktivaFunktioner(List<String> aktivaFunktioner) {
+        this.aktivaFunktioner = aktivaFunktioner;
     }
 
     @JsonIgnore
