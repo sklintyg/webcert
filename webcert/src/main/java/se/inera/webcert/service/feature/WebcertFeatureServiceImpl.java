@@ -45,6 +45,11 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
         LOG.info("Active Webcert features is: {}", StringUtils.join(activeFeatures, ", "));
     }
     
+    
+    public boolean isFeatureActive(Features feature) {
+        return isFeatureActive(feature.getName());
+    }
+    
     /* (non-Javadoc)
      * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(java.lang.String)
      */

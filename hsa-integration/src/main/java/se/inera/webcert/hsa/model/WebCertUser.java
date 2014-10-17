@@ -141,6 +141,10 @@ public class WebCertUser implements Serializable {
     }
 
     public List<String> getAktivaFunktioner() {
+        if (aktivaFunktioner == null) {
+            aktivaFunktioner = Collections.emptyList();
+        }
+        
         return aktivaFunktioner;
     }
 
@@ -148,6 +152,10 @@ public class WebCertUser implements Serializable {
         this.aktivaFunktioner = aktivaFunktioner;
     }
 
+    public boolean hasAktivFunktion(String aktivFunktion) {        
+        return getAktivaFunktioner().contains(aktivFunktion);
+    }
+    
     @JsonIgnore
     public String getAsJson() {
         try {

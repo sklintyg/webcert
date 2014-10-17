@@ -11,6 +11,8 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
+import se.inera.webcert.service.exception.FeatureNotAvailableException;
+import se.inera.webcert.service.feature.Features;
 import se.inera.webcert.web.service.WebCertUserService;
 
 public abstract class AbstractApiController {
@@ -23,7 +25,7 @@ public abstract class AbstractApiController {
 
     @Autowired
     private WebCertUserService webCertUserService;
-
+    
     protected HoSPerson createHoSPersonFromUser() {
         WebCertUser user = webCertUserService.getWebCertUser();
         return HoSPerson.create(user);
@@ -69,5 +71,18 @@ public abstract class AbstractApiController {
 
     public WebCertUserService getWebCertUserService() {
         return webCertUserService;
+    }
+    
+    protected void checkFeatureAvailable(Features feature) {
+        
+        if (feature == null) {
+            return;
+        }
+        
+        WebCertUser webCertUser = webCertUserService.getWebCertUser();
+        
+        if (!webCertUser.hasAktivFunktion(feature.getName())) {
+            throw new FeatureNotAvailableException(feature.getName());
+        }
     }
 }
