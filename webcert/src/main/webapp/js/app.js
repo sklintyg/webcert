@@ -111,30 +111,30 @@ app.config(function($provide) {
 // Global config of default date picker config (individual attributes can be
 // overridden per directive usage)
 app.constant('datepickerConfig', {
-    closeOnDateSelection: true,
-    appendToBody: false,
+    formatDay: 'dd',
+    formatMonth: 'MMMM',
+    formatYear: 'yyyy',
+    formatDayHeader: 'EEE',
+    formatDayTitle: 'MMMM yyyy',
+    formatMonthTitle: 'yyyy',
+    datepickerMode: 'day',
+    minMode: 'day',
+    maxMode: 'year',
     showWeeks: true,
     startingDay: 1,
-    dayFormat: 'dd',
-    monthFormat: 'MMMM',
-    yearFormat: 'yyyy',
-    dayHeaderFormat: 'EEE',
-    dayTitleFormat: 'MMMM yyyy',
-    monthTitleFormat: 'yyyy',
     yearRange: 20,
     minDate: null,
     maxDate: null
 });
 
 app.constant('datepickerPopupConfig', {
-    closeText: 'OK',
+    datepickerPopup: 'yyyy-MM-dd',
     currentText: 'Idag',
     clearText: 'Rensa',
-    dateFormat: 'yyyy-MM-dd',
-    toggleWeeksText: 'Visa veckor',
+    closeText: 'OK',
     closeOnDateSelection: true,
     appendToBody: false,
-    showButtonBar: false
+    showButtonBar: true
 });
 
 // Inject language resources
