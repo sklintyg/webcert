@@ -1,6 +1,6 @@
 <div id="wcHeader" class="print-hide" wc-header default-active="index"></div>
 
-<div class="row webcert-multicol" id="viewCertAndQA">
+<div class="row webcert-multicol" id="viewCertAndQA" wc-feature-active feature="hanteraIntygsutkast">
   <div class="webcert-multicol-background">
 
     <!-- Left column -->
@@ -17,7 +17,8 @@
     <!-- Certificate Left side end -->
 
     <!-- Right side -->
-    <div class="col-sm-6 webcert-col-secondary print-hide" ng-if="widgetState.fragaSvarAvailable">
+    <div class="col-sm-6 webcert-col-secondary print-hide"
+         wc-feature-active feature="hanteraFragor" intygstyp="widgetState.certificateType">
       <div class="webcert-col-shadow"></div>
       <h2 class="col-head">
         Fråga &amp; Svar </h2>

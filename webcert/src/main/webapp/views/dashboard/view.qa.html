@@ -1,11 +1,11 @@
 <div id="wcHeader" class="print-hide" wc-header default-active="unhandled-qa"></div>
 
-<div class="row webcert-multicol" id="viewQAandCert">
+<div class="row webcert-multicol" id="viewQAandCert" wc-feature-active feature="hanteraFragor">
   <div class="webcert-multicol-background">
 
     <!-- Left column -->
     <div class="col-sm-6 webcert-col webcert-col-primary print-hide">
-      <div ng-if="widgetState.fragaSvarAvailable">
+      <div wc-feature-active feature="hanteraFragor" intygstyp="widgetState.certificateType">
         <a class="backlink-icon" href="/web/dashboard#/unhandled-qa" title="Tillbaka till Fråga och Svar"></a>
         <h1 class="backlink-heading">
           Fråga och svar </h1>

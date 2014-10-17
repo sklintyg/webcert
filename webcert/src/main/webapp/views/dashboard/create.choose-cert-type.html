@@ -1,5 +1,5 @@
 <div id="wcHeader" wc-header></div>
-<div class="container-fluid">
+<div class="container-fluid" wc-feature-active feature="hanteraIntygsutkast">
   <div class="row">
     <div id="valj-intyg-typ" class="col-xs-12 col-lg-7 webcert-col webcert-col-single">
       <div class="row">
@@ -97,6 +97,7 @@
                   </td>
                   <td>
                     <button ng-show="cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'" class="btn btn-info"
+                            wc-feature-active feature="kopieraIntyg" intygstyp="cert.intygType"
                             title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras. Kopiera kan användas exempelvis vid förlängning av en sjukskrivning." ng-click="copyIntyg(cert)"
                             id="copyBtn-{{cert.intygId}}">
                       Kopiera

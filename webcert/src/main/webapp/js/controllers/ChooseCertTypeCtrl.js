@@ -38,6 +38,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             ];
 
             ManageCertificate.getCertTypes(function(types) {
+
                 $scope.certTypes = types;
                 $scope.intygType = CreateCertificateDraft.intygType;
             });

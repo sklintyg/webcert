@@ -1,24 +1,9 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.IntygSignatureService;
@@ -43,6 +28,19 @@ import se.inera.webcert.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
 /**
  * Controller exposing services to be used by modules.
  *
@@ -63,7 +61,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
     @Autowired
     private IntygSignatureService signatureService;
-    
+
     @Autowired
     private LogService logService;
 
@@ -108,7 +106,7 @@ public class IntygModuleApiController extends AbstractApiController {
         String draftAsJson = fromBytesToString(draftCertificate);
 
         SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygId, draftAsJson);
-        DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
+            DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
 
         SaveDraftResponse responseEntity = buildSaveDraftResponse(draftValidation);
 
@@ -212,7 +210,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
     /**
      * Creates a PDL log event that a persons draft has been printed.
-     * 
+     *
      * @param intygId
      * @return
      */
@@ -221,7 +219,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response logPrintOfDraft(String intygId) {
-        
+
         LOG.debug("Logging printout of draft intyg '{}'", intygId);
 
         Intyg draft = draftService.getDraft(intygId);
@@ -229,13 +227,13 @@ public class IntygModuleApiController extends AbstractApiController {
         LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(draft);
 
         logService.logPrintOfIntygAsDraft(logRequest);
-        
+
         return Response.ok().build();
     }
-    
+
     /**
      * Issues a request to Intygstjanst to send the signed intyg to a recipient
-     * 
+     *
      * @param intygId
      * @param param
      * @return
@@ -246,12 +244,12 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygId") String intygId, SendSignedIntygParameter param) {
         IntygServiceResult sendResult = intygService.sendIntyg(intygId, param.getRecipient(), param.isPatientConsent());
-        return Response.ok(sendResult).build();        
+        return Response.ok(sendResult).build();
     }
-    
+
     /**
      * Issues a request to Intygstjanst to revoke the signed intyg.
-     * 
+     *
      * @param intygId The id of the intyg to revoke
      * @param param A JSON struct containing an optional message
      * @return
@@ -261,13 +259,13 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response revokeSignedIntyg(@PathParam("intygId") String intygId, RevokeSignedIntygParameter param) {
-        
+
         String revokeMessage = (param != null) ? param.getRevokeMessage(): null;
-        
+
         IntygServiceResult revokeResult = intygService.revokeIntyg(intygId, revokeMessage);
         return Response.ok(revokeResult).build();
     }
-    
+
     /**
      * Signera utkast.
      *
@@ -328,10 +326,10 @@ public class IntygModuleApiController extends AbstractApiController {
         SignatureTicket biljett = signatureService.ticketStatus(biljettId);
         return new BiljettResponse(biljett);
     }
-    
+
     /**
      * Retrieves a list of recipients from Intygtjanst for the specified intygs type.
-     * 
+     *
      * @param intygType
      * @return
      */

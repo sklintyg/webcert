@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.feature.Features;
+import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
@@ -45,10 +47,16 @@ public class PageController {
     public static final String DASHBOARD_VIEW = "dashboard";
     public static final String DASHBOARD_VIEW_REDIRECT = "redirect:/web/" + DASHBOARD_VIEW;
 
+    public static final String ABOUT_VIEW = "dashboard#/webcert/about";
+    public static final String ABOUT_VIEW_REDIRECT = "redirect:/web/" + ABOUT_VIEW;
+
     private static final Logger LOG = LoggerFactory.getLogger(PageController.class);
 
     @Autowired
     private WebCertUserService webCertUserService;
+
+    @Autowired
+    private WebcertFeatureService webcertFeatureService;
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView displayStart() {
@@ -64,10 +72,12 @@ public class PageController {
      * @return String
      */
     protected String resolveStartView(WebCertUser user) {
-        if (user.isLakare()) {
+        if (user.isLakare() && webcertFeatureService.isFeatureActive(Features.HANTERA_INTYGSUTKAST)) {
             return DASHBOARD_VIEW_REDIRECT;
-        } else {
+        } else if (webcertFeatureService.isFeatureActive(Features.HANTERA_FRAGOR)) {
             return ADMIN_VIEW_REDIRECT;
+        } else {
+            return ABOUT_VIEW_REDIRECT;
         }
     }
 
