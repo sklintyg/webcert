@@ -60,12 +60,6 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             var defaultFilterFormData = {
                 forwarded: 'default',
                 complete: 'default',
-                savedFromOpen: {
-                    open: false
-                },
-                savedToOpen: {
-                    open: false
-                },
                 lastFilterQuery: defaultFilterQuery
             };
 
@@ -206,12 +200,6 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             $scope.openIntyg = function(cert) {
                 $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
-            };
-
-            $scope.toggleDatePickerInstance = function(instance) {
-                $timeout(function() {
-                    instance.open = !instance.open;
-                });
             };
 
             // Handle forwarding

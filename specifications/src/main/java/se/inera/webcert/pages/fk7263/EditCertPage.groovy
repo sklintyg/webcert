@@ -38,13 +38,13 @@ class BaserasPaModule extends Module {
     static base = { $("#intygetbaseraspa") }
     static content = {
         undersokning { $("#basedOnExamination") }
-        undersokningDatum { $("#undersokningAvPatienten-date") }
+        undersokningDatum { $("#undersokningAvPatientenDate") }
         telefonkontakt { $("#basedOnPhoneContact") }
-        telefonkontaktDatum { $("#telefonkontaktMedPatienten-date") }
+        telefonkontaktDatum { $("#telefonkontaktMedPatientenDate") }
         journal { $("#basedOnJournal") }
-        journalDatum { $("#journaluppgifter-date") }
+        journalDatum { $("#journaluppgifterDate") }
         other { $("#basedOnOther") }
-        otherDatum { $("#annanReferens-date") }
+        otherDatum { $("#annanReferensDate") }
         otherText { $("#informationBasedOnOtherText") }
     }
 }
