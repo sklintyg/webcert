@@ -2,6 +2,7 @@ package se.inera.webcert.modules;
 
 import java.util.List;
 
+import se.inera.certificate.modules.support.ModuleEntryPoint;
 import se.inera.certificate.modules.support.api.ModuleApi;
 
 public interface IntygModuleRegistry {
@@ -11,5 +12,7 @@ public interface IntygModuleRegistry {
     IntygModule getIntygModule(String id);
 
     List<IntygModule> listAllModules();
+    
+    List<ModuleEntryPoint> getModuleEntryPoints();
 
 }

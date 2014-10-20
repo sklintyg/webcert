@@ -25,7 +25,7 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
     private List<ModuleEntryPoint> moduleEntryPoints;
 
     private Map<String, ModuleApi> moduleApiMap = new HashMap<String, ModuleApi>();
-
+    
     private List<IntygModule> moduleList = new ArrayList<IntygModule>();
 
     @PostConstruct
@@ -65,4 +65,9 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
         }
         return null;
     }
+
+    public List<ModuleEntryPoint> getModuleEntryPoints() {
+        return moduleEntryPoints;
+    }
+    
 }
