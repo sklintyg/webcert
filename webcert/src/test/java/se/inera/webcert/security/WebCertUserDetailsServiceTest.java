@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -162,7 +164,9 @@ public class WebCertUserDetailsServiceTest {
     }
     
     private void setupCallToWebcertFeatureService() {
-        List<String> availableFeatures = Arrays.asList("feature1", "feature2");
+        Set<String> availableFeatures = new TreeSet<String>();
+        availableFeatures.add("feature1");
+        availableFeatures.add("feature2");
         when(webcertFeatureService.getActiveFeatures()).thenReturn(availableFeatures);
     }
     

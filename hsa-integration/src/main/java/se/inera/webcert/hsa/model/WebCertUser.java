@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
 
@@ -35,7 +36,7 @@ public class WebCertUser implements Serializable {
 
     private SelectableVardenhet valdVardgivare;
     
-    private List<String> aktivaFunktioner;
+    private Set<String> aktivaFunktioner;
 
     public String getHsaId() {
         return hsaId;
@@ -140,15 +141,15 @@ public class WebCertUser implements Serializable {
         this.forskrivarkod = forskrivarkod;
     }
 
-    public List<String> getAktivaFunktioner() {
+    public Set<String> getAktivaFunktioner() {
         if (aktivaFunktioner == null) {
-            aktivaFunktioner = Collections.emptyList();
+            aktivaFunktioner = Collections.emptySet();
         }
         
         return aktivaFunktioner;
     }
 
-    public void setAktivaFunktioner(List<String> aktivaFunktioner) {
+    public void setAktivaFunktioner(Set<String> aktivaFunktioner) {
         this.aktivaFunktioner = aktivaFunktioner;
     }
 

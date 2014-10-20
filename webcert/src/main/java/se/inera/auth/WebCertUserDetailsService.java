@@ -43,7 +43,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     @Autowired
     private HsaPersonService hsaPersonService;
-    
+
     @Autowired
     private WebcertFeatureService webcertFeatureService;
 
@@ -94,7 +94,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         webcertUser.setLakare(LAKARE.equals(assertion.getTitel()) || LAKARE_CODE.equals(assertion.getTitelKod()));
 
         decorateWebCertUserWithAdditionalInfo(webcertUser);
-        
+
         decorateWebCertUserWithAvailableFeatures(webcertUser);
 
         return webcertUser;
@@ -120,11 +120,11 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         String titel = extractTitel(hsaPersonInfo);
         webcertUser.setTitel(titel);
     }
-    
+
     private void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
-        
-        List<String> availableFeatures = webcertFeatureService.getActiveFeatures();
-        
+
+        Set<String> availableFeatures = webcertFeatureService.getActiveFeatures();
+
         webcertUser.setAktivaFunktioner(availableFeatures);
     }
 

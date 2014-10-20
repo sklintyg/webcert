@@ -20,14 +20,20 @@ package se.inera.webcert.web.service;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.feature.Features;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
+    
     public WebCertUser getWebCertUser() {
         return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
@@ -43,4 +49,18 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         return user != null && user.getIdsOfSelectedVardenhet().containsAll(enhetsHsaIds);
     }
 
+    public void enableFeaturesOnUser(Features... featuresToEnable) {
+        
+        WebCertUser user = getWebCertUser();
+        
+        LOG.debug("User {} had these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
+        
+        user.getAktivaFunktioner().clear();
+        
+        for (Features feature : featuresToEnable) {
+            user.getAktivaFunktioner().add(feature.getName());
+        }
+        
+        LOG.debug("User {} has now these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
+    }
 }

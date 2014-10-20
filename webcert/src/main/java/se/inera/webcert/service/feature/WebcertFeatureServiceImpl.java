@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 
@@ -41,7 +43,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
             featuresMap.put(feature.getName(), featureState);
         }
         
-        List<String> activeFeatures = getActiveFeatures();
+        Set<String> activeFeatures = getActiveFeatures();
         LOG.info("Active Webcert features is: {}", StringUtils.join(activeFeatures, ", "));
     }
     
@@ -63,9 +65,9 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
      * @see se.inera.webcert.service.feature.WebcertFeatureService#getActiveFeatures()
      */
     @Override
-    public List<String> getActiveFeatures() {
+    public Set<String> getActiveFeatures() {
         
-        List<String> activeFeatures = new ArrayList<String>();
+        Set<String> activeFeatures = new TreeSet<String>();
         
         for (Entry<String,Boolean> feature : featuresMap.entrySet()) {
             if (feature.getValue().equals(Boolean.TRUE)) {

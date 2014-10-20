@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class WebcertFeatureServiceTest {
     @Test
     public void testGetActiveFeatures() {
         
-        List<String> res = featureService.getActiveFeatures();
+        Set<String> res = featureService.getActiveFeatures();
         
         assertThat(res, contains("hanteraFragor", "hanteraIntygsutkast"));
     }
