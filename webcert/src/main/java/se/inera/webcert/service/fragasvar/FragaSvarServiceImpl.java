@@ -8,26 +8,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
+import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.modules.IntygModule;
-import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -44,16 +40,17 @@ import se.inera.webcert.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalC
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
-import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;
+import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -94,9 +91,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
-
+    
     @Autowired
-    private IntygModuleRegistry moduleRegistry;
+    private WebcertFeatureService webcertFeatureService;
 
     @Value("${sendquestiontofk.logicaladdress}")
     private String sendQuestionToFkLogicalAddress;
@@ -330,9 +327,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     private void validateAcceptsQuestions(FragaSvar fragaSvar) {
-        String intygsTyp = fragaSvar.getIntygsReferens().getIntygsTyp();
-        IntygModule module = moduleRegistry.getIntygModule(intygsTyp);
-        if (!module.isFragaSvarAvailable()) {
+        String intygsTyp = fragaSvar.getIntygsReferens().getIntygsTyp();        
+        if (!webcertFeatureService.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR, intygsTyp)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Intygstyp '" + intygsTyp + "' stödjer ej fragasvar.");
         }
     }

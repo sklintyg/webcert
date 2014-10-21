@@ -7,6 +7,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.common.MinimalUtlatande;
+import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -57,6 +59,7 @@ import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCert
 import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.fragasvar.FragaSvarServiceImpl;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
@@ -96,10 +99,10 @@ public class FragaSvarServiceImplTest {
     IntygMetadata intygMetadataMock;
 
     @Mock
-    IntygModuleRegistry moduleRegistry;
-
-    @Mock
     MailNotificationService mailNotificationService;
+    
+    @Mock
+    WebcertFeatureService webcertFeatureServiceMock;
 
     @Mock
     Logger logger;
@@ -119,9 +122,7 @@ public class FragaSvarServiceImplTest {
 
     @Before
     public void setupCommonBehaviour() {
-        IntygModule module = Mockito.mock(IntygModule.class);
-        when(moduleRegistry.getIntygModule(anyString())).thenReturn(module);
-        when(module.isFragaSvarAvailable()).thenReturn(true);
+        when(webcertFeatureServiceMock.isModuleFeatureActive(eq(ModuleFeature.HANTERA_FRAGOR), anyString())).thenReturn(true);
     }
     
     @SuppressWarnings("unchecked")
@@ -735,10 +736,8 @@ public class FragaSvarServiceImplTest {
     public void intygWithoutFragaSvarDoesNotAcceptFraga() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.getIntygsReferens().setIntygsTyp("ts-bas");
-
-        IntygModule module = Mockito.mock(IntygModule.class);
-        when(moduleRegistry.getIntygModule("ts-bas")).thenReturn(module);
-        when(module.isFragaSvarAvailable()).thenReturn(false);
+        
+        when(webcertFeatureServiceMock.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR, "ts-bas")).thenReturn(false);
 
         service.processIncomingQuestion(fragaSvar);
         fail("Processing should have thrown an exception");

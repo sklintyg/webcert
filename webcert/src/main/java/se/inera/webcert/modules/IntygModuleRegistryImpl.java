@@ -25,7 +25,7 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
     private List<ModuleEntryPoint> moduleEntryPoints;
 
     private Map<String, ModuleApi> moduleApiMap = new HashMap<String, ModuleApi>();
-    
+
     private List<IntygModule> moduleList = new ArrayList<IntygModule>();
 
     @PostConstruct
@@ -34,7 +34,7 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
         for (ModuleEntryPoint entryPoint : moduleEntryPoints) {
             moduleApiMap.put(entryPoint.getModuleId(), entryPoint.getModuleApi());
             IntygModule module = new IntygModule(entryPoint.getModuleId(), entryPoint.getModuleName(),
-                    entryPoint.getModuleDescription(), entryPoint.isModuleFragaSvarAvailable(),
+                    entryPoint.getModuleDescription(),
                     entryPoint.getModuleCssPath(WEBCERT), entryPoint.getModuleScriptPath(WEBCERT),
                     entryPoint.getModuleDependencyDefinitionPath(WEBCERT));
 
@@ -69,5 +69,5 @@ public class IntygModuleRegistryImpl implements IntygModuleRegistry {
     public List<ModuleEntryPoint> getModuleEntryPoints() {
         return moduleEntryPoints;
     }
-    
+
 }
