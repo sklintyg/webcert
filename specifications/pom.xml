@@ -5,7 +5,7 @@
   <parent>
     <groupId>se.inera.webcert</groupId>
     <artifactId>webcert-parent</artifactId>
-    <version>0.5.5</version>
+    <version>0.5.6-SNAPSHOT</version>
   </parent>
   <artifactId>webcert-specifications</artifactId>
   <packaging>jar</packaging>
