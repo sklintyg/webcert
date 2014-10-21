@@ -15,7 +15,7 @@
   <parent>
     <groupId>se.inera.webcert</groupId>
     <artifactId>webcert-parent</artifactId>
-    <version>0.5.5-SNAPSHOT</version>
+    <version>0.5.5</version>
   </parent>
 
   <artifactId>persistence</artifactId>
