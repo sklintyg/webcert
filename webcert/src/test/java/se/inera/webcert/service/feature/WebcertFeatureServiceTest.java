@@ -1,6 +1,7 @@
 package se.inera.webcert.service.feature;
 
 import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,17 +45,6 @@ public class WebcertFeatureServiceTest {
     
     private Map<String, Boolean> module2Features = new HashMap<String, Boolean>();
     private ModuleEntryPoint module2EntryPoint = mock(ModuleEntryPoint.class);
-
-    @Before
-    public void setup() {
-        Properties props = new Properties();
-        props.setProperty(Features.HANTERA_INTYGSUTKAST.getName(), "true");
-        props.setProperty(Features.HANTERA_FRAGOR.getName(), "true");
-        props.setProperty(Features.MAKULERA_INTYG.getName(), "false");
-
-        featureService.setFeatures(props);
-        featureService.initWebcertFeaturesMap();
-    }
     
     @Before
     public void setupModuleMaps() {
@@ -74,44 +65,101 @@ public class WebcertFeatureServiceTest {
     }
     
     @Test
-    public void testFeatureMapIsNotNull() {
-        assertNotNull(featureService.getWebcertFeaturesMap());
+    public void testInitWebcertFeatureMap() {
+        Map<String, Boolean> featuresMap = new HashMap<>();
+        featureService.initWebcertFeatures(featuresMap);
+        assertFalse(featuresMap.isEmpty());
+        assertEquals(5, featuresMap.size());
     }
 
     @Test
+    public void testInitModuleFeaturesMap() {
+        Map<String, Boolean> featuresMap = new HashMap<>();
+        featureService.initModuleFeatures(featuresMap);
+        
+        assertFalse(featuresMap.isEmpty());
+        assertEquals(10, featuresMap.size());
+                
+        assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1)));
+        assertTrue(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2)));
+        
+        assertFalse(featuresMap.get(makeModuleName(ModuleFeature.MAKULERA_INTYG, MODULE1)));
+        assertFalse(featuresMap.get(makeModuleName(ModuleFeature.HANTERA_INTYGSUTKAST, MODULE2)));
+                        
+        verify(mockModuleRegistry).getModuleEntryPoints();
+        verify(module1EntryPoint).getModuleFeatures();
+        verify(module2EntryPoint).getModuleFeatures();
+    }
+    
+    private String makeModuleName(ModuleFeature moduleFeature, String moduleName) {
+        return StringUtils.join(new String[]{moduleFeature.getName(), moduleName}, ".");
+    }
+    
+    @Test
+    public void testProcessWebcertAndModelFeatures(){
+        
+        Map<String, Boolean> featuresMap = new HashMap<>();
+        featuresMap.put(Features.HANTERA_INTYGSUTKAST.getName(), Boolean.FALSE);
+        featuresMap.put(Features.HANTERA_FRAGOR.getName(), Boolean.FALSE);
+        featuresMap.put(Features.MAKULERA_INTYG.getName(), Boolean.TRUE);
+        featuresMap.put(Features.KOPIERA_INTYG.getName(), Boolean.FALSE);
+                
+        Properties featureProps = new Properties(); 
+        featureProps.setProperty(Features.HANTERA_INTYGSUTKAST.getName(), "true");
+        featureProps.setProperty(Features.HANTERA_FRAGOR.getName(), "true");
+        featureProps.setProperty(Features.MAKULERA_INTYG.getName(), "false");
+        
+        featureService.processWebcertAndModuleFeatureProperties(featureProps, featuresMap);
+        
+        assertTrue(featuresMap.get(Features.HANTERA_INTYGSUTKAST.getName()));
+        assertTrue(featuresMap.get(Features.HANTERA_FRAGOR.getName()));
+        assertFalse(featuresMap.get(Features.MAKULERA_INTYG.getName()));
+        assertFalse(featuresMap.get(Features.KOPIERA_INTYG.getName()));
+    }
+    
+    
+    @Test
     public void testIsFeatureActive() {
+        
+        Properties featureProps = new Properties();
+        featureProps.setProperty(Features.HANTERA_INTYGSUTKAST.getName(), "true");
+        featureProps.setProperty(Features.HANTERA_FRAGOR.getName(), "true");
+        featureProps.setProperty(Features.MAKULERA_INTYG.getName(), "false");
+        featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1), "false");
+        featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2), "true");
+        
+        featureService.setFeatures(featureProps);
+        featureService.initFeaturesMap();
+        
+        assertEquals(15, featureService.getFeaturesMap().size());
+        
         assertTrue(featureService.isFeatureActive(Features.HANTERA_INTYGSUTKAST.getName()));
-        assertFalse(featureService.isFeatureActive(Features.KOPIERA_INTYG.getName()));
+        assertTrue(featureService.isFeatureActive(Features.HANTERA_INTYGSUTKAST));
+        assertTrue(featureService.isFeatureActive(Features.HANTERA_FRAGOR.getName()));
+        assertTrue(featureService.isFeatureActive(Features.HANTERA_FRAGOR));
+        assertFalse(featureService.isFeatureActive(Features.MAKULERA_INTYG.getName()));
+        assertFalse(featureService.isFeatureActive(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1)));
+        assertTrue(featureService.isFeatureActive(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2)));
     }
     
     @Test
     public void testGetActiveFeatures() {
         
+        Properties featureProps = new Properties();
+        featureProps.setProperty(Features.HANTERA_INTYGSUTKAST.getName(), "true");
+        featureProps.setProperty(Features.HANTERA_FRAGOR.getName(), "true");
+        featureProps.setProperty(Features.MAKULERA_INTYG.getName(), "false");
+        featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1), "false");
+        featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2), "true");
+        
+        featureService.setFeatures(featureProps);
+        featureService.initFeaturesMap();
+        
         Set<String> res = featureService.getActiveFeatures();
         
-        assertThat(res, contains("hanteraFragor", "hanteraIntygsutkast"));
+        assertThat(res, contains("hanteraFragor", "hanteraFragor.m2", "hanteraIntygsutkast", "hanteraIntygsutkast.m1"));
     }
 
-    @Test
-    public void testInitModuleFeaturesMap() {
-        
-        featureService.initModuleFeaturesMap();
-        
-        assertNotNull(featureService.getModuleFeaturesMap());
-        
-        assertTrue(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE1));
-        assertTrue(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR.getName(), MODULE1));
-        assertTrue(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR.getName(), MODULE2));
-        
-        assertFalse(featureService.isModuleFeatureActive(ModuleFeature.MAKULERA_INTYG.getName(), MODULE1));
-        assertFalse(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE2));
-        
-        Set<String> res = featureService.getActiveModuleFeatures();
-        assertThat(res, contains("hanteraFragor.m1", "hanteraFragor.m2", "hanteraIntygsutkast.m1"));
-        
-        verify(mockModuleRegistry).getModuleEntryPoints();
-        verify(module1EntryPoint).getModuleFeatures();
-        verify(module2EntryPoint).getModuleFeatures();
-    }
+
     
 }
