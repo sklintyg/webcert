@@ -1,6 +1,6 @@
 package se.inera.webcert.service.feature;
 
-public enum Features {
+public enum WebcertFeature {
 
     HANTERA_FRAGOR("hanteraFragor"),
     HANTERA_INTYGSUTKAST("hanteraIntygsutkast"),
@@ -10,7 +10,7 @@ public enum Features {
 
     private String name;
     
-    private Features(String name) {
+    private WebcertFeature(String name) {
         this.name = name;
     }
     

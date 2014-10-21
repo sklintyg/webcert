@@ -27,7 +27,7 @@ public interface WebcertFeatureService {
      * @param feature The Webcert feature enum
      * @return
      */
-    public abstract boolean isFeatureActive(Features feature);
+    public abstract boolean isFeatureActive(WebcertFeature feature);
     
     /**
      * Check if a module feature is active.

@@ -12,7 +12,7 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.exception.FeatureNotAvailableException;
-import se.inera.webcert.service.feature.Features;
+import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.web.service.WebCertUserService;
 
 public abstract class AbstractApiController {
@@ -73,7 +73,7 @@ public abstract class AbstractApiController {
         return webCertUserService;
     }
     
-    protected void checkFeatureAvailable(Features feature) {
+    protected void checkFeatureAvailable(WebcertFeature feature) {
         
         if (feature == null) {
             return;

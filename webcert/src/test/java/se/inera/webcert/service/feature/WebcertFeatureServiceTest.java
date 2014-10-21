@@ -99,22 +99,22 @@ public class WebcertFeatureServiceTest {
     public void testProcessWebcertAndModelFeatures(){
         
         Map<String, Boolean> featuresMap = new HashMap<>();
-        featuresMap.put(Features.HANTERA_INTYGSUTKAST.getName(), Boolean.FALSE);
-        featuresMap.put(Features.HANTERA_FRAGOR.getName(), Boolean.FALSE);
-        featuresMap.put(Features.MAKULERA_INTYG.getName(), Boolean.TRUE);
-        featuresMap.put(Features.KOPIERA_INTYG.getName(), Boolean.FALSE);
+        featuresMap.put(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), Boolean.FALSE);
+        featuresMap.put(WebcertFeature.HANTERA_FRAGOR.getName(), Boolean.FALSE);
+        featuresMap.put(WebcertFeature.MAKULERA_INTYG.getName(), Boolean.TRUE);
+        featuresMap.put(WebcertFeature.KOPIERA_INTYG.getName(), Boolean.FALSE);
                 
         Properties featureProps = new Properties(); 
-        featureProps.setProperty(Features.HANTERA_INTYGSUTKAST.getName(), "true");
-        featureProps.setProperty(Features.HANTERA_FRAGOR.getName(), "true");
-        featureProps.setProperty(Features.MAKULERA_INTYG.getName(), "false");
+        featureProps.setProperty(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), "true");
+        featureProps.setProperty(WebcertFeature.HANTERA_FRAGOR.getName(), "true");
+        featureProps.setProperty(WebcertFeature.MAKULERA_INTYG.getName(), "false");
         
         featureService.processWebcertAndModuleFeatureProperties(featureProps, featuresMap);
         
-        assertTrue(featuresMap.get(Features.HANTERA_INTYGSUTKAST.getName()));
-        assertTrue(featuresMap.get(Features.HANTERA_FRAGOR.getName()));
-        assertFalse(featuresMap.get(Features.MAKULERA_INTYG.getName()));
-        assertFalse(featuresMap.get(Features.KOPIERA_INTYG.getName()));
+        assertTrue(featuresMap.get(WebcertFeature.HANTERA_INTYGSUTKAST.getName()));
+        assertTrue(featuresMap.get(WebcertFeature.HANTERA_FRAGOR.getName()));
+        assertFalse(featuresMap.get(WebcertFeature.MAKULERA_INTYG.getName()));
+        assertFalse(featuresMap.get(WebcertFeature.KOPIERA_INTYG.getName()));
     }
     
     
@@ -122,9 +122,9 @@ public class WebcertFeatureServiceTest {
     public void testIsFeatureActive() {
         
         Properties featureProps = new Properties();
-        featureProps.setProperty(Features.HANTERA_INTYGSUTKAST.getName(), "true");
-        featureProps.setProperty(Features.HANTERA_FRAGOR.getName(), "true");
-        featureProps.setProperty(Features.MAKULERA_INTYG.getName(), "false");
+        featureProps.setProperty(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), "true");
+        featureProps.setProperty(WebcertFeature.HANTERA_FRAGOR.getName(), "true");
+        featureProps.setProperty(WebcertFeature.MAKULERA_INTYG.getName(), "false");
         featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1), "false");
         featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2), "true");
         
@@ -133,11 +133,11 @@ public class WebcertFeatureServiceTest {
         
         assertEquals(15, featureService.getFeaturesMap().size());
         
-        assertTrue(featureService.isFeatureActive(Features.HANTERA_INTYGSUTKAST.getName()));
-        assertTrue(featureService.isFeatureActive(Features.HANTERA_INTYGSUTKAST));
-        assertTrue(featureService.isFeatureActive(Features.HANTERA_FRAGOR.getName()));
-        assertTrue(featureService.isFeatureActive(Features.HANTERA_FRAGOR));
-        assertFalse(featureService.isFeatureActive(Features.MAKULERA_INTYG.getName()));
+        assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST.getName()));
+        assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST));
+        assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_FRAGOR.getName()));
+        assertTrue(featureService.isFeatureActive(WebcertFeature.HANTERA_FRAGOR));
+        assertFalse(featureService.isFeatureActive(WebcertFeature.MAKULERA_INTYG.getName()));
         assertFalse(featureService.isFeatureActive(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1)));
         assertTrue(featureService.isFeatureActive(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2)));
     }
@@ -146,9 +146,9 @@ public class WebcertFeatureServiceTest {
     public void testGetActiveFeatures() {
         
         Properties featureProps = new Properties();
-        featureProps.setProperty(Features.HANTERA_INTYGSUTKAST.getName(), "true");
-        featureProps.setProperty(Features.HANTERA_FRAGOR.getName(), "true");
-        featureProps.setProperty(Features.MAKULERA_INTYG.getName(), "false");
+        featureProps.setProperty(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), "true");
+        featureProps.setProperty(WebcertFeature.HANTERA_FRAGOR.getName(), "true");
+        featureProps.setProperty(WebcertFeature.MAKULERA_INTYG.getName(), "false");
         featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1), "false");
         featureProps.setProperty(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2), "true");
         

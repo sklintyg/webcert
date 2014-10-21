@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.webcert.service.feature.Features;
+import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.web.controller.AbstractApiController;
 
 /**
@@ -33,7 +33,7 @@ public class JsLogApiController extends AbstractApiController {
     @Path("/test")
     @Produces(MediaType.TEXT_PLAIN)
     public Response test() {
-        checkFeatureAvailable(Features.MAKULERA_INTYG);
+        checkFeatureAvailable(WebcertFeature.MAKULERA_INTYG);
         return Response.ok().entity("This is the test method").build();
     }
 }

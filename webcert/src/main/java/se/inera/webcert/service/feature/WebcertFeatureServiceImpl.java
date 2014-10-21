@@ -67,7 +67,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
         
         Assert.notNull(featuresMap);
         
-        for (Features feature : Features.values()) {
+        for (WebcertFeature feature : WebcertFeature.values()) {
             featuresMap.put(feature.getName(), Boolean.FALSE);
         }
     }
@@ -138,9 +138,9 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
     }
 
     /* (non-Javadoc)
-     * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(se.inera.webcert.service.feature.Features)
+     * @see se.inera.webcert.service.feature.WebcertFeatureService#isFeatureActive(se.inera.webcert.service.feature.WebcertFeature)
      */
-    public boolean isFeatureActive(Features feature) {
+    public boolean isFeatureActive(WebcertFeature feature) {
         return isFeatureActive(feature.getName());
     }
 

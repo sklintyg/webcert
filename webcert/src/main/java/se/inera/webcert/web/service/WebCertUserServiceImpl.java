@@ -27,7 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.service.feature.Features;
+import se.inera.webcert.service.feature.WebcertFeature;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -49,7 +49,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         return user != null && user.getIdsOfSelectedVardenhet().containsAll(enhetsHsaIds);
     }
 
-    public void enableFeaturesOnUser(Features... featuresToEnable) {
+    public void enableFeaturesOnUser(WebcertFeature... featuresToEnable) {
         
         WebCertUser user = getWebCertUser();
         
@@ -57,7 +57,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         
         user.getAktivaFunktioner().clear();
         
-        for (Features feature : featuresToEnable) {
+        for (WebcertFeature feature : featuresToEnable) {
             user.getAktivaFunktioner().add(feature.getName());
         }
         
