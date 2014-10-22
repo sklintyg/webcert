@@ -16,11 +16,22 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
 
-@Path("/user")
+/**
+ * Controller for accessing the users security context.
+ * 
+ * @author npet
+ *
+ */
+@Path("/anvandare")
 public class UserApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
 
+    /**
+     * Retrieves the security context of the logged in user as JSON.
+     * 
+     * @return
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getUser() {
@@ -28,8 +39,14 @@ public class UserApiController extends AbstractApiController {
         return Response.ok(user.getAsJson()).build();
     }
 
+    /**
+     * Changes the selected care unit in the security context for the logged in user.
+     * 
+     * @param request
+     * @return
+     */
     @POST
-    @Path("/changeunit")
+    @Path("/andraenhet")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response changeSelectedUnitOnUser(ChangeSelectedUnitRequest request) {

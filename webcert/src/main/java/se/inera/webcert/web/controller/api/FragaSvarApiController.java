@@ -25,7 +25,7 @@ public class FragaSvarApiController extends AbstractApiController {
     private FragaSvarService fragaSvarService;
 
     @GET
-    @Path("/query")
+    @Path("/sok")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response query(@QueryParam("") QueryFragaSvarParameter queryParam) {
         abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_FRAGOR);

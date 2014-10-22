@@ -7,7 +7,7 @@ angular.module('webcert').factory('webcert.QuestionAnswer',
          */
         function _getQA(query, onSuccess, onError) {
             $log.debug('_getQA');
-            var restPath = '/api/fragasvar/query';
+            var restPath = '/api/fragasvar/sok';
             $http.get(restPath, { params: query}).success(function(data) {
                 $log.debug('got data:' + data);
                 onSuccess(data);
