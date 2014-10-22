@@ -213,7 +213,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             $scope.onForwardedChange = function(cert) {
                 cert.updateInProgress = true;
-                ManageCertificate.setForwardedState(cert.intygId, cert.forwarded, function(result) {
+                ManageCertificate.setForwardedState(cert.intygId, cert.intygType, cert.forwarded, function(result) {
                     cert.updateInProgress = false;
 
                     if (result !== null) {

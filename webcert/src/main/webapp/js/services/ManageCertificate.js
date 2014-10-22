@@ -53,7 +53,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
              */
             function _getCertificatesForPerson(requestConfig, onSuccess, onError) {
                 $log.debug('_getCertificatesForPerson type:' + requestConfig);
-                var restPath = '/api/intyg/list/' + requestConfig;
+                var restPath = '/api/intyg/person/' + requestConfig;
                 $http.get(restPath).success(function(data) {
                     $log.debug('got data:' + data);
                     onSuccess(data);
@@ -69,7 +69,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
              */
             function _getUnsignedCertificates(onSuccess, onError) {
                 $log.debug('_getUnsignedCertificates:');
-                var restPath = '/api/intyg/unsigned/'; // release version
+                var restPath = '/api/utkast/'; // release version
                 $http.get(restPath).success(function(data) {
                     $log.debug('got data:' + data);
                     onSuccess(data);
@@ -85,7 +85,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
              */
             function _getUnsignedCertificatesByQueryFetchMore(query, onSuccess, onError) {
                 $log.debug('_getUnsignedCertificatesByQueryFetchMore');
-                var restPath = '/api/intyg/unsigned';
+                var restPath = '/api/utkast';
                 $http.get(restPath, { params: query }).success(function(data) {
                     $log.debug('_getUnsignedCertificatesByQueryFetchMore got data:' + data);
                     onSuccess(data);
@@ -98,7 +98,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
             function _getCertificateSavedByList(onSuccess, onError) {
                 $log.debug('_getCertificateSavedByList');
-                var restPath = '/api/intyg/unsigned/lakare/';
+                var restPath = '/api/utkast/lakare/';
                 $http.get(restPath).success(function(data) {
                     $log.debug('_getCertificateSavedByList got data:' + data);
                     onSuccess(data);
@@ -112,9 +112,9 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             /*
              * Toggle Forwarded state of a fragasvar entity with given id
              */
-            function _setForwardedState(id, isForwarded, callback) {
+            function _setForwardedState(id, intygType, isForwarded, callback) {
                 $log.debug('_setForwardedState');
-                var restPath = '/api/intyg/forward/' + id;
+                var restPath = '/api/intyg/' + intygType + '/' + id + '/vidarebefordra';
                 $http.put(restPath, isForwarded.toString()).success(function(data) {
                     $log.debug('_setForwardedState data:' + data);
                     callback(data);

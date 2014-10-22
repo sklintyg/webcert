@@ -85,18 +85,4 @@ public class IntygApiControllerTest {
         assertNotNull(res);
         assertEquals(4, res.size());
     }
-
-    @Test
-    public void testGetUnsignedIntygForUnit() {
-
-        // Mock call to database
-        when(intygRepository.filterIntyg(any(IntygFilter.class))).thenReturn(intygDrafts);
-
-        Response response = intygCtrl.filterDraftsForUnit(null);
-
-        List<ListIntygEntry> res = (List<ListIntygEntry>) response.getEntity();
-
-        assertNotNull(res);
-        assertEquals(2, res.size());
-    }
 }

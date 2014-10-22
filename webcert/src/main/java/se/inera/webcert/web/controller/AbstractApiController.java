@@ -2,6 +2,7 @@
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +82,23 @@ public abstract class AbstractApiController {
         
     }
     
+    protected boolean checkIfWebcertFeatureIsAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
+        Assert.notNull(webcertFeature);
+        Assert.notNull(moduleType);
+        WebCertUser webCertUser = webCertUserService.getWebCertUser();
+        String webcertFeatureName = StringUtils.join(new String[]{webcertFeature.getName(), moduleType}, ".");
+        return webCertUser.hasAktivFunktion(webcertFeatureName);
+        
+    }
+    
     protected void abortIfWebcertFeatureIsNotAvailable(WebcertFeature webcertFeature) {
         if (!checkIfWebcertFeatureIsAvailable(webcertFeature)) {
+            throw new FeatureNotAvailableException(webcertFeature.getName());
+        }
+    }
+    
+    protected void abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
+        if (!checkIfWebcertFeatureIsAvailableForModule(webcertFeature, moduleType)) {
             throw new FeatureNotAvailableException(webcertFeature.getName());
         }
     }

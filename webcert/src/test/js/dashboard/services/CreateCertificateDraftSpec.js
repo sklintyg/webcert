@@ -124,7 +124,7 @@ describe('CreateCertificateDraft', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
             $httpBackend.
-                expectPOST('/api/intyg/create', {
+                expectPOST('/api/utkast/fk7263', {
                     intygType: 'fk7263',
                     patientPersonnummer: '19121212-1212',
                     patientFornamn: 'Test',
@@ -145,9 +145,12 @@ describe('CreateCertificateDraft', function() {
         });
 
         it('should call onError if the server cannot create a draft', function() {
+            
+            CreateCertificateDraft.intygType = 'fk7263';
+            
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
-            $httpBackend.expectPOST('/api/intyg/create', {}).respond(500);
+            $httpBackend.expectPOST('/api/utkast/fk7263').respond(500);
 
             CreateCertificateDraft.createDraft(onSuccess, onError);
             $httpBackend.flush();

@@ -57,7 +57,7 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     payload.patientPostnummer = this.postnummer;
                     payload.patientPostort = this.postort;
 
-                    var restPath = '/api/intyg/create';
+                    var restPath = '/api/utkast/' + this.intygType;
                     $http.post(restPath, payload).success(function(data) {
                         $log.debug('got callback data: ' + data);
                         onSuccess(data);
@@ -73,7 +73,7 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     var id = (typeof cert.intygId === 'undefined') ? cert.id : cert.intygId;
                     $log.debug('_copyIntygToDraft ' + cert.intygType + ', ' + id);
 
-                    var restPath = '/api/intyg/kopiera/' + id;
+                    var restPath = '/api/intyg/' + cert.intygType + '/' + id +'/kopiera/';
                     $http.post(restPath, {}).success(function(data) {
                         $log.debug('got callback data: ' + data);
                         onSuccess(data);

@@ -98,12 +98,14 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
     
             String key;
             String moduleFeatureName;
+            String moduleName;
             Boolean moduleFeatureState = Boolean.FALSE;
     
             for (ModuleFeature moduleFeature : ModuleFeature.values()) {
                 moduleFeatureName = moduleFeature.getName();
+                moduleName = moduleId.toLowerCase();
                 moduleFeatureState = (moduleMap.get(moduleFeatureName) != null) ? moduleMap.get(moduleFeatureName) : Boolean.FALSE;
-                key = StringUtils.join(new String[] { moduleFeatureName, moduleId }, DOT_SEP);
+                key = StringUtils.join(new String[] { moduleFeatureName, moduleName }, DOT_SEP);
                 featuresMap.put(key, moduleFeatureState);
             }
         }
@@ -168,7 +170,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
      */
     public boolean isModuleFeatureActive(String moduleFeatureName, String moduleName) {
         if (isFeatureActive(moduleFeatureName)) {
-            String key = StringUtils.join(new String[] { moduleFeatureName, moduleName }, DOT_SEP);
+            String key = StringUtils.join(new String[] { moduleFeatureName, moduleName.toLowerCase() }, DOT_SEP);
             Boolean moduleFeatureState = featuresMap.get(key);
             return (moduleFeatureState != null) ? moduleFeatureState.booleanValue() : false;
         }
