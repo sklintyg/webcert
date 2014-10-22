@@ -78,20 +78,20 @@ class ArbetsformagaModule extends Module {
     static content = {
         tjanstgoringstid { $("#capacityForWorkActualWorkingHoursPerWeek") }
         nedsattMed25 { $("#nedsattMed25") }
-        nedsattMed25start { $("#nedsattMed25startdate") }
-        nedsattMed25slut { $("#nedsattMed25enddate") }
+        nedsattMed25start { $("#nedsattMed25from") }
+        nedsattMed25slut { $("#nedsattMed25tom") }
         nedsattMed25beskrivning { $("#nedsattMed25beskrivning") }
         nedsattMed50 { $("#nedsattMed50") }
-        nedsattMed50start { $("#nedsattMed50startdate") }
-        nedsattMed50slut { $("#nedsattMed50enddate") }
+        nedsattMed50start { $("#nedsattMed50from") }
+        nedsattMed50slut { $("#nedsattMed50tom") }
         nedsattMed50beskrivning { $("#nedsattMed50beskrivning") }
         nedsattMed75 { $("#nedsattMed75") }
-        nedsattMed75start { $("#nedsattMed75startdate") }
-        nedsattMed75slut { $("#nedsattMed75enddate") }
+        nedsattMed75start { $("#nedsattMed75from") }
+        nedsattMed75slut { $("#nedsattMed75tom") }
         nedsattMed75beskrivning { $("#nedsattMed75beskrivning") }
         nedsattMed100 { $("#nedsattMed100") }
-        nedsattMed100start { $("#nedsattMed100startdate") }
-        nedsattMed100slut { $("#nedsattMed100enddate") }
+        nedsattMed100start { $("#nedsattMed100from") }
+        nedsattMed100slut { $("#nedsattMed100tom") }
 
         period { $("#totalCertDays") }
         arbetstid25 { $("#arbetstid25") }
