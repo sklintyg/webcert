@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.service.dto.Lakare;
+import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
@@ -27,6 +28,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @Path("/query")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response query(@QueryParam("") QueryFragaSvarParameter queryParam) {
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_FRAGOR);
         QueryFragaSvarResponse result = fragaSvarService.filterFragaSvar(queryParam);
         return Response.ok(result).build();
     }
@@ -35,6 +37,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @Path("/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_FRAGOR);
         List<Lakare> lakare = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
         return Response.ok(lakare).build();
     }

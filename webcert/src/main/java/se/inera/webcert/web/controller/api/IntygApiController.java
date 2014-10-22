@@ -16,6 +16,7 @@ import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
+import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.web.controller.AbstractApiController;
@@ -39,6 +40,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -79,7 +81,9 @@ public class IntygApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createNewDraft(CreateNewIntygRequest request) {
-
+        
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
+        
         if (!request.isValid()) {
             LOG.error("Request is invalid: " + request.toString());
             return Response.status(Status.BAD_REQUEST).build();
@@ -105,6 +109,8 @@ public class IntygApiController extends AbstractApiController {
     public Response createNewCopy(CopyIntygRequest request, @PathParam("intygsId") String orgIntygsId) {
 
         LOG.debug("Attempting to create a draft copy of '{}'", orgIntygsId);
+        
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.KOPIERA_INTYG);
 
         CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, request);
 
@@ -179,10 +185,16 @@ public class IntygApiController extends AbstractApiController {
 
         List<IntygItem> signedIntygList = intygService.listIntyg(enhetsIds, personNummer);
         LOG.debug("Got {} signed intyg", signedIntygList.size());
-
-        List<Intyg> draftIntygList = intygRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds,
+        
+        List<Intyg> draftIntygList;
+        
+        if (!checkIfWebcertFeatureIsAvailable(WebcertFeature.HANTERA_INTYGSUTKAST)) { 
+            draftIntygList = intygRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds,
                 ALL_DRAFTS);
-        LOG.debug("Got {} draft intyg", draftIntygList.size());
+            LOG.debug("Got {} draft intyg", draftIntygList.size());
+        } else {
+            draftIntygList = Collections.emptyList();
+        }
 
         List<ListIntygEntry> allIntyg = IntygDraftsConverter.merge(signedIntygList, draftIntygList);
 
@@ -194,7 +206,9 @@ public class IntygApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response filterDraftsForUnit(@QueryParam("") QueryIntygParameter filterParameters) {
-
+        
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
+        
         IntygFilter intygFilter = createIntygFilter(filterParameters);
         QueryIntygResponse queryResponse = performIntygFilterQuery(intygFilter);
 
@@ -249,6 +263,8 @@ public class IntygApiController extends AbstractApiController {
     @Path("/unsigned/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getLakareWithDraftsByEnheter() {
+        
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
         WebCertUser user = getWebCertUserService().getWebCertUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
@@ -273,6 +289,8 @@ public class IntygApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response setForwardOnIntyg(@PathParam("intygsId") String intygsId, Boolean forwarded) {
+        
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
         Intyg updatedIntyg = intygDraftService.setForwardOnDraft(intygsId, forwarded);
 

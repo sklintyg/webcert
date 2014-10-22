@@ -27,6 +27,7 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * @author andreaskaltenbach
@@ -56,6 +57,9 @@ public class IntygModuleApiControllerTest {
     
     @Mock
     private LogService logService;
+    
+    @Mock
+    private WebCertUserService webcertUserService;
 
     @InjectMocks
     private IntygModuleApiController moduleApiController = new IntygModuleApiController();

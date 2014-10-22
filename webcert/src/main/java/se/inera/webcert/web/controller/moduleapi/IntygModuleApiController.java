@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.IntygSignatureService;
@@ -12,6 +13,7 @@ import se.inera.webcert.service.draft.dto.DraftValidationMessage;
 import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
@@ -38,6 +40,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -77,6 +80,8 @@ public class IntygModuleApiController extends AbstractApiController {
     public Response getDraft(@PathParam("intygId") String intygId) {
 
         LOG.debug("Retrieving Intyg with id {}", intygId);
+        
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
         Intyg intyg = draftService.getDraft(intygId);
 
@@ -100,6 +105,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Transactional
     public Response saveDraft(@PathParam("intygId") String intygId, byte[] draftCertificate) {
+        
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
         LOG.debug("Saving Intyg with id {}", intygId);
 
@@ -160,9 +167,11 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Transactional
     public Response discardDraft(@PathParam("intygId") String intygId) {
+        
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
         LOG.debug("Deleting draft with id {}", intygId);
-
+        
         draftService.deleteUnsignedDraft(intygId);
 
         return Response.ok().build();
@@ -178,7 +187,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signed/{intygId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getSignedIntyg(@PathParam("intygId") String intygId) {
-
+        
         LOG.debug("Fetching signed intyg with id '{}' from IT", intygId);
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygData(intygId);
@@ -196,7 +205,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signed/{intygId}/pdf")
     @Produces("application/pdf")
     public final Response getSignedIntygAsPdf(@PathParam(value = "intygId") final String intygId) {
-
+        
         LOG.debug("Fetching signed intyg '{}' as PDF", intygId);
 
         IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygId);
@@ -219,6 +228,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response logPrintOfDraft(String intygId) {
+        
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
         LOG.debug("Logging printout of draft intyg '{}'", intygId);
 
@@ -243,6 +254,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygId") String intygId, SendSignedIntygParameter param) {
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.SKICKA_INTYG);
         IntygServiceResult sendResult = intygService.sendIntyg(intygId, param.getRecipient(), param.isPatientConsent());
         return Response.ok(sendResult).build();
     }
@@ -259,9 +271,8 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response revokeSignedIntyg(@PathParam("intygId") String intygId, RevokeSignedIntygParameter param) {
-
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.MAKULERA_INTYG);
         String revokeMessage = (param != null) ? param.getRevokeMessage(): null;
-
         IntygServiceResult revokeResult = intygService.revokeIntyg(intygId, revokeMessage);
         return Response.ok(revokeResult).build();
     }
@@ -276,6 +287,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signera/server/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse serverSigneraUtkast(@PathParam("intygsId") String intygsId) {
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
         SignatureTicket biljett = draftService.serverSignature(intygsId);
         return new BiljettResponse(biljett);
     }
@@ -291,10 +303,9 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse klientSigneraUtkast(@PathParam("biljettId") String biljettId, byte[] rawSignatur) {
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
-
         String draftAsJson = fromBytesToString(rawSignatur);
-
         SignatureTicket biljett = signatureService.clientSignature(biljettId, draftAsJson);
         return new BiljettResponse(biljett);
     }
@@ -309,6 +320,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signeringshash/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse signeraUtkast(@PathParam("intygsId") String intygsId) {
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
         SignatureTicket biljett = draftService.createDraftHash(intygsId);
         return new BiljettResponse(biljett);
     }
@@ -323,6 +335,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/signeringsstatus/{biljettId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public BiljettResponse biljettStatus(@PathParam("biljettId") String biljettId) {
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
         SignatureTicket biljett = signatureService.ticketStatus(biljettId);
         return new BiljettResponse(biljett);
     }
@@ -337,6 +350,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/mottagare/{intygType}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getListOfRecipientsForIntyg(@PathParam("intygType") String intygType) {
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.SKICKA_INTYG);
         List<IntygRecipient> recipients = intygService.fetchListOfRecipientsForIntyg(intygType);
         return Response.ok(recipients).build();
     }

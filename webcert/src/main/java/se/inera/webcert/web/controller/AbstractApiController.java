@@ -1,10 +1,11 @@
-package se.inera.webcert.web.controller;
+    package se.inera.webcert.web.controller;
 
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 import se.inera.webcert.hsa.model.AbstractVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -73,16 +74,16 @@ public abstract class AbstractApiController {
         return webCertUserService;
     }
     
-    protected void checkFeatureAvailable(WebcertFeature feature) {
-        
-        if (feature == null) {
-            return;
-        }
-        
+    protected boolean checkIfWebcertFeatureIsAvailable(WebcertFeature webcertFeature) {
+        Assert.notNull(webcertFeature);
         WebCertUser webCertUser = webCertUserService.getWebCertUser();
+        return webCertUser.hasAktivFunktion(webcertFeature.getName());
         
-        if (!webCertUser.hasAktivFunktion(feature.getName())) {
-            throw new FeatureNotAvailableException(feature.getName());
+    }
+    
+    protected void abortIfWebcertFeatureIsNotAvailable(WebcertFeature webcertFeature) {
+        if (!checkIfWebcertFeatureIsAvailable(webcertFeature)) {
+            throw new FeatureNotAvailableException(webcertFeature.getName());
         }
     }
 }

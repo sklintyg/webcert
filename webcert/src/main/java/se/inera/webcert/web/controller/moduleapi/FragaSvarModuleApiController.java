@@ -17,11 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
 
 @Path("/fragasvar")
-public class FragaSvarModuleApiController {
+public class FragaSvarModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarModuleApiController.class);
 
@@ -30,17 +32,19 @@ public class FragaSvarModuleApiController {
 
     @GET
     @Path("/{intygId}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public List<FragaSvar> fragaSvarForIntyg(@PathParam("intygId") String intygId) {
+        abortIfFragaSvarNotActive(); 
         return fragaSvarService.getFragaSvar(intygId);
     }
 
     @PUT
     @Path("/{fragasvarId}/answer")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response answer(@PathParam("fragasvarId") final Long frageSvarId, String svarsText) {
-        LOG.debug("answer" + frageSvarId + ", text:" + svarsText);
+        abortIfFragaSvarNotActive();
+        LOG.debug("Set answer for question {}", frageSvarId);
         FragaSvar fragaSvarResponse = fragaSvarService.saveSvar(frageSvarId, svarsText);
         return Response.ok(fragaSvarResponse).build();
     }
@@ -48,9 +52,10 @@ public class FragaSvarModuleApiController {
     @PUT
     @Path("/{fragasvarId}/setDispatchState")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response setDispatchState(@PathParam("fragasvarId") final Long frageSvarId, Boolean isDispatched) {
-        LOG.debug("setDispatchState" + frageSvarId + ", isDispatched:" + isDispatched);
+        abortIfFragaSvarNotActive();
+        LOG.debug("Set DispatchState for question {}, isDispatched: {}", frageSvarId, isDispatched);
         FragaSvar fragaSvarResponse = fragaSvarService.setDispatchState(frageSvarId, isDispatched);
         return Response.ok(fragaSvarResponse).build();
     }
@@ -59,25 +64,31 @@ public class FragaSvarModuleApiController {
     @POST
     @Path("/{intygId}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createQuestion(@PathParam("intygId") final String intygId, CreateQuestionParameter parameter) {
-        LOG.debug("New question for cert:" + intygId + ", ämne:" + parameter.getAmne());
+        abortIfFragaSvarNotActive();
+        LOG.debug("New question for cert {} with subject {}", intygId, parameter.getAmne());
         FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygId, parameter.getAmne(), parameter.getFrageText());
         return Response.ok(fragaSvarResponse).build();
     }
 
     @GET
     @Path("/close/{fragasvarId}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public FragaSvar closeAsHandled(@PathParam("fragasvarId") Long fragasvarId) {
+        abortIfFragaSvarNotActive();
         return fragaSvarService.closeQuestionAsHandled(fragasvarId);
     }
 
     @GET
     @Path("/open/{fragasvarId}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public FragaSvar openAsUnhandled(@PathParam("fragasvarId") Long fragasvarId) {
+        abortIfFragaSvarNotActive();
         return fragaSvarService.openQuestionAsUnhandled(fragasvarId);
     }
-
+    
+    private void abortIfFragaSvarNotActive() {
+        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_FRAGOR);
+    }
 }
