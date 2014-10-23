@@ -1,5 +1,10 @@
 Testet beskriver fallet när en användare skickar en ny fråga till Försäkringskassan och sedan går tillbaka till samma intyg.
 
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
 !3 Lägg till fråga
 
 | Fraga Svar |
@@ -9,7 +14,6 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
 | script | !-SvaraOchFraga-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | lista med ohanterade fragor visas |
@@ -60,3 +64,4 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
+

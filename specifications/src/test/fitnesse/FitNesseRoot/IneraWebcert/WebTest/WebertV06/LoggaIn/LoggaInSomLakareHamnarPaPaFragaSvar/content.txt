@@ -1,0 +1,12 @@
+Testet beskriver fallet när en läkare med uppdraget vård och behandling loggar in.
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
+!3 Verifiera att man hamnar på Sök/Skriv intyg
+
+| script | !-SvaraOchFraga-! |
+| ohanterade fragor sidan visas |
+

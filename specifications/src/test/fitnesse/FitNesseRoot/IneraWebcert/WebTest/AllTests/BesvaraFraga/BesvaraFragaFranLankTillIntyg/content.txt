@@ -1,4 +1,9 @@
-Testet beskriver fallet när en användare besvarar en fråga från försäkringskassan genom att plocka upp ett intyg via en länk till ett intyg i ett mail eller från ett journalsystem.
+Testet beskriver fallet när en användare besvarar en fråga från försäkringskassan genom att plocka upp ett intyg via en direktlänk till intyget.
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Lägg till fråga
 
@@ -6,11 +11,9 @@ Testet beskriver fallet när en användare besvarar en fråga från försäkring
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
 | OVRIGT | FIT-QA-1000 | FK | En fråga från försäkringskassan | intyg-fit-1 | IFV1239877878-1049 | Jan Nilsson | IFV1239877878-1042 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
 
-!3 Givet att det finns ett intyg, verifiera att det går att visa intyget och att frågan visas på intyget
+!3 Verifiera att det går att visa frågan från direktlänken
 
-!| script | SvaraOchFraga |
-| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
-| sok skriv intyg sidan visas |
+| script | !-SvaraOchFraga-! |
 | ga till intygsvy med intygsid | intyg-fit-1 |
 | intyg med fraga svar sidan visas |
 | fraga | $internReferens1 | visas i listan med ohanterade fragor |
@@ -28,3 +31,4 @@ Testet beskriver fallet när en användare besvarar en fråga från försäkring
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
+

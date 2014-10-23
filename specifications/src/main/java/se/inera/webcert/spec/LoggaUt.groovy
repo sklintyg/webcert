@@ -1,6 +1,5 @@
 package se.inera.webcert.spec
 
-import geb.waiting.WaitTimeoutException
 import se.inera.webcert.pages.AccessDeniedPage
 import se.inera.webcert.pages.LoginPage
 import se.inera.webcert.pages.UnhandledQAPage
@@ -44,6 +43,9 @@ class LoggaUt {
 
     def loggaUt() {
         Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
             page.logout()
         }
     }

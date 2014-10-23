@@ -2,5 +2,6 @@
 !3 ''The fully integrated stand-alone acceptance testing framework and wiki.''
 
 IneraWebcert
+IneraWebcertV06
 
 !note Release ${FITNESSE_VERSION}

@@ -1,9 +1,14 @@
 Testet beskriver fallet när en användare skickar en ny fråga till försäkringskassan genom att plocka upp ett intyg via en länk till ett intyg i ett mail eller från ett journalsystem.
 
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
 !3 Givet att det finns ett intyg, verifiera att det går att visa intyget
 
 | script | !-SvaraOchFraga-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 | ga till intygsvy med intygsid | intyg-fit-1 |
 | intyg med fraga svar sidan visas |
 
@@ -24,3 +29,4 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 | ta bort fraga |
 | frageText |
 | En fråga från Fitnesse% |
+

@@ -1,5 +1,10 @@
 Testet beskriver fallet när en användare med flera uppdrag loggar in.
 
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
 !3 Lägg till fråga
 
 | Fraga Svar |
@@ -7,10 +12,9 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 | OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1 | eva | Eva Holgersson | IFV1239877878-1045 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
 | OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-2 | eva | Eva Holgersson | IFV1239877878-1046 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens2= |
 
-!3 Givet att man loggar in som en användare med medarbetaruppdrag på flera enheter, verifiera att enhetsväljaren visas
+!3 Verifiera att enhetsväljaren visas och att man kan byta enhet
 
 | script | !-SvaraOchFraga-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | enhetsvaljare visas |
@@ -24,3 +28,4 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
+

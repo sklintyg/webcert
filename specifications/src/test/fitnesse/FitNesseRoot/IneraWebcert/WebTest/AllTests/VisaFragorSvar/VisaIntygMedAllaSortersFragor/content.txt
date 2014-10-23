@@ -1,4 +1,11 @@
-!3 Lägg till fråga
+Testet beskriver fallet när ett intyg har alla typer av frågor på sig.
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Lägg till frågor
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | internReferens? |
@@ -16,10 +23,11 @@
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
 
-!3 Ta bort fråga
+!3 Ta bort frågor
 
-| Ta Bort Fraga |
+| ta bort fraga |
 | internReferens |
 | $internReferens1 |
 | $internReferens2 |
 | $internReferens3 |
+

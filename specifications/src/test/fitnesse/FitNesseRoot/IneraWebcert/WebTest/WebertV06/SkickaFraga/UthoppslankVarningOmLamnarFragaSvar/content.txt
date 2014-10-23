@@ -1,0 +1,60 @@
+Testet beskriver fallet när en användare kommer till fråga/svar från journalsystemet via uthoppslänk.
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Givet att det finns ett intyg och att man går till det vi uthoppslänken
+
+| script | !-SvaraOchFraga-! |
+| ga till intygsvy via uthopp med intygsid | intyg-fit-6 |
+| intyg med fraga svar sidan visas |
+
+!4 Verifiera att rätt knappar visas
+
+| script | !-SvaraOchFraga-! |
+| kopiera knapp visas | false |
+| makulera knapp visas | false |
+| skicka till fk knapp visas | false |
+
+!4 Verifiera att man får en varningsdialog om man försöker lämna sidan
+
+| script | !-SvaraOchFraga-! |
+| ga till svara och fraga | false |
+| intyg med fraga svar sidan visas |
+| lamna fraga svar varning visas | true |
+| lamna fraga svar avbryt |
+| intyg med fraga svar sidan visas |
+| ga till svara och fraga | false |
+| lamna fraga svar varning visas | true |
+| lamna fraga svar fortsatt |
+| svara och fraga sidan visas |
+
+!4 Verifiera att man inte får en varningsdialog om man går tillbaka och lämnar sidan igen
+
+| script | !-SvaraOchFraga-! |
+| ga till intygsvy med intygsid | intyg-fit-6 |
+| ga till svara och fraga | false |
+| svara och fraga sidan visas |
+
+!3 Givet att man går in på samma intyg utan att gå via uthoppslänken
+
+| script | !-SvaraOchFraga-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+| ga till intygsvy med intygsid | intyg-fit-6 |
+| intyg med fraga svar sidan visas |
+
+!4 Verifiera att alla knappar visas
+
+| script | !-SvaraOchFraga-! |
+| kopiera knapp visas | false |
+| makulera knapp visas | false |
+| skicka till fk knapp visas | false |
+
+!4 Verifiera att man inte får en varningsdialog om man försöker lämna sidan
+
+| script | !-SvaraOchFraga-! |
+| ga till svara och fraga | false |
+| svara och fraga sidan visas |
+

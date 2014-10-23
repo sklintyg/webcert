@@ -7,6 +7,7 @@ class OmWebcertFAQPage extends Page {
     static at = { $("#about-webcert-faq").isDisplayed() }
 
     static content = {
+        webcertLink { $("#about-webcert") }
         supportLink { $("#about-support") }
         intygLink { $("#about-intyg") }
         faqLink { $("#about-faq") }

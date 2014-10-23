@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<properties>
+	<Edit>true</Edit>
+	<Files>true</Files>
+	<Properties>true</Properties>
+	<RecentChanges>true</RecentChanges>
+	<Refactor>true</Refactor>
+	<Search>true</Search>
+	<Suite/>
+	<SymbolicLinks>
+		<BesvaraFragaFranUthoppsLank>.IneraWebcert.WebTest.AllTests.BesvaraFraga.BesvaraFragaFranUthoppsLank</BesvaraFragaFranUthoppsLank>
+		<BesvaraFragaFranLankTillIntyg>.IneraWebcert.WebTest.AllTests.BesvaraFraga.BesvaraFragaFranLankTillIntyg</BesvaraFragaFranLankTillIntyg>
+		<BesvaraFragaFranFragaSvarLista>.IneraWebcert.WebTest.AllTests.BesvaraFraga.BesvaraFragaFranFragaSvarLista</BesvaraFragaFranFragaSvarLista>
+		<BesvaraFragaForIntygPaAnnanEnhet>.IneraWebcert.WebTest.AllTests.BesvaraFraga.BesvaraFragaForIntygPaAnnanEnhet</BesvaraFragaForIntygPaAnnanEnhet>
+		<BesvaraFragaForEjExisterandeIntyg>.IneraWebcert.WebTest.AllTests.BesvaraFraga.BesvaraFragaForEjExisterandeIntyg</BesvaraFragaForEjExisterandeIntyg>
+	</SymbolicLinks>
+	<Versions>true</Versions>
+	<WhereUsed>true</WhereUsed>
+</properties>

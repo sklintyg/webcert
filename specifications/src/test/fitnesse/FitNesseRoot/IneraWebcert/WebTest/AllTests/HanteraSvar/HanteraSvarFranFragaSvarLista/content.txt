@@ -1,2 +1,0 @@
-Testet beskriver fallet när en användare hanterar ett svar i listan med besvarade frågor.
-

@@ -1,5 +1,10 @@
 Testet beskriver fallet när en användare filtrerar frågor på läkare.
 
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
 !3 Lägg till frågor
 
 | Fraga Svar |
@@ -8,10 +13,9 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 | OVRIGT | FIT-QA-1002 | FK | En andra fråga |intyg-fit-1| IFV1239877878-104K| Lars Andersson |IFV1239877878-1045| !today (yyyy-MM-dd) | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens3= |
 | OVRIGT | FIT-QA-1000 | FK | En tredje fråga |intyg-fit-1| IFV1239877878-1049 | Jan Nilsson |IFV1239877878-1042| !today (yyyy-MM-dd) | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
 
-!3 Givet att det finns frågor, verifiera att filtreringen på läkare fungerar
+!3 Verifiera att filtreringen på läkare fungerar
 
 | script | !-SvaraOchFraga-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | valj vardenhet | IFV1239877878-1045 |
@@ -51,3 +55,4 @@ Testet beskriver fallet när en användare filtrerar frågor på läkare.
 | $internReferens1 |
 | $internReferens2 |
 | $internReferens3 |
+

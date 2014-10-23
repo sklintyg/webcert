@@ -1,5 +1,10 @@
 Testet beskriver fallet när en användare filtrerar frågor på datum.
 
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
 !3 Lägg till frågor
 
 | Fraga Svar |
@@ -9,10 +14,9 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 | OVRIGT | FIT-QA-1003 | FK | En tredje fråga |intyg-fit-1| IFV1239877878-104K| Åsa Andersson |IFV1239877878-1045| 2013-01-03T12:00:00 | PENDING_INTERNAL_ACTION | false | | 2013-10-21 | Övrig från FK | $internReferens3= |
 | OVRIGT | FIT-QA-1004 | FK | En fjärde fråga |intyg-fit-1| IFV1239877878-1049 | Åsa Andersson |IFV1239877878-1045| 2013-01-04 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens4= |
 
-!3 Givet att det finns frågor, verifiera att filtreringen på läkare fungerar
+!3 Verifiera att filtreringen på läkare fungerar
 
 | script | !-SvaraOchFraga-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | valj vardenhet | IFV1239877878-1045 |
@@ -33,3 +37,4 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 | $internReferens2 |
 | $internReferens3 |
 | $internReferens4 |
+

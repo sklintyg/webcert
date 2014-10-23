@@ -1,35 +1,27 @@
 package se.inera.webcert.spec
 
-import se.inera.webcert.pages.OmWebcertSupportPage
-import se.inera.webcert.pages.OmWebcertIntygPage
-import se.inera.webcert.pages.OmWebcertFAQPage
+import se.inera.webcert.pages.OmWebcertPage
 import se.inera.webcert.pages.OmWebcertCookiesPage
-import se.inera.webcert.pages.WelcomePage
+import se.inera.webcert.pages.OmWebcertFAQPage
+import se.inera.webcert.pages.OmWebcertIntygPage
+import se.inera.webcert.pages.OmWebcertSupportPage
 
 class OmWebcert {
 
-    def loggaInSom(String id) {
+    def gaTillOmWebcert() {
         Browser.drive {
-            go "/welcome.jsp"
-
+            go "/web/dashboard#/webcert/about"
             waitFor {
-                at WelcomePage
-            }
-            page.loginAs(id)
-        }
-    }
-
-    def gaTillOmWebcertSupport() {
-        Browser.drive {
-            go "/web/dashboard#/support/about"
-            waitFor {
-                at OmWebcertSupportPage
+                at OmWebcertPage
             }
         }
     }
 
-    boolean undersidanSupportVisas() {
+    boolean valjSupport() {
         Browser.drive {
+            waitFor {
+                page.supportLink.click()
+            }
             waitFor {
                 at OmWebcertSupportPage
             }
@@ -38,11 +30,9 @@ class OmWebcert {
 
     boolean valjIntygSomStods() {
         Browser.drive {
-
             waitFor {
                 page.intygLink.click()
             }
-
             waitFor {
                 at OmWebcertIntygPage
             }
@@ -51,11 +41,9 @@ class OmWebcert {
 
     boolean valjVanligaFragor() {
         Browser.drive {
-
             waitFor {
                 page.faqLink.click()
             }
-
             waitFor {
                 at OmWebcertFAQPage
             }
@@ -64,11 +52,9 @@ class OmWebcert {
 
     boolean valjOmKakor() {
         Browser.drive {
-
             waitFor {
                 page.cookiesLink.click()
             }
-
             waitFor {
                 at OmWebcertCookiesPage
             }

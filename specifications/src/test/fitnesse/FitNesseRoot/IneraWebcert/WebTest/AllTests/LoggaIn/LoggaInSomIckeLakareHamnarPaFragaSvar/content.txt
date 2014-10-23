@@ -1,7 +1,12 @@
-Testet beskriver fallet när en lakare med uppdraget vard och behandling loggar in
+Testet beskriver fallet när en administratör loggar in.
 
-!3 Givet att man loggar in som en icke läkare med medarbetaruppdrag vård och behandling hamnar man på Fråga/Svar
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104N_IFV1239877878-1045 |
+
+!3 Verifiera att man hamnar på Frågor och Svar
 
 | script | !-SvaraOchFraga-! |
-| logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 | ohanterade fragor sidan visas |
+

@@ -15,6 +15,15 @@ class SokSkrivIntyg {
         }
     }
 
+    def gaTillSokSkrivIntyg() {
+        Browser.drive {
+            go "/web/dashboard#/create/index"
+            waitFor {
+                at SokSkrivaIntygPage
+            }
+        }
+    }
+
     boolean sokSkrivIntygSidanVisas() {
         sokSkrivIntygSidanVisasSaSmaningom()
     }

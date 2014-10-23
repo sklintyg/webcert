@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<properties>
+	<Edit>true</Edit>
+	<Files>true</Files>
+	<Properties>true</Properties>
+	<RecentChanges>true</RecentChanges>
+	<Refactor>true</Refactor>
+	<Search>true</Search>
+	<Suite/>
+	<SymbolicLinks>
+		<LoggaInSomIckeLakareHamnarPaFragaSvar>.IneraWebcert.WebTest.AllTests.LoggaIn.LoggaInSomIckeLakareHamnarPaFragaSvar</LoggaInSomIckeLakareHamnarPaFragaSvar>
+		<LoggaInSomLakareUtanUppdragFarFelsida>.IneraWebcert.WebTest.AllTests.LoggaIn.LoggaInSomLakareUtanUppdragFarFelsida</LoggaInSomLakareUtanUppdragFarFelsida>
+		<LoggaInMedFleraUppdrag>.IneraWebcert.WebTest.AllTests.LoggaIn.LoggaInMedFleraUppdrag</LoggaInMedFleraUppdrag>
+		<LoggaInMedEttUppdrag>.IneraWebcert.WebTest.AllTests.LoggaIn.LoggaInMedEttUppdrag</LoggaInMedEttUppdrag>
+	</SymbolicLinks>
+	<Versions>true</Versions>
+	<WhereUsed>true</WhereUsed>
+</properties>

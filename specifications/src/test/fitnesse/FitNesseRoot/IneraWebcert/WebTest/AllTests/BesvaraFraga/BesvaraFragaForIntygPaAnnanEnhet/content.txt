@@ -1,11 +1,16 @@
 Testet beskriver fallet när en användare besvarar en fråga från försäkringskassan genom att välja den från listan med ohanterade frågor.
 I det här fallet har frågan skickats till annan enhet än intygsutfärdaren.
 
-!3 Lägg till fråga
+!3 Logga in
 
-|Intyg|
-|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
-|19010101-0101|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-104D|FK7263|intyg-fit-annan-enhet|L|ja|nej|
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
+!3 Lägg till intyg och fråga
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat |
+| 19010101-0101 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-104D | FK7263 | intyg-fit-annan-enhet | L | ja | nej |
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
@@ -13,9 +18,7 @@ I det här fallet har frågan skickats till annan enhet än intygsutfärdaren.
 
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
-!| script | SvaraOchFraga |
-| logga in som |IFV1239877878-1049_IFV1239877878-1042|
-| sok skriv intyg sidan visas |
+| script | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
@@ -30,7 +33,7 @@ I det här fallet har frågan skickats till annan enhet än intygsutfärdaren.
 | fraga | $internReferens1 | visas i listan med ohanterade fragor | false |
 | fraga | $internReferens1 | visas i listan med hanterade fragor |
 
-!3 Ta bort fråga
+!3 Ta bort fråga och intyg
 
 | ta bort fraga |
 | internReferens |
@@ -39,3 +42,4 @@ I det här fallet har frågan skickats till annan enhet än intygsutfärdaren.
 | ta bort intyg |
 | id |
 | intyg-fit-annan-enhet |
+

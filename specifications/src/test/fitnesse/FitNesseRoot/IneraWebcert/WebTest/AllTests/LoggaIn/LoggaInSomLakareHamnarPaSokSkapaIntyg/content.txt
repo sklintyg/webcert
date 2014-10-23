@@ -1,7 +1,12 @@
-Testet beskriver fallet när en lakare med uppdraget vard och behandling loggar in
+Testet beskriver fallet när en läkare med uppdraget vård och behandling loggar in.
 
-!3 Givet att man loggar in som en användare med medarbetaruppdrag vård och behandling hamnar man på Sök/skriv intyg
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
+!3 Verifiera att man hamnar på Sök/Skriv intyg
 
 | script | !-SokSkrivIntyg-! |
-| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 | sok skriv intyg sidan visas |
+

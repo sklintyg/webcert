@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<properties>
+	<Edit>true</Edit>
+	<Files>true</Files>
+	<Help/>
+	<Properties>true</Properties>
+	<RecentChanges>true</RecentChanges>
+	<Refactor>true</Refactor>
+	<Search>true</Search>
+	<Suite/>
+	<Suites/>
+	<SymbolicLinks>
+		<SkickaFragaFranFragaSvarLista>.IneraWebcert.WebTest.AllTests.SkickaFraga.SkickaFragaFranFragaSvarLista</SkickaFragaFranFragaSvarLista>
+		<SkickaFragaFranUthoppsLank>.IneraWebcert.WebTest.AllBrowsers.ChromeSuite.AllTests.SkickaFraga.SkickaFragaFranUthoppsLank</SkickaFragaFranUthoppsLank>
+		<SkickaFragaFranFragaSvarListaOchVerifieraAttDenSparas>.IneraWebcert.WebTest.AllTests.SkickaFraga.SkickaFragaFranFragaSvarListaOchVerifieraAttDenSparas</SkickaFragaFranFragaSvarListaOchVerifieraAttDenSparas>
+		<SkickaFragaFranLankTillRattatIntyg>.IneraWebcert.WebTest.AllTests.SkickaFraga.SkickaFragaFranLankTillRattatIntyg</SkickaFragaFranLankTillRattatIntyg>
+		<SkickaFragaFranLankTillIntyg>.IneraWebcert.WebTest.AllTests.SkickaFraga.SkickaFragaFranLankTillIntyg</SkickaFragaFranLankTillIntyg>
+		<SkickaFragaFranLankTillEjSkickatIntyg>.IneraWebcert.WebTest.AllBrowsers.ChromeSuite.AllTests.SkickaFraga.SkickaFragaFranLankTillEjSkickatIntyg</SkickaFragaFranLankTillEjSkickatIntyg>
+	</SymbolicLinks>
+	<Versions>true</Versions>
+	<WhereUsed>true</WhereUsed>
+</properties>

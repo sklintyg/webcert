@@ -1,10 +1,16 @@
-Navigera i Om webcerts undermenyer
+Testet beskriver fallet när användaren navigerar genom Om Webcerts undermenyer.
 
-!3 Verifiera att man kan nå fliken Om Webcert och navigera till dess undermenyer
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Verifera att man kan nå alla undermenyer till Om Webcert
 
 | script | !-OmWebcert-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
-| ga till om webcert support |
+| ga till om webcert |
+| valj support |
 | valj intyg som stods |
 | valj vanliga fragor |
 | valj om kakor |
+

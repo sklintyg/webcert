@@ -7,6 +7,7 @@ class OmWebcertCookiesPage extends Page {
     static at = { $("#about-webcert-cookies").isDisplayed() }
 
     static content = {
+        webcertLink { $("#about-webcert") }
         supportLink { $("#about-support") }
         intygLink { $("#about-intyg") }
         faqLink { $("#about-faq") }

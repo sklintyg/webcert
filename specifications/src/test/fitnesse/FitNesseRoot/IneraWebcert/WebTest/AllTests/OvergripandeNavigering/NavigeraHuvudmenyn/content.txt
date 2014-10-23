@@ -1,24 +1,30 @@
-Testar möjligheten att nå alla delar av applikationen.
+Testet beskriver fallet när användaren navigerar mellan alla delar av Webcert.
 
-!3 Verifiera att man kan logga in och nå Sök/Skriv intyg
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Verifiera att man kan nå Sök/Skriv intyg
 
 | script | !-SokSkrivIntyg-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+| ga till sok skriv intyg |
 | sok skriv intyg sidan visas |
 
-!3 Verifiera att man kan nå fliken Frågor och svar
+!3 Verifiera att man kan nå Frågor och svar
 
 | script | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 
-!3 Verifiera att man kan nå fliken Ej signerade intyg
+!3 Verifiera att man kan nå Ej signerade intyg
 
 | script | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
 | ej signerade intyg sidan visas |
 
-!3 Verifiera att man kan nå fliken Om Webcert och navigera till dess undermenyer
+!3 Verifiera att man kan nå Om Webcert
 
 | script | !-OmWebcert-! |
-| ga till om webcert support |
+| ga till om webcert |
+

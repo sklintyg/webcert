@@ -1,5 +1,10 @@
 Testet beskriver fallet när en användare med bara ett uppdrag loggar in.
 
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
 !3 Lägg till fråga
 
 | Fraga Svar |
@@ -7,11 +12,9 @@ Testet beskriver fallet när en användare med bara ett uppdrag loggar in.
 | OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1 | eva | Eva Holgersson | IFV1239877878-1042 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
 | OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-2 | eva | Eva Holgersson | vardenhet-fit-2 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens2= |
 
-!3 Givet att man loggar in som en användare med medarbetaruppdrag på endast en enhet, verifiera att enhetsväljaren ej visas
+!3 Verifiera att enhetsväljaren ej visas.
 
 | script | !-SvaraOchFraga-! |
-| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | enhetsvaljare visas | false |
@@ -22,3 +25,4 @@ Testet beskriver fallet när en användare med bara ett uppdrag loggar in.
 | internReferens |
 | $internReferens1 |
 | $internReferens2 |
+
