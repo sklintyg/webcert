@@ -1,2 +1,0 @@
-!define geb.env {saucelabssafari}
-!contents -R2 -g -p -f -h

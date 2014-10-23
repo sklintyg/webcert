@@ -1,0 +1,29 @@
+!3 Givet en fråga
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | internReferens? |
+| OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-1| eva | Eva Holgersson |IFV1239877878-1042| !today (yyyy-MM-dd) | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | $internReferens1= |
+
+!3 Besvara frågan
+
+| svara pa fraga |
+| vardgivare | enhet | internReferens | svarsText |
+| IFV1239877878-1041 | IFV1239877878-1042 | $internReferens1 | Här svarar Fitnesse på frågan |
+
+!3 Verifera att svaret har skickats till försäkringskassan (stub)
+
+| svar skickad till fk |
+| svar? |
+| Här svarar Fitnesse på frågan |
+
+!3 Ta bort svar till försäkringskassan (stub)
+
+| script | !-RensaFragorSvarTillFk-! |
+| rensa svar |
+
+!3 Ta bort fråga
+
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |
+

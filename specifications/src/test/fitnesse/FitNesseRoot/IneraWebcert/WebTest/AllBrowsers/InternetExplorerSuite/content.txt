@@ -1,2 +1,0 @@
-!define geb.env {ie}
-!contents -R2 -g -p -f -h

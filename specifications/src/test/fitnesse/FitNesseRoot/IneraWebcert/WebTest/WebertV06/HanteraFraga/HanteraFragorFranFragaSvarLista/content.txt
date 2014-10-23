@@ -1,1 +1,0 @@
-!include .IneraWebcert.WebTest.AllTests.HanteraFraga.HanteraFragorFranFragaSvarLista

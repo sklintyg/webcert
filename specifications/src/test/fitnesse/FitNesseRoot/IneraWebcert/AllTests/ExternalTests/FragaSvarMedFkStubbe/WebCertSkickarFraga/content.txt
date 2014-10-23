@@ -1,0 +1,33 @@
+!3 Givet ett intyg
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdarId | enhetsId | typ | id | mall | skickat |
+| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1042 | FK7263 | fitnesse-intyg-1 | M | ja |
+
+!3 Ställ en fråga
+
+| stall fraga |
+| vardgivare | enhet | intygsId | ämne | frågeText | internReferens? |
+| IFV1239877878-1041 | IFV1239877878-1042 | fitnesse-intyg-1 | OVRIGT | Här ställer Fitnesse en fråga | $internReferens1= |
+
+!3 Verifera att frågan har skickats till försäkringskassan (stub)
+
+| fraga skickad till fk |
+| fraga? |
+| Här ställer Fitnesse en fråga |
+
+!3 Ta bort frågan till försäkringskassan (stub)
+
+| script | !-RensaFragorSvarTillFk-! |
+| rensa fragor |
+
+!3 Ta bort intyg och fråga
+
+| ta bort Intyg |
+| id |
+| fitnesse-intyg-1 |
+
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |
+

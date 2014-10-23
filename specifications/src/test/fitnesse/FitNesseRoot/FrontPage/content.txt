@@ -1,7 +1,50 @@
-!1 Welcome to [[FitNesse][FitNesse.FitNesse]]!
-!3 ''The fully integrated stand-alone acceptance testing framework and wiki.''
+!-FitNesse-! tester för Webcert.
 
-IneraWebcert
-IneraWebcertV06
+!3 Specifikationer
+Våra test specifikationer. Gör alla förändringar här.
 
-!note Release ${FITNESSE_VERSION}
+ * IneraWebcert
+ * ManuellaTester
+
+!3 Webcert Master
+Tester för Webcert Master.
+
+ * [[Alla tester][AllBrowsers.AllTests]] (lokalt)
+  * [[Alla webbtester][AllBrowsers.AllTests.WebTests]]
+   * [[Chrome][AllBrowsers.AllTests.WebTests.ChromeWebTests]]
+   * [[Firefox][AllBrowsers.AllTests.WebTests.FirefoxWebTests]]
+   * [[Internet Explorer][AllBrowsers.AllTests.WebTests.InternetExplorerWebTests]]
+   * [[Safari][AllBrowsers.AllTests.WebTests.SafariWebTests]]
+  * [[External Tests][AllBrowsers.AllTests.ExternalTests]]
+ * [[Alla tester][AllSauceLabsBrowsers.AllTests]] (!-SauceLabs-!)
+  * [[Alla webbtester][AllSauceLabsBrowsers.AllTests.WebTests]]
+   * [[Chrome][AllSauceLabsBrowsers.AllTests.WebTests.ChromeWebTests]]
+   * [[Firefox][AllSauceLabsBrowsers.AllTests.WebTests.FirefoxWebTests]]
+   * [[Internet Explorer][AllSauceLabsBrowsers.AllTests.WebTests.InternetExplorerWebTests]]
+   * [[Safari][AllSauceLabsBrowsers.AllTests.WebTests.SafariWebTests]]
+  * [[External Tests][AllSauceLabsBrowsers.AllTests.ExternalTests]]
+
+!3 Webcert 0.6
+Tester för Webcert 0.6.
+
+ * Alla Tester
+  * Alla webbtester
+   * [[Chrome][ChromeSuite.IneraWebcert.WebcertReleases.WebcertV06.WebTests]]
+   * [[Firefox][FirefoxSuite.IneraWebcert.WebcertReleases.WebcertV06.WebTests]]
+   * [[Internet Explorer][InternetExplorerSuite.IneraWebcert.WebcertReleases.WebcertV06.WebTests]]
+   * [[Safari][SafariSuite.IneraWebcert.WebcertReleases.WebcertV06.WebTests]]
+  * [[External Tests][IneraWebcert.AllTests.ExternalTests]]
+
+!3 Hjälpspecifikationer
+Används för att köra våra specifikationer i olika lägen. Behöver normalt sett inte ändras.
+
+ * AllBrowsers
+  * ChromeSuite
+  * FirefoxSuite
+  * InternetExplorerSuite
+  * SafariSuite
+ * AllSauceLabsBrowsers
+  * SauceLabsChromeSuite
+  * SauceLabsFirefoxSuite
+  * SauceLabsInternetExplorerSuite
+  * SauceLabsSafariSuite

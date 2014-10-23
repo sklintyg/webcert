@@ -1,7 +1,3 @@
-!-FitNesse-! tester för Webcert.
-
-!contents -R4
-
 !*> '''Variables Defined'''
 !define TEST_SYSTEM {slim}
 !define COMMAND_PATTERN {java -Djava.awt.headless=true -cp %p %m}

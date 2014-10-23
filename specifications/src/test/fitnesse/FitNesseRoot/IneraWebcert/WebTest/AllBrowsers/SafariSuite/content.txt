@@ -1,2 +1,0 @@
-!define geb.env {safari}
-!contents -R2 -g -p -f -h
