@@ -17,7 +17,9 @@ public class AbstractLogMessage implements Serializable {
     private String logId;
 
     private String systemId;
-
+    
+    private String systemName;
+    
     private String activityLevel;
 
     private String activityArgs;
@@ -82,6 +84,14 @@ public class AbstractLogMessage implements Serializable {
         this.systemId = systemId;
     }
 
+    public String getSystemName() {
+        return systemName;
+    }
+
+    public void setSystemName(String systemName) {
+        this.systemName = systemName;
+    }
+
     public String getActivityLevel() {
         return activityLevel;
     }
@@ -97,7 +107,7 @@ public class AbstractLogMessage implements Serializable {
     public void setActivityArgs(String activityArgs) {
         this.activityArgs = activityArgs;
     }
-
+    
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
