@@ -347,10 +347,10 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 };
             }
 
-            function _sendSigneratIntyg(cert, recipientId, patientConsent, dialogModel, sendDialog, onSuccess) {
+            function _sendSigneratIntyg(intygsId, intygsTyp, recipientId, patientConsent, dialogModel, sendDialog, onSuccess) {
                 dialogModel.showerror = false;
                 dialogModel.acceptprogressdone = false;
-                CertificateService.sendSigneratIntyg(cert, recipientId, patientConsent, function() {
+                CertificateService.sendSigneratIntyg(intygsId, intygsTyp, recipientId, patientConsent, function() {
                     dialogModel.acceptprogressdone = true;
                     sendDialog.close();
                     onSuccess();
@@ -369,7 +369,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     model: $scope.dialogSend,
                     button1click: function() {
                         $log.debug('send cert from dialog' + cert);
-                        _sendSigneratIntyg(cert, recipientId, $scope.dialogSend.patientConsent, $scope.dialogSend,
+                        _sendSigneratIntyg(cert.id, cert.intygType, recipientId, $scope.dialogSend.patientConsent, $scope.dialogSend,
                             sendDialog, onSuccess);
                     },
                     button1text: 'common.send',
@@ -404,7 +404,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             function _revokeSigneratIntyg(cert, dialogModel, makuleraDialog, onSuccess) {
                 dialogModel.showerror = false;
                 dialogModel.acceptprogressdone = false;
-                CertificateService.revokeSigneratIntyg(cert.id, function() {
+                CertificateService.revokeSigneratIntyg(cert.id, cert.intygType, function() {
                     dialogModel.acceptprogressdone = true;
                     makuleraDialog.close();
                     onSuccess();

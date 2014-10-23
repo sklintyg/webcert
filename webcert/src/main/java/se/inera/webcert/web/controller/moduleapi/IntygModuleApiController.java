@@ -1,48 +1,29 @@
 package se.inera.webcert.web.controller.moduleapi;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.service.draft.IntygDraftService;
-import se.inera.webcert.service.draft.IntygSignatureService;
-import se.inera.webcert.service.draft.dto.DraftValidation;
-import se.inera.webcert.service.draft.dto.DraftValidationMessage;
-import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.dto.SignatureTicket;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.intyg.dto.IntygPdf;
-import se.inera.webcert.service.intyg.dto.IntygRecipient;
-import se.inera.webcert.service.intyg.dto.IntygServiceResult;
-import se.inera.webcert.service.log.LogRequestFactory;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
-import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
-import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
-import se.inera.webcert.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
-import se.inera.webcert.web.controller.moduleapi.dto.SendSignedIntygParameter;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.intyg.dto.IntygRecipient;
+import se.inera.webcert.service.intyg.dto.IntygServiceResult;
+import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.webcert.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
 /**
  * Controller exposing services to be used by modules.
@@ -58,139 +39,21 @@ public class IntygModuleApiController extends AbstractApiController {
 
     @Autowired
     private IntygService intygService;
-
-    @Autowired
-    private IntygDraftService draftService;
-
-    @Autowired
-    private IntygSignatureService signatureService;
-
-    @Autowired
-    private LogService logService;
-
+    
     /**
-     * Returns the draft certificate as JSON identified by the intygId.
+     * Retrieves a signed intyg from intygstjänst.
      *
-     * @param intygId The id of the certificate
-     * @return a JSON object
-     */
-    @GET
-    @Path("/draft/{intygId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getDraft(@PathParam("intygId") String intygId) {
-
-        LOG.debug("Retrieving Intyg with id {}", intygId);
-        
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
-
-        Intyg intyg = draftService.getDraft(intygId);
-
-        IntygDraftHolder draftHolder = new IntygDraftHolder();
-
-        draftHolder.setStatus(intyg.getStatus());
-        draftHolder.setContent(intyg.getModel());
-
-        return Response.ok(draftHolder).build();
-    }
-
-    /**
-     * Persists the supplied draft certificate using the intygId as key.
-     *
-     * @param intygId          The id of the certificate.
-     * @param draftCertificate Object holding the certificate and its current status.
-     */
-    @PUT
-    @Path("/draft/{intygId}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Transactional
-    public Response saveDraft(@PathParam("intygId") String intygId, byte[] draftCertificate) {
-        
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
-
-        LOG.debug("Saving Intyg with id {}", intygId);
-
-        String draftAsJson = fromBytesToString(draftCertificate);
-
-        SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygId, draftAsJson);
-            DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
-
-        SaveDraftResponse responseEntity = buildSaveDraftResponse(draftValidation);
-
-        return Response.ok().entity(responseEntity).build();
-    }
-
-    private SaveAndValidateDraftRequest createSaveAndValidateDraftRequest(String intygId, String draftAsJson) {
-        SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
-
-        request.setIntygId(intygId);
-        request.setDraftAsJson(draftAsJson);
-
-        HoSPerson savedBy = createHoSPersonFromUser();
-        request.setSavedBy(savedBy);
-
-        return request;
-    }
-
-    private SaveDraftResponse buildSaveDraftResponse(DraftValidation draftValidation) {
-
-        if (draftValidation.isDraftValid()) {
-            return new SaveDraftResponse(DraftValidationStatus.COMPLETE);
-        }
-
-        SaveDraftResponse responseEntity = new SaveDraftResponse(DraftValidationStatus.INCOMPLETE);
-
-        List<DraftValidationMessage> validationMessages = draftValidation.getMessages();
-
-        for (DraftValidationMessage validationMessage : validationMessages) {
-            responseEntity.addMessage(validationMessage.getField(), validationMessage.getMessage());
-        }
-
-        return responseEntity;
-    }
-
-    private String fromBytesToString(byte[] bytes) {
-        try {
-            return new String(bytes, UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Could not convert the payload from draftCertificate to String!", e);
-        }
-    }
-
-    /**
-     * Marks the draft certificate identified by the certificateId as discarded.
-     *
-     * @param intygId The id of the certificate
-     */
-    @DELETE
-    @Path("/draft/{intygId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Transactional
-    public Response discardDraft(@PathParam("intygId") String intygId) {
-        
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
-
-        LOG.debug("Deleting draft with id {}", intygId);
-        
-        draftService.deleteUnsignedDraft(intygId);
-
-        return Response.ok().build();
-    }
-
-    /**
-     * Delivers a signed intyg.
-     *
-     * @param intygId intygid
+     * @param intygsId intygid
      * @return Response
      */
     @GET
-    @Path("/signed/{intygId}")
+    @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getSignedIntyg(@PathParam("intygId") String intygId) {
+    public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         
-        LOG.debug("Fetching signed intyg with id '{}' from IT", intygId);
+        LOG.debug("Fetching signed intyg with id '{}' from IT", intygsId);
 
-        IntygContentHolder intygAsExternal = intygService.fetchIntygData(intygId);
+        IntygContentHolder intygAsExternal = intygService.fetchIntygData(intygsId);
 
         return Response.ok().entity(intygAsExternal).build();
     }
@@ -198,17 +61,17 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Return the signed certificate identified by the given id as PDF.
      *
-     * @param intygId - the globally unique id of a certificate.
+     * @param intygsId - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
-    @Path("/signed/{intygId}/pdf")
+    @Path("/{intygsTyp}/{intygsId}/pdf")
     @Produces("application/pdf")
-    public final Response getSignedIntygAsPdf(@PathParam(value = "intygId") final String intygId) {
+    public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
         
-        LOG.debug("Fetching signed intyg '{}' as PDF", intygId);
+        LOG.debug("Fetching signed intyg '{}' as PDF", intygsId);
 
-        IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygId);
+        IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygsId);
 
         return Response.ok(intygPdfResponse.getPdfData()).header(CONTENT_DISPOSITION, buildPdfHeader(intygPdfResponse.getFilename())).build();
     }
@@ -218,140 +81,52 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Creates a PDL log event that a persons draft has been printed.
-     *
-     * @param intygId
-     * @return
-     */
-    @POST
-    @Path("/draft/logprint")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response logPrintOfDraft(String intygId) {
-        
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
-
-        LOG.debug("Logging printout of draft intyg '{}'", intygId);
-
-        Intyg draft = draftService.getDraft(intygId);
-
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(draft);
-
-        logService.logPrintOfIntygAsDraft(logRequest);
-
-        return Response.ok().build();
-    }
-
-    /**
      * Issues a request to Intygstjanst to send the signed intyg to a recipient
      *
-     * @param intygId
+     * @param intygsId
      * @param param
      * @return
      */
     @POST
-    @Path("/signed/{intygId}/send")
+    @Path("/{intygsTyp}/{intygsId}/skicka")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response sendSignedIntyg(@PathParam("intygId") String intygId, SendSignedIntygParameter param) {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.SKICKA_INTYG);
-        IntygServiceResult sendResult = intygService.sendIntyg(intygId, param.getRecipient(), param.isPatientConsent());
+    public Response sendSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, SendSignedIntygParameter param) {
+        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.SKICKA_INTYG, intygsTyp);
+        IntygServiceResult sendResult = intygService.sendIntyg(intygsId, param.getRecipient(), param.isPatientConsent());
         return Response.ok(sendResult).build();
     }
 
     /**
      * Issues a request to Intygstjanst to revoke the signed intyg.
      *
-     * @param intygId The id of the intyg to revoke
+     * @param intygsId The id of the intyg to revoke
      * @param param A JSON struct containing an optional message
      * @return
      */
     @POST
-    @Path("/signed/{intygId}/revoke")
+    @Path("/{intygsTyp}/{intygsId}/aterkalla")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response revokeSignedIntyg(@PathParam("intygId") String intygId, RevokeSignedIntygParameter param) {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.MAKULERA_INTYG);
+    public Response revokeSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, RevokeSignedIntygParameter param) {
+        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.MAKULERA_INTYG, intygsTyp);
         String revokeMessage = (param != null) ? param.getRevokeMessage(): null;
-        IntygServiceResult revokeResult = intygService.revokeIntyg(intygId, revokeMessage);
+        IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, revokeMessage);
         return Response.ok(revokeResult).build();
-    }
-
-    /**
-     * Signera utkast.
-     *
-     * @param intygsId intyg id
-     * @return BiljettResponse
-     */
-    @POST
-    @Path("/signera/server/{intygsId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse serverSigneraUtkast(@PathParam("intygsId") String intygsId) {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
-        SignatureTicket biljett = draftService.serverSignature(intygsId);
-        return new BiljettResponse(biljett);
-    }
-
-    /**
-     * Signera utkast.
-     *
-     * @param biljettId biljett id
-     * @return BiljettResponse
-     */
-    @POST
-    @Path("/signera/klient/{biljettId}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse klientSigneraUtkast(@PathParam("biljettId") String biljettId, byte[] rawSignatur) {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
-        LOG.debug("Signerar intyg med biljettId {}", biljettId);
-        String draftAsJson = fromBytesToString(rawSignatur);
-        SignatureTicket biljett = signatureService.clientSignature(biljettId, draftAsJson);
-        return new BiljettResponse(biljett);
-    }
-
-    /**
-     * Skapa signeringshash.
-     *
-     * @param intygsId intyg id
-     * @return BiljettResponse
-     */
-    @POST
-    @Path("/signeringshash/{intygsId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse signeraUtkast(@PathParam("intygsId") String intygsId) {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
-        SignatureTicket biljett = draftService.createDraftHash(intygsId);
-        return new BiljettResponse(biljett);
-    }
-
-    /**
-     * Hamta signeringsstatus.
-     *
-     * @param biljettId biljett id
-     * @return BiljettResponse
-     */
-    @GET
-    @Path("/signeringsstatus/{biljettId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse biljettStatus(@PathParam("biljettId") String biljettId) {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
-        SignatureTicket biljett = signatureService.ticketStatus(biljettId);
-        return new BiljettResponse(biljett);
     }
 
     /**
      * Retrieves a list of recipients from Intygtjanst for the specified intygs type.
      *
-     * @param intygType
+     * @param intygsTyp
      * @return
      */
     @GET
-    @Path("/mottagare/{intygType}")
+    @Path("/{intygsTyp}/mottagare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getListOfRecipientsForIntyg(@PathParam("intygType") String intygType) {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.SKICKA_INTYG);
-        List<IntygRecipient> recipients = intygService.fetchListOfRecipientsForIntyg(intygType);
+    public Response getListOfRecipientsForIntyg(@PathParam("intygsTyp") String intygsTyp) {
+        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.SKICKA_INTYG, intygsTyp);
+        List<IntygRecipient> recipients = intygService.fetchListOfRecipientsForIntyg(intygsTyp);
         return Response.ok(recipients).build();
     }
 
