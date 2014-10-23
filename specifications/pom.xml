@@ -138,24 +138,24 @@
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <!--<configuration>
+        <configuration>
           <filesets>
             <fileset>
               <directory>${fitnesse.working}</directory>
+              <includes>
+                <include>${fitnesse.root}/ErrorLogs/**</include>
+                <include>${fitnesse.root}/FitNesse/**</include>
+                <include>${fitnesse.root}/PageHeader/**</include>
+                <include>${fitnesse.root}/RecentChanges/**</include>
+                <include>${fitnesse.root}/files/**</include>
+              </includes>
               <excludes>
-                <exclude>${fitnesse.root}/${fitnesse.project.root}/**</exclude>
-                <exclude>${fitnesse.root}/AllBrowsers/**</exclude>
-                <exclude>${fitnesse.root}/AllSauceLabsBrowser/**</exclude>
-                <exclude>${fitnesse.root}/ManuellaTester/**</exclude>
-                <exclude>${fitnesse.root}/FrontPage/**</exclude>
-                <exclude>${fitnesse.root}/PageFooter/**</exclude>
                 <exclude>${fitnesse.root}/files/validering/**</exclude>
-                <exclude>plugins.properties</exclude>
-                <exclude>**/.gitignore</exclude>
+                <exclude>${fitnesse.root}/files/.gitignore</exclude>
               </excludes>
             </fileset>
           </filesets>
-        </configuration>-->
+        </configuration>
       </plugin>
       <plugin>
         <groupId>uk.co.javahelp.fitnesse</groupId>
