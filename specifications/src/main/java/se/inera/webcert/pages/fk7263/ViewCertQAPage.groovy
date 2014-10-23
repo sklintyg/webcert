@@ -22,7 +22,8 @@ class ViewCertQAPage extends Page {
         certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
         certificateIsNotSentToFkMessage(required: false) {$("#certificate-is-not-sent-to-fk-message-text")}
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
-
+        certificateLoadError(required: false) { $("#cert-load-error") }
+        
         field1yes { $("#field1yes") }
         field1no { $("#field1no") }
         field2 { $("#field2") }
@@ -127,5 +128,9 @@ class ViewCertQAPage extends Page {
 
     def qaSvarstext(String internid) {
         $("#answerText-${internid}")
+    }
+
+    def isCertificateLoadError() {
+        certificateLoadError?.isDisplayed()
     }
 }

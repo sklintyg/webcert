@@ -102,6 +102,28 @@ class SvaraOchFraga {
         }
     }
 
+    boolean intygetKundeInteHamtas() {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            result = page.isCertificateLoadError()
+        }
+        result
+    }
+
+    boolean intygetKundeHamtas() {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at ViewCertQAPage
+            }
+            result = !page.isCertificateLoadError()
+        }
+        result
+    }
+
     boolean intygArRattatMeddelandeVisas(boolean expected = true) {
         def result = false
         Browser.drive {

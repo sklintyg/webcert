@@ -14,6 +14,7 @@ Testet beskriver fallet när en fråga ställts på ett intyg med fält 5 som sa
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
+| intyget kunde hamtas |
 | fraga | $internReferens1 | visas i listan med ohanterade fragor |
 | fraga | $internReferens1 | visas i listan med hanterade fragor |false|
 

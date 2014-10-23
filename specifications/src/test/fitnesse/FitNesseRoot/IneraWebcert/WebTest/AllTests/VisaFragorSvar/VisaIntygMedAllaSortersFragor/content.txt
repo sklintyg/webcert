@@ -14,6 +14,7 @@
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
+| intyget kunde hamtas |
 
 !3 Ta bort fråga
 
