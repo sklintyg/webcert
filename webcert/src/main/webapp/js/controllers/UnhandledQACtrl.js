@@ -18,16 +18,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 filteredYet: false,
                 totalCount: 0,
                 currentList: [],
-                filterFormCollapsed: true,
-                dpFromOpen: {
-                    open: false
-                },
-                dpToOpen: {
-                    open: false
-                },
-                dpAnswerOpen: {
-                    open: false
-                }
+                filterFormCollapsed: true
             };
 
             $scope.statusList = [
@@ -361,12 +352,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 }, 1000);
                 // Launch mail client
                 $window.location = fragaSvarCommonService.buildMailToLink(qa);
-            };
-
-            $scope.toggleDatePickerInstance = function(instance) {
-                $timeout(function() {
-                    instance.open = !instance.open;
-                });
             };
 
             // Broadcast by statService on poll

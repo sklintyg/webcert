@@ -22,12 +22,12 @@
   <c:when test="${useMinifiedJavaScript == 'true'}">
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular.min.js"></script>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se.js"></script>
-    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
   </c:when>
   <c:otherwise>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/angular.js"></script>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.14/i18n/angular-locale_sv-se.js"></script>
-    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
   </c:otherwise>
 </c:choose>
 
