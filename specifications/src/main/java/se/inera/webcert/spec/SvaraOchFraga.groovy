@@ -99,6 +99,7 @@ class SvaraOchFraga {
             waitFor {
                 at ViewCertQAPage
             }
+            sleep(1000L)
         }
     }
 
