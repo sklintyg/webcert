@@ -119,6 +119,7 @@
 				<xsd:attribute name="codeSystem" type="Uid" use="optional"/>
 				<xsd:attribute name="codeSystemName" type="xsd:string" use="optional"/>
 				<xsd:attribute name="codeSystemVersion" type="xsd:string" use="optional"/>
+				<xsd:attribute name="displayName" type="xsd:string" use="optional"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>

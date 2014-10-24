@@ -3,7 +3,7 @@ package se.inera.webcert.spec
 import se.inera.webcert.pages.IndexPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnhandledQAPage
-import se.inera.webcert.pages.fk7263.ViewCertQAPage
+import se.inera.webcert.pages.VisaFragaSvarPage
 import se.inera.webcert.pages.WelcomePage
 
 class SvaraOchFraga {
@@ -82,7 +82,7 @@ class SvaraOchFraga {
             def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             result = page.questionIsSentToFkMessage.isDisplayed()
         }
@@ -93,7 +93,7 @@ class SvaraOchFraga {
     def fragaMedTextVisasIListanMedOhanteradeFragor(String text) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.qaUnhandledPanelWithText(text)
@@ -104,7 +104,7 @@ class SvaraOchFraga {
     boolean fragaVisasIListanMedOhanteradeFragor(String id, boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
               expected == page.qaUnhandledPanel(id).isDisplayed()
@@ -117,7 +117,7 @@ class SvaraOchFraga {
     boolean fragaVisasIListanMedHanteradeFragor(String id, boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.qaHandledPanel(id).isDisplayed()
@@ -129,7 +129,7 @@ class SvaraOchFraga {
     boolean intygMedFragaSvarSidanVisas() {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
         }
     }
@@ -137,7 +137,7 @@ class SvaraOchFraga {
     boolean intygArRattatMeddelandeVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.certificateRevokedMessage.isDisplayed()
@@ -149,7 +149,7 @@ class SvaraOchFraga {
     boolean intygArSkickatTillFkMeddelandeVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.certificateIsSentToFKMessage.isDisplayed()
@@ -191,7 +191,7 @@ class SvaraOchFraga {
     def markeraFragaSomHanterad(String id) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.unhandledQAList.isDisplayed();
@@ -203,7 +203,7 @@ class SvaraOchFraga {
     def valjNyFraga() {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             page.showNewQuestionForm()
         }
@@ -212,7 +212,7 @@ class SvaraOchFraga {
     boolean nyFragaFormularVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.newQuestionForm.isDisplayed()
@@ -224,7 +224,7 @@ class SvaraOchFraga {
     boolean nyFragaKnappVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.newQuestionBtn.isDisplayed()
@@ -244,7 +244,7 @@ class SvaraOchFraga {
     boolean skickaFragaKnappAktiverad(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.sendQuestionBtn.isEnabled()
@@ -256,7 +256,7 @@ class SvaraOchFraga {
     def skickaFragaMedAmne(String fraga, String amne) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             page.newQuestionText = fraga
             page.newQuestionTopic = amne
@@ -270,7 +270,7 @@ class SvaraOchFraga {
     def svaraPaFragaMedSvar(String id, String svar) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.unhandledQAList.isDisplayed();
@@ -334,7 +334,7 @@ class SvaraOchFraga {
     def vidarebefordraFraga(String id) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             page.forwardBtn(id).click()
         }
@@ -393,7 +393,7 @@ class SvaraOchFraga {
         Browser.drive {
             go "/web/dashboard#/fragasvar/fk7263/${id}"
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
         }
     }
@@ -402,7 +402,7 @@ class SvaraOchFraga {
         Browser.drive {
             go "/webcert/web/user/certificate/${id}/questions"
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
         }
     }
@@ -419,7 +419,7 @@ class SvaraOchFraga {
     public boolean intygArSkickatTillIntygstjanstenMeddelandeVisas(boolean expected) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.certificateIsSentToITMessage.isDisplayed()
@@ -431,7 +431,7 @@ class SvaraOchFraga {
     boolean kopieraKnappVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.kopieraBtn.isDisplayed()
@@ -443,7 +443,7 @@ class SvaraOchFraga {
     boolean makuleraKnappVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.makuleraBtn.isDisplayed()
@@ -455,7 +455,7 @@ class SvaraOchFraga {
     boolean skickaTillFkKnappVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.skickaTillFkBtn.isDisplayed()
@@ -468,7 +468,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
                 page.unhandledQAList.isDisplayed();
             }
             waitFor {
@@ -482,7 +482,7 @@ class SvaraOchFraga {
     public void markeraFragaSomOhanterad(String internId) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.qaHandledPanel(internId).isDisplayed()
@@ -495,7 +495,7 @@ class SvaraOchFraga {
     public boolean arFragaOhanterad(String internId) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.qaUnhandledPanel(internId).isDisplayed()
@@ -508,7 +508,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             // TODO:
         }
@@ -519,7 +519,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.qaHandledPanel(internId).isDisplayed()
@@ -533,7 +533,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.qaUnhandledPanel(internId).isDisplayed()
@@ -564,7 +564,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.besvarareNamn(internId).isDisplayed()
@@ -578,7 +578,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             result = page.fkMeddelandeRubrik(id).isDisplayed()
         }
@@ -589,7 +589,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             result = page.fkKontakter(id).isDisplayed()
         }
@@ -600,7 +600,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             result = page.fkKompletteringar(id).isDisplayed()
         }
@@ -611,7 +611,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             result = page.qaFragetext(id).text().contains(text)
         }
@@ -622,7 +622,7 @@ class SvaraOchFraga {
         def result = false
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             result = page.qaSvarstext(id).getAttribute("value").contains(text)
         }
@@ -632,286 +632,13 @@ class SvaraOchFraga {
     boolean intygSaknasVisas() {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.intygSaknas.isDisplayed()
             }
         }
         return true
-    }
-
-    boolean intygFält1Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            if (visatVarde.equalsIgnoreCase("yes")) {
-                waitFor {
-                    page.field1yes.isDisplayed()
-                }
-                result = page.field1yes.text().contains(visatVarde)
-            } else {
-                waitFor {
-                    page.field1no.isDisplayed()
-                }
-                result = page.field1no.text().contains(visatVarde)
-            }
-        }
-        return result
-    }
-
-    boolean intygFalt2Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field2.isDisplayed()
-            }
-            result = page.field2.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt3Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field3.isDisplayed()
-            }
-            result = page.field3.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt4Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field4.isDisplayed()
-            }
-            result = page.field4.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt4bVisas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field4b.isDisplayed()
-            }
-            result = page.field4b.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt5Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field5.isDisplayed()
-            }
-            result = page.field5.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt6aVisas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field6a.isDisplayed()
-            }
-            result = page.field6a.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt6bVisas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field6b.isDisplayed()
-            }
-            result = page.field6b.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt7Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field7.isDisplayed()
-            }
-            result = page.field7.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt8aVisas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field8a.isDisplayed()
-            }
-            result = page.field8a.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt8bVisas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field8b.isDisplayed()
-            }
-            result = page.field8b.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt9Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field9.isDisplayed()
-            }
-            result = page.field9.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt10Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field10.isDisplayed()
-            }
-            result = page.field10.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt11Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field11.isDisplayed()
-            }
-            result = page.field11.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt12Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field12.isDisplayed()
-            }
-            result = page.field12.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt13Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field13.isDisplayed()
-            }
-            result = page.field13.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFalt17Visas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field17.isDisplayed()
-            }
-            result = page.field17.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFaltVarpersonNamnVisas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field_vardperson_namn.isDisplayed()
-            }
-            result = page.field_vardperson_namn.text().contains(visatVarde)
-        }
-        return result
-    }
-
-    boolean intygFaltVarpersonEnhetsnamnVisas(String visatVarde) {
-        def result = false
-        Browser.drive {
-            waitFor {
-                at ViewCertQAPage
-            }
-            waitFor {
-                page.field_vardperson_enhetsnamn.isDisplayed()
-            }
-            result = page.field_vardperson_enhetsnamn.text().contains(visatVarde)
-        }
-        return result
     }
 
     boolean sokSkrivIntygSidanVisas() {
@@ -925,7 +652,7 @@ class SvaraOchFraga {
     boolean lamnaFragaSvarVarningVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 expected == page.qaOnlyDialog.isDisplayed()
@@ -937,7 +664,7 @@ class SvaraOchFraga {
     def lamnaFragaSvarFortsatt() {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.qaOnlyDialogFortsatt.click()
@@ -948,7 +675,7 @@ class SvaraOchFraga {
     def lamnaFragaSvarAvbryt() {
         Browser.drive {
             waitFor {
-                at ViewCertQAPage
+                at VisaFragaSvarPage
             }
             waitFor {
                 page.qaOnlyDialogCancel.click()

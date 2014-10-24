@@ -8,7 +8,7 @@ Detta test ska visa på att man kan skicka ett signerat ts-intyg.
 | valj patient | 19121212-1212 |
 | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-7 |
-| visa sidan visas |
+| visa intyg sidan visas |
 
 !3 Skicka intyget och kontrollera att intyget skickats
 

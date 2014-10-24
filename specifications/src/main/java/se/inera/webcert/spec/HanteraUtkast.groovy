@@ -1,4 +1,5 @@
 package se.inera.webcert.spec
+import se.inera.webcert.pages.fk7263.VisaFk7263Page
 
 import se.inera.webcert.pages.*
 
@@ -53,6 +54,18 @@ class HanteraUtkast {
         Browser.drive {
             waitFor {
                 at EditeraIntygPage
+            }
+        }
+    }
+
+    boolean visaIntygSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+
+            waitFor {
+                page.intygLaddat.isDisplayed()
             }
         }
     }
@@ -136,7 +149,7 @@ class HanteraUtkast {
     boolean visaSidanVisas() {
         Browser.drive {
             waitFor {
-                at VisaIntygPage
+                at VisaFragaSvarPage
             }
         }
     }

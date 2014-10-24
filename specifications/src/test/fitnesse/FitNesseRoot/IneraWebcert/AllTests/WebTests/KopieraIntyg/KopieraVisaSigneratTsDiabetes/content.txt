@@ -8,7 +8,7 @@ Detta test ska visa på att man kan kopiera ett signerat ts-diabetes-intyg från
 | valj patient | 19121212-1212 |
 | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-5 |
-| visa sidan visas |
+| visa intyg sidan visas |
 
 !3 Kopiera intyget
 

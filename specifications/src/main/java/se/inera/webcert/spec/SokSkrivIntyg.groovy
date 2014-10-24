@@ -1,6 +1,9 @@
 package se.inera.webcert.spec
 
 import se.inera.webcert.pages.*
+import se.inera.webcert.pages.fk7263.VisaFk7263Page
+import se.inera.webcert.pages.ts_bas.VisaTsBasPage
+import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 
 class SokSkrivIntyg {
 
@@ -155,14 +158,52 @@ class SokSkrivIntyg {
         }
     }
 
+    // BEGIN these go to the same page but for different classes. should be merged in the future
     boolean visaSidanVisas() {
         Browser.drive {
             waitFor {
-                at VisaIntygPage
+                at VisaFragaSvarPage
             }
 
             waitFor {
                 page.intygVy.isDisplayed()
+            }
+        }
+    }
+
+    boolean visaIntygSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+
+            waitFor {
+                page.intygLaddat.isDisplayed()
+            }
+        }
+    }
+    // END
+
+    boolean visaTsBasSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaTsBasPage
+            }
+
+            waitFor {
+                page.intygLaddat.isDisplayed()
+            }
+        }
+    }
+
+    boolean visaTsDiabetesSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaTsDiabetesPage
+            }
+
+            waitFor {
+                page.intygLaddat.isDisplayed()
             }
         }
     }
