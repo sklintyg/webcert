@@ -1,8 +1,8 @@
 angular.module('webcert').factory('webcert.ManageCertificate',
     [ '$http', '$log', '$location', '$window', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
-        'common.User', 'common.dialogService', 'common.messageService', 'common.CertificateService',
+        'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.CertificateService',
         function($http, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
-            messageService, CertificateService) {
+            featureService, messageService, CertificateService) {
             'use strict';
 
             /**
@@ -18,7 +18,9 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     ];
                     for (var i = 0; i < data.length; i++) {
                         var m = data[i];
-                        types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
+                        if (featureService.isFeatureActive(featureService.features.HANTERA_INTYGSUTKAST, m.id)) {
+                            types.push({sortValue: sortValue++, id: m.id, label: m.label, fragaSvarAvailable: m.fragaSvarAvailable});
+                        }
                     }
                     onSuccess(types);
                 }).error(function(data, status) {
