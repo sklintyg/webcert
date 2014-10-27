@@ -25,7 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
+import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 
@@ -33,7 +35,7 @@ import se.inera.webcert.service.feature.WebcertFeature;
 public class WebCertUserServiceImpl implements WebCertUserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
-    
+
     public WebCertUser getWebCertUser() {
         return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
@@ -50,17 +52,49 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     public void enableFeaturesOnUser(WebcertFeature... featuresToEnable) {
-        
+
         WebCertUser user = getWebCertUser();
-        
+
         LOG.debug("User {} had these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
-        
-        user.getAktivaFunktioner().clear();
-        
+
         for (WebcertFeature feature : featuresToEnable) {
             user.getAktivaFunktioner().add(feature.getName());
         }
+
+        LOG.debug("User {} now has these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
+    }
+
+    @Override
+    public void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable) {
+
+        Assert.notNull(moduleName);
+        Assert.notEmpty(modulefeaturesToEnable);
+
+        WebCertUser user = getWebCertUser();
+
+        for (ModuleFeature moduleFeature : modulefeaturesToEnable) {
+
+            String moduleFeatureName = moduleFeature.getName();
+            String moduleFeatureStr = StringUtils.join(new String[] { moduleFeatureName, moduleName.toLowerCase() }, ".");
+
+            if (!user.hasAktivFunktion(moduleFeatureName)) {
+                LOG.warn("Could not add module feature '{}' to user {} since corresponding webcert feature is not enabled", moduleFeatureStr,
+                        user.getHsaId());
+                continue;
+            }
+
+            user.getAktivaFunktioner().add(moduleFeatureStr);
+            LOG.debug("Added module feature {} to user", moduleFeatureStr);
+        }
+
+    }
+
+    @Override
+    public void clearEnabledFeaturesOnUser() {
+         
+        WebCertUser user = getWebCertUser();
+        user.getAktivaFunktioner().clear();
         
-        LOG.debug("User {} has now these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
+        LOG.debug("Cleared enabled featured from user {}", user.getHsaId());
     }
 }
