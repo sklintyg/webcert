@@ -28,7 +28,7 @@
   <properties>
     <modules-fk7263.version>1.0-SNAPSHOT</modules-fk7263.version>
     <modules-ts.version>1.0-SNAPSHOT</modules-ts.version>
-
+    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
   </properties>
