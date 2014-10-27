@@ -214,5 +214,12 @@
         <column name="STATUS"/>
     </createIndex>
   </changeSet>
-
+  
+  <changeSet id="4" author="np">
+    <!-- Change data type -->
+    <modifyDataType tableName="KOMPLETTERING" columnName="TEXT" newDataType="text"/>
+    <!-- Re-apply not null constraint that was lost during data type change -->
+    <addNotNullConstraint tableName="KOMPLETTERING" columnName="TEXT" columnDataType="text"/>
+  </changeSet>
+  
 </databaseChangeLog>
