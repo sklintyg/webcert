@@ -3,9 +3,6 @@ package se.inera.webcert.web.controller.integration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -18,7 +15,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +40,7 @@ public class IntygIntegrationController {
 
     @Autowired
     private IntygService intygService;
-    
+
     @Autowired
     private WebCertUserService webCertUserService;
 
@@ -66,8 +62,6 @@ public class IntygIntegrationController {
         String intygType = intygData.getMetaData().getType();
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
-        
-        webCertUserService.enableFeaturesOnUser(WebcertFeature.HANTERA_FRAGOR);
 
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }
