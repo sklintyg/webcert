@@ -3,9 +3,17 @@ describe('ManageCertificate', function() {
 
     var ManageCertificate;
     var $httpBackend;
+    var featureService;
 
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
+        featureService = {
+            features:{
+                HANTERA_INTYGSUTKAST: 'hanteraIntygsutkast'
+            },
+            isFeatureActive: jasmine.createSpy('isFeatureActive')
+        };
+        $provide.value('common.featureService', featureService);
         $provide.value('common.dialogService', {});
         $provide.value('common.statService', {});
         $provide.value('common.User', {});
@@ -18,7 +26,7 @@ describe('ManageCertificate', function() {
         function(_ManageCertificate_, _$httpBackend_, _messageService_) {
             ManageCertificate = _ManageCertificate_;
             $httpBackend = _$httpBackend_;
-            _messageService_.getProperty = function() { return "Välj typ av intyg"; };
+            _messageService_.getProperty = function() { return 'Välj typ av intyg'; };
         }]));
 
     describe('#getCertTypes', function() {
@@ -26,6 +34,9 @@ describe('ManageCertificate', function() {
         it('should call onSuccess callback with list of cert types from the server', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
+
+            featureService.isFeatureActive.andReturn(true);
+
             $httpBackend.expectGET('/api/modules/map').respond([
                 {
                     sortValue: 1,
