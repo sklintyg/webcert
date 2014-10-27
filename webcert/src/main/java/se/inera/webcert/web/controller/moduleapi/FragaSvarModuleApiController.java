@@ -31,30 +31,30 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     private FragaSvarService fragaSvarService;
 
     @GET
-    @Path("/{intygId}")
+    @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public List<FragaSvar> fragaSvarForIntyg(@PathParam("intygId") String intygId) {
-        abortIfFragaSvarNotActive(); 
-        return fragaSvarService.getFragaSvar(intygId);
+    public List<FragaSvar> fragaSvarForIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
+        abortIfFragaSvarNotActive(intygsTyp); 
+        return fragaSvarService.getFragaSvar(intygsId);
     }
 
     @PUT
-    @Path("/{fragasvarId}/answer")
+    @Path("/{intygsTyp}/{fragasvarId}/besvara")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response answer(@PathParam("fragasvarId") final Long frageSvarId, String svarsText) {
-        abortIfFragaSvarNotActive();
+    public Response answer(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") final Long frageSvarId, String svarsText) {
+        abortIfFragaSvarNotActive(intygsTyp);
         LOG.debug("Set answer for question {}", frageSvarId);
         FragaSvar fragaSvarResponse = fragaSvarService.saveSvar(frageSvarId, svarsText);
         return Response.ok(fragaSvarResponse).build();
     }
 
     @PUT
-    @Path("/{fragasvarId}/setDispatchState")
+    @Path("/{intygsTyp}/{fragasvarId}/hanterad")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response setDispatchState(@PathParam("fragasvarId") final Long frageSvarId, Boolean isDispatched) {
-        abortIfFragaSvarNotActive();
+    public Response setDispatchState(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") final Long frageSvarId, Boolean isDispatched) {
+        abortIfFragaSvarNotActive(intygsTyp);
         LOG.debug("Set DispatchState for question {}, isDispatched: {}", frageSvarId, isDispatched);
         FragaSvar fragaSvarResponse = fragaSvarService.setDispatchState(frageSvarId, isDispatched);
         return Response.ok(fragaSvarResponse).build();
@@ -62,33 +62,33 @@ public class FragaSvarModuleApiController extends AbstractApiController {
 
 
     @POST
-    @Path("/{intygId}")
+    @Path("/{intygsTyp}/{intygsId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createQuestion(@PathParam("intygId") final String intygId, CreateQuestionParameter parameter) {
-        abortIfFragaSvarNotActive();
-        LOG.debug("New question for cert {} with subject {}", intygId, parameter.getAmne());
-        FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygId, parameter.getAmne(), parameter.getFrageText());
+    public Response createQuestion(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId, CreateQuestionParameter parameter) {
+        abortIfFragaSvarNotActive(intygsTyp);
+        LOG.debug("New question for cert {} with subject {}", intygsId, parameter.getAmne());
+        FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygsId, parameter.getAmne(), parameter.getFrageText());
         return Response.ok(fragaSvarResponse).build();
     }
 
     @GET
-    @Path("/close/{fragasvarId}")
+    @Path("/{intygsTyp}/{fragasvarId}/stang")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public FragaSvar closeAsHandled(@PathParam("fragasvarId") Long fragasvarId) {
-        abortIfFragaSvarNotActive();
+    public FragaSvar closeAsHandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") Long fragasvarId) {
+        abortIfFragaSvarNotActive(intygsTyp);
         return fragaSvarService.closeQuestionAsHandled(fragasvarId);
     }
 
     @GET
-    @Path("/open/{fragasvarId}")
+    @Path("/{intygsTyp}/{fragasvarId}/oppna")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public FragaSvar openAsUnhandled(@PathParam("fragasvarId") Long fragasvarId) {
-        abortIfFragaSvarNotActive();
+    public FragaSvar openAsUnhandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") Long fragasvarId) {
+        abortIfFragaSvarNotActive(intygsTyp);
         return fragaSvarService.openQuestionAsUnhandled(fragasvarId);
     }
     
-    private void abortIfFragaSvarNotActive() {
-        abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_FRAGOR);
+    private void abortIfFragaSvarNotActive(String intygsTyp) {
+        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_FRAGOR, intygsTyp);
     }
 }
