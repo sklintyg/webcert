@@ -13,8 +13,8 @@
 
 !3 så skall ett mejl har skickats till webcert-administratören
 
-|Mail|
-|mottagare?|amne?|innehall?|
+|query:Mail|
+|recipients|subject|body|
 |!-[admin@webcert.se]-!|!-Fråga/svar Webcert: Enhet utan mailadress eller koppling-!|=~/enhet som ej har en mailadress satt.*IFV1239877878-104D.*WebCert-Enhet3/|
 
 !3 Ta bort intyg, frågor och mail

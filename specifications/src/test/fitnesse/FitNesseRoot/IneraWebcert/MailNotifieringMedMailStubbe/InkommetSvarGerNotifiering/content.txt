@@ -15,8 +15,8 @@
 
 !3 så ska ett mejl ha skickats till enheten
 
-|Mail|
-|mottagare?|amne?|innehall?|
+|query:Mail|
+|recipients|subject|body|
 |!-[enhet1@webcert.invalid.se]-!|!-Försäkringskassan har svarat på en fråga-!|=~/Försäkringskassan har besvarat en fråga från !-WebCert-Enhet1-!./|
 
 
