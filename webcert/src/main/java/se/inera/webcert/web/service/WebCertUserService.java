@@ -20,6 +20,7 @@ package se.inera.webcert.web.service;
 
 import java.util.List;
 
+import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 
@@ -36,6 +37,10 @@ public interface WebCertUserService {
     
     boolean isAuthorizedForUnits(List<String> enhetsHsaIds);
     
+    void clearEnabledFeaturesOnUser();
+    
     void enableFeaturesOnUser(WebcertFeature... featuresToEnable);
+    
+    void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable);
 
 }

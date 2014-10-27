@@ -323,8 +323,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
             $scope.onVidareBefordradChange = function(qa) {
                 qa.updateInProgress = true;
-                fragaSvarCommonService.setVidareBefordradState(qa.internReferens, qa.vidarebefordrad,
-                    function(result) {
+                $log.debug('onVidareBefordradChange: fragaSvarId: ' + qa.internReferens + " intysTyp: " + qa.intygsReferens.intygsTyp)
+                fragaSvarCommonService.setVidareBefordradState(qa.internReferens, qa.intygsReferens.intygsTyp, 
+                     qa.vidarebefordrad, function(result) {
                         qa.updateInProgress = false;
 
                         if (result !== null) {
