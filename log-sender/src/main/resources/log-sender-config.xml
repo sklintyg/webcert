@@ -29,7 +29,7 @@
     <task:scheduled ref="logSender" method="sendLogEntries" fixed-rate="${logsender.deliveryIntervalInMilliseconds}"/>
   </task:scheduled-tasks>
 
-  <beans profile="dev">
+  <beans profile="dev,local,test">
     <bean id="jacksonJsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
       <property name="mapper">
         <bean class="se.inera.certificate.integration.json.CustomObjectMapper"/>
