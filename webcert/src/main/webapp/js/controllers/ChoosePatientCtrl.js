@@ -7,6 +7,7 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
                 waiting: false
             };
 
+            $scope.focusPnr = true; // focus pnr input
             $scope.personnummer = CreateCertificateDraft.personnummer;
 
             $scope.lookupPatient = function() {

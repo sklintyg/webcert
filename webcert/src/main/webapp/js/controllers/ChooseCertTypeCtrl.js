@@ -11,6 +11,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             }
 
             // Page setup
+            $scope.focusFirstInput = true;
             $scope.widgetState = {
                 doneLoading: true,
                 activeErrorMessageKey: null,

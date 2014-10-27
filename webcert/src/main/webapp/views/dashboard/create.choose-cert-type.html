@@ -21,7 +21,7 @@
               <div class="form-group">
                 <label for="intygType" class="control-label">Skriv nytt intyg</label>
                 <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType"
-                        data-ng-options="type.id as type.label for type in certTypes"></select>
+                        data-ng-options="type.id as type.label for type in certTypes" wc-focus-me="focusFirstInput"></select>
               </div>
               <div class="form-group">
                 <button id="intygTypeFortsatt" class="btn btn-success" type="submit"
