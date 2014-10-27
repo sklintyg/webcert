@@ -11,7 +11,7 @@
 |fitnesse-saknat-intyg|false|
 |fitnesse-fel-enhet|false|
 
-!2 Normalflöde
+!2 Normalflöden
 
 !3 Om Försäkringskassan skickar en ny fråga
 
@@ -23,6 +23,16 @@
 |Fragor och svar|
 |externReferens|finns?|fraga?|
 |fitnesse|true|En fråga|
+
+!3 Fråga med komplettering
+
+|Fk skickar fraga|
+|amne|externReferens|frageText|intygsId|vardpersonal|vardenhet|falt|komplettering|resultat?|
+|OVRIGT|fitnesse-komplettering|En fråga|fitnesse-intyg-1|IFV1239877878-104B|IFV1239877878-1042|falt5|Text längre än 255 tecken: .......010.......020.......030.......040.......050.......060.......070.......080.......090.......100.......110.......120.......130.......140.......150.......160.......170.......180.......190.......200.......210.......220.......230.......240.......250.......260.......270.......280.......290.......300|OK|
+
+|Fragor och svar|
+|externReferens|finns?|fraga?|amne?|
+|fitnesse-komplettering|true|En fråga|OVRIGT|
 
 !2 Undantagsflöden
 
@@ -53,6 +63,7 @@
 |Ta bort fraga|
 |externReferens|
 |fitnesse|
+|fitnesse-komplettering|
 |fitnesse-saknat-intyg|
 |fitnesse-fel-enhet|
 
