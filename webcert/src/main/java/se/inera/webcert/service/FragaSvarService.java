@@ -15,9 +15,9 @@ import se.inera.webcert.persistence.fragasvar.repository.LakarIdNamn;
  */
 public interface FragaSvarService {
 
-    void processIncomingQuestion(FragaSvar fragaSvar);
+    FragaSvar processIncomingQuestion(FragaSvar fragaSvar);
 
-    void processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum);
+    FragaSvar processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum);
 
     List<FragaSvar> getFragaSvar(List<String> enhetsHsaIds);
 

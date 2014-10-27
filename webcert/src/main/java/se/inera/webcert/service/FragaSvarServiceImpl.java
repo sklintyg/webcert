@@ -68,9 +68,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             Amne.KONTAKT, Amne.OVRIGT);
 
     @Autowired
-    private MailNotificationService mailNotificationService;
-
-    @Autowired
     private FragaSvarRepository fragaSvarRepository;
 
     @Autowired
@@ -94,30 +91,17 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
 
     @Override
-    public void processIncomingQuestion(FragaSvar fragaSvar) {
+    public FragaSvar processIncomingQuestion(FragaSvar fragaSvar) {
 
         // TODO - validation: does certificate exist
 
         // persist the question
-        fragaSvarRepository.save(fragaSvar);
+        return fragaSvarRepository.save(fragaSvar);
 
-        // send mail to enhet to inform about new question
-        try {
-            mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
-        } catch (MailSendException e) {
-            Long frageId = fragaSvar.getInternReferens();
-            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
-            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
-            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
-            LOG.error("Notification mail for question '" + frageId
-                      +  "' concerning certificate '" + intygsId
-                      + "' couldn't be sent to " + enhetsId
-                      + " (" + enhetsNamn + "): " + e.getMessage());
-        }
     }
 
     @Override
-    public void processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum) {
+    public FragaSvar processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum) {
 
         // lookup question in database
         FragaSvar fragaSvar = fragaSvarRepository.findOne(internId);
@@ -138,21 +122,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setStatus(Status.ANSWERED);
 
         // update the FragaSvar
-        fragaSvarRepository.save(fragaSvar);
+        return fragaSvarRepository.save(fragaSvar);
 
-        // send mail to enhet to inform about new question
-        try {
-            mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
-        } catch (MailSendException e) {
-            Long svarsId = fragaSvar.getInternReferens();
-            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
-            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
-            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
-            LOG.error("Notification mail for answer '" + svarsId
-                    +  "' concerning certificate '" + intygsId
-                    + "' couldn't be sent to " + enhetsId
-                    + " (" + enhetsNamn + "): " + e.getMessage());
-        }
     }
 
     @Override
