@@ -75,9 +75,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
     @Autowired
-    private MailNotificationService mailNotificationService;
-
-    @Autowired
     private FragaSvarRepository fragaSvarRepository;
 
     @Autowired
@@ -104,19 +101,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
 
     @Override
-    public void processIncomingQuestion(FragaSvar fragaSvar) {
+    public FragaSvar processIncomingQuestion(FragaSvar fragaSvar) {
 
         validateAcceptsQuestions(fragaSvar);
 
         // persist the question
-        fragaSvarRepository.save(fragaSvar);
-
-        // send mail to enhet to inform about new question
-        mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
+        return fragaSvarRepository.save(fragaSvar);
     }
 
     @Override
-    public void processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum) {
+    public FragaSvar processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum) {
 
         // lookup question in database
         FragaSvar fragaSvar = fragaSvarRepository.findOne(internId);
@@ -137,10 +131,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setStatus(Status.ANSWERED);
 
         // update the FragaSvar
-        fragaSvarRepository.save(fragaSvar);
-
-        // send mail to enhet to inform about new question
-        mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
+        return fragaSvarRepository.save(fragaSvar);
     }
 
     @Override

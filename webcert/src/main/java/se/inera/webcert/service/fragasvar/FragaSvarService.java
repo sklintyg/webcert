@@ -16,9 +16,9 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
  */
 public interface FragaSvarService {
 
-    void processIncomingQuestion(FragaSvar fragaSvar);
+    FragaSvar processIncomingQuestion(FragaSvar fragaSvar);
 
-    void processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum);
+    FragaSvar processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum);
 
     List<FragaSvar> getFragaSvar(List<String> enhetsHsaIds);
 

@@ -5,7 +5,9 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.certificate.logging.LogMarkers;
 import se.inera.webcert.converter.FragaSvarConverter;
@@ -15,6 +17,7 @@ import se.inera.webcert.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMe
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.service.mail.MailNotificationService;
 
 import java.util.List;
 
@@ -27,6 +30,9 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
     private static final Logger LOGGER = LoggerFactory.getLogger(ReceiveQuestionResponderImpl.class);
 
     @Autowired
+    private MailNotificationService mailNotificationService;
+
+   @Autowired
     private FragaSvarConverter converter;
 
     @Autowired
@@ -47,7 +53,21 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
 
         LOGGER.info(LogMarkers.MONITORING, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(), fragaSvar.getExternReferens());
 
-        fragaSvarService.processIncomingQuestion(fragaSvar);
+        fragaSvar = fragaSvarService.processIncomingQuestion(fragaSvar);
+
+        // send mail to enhet to inform about new question
+        try {
+            mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
+        } catch (MailSendException e) {
+            Long frageId = fragaSvar.getInternReferens();
+            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
+            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
+            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
+            LOGGER.error("Notification mail for question '" + frageId
+                      +  "' concerning certificate '" + intygsId
+                      + "' couldn't be sent to " + enhetsId
+                      + " (" + enhetsNamn + "): " + e.getMessage());
+        }
 
         response.setResult(ResultOfCallUtil.okResult());
         return response;
