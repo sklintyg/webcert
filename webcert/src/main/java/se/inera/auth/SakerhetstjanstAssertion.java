@@ -22,7 +22,7 @@ public class SakerhetstjanstAssertion {
     private static final String TITEL_KOD_ATTRIBUTE = "urn:sambi:names:attribute:titleCode";
 
     // Förskrivarkod för specificerad person
-    private static final String FORSKRIVARKOD_ATTRIBUTE = "urn:sambi:names:attribute:personalPrescriptionCode";
+    public static final String FORSKRIVARKOD_ATTRIBUTE = "urn:sambi:names:attribute:personalPrescriptionCode";
 
     // Användarens HSA-ID.
     public static final String HSA_ID_ATTRIBUTE = "urn:sambi:names:attribute:employeeHsaId";

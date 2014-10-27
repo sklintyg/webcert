@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import static se.inera.auth.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
+import static se.inera.auth.SakerhetstjanstAssertion.FORSKRIVARKOD_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
 import static se.inera.auth.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
 import static se.inera.auth.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_ID;
@@ -97,6 +98,7 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
         attributeStatement.getAttributes().add(createAttribute(ENHET_HSA_ID_ATTRIBUTE, fakeCredentials.getEnhetId()));
         attributeStatement.getAttributes().add(createAttribute(MEDARBETARUPPDRAG_TYPE, Medarbetaruppdrag.VARD_OCH_BEHANDLING));
         attributeStatement.getAttributes().add(createAttribute(MEDARBETARUPPDRAG_ID, fakeCredentials.getEnhetId()));
+        attributeStatement.getAttributes().add(createAttribute(FORSKRIVARKOD_ATTRIBUTE, fakeCredentials.getForskrivarKod()));
 
         if (fakeCredentials.isLakare()) {
             attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Läkare"));

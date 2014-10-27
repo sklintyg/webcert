@@ -32,31 +32,8 @@
             <!-- Filter form -->
             <div id="advanced-filter-form" ng-show="!widgetState.filterFormCollapsed"
                  class="qa-filter-panel form-horizontal">
-              <div class="form-group">
-                <label class="col-sm-2 control-label">Frågor från</label>
-                <div class="col-sm-10">
-                  <label class="radio-inline">
-                    <input id="frageStallareAlla" name="frageStallare" type="radio" value="default"
-                           ng-model="filterForm.questionFrom" checked="checked"> Alla avsändare
-                  </label>
-                  <label class="radio-inline">
-                    <input id="frageStallareFK" name="frageStallare" type="radio" value="FK"
-                           ng-model="filterForm.questionFrom"> Försäkringskassan
-                  </label>
-                  <label class="radio-inline">
-                    <input id="frageStallareWC" name="frageStallare" type="radio" value="WC"
-                           ng-model="filterForm.questionFrom"> Vårdenheten</label>
-                </div>
-              </div>
 
-              <div class="form-group">
-                <label class="col-sm-2 control-label">Signerat av</label>
-                <div class="col-sm-10">
-                  <select id="qp-lakareSelector" class="form-control" ng-model="filterForm.lakareSelector"
-                          ng-options="s.name for s in lakareList" ng-disabled="widgetState.loadingLakares"></select>
-                </div>
-              </div>
-
+              <!-- frågor och svar som är -->
               <div class="form-group">
                 <label class="col-sm-2 control-label">Frågor och svar som är</label>
                 <div class="col-sm-10">
@@ -75,16 +52,7 @@
                 </div>
               </div>
 
-              <div class="form-group">
-                <label class="col-sm-2 control-label">Sparat datum</label>
-                <div class="col-sm-10 form-inline">
-                  Från
-                  <span dom-id="filter-changedate-from" target-model="filterQuery.changedFrom" wc-date-picker-field></span>
-                  till
-                  <span dom-id="filter-changedate-to" target-model="filterQuery.changedTo" wc-date-picker-field></span>
-                </div>
-              </div>
-
+              <!-- åtgärd -->
               <div class="form-group">
                 <label class="col-sm-2 control-label">Åtgärd</label>
                 <div class="col-sm-10">
@@ -93,6 +61,45 @@
                 </div>
               </div>
 
+              <!-- Avsändare -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Avsändare</label>
+                <div class="col-sm-10">
+                  <label class="radio-inline">
+                    <input id="frageStallareAlla" name="frageStallare" type="radio" value="default"
+                           ng-model="filterForm.questionFrom" checked="checked"> Alla avsändare
+                  </label>
+                  <label class="radio-inline">
+                    <input id="frageStallareFK" name="frageStallare" type="radio" value="FK"
+                           ng-model="filterForm.questionFrom"> Försäkringskassan
+                  </label>
+                  <label class="radio-inline">
+                    <input id="frageStallareWC" name="frageStallare" type="radio" value="WC"
+                           ng-model="filterForm.questionFrom"> Vårdenheten</label>
+                </div>
+              </div>
+
+              <!-- signerat av -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Signerat av</label>
+                <div class="col-sm-10">
+                  <select id="qp-lakareSelector" class="form-control" ng-model="filterForm.lakareSelector"
+                          ng-options="s.name for s in lakareList" ng-disabled="widgetState.loadingLakares"></select>
+                </div>
+              </div>
+
+              <!-- Skickat/mottaget -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Skickat/mottaget</label>
+                <div class="col-sm-10 form-inline">
+                  Från
+                  <span dom-id="filter-changedate-from" target-model="filterQuery.changedFrom" wc-date-picker-field></span>
+                  till
+                  <span dom-id="filter-changedate-to" target-model="filterQuery.changedTo" wc-date-picker-field></span>
+                </div>
+              </div>
+
+              <!-- buttons -->
               <div class="form-group" style="margin-top:10px;">
                 <div class="col-sm-offset-2 col-sm-10">
                   <button id="filter-qa-btn" class="btn btn-default" ng-click="filterList()">Sök</button>
@@ -141,12 +148,12 @@
                     <th class="center" title="Markera om fråga-svar är vidarebefordrat till den som ska hantera det.">
                       Vidarebefordrad
                     </th>
-                    <th title="Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.">Åtgärd
-                    </th>
-                    <th title="Läkare som har signerat intyget.">Läkare</th>
+                    <th title="Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.">Åtgärd</th>
+                    <th title="Vem som initierade frågan.">Avsändare</th>
                     <th title="Berörd patients personnummer.">Patient</th>
+                    <th title="Läkare som har signerat intyget.">Signerat av</th>
                     <th title="Datum för senaste händelse. Exempelvis när fråga skickades eller när ett svar inkom.">
-                      Sparat datum
+                      Skickat/mottaget
                     </th>
                   </tr>
                   <tr ng-repeat="qa in widgetState.currentList">
@@ -171,6 +178,7 @@
                                                 src="/img/ajax-loader-kit-16x16.gif"></span>
                     </td>
                     <td><span message key="qa.measure.{{qa.measureResKey}}"></span></td>
+                    <td><span message key="qa.fragestallare.{{qa.frageStallare}}"></span></td>
                     <td>{{qa.vardperson.namn}}</td>
                     <td class="unbreakable">{{qa.intygsReferens.patientId.patientIdExtension}}</td>
                     <td class="unbreakable table-qa-last">{{qa.senasteHandelseDatum |
