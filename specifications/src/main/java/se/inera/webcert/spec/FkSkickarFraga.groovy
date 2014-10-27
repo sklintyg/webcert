@@ -23,6 +23,8 @@ class FkSkickarFraga extends WsClientFixture {
     String externReferens
     String frageText
     String rubrik
+    String falt
+    String komplettering
     String signeringsTidpunkt
     String avsantTidpunkt
     String intygsId
@@ -52,6 +54,8 @@ class FkSkickarFraga extends WsClientFixture {
         externReferens = null
         frageText = null
         rubrik = null
+        falt = null
+        komplettering = null
         signeringsTidpunkt = null
         avsantTidpunkt = null
         intygsId = null
@@ -76,6 +80,8 @@ class FkSkickarFraga extends WsClientFixture {
         if (rubrik) question.fkMeddelanderubrik = rubrik
         question.fkReferensId = externReferens
         question.fraga.meddelandeText = frageText
+        if (falt) question.fkKomplettering[0].falt = falt
+        if (komplettering) question.fkKomplettering[0].text = komplettering
         if (!signeringsTidpunkt) signeringsTidpunkt = LocalDateTime.now().toString()
         question.fraga.signeringsTidpunkt = LocalDateTime.parse(signeringsTidpunkt)
         if (!avsantTidpunkt) avsantTidpunkt = LocalDateTime.now().toString()
