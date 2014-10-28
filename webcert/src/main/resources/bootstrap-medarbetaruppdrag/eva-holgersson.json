@@ -6,6 +6,10 @@
     	},
     	{
     		"enhet": "linkoping"
+    	},
+    	{
+    		"vardgivare": "ostergotland",
+    		"enhet": "enhet-finns-ej"
     	}
     ]
 }
