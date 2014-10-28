@@ -122,7 +122,19 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
                 }
             }
         }
-
+        for (Medarbetaruppdrag.Uppdrag uppdrag : medarbetaruppdrag.getUppdrag()) {
+            if (uppdrag.getEnhet().endsWith("-finns-ej")) {
+                for (String andamal : uppdrag.getAndamal()) {
+                    MiuInformationType miuInfo = new MiuInformationType();
+                    miuInfo.setHsaIdentity(medarbetaruppdrag.getHsaId());
+                    miuInfo.setMiuPurpose(andamal);
+                    miuInfo.setCareUnitHsaIdentity(uppdrag.getEnhet());
+                    miuInfo.setCareUnitName("Enhet som inte finns");
+                    miuInfo.setCareGiver(uppdrag.getVardgivare());
+                    informationTypes.add(miuInfo);
+                }
+            }
+        }
         return informationTypes;
     }
 
@@ -136,7 +148,10 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         HsawsSimpleLookupResponseType response = new HsawsSimpleLookupResponseType();
 
         if (parameters.getLookup().getSearchAttribute().equals("hsaIdentity")) {
-            response.getResponseValues().add(createAttributeValueListForEnhet(parameters.getLookup().getValue()));
+            AttributeValueListType result = createAttributeValueListForEnhet(parameters.getLookup().getValue());
+            if (result != null) {
+                response.getResponseValues().add(result);
+            }
         }
 
         return response;
@@ -145,6 +160,10 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
     private AttributeValueListType createAttributeValueListForEnhet(String enhetsId) {
         Vardenhet vardenhet = hsaService.getVardenhet(enhetsId);
 
+        if (vardenhet == null) {
+            return null;
+        }
+        
         AttributeValueListType attributeList = new AttributeValueListType();
         attributeList.setDN(enhetsId);
 
@@ -177,10 +196,17 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
 
         for (Vardgivare vardgivare : hsaService.getVardgivare()) {
             for (Vardenhet vardenhet : vardgivare.getVardenheter()) {
+                if (vardenhet.getId().equals(parameters.getHsaIdentity())) {
+                    GetCareUnitResponseType response = new GetCareUnitResponseType();
+                    response.setCareUnitHsaIdentity(vardenhet.getId());
+                    response.setCareGiver(vardgivare.getId());
+                    return response;
+                }
                 for (Mottagning mottagning : vardenhet.getMottagningar()) {
                     if (mottagning.getId().equals(parameters.getHsaIdentity())) {
                         GetCareUnitResponseType response = new GetCareUnitResponseType();
                         response.setCareUnitHsaIdentity(vardenhet.getId());
+                        response.setCareGiver(vardgivare.getId());
                         return response;
                     }
                 }
