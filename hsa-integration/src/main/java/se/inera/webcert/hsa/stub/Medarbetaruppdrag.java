@@ -38,22 +38,31 @@ public class Medarbetaruppdrag {
     }
 
     public static class Uppdrag {
+        private String vardgivare;
         private String enhet;
         private List<String> andamal;
         public Uppdrag() {
             enhet = "";
             andamal = asList(VARD_OCH_BEHANDLING);
         }
-        public Uppdrag(String enhet) {
-            this(enhet, VARD_OCH_BEHANDLING);
+        public Uppdrag(String vardgivare, String enhet) {
+            this(vardgivare, enhet, VARD_OCH_BEHANDLING);
         }
-        public Uppdrag(String enhet, String andamal) {
+        public Uppdrag(String vardgivare, String enhet, String andamal) {
+            this.vardgivare = vardgivare;
             this.enhet = enhet;
             this.andamal = asList(andamal);
         }
-        public Uppdrag(String enhet, List<String> andamal) {
+        public Uppdrag(String vardgivare, String enhet, List<String> andamal) {
+            this.vardgivare = vardgivare;
             this.enhet = enhet;
             this.andamal = andamal;
+        }
+        public String getVardgivare() {
+            return vardgivare;
+        }
+        public void setVardgivare(String vardgivare) {
+            this.vardgivare = vardgivare;
         }
         public String getEnhet() {
             return enhet;
