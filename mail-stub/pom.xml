@@ -4,7 +4,7 @@
   <parent>
     <artifactId>webcert-parent</artifactId>
     <groupId>se.inera.webcert</groupId>
-    <version>0.5.6</version>
+    <version>0.5.7-SNAPSHOT</version>
   </parent>
 
   <artifactId>mail-stub</artifactId>
