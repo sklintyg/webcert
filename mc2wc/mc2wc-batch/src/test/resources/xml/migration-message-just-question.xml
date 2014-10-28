@@ -21,8 +21,12 @@
       </careUnit>
     </carePerson>
     <subject>OTHER</subject>
+    <caption>tns:caption</caption>
+    <sent>2001-12-31T12:00:00</sent>
+    <signed>2001-12-31T12:00:00</signed>
     <originator>CARE</originator>
     <status>SENT</status>
     <questionText>Det är frågan</questionText>
+    <questionLastAnswerDate>2002-01-14</questionLastAnswerDate>
   </questions>
 </migrationMessage>

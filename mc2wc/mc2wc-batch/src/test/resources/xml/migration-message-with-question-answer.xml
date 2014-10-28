@@ -83,5 +83,14 @@
       <sent>2011-11-09T09:28:52.000</sent>
       <status>SENT</status>
     </answer>
+    <externalContacts>Bo Börjesson, Göteborg</externalContacts>
+    <supplement>
+      <field>Fält 1</field>
+      <text>Text 1</text>
+    </supplement>
+    <supplement>
+      <field>Fält 2</field>
+      <text>Text 2</text>
+    </supplement>
   </questions>
 </migrationMessage>

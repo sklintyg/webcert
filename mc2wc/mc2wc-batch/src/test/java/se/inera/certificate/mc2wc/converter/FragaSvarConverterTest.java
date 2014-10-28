@@ -1,5 +1,6 @@
 package se.inera.certificate.mc2wc.converter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
@@ -43,10 +44,18 @@ public class FragaSvarConverterTest {
         assertNotNull(fs.getFrageSigneringsDatum());
         assertNotNull(fs.getFrageSkickadDatum());
         assertNotNull(fs.getIntygsReferens());
+        assertNotNull(fs.getMeddelandeRubrik());
+        assertNotNull(fs.getExternReferens());
+        assertNotNull(fs.getExternaKontakter());
+        assertEquals(1, fs.getExternaKontakter().size());
+        
+        assertNotNull(fs.getKompletteringar());
+        assertEquals(2, fs.getKompletteringar().size());
+        
         //assertNotNull(fs.getVardAktorHsaId());
         //assertNotNull(fs.getVardAktorNamn());
     }
-        
+            
     private MigrationMessage unmarshall(String testDoc) throws JAXBException, IOException {
         ClassPathResource res = new ClassPathResource(testDoc);
         return (MigrationMessage) unmarshaller.unmarshal(res.getFile());

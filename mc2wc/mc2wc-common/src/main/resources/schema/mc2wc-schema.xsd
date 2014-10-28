@@ -52,6 +52,7 @@
       <element name="answer" type="tns:answerType" maxOccurs="1"
                minOccurs="0">
       </element>
+      <element name="externalContacts" type="string" minOccurs="0" maxOccurs="1"></element>
       <element name="supplement" type="tns:supplementType"
                maxOccurs="unbounded" minOccurs="0">
       </element>

@@ -22,10 +22,10 @@ import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 
 public class FragaSvarConverterImpl implements FragaSvarConverter {
-    
+
     private static final String PERSONNUMMER_OID = "1.2.752.129.2.1.3.1";
     private static final String SAMORDNINGSNUMMER_OID = "1.2.752.129.2.1.3.3";
-    
+
     @Override
     public FragaSvar toFragaSvar(QuestionType qa) {
 
@@ -34,9 +34,9 @@ public class FragaSvarConverterImpl implements FragaSvarConverter {
         IntygsReferens intygsRef = new IntygsReferens();
         intygsRef.setIntygsId(qa.getCertificateId());
         intygsRef.setIntygsTyp(qa.getCertificateType()); // TODO: hardcode ?
-        
+
         Id patientId = toPatientId(qa.getPatient().getPersonId());
-        
+
         intygsRef.setPatientId(patientId);
         intygsRef.setPatientNamn(qa.getPatient().getFullName());
         intygsRef.setSigneringsDatum(qa.getCertificateSigned());
@@ -60,7 +60,7 @@ public class FragaSvarConverterImpl implements FragaSvarConverter {
 
         Vardperson vardperson = convertToVardperson(qa.getCarePerson());
         fs.setVardperson(vardperson);
-        
+
         fs.setVardAktorHsaId(vardperson.getHsaId());
         fs.setVardAktorNamn(vardperson.getNamn());
 
@@ -72,14 +72,17 @@ public class FragaSvarConverterImpl implements FragaSvarConverter {
         Status status = calculateStatus(qa);
         fs.setStatus(status);
 
-
-        //fs.setExternaKontakter(externaKontakter);
+        if (qa.getExternalContacts() != null) {
+            Set<String> externaKontakter = new HashSet<String>();
+            externaKontakter.add(qa.getExternalContacts());
+            fs.setExternaKontakter(externaKontakter);
+        }
 
         return fs;
     }
 
     private Id toPatientId(String patientId) {
-        String patientIdRoot = FragaSvarUtils.detectIfSamordningsNummer(patientId) ? SAMORDNINGSNUMMER_OID : PERSONNUMMER_OID; 
+        String patientIdRoot = FragaSvarUtils.detectIfSamordningsNummer(patientId) ? SAMORDNINGSNUMMER_OID : PERSONNUMMER_OID;
         return new Id(patientIdRoot, patientId);
     }
 
@@ -175,22 +178,22 @@ public class FragaSvarConverterImpl implements FragaSvarConverter {
             return Amne.OVRIGT;
         }
         switch (questionSubject) {
-            case CONTACT:
-                return Amne.KONTAKT;
-            case KOMPLEMENTING:
-                return Amne.KOMPLETTERING_AV_LAKARINTYG;
-            case MAKULERING:
-                return Amne.MAKULERING_AV_LAKARINTYG;
-            case MEETING:
-                return Amne.AVSTAMNINGSMOTE;
-            case REMINDER:
-                return Amne.PAMINNELSE;
-            case WORK_PROLONGING:
-                return Amne.ARBETSTIDSFORLAGGNING;
-            case OTHER:
-                return Amne.OVRIGT;
-            default:
-                return null;
+        case CONTACT:
+            return Amne.KONTAKT;
+        case KOMPLEMENTING:
+            return Amne.KOMPLETTERING_AV_LAKARINTYG;
+        case MAKULERING:
+            return Amne.MAKULERING_AV_LAKARINTYG;
+        case MEETING:
+            return Amne.AVSTAMNINGSMOTE;
+        case REMINDER:
+            return Amne.PAMINNELSE;
+        case WORK_PROLONGING:
+            return Amne.ARBETSTIDSFORLAGGNING;
+        case OTHER:
+            return Amne.OVRIGT;
+        default:
+            return null;
         }
 
     }

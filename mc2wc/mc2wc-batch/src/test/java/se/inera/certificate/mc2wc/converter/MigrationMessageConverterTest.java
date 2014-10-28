@@ -11,6 +11,7 @@ import se.inera.certificate.mc2wc.dbunit.AbstractDbUnitSpringTest;
 import se.inera.certificate.mc2wc.dbunit.CustomFlatXmlDataSetLoader;
 import se.inera.certificate.mc2wc.medcert.jpa.model.Certificate;
 import se.inera.certificate.mc2wc.message.MigrationMessage;
+import se.inera.certificate.mc2wc.message.QuestionType;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -48,6 +49,12 @@ public class MigrationMessageConverterTest extends AbstractDbUnitSpringTest {
         assertNotNull(migrationMessage);
         assertNotNull(migrationMessage.getCertificate());
         assertEquals(1, migrationMessage.getQuestions().size());
+        
+        // check complements
+        QuestionType question = migrationMessage.getQuestions().get(0);
+        assertEquals(1, question.getSupplements().size());
+        
+        assertNotNull(question.getExternalContacts());
     }
     
     @Test
