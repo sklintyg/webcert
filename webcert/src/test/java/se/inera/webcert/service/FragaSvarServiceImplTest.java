@@ -85,9 +85,6 @@ public class FragaSvarServiceImplTest {
     IntygService intygService;
 
     @Mock
-    MailNotificationService mailNotificationService;
-
-    @Mock
     CertificateContentMeta certificateContentMetaMock;
 
     @Mock
@@ -683,18 +680,4 @@ public class FragaSvarServiceImplTest {
         return user;
     }
 
-    @Test
-    public void testMailNotificationForQuestion() throws MessagingException {
-        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
-        service.processIncomingQuestion(fraga);
-        verify(mailNotificationService).sendMailForIncomingQuestion(fraga);
-    }
-
-    @Test
-    public void testMailNotificationForAnswer() throws MessagingException {
-        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
-        when(fragasvarRepository.findOne(1L)).thenReturn(fragaSvar);
-        service.processIncomingAnswer(1L, "svarsText", new LocalDateTime());
-        verify(mailNotificationService).sendMailForIncomingAnswer(fragaSvar);
-    }
 }
