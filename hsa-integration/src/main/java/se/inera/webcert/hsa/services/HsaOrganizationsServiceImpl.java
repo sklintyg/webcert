@@ -97,6 +97,11 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         String enhetHsaId = miuInformationType.getCareUnitHsaIdentity();
 
         String enhetDn = fetchDistinguishedName(enhetHsaId);
+        
+        if (enhetDn == null) {
+            return vardenheter;
+        }
+        
         LOG.debug("DN for enhet '{}' is '{}'", enhetHsaId, enhetDn);
 
         List<CareUnitType> careUnits = fetchSubEnheter(vardgivare, enhetDn);
@@ -151,8 +156,16 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         lookupType.setLookup(exactType);
 
         HsawsSimpleLookupResponseType lookupResponse = client.callHsawsSimpleLookup(lookupType);
-
-        return lookupResponse.getResponseValues().get(0).getDN();
+        switch (lookupResponse.getResponseValues().size()) {
+            case 0:
+                LOG.error("Enhet med HSA-ID {} saknas.", hsaId);
+                return null;
+            case 1:
+                return lookupResponse.getResponseValues().get(0).getDN();
+            default:
+                LOG.warn("HSA-ID {} används till fler än 1 enhet. Detta är troligen ett konfigurations-fel i HSA-katalogen.", hsaId);
+                return lookupResponse.getResponseValues().get(0).getDN();
+        }
     }
 
     private void attachMottagningar(Vardenhet vardenhet) {
