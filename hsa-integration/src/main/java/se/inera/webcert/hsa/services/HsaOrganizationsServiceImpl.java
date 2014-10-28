@@ -95,8 +95,14 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         List<Vardenhet> vardenheter = new ArrayList<>();
 
         String enhetHsaId = miuInformationType.getCareUnitHsaIdentity();
+        String enhetNamn = miuInformationType.getCareUnitName();
 
-        String enhetDn = fetchDistinguishedName(enhetHsaId);
+        String enhetDn = fetchDistinguishedName(enhetHsaId, enhetNamn);
+        
+        if (enhetDn == null) {
+            return vardenheter;
+        }
+        
         LOG.debug("DN for enhet '{}' is '{}'", enhetHsaId, enhetDn);
 
         List<CareUnitType> careUnits = fetchSubEnheter(vardgivare, enhetDn);
@@ -138,7 +144,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         return response.getCareUnits().getCareUnit();
     }
 
-    private String fetchDistinguishedName(String hsaId) {
+    private String fetchDistinguishedName(String hsaId, String namn) {
         HsawsSimpleLookupType lookupType = new HsawsSimpleLookupType();
         ExactType exactType = new ExactType();
         exactType.setSearchAttribute("hsaIdentity");
@@ -151,8 +157,16 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         lookupType.setLookup(exactType);
 
         HsawsSimpleLookupResponseType lookupResponse = client.callHsawsSimpleLookup(lookupType);
-
-        return lookupResponse.getResponseValues().get(0).getDN();
+        switch (lookupResponse.getResponseValues().size()) {
+            case 0:
+                LOG.error("Enhet {} med hsaId {} saknas.", namn, hsaId);
+                return null;
+            case 1:
+                return lookupResponse.getResponseValues().get(0).getDN();
+            default:
+                LOG.warn("hsaId {} används till fler än 1 enhet. Detta är troligen ett konfigurations-fel i HSA-katalogen.", hsaId);
+                return lookupResponse.getResponseValues().get(0).getDN();
+        }
     }
 
     private void attachMottagningar(Vardenhet vardenhet) {
