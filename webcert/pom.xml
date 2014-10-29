@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
-<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part 
-  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web). 
-  Inera Certificate Web is free software: you can redistribute it and/or modify 
-  it under the terms of the GNU Affero General Public License as published 
-  by the Free Software Foundation, either version 3 of the License, or (at 
-  your option) any later version. Inera Certificate Web is distributed in the 
-  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
-  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-  GNU Affero General Public License for more details. You should have received 
-  a copy of the GNU Affero General Public License along with this program. 
+<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part
+  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
+  Inera Certificate Web is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published
+  by the Free Software Foundation, either version 3 of the License, or (at
+  your option) any later version. Inera Certificate Web is distributed in the
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Affero General Public License for more details. You should have received
+  a copy of the GNU Affero General Public License along with this program.
   If not, see <http://www.gnu.org/licenses/>. -->
 <project
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -106,14 +106,6 @@
       <artifactId>ts-diabetes</artifactId>
       <version>${modules-ts.version}</version>
     </dependency>
-
-    <!-- AMQ -->
-    <!-- <dependency> <groupId>org.apache.activemq</groupId> <artifactId>activemq-client</artifactId> 
-      </dependency> -->
-    <!-- <dependency> <groupId>org.apache.activemq</groupId> <artifactId>activemq-spring</artifactId> 
-      </dependency> -->
-    <!-- <dependency> <groupId>org.apache.activemq</groupId> <artifactId>activemq-kahadb-store</artifactId> 
-      </dependency> -->
 
     <!-- Logging -->
     <dependency>
@@ -351,12 +343,6 @@
           <webAppConfig>
             <contextPath>/</contextPath>
           </webAppConfig>
-<!--           <contextHandlers>
-            <contextHandler implementation="org.eclipse.jetty.webapp.WebAppContext">
-              <war>../log-sender/target/inera-log-sender.war</war>
-              <contextPath>/log-sender</contextPath>
-            </contextHandler>
-          </contextHandlers> -->
           <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-web.xml</contextXml>
           <systemProperties>
             <systemProperty>
@@ -446,39 +432,39 @@
             <configuration>
               <target>
                 <copy todir="${project.build.directory}/webjardependencies"
-                  verbose="false">
+                    verbose="false">
                   <regexpmapper from="^(.*)[/\\].*[/\\](.*)$$"
-                    to="\1/\2" />
+                      to="\1/\2"/>
                   <fileset
-                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/">
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/">
                   </fileset>
                 </copy>
                 <copy
-                  todir="${project.build.directory}/webjardependencies/common"
-                  verbose="false">
+                    todir="${project.build.directory}/webjardependencies/common"
+                    verbose="false">
                   <fileset
-                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/common">
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/common">
                   </fileset>
                 </copy>
                 <copy
-                  todir="${project.build.directory}/webjardependencies/fk7263"
-                  verbose="false">
+                    todir="${project.build.directory}/webjardependencies/fk7263"
+                    verbose="false">
                   <fileset
-                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
                   </fileset>
                 </copy>
                 <copy
-                  todir="${project.build.directory}/webjardependencies/ts-bas"
-                  verbose="false">
+                    todir="${project.build.directory}/webjardependencies/ts-bas"
+                    verbose="false">
                   <fileset
-                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
                   </fileset>
                 </copy>
                 <copy
-                  todir="${project.build.directory}/webjardependencies/ts-diabetes"
-                  verbose="false">
+                    todir="${project.build.directory}/webjardependencies/ts-diabetes"
+                    verbose="false">
                   <fileset
-                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-diabetes">
+                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-diabetes">
                   </fileset>
                 </copy>
               </target>
@@ -539,6 +525,33 @@
         <system.mode>local</system.mode>
       </properties>
     </profile>
+
+    <profile>
+      <id>v0.6</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-release-features</id>
+                <phase>process-resources</phase>
+                <configuration>
+                  <target>
+                    <copy file="${project.basedir}/../src/main/releases/v0.6/features.properties"
+                        tofile="${project.build.outputDirectory}/features.properties" overwrite="true"/>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
-  
+
 </project>
