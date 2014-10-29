@@ -1,6 +1,8 @@
 package se.inera.log.messages;
 
-public class IntygPrintMessage extends AbstractLogMessage {
+import java.io.Serializable;
+
+public class IntygPrintMessage extends AbstractLogMessage implements Serializable {
 
     public IntygPrintMessage(String intygId, String printMethod) {
         super(ActivityType.PRINT);

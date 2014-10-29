@@ -8,6 +8,7 @@ import javax.jms.QueueBrowser;
 import javax.jms.Session;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -45,10 +46,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
+import se.inera.log.messages.IntygPrintMessage;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.log.messages.Patient;
+import se.inera.log.messages.SendIntygToRecipientMessage;
 import se.riv.ehr.log.store.storelog.v1.ObjectFactory;
 import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
@@ -83,12 +87,12 @@ public class LogSenderTest {
 
     private List<AbstractLogMessage> logEntries = new ArrayList<AbstractLogMessage>() {
         {
-            add(intygReadMessage("2013-01-01T10:00"));
-            add(intygReadMessage("2013-01-02T10:00"));
-            add(intygReadMessage("2013-01-03T10:00"));
-            add(intygReadMessage("2013-01-04T10:00"));
-            add(intygReadMessage("2013-01-05T10:00"));
-            add(intygReadMessage("2013-01-06T10:00"));
+            add(populateLogMessage("2013-01-01T10:00", new IntygReadMessage("abc123")));
+            add(populateLogMessage("2013-01-02T10:00", new IntygReadMessage("abc123")));
+            add(populateLogMessage("2013-01-03T10:00", new IntygPrintMessage("abc123","web")));
+            add(populateLogMessage("2013-01-04T10:00", new IntygPrintMessage("abc123","pdf")));
+            add(populateLogMessage("2013-01-05T10:00", new SendIntygToRecipientMessage("abc123", "FK")));
+            add(populateLogMessage("2013-01-06T10:00", new SendIntygToRecipientMessage("abc123", "TS")));
         }
     };
 
@@ -100,24 +104,23 @@ public class LogSenderTest {
         return logIds;
     }
 
-    private AbstractLogMessage intygReadMessage(String timestamp) {
-        IntygReadMessage intygReadMessage = new IntygReadMessage("abc123");
-        intygReadMessage.setSystemId("webcert");
-        intygReadMessage.setSystemName("WebCert");
-        intygReadMessage.setTimestamp(new LocalDateTime(timestamp));
-        intygReadMessage.setUserId("user1");
-        intygReadMessage.setUserName("Markus Gran");
+    private AbstractLogMessage populateLogMessage(String timestamp, AbstractLogMessage logMessage) {
+        logMessage.setSystemId("webcert");
+        logMessage.setSystemName("WebCert");
+        logMessage.setTimestamp(new LocalDateTime(timestamp));
+        logMessage.setUserId("user1");
+        logMessage.setUserName("Markus Gran");
 
         Enhet enhet = new Enhet("enhet1", "Enhet 1", "vg1", "Vårdgivare 1");
-        intygReadMessage.setUserCareUnit(enhet);
+        logMessage.setUserCareUnit(enhet);
 
         Patient patient = new Patient("19121212-1212", "Tolv Tolvasson");
-        intygReadMessage.setPatient(patient);
+        logMessage.setPatient(patient);
         
         Enhet owner = new Enhet("enhet1", "Enhet 1", "vg1", "Vårdgivare 1");
-        intygReadMessage.setResourceOwner(owner);
+        logMessage.setResourceOwner(owner);
 
-        return intygReadMessage;
+        return logMessage;
     }
 
     @Test
