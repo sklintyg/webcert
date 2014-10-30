@@ -43,7 +43,7 @@
   </modules>
 
   <scm>
-    <connection>scm:git:https://${scm.host}/p/inera-webcert/</connection>
+    <connection>scm:git:https://${scm.host}/sklintyg/webcert.git/</connection>
     <tag>HEAD</tag>
   </scm>
 
