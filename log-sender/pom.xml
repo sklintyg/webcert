@@ -1,39 +1,26 @@
 <?xml version="1.0"?>
-<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part 
-  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web). 
-  Inera Certificate Web is free software: you can redistribute it and/or modify 
-  it under the terms of the GNU Affero General Public License as published 
-  by the Free Software Foundation, either version 3 of the License, or (at 
-  your option) any later version. Inera Certificate Web is distributed in the 
-  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
-  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-  GNU Affero General Public License for more details. You should have received 
-  a copy of the GNU Affero General Public License along with this program. 
-  If not, see <http://www.gnu.org/licenses/>. -->
-<project
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
-    <groupId>se.inera.webcert</groupId>
-    <artifactId>webcert-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>se.inera.intyg.webcert</groupId>
+    <artifactId>webcert</artifactId>
+    <version>2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>log-sender</artifactId>
-  <name>Inera Log Sender Application</name>
   <packaging>war</packaging>
+
+  <name>Log Sender Application</name>
 
   <properties>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
   </properties>
 
   <dependencies>
-    <!-- Project dependencies -->
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>webcert-schemas</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>log-messages</artifactId>
@@ -43,10 +30,16 @@
       <artifactId>loggtjanst-stub</artifactId>
     </dependency>
 
-    <!-- Dependencies to Intygstjansten -->
+    <!-- Common -->
     <dependency>
-      <groupId>se.inera.certificate</groupId>
-      <artifactId>logback-util</artifactId>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>logging-util</artifactId>
+    </dependency>
+
+    <!-- Schemas -->
+    <dependency>
+      <groupId>se.inera.intyg.schemas</groupId>
+      <artifactId>webcert-schemas</artifactId>
     </dependency>
 
     <!-- Logging -->
@@ -92,8 +85,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-jms</artifactId>
     </dependency>
-    <!--<dependency> <groupId>org.springframework</groupId> <artifactId>spring-task</artifactId> 
-      </dependency> -->
 
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -150,7 +141,7 @@
   </dependencies>
 
   <build>
-    <finalName>inera-log-sender</finalName>
+    <finalName>log-sender</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.activemq.tooling</groupId>

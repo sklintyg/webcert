@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>se.inera.intyg.webcert</groupId>
+    <artifactId>webcert</artifactId>
+    <version>2.0-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
+  </parent>
+
+  <artifactId>pu-integration</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Webcert PU-Integration</name>
+
+  <properties>
+    <schema.path>src/main/resources/schemas</schema.path>
+    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
+  </properties>
+
+  <dependencies>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- WebServices/REST -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http</artifactId>
+    </dependency>
+
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+
+    <!-- XML -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jvnet.jaxb2_commons</groupId>
+      <artifactId>jaxb2-basics-runtime</artifactId>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+    </dependency>
+
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-codegen-plugin</artifactId>
+        <version>${cxf.version}</version>
+        <executions>
+          <execution>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sourceRoot>${basedir}/target/generated/src/main/java</sourceRoot>
+              <wsdlOptions>
+
+                <wsdlOption>
+                  <extraargs>
+                    <extraarg>-xjc-XhashCode</extraarg>
+                    <extraarg>-xjc-Xequals</extraarg>
+                    <extraarg>-xjc-XtoString</extraarg>
+                    <extraarg>-xjc-Xinheritance</extraarg>
+                    <extraarg>-p</extraarg>
+                    <extraarg>
+                      urn:riv:population:residentmaster:LookupResidentForFullProfileResponder:1=se.inera.population.residentmaster.v1.lookupresidentforfullprofile
+                    </extraarg>
+                    <extraarg>-p</extraarg>
+                    <extraarg>urn:riv:population:residentmaster:1=se.inera.population.residentmaster.v1</extraarg>
+                    <extraarg>-p</extraarg>
+                    <extraarg>urn:riv:itintegration:registry:1=se.inera.itintegration.v1</extraarg>
+                    <extraarg>-p</extraarg>
+                    <extraarg>
+                      urn:riv:population:residentmaster:LookupResidentForFullProfile:1:rivtabp21=se.inera.population.residentmaster.v1
+                    </extraarg>
+                    <extraarg>-validate</extraarg>
+                    <extraarg>-verbose</extraarg>
+                  </extraargs>
+                  <wsdl>
+                    ${schema.path}/wsdl/residentmaster/interactions/LookupResidentForFullProfileInteraction/LookupResidentForFullProfileInteraction_1.0_RIVTABP21.wsdl
+                  </wsdl>
+                </wsdlOption>
+
+              </wsdlOptions>
+            </configuration>
+            <goals>
+              <goal>wsdl2java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb2-basics</artifactId>
+            <version>${jaxb.commons.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+</project>

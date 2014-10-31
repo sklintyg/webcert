@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>se.inera.intyg.webcert</groupId>
+    <artifactId>webcert</artifactId>
+    <version>2.0-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
+  </parent>
+
+  <artifactId>loggtjanst-stub</artifactId>
+
+  <name>WebCert Loggtjänst Stub</name>
+
+  <properties>
+    <schema.path>${basedir}/src/main/resources/schemas</schema.path>
+    <target.path>${basedir}/target/generated/src/main/java</target.path>
+    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
+  </properties>
+
+  <dependencies>
+
+    <!-- Common -->
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>integration-util</artifactId>
+    </dependency>
+
+    <!-- Schemas -->
+    <dependency>
+      <groupId>se.inera.intyg.schemas</groupId>
+      <artifactId>intygstjanst-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.schemas</groupId>
+      <artifactId>webcert-schemas</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>
