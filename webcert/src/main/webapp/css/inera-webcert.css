@@ -553,6 +553,10 @@ input:focus:invalid:focus, textarea:focus:invalid:focus, select:focus:invalid:fo
  Webcert elements
  **/
 
+.multiline {
+    white-space: pre-line;
+}
+
 .bluebox {
   background-color: #008391;
   -webkit-border-radius: 8px 8px 8px 8px;

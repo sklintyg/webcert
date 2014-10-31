@@ -233,6 +233,11 @@ span.help {
   border-radius: 4px 4px 4px 4px;
 }
 
+ul.padded-list > li {
+    padding-bottom: 5px;
+    padding-left: 16px;
+}
+
 .cert-body .body-row .unfilled {
   color: #888;
   -webkit-border-radius: 4px 4px 4px 4px;
@@ -377,6 +382,7 @@ input[datepicker-popup] {
 .qa-block-body {
   display: block;
   padding: 20px 20px;
+  white-space: pre-line;
 }
 
 .qa-sender, .qa-date {
