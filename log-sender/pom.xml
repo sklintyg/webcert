@@ -13,7 +13,7 @@
   <artifactId>log-sender</artifactId>
   <packaging>war</packaging>
 
-  <name>Log Sender Application</name>
+  <name>Webcert (Log Sender)</name>
 
   <properties>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
@@ -39,7 +39,7 @@
     <!-- Schemas -->
     <dependency>
       <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>webcert-schemas</artifactId>
+      <artifactId>schemas-webcert</artifactId>
     </dependency>
 
     <!-- Logging -->

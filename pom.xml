@@ -171,12 +171,12 @@
       <!-- Schemas -->
       <dependency>
         <groupId>se.inera.intyg.schemas</groupId>
-        <artifactId>intygstjanst-schemas</artifactId>
+        <artifactId>schemas-intygstjanst</artifactId>
         <version>${schemas.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.schemas</groupId>
-        <artifactId>webcert-schemas</artifactId>
+        <artifactId>schemas-webcert</artifactId>
         <version>${schemas.version}</version>
       </dependency>
 

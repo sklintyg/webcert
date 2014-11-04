@@ -13,7 +13,7 @@
 
   <artifactId>intygstjanst-stub</artifactId>
 
-  <name>WebCert Intygstjänst Stub</name>
+  <name>Webcert (Intygstjänsten Stub)</name>
 
   <properties>
     <schema.path>${basedir}/src/main/resources/schemas</schema.path>
@@ -31,7 +31,7 @@
     <!-- Schemas -->
     <dependency>
       <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>intygstjanst-schemas</artifactId>
+      <artifactId>schemas-intygstjanst</artifactId>
     </dependency>
 
     <dependency>

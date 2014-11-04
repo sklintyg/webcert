@@ -13,7 +13,7 @@
 
   <artifactId>loggtjanst-stub</artifactId>
 
-  <name>WebCert Loggtjänst Stub</name>
+  <name>Webcert (Loggtjänst Stub)</name>
 
   <properties>
     <schema.path>${basedir}/src/main/resources/schemas</schema.path>
@@ -32,11 +32,11 @@
     <!-- Schemas -->
     <dependency>
       <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>intygstjanst-schemas</artifactId>
+      <artifactId>schemas-intygstjanst</artifactId>
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>webcert-schemas</artifactId>
+      <artifactId>schemas-webcert</artifactId>
     </dependency>
 
     <dependency>

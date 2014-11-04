@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>mail-stub</artifactId>
-  <name>WebCert Mail Server Stubs</name>
+  <name>Webcert (Mail Server Stubs)</name>
 
   <properties>
     <schema.path>${basedir}/src/main/resources/schemas</schema.path>

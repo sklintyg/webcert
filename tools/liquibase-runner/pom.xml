@@ -14,7 +14,7 @@
   <artifactId>webcert-liquibase-runner</artifactId>
   <packaging>jar</packaging>
 
-  <name>Webcert Liquibase Runner</name>
+  <name>Webcert (Liquibase Runner)</name>
 
   <dependencies>
 

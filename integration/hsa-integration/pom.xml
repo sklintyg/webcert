@@ -14,7 +14,7 @@
   <artifactId>hsa-integration</artifactId>
   <packaging>jar</packaging>
 
-  <name>Webcert HSA-Integration</name>
+  <name>Webcert (HSA-integration)</name>
 
   <properties>
     <schema.path>src/main/resources/schemas</schema.path>

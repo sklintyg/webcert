@@ -13,7 +13,7 @@
   <artifactId>webcert-persistence</artifactId>
   <packaging>jar</packaging>
 
-  <name>Webcert Persistence</name>
+  <name>Webcert (Persistence)</name>
 
   <properties>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>

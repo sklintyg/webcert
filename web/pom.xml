@@ -13,7 +13,7 @@
   <artifactId>webcert-web</artifactId>
   <packaging>war</packaging>
 
-  <name>Webcert Web</name>
+  <name>Webcert (Web)</name>
 
   <properties>
 
@@ -96,7 +96,7 @@
     <!-- Schemas -->
     <dependency>
       <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>webcert-schemas</artifactId>
+      <artifactId>schemas-webcert</artifactId>
     </dependency>
 
     <!-- Logging -->

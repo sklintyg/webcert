@@ -14,7 +14,7 @@
   <artifactId>pu-integration</artifactId>
   <packaging>jar</packaging>
 
-  <name>Webcert PU-Integration</name>
+  <name>Webcert (PU-integration)</name>
 
   <properties>
     <schema.path>src/main/resources/schemas</schema.path>

@@ -12,7 +12,7 @@
 
   <artifactId>log-messages</artifactId>
 
-  <name>WebCert Log Messages</name>
+  <name>Webcert (Log Messages)</name>
 
   <properties>
     <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>

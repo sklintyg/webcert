@@ -13,7 +13,7 @@
   <artifactId>webcert-specifications</artifactId>
   <packaging>jar</packaging>
 
-  <name>Webcert FitNesse specifications</name>
+  <name>Webcert (FitNesse)</name>
 
   <properties>
     <geb.env>firefox</geb.env>
@@ -56,7 +56,7 @@
     <!-- Schemas -->
     <dependency>
       <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>webcert-schemas</artifactId>
+      <artifactId>schemas-webcert</artifactId>
     </dependency>
 
     <dependency>
