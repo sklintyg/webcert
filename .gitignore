@@ -17,8 +17,8 @@ node
 node_modules
 target
 activemq-data
-webcert/node_modules/
-webcert/src/main/webapp/js/coverage/
-webcert/src/main/webapp/js/app.min.js
-webcert/src/test/js/coverage/
-webcert/src/test/coverage/
+web/node_modules/
+web/src/main/webapp/js/coverage/
+web/src/main/webapp/js/app.min.js
+web/src/test/js/coverage/
+web/src/test/coverage/
