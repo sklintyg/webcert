@@ -73,6 +73,11 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
     <!-- Tools -->
     <dependency>
       <groupId>se.inera.intyg.tools</groupId>
