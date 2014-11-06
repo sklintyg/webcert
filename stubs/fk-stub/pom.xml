@@ -18,7 +18,6 @@
   <properties>
     <schema.path>${basedir}/src/main/resources/schemas</schema.path>
     <target.path>${basedir}/target/generated/src/main/java</target.path>
-    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
   </properties>
 
   <dependencies>
