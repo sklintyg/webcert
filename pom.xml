@@ -37,8 +37,6 @@
 
     <!-- Tools -->
     <liquibase-runner.version>1.0-SNAPSHOT</liquibase-runner.version>
-
-    <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
   </properties>
 
   <modules>

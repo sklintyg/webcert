@@ -30,8 +30,6 @@
     <fitnesse.project.root>IneraWebcert</fitnesse.project.root>
     <fitnesse.suite>${fitnesse.project.root}</fitnesse.suite>
 
-    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
-
     <!-- This example has no unit tests, just integration tests -->
     <skipTests>true</skipTests>
   </properties>

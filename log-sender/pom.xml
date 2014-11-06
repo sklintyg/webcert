@@ -15,10 +15,6 @@
 
   <name>Webcert (Log Sender)</name>
 
-  <properties>
-    <checkstyle.basedir>${project.basedir}/..</checkstyle.basedir>
-  </properties>
-
   <dependencies>
 
     <dependency>
