@@ -1,2 +1,2 @@
 #!/bin/sh
-java -cp .:lib/${project.build.finalName}.jar se.inera.certificate.liquibase.Runner
+java -jar lib/webcert-liquibase-runner-2.0-SNAPSHOT-jar-with-dependencies.jar --changeLogFile="changelog/changelog.xml" --contexts=none update
