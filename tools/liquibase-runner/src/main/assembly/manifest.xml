@@ -21,7 +21,6 @@
       <directory>${basedir}/src/main/assembly/template</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>runner.properties</include>
         <include>liquibase.properties</include>
       </includes>
       <lineEnding>keep</lineEnding>
