@@ -1,9 +1,16 @@
 package se.inera.webcert.web.controller.integration;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.service.draft.IntygDraftService;
+import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -27,27 +34,30 @@ import java.util.Map;
  *
  * @author nikpet
  */
-@Path("/certificate")
+@Path("/")
 public class IntygIntegrationController {
 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
-    private static final String PARAM_QA_ONLY = "qaOnly";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
     private String urlBaseTemplate;
 
-    private String urlFragmentTemplate;
+    private String urlIntygFragmentTemplate;
+    private String urlUtkastFragmentTemplate;
 
     @Autowired
     private IntygService intygService;
 
     @Autowired
+    private IntygRepository intygRepository;
+
+    @Autowired
     private WebCertUserService webCertUserService;
 
     /**
-     * Fetches a certificate from IT and then performs a redirect to the view that displays
+     * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
      *
      * @param uriInfo
@@ -56,31 +66,44 @@ public class IntygIntegrationController {
      * @return
      */
     @GET
-    @Path("/{intygId}/questions")
+    @Path("/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
 
-        IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId);
+        Boolean draft = true;
+        String intygType;
 
-        String intygType = intygData.getMetaData().getType();
+        if(StringUtils.isBlank(intygId)) {
+            return Response.serverError().build();
+        }
+
+        Intyg draftData = intygRepository.findOne(intygId);
+        if (draftData != null && !draftData.getStatus().equals(IntygsStatus.SIGNED)) {
+            intygType = draftData.getIntygsTyp();
+        } else {
+            draft = false;
+            IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId); // Throws exceptions in case of errors
+            intygType = intygData.getMetaData().getType();
+        }
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
 
-        //webCertUserService.clearEnabledFeaturesOnUser();
-        //webCertUserService.enableFeaturesOnUser(WebcertFeature.HANTERA_FRAGOR);
-        //webCertUserService.enableModuleFeatureOnUser(intygType, ModuleFeature.HANTERA_FRAGOR);
+        webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM);
 
-        return buildRedirectResponse(uriInfo, intygType, intygId);
+        return buildRedirectResponse(uriInfo, intygType, intygId, draft);
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, Boolean draft) {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<String, Object>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
-        urlParams.put(PARAM_QA_ONLY, true);
 
+        String urlFragmentTemplate = this.urlIntygFragmentTemplate;
+        if(draft) {
+            urlFragmentTemplate = this.urlUtkastFragmentTemplate;
+        }
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
@@ -90,7 +113,11 @@ public class IntygIntegrationController {
         this.urlBaseTemplate = urlBaseTemplate;
     }
 
-    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
-        this.urlFragmentTemplate = urlFragmentTemplate;
+    public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
+        this.urlIntygFragmentTemplate = urlFragmentTemplate;
+    }
+
+    public void setUrlUtkastFragmentTemplate(String urlFragmentTemplate) {
+        this.urlUtkastFragmentTemplate = urlFragmentTemplate;
     }
 }
