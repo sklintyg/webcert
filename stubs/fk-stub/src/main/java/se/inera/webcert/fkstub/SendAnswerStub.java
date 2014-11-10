@@ -1,17 +1,15 @@
 package se.inera.webcert.fkstub;
 
-import static se.inera.certificate.integration.util.ResultOfCallUtil.failResult;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
 
-import se.inera.certificate.integration.util.ResultOfCallUtil;
-import se.inera.webcert.integration.validator.SendMedicalCertificateAnswerValidator;
-import se.inera.webcert.integration.validator.ValidationException;
-import se.inera.webcert.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
-import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
-import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
-import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
+import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
+import se.inera.webcert.fkstub.validation.SendMedicalCertificateAnswerValidator;
+import se.inera.webcert.fkstub.validation.ValidationException;
 
 /**
  * @author andreaskaltenbach
@@ -41,7 +39,7 @@ public class SendAnswerStub implements SendMedicalCertificateAnswerResponderInte
                 validator.validateAndCorrect();
                 response.setResult(ResultOfCallUtil.okResult());
             } catch (ValidationException e) {
-                response.setResult(failResult(e.getMessage()));
+                response.setResult(ResultOfCallUtil.failResult(e.getMessage()));
             }
             questionAnswerStore.addAnswer(parameters.getAnswer());
         }

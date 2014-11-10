@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import se.inera.webcert.overvakning.HealthCheck;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.ConfigurationType;
@@ -13,6 +14,7 @@ import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
 
 import javax.annotation.PostConstruct;
 import javax.jws.WebParam;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

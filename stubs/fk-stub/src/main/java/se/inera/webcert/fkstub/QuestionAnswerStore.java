@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
-import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
-import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
 
 /**
  * @author andreaskaltenbach

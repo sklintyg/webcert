@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -63,6 +64,8 @@
       <artifactId>log-messages</artifactId>
     </dependency>
 
+    
+
     <!-- Common -->
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
@@ -91,10 +94,21 @@
       <artifactId>ts-diabetes</artifactId>
     </dependency>
 
-    <!-- Schemas -->
+    <!-- Interactions -->    
     <dependency>
-      <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>schemas-webcert</artifactId>
+      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting.v1</groupId>
+      <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>se.riv.itintegration.monitoring</groupId>
+      <artifactId>itintegration-monitoring-interactions</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Logging -->
@@ -289,6 +303,8 @@
       <artifactId>xmlunit</artifactId>
     </dependency>
 
+
+    
   </dependencies>
 
   <build>
@@ -423,39 +439,39 @@
             <configuration>
               <target>
                 <copy todir="${project.build.directory}/webjardependencies"
-                    verbose="false">
+                  verbose="false">
                   <regexpmapper from="^(.*)[/\\].*[/\\](.*)$$"
-                      to="\1/\2"/>
+                    to="\1/\2" />
                   <fileset
-                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/">
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/">
                   </fileset>
                 </copy>
                 <copy
-                    todir="${project.build.directory}/webjardependencies/common"
-                    verbose="false">
+                  todir="${project.build.directory}/webjardependencies/common"
+                  verbose="false">
                   <fileset
-                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/common">
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/common">
                   </fileset>
                 </copy>
                 <copy
-                    todir="${project.build.directory}/webjardependencies/fk7263"
-                    verbose="false">
+                  todir="${project.build.directory}/webjardependencies/fk7263"
+                  verbose="false">
                   <fileset
-                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
                   </fileset>
                 </copy>
                 <copy
-                    todir="${project.build.directory}/webjardependencies/ts-bas"
-                    verbose="false">
+                  todir="${project.build.directory}/webjardependencies/ts-bas"
+                  verbose="false">
                   <fileset
-                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
                   </fileset>
                 </copy>
                 <copy
-                    todir="${project.build.directory}/webjardependencies/ts-diabetes"
-                    verbose="false">
+                  todir="${project.build.directory}/webjardependencies/ts-diabetes"
+                  verbose="false">
                   <fileset
-                      dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-diabetes">
+                    dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-diabetes">
                   </fileset>
                 </copy>
               </target>
@@ -529,8 +545,10 @@
                 <phase>process-resources</phase>
                 <configuration>
                   <target>
-                    <copy file="${project.basedir}/../src/main/releases/v0.6/features.properties"
-                        tofile="${project.build.outputDirectory}/features.properties" overwrite="true"/>
+                    <copy
+                      file="${project.basedir}/../src/main/releases/v0.6/features.properties"
+                      tofile="${project.build.outputDirectory}/features.properties"
+                      overwrite="true" />
                   </target>
                 </configuration>
                 <goals>

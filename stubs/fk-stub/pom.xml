@@ -21,20 +21,38 @@
   </properties>
 
   <dependencies>
-
+    
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>webcert-persistence</artifactId>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
     </dependency>
-
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    
+    <!-- Logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>logging-util</artifactId>
+    </dependency>
+    
     <!-- Schemas -->
     <dependency>
-      <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>schemas-intygstjanst</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>schemas-webcert</artifactId>
+      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting.v1</groupId>
+      <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -51,6 +69,7 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
     </dependency>
+    
   </dependencies>
 
 </project>

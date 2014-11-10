@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.w3.wsaddressing10.AttributedURIType;
 
-import se.inera.certificate.integration.util.ResultOfCallUtil;
 import se.inera.certificate.logging.LogMarkers;
+import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.webcert.integration.validator.QuestionAnswerValidator;
 import se.inera.webcert.medcertqa.v1.InnehallType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
