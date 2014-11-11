@@ -21,7 +21,7 @@
       <directory>${basedir}/src/main/assembly/template</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>runner.properties</include>
+        <include>liquibase.properties</include>
       </includes>
       <lineEnding>keep</lineEnding>
     </fileSet>
@@ -29,7 +29,7 @@
       <directory>${project.build.directory}</directory>
       <outputDirectory>/lib</outputDirectory>
       <includes>
-        <include>liquibase-runner-for-webcert-*.jar</include>
+        <include>webcert-liquibase-runner-*-jar-with-dependencies.jar</include>
       </includes>
       <excludes>
         <exclude>dummy.txt</exclude>

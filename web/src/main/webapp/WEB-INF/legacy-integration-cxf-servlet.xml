@@ -19,7 +19,7 @@
 
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
-      <ref bean="intygIntegrationController" />
+      <ref bean="legacyIntygIntegrationController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
@@ -30,11 +30,10 @@
     </jaxrs:extensionMappings>
   </jaxrs:server>
 
-  <bean id="intygIntegrationController"
-    class="se.inera.webcert.web.controller.integration.IntygIntegrationController">
+  <bean id="legacyIntygIntegrationController"
+    class="se.inera.webcert.web.controller.integration.LegacyIntygIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
-    <property name="urlIntygFragmentTemplate" value="${certificate.view.url.intyg.integration.template}" />
-    <property name="urlUtkastFragmentTemplate" value="${certificate.view.url.utkast.integration.template}" />
+    <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
   </bean>
 
 </beans>

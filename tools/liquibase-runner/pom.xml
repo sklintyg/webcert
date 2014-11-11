@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -13,114 +13,105 @@
 
   <artifactId>webcert-liquibase-runner</artifactId>
   <packaging>jar</packaging>
-
   <name>Webcert (Liquibase Runner)</name>
-
   <dependencies>
+    <!-- Jdbc-connector -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
 
+    <!-- Persistance project contains changelog -->
     <dependency>
       <groupId>se.inera.intyg.webcert</groupId>
       <artifactId>webcert-persistence</artifactId>
       <exclusions>
         <exclusion>
+          <groupId>se.inera.intyg.tools</groupId>
+          <artifactId>liquibase-runner</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>se.inera.intyg.intygstjanst</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>intygstjanst-specifications</artifactId>
         </exclusion>
         <exclusion>
           <groupId>se.inera.intyg.common</groupId>
           <artifactId>common-support</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>se.inera.intyg.common</groupId>
+          <artifactId>common-web</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>se.inera.intyg.common</groupId>
+          <artifactId>common-web</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>spring-tx</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-orm</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework.data</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>spring-data-jpa</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.hibernate</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>hibernate-entitymanager</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.hibernate.javax.persistence</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>hibernate-jpa-2.0-api</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.jadira.usertype</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.liquibase</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>usertype.core</artifactId>
         </exclusion>
         <exclusion>
           <groupId>ch.qos.logback</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>logback-classic</artifactId>
         </exclusion>
         <exclusion>
           <groupId>com.google.guava</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>guava</artifactId>
         </exclusion>
         <exclusion>
           <groupId>commons-lang</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>commons-lang</artifactId>
         </exclusion>
         <exclusion>
           <groupId>joda-time</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>joda-time</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
-
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-    </dependency>
-
-    <!-- Tools -->
-    <dependency>
-      <groupId>se.inera.intyg.tools</groupId>
-      <artifactId>liquibase-runner</artifactId>
-    </dependency>
-
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>2.3</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <transformers>
-                <transformer
-                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>se.inera.certificate.liquibase.Runner</mainClass>
-                </transformer>
-              </transformers>
-              <artifactSet>
-                <excludes>
-                  <exclude>org.springframework:*</exclude>
-                  <exclude>org.hibernate.*:*</exclude>
-                  <exclude>org.jadira.usertype:*</exclude>
-                  <exclude>com.google.guava:*</exclude>
-                  <exclude>com.h2database:*</exclude>
-                </excludes>
-              </artifactSet>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
+          <execution>
+            <id>make-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <archive>
+                <manifest>
+                  <mainClass>liquibase.integration.commandline.Main</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </execution>
           <execution>
             <id>make-assembly</id>
             <phase>package</phase>
@@ -133,7 +124,15 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
-
 </project>
