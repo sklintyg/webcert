@@ -25,12 +25,12 @@
     <logging-util.version>1.1.3</logging-util.version>
 
     <!-- Intygstjanst -->
-    <intygstjanst.version>(,2.0.0)</intygstjanst.version>
+    <intygstjanst.version>0-SNAPSHOT</intygstjanst.version>
 
     <!-- Intygstyper -->
-    <fk7263.version>(,2.0.0)</fk7263.version>
-    <ts-bas.version>(,1.0.0)</ts-bas.version>
-    <ts-diabetes.version>(,1.0.0)</ts-diabetes.version>
+    <fk7263.version>0-SNAPSHOT</fk7263.version>
+    <ts-bas.version>0-SNAPSHOT</ts-bas.version>
+    <ts-diabetes.version>0-SNAPSHOT</ts-diabetes.version>
 
     <!-- Schemas -->
     <schemas.version>1.0.0</schemas.version>
