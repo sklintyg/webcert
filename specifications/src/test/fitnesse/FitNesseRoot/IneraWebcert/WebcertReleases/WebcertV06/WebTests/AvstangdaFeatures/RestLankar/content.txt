@@ -11,40 +11,29 @@
 
 | feature utkast |
 | statusCode? |
-| 403|
+| 403 |
 
-| feature module utkast |
-| typ | verb | statusCode? |
-| fk7263 | GET | 403 |
-
-| feature module utkast |
-| typ | verb | statusCode? |
-| ts-bas | GET | 403 |
-
-| feature module utkast |
-| typ | verb | statusCode? |
-| ts-diabetes | GET | 403 |
-
-| feature module utkast |
-| typ | verb | statusCode? |
-| fk7263 | PUT | 403 |
-
-| feature module utkast |
-| typ | verb | statusCode? |
-| ts-bas | PUT | 403 |
-
-| feature module utkast |
-| typ | verb | statusCode? |
-| ts-diabetes | PUT | 403 |
-
-| feature module utkast |
-| typ | verb | statusCode? |
-| fk7263 | DELETE| 403 |
-
-| feature module utkast |
-| typ | verb | statusCode? |
-| ts-bas | DELETE| 403 |
-
-| feature module utkast |
-| typ | verb | statusCode? |
-| ts-diabetes | DELETE| 403 |
+| feature moduler |
+| typ | intyg status | verb | metod | status? |
+| fk7263 |fragasvar| GET || 0|
+| fk7263 |utkast| GET || 403 |
+| ts-bas |utkast| GET || 403 |
+| ts-diabetes |utkast| GET || 403 |
+| fk7263 |intyg| POST |skicka| 403 |
+| ts-bas |intyg| POST |skicka| 403 |
+| ts-diabetes |intyg| POST |skicka| 403 |
+| fk7263 |intyg| POST|aterkalla| 403 |
+| ts-bas |intyg| POST |aterkalla| 403 |
+| ts-diabetes |intyg| POST |aterkalla| 403 |
+| fk7263 |utkast| POST |loggautskrift| 403 |
+| ts-bas |utkast| POST |loggautskrift| 403 |
+| ts-diabetes |utkast| POST |loggautskrift| 403 |
+| fk7263 |utkast| PUT || 403 |
+| ts-bas |utkast| PUT || 403 |
+| ts-diabetes |utkast| PUT || 403 |
+| fk7263 |utkast| POST|signeraserver| 403 |
+| ts-bas |utkast| POST |signeraserver| 403 |
+| ts-diabetes |utkast| POST |signeraserver| 403 |
+| fk7263 | utkast | DELETE || 403 |
+| ts-bas | utkast | DELETE || 403 |
+| ts-diabetes | utkast | DELETE || 403 |
