@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.0</version>
+    <version>0-SNAPSHOT</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -19,10 +19,10 @@
   <properties>
 
     <!-- Common -->
-    <common-support.version>1.0.0</common-support.version>
-    <common-web.version>1.0.0</common-web.version>
-    <integration-util.version>1.0.0</integration-util.version>
-    <logging-util.version>1.1.3</logging-util.version>
+    <common-support.version>0-SNAPSHOT</common-support.version>
+    <common-web.version>0-SNAPSHOT</common-web.version>
+    <integration-util.version>0-SNAPSHOT</integration-util.version>
+    <logging-util.version>0-SNAPSHOT</logging-util.version>
 
     <!-- Intygstjanst -->
     <intygstjanst.version>0-SNAPSHOT</intygstjanst.version>
@@ -33,10 +33,10 @@
     <ts-diabetes.version>0-SNAPSHOT</ts-diabetes.version>
 
     <!-- Schemas -->
-    <schemas.version>1.0.0</schemas.version>
+    <schemas.version>0-SNAPSHOT</schemas.version>
 
     <!-- Tools -->
-    <liquibase-runner.version>1.0.0</liquibase-runner.version>
+    <liquibase-runner.version>0-SNAPSHOT</liquibase-runner.version>
 
     <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
   </properties>
