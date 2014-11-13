@@ -9,8 +9,8 @@ import javax.ws.rs.core.MediaType;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
-import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
 
 /**
  * @author andreaskaltenbach

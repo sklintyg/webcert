@@ -1,8 +1,10 @@
 package se.inera.webcert.converter;
 
 import com.google.common.collect.ImmutableSet;
+
 import org.springframework.stereotype.Component;
-import se.inera.certificate.integration.util.IdUtil;
+
+import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.IdUtil;
 import se.inera.certificate.model.HosPersonal;
 import se.inera.certificate.model.Utlatande;
 import se.inera.webcert.medcertqa.v1.FkKontaktType;

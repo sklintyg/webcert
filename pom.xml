@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -33,7 +33,10 @@
     <ts-diabetes.version>0-SNAPSHOT</ts-diabetes.version>
 
     <!-- Schemas -->
-    <schemas.version>0-SNAPSHOT</schemas.version>
+    <clinicalprocess-healthcond-certificate.version>0-SNAPSHOT</clinicalprocess-healthcond-certificate.version>
+    <insuranceprocess-healthreporting.version>0-SNAPSHOT</insuranceprocess-healthreporting.version>
+    <itintegration-monitoring.version>0-SNAPSHOT</itintegration-monitoring.version>
+    <ehr-logstore.version>0-SNAPSHOT</ehr-logstore.version>
 
     <!-- Tools -->
     <liquibase-runner.version>0-SNAPSHOT</liquibase-runner.version>
@@ -169,14 +172,24 @@
 
       <!-- Schemas -->
       <dependency>
-        <groupId>se.inera.intyg.schemas</groupId>
-        <artifactId>schemas-intygstjanst</artifactId>
-        <version>${schemas.version}</version>
+        <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
+        <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
+        <version>${clinicalprocess-healthcond-certificate.version}</version>
       </dependency>
       <dependency>
-        <groupId>se.inera.intyg.schemas</groupId>
-        <artifactId>schemas-webcert</artifactId>
-        <version>${schemas.version}</version>
+        <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting.v1</groupId>
+        <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
+        <version>${insuranceprocess-healthreporting.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.riv.itintegration.monitoring</groupId>
+        <artifactId>itintegration-monitoring-interactions</artifactId>
+        <version>${itintegration-monitoring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.riv.ehr.logstore</groupId>
+        <artifactId>ehr-logstore-interactions</artifactId>
+        <version>${ehr-logstore.version}</version>
       </dependency>
 
       <!-- Tools -->

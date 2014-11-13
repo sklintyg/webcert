@@ -2,7 +2,7 @@ package se.inera.webcert.converter;
 
 import se.inera.webcert.converter.util.ConvertToFKTypes;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.sendmedicalcertificatequestionsponder.v1.QuestionToFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
 
 /**
  * Created by pehr on 10/2/13.

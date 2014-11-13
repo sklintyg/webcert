@@ -21,21 +21,17 @@
   </properties>
 
   <dependencies>
-
-    <!-- Common -->
+    
     <dependency>
-      <groupId>se.inera.intyg.common</groupId>
-      <artifactId>integration-util</artifactId>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
     </dependency>
 
     <!-- Schemas -->
     <dependency>
-      <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>schemas-intygstjanst</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>schemas-webcert</artifactId>
+      <groupId>se.riv.ehr.logstore</groupId>
+      <artifactId>ehr-logstore-interactions</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
