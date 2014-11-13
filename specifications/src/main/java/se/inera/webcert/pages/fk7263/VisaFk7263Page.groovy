@@ -8,9 +8,23 @@ class VisaFk7263Page extends Page {
 
     static content = {
 
+        // messages
         intygSaknas { $("#cert-load-error") }
         intygLaddat { $('#intyg-vy-laddad') }
+        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
+        certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
+        certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
 
+        // header
+        webcertLogoLink(required: false) { $("#webcertLogoLink") }
+        bytVardenhetLink(required: false) { $("#wc-care-unit-clinic-selector") }
+        loggaUtLink(required: false) { $("#logoutLink") }
+        omWebcertLink { $("#aboutLink") }
+        omWebcertDialog(required: false) { $("#omWebcertDialog") }
+        huvudmeny(required: false) { $("#huvudmeny")}
+
+        // intyg top panel
+        tillbakaButton(required: false) { $("#tillbakaButton")}
         copyButton { $("#copyBtn") }
         makuleraButton { $("#makuleraBtn") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
@@ -19,9 +33,10 @@ class VisaFk7263Page extends Page {
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
 
-        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
-        certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
-        certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+        // fraga svar
+        vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
+
+        // INTYG
 
         // smittskydd
         smittskydd { $("#smittskydd") }

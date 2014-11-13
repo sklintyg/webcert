@@ -9,13 +9,13 @@ class FeatureUtkast extends RestClientFixture{
     int statusCode
 
     def execute() {
+        statusCode = 0;
         ex = false
         def client = createRestClient("http://localhost:9088/")
         def headers = new HashMap<String,String>()
         headers.put("Cookie","JSESSIONID="+Browser.getJSession())
         try {
-            client.get(path: "/api/utkast/")
-            return false
+            client.get(path: "/api/utkast/", headers:headers)
         }
         catch(HttpResponseException e) {
             statusCode = e.statusCode
