@@ -11,9 +11,11 @@ class EditCertPage extends Page {
 
         // Knappar
         sparaKnapp { $("#spara-utkast") }
+        tillbakaButton(required: false) { $("#tillbakaButton")}
 
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
+        errorPanel { $("#error-panel")}
 
         smittskydd { $("#smittskydd") }
         baserasPa { module BaserasPaModule }
