@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -53,8 +53,16 @@
 
     <!-- Schemas -->
     <dependency>
-      <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>schemas-webcert</artifactId>
+      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting.v1</groupId>
+      <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.riv.itintegration.monitoring</groupId>
+      <artifactId>itintegration-monitoring-interactions</artifactId>
     </dependency>
 
     <dependency>
@@ -275,10 +283,8 @@
 
     <profile>
       <id>wiki</id>
-      <!--
-        This profile is for use when writing tests using the FitNesse wiki.
-        Simply run 'mvn verify -P wiki' and use a browser to visit http://localhost:9124/IneraWebcert
-      -->
+      <!-- This profile is for use when writing tests using the FitNesse 
+        wiki. Simply run 'mvn verify -P wiki' and use a browser to visit http://localhost:9124/IneraWebcert -->
       <build>
         <plugins>
           <plugin>
@@ -299,9 +305,8 @@
     </profile>
     <profile>
       <id>auto</id>
-      <!--
-        This profile will boot FitNesse to automatically run the configured test suite. Simply run 'mvn verify -P auto'
-      -->
+      <!-- This profile will boot FitNesse to automatically run the configured 
+        test suite. Simply run 'mvn verify -P auto' -->
       <build>
         <plugins>
           <plugin>
@@ -323,9 +328,8 @@
     </profile>
     <profile>
       <id>nightly</id>
-      <!--
-        This profile will boot FitNesse to automatically run the configured test suite. Simply run 'mvn verify -P nightly'
-      -->
+      <!-- This profile will boot FitNesse to automatically run the configured 
+        test suite. Simply run 'mvn verify -P nightly' -->
       <build>
         <plugins>
           <plugin>

@@ -42,7 +42,6 @@
     <dependency>
       <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
       <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
-      <version>1.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
