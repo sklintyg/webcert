@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>0-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -19,10 +19,7 @@
   <properties>
 
     <!-- Common -->
-    <common-support.version>0-SNAPSHOT</common-support.version>
-    <common-web.version>0-SNAPSHOT</common-web.version>
-    <integration-util.version>0-SNAPSHOT</integration-util.version>
-    <logging-util.version>0-SNAPSHOT</logging-util.version>
+    <common.version>(,2.0.0)</common.version>
 
     <!-- Intygstjanst -->
     <intygstjanst.version>0-SNAPSHOT</intygstjanst.version>
@@ -128,22 +125,22 @@
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>common-support</artifactId>
-        <version>${common-support.version}</version>
+        <version>${common.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>common-web</artifactId>
-        <version>${common-web.version}</version>
+        <version>${common.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>integration-util</artifactId>
-        <version>${integration-util.version}</version>
+        <version>${common.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.common</groupId>
         <artifactId>logging-util</artifactId>
-        <version>${logging-util.version}</version>
+        <version>${common.version}</version>
       </dependency>
 
       <!-- Intygstjanst -->
@@ -418,7 +415,7 @@
   <repositories>
     <repository>
       <id>callista-release</id>
-      <url>https://${repository.host}/release/</url>
+      <url>http://repository-callistasoftware.forge.cloudbees.com/release/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -428,7 +425,7 @@
     </repository>
     <repository>
       <id>callista-snapshot</id>
-      <url>https://${repository.host}/snapshot/</url>
+      <url>http://repository-callistasoftware.forge.cloudbees.com/snapshot/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -438,7 +435,7 @@
     </repository>
     <repository>
       <id>thirdparty</id>
-      <url>https://${repository.host}/3rdparty</url>
+      <url>http://repository-callistasoftware.forge.cloudbees.com/3rdparty</url>
       <releases>
         <enabled>true</enabled>
       </releases>
