@@ -328,4 +328,25 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
         return vardgivare;
     }
+
+	@Override
+	public Vardenhet getVardenhet(String careUnitHsaId) {
+		
+		LOG.debug("Getting info on vardenhet '{}'", careUnitHsaId);
+		
+		// get the basic details
+		GetHsaUnitResponseType response = client.callGetHsaunit(careUnitHsaId);
+		
+		Vardenhet vardenhet = new Vardenhet(careUnitHsaId, response.getName(),
+                response.getStartDate(), response.getEndDate());
+		
+		// update with unit contact details
+		updateWithContactInformation(vardenhet, response);
+		
+		// update with the workplace code for this unit
+		String unitWorkplaceCode = getWorkplaceCode(vardenhet.getId());
+        vardenhet.setArbetsplatskod(unitWorkplaceCode);
+        
+		return vardenhet;
+	}
 }

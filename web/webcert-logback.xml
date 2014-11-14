@@ -63,7 +63,7 @@
 
   <logger name="se.inera.auth" level="info" />
   
-  <logger name="se.inera.webcert" level="info" />
+  <logger name="se.inera.webcert" level="debug" />
   
   <logger name="se.inera.certificate.modules.fk7263" level="info" />
   
