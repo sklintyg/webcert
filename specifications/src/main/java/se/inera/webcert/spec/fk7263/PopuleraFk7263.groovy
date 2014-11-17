@@ -135,7 +135,16 @@ class PopuleraFk7263 {
             if (atgardSjukvard != null) page.atgardSjukvard = atgardSjukvard
             if (atgardAnnan != null) page.atgardAnnan = atgardAnnan
 
-            if (rekommendationRessatt != null) page.rekommendationer.ressatt = rekommendationRessatt
+            if (rekommendationRessatt != null) {
+                if (rekommendationRessatt) {
+                    page.rekommendationer.ressattJa = true
+                    page.rekommendationer.ressattEj = false
+                } else {
+                    page.rekommendationer.ressattJa = false
+                    page.rekommendationer.ressattEj = true
+                }
+            }
+
             if (rekommendationKontaktAf != null) page.rekommendationer.kontaktAf = rekommendationKontaktAf
             if (rekommendationKontaktForetagshalsovard != null) page.rekommendationer.kontaktForetagshalsovard = rekommendationKontaktForetagshalsovard
             if (rekommendationOvrigt != null) page.rekommendationer.ovrigt = rekommendationOvrigt
