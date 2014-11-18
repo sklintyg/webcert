@@ -131,7 +131,8 @@ class PrognosModule extends Module {
 class RekommendationerModule extends Module {
     static base = { $("#rekommendationerForm") }
     static content = {
-        ressatt { $("#rekommendationRessatt") }
+        ressattJa { $("#rekommendationRessatt") }
+        ressattNej { $("#rekommendationRessattEj") }
         kontaktAf { $("#rekommendationKontaktAf") }
         kontaktForetagshalsovard { $("#rekommendationKontaktForetagshalsovard") }
         ovrigt { $("#rekommendationOvrigt") }
