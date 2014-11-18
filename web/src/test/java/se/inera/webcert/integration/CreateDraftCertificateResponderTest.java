@@ -28,6 +28,8 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCode
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
+import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
+import se.inera.webcert.integration.validator.ValidationResult;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 
@@ -49,12 +51,18 @@ public class CreateDraftCertificateResponderTest {
 	@Mock
 	CreateNewDraftRequestBuilder mockRequestBuilder;
 	
+	@Mock
+	CreateDraftCertificateValidator mockValidator;
+	
 	@InjectMocks
 	CreateDraftCertificateResponderImpl responder;
 	
 	@Test
 	public void test() {
 		
+	    ValidationResult validationResults = new ValidationResult();
+        when(mockValidator.validate(any(UtlatandeType.class))).thenReturn(validationResults);
+	    
 		List<MiuInformationType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
 		when(hsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
 		

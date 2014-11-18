@@ -44,7 +44,7 @@
     <jaxws:outFaultInterceptors>
       <bean
         class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/receive-question.xslt" />
+        <constructor-arg value="transform/create-draft-certificate.xslt" />
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
