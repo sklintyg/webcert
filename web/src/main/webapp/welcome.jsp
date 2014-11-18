@@ -183,6 +183,22 @@
                 "enhetId" : "linkoping",
                 "lakare" : true,
                 "forskrivarKod": "2481632"
+            },//Läkare för test av djupintegration
+            {
+                "fornamn" : "Journa",
+                "efternamn" : "La System",
+                "hsaId" : "SE4815162344-1B02",
+                "enhetId" : "SE4815162344-1A03",
+                "lakare" : true,
+                "forskrivarKod": "2481632"
+            },
+            {
+                "fornamn" : "Ivar",
+                "efternamn" : "Integration",
+                "hsaId" : "SE4815162344-1B01",
+                "enhetId" : "SE4815162344-1A02",
+                "lakare" : true,
+                "forskrivarKod": "2481632"
             },
             //Admin personal med flera enheter&mottagningar
             {
@@ -280,12 +296,14 @@
                         <option value="10" id="TST5565594230-106J_IFV1239877878-103D">Markus Gran (Läkare VårdEnhetA)</option>
                         <option value="11" id="eva_centrum-vast">Eva Holgersson (Läkare Centrum Väst)</option>
                         <option value="12">Staffan Stafett (Läkare Centrum Väst, Linköping, Norrköping)</option>
-                        <option value="13">Adam Admin (Administratör Centrum Väst)</option>
-                        <option value="14">Adamo Admin (Administratör Centrum Väst)</option>
-                        <option value="15">Adamo Admin (Administratör Centrum Väst)</option>
-                        <option value="16" id="fitnesse-admin1">Fitnesse Admin (Administratör Vardenhet Fitnesse 1)</option>
-                        <option value="17" id="fitnesse-admin2">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
-                        <option value="18">Han Solo (Administratör, Centrum Norr)</option>
+                        <option value="13">Journa La System (Läkare WebCert-Integration Enhet 2)</option>
+                        <option value="14">Ivar Integration (Läkare WebCert-Integration Enhet 1)</option>
+                        <option value="15">Adam Admin (Administratör Centrum Väst)</option>
+                        <option value="16">Adamo Admin (Administratör Centrum Väst)</option>
+                        <option value="17">Adamo Admin (Administratör Centrum Väst)</option>
+                        <option value="18" id="fitnesse-admin1">Fitnesse Admin (Administratör Vardenhet Fitnesse 1)</option>
+                        <option value="19" id="fitnesse-admin2">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
+                        <option value="20">Han Solo (Administratör, Centrum Norr)</option>
                     </select>
                     <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary"
                            style="margin-top: 20px;width: 100%">
