@@ -14,5 +14,7 @@ public interface IntygModuleRegistry {
     List<IntygModule> listAllModules();
     
     List<ModuleEntryPoint> getModuleEntryPoints();
+    
+    boolean moduleExists(String moduleId);
 
 }

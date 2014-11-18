@@ -2,6 +2,7 @@ package se.inera.webcert.hsa.services;
 
 import java.util.List;
 
+import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 
 /**
@@ -15,4 +16,6 @@ public interface HsaOrganizationsService {
      * an empty list will be returned
      */
     List<Vardgivare> getAuthorizedEnheterForHosPerson(String hosPersonHsaId);
+    
+    Vardenhet getVardenhet(String vardenhetHsaId);
 }
