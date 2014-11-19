@@ -27,7 +27,7 @@ public class CreateDraftCertificateValidatorTest {
     
     private static final String VALID_HSAID = "SE2321000016-A1PB";
     
-    private static final String INVALID_HSAID = "SE1234567890-123A";
+    private static final String INVALID_HSAID = "SE12345678-123A";
 
     private static final String PERSONNR_ROOT = "1.2.752.129.2.1.3.1";
     
