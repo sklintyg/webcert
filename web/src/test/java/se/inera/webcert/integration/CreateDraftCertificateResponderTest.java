@@ -28,10 +28,14 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCode
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
+import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
+import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.webcert.service.dto.Vardgivare;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateResponderTest {
@@ -54,6 +58,9 @@ public class CreateDraftCertificateResponderTest {
 	@Mock
 	CreateDraftCertificateValidator mockValidator;
 	
+	@Mock
+	IntegreradeEnheterRegistry mockIntegreradeEnheterService;
+	
 	@InjectMocks
 	CreateDraftCertificateResponderImpl responder;
 	
@@ -66,10 +73,24 @@ public class CreateDraftCertificateResponderTest {
 		List<MiuInformationType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
 		when(hsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
 		
+		Vardgivare vardgivare = new Vardgivare();
+		vardgivare.setHsaId("SE1234567890-2B01");
+		vardgivare.setNamn("Vardgivaren");
+		
+		Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setHsaId("SE1234567890-1A01");
+        vardenhet.setNamn("Vardenheten");
+		vardenhet.setVardgivare(vardgivare);
+		
 		CreateNewDraftRequest draftRequest = new CreateNewDraftRequest();
+        draftRequest.setIntygId(UTKAST_ID);
+        draftRequest.setVardenhet(vardenhet);
+		
 		when(mockRequestBuilder.buildCreateNewDraftRequest(any(UtlatandeType.class), any(MiuInformationType.class))).thenReturn(draftRequest);
 		
 		when(intygsUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(UTKAST_ID);
+		
+		when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
 				
 		CreateDraftCertificateType parameters = createParams();
 		CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, parameters);

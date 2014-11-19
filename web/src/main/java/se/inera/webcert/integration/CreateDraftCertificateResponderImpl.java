@@ -18,10 +18,15 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
+import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
+import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
+import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.webcert.service.dto.Vardgivare;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
@@ -38,6 +43,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     
     @Autowired
     private CreateDraftCertificateValidator validator;
+    
+    @Autowired
+    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
     @Override
     @Transactional
@@ -71,7 +79,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         CreateNewDraftRequest utkastsRequest = draftRequestBuilder.buildCreateNewDraftRequest(utkastsParams, unitMIU);
 
         String nyttUtkastsId = intygsUtkastService.createNewDraft(utkastsRequest);
-
+        
+        addVardenhetToRegistry(utkastsRequest);
+        
         return createSuccessResponse(nyttUtkastsId);
     }
 
@@ -113,5 +123,23 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         return response;
     }
-
+    
+    private void addVardenhetToRegistry(CreateNewDraftRequest utkastsRequest) {
+        
+        Vardenhet vardenhet = utkastsRequest.getVardenhet();
+        Vardgivare vardgivare = vardenhet.getVardgivare();
+                
+        IntegreradEnhetEntry integreradEnhet = new IntegreradEnhetEntry(vardenhet.getHsaId(),
+                vardenhet.getNamn(), vardgivare.getHsaId(), vardgivare.getNamn());
+        
+        boolean result = integreradeEnheterRegistry.addIfNotExistsIntegreradEnhet(integreradEnhet);
+        
+        if (result) {
+            LOG.info("Added unit '{}' to registry of integrated units", vardenhet.getHsaId());
+        } else {
+            LOG.debug("Unit '{}' was alredy present in the registry of integrated units", vardenhet.getHsaId());
+        }
+        
+    }
+    
 }
