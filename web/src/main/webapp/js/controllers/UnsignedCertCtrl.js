@@ -3,9 +3,9 @@
  */
 angular.module('webcert').controller('webcert.UnsignedCertCtrl',
     [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'webcert.ManageCertificate', 'common.User',
+        'webcert.ManageCertificate', 'common.User', 'common.intygNotifyService',
         function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService, ManageCertificate,
-            User) {
+            User, intygNotifyService) {
             'use strict';
 
             // Constant settings
@@ -166,9 +166,8 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                     $scope.widgetState.currentList = successData.results;
                     $scope.widgetState.totalCount = successData.totalCount;
                 }, function() {
-                    $scope.widgetState.runningQuery = false;
                     $log.debug('Query Error');
-                    // TODO: real errorhandling
+                    $scope.widgetState.runningQuery = false;
                     $scope.widgetState.activeErrorMessageKey = 'info.query.error';
                 });
             };
@@ -204,26 +203,13 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             // Handle forwarding
             $scope.openMailDialog = function(cert) {
-                $timeout(function() {
-                    ManageCertificate.handleForwardedToggle(cert, $scope.onForwardedChange);
-                }, 1000);
-                // Launch mail client
-                $window.location = ManageCertificate.buildMailToLink(cert);
+                intygNotifyService.forwardIntyg(cert, cert.updateState);
             };
 
             $scope.onForwardedChange = function(cert) {
-                cert.updateInProgress = true;
-                ManageCertificate.setForwardedState(cert.intygId, cert.intygType, cert.forwarded, function(result) {
-                    cert.updateInProgress = false;
-
-                    if (result !== null) {
-                        cert.forwarded = result.forwarded;
-                    } else {
-                        cert.forwarded = !cert.forwarded;
-                        dialogService.showErrorMessageDialog('Kunde inte markera/avmarkera frågan som ' +
-                            'vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. Annars kan ' +
-                            'du kontakta supporten.');
-                    }
-                });
+                cert.updateState = {
+                    updateInProgress: true
+                };
+                intygNotifyService.onForwardedChange(cert, cert.updateState);
             };
         }]);
