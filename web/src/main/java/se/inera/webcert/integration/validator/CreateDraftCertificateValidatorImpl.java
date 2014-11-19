@@ -31,7 +31,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     @PostConstruct
     public void init() {
         SimpleIdValidatorBuilder validatorBuilder = new SimpleIdValidatorBuilder();
-        this.idValidator = validatorBuilder.withHsaIdValidator().withPersonnummerValidator(true).withSamordningsnummerValidator(true).build();
+        this.idValidator = validatorBuilder.withSimpleHsaIdValidator().withPersonnummerValidator(true).withSamordningsnummerValidator(true).build();
     }
 
     /*
