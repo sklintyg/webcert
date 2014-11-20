@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <properties>
-	<Edit>true</Edit>
-	<Files>true</Files>
-	<Help/>
-	<Properties>true</Properties>
-	<RecentChanges>true</RecentChanges>
-	<Refactor>true</Refactor>
-	<Search>true</Search>
+	<Edit/>
+	<Files/>
+	<Help></Help>
+	<Properties/>
+	<RecentChanges/>
+	<Refactor/>
+	<Search/>
 	<Suite/>
-	<Suites/>
-	<Versions>true</Versions>
-	<WhereUsed>true</WhereUsed>
+	<Suites></Suites>
+	<Versions/>
+	<WhereUsed/>
 </properties>

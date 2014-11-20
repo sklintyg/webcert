@@ -1,11 +1,11 @@
 package se.inera.webcert.pages.ts_diabetes
 
 import geb.Module
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class EditCertPage extends Page {
+class EditCertPage extends AbstractPage {
 
-    static at = { $("#edit-ts-diabetes").isDisplayed() }
+    static at = { doneLoading() && $("#edit-ts-diabetes").isDisplayed() }
 
     static content = {
 

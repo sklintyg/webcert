@@ -164,8 +164,8 @@ function checkAddIndexOf() {
 }
 
 // Inject language resources
-app.run([ '$rootScope', 'common.messageService', 'common.User',
-    function($rootScope, messageService, User) {
+app.run([ '$log', '$rootScope', '$window', 'common.messageService', 'common.User',
+    function($log, $rootScope, $window, messageService, User) {
         'use strict';
 
         // add IndexOf to IE8
@@ -176,6 +176,17 @@ app.run([ '$rootScope', 'common.messageService', 'common.User',
         User.setUserContext(MODULE_CONFIG.USERCONTEXT);
         messageService.addResources(wcMessages);
 
+        $window.doneLoading = false;
+        $window.dialogDoneLoading = true;
+
+        $rootScope.$on('$routeChangeStart', function() {
+            $log.debug('$window.doneLoading = false;')
+            $window.doneLoading = false;
+        });
+        $rootScope.$on('$routeChangeSuccess', function() {
+            $log.debug('$window.doneLoading = true;')
+            $window.doneLoading = true;
+        });
     }]);
 
 // Get a list of all modules to find all files to load.

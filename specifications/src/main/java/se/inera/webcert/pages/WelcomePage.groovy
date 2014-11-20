@@ -1,8 +1,8 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class WelcomePage extends Page {
+class WelcomePage extends AbstractPage {
 
     static at = { $("#loginForm").isDisplayed() }
 

@@ -1,8 +1,8 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class IndexPage extends Page {
+class IndexPage extends AbstractPage {
 
     static at = { $("#indexPage").isDisplayed() }
 

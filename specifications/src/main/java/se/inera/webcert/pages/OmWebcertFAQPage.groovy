@@ -1,10 +1,10 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class OmWebcertFAQPage extends Page {
+class OmWebcertFAQPage extends AbstractPage {
 
-    static at = { $("#about-webcert-faq").isDisplayed() }
+    static at = { doneLoading() && $("#about-webcert-faq").isDisplayed() }
 
     static content = {
         webcertLink { $("#about-webcert") }

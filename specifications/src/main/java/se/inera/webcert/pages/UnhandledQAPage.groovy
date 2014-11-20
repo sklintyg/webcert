@@ -1,10 +1,10 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class UnhandledQAPage extends Page {
+class UnhandledQAPage extends AbstractPage {
 
-    static at = { $("#unhandled-qa").isDisplayed() }
+    static at = { doneLoading() && $("#unhandled-qa").isDisplayed() }
 
     static content = {
         unitstatUnhandledQuestionsBadgde(required: false) { $("#stat-unitstat-unhandled-question-count") }

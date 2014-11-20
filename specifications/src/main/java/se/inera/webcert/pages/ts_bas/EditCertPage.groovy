@@ -1,11 +1,11 @@
 package se.inera.webcert.pages.ts_bas
 
 import geb.Module
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class EditCertPage extends Page {
+class EditCertPage extends AbstractPage {
 
-    static at = { $("#edit-ts-bas").isDisplayed() }
+    static at = { doneLoading() && $("#edit-ts-bas").isDisplayed() }
 
     static content = {
 

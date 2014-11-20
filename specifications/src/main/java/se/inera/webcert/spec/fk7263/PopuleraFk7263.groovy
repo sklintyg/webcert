@@ -138,10 +138,10 @@ class PopuleraFk7263 {
             if (rekommendationRessatt != null) {
                 if (rekommendationRessatt) {
                     page.rekommendationer.ressattJa = true
-                    page.rekommendationer.ressattEj = false
+                    page.rekommendationer.ressattNej = false
                 } else {
                     page.rekommendationer.ressattJa = false
-                    page.rekommendationer.ressattEj = true
+                    page.rekommendationer.ressattNej = true
                 }
             }
 

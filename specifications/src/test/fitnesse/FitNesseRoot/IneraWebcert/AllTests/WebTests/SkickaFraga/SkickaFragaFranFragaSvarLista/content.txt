@@ -48,6 +48,11 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 | fraga med text | En fråga från Fitnesse 4 | visas  i listan med ohanterade fragor |
 | fragan ar skickad till fk meddelande visas |
 
+!3 Ta bort fråga från försäkringskassan (stub)
+
+| script | !-RensaFragorSvarTillFk-! |
+| rensa fragor |
+
 !3 Ta bort de frågor vi har skickat
 
 | ta bort fraga |

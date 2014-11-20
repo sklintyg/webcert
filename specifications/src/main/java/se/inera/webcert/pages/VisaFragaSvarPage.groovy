@@ -1,10 +1,10 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class VisaFragaSvarPage extends Page {
+class VisaFragaSvarPage extends AbstractPage {
 
-    static at = { $("#viewQAAndCert").isDisplayed() }
+    static at = { doneLoading() && $("#viewQAAndCert").isDisplayed() }
 
     static content = {
 
@@ -44,21 +44,29 @@ class VisaFragaSvarPage extends Page {
 
     def copy() {
         $("#copyBtn").click()
-        sleep(300)
+        waitFor {
+            doneLoading()
+        }
         kopieraDialogKopieraKnapp.click()
     }
 
     def makulera() {
         $("#makuleraBtn").click()
-        sleep(300)
+        waitFor {
+            doneLoading()
+        }
         makuleraDialogKopieraKnapp.click()
     }
 
     def send() {
         $("#sendBtn").click()
-        sleep(1000)
+        waitFor {
+            doneLoading()
+        }
         skickaDialogCheck.click()
-        sleep(100)
+        waitFor {
+            doneLoading()
+        }
         skickaDialogSkickaKnapp.click()
     }
 

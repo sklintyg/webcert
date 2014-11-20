@@ -1,10 +1,10 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class SokSkrivaIntygPage extends Page {
+class SokSkrivaIntygPage extends AbstractPage {
 
-    static at = { $("#skapa-valj-patient").isDisplayed() }
+    static at = { doneLoading() && $("#skapa-valj-patient").isDisplayed() }
 
     static content = {
         personnummer { $("#pnr") }

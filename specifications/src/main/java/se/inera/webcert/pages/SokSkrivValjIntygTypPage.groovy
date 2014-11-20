@@ -1,10 +1,10 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class SokSkrivValjIntygTypPage extends Page {
+class SokSkrivValjIntygTypPage extends AbstractPage {
 
-    static at = { $("#valj-intyg-typ").isDisplayed() }
+    static at = { doneLoading() && $("#valj-intyg-typ").isDisplayed() }
 
     static content = {
         patientNamn { $("#patientNamn") }
@@ -21,7 +21,9 @@ class SokSkrivValjIntygTypPage extends Page {
 
     def copy(String intygId) {
         copyBtn(intygId).click()
-        sleep(500)
+        waitFor {
+            doneLoading()
+        }
         kopieraDialogKopieraKnapp.click()
     }
 

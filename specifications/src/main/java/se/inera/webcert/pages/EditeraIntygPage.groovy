@@ -1,10 +1,10 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class EditeraIntygPage extends Page {
+class EditeraIntygPage extends AbstractPage {
 
-    static at = { $(".edit-form").isDisplayed() }
+    static at = { doneLoading() && $(".edit-form").isDisplayed() }
 
     static content = {
         radera { $("#ta-bort-utkast") }

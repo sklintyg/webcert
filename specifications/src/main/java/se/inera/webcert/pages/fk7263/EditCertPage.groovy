@@ -1,21 +1,21 @@
 package se.inera.webcert.pages.fk7263
 
 import geb.Module
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class EditCertPage extends Page {
+class EditCertPage extends AbstractPage {
 
-    static at = { $("#edit-fk7263").isDisplayed() }
+    static at = { doneLoading() && $("#edit-fk7263").isDisplayed() }
 
     static content = {
 
         // Knappar
         sparaKnapp { $("#spara-utkast") }
-        tillbakaButton(required: false) { $("#tillbakaButton")}
+        tillbakaButton(required: false) { $("#tillbakaButton") }
 
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
-        errorPanel { $("#error-panel")}
+        errorPanel { $("#error-panel") }
 
         smittskydd { $("#smittskydd") }
         baserasPa { module BaserasPaModule }
@@ -113,7 +113,7 @@ class PrognosModule extends Module {
         if (valdPrognos != null) {
             def validTypes = ["ja", "delvis", "nej", "?"];
             assert validTypes.contains(valdPrognos),
-                "Fältet 'prognos' kan endast innehålla något av följande värden: ${validTypes}"
+                    "Fältet 'prognos' kan endast innehålla något av följande värden: ${validTypes}"
 
             if ("ja" == valdPrognos) {
                 prognos = "YES"
@@ -137,7 +137,7 @@ class RekommendationerModule extends Module {
         kontaktForetagshalsovard { $("#rekommendationKontaktForetagshalsovard") }
         ovrigt { $("#rekommendationOvrigt") }
         ovrigtBeskrivning { $("#rekommendationOvrigtBeskrivning") }
-        arbetslivsinriktadRehabilitering { $("input", name: "recommendationsToFkReabInQuestion")}
+        arbetslivsinriktadRehabilitering { $("input", name: "recommendationsToFkReabInQuestion") }
     }
 
     def valjArbetslivsinriktadRehabilitering(String arAktuell) {

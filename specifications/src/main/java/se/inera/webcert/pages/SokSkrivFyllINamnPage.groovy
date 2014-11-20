@@ -1,10 +1,10 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class SokSkrivFyllINamnPage extends Page {
+class SokSkrivFyllINamnPage extends AbstractPage {
 
-    static at = { $("#sok-skriv-fyll-i-namn").isDisplayed() }
+    static at = { doneLoading() && $("#sok-skriv-fyll-i-namn").isDisplayed() }
 
     static content = {
         fornamn { $("#fornamn") }

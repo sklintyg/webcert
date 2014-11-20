@@ -1,10 +1,10 @@
 package se.inera.webcert.pages.fk7263
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class VisaFk7263Page extends Page {
+class VisaFk7263Page extends AbstractPage {
 
-    static at = { $("#viewCertAndQA").isDisplayed() }
+    static at = { js.doneLoading && $("#viewCertAndQA").isDisplayed() }
 
     static content = {
 
@@ -128,22 +128,29 @@ class VisaFk7263Page extends Page {
 
     def copy() {
         $("#copyBtn").click()
-        sleep(300)
+        waitFor {
+            doneLoading()
+        }
         kopieraDialogKopieraKnapp.click()
     }
 
     def makulera() {
         $("#makuleraBtn").click()
-        sleep(300)
+        waitFor {
+            doneLoading()
+        }
         makuleraDialogKopieraKnapp.click()
     }
 
     def send() {
         $("#sendBtn").click()
-        sleep(1000)
+        waitFor {
+            doneLoading()
+        }
         skickaDialogCheck.click()
-        sleep(100)
+        waitFor {
+            doneLoading()
+        }
         skickaDialogSkickaKnapp.click()
     }
-
 }

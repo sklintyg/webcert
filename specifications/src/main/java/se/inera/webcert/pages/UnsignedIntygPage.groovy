@@ -1,10 +1,10 @@
 package se.inera.webcert.pages
 
-import geb.Page
+import se.inera.certificate.page.AbstractPage
 
-class UnsignedIntygPage extends Page {
+class UnsignedIntygPage extends AbstractPage {
 
-    static at = { $("#unsigned").isDisplayed() }
+    static at = { doneLoading() && $("#unsigned").isDisplayed() }
 
     static content = {
         unitstatUnsignedIntygsBadge(required: false) { $("#stat-unitstat-unsigned-certs-count") }
