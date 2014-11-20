@@ -20,15 +20,12 @@
   <security:http security="none" pattern="/welcome.jsp"/>
   <security:http security="none" pattern="/version.jsp"/>
   <security:http security="none" pattern="/index.jsp"/>
+  <security:http security="none" pattern="/healthcheck.jsp"/>
   <security:http security="none" pattern="/"/>
   <security:http security="none" pattern="/error.jsp"/>
-  <security:http security="none" pattern="/health-check/health-check-overview.jsp"/>
-  <security:http security="none" pattern="/health-check/health-check.jsp"/>
-  <security:http security="none" pattern="/health-check/health-check-hsa.jsp"/>
-  <security:http security="none" pattern="/health-check/health-check-db.jsp"/>
-  <security:http security="none" pattern="/health-check/health-check-signatur-queue-size.jsp"/>
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/services/**"/>
+  <security:http security="none" pattern="/monitoring/**"/>
   <security:http security="none" pattern="/favicon.ico"/>
 
   <!-- Logger for SAML messages and events -->

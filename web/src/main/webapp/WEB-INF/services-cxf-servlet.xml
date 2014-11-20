@@ -39,7 +39,8 @@
       <cxf:logging />
     </cxf:features>
   </cxf:bus>
-
+  
+  <!-- ws endpoints -->
   <jaxws:endpoint address="/create-draft-certificate/v1.0" implementor="se.inera.webcert.integration.CreateDraftCertificateResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
@@ -48,8 +49,7 @@
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
-
-  <!-- ws endpoints -->
+  
   <jaxws:endpoint address="/receive-question/v1.0" implementor="se.inera.webcert.integration.ReceiveQuestionResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean
@@ -67,8 +67,6 @@
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
-
-  <jaxws:endpoint address="/ping-for-configuration/v1.0" implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl" />
   
   <!-- REST service for inserting questions directly into the database for testing purposes -->
   <beans profile="dev,local,test,qa">

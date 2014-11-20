@@ -77,15 +77,16 @@
         </list>
       </property>
     </bean>
+
+    <!-- Expose healthCheckService for use in health-check.jsp -->
     <bean
       class="org.springframework.web.context.support.ServletContextAttributeExporter">
       <property name="attributes">
         <map>
-          <entry key="healthcheck" value-ref="healthcheck" />
+          <entry key="healthcheck" value-ref="healthCheckService" />
         </map>
       </property>
     </bean>
-    <bean id="healthcheck" class="se.inera.webcert.overvakning.HealthCheck" />
 
     <!-- Mail configuration -->
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -112,9 +113,6 @@
         <bean class="se.inera.certificate.integration.json.CustomObjectMapper" />
       </property>
     </bean>
-
-    <jaxws:endpoint address="/ping-for-configuration/v1.0"
-      implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl" />
 
     <!-- Handlers for REST services -->
     <bean id="webcertRestExceptionHandler"
@@ -159,6 +157,12 @@
     <jaxws:client id="getRecipientsForCertificateResponder"
       serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface"
       address="${intygstjanst.getrecipientsforcertificate.endpoint.url}" />
+      
+    <jaxws:client id="pingIntygstjanstForConfigurationClient" 
+      serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface" 
+      address="${intygstjanst.pingforconfiguration.endpoint.url}" />  
+      
+      
   </beans>
 
   <!-- In dev and demo mode we bootstrap data -->
