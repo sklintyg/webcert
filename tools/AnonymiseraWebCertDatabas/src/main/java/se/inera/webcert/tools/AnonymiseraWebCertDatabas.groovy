@@ -127,7 +127,7 @@ class AnonymiseraWebCertDatabas {
                 def id = it.INTYG_ID
                 Sql sql = new Sql(dataSource)
                 try {
-                    // Anonymisera alla befintliga frågor och svar
+                    // Anonymisera alla migrerade intyg
                     def fragasvar = sql.firstRow( '''select PATIENT_NAMN, PATIENT_SSN, INTYGS_DATA
                                                  from MIGRERADE_INTYG_FRAN_MEDCERT where INTYG_ID = :id''' , [id : id])
                     String patientNamn = AnonymizeString.anonymize(fragasvar.PATIENT_NAMN)
