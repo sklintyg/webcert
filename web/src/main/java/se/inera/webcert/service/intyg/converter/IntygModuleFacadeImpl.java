@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.model.Utlatande;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.ApplicationOrigin;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
@@ -20,7 +22,6 @@ import se.inera.certificate.modules.support.api.dto.TransportModelHolder;
 import se.inera.certificate.modules.support.api.dto.TransportModelResponse;
 import se.inera.certificate.modules.support.api.dto.TransportModelVersion;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 
 @Component
@@ -41,22 +42,23 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
         } catch (ModuleException e) {
             throw new IntygModuleFacadeException("Exception occured when generating PDF document from external", e);
+        } catch (ModuleNotFoundException e) {
+            throw new IntygModuleFacadeException("Exception occured when generating PDF document from external", e);
         }
     }
 
     public String convertFromExternalToInternal(String intygType, String externalIntygJsonModel) throws IntygModuleFacadeException {
-
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-
-        ExternalModelHolder extHolder = new ExternalModelHolder(externalIntygJsonModel);
-        InternalModelResponse internalModelReponse;
         try {
-            internalModelReponse = moduleApi.convertExternalToInternal(extHolder);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+
+            ExternalModelHolder extHolder = new ExternalModelHolder(externalIntygJsonModel);
+            InternalModelResponse internalModelReponse  = moduleApi.convertExternalToInternal(extHolder);
+            return internalModelReponse.getInternalModel();
         } catch (ModuleException me) {
             throw new IntygModuleFacadeException("Exception occured when converting from external to internal", me);
+        } catch (ModuleNotFoundException e) {
+            throw new IntygModuleFacadeException("Exception occured when converting from external to internal", e);
         }
-
-        return internalModelReponse.getInternalModel();
     }
 
     public ExternalModelResponse convertFromTransportToExternal(String intygType, UtlatandeType utlatandeType)
@@ -69,6 +71,8 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             throw new IntygModuleFacadeException("Exception occured when marshalling from transport to XML", jxe);
         } catch (ModuleException me) {
             throw new IntygModuleFacadeException("Exception occured when unmarshalling from transport XML to external", me);
+        } catch (ModuleNotFoundException e) {
+            throw new IntygModuleFacadeException("Exception occured when marshalling from transport to XML", e);
         }
     }
 
@@ -88,6 +92,8 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             throw new IntygModuleFacadeException("A ModuleException was throw when converting from internal to transport", me);
         } catch (JAXBException jxe) {
             throw new IntygModuleFacadeException("Exception occured when unmarshalling from XML to transport", jxe);
+        } catch (ModuleNotFoundException e) {
+            throw new IntygModuleFacadeException("A ModuleNotFoundException was throw when converting from internal to transport", e);
         }
     }
 
@@ -102,6 +108,8 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
         } catch (ModuleException e) {
             throw new IntygModuleFacadeException("A ModuleException was throw when converting from internal to external", e);
+        } catch (ModuleNotFoundException e) {
+            throw new IntygModuleFacadeException("A ModuleNotFoundException was throw when converting from internal to external", e);
         }
     }
     

@@ -10,8 +10,7 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.modules.IntygModule;
-import se.inera.webcert.modules.IntygModuleRegistry;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.webcert.web.controller.AbstractApiController;
 
 /**
@@ -32,7 +31,6 @@ public class ModuleApiController extends AbstractApiController {
     @Path("/map")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getModulesMap() {
-        List<IntygModule> modules = moduleRegistry.listAllModules();
-        return Response.ok(modules).build();
+        return Response.ok(moduleRegistry.listAllModules()).build();
     }
 }

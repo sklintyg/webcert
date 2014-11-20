@@ -10,6 +10,8 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
@@ -23,7 +25,6 @@ import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
@@ -263,7 +264,7 @@ public class IntygDraftServiceImplTest {
     }
 
     @Test
-    public void testCreateNewDraftCopy() throws ModuleException {
+    public void testCreateNewDraftCopy() throws ModuleException, ModuleNotFoundException {
 
         IntygMetadata metaData = new IntygMetadata();
         metaData.setPatientId(PATIENT_SSN);
@@ -320,7 +321,7 @@ public class IntygDraftServiceImplTest {
     }
 
     @Test
-    public void testCreateNewDraftCopyWithNewPersonnummer() throws ModuleException {
+    public void testCreateNewDraftCopyWithNewPersonnummer() throws ModuleException, ModuleNotFoundException {
 
         IntygMetadata metaData = new IntygMetadata();
         metaData.setPatientId(PATIENT_SSN);

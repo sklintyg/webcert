@@ -16,7 +16,7 @@ import org.mockito.stubbing.Answer;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeTyp;
-import se.inera.webcert.modules.IntygModuleRegistry;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateValidatorTest {

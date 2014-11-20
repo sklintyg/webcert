@@ -19,9 +19,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.ModuleEntryPoint;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.webcert.modules.IntygModuleRegistry;
 
 /**
  * Service that keeps track of active features of Webcert and installed modules. 

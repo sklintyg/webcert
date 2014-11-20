@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
@@ -19,7 +21,6 @@ import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.AbstractVardenhet;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
@@ -163,13 +164,14 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String modelAsJson;
 
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-
         try {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             InternalModelResponse draftResponse = moduleApi.createNewInternal(draftRequest);
             modelAsJson = draftResponse.getInternalModel();
         } catch (ModuleException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        } catch (ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
 
         LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(modelAsJson), intygType);
@@ -297,6 +299,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         } catch (ModuleException me) {
             LOG.error("Module exception occured when trying to make a copy of " + orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        } catch (ModuleNotFoundException e) {
+            LOG.error("Module exception occured when trying to make a copy of " + orgIntygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
     }
 
@@ -387,9 +392,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         LOG.debug("Validating Intyg '{}' with type '{}'", intygId, intygType);
 
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-
         try {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             InternalModelHolder intHolder = new InternalModelHolder(draftAsJson);
             ValidateDraftResponse validateDraftResponse = moduleApi.validateDraft(intHolder);
 
@@ -397,6 +401,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         } catch (ModuleException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        } catch (ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
 
         return draftValidation;
@@ -525,6 +531,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             InternalModelResponse updatedInternal = moduleApi.updateInternal(internalModel, hosPerson, LocalDateTime.now());
             intyg.setModel(updatedInternal.getInternalModel());
         } catch (ModuleException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
+        } catch (ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
         }
     }

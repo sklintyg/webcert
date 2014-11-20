@@ -16,9 +16,9 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftce
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeTyp;
 import se.inera.certificate.model.Id;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.validate.IdValidator;
 import se.inera.certificate.validate.SimpleIdValidatorBuilder;
-import se.inera.webcert.modules.IntygModuleRegistry;
 
 @Component
 public class CreateDraftCertificateValidatorImpl implements CreateDraftCertificateValidator {

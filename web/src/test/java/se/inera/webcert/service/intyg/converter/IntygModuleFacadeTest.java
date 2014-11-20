@@ -22,6 +22,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.model.common.MinimalUtlatande;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.ApplicationOrigin;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
@@ -33,7 +35,6 @@ import se.inera.certificate.modules.support.api.dto.TransportModelHolder;
 import se.inera.certificate.modules.support.api.dto.TransportModelResponse;
 import se.inera.certificate.modules.support.api.dto.TransportModelVersion;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.modules.IntygModuleRegistry;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,7 +67,7 @@ public class IntygModuleFacadeTest {
     }
 
     @Test
-    public void testConvertFromTransportToExternal() throws IntygModuleFacadeException, ModuleException, JAXBException, IOException {
+    public void testConvertFromTransportToExternal() throws IntygModuleFacadeException, ModuleException, JAXBException, IOException, ModuleNotFoundException {
         
         when(jaxbUtil.marshallFromTransportToXml(any(UtlatandeType.class))).thenReturn(TRANSPORT_XML);
         
@@ -85,7 +86,7 @@ public class IntygModuleFacadeTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertFromInternalToTransport() throws ModuleException, IntygModuleFacadeException, JAXBException {
+    public void testConvertFromInternalToTransport() throws ModuleException, IntygModuleFacadeException, JAXBException, ModuleNotFoundException {
         
         Utlatande utlatande = new MinimalUtlatande();
         ExternalModelResponse emr = new ExternalModelResponse(EXT_JSON, utlatande);
@@ -124,7 +125,7 @@ public class IntygModuleFacadeTest {
     }
     
     @Test
-    public void testConvertFromExternalToInternal() throws IntygModuleFacadeException, ModuleException {
+    public void testConvertFromExternalToInternal() throws IntygModuleFacadeException, ModuleException, ModuleNotFoundException {
 
         InternalModelResponse imr = new InternalModelResponse(INT_JSON);
         when(moduleApi.convertExternalToInternal(any(ExternalModelHolder.class))).thenReturn(imr);
@@ -137,7 +138,7 @@ public class IntygModuleFacadeTest {
     }
 
     @Test
-    public void testConvertFromInternalToExternal() throws IntygModuleFacadeException, ModuleException {
+    public void testConvertFromInternalToExternal() throws IntygModuleFacadeException, ModuleException, ModuleNotFoundException {
 
         ExternalModelResponse emr = new ExternalModelResponse(EXT_JSON, new MinimalUtlatande());
         when(moduleApi.convertInternalToExternal(any(InternalModelHolder.class))).thenReturn(emr);
