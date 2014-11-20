@@ -113,7 +113,7 @@ public final class IntygDraftsConverter {
         ie.setUpdatedSignedBy(intyg.getSenastSparadAv().getNamn());
         ie.setLastUpdatedSigned(intyg.getSenastSparadDatum());
         ie.setPatientId(intyg.getPatientPersonnummer());
-        ie.setForwarded(intyg.getVidarebefordrad());
+        ie.setVidarebefordrad(intyg.getVidarebefordrad());
 
         StatusType status = convertIntygsStatusToStatusType(intyg.getStatus());
         ie.setStatus(status.toString());

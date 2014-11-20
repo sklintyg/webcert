@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.IntygSignatureService;
@@ -32,6 +33,7 @@ import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
@@ -76,6 +78,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         IntygDraftHolder draftHolder = new IntygDraftHolder();
 
+        draftHolder.setVidarebefordrad(intyg.getVidarebefordrad());
         draftHolder.setStatus(intyg.getStatus());
         draftHolder.setContent(intyg.getModel());
 
@@ -85,7 +88,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Persists the supplied draft certificate using the intygId as key.
      *
-     * @param intygsId          The id of the certificate.
+     * @param intygsId The id of the certificate.
      * @param draftCertificate Object holding the certificate and its current status.
      */
     @PUT
@@ -108,7 +111,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         return Response.ok().entity(responseEntity).build();
     }
-    
+
     private SaveAndValidateDraftRequest createSaveAndValidateDraftRequest(String intygId, String draftAsJson) {
         SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
 

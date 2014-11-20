@@ -11,6 +11,8 @@ import se.inera.webcert.persistence.intyg.model.IntygsStatus;
  */
 public class IntygDraftHolder {
 
+    private boolean vidarebefordrad;
+
     private IntygsStatus status;
 
     @JsonRawValue
@@ -18,6 +20,14 @@ public class IntygDraftHolder {
 
     public IntygDraftHolder() {
 
+    }
+
+    public boolean isVidarebefordrad() {
+        return vidarebefordrad;
+    }
+
+    public void setVidarebefordrad(boolean vidarebefordrad) {
+        this.vidarebefordrad = vidarebefordrad;
     }
 
     public IntygsStatus getStatus() {

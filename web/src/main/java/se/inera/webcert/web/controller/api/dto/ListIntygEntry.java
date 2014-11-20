@@ -18,7 +18,7 @@ public class ListIntygEntry {
 
     private String updatedSignedBy;
 
-    private boolean forwarded;
+    private boolean vidarebefordrad;
 
     public ListIntygEntry() {
 
@@ -80,12 +80,12 @@ public class ListIntygEntry {
         this.updatedSignedBy = updatedSignedBy;
     }
 
-    public boolean isForwarded() {
-        return forwarded;
+    public boolean isVidarebefordrad() {
+        return vidarebefordrad;
     }
 
-    public void setForwarded(boolean forwarded) {
-        this.forwarded = forwarded;
+    public void setVidarebefordrad(boolean vidarebefordrad) {
+        this.vidarebefordrad = vidarebefordrad;
     }
 
 }
