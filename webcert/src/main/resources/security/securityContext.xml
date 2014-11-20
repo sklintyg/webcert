@@ -21,6 +21,7 @@
   <security:http security="none" pattern="/error.jsp"/>
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/services/**"/>
+  <security:http security="none" pattern="/monitoring/**"/>
   <security:http security="none" pattern="/favicon.ico"/>
 
   <!-- Logger for SAML messages and events -->

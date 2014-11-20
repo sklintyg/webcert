@@ -16,13 +16,6 @@
                 http://cxf.apache.org/schemas/configuration/http-conf.xsd">
                 
   <context:annotation-config />
-  
-
-  <import resource="classpath:fk-stub-context.xml" />
-  <import resource="classpath:hsa-stub-context.xml" />
-  <import resource="classpath:/mail-stub-rest-api-context.xml" />
-  <import resource="classpath:/intygstjanst-stub-context.xml"/>
-  <import resource="classpath:/loggtjanst-stub-context.xml"/>
 
   <cxf:bus>
     <cxf:features>
@@ -31,38 +24,6 @@
   </cxf:bus>
 
   <!-- ws endpoints -->
-  <jaxws:endpoint address="/receive-question/v1.0" implementor="se.inera.webcert.integration.ReceiveQuestionResponderImpl">
-    <jaxws:outFaultInterceptors>
-      <bean class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/receive-question.xslt" />
-      </bean>
-    </jaxws:outFaultInterceptors>
-  </jaxws:endpoint>
-
-  <jaxws:endpoint address="/receive-answer/v1.0" implementor="se.inera.webcert.integration.ReceiveAnswerResponderImpl">
-    <jaxws:outFaultInterceptors>
-      <bean class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/receive-answer.xslt" />
-      </bean>
-    </jaxws:outFaultInterceptors>
-  </jaxws:endpoint>
-
-  <beans profile="dev,local,test,qa">
-    <jaxrs:server address="/questions">
-      <jaxrs:serviceBeans>
-        <ref bean="questionBean" />
-      </jaxrs:serviceBeans>
-      <jaxrs:providers>
-        <ref bean="jacksonJsonProvider" />
-      </jaxrs:providers>
-      <jaxrs:extensionMappings>
-        <entry key="json" value="application/json" />
-      </jaxrs:extensionMappings>
-    </jaxrs:server>
-    <bean id="questionBean" class="se.inera.webcert.integration.test.QuestionResource" />
-  </beans>
-
-
-
+  <jaxws:endpoint address="/ping-for-configuration/v1.0" implementor="se.inera.webcert.integration.PingForConfigurationResponderImpl" />
 
 </beans>
