@@ -49,7 +49,6 @@
     <module>integration/hsa-integration</module>
     <module>integration/pu-integration</module>
     <module>specifications</module>
-    <module>overvakning</module>
     <module>stubs/fk-stub</module>
     <module>stubs/loggtjanst-stub</module>
     <module>stubs/intygstjanst-stub</module>

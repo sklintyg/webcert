@@ -29,10 +29,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>overvakning</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>hsa-integration</artifactId>
     </dependency>
     <dependency>
