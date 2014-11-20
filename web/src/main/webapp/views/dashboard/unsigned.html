@@ -149,15 +149,15 @@
                     </td>
                     <td>
                       <button class="btn btn-default"
-                              ng-class="{'btn-info': !cert.forwarded, 'btn-default btn-secondary' : cert.forwarded}"
+                              ng-class="{'btn-info': !cert.vidarebefordrad, 'btn-default btn-secondary' : cert.vidarebefordrad}"
                               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
                               ng-click="openMailDialog(cert)">
-                        <img ng-if="!cert.forwarded" src="/img/mail.png">
-                        <img ng-if="cert.forwarded" src="/img/mail_dark.png">
+                        <img ng-if="!cert.vidarebefordrad" src="/img/mail.png">
+                        <img ng-if="cert.vidarebefordrad" src="/img/mail_dark.png">
                       </button>
                     </td>
                     <td class="center">
-                      <input id="selected" type="checkbox" ng-disabled="cert.updateState.updateInProgress" ng-model="cert.forwarded"
+                      <input id="selected" type="checkbox" ng-disabled="cert.updateState.updateInProgress" ng-model="cert.vidarebefordrad"
                              ng-change="onForwardedChange(cert)" />
                       <span ng-if="cert.updateState.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
                     </td>

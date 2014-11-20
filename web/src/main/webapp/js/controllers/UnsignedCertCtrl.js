@@ -203,12 +203,15 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             // Handle forwarding
             $scope.openMailDialog = function(cert) {
+                cert.updateState = {
+                    vidarebefordradInProgress: true
+                };
                 intygNotifyService.forwardIntyg(cert, cert.updateState);
             };
 
             $scope.onForwardedChange = function(cert) {
                 cert.updateState = {
-                    updateInProgress: true
+                    vidarebefordradInProgress: true
                 };
                 intygNotifyService.onForwardedChange(cert, cert.updateState);
             };
