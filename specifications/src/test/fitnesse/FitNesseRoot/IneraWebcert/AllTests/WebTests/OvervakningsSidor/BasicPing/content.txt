@@ -1,10 +1,12 @@
-Testet beskriver fallet när ett externt system använder vår Ping-tjänst för att kontrollera systemets status.
+Testet beskriver fallet när ett externt system använder vårt REST API för övervakning för att kontrollera systemets status.
 
 | health check |
 | endpoint | status? |
-| health-check-overview | =~/Ping[0-9]+OK/ |
-| health-check | =~/OK[0-9]+/ |
-| health-check-db | =~/OK[0-9]+/ |
-| health-check-hsa | =~/OK[0-9]+/ |
-| health-check-signatur-queue-size | OK0 |
+| ping | =~/OK[0-9]+/ |
+| db | =~/OK[0-9]+/ |
+| jms | =~/OK[0-9]+/ |
+| hsa | =~/OK[0-9]+/ |
+| intygstjanst | =~/OK[0-9]+/ |
+| uptime | =~/OK[0-9]+/ |
+| signature-queue | OK0 |
 

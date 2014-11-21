@@ -10,7 +10,7 @@ class HealthCheck extends RestClientFixture {
 
     void execute() {
         def restClient = createRestClient(baseUrl)
-        healthCheck = restClient.get(path: "/health-check/${endpoint}.jsp").data
+        healthCheck = restClient.get(path: "/monitoring/health-check/${endpoint}").data
     }
 
     def status() {
