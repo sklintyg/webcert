@@ -205,4 +205,8 @@
           TEXT_SIGNED_AT="2011-12-22 10:51:50.0" QUESTION_ID="question006" />
   <complement ID="3" FALT="2. Diagnos/diagnoser f&#246;r sjukdom/symtom som orsakar nedsatt arbetsf&#246;rm&#229;ga"
               TEXT="Diagnosen &#228;r fel .................." QUESTION_ID="question005" />
+  <complement ID="4" FALT="Fält 5" TEXT="En diagnos är fel" QUESTION_ID="question010" />
+  <complement ID="5" FALT="Fält 6" TEXT="En annan diagnos är fel" QUESTION_ID="question007" />
+  <complement ID="6" FALT="Fält 7 tom str" TEXT="" QUESTION_ID="question007" />
+  <complement ID="7" FALT="Fält 8 null" QUESTION_ID="question007" />
 </dataset>

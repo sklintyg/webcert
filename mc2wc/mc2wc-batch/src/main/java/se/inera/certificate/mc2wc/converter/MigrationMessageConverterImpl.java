@@ -36,6 +36,8 @@ import se.inera.certificate.mc2wc.message.SupplementType;
 public class MigrationMessageConverterImpl implements MigrationMessageConverter {
 
     private static final String INTYGS_TYP = "fk7263";
+    
+    private static final String SUPPLEMENT_DEFAULT_TEXT = "<Ingen text satt>";
 
     private static Logger log = LoggerFactory.getLogger(MigrationMessageConverter.class);
 
@@ -185,7 +187,8 @@ public class MigrationMessageConverterImpl implements MigrationMessageConverter 
         for (Complement mcComplement : complements) {
             SupplementType st = new SupplementType();
             st.setField(mcComplement.getFalt());
-            st.setText(mcComplement.getText());
+            String supplementText = (StringUtils.isNotEmpty(mcComplement.getText())) ? mcComplement.getText() : SUPPLEMENT_DEFAULT_TEXT; 
+            st.setText(supplementText);
             qa.getSupplements().add(st);
         }
 

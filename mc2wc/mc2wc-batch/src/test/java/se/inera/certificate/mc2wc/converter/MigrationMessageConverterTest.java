@@ -105,6 +105,9 @@ public class MigrationMessageConverterTest extends AbstractDbUnitSpringTest {
         assertNotNull(migrationMessage);
         assertNull(migrationMessage.getCertificate());
         assertEquals(1, migrationMessage.getQuestions().size());
+        
+        QuestionType question = migrationMessage.getQuestions().get(0);
+        assertEquals(3, question.getSupplements().size());
     }
 
     @Test
