@@ -45,6 +45,8 @@
     <module>persistence</module>
     <module>log-messages</module>
     <module>log-sender</module>
+    <module>notification-messages</module>
+    <module>notification-sender</module>
     <module>integration/eid-integration</module>
     <module>integration/hsa-integration</module>
     <module>integration/pu-integration</module>
@@ -101,11 +103,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>overvakning</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>hsa-integration</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -117,6 +114,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>pu-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>notification-messages</artifactId>
         <version>${project.version}</version>
       </dependency>
 

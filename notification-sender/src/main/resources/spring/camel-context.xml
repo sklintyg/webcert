@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:camel="http://camel.apache.org/schema/spring"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+  
+  <bean id="processNotificationRequestRouteBuilder" class="se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteBuilder" />
+     
+  <camel:camelContext id="webcertNotification">
+    
+    <camel:routeBuilder ref="processNotificationRequestRouteBuilder"/>
+        
+    <camel:endpoint id="notificationRequestEndpoint" uri="${notificationRequestEndpointUri}"/>
+    <camel:endpoint id="certificateStatusUpdateEndpoint" uri="${certificateStatusUpdateEndpointUri}"/>
+    <camel:endpoint id="intygRepositoryEndpoint" uri="${intygRepositoryEndpointUri}"/>
+    
+    <camel:dataFormats>
+      <camel:jaxb id="notificationRequestJaxb" contextPath="se.inera.webcert.notifications.message.v1"/>
+    </camel:dataFormats>
+    
+  </camel:camelContext>
+  
+</beans>

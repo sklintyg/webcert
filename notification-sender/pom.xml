@@ -1,0 +1,190 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>se.inera.intyg.webcert</groupId>
+    <artifactId>webcert</artifactId>
+    <version>0-SNAPSHOT</version>
+  </parent>
+  <artifactId>notification-sender</artifactId>
+  <packaging>war</packaging>
+  <name>Webcert Notification Sender Application</name>
+  <properties>
+    <camel.version>2.13.3</camel.version>
+    <cxf.version>2.7.13</cxf.version>
+  </properties>
+  <dependencies>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>webcert-persistence</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>notification-messages</artifactId>
+    </dependency>
+
+    <!-- Interactions -->
+    <dependency>
+      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
+    </dependency>
+
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>logging-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- Camel -->
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-cxf</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-jms</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-jaxb</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-camel</artifactId>
+      <version>${activemq.version}</version>
+    </dependency>
+
+    <!-- Test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-test-spring</artifactId>
+      <version>${camel.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-broker</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <finalName>log-sender</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.activemq.tooling</groupId>
+        <artifactId>activemq-maven-plugin</artifactId>
+        <version>5.8.0</version>
+        <configuration>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <configuration>
+          <webAppConfig>
+            <contextPath>/notification-sender</contextPath>
+          </webAppConfig>
+          <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+          <systemProperties>
+            <systemProperty>
+              <name>spring.profiles.active</name>
+              <value>dev</value>
+            </systemProperty>
+            <systemProperty>
+              <name>notification-sender.logback.file</name>
+              <value>${basedir}/notification-logback.xml</value>
+            </systemProperty>
+            <systemProperty>
+              <name>notification-sender.config.file</name>
+              <value>${basedir}/notification-sender-jetty.properties</value>
+            </systemProperty>
+            <systemProperty>
+              <name>catalina.base</name>
+              <value>${project.build.directory}/catalina.base</value>
+            </systemProperty>
+            <systemProperty>
+              <name>jetty.port</name>
+              <value>9090</value>
+            </systemProperty>
+            <systemProperty>
+              <name>java.awt.headless</name>
+              <value>true</value>
+            </systemProperty>
+          </systemProperties>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2db.connector.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>${commons-dbcp2.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-broker</artifactId>
+            <version>${activemq.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-kahadb-store</artifactId>
+            <version>${activemq.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jms_1.1_spec</artifactId>
+            <version>${geronimo-jms-specs.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
