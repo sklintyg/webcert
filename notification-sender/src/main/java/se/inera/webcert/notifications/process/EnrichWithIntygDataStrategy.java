@@ -13,7 +13,7 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 
 public class EnrichWithIntygDataStrategy implements AggregationStrategy {
-
+    
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
                 

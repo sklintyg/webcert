@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteHeaders;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 
@@ -26,7 +27,7 @@ public class IntygRepositoryServiceImpl implements IntygRepositoryService {
      * @see se.inera.webcert.notifications.service.IntygRepositoryService#getIntygsUtkast(java.lang.String)
      */
     @Override
-    public Intyg getIntygsUtkast(@Header("intygsId") String intygsId) {
+    public Intyg getIntygsUtkast(@Header(ProcessNotificationRequestRouteHeaders.INTYGS_ID) String intygsId) {
         
         LOG.debug("Retrieveing Intygsutkast using param '{}'", intygsId);
         

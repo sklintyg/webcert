@@ -11,6 +11,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeTyp;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
+import se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteHeaders;
 
 
 public class CreateAndInitCertificateStatusRequestProcessor implements Processor {
@@ -25,7 +26,7 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         Message inMsg = exchange.getIn();
         
         NotificationRequestType request = inMsg.getBody(NotificationRequestType.class);
-        String intygsId = inMsg.getHeader("intygsId", String.class);
+        String intygsId = inMsg.getHeader(ProcessNotificationRequestRouteHeaders.INTYGS_ID, String.class);
         
         LOG.debug("Creating CertificateStatusUpdate for certificate {}, event {}", intygsId, request.getHandelse());
         
@@ -42,9 +43,6 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         
         CertificateStatusUpdateForCareType statusUpdateType = new CertificateStatusUpdateForCareType();
         statusUpdateType.setUtlatande(utlatandeType);
-        
-        exchange.getIn().setHeader("intygsId", intygsId);
-        exchange.getIn().setHeader("event", request.getHandelse());
         
         exchange.getIn().setBody(statusUpdateType);
     }

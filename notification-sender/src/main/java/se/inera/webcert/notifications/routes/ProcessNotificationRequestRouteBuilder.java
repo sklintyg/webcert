@@ -10,7 +10,8 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("ref:notificationRequestEndpoint").routeId("processNotificationRequest")
-        .setHeader("intygsId", ns.xpath("/not:NotificationRequest/not:intygsId/text()"))
+        .setHeader(ProcessNotificationRequestRouteHeaders.INTYGS_ID, ns.xpath("/not:NotificationRequest/not:intygsId/text()"))
+        .setHeader(ProcessNotificationRequestRouteHeaders.INTYGS_TYP, ns.xpath("/not:NotificationRequest/not:intygsTyp/text()"))
         .unmarshal("notificationRequestJaxb")
         .processRef("createAndInitCertificateStatusRequestProcessor")
         .enrichRef("intygRepositoryEndpoint", "enrichWithIntygDataStrategy")

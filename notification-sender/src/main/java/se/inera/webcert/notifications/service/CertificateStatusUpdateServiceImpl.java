@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+import se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteHeaders;
 
 public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpdateService {
     
@@ -24,7 +25,7 @@ public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpda
      * @see se.inera.webcert.notifications.service.CertificateStatusUpdateService#sendStatusUpdate(java.lang.String, se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType)
      */
     @Override
-    public void sendStatusUpdate(@Header("intygsId") String intygsId, CertificateStatusUpdateForCareType request) throws Exception {
+    public void sendStatusUpdate(@Header(ProcessNotificationRequestRouteHeaders.INTYGS_ID) String intygsId, CertificateStatusUpdateForCareType request) throws Exception {
         
         LOG.debug("Sending status update for intyg '{}'", intygsId);
         
