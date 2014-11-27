@@ -1,5 +1,18 @@
 package se.inera.webcert.service.draft;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,11 +23,18 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.model.common.internal.GrundData;
+import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
@@ -40,21 +60,10 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.intyg.dto.IntygMetadata;
+import se.inera.webcert.service.intyg.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygDraftServiceImplTest {
@@ -264,14 +273,11 @@ public class IntygDraftServiceImplTest {
     }
 
     @Test
-    public void testCreateNewDraftCopy() throws ModuleException, ModuleNotFoundException {
+    public void testCreateNewDraftCopy() throws Exception {
 
-        IntygMetadata metaData = new IntygMetadata();
-        metaData.setPatientId(PATIENT_SSN);
-        metaData.setType(INTYG_TYPE);
-        IntygContentHolder ich = new IntygContentHolder(INTYG_JSON, metaData);
+        IntygContentHolder ich = createIntygContentHolder();
 
-        when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
+        when(intygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
 
         Person person = new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga");
         when(puService.getPerson(PATIENT_SSN)).thenReturn(person);
@@ -280,7 +286,7 @@ public class IntygDraftServiceImplTest {
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
 
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(ExternalModelHolder.class))).thenReturn(imr);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
@@ -303,15 +309,23 @@ public class IntygDraftServiceImplTest {
         verify(intygRepository).save(any(Intyg.class));
     }
 
+    private IntygContentHolder createIntygContentHolder() throws Exception {
+        List<IntygStatus> status = new ArrayList<IntygStatus>();
+        status.add(new IntygStatus(StatusType.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new IntygStatus(StatusType.SENT, "FK", LocalDateTime.now()));
+        Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
+                "IntygDraftServiceImplTest/utlatande.json").getFile(), Utlatande.class);
+        IntygContentHolder ich = new IntygContentHolder("<external-json/>", utlatande, status, false);
+        return ich;
+    }
+
     @Test(expected = WebCertServiceException.class)
-    public void testCreateNewDraftCopyPUtjanstFailed() throws ModuleException {
+    public void testCreateNewDraftCopyPUtjanstFailed() throws Exception {
 
-        IntygMetadata metaData = new IntygMetadata();
-        metaData.setPatientId(PATIENT_SSN);
-        metaData.setType(INTYG_TYPE);
-        IntygContentHolder ich = new IntygContentHolder(INTYG_JSON, metaData);
+        IntygContentHolder ich = createIntygContentHolder();
 
-        when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
+
+        when(intygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
 
         when(puService.getPerson(PATIENT_SSN)).thenReturn(null);
 
@@ -321,14 +335,11 @@ public class IntygDraftServiceImplTest {
     }
 
     @Test
-    public void testCreateNewDraftCopyWithNewPersonnummer() throws ModuleException, ModuleNotFoundException {
+    public void testCreateNewDraftCopyWithNewPersonnummer() throws Exception {
 
-        IntygMetadata metaData = new IntygMetadata();
-        metaData.setPatientId(PATIENT_SSN);
-        metaData.setType(INTYG_TYPE);
-        IntygContentHolder ich = new IntygContentHolder(INTYG_JSON, metaData);
+        IntygContentHolder ich = createIntygContentHolder();
 
-        when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
+        when(intygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
 
         Person person = new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga");
         when(puService.getPerson(PATIENT_NEW_SSN)).thenReturn(person);
@@ -337,7 +348,7 @@ public class IntygDraftServiceImplTest {
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
 
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(ExternalModelHolder.class))).thenReturn(imr);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
@@ -365,6 +376,7 @@ public class IntygDraftServiceImplTest {
     private CreateNewDraftCopyRequest buildCopyRequest() {
         CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest();
         req.setOriginalIntygId(INTYG_ID);
+        req.setTyp(INTYG_TYPE);
         req.setHosPerson(hoSPerson);
         req.setVardenhet(vardenhet);
         return req;

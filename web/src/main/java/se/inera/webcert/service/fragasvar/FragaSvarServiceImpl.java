@@ -242,7 +242,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    public FragaSvar saveNewQuestion(String intygId, Amne amne, String frageText) {
+    public FragaSvar saveNewQuestion(String intygId, String typ, Amne amne, String frageText) {
         // Input sanity check
         if (StringUtils.isEmpty(frageText)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
@@ -258,28 +258,28 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Fetch from Intygstjansten
-        IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(intygId);
+        IntygContentHolder intyg = intygService.fetchIntygData(intygId, typ);
 
         // Get utfardande vardperson
-        Vardperson vardPerson = FragaSvarConverter.convert(externalIntygData.getExternalModel().getSkapadAv());
+        Vardperson vardPerson = FragaSvarConverter.convert(intyg.getUtlatande().getGrundData().getSkapadAv());
 
         // Is user authorized to save an answer to this question?
         verifyEnhetsAuth(vardPerson.getEnhetsId());
 
         // Verksamhetsregel FS-001 (Is the certificate sent to FK)
-        if (!isSentToFK(externalIntygData.getMetaData().getStatuses())) {
+        if (!isSentToFK(intyg.getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-001: Certificate must be sent to FK first before sending question!");
         }
 
         // Verify that certificate is not revoked
-        if (isRevoked(externalIntygData.getMetaData().getStatuses())) {
+        if (intyg.isRevoked()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-XXX: Cannot save Fraga when certificate is revoked!");
         }
 
         IntygsReferens intygsReferens = FragaSvarConverter
-                .convertToIntygsReferens(externalIntygData.getExternalModel());
+                .convertToIntygsReferens(intyg.getUtlatande());
 
         FragaSvar fraga = new FragaSvar();
         fraga.setFrageStallare(WEBCERT);

@@ -8,9 +8,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import org.joda.time.LocalDateTime;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,12 +22,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
+import se.inera.webcert.service.intyg.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -66,12 +72,14 @@ public class IntygModuleApiControllerTest {
     @BeforeClass
     public static void setupCertificateData() throws IOException {
 
-        IntygMetadata meta = new IntygMetadata();
-        meta.setId(CERTIFICATE_ID);
-        meta.setType(CERTIFICATE_TYPE);
-        meta.setPatientId(PATIENT_ID);
+        Utlatande utlatande = new Utlatande();
+        utlatande.setId(CERTIFICATE_ID);
+        utlatande.setTyp(CERTIFICATE_TYPE);
         
-        utlatandeHolder = new IntygContentHolder("<json>", meta);
+            List<IntygStatus> status = new ArrayList<IntygStatus>();
+            status.add(new IntygStatus(StatusType.RECEIVED, "MI", LocalDateTime.now()));
+            status.add(new IntygStatus(StatusType.SENT, "FK", LocalDateTime.now()));
+            utlatandeHolder =  new IntygContentHolder("<external-json/>", utlatande, status, false);
     }
 
     @Ignore
@@ -80,11 +88,11 @@ public class IntygModuleApiControllerTest {
         
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
         
-        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID)).thenReturn(pdfResponse);
+        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, "fk7263")).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getIntygAsPdf("fk7263", CERTIFICATE_ID);
 
-        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID);
+        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, "fk7263");
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(PDF_DATA, response.getEntity());

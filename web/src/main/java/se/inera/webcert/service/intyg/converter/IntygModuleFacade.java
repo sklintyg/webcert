@@ -1,20 +1,17 @@
 package se.inera.webcert.service.intyg.converter;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
-import se.inera.certificate.model.Utlatande;
-import se.inera.certificate.modules.support.api.dto.ExternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.CertificateResponse;
+import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 
 public interface IntygModuleFacade {
 
-    public abstract UtlatandeType convertFromInternalToTransport(String intygType, String intygJsonModel) throws IntygModuleFacadeException;
+    public abstract IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel) throws IntygModuleFacadeException;
     
-    public abstract Utlatande convertFromInternalToExternal(String intygType, String intygJsonModel) throws IntygModuleFacadeException;
+    public abstract CertificateResponse getCertificate(String certificateId, String intygType) throws IntygModuleFacadeException;
+ 
+    public abstract void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException;
     
-    public abstract ExternalModelResponse convertFromTransportToExternal(String intygType, UtlatandeType utlatandeType) throws IntygModuleFacadeException;
-    
-    public abstract String convertFromExternalToInternal(String intygType, String externalIntygJsonModel) throws IntygModuleFacadeException;
-    
-    public abstract IntygPdf convertFromExternalToPdfDocument(String intygType, String externalIntygJsonModel) throws IntygModuleFacadeException;
+    public abstract void sendCertificate(String intygType, String internalIntygJsonModel, String recipient) throws ModuleException, IntygModuleFacadeException;
     
 }

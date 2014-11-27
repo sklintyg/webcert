@@ -125,11 +125,6 @@
     <bean id="localDateTimeHandler" class="se.inera.webcert.web.handlers.LocalDateTimeHandler" />
 
     <!-- ws clients -->
-    <jaxws:client id="getCertificateForCareResponder"
-      serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface"
-      address="${intygstjanst.getcertificateforcare.endpoint.url}">
-    </jaxws:client>
-
     <jaxws:client id="listCertificatesForCareResponder"
       serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface"
       address="${intygstjanst.listcertificatesforcare.endpoint.url}">

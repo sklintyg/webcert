@@ -1,19 +1,8 @@
 package se.inera.webcert.web.controller.integration;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.service.draft.IntygDraftService;
-import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.web.service.WebCertUserService;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,9 +13,18 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.certificate.modules.fk7263.model.Constants;
+import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -57,8 +55,8 @@ public class IntygIntegrationController {
     private WebCertUserService webCertUserService;
 
     /**
-     * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
-     * the certificate. Can be used for all types of certificates.
+     * Fetches an FK certificate from IT or webcert and then performs a redirect to the view that displays
+     * the certificate.
      *
      * @param uriInfo
      * @param intygId
@@ -68,9 +66,24 @@ public class IntygIntegrationController {
     @GET
     @Path("/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
+        return redirectToIntyg(uriInfo, intygId, Constants.FK7263);
+    }
 
-        Boolean draft = true;
-        String intygType;
+    /**
+     * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
+     * the certificate. Can be used for all types of certificates.
+     *
+     * @param uriInfo
+     * @param intygId
+     *            The id of the certificate to view.
+     * @param typ The type of certificate
+     * @return
+     */
+    @GET
+    @Path("/{typ}/{intygId}")
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typ) {
+
+        Boolean draft = false;
 
         if(StringUtils.isBlank(intygId)) {
             return Response.serverError().build();
@@ -78,18 +91,14 @@ public class IntygIntegrationController {
 
         Intyg draftData = intygRepository.findOne(intygId);
         if (draftData != null && !draftData.getStatus().equals(IntygsStatus.SIGNED)) {
-            intygType = draftData.getIntygsTyp();
-        } else {
-            draft = false;
-            IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId); // Throws exceptions in case of errors
-            intygType = intygData.getMetaData().getType();
+            draft = true;
         }
-
-        LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
+        
+        LOG.debug("Redirecting to view intyg {} of type {}", intygId, typ);
 
         webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM);
 
-        return buildRedirectResponse(uriInfo, intygType, intygId, draft);
+        return buildRedirectResponse(uriInfo, typ, intygId, draft);
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, Boolean draft) {

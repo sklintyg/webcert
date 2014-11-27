@@ -1,5 +1,11 @@
 package se.inera.webcert.service.draft;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -7,11 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
@@ -48,12 +54,6 @@ import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class IntygDraftServiceImpl implements IntygDraftService {
@@ -252,15 +252,16 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     public CreateNewDraftCopyResponse createNewDraftCopy(CreateNewDraftCopyRequest copyRequest) {
 
         String orgIntygsId = copyRequest.getOriginalIntygId();
+        String typ = copyRequest.getTyp();
 
-        LOG.debug("Creating a new draft based on intyg '{}'", orgIntygsId);
+        LOG.debug("Creating a new draft of type {} based on intyg '{}'", typ, orgIntygsId);
 
         try {
 
-            IntygContentHolder template = intygService.fetchExternalIntygData(orgIntygsId);
+            IntygContentHolder template = intygService.fetchIntygData(orgIntygsId, typ);
 
-            String intygType = template.getMetaData().getType();
-            String patientPersonnummer = template.getMetaData().getPatientId();
+            String intygType = template.getUtlatande().getTyp();
+            String patientPersonnummer = template.getUtlatande().getGrundData().getPatient().getPersonId();
 
             if (copyRequest.containsNyttPatientPersonnummer()) {
                 patientPersonnummer = copyRequest.getNyttPatientPersonnummer();
@@ -283,7 +284,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(moduleRequest,
-                    new ExternalModelHolder(template.getContents()));
+                    new InternalModelHolder(template.getContents()));
             String newDraftModelAsJson = draftResponse.getInternalModel();
 
             LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(newDraftModelAsJson), intygType);
