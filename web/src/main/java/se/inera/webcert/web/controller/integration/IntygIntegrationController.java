@@ -103,10 +103,10 @@ public class IntygIntegrationController {
 
         String urlFragmentTemplate;
         if(draft) {
+            urlParams.put(PARAM_HOSP_NAME, responsibleHospName);
             urlFragmentTemplate = this.urlUtkastFragmentTemplate;
         } else {
             urlFragmentTemplate = this.urlIntygFragmentTemplate;
-            urlParams.put(PARAM_HOSP_NAME, responsibleHospName);
         }
 
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
