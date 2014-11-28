@@ -29,6 +29,16 @@
     <!-- Common -->
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
+      <artifactId>integration-util</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>se.inera.intyg.common</groupId>
+          <artifactId>logging-util</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
       <artifactId>logging-util</artifactId>
     </dependency>
 
@@ -36,6 +46,12 @@
     <dependency>
       <groupId>se.riv.ehr.logstore</groupId>
       <artifactId>ehr-logstore-interactions</artifactId>
+    </dependency>
+
+    <!-- JSON input/output -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
     </dependency>
 
     <!-- Logging -->
@@ -82,6 +98,7 @@
       <artifactId>spring-jms</artifactId>
     </dependency>
 
+    <!-- Apache Commons -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -91,16 +108,20 @@
       <artifactId>commons-io</artifactId>
     </dependency>
 
+    <!-- Web Service -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
     </dependency>
 
+    <!-- Web -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Queue/JMS -->
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jms_1.1_spec</artifactId>
@@ -146,9 +167,6 @@
       <plugin>
         <groupId>org.apache.activemq.tooling</groupId>
         <artifactId>activemq-maven-plugin</artifactId>
-        <version>5.8.0</version>
-        <configuration>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.eclipse.jetty</groupId>

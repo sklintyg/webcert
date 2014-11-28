@@ -60,8 +60,6 @@
       <artifactId>log-messages</artifactId>
     </dependency>
 
-    
-
     <!-- Common -->
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
