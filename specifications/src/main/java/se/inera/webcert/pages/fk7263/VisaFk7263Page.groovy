@@ -37,6 +37,7 @@ class VisaFk7263Page extends AbstractPage {
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
 
         // INTYG
+        namnOchPersonnummer { $("#patientNamnPersonnummer") }
 
         // smittskydd
         smittskydd { $("#smittskydd") }

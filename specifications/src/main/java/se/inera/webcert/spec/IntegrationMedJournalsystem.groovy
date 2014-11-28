@@ -23,16 +23,43 @@ class IntegrationMedJournalsystem {
 
     def visaIntygViaIntegration(String intygId) {
         Browser.drive {
-            go "/integration/" + intygId
+            go "/visa/intyg/" + intygId
             waitFor {
                 at VisaFk7263Page
             }
         }
     }
 
+    def visaIntygViaIntegrationMedPersonnummer(String intygId, String personnummer) {
+        Browser.drive {
+            go "/visa/intyg/" + intygId + "?alternatePatientSSN=" + personnummer
+            waitFor {
+                at VisaFk7263Page
+            }
+        }
+    }
+
+    def verifieraNamnOchPersonnummer(String expected) {
+        Browser.drive {
+            waitFor {
+                expected == page.namnOchPersonnummer.text()
+            }
+        }
+        true
+    }
+
+    def kopieraIntyg(String intygId) {
+        Browser.drive {
+            waitFor {
+                page.copyButton.isDisplayed()
+            }
+            page.copy()
+        }
+    }
+
     def visaUtkastViaIntegration(String intygId) {
         Browser.drive {
-            go "/integration/" + intygId
+            go "/visa/intyg/" + intygId
             waitFor {
                 at EditCertPage
             }
