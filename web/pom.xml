@@ -81,6 +81,7 @@
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>fk7263</artifactId>
     </dependency>
+    <!-- 
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-bas</artifactId>
@@ -89,7 +90,7 @@
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-diabetes</artifactId>
     </dependency>
-
+     -->
     <!-- Interactions -->    
     <dependency>
       <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
@@ -453,6 +454,7 @@
                     dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
                   </fileset>
                 </copy>
+                <!-- 
                 <copy
                   todir="${project.build.directory}/webjardependencies/ts-bas"
                   verbose="false">
@@ -467,6 +469,7 @@
                     dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-diabetes">
                   </fileset>
                 </copy>
+                 -->
               </target>
             </configuration>
             <goals>
