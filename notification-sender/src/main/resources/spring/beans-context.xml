@@ -2,11 +2,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-  
+   
   <bean id="createAndInitCertificateStatusRequestProcessor" class="se.inera.webcert.notifications.process.CreateAndInitCertificateStatusRequestProcessor"/>
   
   <bean id="enrichWithIntygDataStrategy" class="se.inera.webcert.notifications.process.EnrichWithIntygDataStrategy" />
   
-  <bean id="intygRepositoryService" class="se.inera.webcert.notifications.service.IntygRepositoryServiceImpl" />
-
+  <bean id="webcertRepositoryService" class="se.inera.webcert.notifications.service.WebcertRepositoryServiceImpl" />
+  
+  <bean id="intygsTypChecker" class="se.inera.webcert.notifications.process.IntygsTypCheckerImpl">
+    <property name="allowedIntygsTypes">
+      <list>
+        <value>fk7263</value>
+      </list>
+    </property>
+  </bean>
+ 
 </beans>

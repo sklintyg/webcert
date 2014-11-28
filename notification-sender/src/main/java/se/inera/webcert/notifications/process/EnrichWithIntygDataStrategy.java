@@ -1,64 +1,65 @@
 package se.inera.webcert.notifications.process;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.EnhetType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HosPersonalType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeTyp;
 import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 
-public class EnrichWithIntygDataStrategy implements AggregationStrategy {
-    
-    @Override
-    public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-                
-        CertificateStatusUpdateForCareType statusUpdateType = oldExchange.getIn().getBody(CertificateStatusUpdateForCareType.class);
-        UtlatandeType utlatandeType = statusUpdateType.getUtlatande();       
-        
-        Intyg intygsUtkast = newExchange.getIn().getBody(Intyg.class);
-                
-        //utlatandeType.setSigneringsdatum(intygsUtkast.get);
-                
-        TypAvUtlatandeTyp typAvUtlatande = new TypAvUtlatandeTyp();
-        typAvUtlatande.setCode(intygsUtkast.getIntygsTyp());
-        utlatandeType.setTypAvUtlatande(typAvUtlatande);
-                
-        /*HosPersonalType hoSPerson = createHosPersonal(intygsUtkast);
-        utlatandeType.setSkapadAv(hoSPerson);*/
-        
+public class EnrichWithIntygDataStrategy {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygDataStrategy.class);
+
+    public CertificateStatusUpdateForCareType enrichCertificateStatusUpdate(CertificateStatusUpdateForCareType statusUpdateType, Intyg intygsUtkast) {
+
+        LOG.info("Enriching CertificateStatusUpdateForCareType with data from intygsutkast {}", intygsUtkast.getIntygsId());
+
+        UtlatandeType utlatandeType = statusUpdateType.getUtlatande();
+
+        decorateWithSignDate(utlatandeType, intygsUtkast);
+        decorateWithHoSPerson(utlatandeType, intygsUtkast);
+
         // content that has to be extracted from the certificate model
-        //utlatandeType.setDiagnos(value);
-        //utlatandeType.getArbetsformaga()    
-        
-        return oldExchange;
+        // utlatandeType.setDiagnos(value);
+        // utlatandeType.getArbetsformaga()
+
+        return statusUpdateType;
     }
-    
-    private HosPersonalType createHosPersonal(Intyg intygsUtkast) {
-        
+
+    private void decorateWithSignDate(UtlatandeType utlatandeType, Intyg intygsUtkast) {
+        if (IntygsStatus.SIGNED.equals(intygsUtkast.getStatus())) {
+
+            utlatandeType.setSigneringsdatum(null);
+        }
+    }
+
+    private void decorateWithHoSPerson(UtlatandeType utlatandeType, Intyg intygsUtkast) {
+
         VardpersonReferens vardpersonReferens = intygsUtkast.getSkapadAv();
-        
-        HosPersonalType hoSPersonal = new HosPersonalType();
-        hoSPersonal.setFullstandigtNamn(vardpersonReferens.getNamn());
-        
+
+        HosPersonalType hoSPerson = new HosPersonalType();
+        hoSPerson.setFullstandigtNamn(vardpersonReferens.getNamn());
+
         HsaId personHsaId = createHsaId(vardpersonReferens.getHsaId());
-        hoSPersonal.setPersonalId(personHsaId);
-                
+        hoSPerson.setPersonalId(personHsaId);
+
         EnhetType vardEnhet = new EnhetType();
         vardEnhet.setEnhetsnamn(intygsUtkast.getEnhetsNamn());
-        
+
         HsaId vardEnhetHsaId = createHsaId(vardpersonReferens.getHsaId());
         vardEnhet.setEnhetsId(vardEnhetHsaId);
-                
-        hoSPersonal.setEnhet(vardEnhet);
-                
-        return hoSPersonal;
+
+        hoSPerson.setEnhet(vardEnhet);
+
+        utlatandeType.setSkapadAv(hoSPerson);
     }
-    
+
     private HsaId createHsaId(String id) {
         HsaId hsaId = new HsaId();
         hsaId.setRoot("adf");

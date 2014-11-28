@@ -1,0 +1,60 @@
+package se.inera.webcert.notifications.service;
+
+import org.apache.camel.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.webcert.notifications.routes.RouteHeaders;
+import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
+import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+
+/**
+ * Simple facade for the Intyg respository so header values from Camel
+ * routes can be used as parameters.
+ * 
+ * @author npet
+ *
+ */
+public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(WebcertRepositoryService.class);
+    
+    @Autowired
+    private IntygRepository intygRepository;
+    
+    @Autowired
+    private IntegreradEnhetRepository integreradEnhetRepository;
+    
+    /* (non-Javadoc)
+     * @see se.inera.webcert.notifications.service.IntygRepositoryService#getIntygsUtkast(java.lang.String)
+     */
+    @Override
+    public Intyg getIntygsUtkast(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+        
+        LOG.debug("Retrieveing Intygsutkast using param '{}'", intygsId);
+        
+        return intygRepository.findOne(intygsId);
+    }
+    
+    public boolean isIntygsUtkastPresent(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+        
+        if (intygRepository.exists(intygsId)) {
+            return true;
+        }
+        
+        LOG.debug("Intyg '{}' is not present in IntygRepository", intygsId);
+        return false;
+    }
+    
+    public boolean isVardenhetIntegrerad(@Header(RouteHeaders.VARDENHET_HSA_ID) String vardenhetHsaId) {
+        
+        if (integreradEnhetRepository.exists(vardenhetHsaId)) {
+            return true;
+        };
+        
+        LOG.debug("Vardenhet '{}' is not present in IntegreradEnhetRepository", vardenhetHsaId);
+        return false;
+    }
+}
