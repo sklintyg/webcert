@@ -39,6 +39,18 @@ class IntegrationMedJournalsystem {
         }
     }
 
+    boolean intygLaddat(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                if (expected) {
+                    at VisaPage
+                    page.intygLaddat(expected)
+                }
+                true
+            }
+        }
+    }
+
     def visaUtkastViaIntegrationMedPersonnummer(String intygId, String personnummer) {
         Browser.drive {
             go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer

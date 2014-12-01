@@ -1,10 +1,8 @@
 package se.inera.webcert.pages.ts_bas
 
-import se.inera.certificate.page.AbstractPage
+import se.inera.webcert.pages.VisaPage
 
-class VisaTsBasPage extends AbstractPage {
-
-    static at = { js.doneLoading && $("#viewCertAndQA").isDisplayed() }
+class VisaTsBasPage extends VisaPage {
 
     static content = {
 

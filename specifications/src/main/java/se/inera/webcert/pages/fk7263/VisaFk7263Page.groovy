@@ -1,10 +1,8 @@
 package se.inera.webcert.pages.fk7263
 
-import se.inera.certificate.page.AbstractPage
+import se.inera.webcert.pages.VisaPage
 
-class VisaFk7263Page extends AbstractPage {
-
-    static at = { js.doneLoading && $("#viewCertAndQA").isDisplayed() }
+class VisaFk7263Page extends VisaPage {
 
     static content = {
 
