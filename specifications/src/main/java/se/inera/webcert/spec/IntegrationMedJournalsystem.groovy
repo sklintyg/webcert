@@ -32,9 +32,43 @@ class IntegrationMedJournalsystem {
 
     def visaIntygViaIntegrationMedPersonnummer(String intygId, String personnummer) {
         Browser.drive {
-            go "/visa/intyg/" + intygId + "?alternatePatientSSN=" + personnummer
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer
             waitFor {
                 at VisaFk7263Page
+            }
+        }
+    }
+
+    def visaUtkastViaIntegrationMedPersonnummer(String intygId, String personnummer) {
+        Browser.drive {
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer
+            waitFor {
+                at EditCertPage
+            }
+        }
+    }
+
+    def visaUtkastViaIntegrationMedPersonnummerSignerandeLakare(String intygId, String personnummer, String signerandeLakare) {
+        Browser.drive {
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer + "&responsibleHospName=" + signerandeLakare
+            waitFor {
+                at EditCertPage
+            }
+        }
+    }
+
+    def nyttPersonnummerMeddelandeVisas() {
+        Browser.drive {
+            waitFor {
+                page.nyttPersonnummer.isDisplayed()
+            }
+        }
+    }
+
+    def signerandeLakareMeddelandeVisas(expected) {
+        Browser.drive {
+            waitFor {
+                (expected == page.signerandeLakare.text()) && page.signerandeLakare.isDisplayed()
             }
         }
     }

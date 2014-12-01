@@ -67,7 +67,7 @@ public class IntygIntegrationController {
      */
     @GET
     @Path("/{intygId}")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @DefaultValue("") @QueryParam("alternatePatientSSN") String alternatePatientSSN, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
 
         Boolean draft = true;
         String intygType;
@@ -89,17 +89,17 @@ public class IntygIntegrationController {
 
         webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM);
 
-        return buildRedirectResponse(uriInfo, intygType, intygId, alternatePatientSSN, responsibleHospName, draft);
+        return buildRedirectResponse(uriInfo, intygType, intygId, alternatePatientSSn, responsibleHospName, draft);
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSN, String responsibleHospName, Boolean draft) {
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn, String responsibleHospName, Boolean draft) {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<String, Object>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
-        urlParams.put(PARAM_PATIENT_SSN, alternatePatientSSN);
+        urlParams.put(PARAM_PATIENT_SSN, alternatePatientSSn);
 
         String urlFragmentTemplate;
         if(draft) {
