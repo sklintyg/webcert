@@ -1,15 +1,14 @@
 package se.inera.webcert.hsa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import se.inera.certificate.integration.json.CustomObjectMapper;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import se.inera.certificate.integration.json.CustomObjectMapper;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * @author andreaskaltenbach
@@ -27,15 +26,15 @@ public class WebCertUser implements Serializable {
     private List<Vardgivare> vardgivare;
 
     private List<String> specialiseringar;
-    
+
     private String titel;
-    
+
     private List<String> legitimeradeYrkesgrupper;
 
     private SelectableVardenhet valdVardenhet;
 
     private SelectableVardenhet valdVardgivare;
-    
+
     private Set<String> aktivaFunktioner;
 
     public String getHsaId() {
@@ -76,11 +75,11 @@ public class WebCertUser implements Serializable {
     }
 
     public List<String> getSpecialiseringar() {
-        
+
         if (specialiseringar == null) {
             specialiseringar = Collections.emptyList();
         }
-        
+
         return specialiseringar;
     }
 
@@ -97,11 +96,11 @@ public class WebCertUser implements Serializable {
     }
 
     public List<String> getLegitimeradeYrkesgrupper() {
-        
+
         if (legitimeradeYrkesgrupper == null) {
             legitimeradeYrkesgrupper = Collections.emptyList();
         }
-                
+
         return legitimeradeYrkesgrupper;
     }
 
@@ -145,7 +144,7 @@ public class WebCertUser implements Serializable {
         if (aktivaFunktioner == null) {
             aktivaFunktioner = Collections.emptySet();
         }
-        
+
         return aktivaFunktioner;
     }
 
@@ -153,10 +152,10 @@ public class WebCertUser implements Serializable {
         this.aktivaFunktioner = aktivaFunktioner;
     }
 
-    public boolean hasAktivFunktion(String aktivFunktion) {        
+    public boolean hasAktivFunktion(String aktivFunktion) {
         return getAktivaFunktioner().contains(aktivFunktion);
     }
-    
+
     @JsonIgnore
     public String getAsJson() {
         try {
@@ -164,6 +163,18 @@ public class WebCertUser implements Serializable {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @JsonIgnore
+    public List<String> getIdsOfSelectedVardgivare() {
+
+        SelectableVardenhet selected = getValdVardgivare();
+
+        if (selected == null) {
+            return Collections.emptyList();
+        }
+
+        return selected.getHsaIds();
     }
 
     @JsonIgnore

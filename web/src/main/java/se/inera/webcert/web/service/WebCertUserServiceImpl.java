@@ -18,18 +18,19 @@
  */
 package se.inera.webcert.web.service;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.feature.WebcertFeatureService;
+
+import java.util.List;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -43,7 +44,11 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Override
     public boolean isAuthorizedForUnit(String enhetsHsaId) {
         WebCertUser user = getWebCertUser();
-        return user != null && user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
+        if (user.hasAktivFunktion(WebcertFeature.FRAN_JOURNALSYSTEM.getName())) {
+            return user != null && user.getIdsOfSelectedVardgivare().contains(enhetsHsaId);
+        } else {
+            return user != null && user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
+        }
     }
 
     public boolean isAuthorizedForUnits(List<String> enhetsHsaIds) {
@@ -91,10 +96,10 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
     @Override
     public void clearEnabledFeaturesOnUser() {
-         
+
         WebCertUser user = getWebCertUser();
         user.getAktivaFunktioner().clear();
-        
+
         LOG.debug("Cleared enabled featured from user {}", user.getHsaId());
     }
 }

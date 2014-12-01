@@ -4,11 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
@@ -21,7 +19,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,22 +69,30 @@ public class IntygIntegrationController {
         Boolean draft = true;
         String intygType;
 
-        if(StringUtils.isBlank(intygId)) {
+        if (StringUtils.isBlank(intygId)) {
             return Response.serverError().build();
         }
+
+        webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM);
 
         Intyg draftData = intygRepository.findOne(intygId);
         if (draftData != null && !draftData.getStatus().equals(IntygsStatus.SIGNED)) {
             intygType = draftData.getIntygsTyp();
         } else {
             draft = false;
-            IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId); // Throws exceptions in case of errors
-            intygType = intygData.getMetaData().getType();
+            try {
+                IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId);
+                intygType = intygData.getMetaData().getType();
+            } catch (WebCertServiceException e) {
+                // Intyget kunde inte läsas av någon anledning. Släpp igenom detta utan fel eftersom den här
+                // controllerns enda uppgift är att skicka vidare användaren till rätt sida. Vad som ska hända därefter
+                // är upp till den controllern. I dagsläget skickar vi vidare användaren till fk7263 eftersom det är det
+                // enda intyget som stöds.
+                intygType = "fk7263";
+            }
         }
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
-
-        webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM);
 
         return buildRedirectResponse(uriInfo, intygType, intygId, alternatePatientSSn, responsibleHospName, draft);
     }
