@@ -11,3 +11,6 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 | nytt personnummer meddelande visas|
 | kopiera intyg | intyg-fit-1 |
 | verifiera namn och personnummer | Björn Anders Daniel Pärsson - 19520617-2339 |
+
+| script | !-HanteraUtkast-! |
+| radera utkast |
