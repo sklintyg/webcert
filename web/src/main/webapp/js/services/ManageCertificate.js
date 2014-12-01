@@ -127,7 +127,15 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             }
 
             function _createCopyDraft($scope, dialogModel, cert, onSuccess, onError) {
+                var valdVardenhet = User.getValdVardenhet();
+                CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
+                CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
+                CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
+                CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
+                CreateCertificateDraft.intygType = cert.intygType;
+
                 CreateCertificateDraft.nyttPatientPersonnummer = $routeParams.patientId;
+
                 CreateCertificateDraft.copyIntygToDraft(cert, function(data) {
                     $log.debug('Successfully requested copy draft');
                     if(onSuccess) {
@@ -136,7 +144,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 }, function(error) {
                     $log.debug('Create copy failed: ' + error.message);
                     if (onError) {
-                        onError();
+                        onError(error.errorCode);
                     }
                 });
             }
@@ -190,7 +198,13 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                                 $scope.widgetState.createErrorMessageKey = undefined;
                                 copyDialog.close();
                                 goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
-                            }, function() {
+                            }, function(errorCode) {
+                                if (errorCode == 'DATA_NOT_FOUND') {
+                                    $scope.dialog.errormessageid = 'error.failedtocopyintyg.personidnotfound';
+                                }
+                                else {
+                                    $scope.dialog.errormessageid = 'error.failedtocopyintyg';
+                                }
                                 $scope.dialog.acceptprogressdone = true;
                                 $scope.dialog.showerror = true;
                             });

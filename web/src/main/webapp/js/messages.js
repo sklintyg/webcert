@@ -68,6 +68,7 @@ var wcMessages = {
         'error.failedtocreateintyg': 'Kunde inte skapa intyget. Försök igen senare.',
         'error.failedtocancelintyg': 'Kunde inte makulera intyget. Försök igen senare.',
         'error.failedtocopyintyg': 'Kunde inte kopiera intyget. Försök igen senare.',
+        'error.failedtocopyintyg.personidnotfound': 'Kunde inte kopiera intyget. Det nya person-id:t kunde inte hittas.',
         'error.failedtosendintyg': 'Kunde inte skicka intyget. Försök igen senare.'
     },
     'en': {
