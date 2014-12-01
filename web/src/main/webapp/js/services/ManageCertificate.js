@@ -1,7 +1,7 @@
 angular.module('webcert').factory('webcert.ManageCertificate',
-    [ '$http', '$log', '$location', '$window', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
+    [ '$http', '$routeParams', '$log', '$location', '$window', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
         'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.CertificateService',
-        function($http, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
+        function($http, $routeParams, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
             featureService, messageService, CertificateService) {
             'use strict';
 
@@ -127,13 +127,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             }
 
             function _createCopyDraft($scope, dialogModel, cert, onSuccess, onError) {
-                var valdVardenhet = User.getValdVardenhet();
-                CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
-                CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
-                CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
-                CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
-                CreateCertificateDraft.intygType = cert.intygType;
-
+                CreateCertificateDraft.nyttPatientPersonnummer = $routeParams.patientId;
                 CreateCertificateDraft.copyIntygToDraft(cert, function(data) {
                     $log.debug('Successfully requested copy draft');
                     if(onSuccess) {
@@ -176,9 +170,12 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                         titleId: 'label.copycert',
                         templateUrl: '/views/partials/check-dialog.html',
                         model: dialogModel,
-                        bodyText: '<p>Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma ' +
-                            'information. I de fall patienten har ändrat namn eller adress så uppdateras den informationen.</p>' +
-                            '<p>Uppgifterna i intygsutkastet går att ändra innan det signeras.</p>' +
+                        bodyText: '<p>Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma information. '+
+                            ($routeParams.patientId ?
+                                'För denna patient finns nytt person-id och informationen kommer därför uppdateras i det nya intyget.'
+                            :
+                                'I de fall patienten har ändrat namn eller adress så uppdateras den informationen.') +
+                            '</p><p>Uppgifterna i intygsutkastet går att ändra innan det signeras.</p>' +
                             'Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.',
                         button1click: function() {
                             $log.debug('copy cert from dialog' + cert);

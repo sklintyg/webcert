@@ -15,9 +15,7 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -32,13 +30,15 @@ import java.util.Map;
  * Controller to enable an external user to access certificates directly from a
  * link in an external patient care system.
  *
- * @author nikpet
+ * @author bensam
  */
-@Path("/")
+@Path("/intyg")
 public class IntygIntegrationController {
 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
+    public static final String PARAM_HOSP_NAME = "hospName";
+    public static final String PARAM_PATIENT_SSN = "patientId";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -67,7 +67,7 @@ public class IntygIntegrationController {
      */
     @GET
     @Path("/{intygId}")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
 
         Boolean draft = true;
         String intygType;
@@ -89,21 +89,26 @@ public class IntygIntegrationController {
 
         webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM);
 
-        return buildRedirectResponse(uriInfo, intygType, intygId, draft);
+        return buildRedirectResponse(uriInfo, intygType, intygId, alternatePatientSSn, responsibleHospName, draft);
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, Boolean draft) {
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn, String responsibleHospName, Boolean draft) {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<String, Object>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
+        urlParams.put(PARAM_PATIENT_SSN, alternatePatientSSn);
 
-        String urlFragmentTemplate = this.urlIntygFragmentTemplate;
+        String urlFragmentTemplate;
         if(draft) {
+            urlParams.put(PARAM_HOSP_NAME, responsibleHospName);
             urlFragmentTemplate = this.urlUtkastFragmentTemplate;
+        } else {
+            urlFragmentTemplate = this.urlIntygFragmentTemplate;
         }
+
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
         return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();

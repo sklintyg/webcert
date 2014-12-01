@@ -1,0 +1,13 @@
+Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg via djupintegration med ett uppdaterat personnummer
+
+!3 Välj patient och visa intyget
+
+| script | !-SokSkrivIntyg-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+| sok skriv intyg sidan visas sa smaningom |
+
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration med | intyg-fit-1 | personnummer | 19520617-2339 |
+| nytt personnummer meddelande visas|
+| kopiera intyg | intyg-fit-1 |
+| verifiera namn och personnummer | Björn Anders Daniel Pärsson - 19520617-2339 |

@@ -16,6 +16,8 @@ class EditCertPage extends AbstractPage {
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
         errorPanel { $("#error-panel") }
+        nyttPersonnummer { $("#nyttPersonnummer") }
+        signerandeLakare { $("#signingDoctor")}
 
         smittskydd { $("#smittskydd") }
         baserasPa { module BaserasPaModule }
