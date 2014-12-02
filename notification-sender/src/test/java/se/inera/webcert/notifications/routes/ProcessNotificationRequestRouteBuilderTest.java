@@ -46,7 +46,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
     MockEndpoint mockCertificateStatusUpdateEndpoint;
         
     @Test
-    public void test() throws Exception {
+    public void testWithSkapat() throws Exception {
         
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
         
@@ -54,6 +54,24 @@ public class ProcessNotificationRequestRouteBuilderTest {
         
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-1");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
+        exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+        
+        processNotificationRequestEndpoint.send(exchange);
+        
+        assertIsSatisfied(camelContext);
+        
+    }
+    
+    @Test
+    public void testWithSigned() throws Exception {
+        
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
+        
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
+        
+        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
         exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
         exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
         

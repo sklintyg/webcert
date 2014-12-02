@@ -23,6 +23,7 @@
     
     <!-- Endpoint for retrieving an Intyg entity from repository -->
     <camel:endpoint id="getIntygFromWebcertRepositoryServiceEndpoint" uri="${getIntygFromWebcertRepositoryServiceEndpointUri}"/>
+    <camel:endpoint id="getIntygModelFromWebcertRepositoryServiceEndpoint" uri="${getIntygModelFromWebcertRepositoryServiceEndpointUri}"/>
     
     <!-- Endpoint pointing to the processNotificationRequest route -->
     <camel:endpoint id="processNotificationRequestEndpoint" uri="${processNotificationRequestEndpointUri}"/>

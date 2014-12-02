@@ -7,6 +7,8 @@
   
   <bean id="enrichWithIntygDataStrategy" class="se.inera.webcert.notifications.process.EnrichWithIntygDataStrategy" />
   
+  <bean id="enrichWithIntygModelDataStrategy" class="se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy" />
+  
   <bean id="webcertRepositoryService" class="se.inera.webcert.notifications.service.WebcertRepositoryServiceImpl" />
   
   <bean id="intygsTypChecker" class="se.inera.webcert.notifications.process.IntygsTypCheckerImpl">

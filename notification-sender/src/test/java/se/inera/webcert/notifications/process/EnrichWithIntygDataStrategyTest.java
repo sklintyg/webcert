@@ -31,7 +31,7 @@ public class EnrichWithIntygDataStrategyTest {
         
         Intyg intygsUtkast = dataProducer.buildIntyg("intyg/intyg-1.json");
         
-        CertificateStatusUpdateForCareType res = strategy.enrichCertificateStatusUpdate(statusUpdateType, intygsUtkast);
+        CertificateStatusUpdateForCareType res = strategy.enrichWithIntygProperties(statusUpdateType, intygsUtkast);
         assertNotNull(res.getUtlatande());
         assertNotNull(res.getUtlatande().getSkapadAv());
         assertNotNull(res.getUtlatande().getSkapadAv().getFullstandigtNamn());

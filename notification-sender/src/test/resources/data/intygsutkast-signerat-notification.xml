@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <not:NotificationRequest xmlns:not="urn:inera:webcert:notifications:1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:inera:webcert:notifications:1 notification-message.xsd ">
-  <not:handelse>INTYGSUTKAST_SKAPAT</not:handelse>
-  <not:handelseTidpunkt>2014-10-10T12:00:00</not:handelseTidpunkt>
-  <not:intygsId>intyg-1</not:intygsId>
+  <not:handelse>INTYGSUTKAST_SIGNERAT</not:handelse>
+  <not:handelseTidpunkt>2014-10-12T12:00:00</not:handelseTidpunkt>
+  <not:intygsId>intyg-2</not:intygsId>
   <not:intygsTyp>fk7263</not:intygsTyp>
   <not:hoSPerson>
-    <not:hsaId>person-2</not:hsaId>
-    <not:fullstandigtNamn>Dr. Börje Dengroth</not:fullstandigtNamn>
+    <not:hsaId>person-1</not:hsaId>
+    <not:fullstandigtNamn>Dr. Åsa Andersson</not:fullstandigtNamn>
     <not:vardenhet>
       <not:hsaId>vardenhet-1</not:hsaId>
       <not:enhetsNamn>Vårdenheten 1</not:enhetsNamn>

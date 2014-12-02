@@ -10,32 +10,30 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.Signatur;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 
 public class EnrichWithIntygDataStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygDataStrategy.class);
 
-    public CertificateStatusUpdateForCareType enrichCertificateStatusUpdate(CertificateStatusUpdateForCareType statusUpdateType, Intyg intygsUtkast) {
+    public CertificateStatusUpdateForCareType enrichWithIntygProperties(CertificateStatusUpdateForCareType statusUpdateType, Intyg intygsUtkast) {
 
-        LOG.info("Enriching CertificateStatusUpdateForCareType with data from intygsutkast {}", intygsUtkast.getIntygsId());
+        LOG.debug("Enriching CertificateStatusUpdateForCareType with data from intygsutkast {}", intygsUtkast.getIntygsId());
 
         UtlatandeType utlatandeType = statusUpdateType.getUtlatande();
-
-        decorateWithSignDate(utlatandeType, intygsUtkast);
+        
         decorateWithHoSPerson(utlatandeType, intygsUtkast);
-
-        // content that has to be extracted from the certificate model
-        // utlatandeType.setDiagnos(value);
-        // utlatandeType.getArbetsformaga()
+        decorateWithSignDate(utlatandeType, intygsUtkast);
 
         return statusUpdateType;
     }
-
+    
     private void decorateWithSignDate(UtlatandeType utlatandeType, Intyg intygsUtkast) {
         if (IntygsStatus.SIGNED.equals(intygsUtkast.getStatus())) {
-
-            utlatandeType.setSigneringsdatum(null);
+            LOG.debug("Status is SIGNED, getting signed date");
+            Signatur latestSignatur = intygsUtkast.getLatestSignatur();
+            utlatandeType.setSigneringsdatum(latestSignatur.getSigneringsDatum());
         }
     }
 

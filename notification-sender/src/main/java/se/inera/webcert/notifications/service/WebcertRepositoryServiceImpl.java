@@ -38,6 +38,20 @@ public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
         return intygRepository.findOne(intygsId);
     }
     
+    @Override
+    public String getIntygsUtkastModel(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+        
+        LOG.debug("Retrieveing Intygsutkast model using param '{}'", intygsId);
+        
+        Intyg intygsUtkast = intygRepository.findOne(intygsId);
+        
+        if (intygsUtkast != null) {
+            return intygsUtkast.getModel();
+        }
+                
+        return null;
+    }
+
     public boolean isIntygsUtkastPresent(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
         
         if (intygRepository.exists(intygsId)) {

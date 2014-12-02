@@ -19,7 +19,7 @@ public class TestIntygProducer {
     private static final Logger LOG = LoggerFactory.getLogger(TestIntygProducer.class);
 
     private ObjectMapper objMapper;
-        
+           
     public Intyg buildIntyg(String pathToJsonFile) {
         try {
             String intygJson = TestDataUtil.readRequestFromFile(pathToJsonFile);
@@ -56,7 +56,4 @@ public class TestIntygProducer {
         
         return objMapper;
     }
-    
-    
-    
 }
