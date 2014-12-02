@@ -19,6 +19,10 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 | script | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration | intyg-fit-101 |
 | intyg laddat | true |
+| skicka knapp visas | true |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | true |
 | visa intyg via integration | intyg-fit-102 |
 | intyg laddat | false |
 | visa intyg via integration | intyg-fit-103 |
@@ -38,10 +42,22 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 | intyg laddat | false |
 | visa intyg via integration | intyg-fit-102 |
 | intyg laddat | true |
+| skicka knapp visas | true |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | true |
 | visa intyg via integration | intyg-fit-103 |
 | intyg laddat | true |
+| skicka knapp visas | true |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | true |
 | visa intyg via integration | intyg-fit-104 |
 | intyg laddat | true |
+| skicka knapp visas | true |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | true |
 
 !3 Logga in
 
@@ -55,10 +71,22 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 | intyg laddat | false |
 | visa intyg via integration | intyg-fit-102 |
 | intyg laddat | true |
+| skicka knapp visas | false |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | false |
 | visa intyg via integration | intyg-fit-103 |
 | intyg laddat | true |
+| skicka knapp visas | true |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | true |
 | visa intyg via integration | intyg-fit-104 |
 | intyg laddat | true |
+| skicka knapp visas | false |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | false |
 
 !3 Logga in
 
@@ -72,10 +100,22 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 | intyg laddat | false |
 | visa intyg via integration | intyg-fit-102 |
 | intyg laddat | true |
+| skicka knapp visas | false |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | false |
 | visa intyg via integration | intyg-fit-103 |
 | intyg laddat | true |
+| skicka knapp visas | false |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | false |
 | visa intyg via integration | intyg-fit-104 |
 | intyg laddat | true |
+| skicka knapp visas | true |
+| skriv ut knapp visas | true |
+| kopiera knapp visas | true |
+| makulera knapp visas | true |
 
 !3 Ta bort intyg
 

@@ -1,4 +1,5 @@
 package se.inera.webcert.spec
+
 import se.inera.webcert.pages.VisaPage
 
 class VisaIntyg {
@@ -17,6 +18,40 @@ class VisaIntyg {
             waitFor {
                 at VisaPage
                 page.intygLaddat(expected)
+            }
+        }
+    }
+
+    boolean skickaKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.skickaKnapp.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
+    boolean skrivUtKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.skrivUtKnapp.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
+    boolean kopieraKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.kopieraKnapp.isDisplayed() == expected
+            }
+        }
+    }
+
+    boolean makuleraKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.makuleraKnapp.isDisplayed() == expected
             }
         }
     }

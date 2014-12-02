@@ -8,6 +8,11 @@ class VisaPage extends AbstractPage {
     static content = {
         intygSaknas { $('#cert-load-error') }
         intygLaddat { $('#intyg-vy-laddad') }
+
+        skickaKnapp { $("#sendBtn") }
+        skrivUtKnapp {$("#downloadprint") }
+        kopieraKnapp { $("#copyBtn") }
+        makuleraKnapp { $("#makuleraBtn") }
     }
 
     boolean intygLaddat(boolean expected) {
@@ -17,4 +22,5 @@ class VisaPage extends AbstractPage {
             intygSaknas.isDisplayed() != expected
         }
     }
+
 }

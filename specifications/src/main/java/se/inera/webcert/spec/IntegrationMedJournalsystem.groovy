@@ -159,6 +159,43 @@ class IntegrationMedJournalsystem {
         true
     }
 
+
+    boolean skickaKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.skickaKnapp.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
+    boolean skrivUtKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.skrivUtKnapp.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
+    boolean kopieraKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.kopieraKnapp.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
+    boolean makuleraKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.makuleraKnapp.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
     boolean verifieraTillbakaknappBorta() {
         Browser.drive {
             waitFor() {
