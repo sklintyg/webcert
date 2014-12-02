@@ -8,4 +8,5 @@ public interface RouteHeaders {
     
     public static final String VARDENHET_HSA_ID = "vardenhetHsaId";
     
+    public static final String RADERAT = "INTYGSUTKAST_RADERAT";
 }

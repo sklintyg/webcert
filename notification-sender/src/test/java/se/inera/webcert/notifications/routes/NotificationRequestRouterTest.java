@@ -61,6 +61,25 @@ public class NotificationRequestRouterTest {
         assertIsSatisfied(mockProcessNotificationRequestEndpoint);
         
     }
+
+    @Test
+    public void testDeletedMessage() throws Exception {
+        
+        mockProcessNotificationRequestEndpoint.expectedMessageCount(1);
+        mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_ID, "intyg-1");
+        mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_TYP, "fk7263");
+        mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+        mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.RADERAT, "INTYGSUTKAST_RADERAT");
+        
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-makulerat-notification.xml");
+        
+        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
+        
+        recieveNotificationRequestEndpoint.send(exchange);
+        
+        assertIsSatisfied(mockProcessNotificationRequestEndpoint);
+        
+    }
     
     protected Exchange wrapRequestInExchange(Object request, CamelContext camelContext) {
 
