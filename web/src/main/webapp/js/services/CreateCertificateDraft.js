@@ -33,6 +33,9 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                             that.postnummer = data.person.postnummer;
                             that.postort = data.person.postort;
                             onSuccess();
+                        } else if (data.status === 'ERROR') {
+                            $log.warn('PU-tjänsten kunde inte kontaktas, manuell inmatning krävs');
+                            onError();
                         } else {
                             $log.debug('Personen hittades inte i PU-tjänsten, manuell inmatning krävs');
                             onNotFound();

@@ -285,6 +285,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
                 String fornamn = Strings.join(" ", template.getExternalModel().getPatient().getFornamn());
                 String efternamn = template.getExternalModel().getPatient().getEfternamn();
                 if (fornamn == null || fornamn.length() == 0) {
+                    // In this case use the last name from the template efternamn as efternamn and the rest as fornamn.
                     String[] namn = efternamn.split(" ");
                     if (namn.length > 0) {
                         fornamn = Strings.join(" ", java.util.Arrays.copyOfRange(namn, 0, namn.length - 1));

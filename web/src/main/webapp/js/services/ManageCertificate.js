@@ -166,10 +166,16 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 if ($cookieStore.get(COPY_DIALOG_COOKIE)) {
                     $log.debug('copy cert without dialog' + cert);
                     $scope.widgetState.activeErrorMessageKey = null;
+                    $scope.widgetState.inlineErrorMessageKey = null;
                     _createCopyDraft($scope, dialogModel, cert, function(draftResponse) {
                         goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
-                    }, function() {
-                        $scope.widgetState.activeErrorMessageKey = 'error.failedtocopyintyg';
+                    }, function(errorCode) {
+                        if (errorCode == 'DATA_NOT_FOUND') {
+                            $scope.widgetState.inlineErrorMessageKey = 'error.failedtocopyintyg.personidnotfound';
+                        }
+                        else {
+                            $scope.widgetState.inlineErrorMessageKey = 'error.failedtocopyintyg';
+                        }
                     });
                 } else {
 
