@@ -25,6 +25,11 @@
     <camel:endpoint id="getIntygFromWebcertRepositoryServiceEndpoint" uri="${getIntygFromWebcertRepositoryServiceEndpointUri}"/>
     <camel:endpoint id="getIntygModelFromWebcertRepositoryServiceEndpoint" uri="${getIntygModelFromWebcertRepositoryServiceEndpointUri}"/>
     
+    <camel:endpoint id="getNbrOfQuestionsEndpoint" uri="${getNbrOfQuestionsEndpointUri}"/>
+    <camel:endpoint id="getNbrOfAnsweredQuestionsEndpoint" uri="${getNbrOfAnsweredQuestionsEndpointUri}" />
+    <camel:endpoint id="getNbrOfHandledQuestionsEndpoint" uri="${getNbrOfAnsweredQuestionsEndpointUri}" />
+    <camel:endpoint id="getNbrOfHandledAndAnsweredQuestionsEndpoint" uri="${getNbrOfHandledAndAnsweredQuestionsEndpointUri}" />
+    
     <!-- Endpoint pointing to the processNotificationRequest route -->
     <camel:endpoint id="processNotificationRequestEndpoint" uri="${processNotificationRequestEndpointUri}"/>
     

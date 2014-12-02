@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.notifications.process.EnrichWithIntygDataStrategy;
 import se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy;
+import se.inera.webcert.notifications.process.FragaSvarEnricher;
 
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
         
@@ -15,6 +16,9 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     @Autowired
     private EnrichWithIntygDataStrategy intygPropertiesEnricher;
     
+    @Autowired
+    private FragaSvarEnricher fragaSvarEnricher;
+    
     @Override
     public void configure() throws Exception {
         from("ref:processNotificationRequestEndpoint").routeId("processNotificationRequest")
@@ -22,6 +26,10 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
         .processRef("createAndInitCertificateStatusRequestProcessor")
         .enrich("getIntygFromWebcertRepositoryServiceEndpoint", AggregationStrategies.bean(intygPropertiesEnricher, "enrichWithIntygProperties"))
         .enrich("getIntygModelFromWebcertRepositoryServiceEndpoint", AggregationStrategies.bean(intygModelEnricher, "enrichWithArbetsformagorAndDiagnos"))
+        .enrich("getNbrOfQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfQuestionsForIntyg"))
+        .enrich("getNbrOfAnsweredQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfAnsweredQuestionsForIntyg"))
+        .enrich("getNbrOfHandledQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfHandledQuestionsForIntyg"))
+        .enrich("getNbrOfHandledAndAnsweredQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfHandledAndAnsweredQuestionsForIntyg"))
         .to("ref:sendCertificateStatusUpdateEndpoint");
     }
 }

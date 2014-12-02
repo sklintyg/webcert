@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.notifications.routes.RouteHeaders;
+import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
@@ -25,7 +26,26 @@ public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
     private IntygRepository intygRepository;
     
     @Autowired
+    private FragaSvarRepository fragaSvarRepository;
+    
+    @Autowired
     private IntegreradEnhetRepository integreradEnhetRepository;
+    
+    public Long countNbrOfQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+        return fragaSvarRepository.countByIntyg(intygsId);
+    }
+    
+    public Long countNbrOfAnsweredQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+        return fragaSvarRepository.countAnsweredByIntyg(intygsId);
+    }
+    
+    public Long countNbrOfHandledQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+        return fragaSvarRepository.countHandledByIntyg(intygsId);
+    }
+    
+    public Long countNbrOfHandledAndAnsweredQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+        return fragaSvarRepository.countHandledAndAnsweredByIntyg(intygsId);
+    }
     
     /* (non-Javadoc)
      * @see se.inera.webcert.notifications.service.IntygRepositoryService#getIntygsUtkast(java.lang.String)

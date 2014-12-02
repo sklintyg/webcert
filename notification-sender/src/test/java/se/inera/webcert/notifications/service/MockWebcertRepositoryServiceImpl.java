@@ -39,4 +39,24 @@ public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryServic
     public boolean isVardenhetIntegrerad(@Header(RouteHeaders.VARDENHET_HSA_ID) String vardenhetHsaId) {
         return INTEGRATED_UNITS.contains(vardenhetHsaId);
     }
+
+    @Override
+    public Long countNbrOfQuestionsForIntyg(String intygsId) {
+        return new Long(3);
+    }
+
+    @Override
+    public Long countNbrOfAnsweredQuestionsForIntyg(String intygsId) {
+        return new Long(1);
+    }
+
+    @Override
+    public Long countNbrOfHandledQuestionsForIntyg(String intygsId) {
+        return new Long(1);
+    }
+
+    @Override
+    public Long countNbrOfHandledAndAnsweredQuestionsForIntyg(String intygsId) {
+        return new Long(1);
+    }
 }
