@@ -11,6 +11,7 @@ class VisaFk7263Page extends AbstractPage {
         // messages
         intygSaknas { $("#cert-load-error") }
         intygLaddat { $('#intyg-vy-laddad') }
+        intygFel { $("#cert-inline-error") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
         certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
@@ -28,6 +29,8 @@ class VisaFk7263Page extends AbstractPage {
         copyButton { $("#copyBtn") }
         makuleraButton { $("#makuleraBtn") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
+        kopieraDialogAvbrytKnapp { $("#button2copy-dialog") }
+        kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
         skickaDialogCheck { $("#patientSamtycke") }

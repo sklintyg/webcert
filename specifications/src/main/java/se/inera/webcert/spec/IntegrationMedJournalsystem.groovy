@@ -63,6 +63,7 @@ class IntegrationMedJournalsystem {
                 page.nyttPersonnummer.isDisplayed()
             }
         }
+        true
     }
 
     def signerandeLakareMeddelandeVisas(expected) {
@@ -71,6 +72,7 @@ class IntegrationMedJournalsystem {
                 (expected == page.signerandeLakare.text()) && page.signerandeLakare.isDisplayed()
             }
         }
+        true
     }
 
     def verifieraNamnOchPersonnummer(String expected) {
@@ -91,6 +93,50 @@ class IntegrationMedJournalsystem {
         }
     }
 
+    def stangAvKopieraDialogen() {
+        Browser.drive {
+            page.copyButton.click()
+            waitFor {
+                doneLoading()
+            }
+            page.kopieraDialogVisaInteIgen.click()
+            page.kopieraDialogKopieraKnapp.click()
+            page.kopieraDialogAvbrytKnapp.click()
+        }
+    }
+
+    def aktiveraKopieraDialogen() {
+        Browser.deleteCookie("wc.dontShowCopyDialog");
+    }
+
+    def kopieraIntygUtanDialog() {
+        Browser.drive {
+            waitFor {
+                page.copyButton.isDisplayed()
+            }
+            page.copyButton.click()
+        }
+        true
+    }
+
+    def intygsFelVisas() {
+        Browser.drive {
+            waitFor {
+                page.intygFel.isDisplayed()
+            }
+        }
+        true
+    }
+
+    def intygetSynligt() {
+        Browser.drive {
+            waitFor {
+                page.intygLaddat.isDisplayed()
+            }
+        }
+        true
+    }
+
     def visaUtkastViaIntegration(String intygId) {
         Browser.drive {
             go "/visa/intyg/" + intygId
@@ -98,6 +144,7 @@ class IntegrationMedJournalsystem {
                 at EditCertPage
             }
         }
+        true
     }
 
     boolean verifieraTillbakaknappBorta() {

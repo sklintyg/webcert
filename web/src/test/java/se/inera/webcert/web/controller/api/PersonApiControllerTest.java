@@ -49,6 +49,8 @@ public class PersonApiControllerTest {
     @Test
     public void testGetPersonuppgifterMissingPerson() {
 
+        when(puService.getPerson(anyString())).thenReturn(new PersonSvar(null, PersonSvar.Status.NOT_FOUND));
+
         Response response = personCtrl.getPersonuppgifter("18121212-1212");
 
         assertNotNull(response);

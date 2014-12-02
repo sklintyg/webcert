@@ -1,6 +1,7 @@
 package se.inera.webcert.spec
 
 import geb.driver.CachingDriverFactory
+import org.openqa.selenium.Cookie
 
 public class Browser {
 
@@ -32,5 +33,15 @@ public class Browser {
 
     static String getJSession() {
         browser.getDriver().manage().getCookieNamed("JSESSIONID").getValue()
+    }
+
+    static String deleteCookie(cookieName) {
+        Cookie cookie = new Cookie(cookieName, "")
+        browser.getDriver().manage().deleteCookie(cookie)
+    }
+
+    static String setCookie(cookieName, cookieValue) {
+        Cookie cookie = new Cookie(cookieName, cookieValue)
+        browser.getDriver().manage().addCookie(cookie)
     }
 }

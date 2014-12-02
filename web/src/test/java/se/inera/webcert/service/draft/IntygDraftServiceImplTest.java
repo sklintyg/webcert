@@ -314,7 +314,7 @@ public class IntygDraftServiceImplTest {
 
         when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
 
-        when(puService.getPerson(PATIENT_SSN)).thenReturn(null);
+        when(puService.getPerson(PATIENT_SSN)).thenReturn(new PersonSvar(null, PersonSvar.Status.NOT_FOUND));
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         draftService.createNewDraftCopy(copyReq);
