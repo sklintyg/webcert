@@ -1,13 +1,5 @@
 package se.inera.webcert.service.fragasvar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -17,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
@@ -52,6 +43,14 @@ import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author andreaskaltenbach
@@ -189,7 +188,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Is user authorized to save an answer to this question?
-        verifyEnhetsAuth(fragaSvar.getVardperson().getEnhetsId());
+        verifyEnhetsAuth(fragaSvar.getVardperson().getEnhetsId(), false);
 
         if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "FragaSvar with id "
@@ -264,7 +263,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         Vardperson vardPerson = FragaSvarConverter.convert(externalIntygData.getExternalModel().getSkapadAv());
 
         // Is user authorized to save an answer to this question?
-        verifyEnhetsAuth(vardPerson.getEnhetsId());
+        verifyEnhetsAuth(vardPerson.getEnhetsId(), false);
 
         // Verksamhetsregel FS-001 (Is the certificate sent to FK)
         if (!isSentToFK(externalIntygData.getMetaData().getStatuses())) {
@@ -419,7 +418,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         FragaSvarFilter filter = new FragaSvarFilter();
 
         if (StringUtils.isNotEmpty(params.getEnhetId())) {
-            verifyEnhetsAuth(params.getEnhetId());
+            verifyEnhetsAuth(params.getEnhetId(), true);
             filter.getEnhetsIds().add(params.getEnhetId());
         } else {
             WebCertUser user = webCertUserService.getWebCertUser();
@@ -450,8 +449,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return (booleanObj != null) && booleanObj;
     }
 
-    protected void verifyEnhetsAuth(String enhetsId) {
-        if (!webCertUserService.isAuthorizedForUnit(enhetsId)) {
+    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);
         }
@@ -464,7 +463,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         List<String> enhetsIdParams = new ArrayList<>();
 
         if (enhetsId != null) {
-            verifyEnhetsAuth(enhetsId);
+            verifyEnhetsAuth(enhetsId, true);
             enhetsIdParams.add(enhetsId);
         } else {
             WebCertUser user = webCertUserService.getWebCertUser();

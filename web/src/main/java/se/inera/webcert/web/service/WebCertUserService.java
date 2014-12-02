@@ -33,7 +33,7 @@ public interface WebCertUserService {
      */
     WebCertUser getWebCertUser();
 
-    boolean isAuthorizedForUnit(String enhetsHsaId);
+    boolean isAuthorizedForUnit(String enhetsHsaId, boolean isReadOnlyOperation);
 
     boolean isAuthorizedForUnits(List<String> enhetsHsaIds);
 

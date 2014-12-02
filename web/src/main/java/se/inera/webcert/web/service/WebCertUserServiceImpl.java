@@ -42,9 +42,9 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     @Override
-    public boolean isAuthorizedForUnit(String enhetsHsaId) {
+    public boolean isAuthorizedForUnit(String enhetsHsaId, boolean isReadOnlyOperation) {
         WebCertUser user = getWebCertUser();
-        if (user.hasAktivFunktion(WebcertFeature.FRAN_JOURNALSYSTEM.getName())) {
+        if (isReadOnlyOperation && user.hasAktivFunktion(WebcertFeature.FRAN_JOURNALSYSTEM.getName())) {
             return user != null && user.getIdsOfSelectedVardgivare().contains(enhetsHsaId);
         } else {
             return user != null && user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
