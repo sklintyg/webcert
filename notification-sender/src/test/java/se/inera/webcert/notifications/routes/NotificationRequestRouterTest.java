@@ -68,7 +68,7 @@ public class NotificationRequestRouterTest {
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.RADERAT, "INTYGSUTKAST_RADERAT");
         
-        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-makulerat-notification.xml");
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-raderat-notification.xml");
         
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         

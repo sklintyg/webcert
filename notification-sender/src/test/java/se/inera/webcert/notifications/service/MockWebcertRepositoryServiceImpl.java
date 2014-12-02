@@ -9,6 +9,7 @@ import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.TestIntygProducer;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryService {
 
@@ -58,5 +59,10 @@ public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryServic
     @Override
     public Long countNbrOfHandledAndAnsweredQuestionsForIntyg(String intygsId) {
         return new Long(1);
+    }
+
+    @Override
+    public IntygsStatus getIntygsUtkastStatus(String intygsId) {
+        return IntygsStatus.SIGNED;
     }
 }

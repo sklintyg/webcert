@@ -6,9 +6,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.notifications.routes.RouteHeaders;
+import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 
 /**
@@ -90,5 +92,10 @@ public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
         
         LOG.debug("Vardenhet '{}' is not present in IntegreradEnhetRepository", vardenhetHsaId);
         return false;
+    }
+
+    @Override
+    public IntygsStatus getIntygsUtkastStatus(String intygsId) {
+        return intygRepository.getIntygsStatus(intygsId);
     }
 }

@@ -143,4 +143,11 @@ public class IntygRepositoryTest {
         assertThat(intygRepository.findOne("intyg-1"), is(nullValue()));
     }
 
+    @Test
+    public void testGetIntygsStatus() {
+        Intyg intyg3 = intygRepository.save(IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_3_ID, IntygsStatus.DRAFT_COMPLETE));
+        IntygsStatus status = intygRepository.getIntygsStatus(intyg3.getIntygsId());
+        assertThat(status, is(IntygsStatus.DRAFT_COMPLETE));
+    }
+
 }

@@ -10,7 +10,9 @@
   <bean id="enrichWithIntygModelDataStrategy" class="se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy" />
   
   <bean id="fragaSvarEnricher" class="se.inera.webcert.notifications.process.FragaSvarEnricher" />
-    
+
+  <bean id="setIntygsStatusProcessor" class="se.inera.webcert.notifications.process.SetIntygStatusProcessor" />
+
   <bean id="intygsTypChecker" class="se.inera.webcert.notifications.process.IntygsTypCheckerImpl">
     <property name="allowedIntygsTypes">
       <list>

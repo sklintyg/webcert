@@ -20,6 +20,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.webcert.notifications.TestDataUtil;
+import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/spring/test-properties-context.xml", "/spring/beans-context.xml", "/spring/test-service-context.xml", "/spring/camel-context.xml"})
@@ -66,11 +67,29 @@ public class ProcessNotificationRequestRouteBuilderTest {
         exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
         
         processNotificationRequestEndpoint.send(exchange);
-        
+
         assertIsSatisfied(camelContext);
         
     }
     
+    @Test
+    public void testWithDeleted() throws InterruptedException {
+        mockCertificateStatusUpdateEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_STATUS, IntygsStatus.SIGNED);
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
+        
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-raderat-notification.xml");
+        
+        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
+        exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+        exchange.getIn().setHeader(RouteHeaders.RADERAT, "INTYGSUTKAST_RADERAT");
+
+        processNotificationRequestEndpoint.send(exchange);
+        assertIsSatisfied(camelContext);
+        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+    }
+
     private Exchange wrapRequestInExchange(Object request, CamelContext camelContext) {
 
         Exchange exchange = new DefaultExchange(camelContext);
