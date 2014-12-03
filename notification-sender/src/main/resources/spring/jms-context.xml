@@ -4,12 +4,23 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+   <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="jmsFactory" />
+    <property name="defaultDestination" ref="notificationQueue" />
+    <property name="sessionTransacted" value="true" />
+  </bean>
+
+  <bean id="nonTransactedJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="jmsFactory" />
+    <property name="defaultDestination" ref="notificationQueue" />
   </bean>
 
   <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/jms/ConnectionFactory" />
+  </bean>
+
+  <bean id="notificationQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/jms/NotificatonQueue" />
   </bean>
 
 </beans>

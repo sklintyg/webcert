@@ -48,4 +48,16 @@
       </New>
     </Arg>
   </New>
+  <New id="NotificationQueue" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref refid="wac" />
+    </Arg>
+    <Arg>jms/NotificationQueue</Arg>
+    <Arg>
+      <New class="org.apache.activemq.command.ActiveMQQueue">
+        <Arg>NOTIFICATIONSENDER.QUEUE</Arg>
+      </New>
+    </Arg>
+  </New>
+
 </Configure>
