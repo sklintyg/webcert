@@ -18,7 +18,7 @@ public class PUServiceTest {
 
     @Test
     public void checkExistingPersonWithFullAddress() {
-        Person person = service.getPerson("19121212-1212");
+        Person person = service.getPerson("19121212-1212").getPerson();
         assertEquals("Tolvan", person.getFornamn());
         assertEquals("Tolvansson", person.getEfternamn());
         assertEquals("Svensson, Storgatan 1, PL 1234", person.getPostadress());
@@ -28,7 +28,7 @@ public class PUServiceTest {
 
     @Test
     public void checkExistingPersonWithMinimalAddress() {
-        Person person = service.getPerson("20121212-1212");
+        Person person = service.getPerson("20121212-1212").getPerson();
         assertEquals("Lilltolvan", person.getFornamn());
         assertEquals("Tolvansson", person.getEfternamn());
         assertEquals("Storgatan 1", person.getPostadress());
@@ -38,7 +38,7 @@ public class PUServiceTest {
 
     @Test
     public void checkExistingPersonWithMellannamn() {
-        Person person = service.getPerson("19520614-2597");
+        Person person = service.getPerson("19520614-2597").getPerson();
         assertEquals("Per Peter", person.getFornamn());
         assertEquals("Pärsson", person.getEfternamn());
         assertEquals("Svensson", person.getMellannamn());
@@ -46,7 +46,7 @@ public class PUServiceTest {
     
     @Test
     public void checkNonExistingPerson() {
-        Person person = service.getPerson("19121212-7169");
+        Person person = service.getPerson("19121212-7169").getPerson();
         assertNull(person);
     }
 }

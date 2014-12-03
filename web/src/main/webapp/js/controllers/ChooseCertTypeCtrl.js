@@ -16,6 +16,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 doneLoading: true,
                 activeErrorMessageKey: null,
                 createErrorMessageKey: null,
+                inlineErrorMessageKey: null,
                 currentList: undefined
             };
 
