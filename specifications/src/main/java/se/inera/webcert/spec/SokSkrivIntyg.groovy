@@ -130,6 +130,19 @@ class SokSkrivIntyg {
         }
     }
 
+    def visaSokSkrivIntyg() {
+        Browser.drive {
+
+        }
+    }
+
+    def kanEjMakuleraVisatIntyg() {
+        Browser.drive {
+            page.kanInteMakulera()
+        }
+        true
+    }
+
     def makuleraBekraftelseVisas() {
         Browser.drive {
             waitFor {

@@ -27,7 +27,7 @@ class VisaFk7263Page extends AbstractPage {
         // intyg top panel
         tillbakaButton(required: false) { $("#tillbakaButton")}
         copyButton { $("#copyBtn") }
-        makuleraButton { $("#makuleraBtn") }
+        makuleraButton(required: false) { $("#makuleraBtn") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         kopieraDialogAvbrytKnapp { $("#button2copy-dialog") }
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
@@ -145,6 +145,16 @@ class VisaFk7263Page extends AbstractPage {
             doneLoading()
         }
         makuleraDialogKopieraKnapp.click()
+    }
+
+    boolean exists(content) {
+        content
+    }
+
+    def kanInteMakulera() {
+        waitFor {
+            !exists(makuleraButton)
+        }
     }
 
     def send() {

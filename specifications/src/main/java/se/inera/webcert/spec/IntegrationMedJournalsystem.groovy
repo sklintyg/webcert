@@ -169,6 +169,19 @@ class IntegrationMedJournalsystem {
         true
     }
 
+    boolean integrationBorttagetMeddelandeVisas() {
+        Browser.drive {
+            waitFor {
+                at EditCertPage
+            }
+            waitFor() {
+                page.integrationBorttaget.isDisplayed()
+            }
+        }
+
+        true
+    }
+
     boolean vidarebefordraEjHanteradFragaEjSynlig() {
         Browser.drive {
             waitFor() {

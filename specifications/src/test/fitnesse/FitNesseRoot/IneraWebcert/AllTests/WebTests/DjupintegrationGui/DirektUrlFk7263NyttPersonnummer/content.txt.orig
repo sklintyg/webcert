@@ -15,9 +15,8 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 
 | script | !-HanteraUtkast-! |
 | radera utkast |
-| script | !-IntegrationMedJournalsystem-! |
-| integration borttaget meddelande visas |
 
+<<<<<<< HEAD
 !4 Detta test har ett felaktigt personnummer. Om man valt att inte visa kopieringsdialogen så ska felet visas tillsammans med intyget. 
 | script | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration med | intyg-fit-1 | personnummer | 19520617-233 |
@@ -27,5 +26,7 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 | intygs fel visas |
 | intyget synligt |
 | aktivera kopiera dialogen |
-
-
+=======
+| script | !-IntegrationMedJournalsystem-! |
+| integration borttaget meddelande visas |
+>>>>>>> Fitnesse-test för meddelande och rättigheter vid makulering och borttagning av utkast och intyg.
