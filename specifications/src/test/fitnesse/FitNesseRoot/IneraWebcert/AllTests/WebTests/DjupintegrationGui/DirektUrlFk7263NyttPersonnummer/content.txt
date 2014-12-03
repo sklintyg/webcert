@@ -15,6 +15,7 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 
 | script | !-HanteraUtkast-! |
 | radera utkast |
+
 | script | !-IntegrationMedJournalsystem-! |
 | integration borttaget meddelande visas |
 
