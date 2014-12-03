@@ -59,8 +59,11 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>log-messages</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>notification-messages</artifactId>
+    </dependency>
 
-    
 
     <!-- Common -->
     <dependency>
