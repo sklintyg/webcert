@@ -2,9 +2,12 @@ package se.inera.webcert.notifications.routes;
 
 import static org.apache.camel.builder.PredicateBuilder.and;
 
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.builder.xml.Namespaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.notifications.process.GetIntygPropertiesProcessor;
@@ -24,6 +27,8 @@ public class NotificationRequestRouter extends RouteBuilder {
 
     private Namespaces ns = new Namespaces("not", "urn:inera:webcert:notifications:1");
 
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationRequestRouter.class); 
+
     @Override
     public void configure() throws Exception {
         from("ref:receiveNotificationRequestEndpoint").routeId("notificationRequestRouter")
@@ -34,8 +39,8 @@ public class NotificationRequestRouter extends RouteBuilder {
         .process(getIntygPropertiesProcessor)
         .choice()
             .when(header(RouteHeaders.SAKNAS_I_DB))
+                .log(LoggingLevel.DEBUG, LOG, "No intyg found in database, stopping route.")
                 .stop()
-                //TODO setup an error handler in some way
             .when(ns.xpath("/not:NotificationRequest/not:handelse[text() = 'INTYGSUTKAST_RADERAT']"))
                 .setHeader(RouteHeaders.RADERAT, constant("INTYGSUTKAST_RADERAT"))
                 .to("ref:processNotificationRequestEndpoint")

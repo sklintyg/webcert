@@ -9,7 +9,6 @@ import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.TestIntygProducer;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryService {
 
@@ -17,8 +16,6 @@ public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryServic
 
     private List<String> INTEGRATED_UNITS = Arrays.asList("vardenhet-1", "vardenhet-3");
     
-    private String UTFARDANDE_HSA_ID = "enhetsHsaId";
-
     private TestIntygProducer intygProducer = new TestIntygProducer();
 
     @Override
@@ -61,17 +58,5 @@ public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryServic
     @Override
     public Long countNbrOfHandledAndAnsweredQuestionsForIntyg(String intygsId) {
         return new Long(1);
-    }
-
-    @Override
-    public IntygsStatus getIntygsUtkastStatus(String intygsId) {
-        switch (intygsId) {
-        case "intyg-1":
-            return IntygsStatus.DRAFT_INCOMPLETE;
-        case "intyg-2":
-            return IntygsStatus.SIGNED;
-        default:
-            return null;
-        }
     }
 }

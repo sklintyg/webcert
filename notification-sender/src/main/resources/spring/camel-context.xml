@@ -8,7 +8,7 @@
   <bean id="processNotificationRequestRouteBuilder" class="se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteBuilder" />
   
   <bean id="notificationRequestRouter" class="se.inera.webcert.notifications.routes.NotificationRequestRouter" />
-     
+
   <camel:camelContext id="webcertNotification">
     
     <camel:routeBuilder ref="processNotificationRequestRouteBuilder"/>

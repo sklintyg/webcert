@@ -10,23 +10,28 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.apache.camel.Processor;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.NotifyBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.DefaultMessage;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HandelseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
 import se.inera.webcert.notifications.TestDataUtil;
+import se.inera.webcert.notifications.service.CertificateStatusUpdateServiceImpl;
+import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
@@ -42,7 +47,9 @@ public class ProcessNotificationRequestRouteBuilderTest {
     
     @EndpointInject(uri = "mock:certificateStatusUpdateEndpoint")
     MockEndpoint mockCertificateStatusUpdateEndpoint;
-        
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilderTest.class);
+
     @Test
     public void testWithSkapat() throws Exception {
         
@@ -120,6 +127,35 @@ public class ProcessNotificationRequestRouteBuilderTest {
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
         CertificateStatusUpdateForCareType body = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn().getBody(CertificateStatusUpdateForCareType.class);
         assertTrue(body.getUtlatande().getFragorOchSvar() != null);
+    }
+
+    @Test 
+    public void testException() throws InterruptedException {
+        mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
+            private int counter = 0;
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                counter++;
+                if (counter <= 2) {
+                    LOG.debug("{} attempt - throwing exception", counter);
+                    throw new CertificateStatusUpdateServiceException("fail!");
+                } else if (counter > 2){
+                   LOG.debug("Ok message received on attempt {}", counter);
+                }
+            }
+        });
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(3);
+
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
+        
+        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, "SIGNED");
+        exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+
+        processNotificationRequestEndpoint.send(exchange);
+        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
     }
 
     private Exchange wrapRequestInExchange(Object request, CamelContext camelContext) {

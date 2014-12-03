@@ -22,6 +22,10 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        //Setup error handling strategy, using redelivery of 3 secs and then exponentially increasing the time interval
+        errorHandler(deadLetterChannel("jms:queue:dead")
+                .maximumRedeliveries(6).redeliveryDelay(2000).useExponentialBackOff());
+
         from("ref:processNotificationRequestEndpoint").routeId("processNotificationRequest")
         .unmarshal("notificationRequestJaxb")
         .processRef("createAndInitCertificateStatusRequestProcessor")
