@@ -47,6 +47,17 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
     @Query("SELECT DISTINCT fs.vardperson.hsaId, fs.vardperson.namn FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) ORDER BY fs.vardperson.namn ASC")
     List<Object[]> findDistinctFragaSvarHsaIdByEnhet(@Param("idList") List<String> enhetsIds);
 
+    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
+    Long countByIntyg(@Param("intygsId") String intygsId);
+    
+    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = 'CLOSED'")
+    Long countHandledByIntyg(@Param("intygsId") String intygsId);
+    
+    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = 'ANSWERED' AND fs.svarsText IS NOT NULL")
+    Long countAnsweredByIntyg(@Param("intygsId") String intygsId);
+    
+    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = 'CLOSED' AND fs.svarsText IS NOT NULL")
+    Long countHandledAndAnsweredByIntyg(@Param("intygsId") String intygsId);
 
     /**
      * Should return a list of {@link FragaSvar} entities in the repository related to the specified intygsId.

@@ -1,10 +1,17 @@
 package se.inera.webcert.persistence.intyg.model;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -12,7 +19,10 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -85,6 +95,10 @@ public class Intyg {
 
     @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
     private Boolean vidarebefordrad = Boolean.FALSE;
+    
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "INTYG_ID" )
+    private List<Signatur> signaturer = new ArrayList<Signatur>(0);
 
     @PrePersist
     void onPrePersist() {
@@ -98,6 +112,26 @@ public class Intyg {
         senastSparadDatum = new LocalDateTime();
     }
 
+    public Signatur getLatestSignatur() {
+        
+        List<Signatur> signaturer = getSignaturer();
+        
+        if (signaturer.isEmpty()) {
+            return null;
+        }
+        
+        if (signaturer.size() == 1) {
+            return signaturer.get(0);
+        }
+        
+        return Collections.max(signaturer, new Comparator<Signatur>() {
+            @Override
+            public int compare(Signatur signatur, Signatur anotherSignatur) {
+                return signatur.getSigneringsDatum().compareTo(anotherSignatur.getSigneringsDatum());
+            }
+        });
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -246,6 +280,14 @@ public class Intyg {
 
     public LocalDateTime getSenastSparadDatum() {
         return senastSparadDatum;
+    }
+    
+    public List<Signatur> getSignaturer() {
+        return signaturer;
+    }
+
+    public void setSignaturer(List<Signatur> signaturer) {
+        this.signaturer = signaturer;
     }
 
     private byte[] toBytes(String data) {

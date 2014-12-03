@@ -1,8 +1,10 @@
 package se.inera.webcert.persistence.intyg.repository.util;
 
 import org.joda.time.LocalDateTime;
+
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.Signatur;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 
 import java.util.UUID;
@@ -76,6 +78,7 @@ public class IntygTestUtil {
         vardpersonReferens.setHsaId(hoSPersonId);
         vardpersonReferens.setNamn(hoSPersonNamn);
         intyg.setSenastSparadAv(vardpersonReferens);
+        intyg.setSenastSparadDatum(LocalDateTime.now());
         intyg.setSkapadAv(vardpersonReferens);
 
         if (senastSparadDatum != null) {
@@ -88,5 +91,9 @@ public class IntygTestUtil {
 
         return intyg;
     }
-
+    
+    public static Signatur buildSignatur(String intygId, String signeradAv, LocalDateTime signeringsDatum) {
+        return new Signatur(signeringsDatum, signeradAv, intygId, "<intygs-data>", "<intyg-hash>", "<signatur-data>");  
+    }
+    
 }
