@@ -62,4 +62,16 @@ public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryServic
     public Long countNbrOfHandledAndAnsweredQuestionsForIntyg(String intygsId) {
         return new Long(1);
     }
+
+    @Override
+    public IntygsStatus getIntygsUtkastStatus(String intygsId) {
+        switch (intygsId) {
+        case "intyg-1":
+            return IntygsStatus.DRAFT_INCOMPLETE;
+        case "intyg-2":
+            return IntygsStatus.SIGNED;
+        default:
+            return null;
+        }
+    }
 }

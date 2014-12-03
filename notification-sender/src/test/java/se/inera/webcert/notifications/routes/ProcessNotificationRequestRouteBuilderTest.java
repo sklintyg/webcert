@@ -1,7 +1,10 @@
 package se.inera.webcert.notifications.routes;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
@@ -21,6 +24,8 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HandelseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
 import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
@@ -54,6 +59,10 @@ public class ProcessNotificationRequestRouteBuilderTest {
         
         assertIsSatisfied(camelContext);
         
+        CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn().getBody(CertificateStatusUpdateForCareType.class);
+        assertNotNull(statusUpdateType);
+        assertEquals(HandelsekodCodeRestrictionType.HAN_1, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
+        assertNull(statusUpdateType.getUtlatande().getFragorOchSvar());
     }
     
     @Test
