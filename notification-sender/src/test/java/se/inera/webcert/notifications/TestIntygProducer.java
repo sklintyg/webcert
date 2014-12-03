@@ -24,7 +24,7 @@ public class TestIntygProducer {
         try {
             String intygJson = TestDataUtil.readRequestFromFile(pathToJsonFile);
             if (intygJson == null) {
-                throw new RuntimeException("No intyg json found on: " + pathToJsonFile);
+                return null;
             }
             ObjectMapper objectMapper = getObjectMapper();
             return objectMapper.readValue(intygJson, Intyg.class);
