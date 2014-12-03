@@ -1,5 +1,7 @@
 package se.inera.webcert.service.notification;
 
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
+
 /**
  * Service that notifies a unit care of incoming changes.
  *
@@ -7,6 +9,14 @@ package se.inera.webcert.service.notification;
  */
 public interface NotificationService {
 
-    void notify(String xml);
+    /**
+     * Notify unit cares when there's have been a change in one of
+     * <ul>
+     *     <li>Intyg</li>
+     *     <li>Intygsutkast</li>
+     *     <li>FragaSvar</li>
+     * </ul>
+     */
+    void notify(NotificationRequestType notificationRequestType);
 
 }

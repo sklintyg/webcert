@@ -6,11 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
+import se.inera.webcert.notifications.message.v1.ObjectFactory;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import java.io.StringWriter;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -33,29 +39,50 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void notify(String message) {
-        send(message);
+    public void notify(NotificationRequestType notificationRequestType) {
+        send(notificationRequestType);
     }
 
-    void send(String message) {
+
+    /* -- Package visibility -- */
+
+    void send(NotificationRequestType notificationRequestType) {
 
         if (jmsTemplate == null) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;
         }
 
-        jmsTemplate.send(new MC(message));
+        jmsTemplate.send(new NotificationMessageCreator(notificationRequestType));
     }
 
-    static final class MC implements MessageCreator {
-        private String message;
+    static final class NotificationMessageCreator implements MessageCreator {
+        private NotificationRequestType value;
 
-        public MC(String message) {
-            this.message = message;
+        public NotificationMessageCreator(NotificationRequestType notificationRequestType) {
+            this.value = notificationRequestType;
         }
 
         public Message createMessage(Session session) throws JMSException {
+            String message = null;
+            try {
+                message = objToString();
+            } catch (JAXBException e) {
+                throw new JMSException("Could not create notification message!", e.getMessage());
+            }
+
             return session.createObjectMessage(message);
+        }
+
+        String objToString() throws JAXBException {
+            ObjectFactory objectFactory = new ObjectFactory();
+            StringWriter writer = new StringWriter();
+            JAXBContext context = JAXBContext.newInstance("se.inera.webcert.notifications.message.v1");
+
+            Marshaller m = context.createMarshaller();
+            m.marshal(objectFactory.createNotificationRequest(value), writer);
+
+            return writer.toString();
         }
     }
 

@@ -1,16 +1,17 @@
 package se.inera.webcert.service.notification;
 
-import se.inera.webcert.notifications.message.v1.HandelseType;
-import se.inera.webcert.notifications.message.v1.HoSPersonType;
-import se.inera.webcert.notifications.message.v1.VardenhetType;
+import org.joda.time.LocalDateTime;
+
+import se.inera.webcert.notifications.message.v1.*;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 
 /**
- * Created by Magnus Ekstrand on 03/12/14.
+ * Created by Magnus Ekstrand on 03/12/14
  */
-public class NotificationFactory {
+public class NotificationMessageFactory {
+
+    private static ObjectFactory objectFactory = new ObjectFactory();
 
     /* -- Create notification messages based on certificate -- */
 
@@ -110,42 +111,52 @@ public class NotificationFactory {
 
     static NotificationRequestType createNotification(Intyg intyg) {
 
-        VardenhetType vt = new VardenhetType();
-        vt.setHsaId(intyg.getEnhetsId());
-        vt.setEnhetsNamn(intyg.getEnhetsNamn());
+        VardenhetType vt = getVardenhetType(intyg.getEnhetsId(), intyg.getEnhetsNamn());
+        HoSPersonType hspt = getHoSPersonType(intyg.getSenastSparadAv().getNamn(), intyg.getSenastSparadAv().getHsaId(), vt);
 
-        HoSPersonType hspt = new HoSPersonType();
-        hspt.setFullstandigtNamn(intyg.getSkapadAv().getNamn());
-        hspt.setHsaId(intyg.getSkapadAv().getHsaId());
-        hspt.setVardenhet(vt);
-
-        NotificationRequestType nrt = new NotificationRequestType();
-        nrt.setHandelseTidpunkt(intyg.getSenastSparadDatum());
-        nrt.setHoSPerson(hspt);
-        nrt.setIntygsId(intyg.getIntygsId());
-        nrt.setIntygsTyp(intyg.getIntygsTyp());
-
-        return nrt;
+        return getNotificationRequestType(intyg.getSenastSparadDatum(), hspt,
+                intyg.getIntygsId(), intyg.getIntygsTyp());
     }
 
     static NotificationRequestType createNotification(FragaSvar fragaSvar) {
 
-        VardenhetType vt = new VardenhetType();
-        vt.setHsaId(fragaSvar.getVardperson().getEnhetsId());
-        vt.setEnhetsNamn(fragaSvar.getVardperson().getEnhetsnamn());
 
-        HoSPersonType hspt = new HoSPersonType();
-        hspt.setFullstandigtNamn(fragaSvar.getVardperson().getNamn());
-        hspt.setHsaId(fragaSvar.getVardperson().getHsaId());
+        VardenhetType vt = getVardenhetType(fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn());
+        HoSPersonType hspt = getHoSPersonType(fragaSvar.getVardperson().getNamn(), fragaSvar.getVardperson().getHsaId(), vt);
+
+        return getNotificationRequestType(fragaSvar.getSenasteHandelse(), hspt,
+                fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp());
+    }
+
+    private static VardenhetType getVardenhetType(String hsaId, String enhetsNamn) {
+
+        VardenhetType vt = objectFactory.createVardenhetType();
+        vt.setHsaId(hsaId);
+        vt.setEnhetsNamn(enhetsNamn);
+
+        return vt;
+    }
+
+    private static HoSPersonType getHoSPersonType(String namn, String hsaId, VardenhetType vt) {
+
+        HoSPersonType hspt = objectFactory.createHoSPersonType();
+        hspt.setFullstandigtNamn(namn);
+        hspt.setHsaId(hsaId);
         hspt.setVardenhet(vt);
 
-        NotificationRequestType nrt = new NotificationRequestType();
-        nrt.setHandelseTidpunkt(fragaSvar.getSenasteHandelse());
-        nrt.setHoSPerson(hspt);
-        nrt.setIntygsId(fragaSvar.getIntygsReferens().getIntygsId());
-        nrt.setIntygsTyp(fragaSvar.getIntygsReferens().getIntygsTyp());
+        return hspt;
+    }
+
+    static NotificationRequestType getNotificationRequestType(LocalDateTime handelseTidpunkt, HoSPersonType hoSPersonType, String intygsId, String intygsTyp) {
+
+        NotificationRequestType nrt = objectFactory.createNotificationRequestType();
+        nrt.setHandelseTidpunkt(handelseTidpunkt);
+        nrt.setHoSPerson(hoSPersonType);
+        nrt.setIntygsId(intygsId);
+        nrt.setIntygsTyp(intygsTyp);
 
         return nrt;
     }
+
 
 }
