@@ -16,6 +16,8 @@ public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryServic
     private List<String> VALID_INTYGS_ID = Arrays.asList("intyg-1", "intyg-3");
 
     private List<String> INTEGRATED_UNITS = Arrays.asList("vardenhet-1", "vardenhet-3");
+    
+    private String UTFARDANDE_HSA_ID = "enhetsHsaId";
 
     private TestIntygProducer intygProducer = new TestIntygProducer();
 
@@ -59,10 +61,5 @@ public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryServic
     @Override
     public Long countNbrOfHandledAndAnsweredQuestionsForIntyg(String intygsId) {
         return new Long(1);
-    }
-
-    @Override
-    public IntygsStatus getIntygsUtkastStatus(String intygsId) {
-        return IntygsStatus.SIGNED;
     }
 }

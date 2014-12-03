@@ -10,5 +10,9 @@ public interface RouteHeaders {
 
     public static final String INTYGS_STATUS = "intygsStatus";
 
+    public static final String LOGISK_ADRESS = "logiskAdress";
+
     public static final String RADERAT = "INTYGSUTKAST_RADERAT";
+
+    public static final String SAKNAS_I_DB = "SAKNAS_I_DB";
 }

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.notifications.process.EnrichWithIntygDataStrategy;
 import se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy;
 import se.inera.webcert.notifications.process.FragaSvarEnricher;
-import se.inera.webcert.notifications.process.SetIntygStatusProcessor;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
@@ -20,15 +19,11 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     
     @Autowired
     private FragaSvarEnricher fragaSvarEnricher;
-    
-    @Autowired
-    private SetIntygStatusProcessor setIntygsStatusProcessor;
-    
+
     @Override
     public void configure() throws Exception {
         from("ref:processNotificationRequestEndpoint").routeId("processNotificationRequest")
         .unmarshal("notificationRequestJaxb")
-        .process(setIntygsStatusProcessor)
         .processRef("createAndInitCertificateStatusRequestProcessor")
         //Do not enrich for deleted drafts
         .choice()

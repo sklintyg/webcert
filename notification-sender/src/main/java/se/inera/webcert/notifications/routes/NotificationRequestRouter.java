@@ -7,6 +7,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.builder.xml.Namespaces;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.webcert.notifications.process.GetIntygPropertiesProcessor;
 import se.inera.webcert.notifications.process.IntygsTypChecker;
 import se.inera.webcert.notifications.service.WebcertRepositoryService;
 
@@ -17,7 +18,10 @@ public class NotificationRequestRouter extends RouteBuilder {
     
     @Autowired
     IntygsTypChecker intygsTypChecker;
-    
+
+    @Autowired
+    GetIntygPropertiesProcessor getIntygPropertiesProcessor; 
+
     private Namespaces ns = new Namespaces("not", "urn:inera:webcert:notifications:1");
 
     @Override
@@ -26,23 +30,25 @@ public class NotificationRequestRouter extends RouteBuilder {
         .setHeader(RouteHeaders.INTYGS_ID, ns.xpath("/not:NotificationRequest/not:intygsId/text()"))
         .setHeader(RouteHeaders.INTYGS_TYP, ns.xpath("/not:NotificationRequest/not:intygsTyp/text()"))
         .setHeader(RouteHeaders.VARDENHET_HSA_ID, ns.xpath("/not:NotificationRequest/not:hoSPerson/not:vardenhet/not:hsaId/text()"))
+        .filter(isOfAllowedType())
+        .process(getIntygPropertiesProcessor)
         .choice()
+            .when(header(RouteHeaders.SAKNAS_I_DB))
+                .stop()
+                //TODO setup an error handler in some way
             .when(ns.xpath("/not:NotificationRequest/not:handelse[text() = 'INTYGSUTKAST_RADERAT']"))
                 .setHeader(RouteHeaders.RADERAT, constant("INTYGSUTKAST_RADERAT"))
                 .to("ref:processNotificationRequestEndpoint")
             .otherwise()
-                .filter(filterPredicate())
+                .filter(isFromIntegratedVardenhet())
                 .to("ref:processNotificationRequestEndpoint");
     }
 
-    private Predicate filterPredicate() {
-
-        Predicate isPresentInDb = method(webcertRepositoryService, "isIntygsUtkastPresent").isEqualTo(Boolean.TRUE);
-
-        Predicate isOfAllowedType = method(intygsTypChecker).isEqualTo(Boolean.TRUE);
-
-        Predicate isFromIntegreradVardenhet = method(webcertRepositoryService, "isVardenhetIntegrerad").isEqualTo(Boolean.TRUE);
-
-        return and(isPresentInDb, isOfAllowedType, isFromIntegreradVardenhet);
+    private Predicate isFromIntegratedVardenhet() {
+        return method(webcertRepositoryService, "isVardenhetIntegrerad").isEqualTo(Boolean.TRUE);
+    }
+    
+    private Predicate isOfAllowedType() {
+        return method(intygsTypChecker).isEqualTo(Boolean.TRUE);
     }
 }

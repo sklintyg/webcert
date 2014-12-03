@@ -85,6 +85,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
         exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
         exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
         exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, "SIGNED");
         exchange.getIn().setHeader(RouteHeaders.RADERAT, "INTYGSUTKAST_RADERAT");
 
         processNotificationRequestEndpoint.send(exchange);
@@ -102,6 +103,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
         exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, "SIGNED");
         exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
 
         processNotificationRequestEndpoint.send(exchange);

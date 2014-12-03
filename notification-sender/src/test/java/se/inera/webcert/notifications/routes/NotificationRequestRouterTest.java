@@ -56,7 +56,25 @@ public class NotificationRequestRouterTest {
         recieveNotificationRequestEndpoint.send(exchange);
         
         assertIsSatisfied(mockProcessNotificationRequestEndpoint);
+    }
+
+    @Test
+    public void testLogiskAdress() throws Exception {
         
+        mockProcessNotificationRequestEndpoint.expectedMessageCount(1);
+        mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_ID, "intyg-2");
+        mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_TYP, "fk7263");
+        mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+        mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_STATUS, "SIGNED");
+        mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.LOGISK_ADRESS, "vardenhet-1");
+        
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
+        
+        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
+        
+        recieveNotificationRequestEndpoint.send(exchange);
+        
+        assertIsSatisfied(mockProcessNotificationRequestEndpoint);
     }
 
     @Test
@@ -69,6 +87,21 @@ public class NotificationRequestRouterTest {
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.RADERAT, "INTYGSUTKAST_RADERAT");
         
         String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-raderat-notification.xml");
+        
+        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
+        
+        recieveNotificationRequestEndpoint.send(exchange);
+        
+        assertIsSatisfied(mockProcessNotificationRequestEndpoint);
+        
+    }
+
+    @Test
+    public void testIntygDoesNotExist() throws Exception {
+        
+        mockProcessNotificationRequestEndpoint.expectedMessageCount(0);
+        
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intyg-not-in-db.xml");
         
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         

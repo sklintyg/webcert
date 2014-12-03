@@ -4,6 +4,6 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 
 public interface CertificateStatusUpdateService {
 
-    void sendStatusUpdate(String intygsId, CertificateStatusUpdateForCareType request) throws Exception;
+    public abstract void sendStatusUpdate(String intygsId, CertificateStatusUpdateForCareType request, String logicalAddress) throws Exception;
 
 }

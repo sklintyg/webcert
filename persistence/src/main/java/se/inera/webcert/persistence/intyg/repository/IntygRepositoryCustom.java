@@ -59,4 +59,12 @@ public interface IntygRepositoryCustom extends IntygFilteredRepositoryCustom {
      */
     @Query("SELECT i.status from Intyg i WHERE i.intygsId = :intygsId")
     IntygsStatus getIntygsStatus(@Param("intygsId") String intygsId);
+
+    /**
+     * Return the HSA-ID for the Enhet on which the Intyg was created
+     * @param intygsId
+     * @return
+     */
+    @Query("SELECT i.enhetsId from Intyg i WHERE i.intygsId = :intygsId")
+    String getIntygsVardenhetsHsaId(@Param("intygsId") String intygsId);
 }

@@ -94,8 +94,4 @@ public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
         return false;
     }
 
-    @Override
-    public IntygsStatus getIntygsUtkastStatus(String intygsId) {
-        return intygRepository.getIntygsStatus(intygsId);
-    }
 }
