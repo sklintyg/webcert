@@ -24,15 +24,15 @@ Tester för Webcert Master.
    * [[Safari][AllSauceLabsBrowsers.AllTests.WebTests.SafariWebTests]]
   * [[External Tests][AllSauceLabsBrowsers.AllTests.ExternalTests]]
 
-!3 Webcert 0.6
-Tester för Webcert 0.6.
+!3 Webcert 3.0
+Tester för Webcert 3.0.
 
  * Alla Tester
   * Alla webbtester
-   * [[Chrome][ChromeSuite.IneraWebcert.WebcertReleases.WebcertV06.WebTests]]
-   * [[Firefox][FirefoxSuite.IneraWebcert.WebcertReleases.WebcertV06.WebTests]]
-   * [[Internet Explorer][InternetExplorerSuite.IneraWebcert.WebcertReleases.WebcertV06.WebTests]]
-   * [[Safari][SafariSuite.IneraWebcert.WebcertReleases.WebcertV06.WebTests]]
+   * [[Chrome][ChromeSuite.IneraWebcert.WebcertReleases.WebcertV30.WebTests]]
+   * [[Firefox][FirefoxSuite.IneraWebcert.WebcertReleases.WebcertV30.WebTests]]
+   * [[Internet Explorer][InternetExplorerSuite.IneraWebcert.WebcertReleases.WebcertV30.WebTests]]
+   * [[Safari][SafariSuite.IneraWebcert.WebcertReleases.WebcertV30.WebTests]]
   * [[External Tests][IneraWebcert.AllTests.ExternalTests]]
 
 !3 Hjälpspecifikationer
