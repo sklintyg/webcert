@@ -45,7 +45,7 @@ public class NotificationRequestRouter extends RouteBuilder {
                 .setHeader(RouteHeaders.RADERAT, constant("INTYGSUTKAST_RADERAT"))
                 .to("ref:processNotificationRequestEndpoint")
             .otherwise()
-                .filter(isFromIntegratedVardenhet())
+                //.filter(isFromIntegratedVardenhet())
                 .to("ref:processNotificationRequestEndpoint");
     }
 

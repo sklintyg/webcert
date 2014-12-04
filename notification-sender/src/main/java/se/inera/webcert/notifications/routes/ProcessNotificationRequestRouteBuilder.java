@@ -32,7 +32,7 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
         //Do not enrich for deleted drafts
         .choice()
             .when(header(RouteHeaders.RADERAT))
-                .to("ref:sendCertificateStatusUpdateEndpoint")
+                .to("sendCertificateStatusUpdateEndpoint")
             .otherwise()
                 .enrich("getIntygFromWebcertRepositoryServiceEndpoint", AggregationStrategies.bean(intygPropertiesEnricher, "enrichWithIntygProperties"))
                 .enrich("getIntygModelFromWebcertRepositoryServiceEndpoint", AggregationStrategies.bean(intygModelEnricher, "enrichWithArbetsformagorAndDiagnos"))
@@ -43,9 +43,9 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
                         .enrich("getNbrOfAnsweredQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfAnsweredQuestionsForIntyg"))
                         .enrich("getNbrOfHandledQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfHandledQuestionsForIntyg"))
                         .enrich("getNbrOfHandledAndAnsweredQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfHandledAndAnsweredQuestionsForIntyg"))
-                        .to("ref:sendCertificateStatusUpdateEndpoint")
+                        .to("sendCertificateStatusUpdateEndpoint")
                     .otherwise()
-                        .to("ref:sendCertificateStatusUpdateEndpoint");
+                        .to("sendCertificateStatusUpdateEndpoint");
 
 
     }
