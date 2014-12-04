@@ -129,6 +129,17 @@
       <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.dbunit</groupId>
+      <artifactId>dbunit</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>junit</artifactId>
+          <groupId>junit</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
   </dependencies>
 
