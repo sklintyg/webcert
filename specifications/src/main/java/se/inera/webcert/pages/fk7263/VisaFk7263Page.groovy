@@ -14,6 +14,9 @@ class VisaFk7263Page extends VisaPage {
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
         certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
 
+        // copy dialog
+        annanEnhetText { $("#annanVardenhet")}
+
         // header
         webcertLogoLink(required: false) { $("#webcertLogoLink") }
         bytVardenhetLink(required: false) { $("#wc-care-unit-clinic-selector") }

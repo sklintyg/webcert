@@ -179,18 +179,19 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     });
                 } else {
 
+                    var otherCareUnit = false;
+                    if (cert.intygMetadata !== undefined && User.getValdVardenhet() !== cert.intygMetadata.skapadAv.vardenhet.enhetsid) {
+                        otherCareUnit = true;
+                    }
+
+                    dialogModel.otherCareUnit = otherCareUnit;
+                    dialogModel.patientId = $routeParams.patientId;
+
                     copyDialog = dialogService.showDialog($scope, {
                         dialogId: 'copy-dialog',
                         titleId: 'label.copycert',
-                        templateUrl: '/views/partials/check-dialog.html',
+                        templateUrl: '/views/partials/copy-dialog.html',
                         model: dialogModel,
-                        bodyText: '<p>Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma information. '+
-                            ($routeParams.patientId ?
-                                'För denna patient finns nytt person-id och informationen kommer därför uppdateras i det nya intyget.'
-                            :
-                                'I de fall patienten har ändrat namn eller adress så uppdateras den informationen.') +
-                            '</p><p>Uppgifterna i intygsutkastet går att ändra innan det signeras.</p>' +
-                            'Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.',
                         button1click: function() {
                             $log.debug('copy cert from dialog' + cert);
                             if (dialogModel.dontShowCopyInfo) {
