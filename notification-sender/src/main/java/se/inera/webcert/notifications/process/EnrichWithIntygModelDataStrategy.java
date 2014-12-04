@@ -38,8 +38,11 @@ public class EnrichWithIntygModelDataStrategy {
     public static final JsonPath NEDSATT_75_JSONP = JsonPath.compile("$.nedsattMed75");
     public static final JsonPath NEDSATT_100_JSONP = JsonPath.compile("$.nedsattMed100");
 
-    private static final String ARBETSFORMAGA_UNIT = "procent";
-
+    private static final String ARBETSFORMAGA_UNIT = "%";
+    
+    private static final String DIAGNOS_CODESYSTEM = "1.2.752.116.1.1.1.1.1";
+    private static final String DIAGNOS_CODESYSTEM_NAME = "ICD-10";
+    
     private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygModelDataStrategy.class);
 
     private static final Configuration PARSER_JACKSON_CONFIGURATION = Configuration
@@ -49,7 +52,7 @@ public class EnrichWithIntygModelDataStrategy {
             .build();
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd");
-
+    
     private Map<String, JsonPath> jsonPaths = new HashMap<String, JsonPath>();
 
     public EnrichWithIntygModelDataStrategy() {
@@ -99,6 +102,8 @@ public class EnrichWithIntygModelDataStrategy {
         
         DiagnosType dt = new DiagnosType();        
         dt.setCode(diagnosKod);
+        dt.setCodeSystem(DIAGNOS_CODESYSTEM);
+        dt.setCodeSystemName(DIAGNOS_CODESYSTEM_NAME);
         dt.setDisplayName(diagnosBeskr);
 
         return dt;
