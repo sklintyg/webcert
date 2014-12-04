@@ -31,7 +31,7 @@
     <Arg>jms/ConnectionFactory</Arg>
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
-        <Arg>vm://localhost?broker.persistent=false</Arg>
+        <Arg>tcp://localhost:61616</Arg>
       </New>
     </Arg>
   </New>
