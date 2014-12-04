@@ -35,5 +35,16 @@
     <property name="dataSource" ref="dataSource" />
     <property name="changeLog" value="classpath:changelog/changelog.xml" />
   </bean>
+  
+  <!-- Populate db with initial test data -->
+  <bean id="testDataLoader" class="se.inera.webcert.notifications.TestDataDbUnitLoader" depends-on="liquibase" init-method="loadTestData">
+    <property name="dataFile" value="/db/intyg-data.xml"/>
+    <property name="intygsIds">
+      <list>
+        <value>intyg-1</value>
+        <value>intyg-2</value>
+      </list>
+    </property>
+  </bean>
 
 </beans>
