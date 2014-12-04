@@ -88,7 +88,7 @@
       <artifactId>ts-diabetes</artifactId>
     </dependency>
 
-    <!-- Interactions -->    
+    <!-- Interactions -->
     <dependency>
       <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
       <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
@@ -295,7 +295,7 @@
     </dependency>
 
 
-    
+
   </dependencies>
 
   <build>
@@ -540,6 +540,34 @@
                       file="${project.basedir}/../src/main/releases/v0.6/features.properties"
                       tofile="${project.build.outputDirectory}/features.properties"
                       overwrite="true" />
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>v3.0</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-release-features</id>
+                <phase>process-resources</phase>
+                <configuration>
+                  <target>
+                    <copy
+                        file="${project.basedir}/../src/main/releases/v3.0/features.properties"
+                        tofile="${project.build.outputDirectory}/features.properties"
+                        overwrite="true" />
                   </target>
                 </configuration>
                 <goals>
