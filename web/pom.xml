@@ -525,34 +525,6 @@
     </profile>
 
     <profile>
-      <id>v0.6</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>copy-release-features</id>
-                <phase>process-resources</phase>
-                <configuration>
-                  <target>
-                    <copy
-                      file="${project.basedir}/../src/main/releases/v0.6/features.properties"
-                      tofile="${project.build.outputDirectory}/features.properties"
-                      overwrite="true" />
-                  </target>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
       <id>v3.0</id>
       <build>
         <plugins>
