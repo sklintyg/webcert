@@ -3,6 +3,7 @@ package se.inera.webcert.spec.fk7263
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
+import org.openqa.selenium.Keys
 import se.inera.webcert.pages.fk7263.EditCertPage
 import se.inera.webcert.spec.Browser
 
@@ -89,12 +90,23 @@ class PopuleraFk7263 {
             if (otherDatum != null) page.baserasPa.otherDatum = otherDatum
             if (otherText != null) page.baserasPa.otherText = otherText
 
-            if (diagnos1 != null) page.diagnos.diagnos1 = diagnos1
-            if (diagnos1Text != null) page.diagnos.diagnos1Text = diagnos1Text
-            if (diagnos2 != null) page.diagnos.diagnos2 = diagnos2
-            if (diagnos2Text != null) page.diagnos.diagnos2Text = diagnos2Text
-            if (diagnos3 != null) page.diagnos.diagnos3 = diagnos3
-            if (diagnos3Text != null) page.diagnos.diagnos3Text = diagnos3Text
+            if (diagnos1 != null) {
+                page.diagnos.diagnos1 = diagnos1
+                // diagnos1Text kommer sättas med enter i detta fält
+                page.diagnos.diagnos1 << Keys.ENTER
+            }
+            // Diagnostext fälten är nu read only.
+/*            if (diagnos1Text != null) page.diagnos.diagnos1Text = diagnos1Text*/
+            if (diagnos2 != null) {
+                page.diagnos.diagnos2 = diagnos2
+                page.diagnos.diagnos2 << Keys.ENTER
+            }
+/*            if (diagnos2Text != null) page.diagnos.diagnos2Text = diagnos2Text*/
+            if (diagnos3 != null) {
+                page.diagnos.diagnos3 = diagnos3
+                page.diagnos.diagnos3 << Keys.ENTER
+            }
+/*            if (diagnos3Text != null) page.diagnos.diagnos3Text = diagnos3Text*/
             if (diagnosFortydligande != null) page.diagnos.fortydligande = diagnosFortydligande
 
             if (diagnosSamsjuklighet != null) page.diagnos.samsjuklighet = diagnosSamsjuklighet
