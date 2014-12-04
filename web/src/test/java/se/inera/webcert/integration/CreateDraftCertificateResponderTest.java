@@ -4,13 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -32,10 +32,14 @@ import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
+import se.inera.webcert.notifications.message.v1.HandelseType;
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
+import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.test.TestIntygFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateResponderTest {
@@ -47,10 +51,10 @@ public class CreateDraftCertificateResponderTest {
 	private static final String UTKAST_ID = "abc123";
 
 	@Mock
-	IntygDraftService intygsUtkastService;
+	IntygDraftService mockIntygsUtkastService;
 	
 	@Mock
-	HsaPersonService hsaPersonService;
+	HsaPersonService mockHsaPersonService;
 	
 	@Mock
 	CreateNewDraftRequestBuilder mockRequestBuilder;
@@ -60,18 +64,26 @@ public class CreateDraftCertificateResponderTest {
 	
 	@Mock
 	IntegreradeEnheterRegistry mockIntegreradeEnheterService;
-	
+
+    @Mock
+    NotificationService mockNotificationService;
+
 	@InjectMocks
 	CreateDraftCertificateResponderImpl responder;
-	
+
+    /**
+     * When a new certificate draft is being created the caller
+     * should get a success response returned and any stakeholder
+     * should be notified with a notification message:
+     */
 	@Test
-	public void test() {
+	public void whenNewCertificateDraftSuccessResponse() {
 		
 	    ValidationResult validationResults = new ValidationResult();
         when(mockValidator.validate(any(UtlatandeType.class))).thenReturn(validationResults);
 	    
 		List<MiuInformationType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
-		when(hsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
+		when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
 		
 		Vardgivare vardgivare = new Vardgivare();
 		vardgivare.setHsaId("SE1234567890-2B01");
@@ -87,20 +99,30 @@ public class CreateDraftCertificateResponderTest {
         draftRequest.setVardenhet(vardenhet);
 		
 		when(mockRequestBuilder.buildCreateNewDraftRequest(any(UtlatandeType.class), any(MiuInformationType.class))).thenReturn(draftRequest);
-		
-		when(intygsUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(UTKAST_ID);
-		
-		when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
-				
+		when(mockIntygsUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(UTKAST_ID);
+        when(mockIntygsUtkastService.getDraft(anyString())).thenReturn(TestIntygFactory.createIntyg(UTKAST_ID, LocalDateTime.now()));
+        when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
+
+        ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
+
 		CreateDraftCertificateType parameters = createParams();
 		CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, parameters);
-		
-		assertNotNull(response);
-		assertEquals(response.getResult().getResultCode(), ResultCodeType.OK);
-		assertEquals(response.getUtlatandeId().getExtension(), UTKAST_ID);
-		
-		verify(intygsUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
-	}
+
+        verify(mockIntygsUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
+        verify(mockIntygsUtkastService).getDraft(anyString());
+        verify(mockNotificationService).notify(notificationRequestTypeArgumentCaptor.capture());
+
+        // Assert response content
+        assertNotNull(response);
+        assertEquals(response.getResult().getResultCode(), ResultCodeType.OK);
+        assertEquals(response.getUtlatandeId().getExtension(), UTKAST_ID);
+
+        // Assert notification message
+        NotificationRequestType notificationRequestType = notificationRequestTypeArgumentCaptor.getValue();
+        assertEquals(UTKAST_ID, notificationRequestType.getIntygsId());
+        assertEquals(HandelseType.INTYGSUTKAST_SKAPAT, notificationRequestType.getHandelse());
+
+    }
 
 	private CreateDraftCertificateType createParams() {
 		
@@ -150,6 +172,7 @@ public class CreateDraftCertificateResponderTest {
 	}
 	
 	private MiuInformationType createMIU(String personHsaId, String unitHsaId, LocalDateTime miuEndDate) {
+
 		MiuInformationType miu = new MiuInformationType();
 		miu.setCareGiver(CAREGIVER_HSAID);
 		miu.setCareGiverName("Landstinget");
@@ -157,6 +180,7 @@ public class CreateDraftCertificateResponderTest {
 		miu.setCareUnitHsaIdentity(unitHsaId);
 		miu.setCareUnitEndDate(miuEndDate);
 		miu.setHsaIdentityPerson(personHsaId);
-		return miu;
+
+        return miu;
 	}
 }

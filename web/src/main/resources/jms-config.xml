@@ -14,5 +14,8 @@
   <bean id="queue" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/jms/Queue" />
   </bean>
+  <bean id="notificationQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/jms/NotificationQueue" />
+  </bean>
 
 </beans>

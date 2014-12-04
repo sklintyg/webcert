@@ -1,5 +1,7 @@
 package se.inera.webcert.integration;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.logging.LogMarkers;
 import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.webcert.integration.validator.QuestionAnswerValidator;
+
 import se.inera.webcert.medcertqa.v1.InnehallType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.receivemedicalcertificateanswer.v1.rivtabp20.ReceiveMedicalCertificateAnswerResponderInterface;
@@ -19,8 +22,6 @@ import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedic
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.mail.MailNotificationService;
-
-import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -39,6 +40,7 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
     @Override
     public ReceiveMedicalCertificateAnswerResponseType receiveMedicalCertificateAnswer(
             AttributedURIType logicalAddress, ReceiveMedicalCertificateAnswerType request) {
+
         ReceiveMedicalCertificateAnswerResponseType response = new ReceiveMedicalCertificateAnswerResponseType();
 
         List<String> validationMessages = QuestionAnswerValidator.validate(request);
@@ -59,7 +61,9 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("No question found with internal ID " + answerType.getVardReferensId(), e);
         }
+
         FragaSvar fragaSvar = fragaSvarService.processIncomingAnswer(referensId, answerContents.getMeddelandeText(), answerContents.getSigneringsTidpunkt());
+
         // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingAnswer(fragaSvar);
