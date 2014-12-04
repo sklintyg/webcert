@@ -22,6 +22,7 @@ public class GetIntygPropertiesProcessor implements Processor {
         String intygsId = exchange.getIn().getHeader(RouteHeaders.INTYGS_ID, String.class);
 
         Intyg intyg = webcertRepositoryService.getIntygsUtkast(intygsId);
+
         if (intyg == null) {
             LOG.debug("Intyg with intygsID: {} not found in database!", intygsId);
             exchange.getIn().setHeader(RouteHeaders.SAKNAS_I_DB, "SAKNAS_I_DB");

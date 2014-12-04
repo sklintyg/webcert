@@ -68,7 +68,7 @@ public class TestDataDbUnitLoader {
         IDataSet dataSet = getDataSet(testDataFile);
         
         IDatabaseConnection dbConn = new DatabaseDataSourceConnection(dataSource);
-        DatabaseOperation.CLEAN_INSERT.execute(dbConn, dataSet);
+        DatabaseOperation.INSERT.execute(dbConn, dataSet);
     }
     
     private IDataSet getDataSet(String filePath) throws DatabaseUnitException, IOException {

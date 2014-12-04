@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.webcert.notifications.TestDataUtil;
@@ -27,6 +28,7 @@ import se.inera.webcert.notifications.TestDataUtil;
 @ContextConfiguration({"/spring/test-properties-context.xml", "/spring/beans-context.xml", "/spring/test-service-context.xml", "/spring/camel-context.xml"})
 @MockEndpointsAndSkip("direct:processNotificationRequestEndpoint")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles( profiles = "unittest" )
 public class NotificationRequestRouterTest {
     
     @Autowired

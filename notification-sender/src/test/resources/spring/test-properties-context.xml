@@ -4,8 +4,16 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <context:property-placeholder
-    location="classpath:unittest-route-params.properties"
-    order="1" ignore-resource-not-found="false" />
+    <beans profile="unittest">
+      <context:property-placeholder
+        location="classpath:unittest-route-params.properties"
+        order="1" ignore-resource-not-found="false" />
+    </beans>
 
+    <beans profile="integration">
+      <context:property-placeholder
+        location="classpath:integration-route-params.properties"
+        order="1" ignore-resource-not-found="false" />
+    </beans>
+    
 </beans>
