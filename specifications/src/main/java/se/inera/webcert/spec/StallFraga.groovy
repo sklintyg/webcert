@@ -15,7 +15,7 @@ public class StallFraga extends RestClientFixture {
     String intygsId
     String ämne
     String frågeText
-    
+    String typ = "fk7263"
     String internReferens
     String internReferens() {
         internReferens
@@ -24,7 +24,7 @@ public class StallFraga extends RestClientFixture {
     def execute() {
         def restClient = createRestClient(baseUrl)
         def response = restClient.post(
-                path: "questions/skickafraga/${vardgivare}/${enhet}/${intygsId}",
+                path: "questions/skickafraga/${vardgivare}/${enhet}/${intygsId}/${typ}",
                 body: "{\"amne\":\"${ämne}\",\"frageText\":\"${frågeText}\"}",
                 requestContentType: JSON
         )
