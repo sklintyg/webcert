@@ -1,5 +1,11 @@
 package se.inera.webcert.service.draft;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -7,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -44,16 +51,7 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.log.LogRequestFactory;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class IntygDraftServiceImpl implements IntygDraftService {
@@ -74,9 +72,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Autowired
     private IntygService intygService;
-
-    @Autowired
-    private LogService logService;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -226,10 +221,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Override
     public Intyg getDraft(String intygId) {
-        Intyg intyg = getIntygAsDraft(intygId);
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
-        logService.logReadOfIntyg(logRequest);
-        return intyg;
+        return getIntygAsDraft(intygId);
     }
 
     @Override
