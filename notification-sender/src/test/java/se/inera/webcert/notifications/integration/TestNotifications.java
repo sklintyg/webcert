@@ -15,6 +15,8 @@ import javax.jms.Session;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,7 @@ import se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareRespond
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/test-notification-sender-config.xml")
 @ActiveProfiles(profiles = { "integration", "dev" })
-@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestNotifications {
 
     @Autowired
@@ -48,6 +50,11 @@ public class TestNotifications {
     @Autowired
     private CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderStub;
 
+    @Before
+    public void resetStub() {
+        this.certificateStatusUpdateForCareResponderStub.reset();
+    }
+    
     private void sendMessage(final String message) {
         jmsTemplate.send(queue, new MessageCreator() {
             public Message createMessage(Session session) throws JMSException {
@@ -90,7 +97,9 @@ public class TestNotifications {
         await().atMost(10, TimeUnit.SECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                return certificateStatusUpdateForCareResponderStub.getNumberOfReceivedMessages() == 3;
+                int numberOfReceivedMessages = certificateStatusUpdateForCareResponderStub.getNumberOfReceivedMessages();
+                System.out.println(numberOfReceivedMessages);
+                return (numberOfReceivedMessages == 3);
             }
         });
         Map<String, HandelseType> exchange = certificateStatusUpdateForCareResponderStub.getExchange();

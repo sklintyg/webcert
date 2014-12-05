@@ -6,6 +6,7 @@ import org.apache.camel.util.toolbox.AggregationStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.process.EnrichWithIntygDataStrategy;
@@ -26,12 +27,18 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     
     @Autowired
     private FragaSvarEnricher fragaSvarEnricher;
+    
+    @Value("${errorhanding.maxRedeliveries}")
+    private int maxRedeliveries;
+    
+    @Value("${errorhanding.redeliveryDelay}")
+    private long redeliveryDelay;
 
     @Override
     public void configure() throws Exception {
         //Setup error handling strategy, using redelivery of 3 secs and then exponentially increasing the time interval
         errorHandler(deadLetterChannel("redeliveryExhaustedEndpoint")
-                .maximumRedeliveries(6).redeliveryDelay(0).useExponentialBackOff());
+                .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay).useExponentialBackOff());
 
         onException(NonRecoverableCertificateStatusUpdateServiceException.class)
         .handled(true)

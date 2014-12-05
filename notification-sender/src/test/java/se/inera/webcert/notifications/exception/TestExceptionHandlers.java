@@ -54,7 +54,7 @@ public class TestExceptionHandlers {
             }
         });
         // Check for 7 messages, 1 original and 6 retries
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(7);
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(4);
         String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
         
         Exchange exchange = buildExchange(requestPayload);

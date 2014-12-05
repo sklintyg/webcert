@@ -6,13 +6,13 @@
 
     <beans profile="unittest">
       <context:property-placeholder
-        location="classpath:unittest-route-params.properties"
+        location="classpath:test-default.properties, classpath:unittest-route-params.properties"
         order="1" ignore-resource-not-found="false" />
     </beans>
 
     <beans profile="integration">
       <context:property-placeholder
-        location="classpath:integration-route-params.properties"
+        location="classpath:test-default.properties, classpath:integration-route-params.properties"
         order="1" ignore-resource-not-found="false" />
     </beans>
     

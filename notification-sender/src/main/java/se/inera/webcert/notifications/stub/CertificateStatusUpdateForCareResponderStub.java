@@ -45,5 +45,10 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
     public Map<String, HandelseType> getExchange() {
         return (Map<String, HandelseType>) store;
     }
+    
+    public void reset() {
+        this.store.clear();
+        this.counter.set(0);
+    }
 
 }
