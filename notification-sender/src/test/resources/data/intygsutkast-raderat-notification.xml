@@ -4,6 +4,7 @@
   <not:handelseTidpunkt>2014-10-10T12:00:00</not:handelseTidpunkt>
   <not:intygsId>intyg-4</not:intygsId>
   <not:intygsTyp>fk7263</not:intygsTyp>
+  <not:utfardandeEnhetsId>vardenhet-1</not:utfardandeEnhetsId>
   <not:hoSPerson>
     <not:hsaId>person-2</not:hsaId>
     <not:fullstandigtNamn>Dr. Börje Dengroth</not:fullstandigtNamn>

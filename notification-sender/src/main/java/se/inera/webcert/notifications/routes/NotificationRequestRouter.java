@@ -33,7 +33,7 @@ public class NotificationRequestRouter extends RouteBuilder {
         .setHeader(RouteHeaders.INTYGS_ID, ns.xpath("/not:NotificationRequest/not:intygsId/text()"))
         .setHeader(RouteHeaders.INTYGS_TYP, ns.xpath("/not:NotificationRequest/not:intygsTyp/text()"))
         .setHeader(RouteHeaders.HANDELSE, ns.xpath("/not:NotificationRequest/not:handelse/text()"))
-        .setHeader(RouteHeaders.LOGISK_ADRESS, ns.xpath("/not:NotificationRequest/not:utfarandeEnhetsId/text()"))
+        .setHeader(RouteHeaders.LOGISK_ADRESS, ns.xpath("/not:NotificationRequest/not:utfardandeEnhetsId/text()"))
         .filter(isOfAllowedType())
         .process(getIntygPropertiesProcessor)
         .choice()

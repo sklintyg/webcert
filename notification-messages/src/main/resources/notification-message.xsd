@@ -10,7 +10,7 @@
       <xs:element name="handelseTidpunkt" type="xs:dateTime"></xs:element>
       <xs:element name="intygsId" type="xs:string"></xs:element>
       <xs:element name="intygsTyp" type="xs:string"></xs:element>
-      <xs:element name="utfarandeEnhetsId" type="tns:nonEmptyString" minOccurs="0" />
+      <xs:element name="utfardandeEnhetsId" type="tns:nonEmptyString" minOccurs="0" />
       <xs:element name="hoSPerson" type="tns:hoSPersonType"></xs:element>
     </xs:sequence>
   </xs:complexType>

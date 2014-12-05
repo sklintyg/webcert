@@ -18,8 +18,6 @@
   <context:component-scan
     base-package="se.inera.webcert.notifications,se.inera.webcert.persistance" />
   
-<!--   <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub"/> -->
+  <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub"/>
   
-  <mockito:mock id="mockCertificateStatusUpdateForCareResponder"
-    class="se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface" />
 </beans>
