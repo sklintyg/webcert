@@ -35,6 +35,18 @@ Man kan även komma åt H2-databasen som startas:
 $ open http://localhost:9090/
 ```
 
+För att komma åt webcert eller intyggs databasen fyll i JDBC URL'n :
+
+WebCert 
+```
+JDBC URL : jdbc:h2:tcp://localhost:9094/mem:dataSource
+```
+
+Intygg  
+```
+JDBC URL : jdbc:h2:tcp://localhost:9092/mem:dataSource
+```
+
 ### Kör FitNesse
 För att köra FitNesse-testerna måste man starta FitNesse wiki:
 ```
