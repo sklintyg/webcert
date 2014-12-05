@@ -16,4 +16,5 @@
 | geb.build.baseUrl | ${webcert.web.baseUrl} |
 | webcert.baseUrl | ${webcert.baseUrl} |
 | certificate.baseUrl | ${certificate.baseUrl} |
+| fitnesse.working | ${fitnesse.working} |
 
