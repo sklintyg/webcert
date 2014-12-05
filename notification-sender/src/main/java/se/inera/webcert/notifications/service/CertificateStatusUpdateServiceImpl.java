@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
+import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
 
 public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpdateService {
 
@@ -36,9 +38,13 @@ public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpda
         ResultType result = response.getResult();
         switch (result.getResultCode()) {
         case ERROR:
-            throw new CertificateStatusUpdateServiceException(String.format(
-                    "CertificateStatusUpdateServiceImpl failed with error code: %s and message %s", result.getErrorId(),
-                    result.getResultText()));
+            if (result.getErrorId().equals(ErrorIdType.TECHNICAL_ERROR)) {
+                throw new NonRecoverableCertificateStatusUpdateServiceException(String.format(
+                        "CertificateStatusUpdateServiceImpl failed with non-recoverable error code: %s and message %s", result.getErrorId(), result.getResultText()));
+            } else {
+                throw new CertificateStatusUpdateServiceException(String.format(
+                        "CertificateStatusUpdateServiceImpl failed with error code: %s and message %s", result.getErrorId(), result.getResultText()));
+            }
         case INFO:
             LOG.info("CertificateStatusUpdateServiceImpl got message:" + result.getResultText());
             break;

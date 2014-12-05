@@ -33,6 +33,11 @@
     <!-- Endpoint pointing to the processNotificationRequest route -->
     <camel:endpoint id="processNotificationRequestEndpoint" uri="${processNotificationRequestEndpointUri}"/>
     
+    <!-- Error handling endpoint -->
+    <camel:endpoint id="errorHandlerEndpoint" uri="${errorHandlerEndpointUri}"/>
+
+    <camel:endpoint id="redeliveryExhaustedEndpoint" uri="${redeliveryExhaustedEndpointUri}"/>
+    
     <camel:dataFormats>
       <camel:jaxb id="notificationRequestJaxb" contextPath="se.inera.webcert.notifications.message.v1"/>
     </camel:dataFormats>

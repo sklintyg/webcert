@@ -11,6 +11,7 @@ import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.process.EnrichWithIntygDataStrategy;
 import se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy;
 import se.inera.webcert.notifications.process.FragaSvarEnricher;
+import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
@@ -29,9 +30,13 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         //Setup error handling strategy, using redelivery of 3 secs and then exponentially increasing the time interval
-        errorHandler(deadLetterChannel("jms:queue:dead")
-                .maximumRedeliveries(6).redeliveryDelay(2000).useExponentialBackOff());
+        errorHandler(deadLetterChannel("redeliveryExhaustedEndpoint")
+                .maximumRedeliveries(6).redeliveryDelay(0).useExponentialBackOff());
 
+        onException(NonRecoverableCertificateStatusUpdateServiceException.class)
+        .handled(true)
+        .to("errorHandlerEndpoint");
+        
         from("ref:processNotificationRequestEndpoint").routeId("processNotificationRequest")
         .unmarshal("notificationRequestJaxb")
         .processRef("createAndInitCertificateStatusRequestProcessor")
@@ -55,5 +60,13 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
                         .to("sendCertificateStatusUpdateEndpoint")
                     .otherwise()
                         .to("sendCertificateStatusUpdateEndpoint");
+                                
+        from("errorHandlerEndpoint").routeId("errorLogging")
+            .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}").getText())
+            .stop();
+
+        from("redeliveryExhaustedEndpoint").routeId("redeliveryErrorLogging")
+            .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}").getText())
+            .stop();
     }
 }
