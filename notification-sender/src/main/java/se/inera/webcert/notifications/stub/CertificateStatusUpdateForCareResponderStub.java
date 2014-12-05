@@ -11,22 +11,27 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HandelseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 
 public class CertificateStatusUpdateForCareResponderStub implements CertificateStatusUpdateForCareResponderInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
 
-    private ConcurrentHashMap<String, HandelseType> store = new ConcurrentHashMap<String, HandelseType>();
+    private ConcurrentHashMap<String, HandelsekodCodeRestrictionType> store = new ConcurrentHashMap<String, HandelsekodCodeRestrictionType>();
     private AtomicInteger counter = new AtomicInteger(0);
 
     @Override
     public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(String logicalAddress,
             CertificateStatusUpdateForCareType request) {
+        HandelsekodCodeRestrictionType handelseKod = request.getUtlatande().getHandelse().getHandelsekod();
+        String utlatandeId = request.getUtlatande().getUtlatandeId().getExtension();
+        LOG.info("\n*********************************************************************************\n"
+                + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"
+                + "*********************************************************************************", logicalAddress, utlatandeId, handelseKod);
 
-        LOG.info("Request to address '{}' recieved", logicalAddress);
         counter.incrementAndGet();
-        store.put(request.getUtlatande().getUtlatandeId().getExtension(), request.getUtlatande().getHandelse());
+        store.put(utlatandeId, handelseKod);
 
         CertificateStatusUpdateForCareResponseType response = new CertificateStatusUpdateForCareResponseType();
         response.setResult(ResultTypeUtil.okResult());
@@ -42,8 +47,8 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         return store.keySet().size();
     }
 
-    public Map<String, HandelseType> getExchange() {
-        return (Map<String, HandelseType>) store;
+    public Map<String, HandelsekodCodeRestrictionType> getExchange() {
+        return (Map<String, HandelsekodCodeRestrictionType>) store;
     }
     
     public void reset() {

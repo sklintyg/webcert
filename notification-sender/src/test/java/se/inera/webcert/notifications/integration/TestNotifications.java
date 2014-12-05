@@ -98,16 +98,15 @@ public class TestNotifications {
             @Override
             public Boolean call() throws Exception {
                 int numberOfReceivedMessages = certificateStatusUpdateForCareResponderStub.getNumberOfReceivedMessages();
-                System.out.println(numberOfReceivedMessages);
                 return (numberOfReceivedMessages == 3);
             }
         });
-        Map<String, HandelseType> exchange = certificateStatusUpdateForCareResponderStub.getExchange();
+        Map<String, HandelsekodCodeRestrictionType> exchange = certificateStatusUpdateForCareResponderStub.getExchange();
 
-        assertEquals("Expected INTYGSUTKAST_RADERAT for intyg-4", exchange.get("intyg-4").getHandelsekod(), HandelsekodCodeRestrictionType.HAN_4);
+        assertEquals("Expected INTYGSUTKAST_RADERAT for intyg-4", exchange.get("intyg-4"), HandelsekodCodeRestrictionType.HAN_4);
 
-        assertEquals("Expected INTYG_SIGNERAT for intyg-2", exchange.get("intyg-2").getHandelsekod(), HandelsekodCodeRestrictionType.HAN_2);
+        assertEquals("Expected INTYG_SIGNERAT for intyg-2", exchange.get("intyg-2"), HandelsekodCodeRestrictionType.HAN_2);
 
-        assertEquals("Expected INTYGSUTKAST_SKAPAT for intyg-1", exchange.get("intyg-1").getHandelsekod(), HandelsekodCodeRestrictionType.HAN_1);
+        assertEquals("Expected INTYGSUTKAST_SKAPAT for intyg-1", exchange.get("intyg-1"), HandelsekodCodeRestrictionType.HAN_1);
     }
 }
