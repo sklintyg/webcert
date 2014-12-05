@@ -41,4 +41,8 @@ class FragorOchSvar extends RestClientFixture {
     def status() {
         fragaSvar.status
     }
+
+    def amne() {
+        fragaSvar.amne
+    }
 }
