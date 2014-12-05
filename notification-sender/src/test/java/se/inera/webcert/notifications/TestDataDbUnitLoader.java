@@ -55,7 +55,7 @@ public class TestDataDbUnitLoader {
     }
     
     private String getIntygModelData(String intygsId) {
-        String modelFilePath = "intyg/" + intygsId + ".json";
+        String modelFilePath = "utlatande/utlatande-intyg-1.json";
         return TestDataUtil.readRequestFromFile(modelFilePath);
     }
     

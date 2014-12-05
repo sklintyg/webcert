@@ -2,7 +2,7 @@
 <not:NotificationRequest xmlns:not="urn:inera:webcert:notifications:1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:inera:webcert:notifications:1 notification-message.xsd ">
   <not:handelse>INTYGSUTKAST_RADERAT</not:handelse>
   <not:handelseTidpunkt>2014-10-10T12:00:00</not:handelseTidpunkt>
-  <not:intygsId>intyg-1</not:intygsId>
+  <not:intygsId>intyg-4</not:intygsId>
   <not:intygsTyp>fk7263</not:intygsTyp>
   <not:hoSPerson>
     <not:hsaId>person-2</not:hsaId>

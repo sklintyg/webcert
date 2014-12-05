@@ -13,7 +13,6 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.NotifyBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.DefaultMessage;
@@ -31,7 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
 import se.inera.webcert.notifications.TestDataUtil;
-import se.inera.webcert.notifications.service.CertificateStatusUpdateServiceImpl;
+import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
@@ -52,6 +51,8 @@ public class ProcessNotificationRequestRouteBuilderTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilderTest.class);
 
+    private static final String VARDENHET_1_ADDR = "vardenhet-1";
+
     @Test
     public void testWithSkapat() throws Exception {
         
@@ -62,7 +63,9 @@ public class ProcessNotificationRequestRouteBuilderTest {
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-1");
         exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
-        exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, IntygsStatus.DRAFT_INCOMPLETE);
+        exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_SKAPAT.toString());
+        exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
         
         processNotificationRequestEndpoint.send(exchange);
         
@@ -84,31 +87,44 @@ public class ProcessNotificationRequestRouteBuilderTest {
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
         exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
-        exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, IntygsStatus.SIGNED);
+        exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_SIGNERAT.toString());
+        exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
         
         processNotificationRequestEndpoint.send(exchange);
 
         assertIsSatisfied(camelContext);
         
+        CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn().getBody(CertificateStatusUpdateForCareType.class);
+        assertNotNull(statusUpdateType);
+        assertEquals(HandelsekodCodeRestrictionType.HAN_2, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
+        assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());
+        assertEquals(1, statusUpdateType.getUtlatande().getArbetsformaga().size());
     }
     
     @Test
     public void testWithDeleted() throws InterruptedException {
-        mockCertificateStatusUpdateEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_STATUS, IntygsStatus.SIGNED);
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
         
         String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-raderat-notification.xml");
         
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
-        exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-4");
         exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
-        exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
-        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, "SIGNED");
-        exchange.getIn().setHeader(RouteHeaders.RADERAT, "INTYGSUTKAST_RADERAT");
+        exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_RADERAT.toString());
+        exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
 
         processNotificationRequestEndpoint.send(exchange);
+        
         assertIsSatisfied(camelContext);
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+        
+        CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn().getBody(CertificateStatusUpdateForCareType.class);
+        assertNotNull(statusUpdateType);
+        assertEquals(HandelsekodCodeRestrictionType.HAN_4, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
+        assertTrue(statusUpdateType.getUtlatande().getArbetsformaga().isEmpty());
+        assertNull(statusUpdateType.getUtlatande().getDiagnos());
+        assertNull(statusUpdateType.getUtlatande().getFragorOchSvar());
     }
 
     @Test
@@ -121,14 +137,16 @@ public class ProcessNotificationRequestRouteBuilderTest {
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
         exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
-        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, "SIGNED");
-        exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, IntygsStatus.SIGNED);
+        exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_SIGNERAT.toString());
+        exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
 
         processNotificationRequestEndpoint.send(exchange);
         assertIsSatisfied(camelContext);
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
         CertificateStatusUpdateForCareType body = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn().getBody(CertificateStatusUpdateForCareType.class);
-        assertTrue(body.getUtlatande().getFragorOchSvar() != null);
+        assertNotNull(body.getUtlatande().getFragorOchSvar());
+        assertEquals(1, body.getUtlatande().getArbetsformaga().size());
     }
 
     @Test 
@@ -153,8 +171,9 @@ public class ProcessNotificationRequestRouteBuilderTest {
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
         exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
-        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, "SIGNED");
-        exchange.getIn().setHeader(RouteHeaders.VARDENHET_HSA_ID, "vardenhet-1");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, IntygsStatus.SIGNED);
+        exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_SIGNERAT.toString());
+        exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
 
         processNotificationRequestEndpoint.send(exchange);
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
