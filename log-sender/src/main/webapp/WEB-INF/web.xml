@@ -1,28 +1,8 @@
-<!--
-
-  Copyright (C) 2013 Inera AB (http://www.inera.se)
-
-  This file is part of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
-
-  Inera Certificate Web is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as
-  published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  Inera Certificate Web is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
-
--->
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0">
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
 
-  <display-name>Inera Log Sender Web Application</display-name>
+  <display-name>Webcert Log Sender Web Application</display-name>
 
   <context-param>
     <param-name>contextConfigLocation</param-name>
@@ -40,16 +20,31 @@
   </servlet>
 
   <servlet-mapping>
-      <servlet-name>ws</servlet-name>
-      <url-pattern>/*</url-pattern>
-    </servlet-mapping>
+    <servlet-name>ws</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
 
   <!-- Listener for external logback configuration file -->
   <listener>
     <listener-class>se.inera.certificate.logging.LogbackConfiguratorContextListener</listener-class>
   </listener>
+
   <!-- Start spring context -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+
+  <!-- JMS resources -->
+  <resource-ref>
+    <res-ref-name>jms/ConnectionFactory</res-ref-name>
+    <res-type>javax.jms.ConnectionFactory</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+
+  <resource-ref>
+    <res-ref-name>jms/Queue</res-ref-name>
+    <res-type>javax.jms.Queue</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+
 </web-app>

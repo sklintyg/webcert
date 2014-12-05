@@ -1,4 +1,4 @@
-    package se.inera.webcert.web.controller;
+package se.inera.webcert.web.controller;
 
 import java.util.List;
 
@@ -27,17 +27,17 @@ public abstract class AbstractApiController {
 
     @Autowired
     private WebCertUserService webCertUserService;
-    
+
     protected HoSPerson createHoSPersonFromUser() {
         WebCertUser user = webCertUserService.getWebCertUser();
         return HoSPerson.create(user);
     }
 
     protected Vardenhet createVardenhetFromUser() {
-        
+
         WebCertUser user = webCertUserService.getWebCertUser();
         AbstractVardenhet valdEnhet = getValdEnhet(user);
-                
+
         Vardenhet enhet = new Vardenhet();
         enhet.setHsaId(valdEnhet.getId());
         enhet.setNamn(valdEnhet.getNamn());
@@ -55,12 +55,13 @@ public abstract class AbstractApiController {
     }
 
     private AbstractVardenhet getValdEnhet(WebCertUser user) {
-        if (user.getValdVardenhet() instanceof  AbstractVardenhet) {
+        if (user.getValdVardenhet() instanceof AbstractVardenhet) {
             return (AbstractVardenhet) user.getValdVardenhet();
         } else {
             return null;
         }
     }
+
     protected List<String> getEnhetIdsForCurrentUser() {
 
         WebCertUser webCertUser = webCertUserService.getWebCertUser();
@@ -74,29 +75,28 @@ public abstract class AbstractApiController {
     public WebCertUserService getWebCertUserService() {
         return webCertUserService;
     }
-    
+
     protected boolean checkIfWebcertFeatureIsAvailable(WebcertFeature webcertFeature) {
         Assert.notNull(webcertFeature);
         WebCertUser webCertUser = webCertUserService.getWebCertUser();
         return webCertUser.hasAktivFunktion(webcertFeature.getName());
-        
     }
-    
+
     protected boolean checkIfWebcertFeatureIsAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
         Assert.notNull(webcertFeature);
         Assert.notNull(moduleType);
         WebCertUser webCertUser = webCertUserService.getWebCertUser();
-        String webcertFeatureName = StringUtils.join(new String[]{webcertFeature.getName(), moduleType}, ".");
+        String webcertFeatureName = StringUtils.join(new String[] { webcertFeature.getName(), moduleType }, ".");
         return webCertUser.hasAktivFunktion(webcertFeatureName);
-        
+
     }
-    
+
     protected void abortIfWebcertFeatureIsNotAvailable(WebcertFeature webcertFeature) {
         if (!checkIfWebcertFeatureIsAvailable(webcertFeature)) {
             throw new FeatureNotAvailableException(webcertFeature.getName());
         }
     }
-    
+
     protected void abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
         if (!checkIfWebcertFeatureIsAvailableForModule(webcertFeature, moduleType)) {
             throw new FeatureNotAvailableException(webcertFeature.getName());

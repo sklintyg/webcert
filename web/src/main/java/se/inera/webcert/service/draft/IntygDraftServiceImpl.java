@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.certificate.model.util.Strings;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -32,6 +33,7 @@ import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.pu.model.Person;
+import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
@@ -269,11 +271,43 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             }
 
             LOG.debug("Refreshing person data to use for the copy of '{}'", orgIntygsId);
-            Person person = personUppgiftsService.getPerson(patientPersonnummer);
+            PersonSvar personSvar = personUppgiftsService.getPerson(patientPersonnummer);
+            Person person = personSvar.getPerson();
 
-            if (person == null) {
+            if (personSvar.getStatus() == PersonSvar.Status.NOT_FOUND) {
                 LOG.error("No person data was found using '{}'", patientPersonnummer);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "No person data found using '"
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No person data found using '"
+                        + patientPersonnummer + "'");
+            }
+            else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
+                LOG.error("External error while looking up person data '{}'", patientPersonnummer);
+
+                // If there is a problem with the external system use old patient information.
+                String fornamn = Strings.join(" ", template.getUtlatande().getGrundData().getPatient().getFornamn());
+                String efternamn = template.getUtlatande().getGrundData().getPatient().getEfternamn();
+                if (fornamn == null || fornamn.length() == 0) {
+                    // In this case use the last name from the template efternamn as efternamn and the rest as fornamn.
+                    String[] namn = efternamn.split(" ");
+                    if (namn.length > 0) {
+                        fornamn = Strings.join(" ", java.util.Arrays.copyOfRange(namn, 0, namn.length - 1));
+                        if (namn.length > 1)
+                            efternamn = namn[namn.length - 1];
+                        else
+                            efternamn = "";
+                    }
+                }
+                person = new Person(
+                    patientPersonnummer,
+                    fornamn,
+                    Strings.join(" ", template.getUtlatande().getGrundData().getPatient().getMellannamn()),
+                    efternamn,
+                    template.getUtlatande().getGrundData().getPatient().getPostadress(),
+                    template.getUtlatande().getGrundData().getPatient().getPostnummer(),
+                    template.getUtlatande().getGrundData().getPatient().getPostort());
+            }
+            else if (personSvar.getStatus() != PersonSvar.Status.FOUND) {
+                LOG.error("Unknown status while looking up person data '{}'", patientPersonnummer);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown status while looking up person data '"
                         + patientPersonnummer + "'");
             }
 

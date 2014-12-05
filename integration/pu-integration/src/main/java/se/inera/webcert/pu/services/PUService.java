@@ -1,8 +1,8 @@
 package se.inera.webcert.pu.services;
 
-import se.inera.webcert.pu.model.Person;
+import se.inera.webcert.pu.model.PersonSvar;
 
 public interface PUService {
 
-    Person getPerson(String personId);
+    PersonSvar getPerson(String personId);
 }

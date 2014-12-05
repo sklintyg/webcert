@@ -2,6 +2,7 @@ package se.inera.webcert.service.intyg;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,7 +68,7 @@ public class IntygServiceTest {
 
     @Mock
     private LogService logservice;
-    
+
     @InjectMocks
     private IntygServiceImpl intygService = new IntygServiceImpl();
 
@@ -111,7 +112,7 @@ public class IntygServiceTest {
 
     @Before
     public void setupDefaultAuthorization() {
-        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
     }
 
     @Before
@@ -143,7 +144,7 @@ public class IntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testFetchIntygWithFailingAuth() {
-        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(false);
 
         intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }

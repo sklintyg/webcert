@@ -1,10 +1,8 @@
 package se.inera.webcert.pages.ts_diabetes
 
-import se.inera.certificate.page.AbstractPage
+import se.inera.webcert.pages.VisaPage
 
-class VisaTsDiabetesPage extends AbstractPage {
-
-    static at = { js.doneLoading && $("#viewCertAndQA").isDisplayed() }
+class VisaTsDiabetesPage extends VisaPage {
 
     static content = {
 

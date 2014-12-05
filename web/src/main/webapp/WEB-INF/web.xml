@@ -135,7 +135,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>integrationapi</servlet-name>
-    <url-pattern>/integration/*</url-pattern>
+    <url-pattern>/visa/*</url-pattern>
   </servlet-mapping>
 
   <filter>

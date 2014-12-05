@@ -1,0 +1,4 @@
+!contents -R2 -g -p -f -h
+
+!see <IneraWebcert.AllTests.WebTests.OvergripandeNavigering.NavigeraHuvudmenyn
+!see <IneraWebcert.AllTests.WebTests.OvergripandeNavigering.NavigeraOmWebcert

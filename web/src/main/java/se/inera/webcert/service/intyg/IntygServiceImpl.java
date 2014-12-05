@@ -110,7 +110,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     public IntygContentHolder fetchIntygData(String intygId, String typ) {
         try {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
-            verifyEnhetsAuth(certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
+            verifyEnhetsAuth(certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), true);
             List<IntygStatus> status = serviceConverter.convertListOfStatusToListOfIntygStatus(certificate.getMetaData().getStatus());
             String internalIntygJsonModel = certificate.getInternalModel();
 
@@ -185,8 +185,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
-    protected void verifyEnhetsAuth(String enhetsId) {
-        if (!webCertUserService.isAuthorizedForUnit(enhetsId)) {
+    protected void verifyEnhetsAuth(String enhetsId, boolean readOnlyOperation) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId, readOnlyOperation)) {
             LOG.info("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);

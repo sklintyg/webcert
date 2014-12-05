@@ -530,7 +530,7 @@
     </profile>
 
     <profile>
-      <id>v0.6</id>
+      <id>v3.0</id>
       <build>
         <plugins>
           <plugin>
@@ -542,9 +542,9 @@
                 <configuration>
                   <target>
                     <copy
-                      file="${project.basedir}/../src/main/releases/v0.6/features.properties"
-                      tofile="${project.build.outputDirectory}/features.properties"
-                      overwrite="true" />
+                        file="${project.basedir}/../src/main/releases/v3.0/features.properties"
+                        tofile="${project.build.outputDirectory}/features.properties"
+                        overwrite="true" />
                   </target>
                 </configuration>
                 <goals>

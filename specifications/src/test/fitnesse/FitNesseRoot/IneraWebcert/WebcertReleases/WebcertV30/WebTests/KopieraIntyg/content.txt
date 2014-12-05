@@ -1,0 +1,6 @@
+!contents -R2 -g -p -f -h
+
+!see <IneraWebcert.AllTests.WebTests.KopieraIntyg.KopieraFk7263FranAnnanVardenhet
+!see <IneraWebcert.AllTests.WebTests.KopieraIntyg.KopieraTidigareSigneratFk7263
+!see <IneraWebcert.AllTests.WebTests.KopieraIntyg.KopieraTidigareUtkastFk7263
+!see <IneraWebcert.AllTests.WebTests.KopieraIntyg.KopieraVisaSigneratFk7263

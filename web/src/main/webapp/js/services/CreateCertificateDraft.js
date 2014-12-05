@@ -33,6 +33,9 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                             that.postnummer = data.person.postnummer;
                             that.postort = data.person.postort;
                             onSuccess();
+                        } else if (data.status === 'ERROR') {
+                            $log.warn('PU-tjänsten kunde inte kontaktas, manuell inmatning krävs');
+                            onError();
                         } else {
                             $log.debug('Personen hittades inte i PU-tjänsten, manuell inmatning krävs');
                             onNotFound();
@@ -73,8 +76,13 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     var id = (typeof cert.intygId === 'undefined') ? cert.id : cert.intygId;
                     $log.debug('_copyIntygToDraft ' + cert.intygType + ', ' + id);
 
+                    var payload = {};
+                    if (this.nyttPatientPersonnummer) {
+                        payload.nyttPatientPersonnummer = this.nyttPatientPersonnummer;
+                    }
+
                     var restPath = '/api/intyg/' + cert.intygType + '/' + id +'/kopiera/';
-                    $http.post(restPath, {}).success(function(data) {
+                    $http.post(restPath, payload).success(function(data) {
                         $log.debug('got callback data: ' + data);
                         onSuccess(data);
                         statService.refreshStat();

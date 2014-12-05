@@ -2,10 +2,14 @@ package se.inera.webcert.service.intyg;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -22,18 +26,23 @@ import se.inera.webcert.service.log.dto.LogRequest;
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
+    @Before
+    public void setupDefaultAuthorization() {
+        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(true);
+    }
+
     @Test
     public void testSendIntyg() throws Exception {
-        
+
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
         assertEquals(IntygServiceResult.OK, res);
-        
+
         verify(omsandningRepository).save(any(Omsandning.class));
         verify(omsandningRepository).delete(any(Omsandning.class));
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(moduleFacade).sendCertificate(INTYG_TYP_FK, json, "FK");
     }
-    
+
     @Test
     public void testSendIntygFailingWithExternalServiceCallException() throws Exception {
                 
@@ -44,10 +53,10 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
         assertEquals(IntygServiceResult.RESCHEDULED, res);
-        
+
         verify(omsandningRepository, times(2)).save(any(Omsandning.class));
     }
-    
+
     @Test
     public void testSendIntygFailingWithModuleFacadeException() throws Exception {
                 

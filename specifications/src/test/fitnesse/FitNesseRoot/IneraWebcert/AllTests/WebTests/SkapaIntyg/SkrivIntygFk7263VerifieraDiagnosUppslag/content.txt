@@ -1,0 +1,26 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Ange diagnoskoder och verifiera beskrivningen
+
+| Populera Fk7263 |
+| diagnos1 | diagnos2 | diagnos3 |
+| !-B079X-! | !-B080B-! | !-B080W-! |
+
+| skriv intyg |
+| diagnos1 text? | diagnos2 text? | diagnos3 text? |
+| Virusvårtor, ospecificerade | Falska kokoppor | Annan och icke specificerad infektion orsakad av ortopoxvirus |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |

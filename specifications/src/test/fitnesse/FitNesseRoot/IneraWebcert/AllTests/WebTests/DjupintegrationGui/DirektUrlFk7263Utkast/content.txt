@@ -23,6 +23,5 @@
 !3 Verifiera att man fick ett felmeddelande istället för att man blev skickad till ej signerade intyg
 
 | script | !-IntegrationMedJournalsystem-! |
-| radera utkast felmeddelande visas |
-
+| integration borttaget meddelande visas |
 
