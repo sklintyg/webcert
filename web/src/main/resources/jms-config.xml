@@ -4,9 +4,13 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <bean id="jmsProducerTemplate" class="org.springframework.jms.core.JmsTemplate">
+  <bean id="jmsPDLLogTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="jmsFactory" />
     <property name="defaultDestination" ref="queue" />
+  </bean>
+  <bean id="jmsNotificationTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="jmsFactory" />
+    <property name="defaultDestination" ref="notificationQueue" />
   </bean>
   <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/jms/ConnectionFactory" />

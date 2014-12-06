@@ -1,5 +1,7 @@
 package se.inera.webcert.service.draft;
 
+import java.util.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -7,36 +9,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
-import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.certificate.modules.support.api.dto.ValidationMessage;
-import se.inera.certificate.modules.support.api.dto.ValidationStatus;
+import se.inera.certificate.modules.support.api.dto.*;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.AbstractVardenhet;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.services.PUService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
-import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.draft.dto.DraftValidation;
-import se.inera.webcert.service.draft.dto.DraftValidationStatus;
-import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.dto.SignatureTicket;
+import se.inera.webcert.service.draft.dto.*;
 import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
-import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Lakare;
+import se.inera.webcert.service.dto.*;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
@@ -47,21 +38,24 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.notification.NotificationMessageFactory;
+import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class IntygDraftServiceImpl implements IntygDraftService {
+
+    public enum Event {
+        CHANGED, CREATED, DELETED;
+    }
 
     private static final List<IntygsStatus> ALL_DRAFT_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
             IntygsStatus.DRAFT_INCOMPLETE);
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftServiceImpl.class);
+
+    @Autowired
+    private CreateIntygsIdStrategy intygsIdStrategy;
 
     @Autowired
     private IntygRepository intygRepository;
@@ -70,22 +64,23 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private IntygModuleRegistry moduleRegistry;
 
     @Autowired
-    private CreateIntygsIdStrategy intygsIdStrategy;
-
-    @Autowired
     private IntygService intygService;
-
-    @Autowired
-    private LogService logService;
-
-    @Autowired
-    private WebCertUserService webCertUserService;
 
     @Autowired
     private IntygSignatureService signatureService;
 
     @Autowired
+    private LogService logService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     private PUService personUppgiftsService;
+
+    @Autowired
+    private WebCertUserService webCertUserService;
+
 
     @Override
     @Transactional
@@ -234,17 +229,21 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Override
     public SignatureTicket createDraftHash(String intygsId) {
+
         Intyg intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         intygRepository.save(intyg);
+
         return signatureService.createDraftHash(intygsId);
     }
 
     @Override
     public SignatureTicket serverSignature(String intygsId) {
+
         Intyg intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         intygRepository.save(intyg);
+
         return signatureService.serverSignature(intygsId);
     }
 
@@ -345,7 +344,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    @Transactional
     public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request) {
 
         String intygId = request.getIntygId();
@@ -367,22 +365,31 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         }
 
         String intygType = intyg.getIntygsTyp();
-
         String draftAsJson = request.getDraftAsJson();
 
+        // Update draft with user information
+        updateWithUser(intyg, draftAsJson);
+
+        // Is draft valid?
         DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
 
         IntygsStatus intygStatus = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE : IntygsStatus.DRAFT_INCOMPLETE;
-
-        updateWithUser(intyg, draftAsJson);
-
         intyg.setStatus(intygStatus);
 
-        Intyg persistedDraft = intygRepository.save(intyg);
+        // Save the updated draft
+        intyg = saveIntyg(intyg);
+        LOG.debug("Draft '{}' updated", intyg.getIntygsId());
 
-        LOG.debug("Draft '{}' updated", persistedDraft.getIntygsId());
+        // Notify stakeholders when a draft has been changed/updated
+        notify(intyg, Event.CHANGED);
 
         return draftValidation;
+    }
+
+    @Transactional
+    private Intyg saveIntyg(Intyg intyg) {
+        Intyg persistedDraft = intygRepository.save(intyg);
+        return persistedDraft;
     }
 
     @Override
@@ -481,7 +488,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    @Transactional
     public void deleteUnsignedDraft(String intygId) {
 
         LOG.debug("Deleting draft with id '{}'", intygId);
@@ -497,9 +503,19 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         // check that the draft is still unsigned
         if (!isTheDraftStillADraft(intyg.getStatus())) {
             LOG.error("Intyg '{}' can not be deleted since it is no longer a draft", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "The intyg can not be deleted since it is no longer a draft");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "The intyg can not be deleted since it is no longer a draft");
         }
 
+        // Delete draft from repository
+        deleteUnsignedDraft(intyg);
+
+        // Notify stakeholders when a draft is deleted
+        notify(intyg, Event.DELETED);
+    }
+
+    @Transactional
+    private void deleteUnsignedDraft(Intyg intyg) {
         intygRepository.delete(intyg);
     }
 
@@ -548,4 +564,23 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private boolean isTheDraftStillADraft(IntygsStatus intygStatus) {
         return ALL_DRAFT_STATUSES.contains(intygStatus);
     }
+
+    private void notify(Intyg intyg, Event event) {
+
+        NotificationRequestType notificationRequestType = null;
+
+        switch (event) {
+        case CHANGED:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(intyg);
+            break;
+        case CREATED:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(intyg);
+            break;
+        case DELETED:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(intyg);
+        }
+
+        notificationService.notify(notificationRequestType);
+    }
+
 }

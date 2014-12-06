@@ -4,6 +4,7 @@ import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -13,18 +14,13 @@ import org.mockito.stubbing.Answer;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
-import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.HoSPersonal;
-import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
-import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.certificate.modules.support.api.dto.ValidationMessage;
-import se.inera.certificate.modules.support.api.dto.ValidationStatus;
+import se.inera.certificate.modules.support.api.dto.*;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.notifications.message.v1.HandelseType;
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
@@ -42,19 +38,17 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygDraftServiceImplTest {
@@ -87,6 +81,9 @@ public class IntygDraftServiceImplTest {
 
     @Mock
     private PUService puService;
+
+    @Mock
+    private NotificationService notificationService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -153,11 +150,18 @@ public class IntygDraftServiceImplTest {
     public void testDeleteDraftThatIsUnsigned() {
 
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
+        ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
 
         draftService.deleteUnsignedDraft(INTYG_ID);
 
         verify(intygRepository).findOne(INTYG_ID);
         verify(intygRepository).delete(intygDraft);
+        verify(notificationService).notify(notificationRequestTypeArgumentCaptor.capture());
+
+        // Assert notification message
+        NotificationRequestType notificationRequestType = notificationRequestTypeArgumentCaptor.getValue();
+        assertEquals(INTYG_ID, notificationRequestType.getIntygsId());
+        assertEquals(HandelseType.INTYGSUTKAST_RADERAT, notificationRequestType.getHandelse());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -183,33 +187,36 @@ public class IntygDraftServiceImplTest {
     @Test
     public void testSaveAndValidateDraft() throws Exception {
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
-
         ModuleApi mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-
+        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", "This is soooo wrong!");
-
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
-        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
-
-        when(intygRepository.save(intygDraft)).thenReturn(intygDraft);
-
         WebCertUser user = createUser();
 
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
+        when(intygRepository.save(intygDraft)).thenReturn(intygDraft);
         when(userService.getWebCertUser()).thenReturn(user);
-        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
-
         when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(
                 new InternalModelResponse("{}"));
+
+        ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
 
         DraftValidation res = draftService.saveAndValidateDraft(request);
 
         verify(intygRepository).save(any(Intyg.class));
+        verify(notificationService).notify(notificationRequestTypeArgumentCaptor.capture());
 
         assertNotNull("An DraftValidation should be returned", res);
         assertFalse("Validation should fail", res.isDraftValid());
         assertEquals("Validation should have 1 message", 1, res.getMessages().size());
+
+        // Assert notification message
+        NotificationRequestType notificationRequestType = notificationRequestTypeArgumentCaptor.getValue();
+        assertEquals(INTYG_ID, notificationRequestType.getIntygsId());
+        assertEquals(HandelseType.INTYGSUTKAST_ANDRAT, notificationRequestType.getHandelse());
+
     }
 
     private WebCertUser createUser() {
@@ -244,14 +251,18 @@ public class IntygDraftServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftWithExceptionInModule() throws Exception {
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
-
         ModuleApi mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
+        WebCertUser user = createUser();
 
+        when(userService.getWebCertUser()).thenReturn(user);
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(new InternalModelResponse("{}"));
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenThrow(ModuleException.class);
 
-        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
+        ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
+
         draftService.saveAndValidateDraft(request);
     }
 

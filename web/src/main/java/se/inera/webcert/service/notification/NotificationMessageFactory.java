@@ -7,6 +7,8 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 
 /**
+ * Factory class exposing methods which creates notifications messages.
+ *
  * Created by Magnus Ekstrand on 03/12/14
  */
 public class NotificationMessageFactory {
@@ -75,7 +77,7 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
-    public static NotificationRequestType createNotificationFromManagedQuestionFromFK(FragaSvar fragaSvar) {
+    public static NotificationRequestType createNotificationFromClosedQuestionFromFK(FragaSvar fragaSvar) {
 
         NotificationRequestType nrt = createNotification(fragaSvar);
         nrt.setHandelse(HandelseType.FRAGA_FRAN_FK_HANTERAD);
@@ -99,7 +101,7 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
-    public static NotificationRequestType createNotificationFromManagedAnswerFromFK(FragaSvar fragaSvar) {
+    public static NotificationRequestType createNotificationFromClosedAnswerFromFK(FragaSvar fragaSvar) {
 
         NotificationRequestType nrt = createNotification(fragaSvar);
         nrt.setHandelse(HandelseType.SVAR_FRAN_FK_HANTERAD);
@@ -157,6 +159,5 @@ public class NotificationMessageFactory {
 
         return nrt;
     }
-
 
 }

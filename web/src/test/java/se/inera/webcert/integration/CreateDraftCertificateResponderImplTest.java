@@ -1,12 +1,5 @@
 package se.inera.webcert.integration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-
-import java.util.Arrays;
-import java.util.List;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,13 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.EnhetType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonalType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.PatientType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.*;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeTyp;
@@ -41,8 +28,15 @@ import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.test.TestIntygFactory;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.*;
+
 @RunWith(MockitoJUnitRunner.class)
-public class CreateDraftCertificateResponderTest {
+public class CreateDraftCertificateResponderImplTest {
 
 	private static final String LOGICAL_ADDR = "1234567890";
 	private static final String USER_HSAID = "SE1234567890";
@@ -121,7 +115,6 @@ public class CreateDraftCertificateResponderTest {
         NotificationRequestType notificationRequestType = notificationRequestTypeArgumentCaptor.getValue();
         assertEquals(UTKAST_ID, notificationRequestType.getIntygsId());
         assertEquals(HandelseType.INTYGSUTKAST_SKAPAT, notificationRequestType.getHandelse());
-
     }
 
 	private CreateDraftCertificateType createParams() {

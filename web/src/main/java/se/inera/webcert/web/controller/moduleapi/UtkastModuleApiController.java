@@ -49,20 +49,21 @@ import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
 public class UtkastModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastModuleApiController.class);
-    
+
     @Autowired
     private IntygDraftService draftService;
-    
+
     @Autowired
     private IntygSignatureService signatureService;
 
     @Autowired
     private LogService logService;
-    
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
-     * @param intygsId The id of the certificate
+     * @param intygsId
+     *            The id of the certificate
      * @return a JSON object
      */
     @GET
@@ -71,7 +72,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     public Response getDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
 
         LOG.debug("Retrieving Intyg with id {} and type {}", intygsId, intygsTyp);
-        
+
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         Intyg intyg = draftService.getDraft(intygsId);
@@ -84,20 +85,21 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         return Response.ok(draftHolder).build();
     }
-    
+
     /**
      * Persists the supplied draft certificate using the intygId as key.
      *
-     * @param intygsId The id of the certificate.
-     * @param draftCertificate Object holding the certificate and its current status.
+     * @param intygsId
+     *            The id of the certificate.
+     * @param draftCertificate
+     *            Object holding the certificate and its current status.
      */
     @PUT
     @Path("/{intygsTyp}/{intygsId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Transactional
     public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, byte[] draftCertificate) {
-        
+
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         LOG.debug("Saving Intyg with id {}", intygsId);
@@ -105,7 +107,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         String draftAsJson = fromBytesToString(draftCertificate);
 
         SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, draftAsJson);
-            DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
+        DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
 
         SaveDraftResponse responseEntity = buildSaveDraftResponse(draftValidation);
 
@@ -148,27 +150,27 @@ public class UtkastModuleApiController extends AbstractApiController {
             throw new RuntimeException("Could not convert the payload from draftCertificate to String!", e);
         }
     }
-    
+
     /**
      * Deletes a draft certificate identified by the certificateId.
      *
-     * @param intygsId The id of the certificate
+     * @param intygsId
+     *            The id of the certificate
      */
     @DELETE
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @Transactional
     public Response discardDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
-        
+
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         LOG.debug("Deleting draft with id {}", intygsId);
-        
+
         draftService.deleteUnsignedDraft(intygsId);
 
         return Response.ok().build();
     }
-    
+
     /**
      * Creates a PDL log event that a persons draft has been printed.
      *
@@ -180,7 +182,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response logPrintOfDraftToPDL(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
-        
+
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         LOG.debug("Logging printout of draft intyg '{}'", intygsId);
@@ -193,11 +195,12 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         return Response.ok().build();
     }
-    
+
     /**
      * Signera utkast.
      *
-     * @param intygsId intyg id
+     * @param intygsId
+     *            intyg id
      * @return BiljettResponse
      */
     @POST
@@ -212,7 +215,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Signera utkast.
      *
-     * @param biljettId biljett id
+     * @param biljettId
+     *            biljett id
      * @return BiljettResponse
      */
     @POST
@@ -230,7 +234,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Skapa signeringshash.
      *
-     * @param intygsId intyg id
+     * @param intygsId
+     *            intyg id
      * @return BiljettResponse
      */
     @POST
@@ -245,7 +250,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Hamta signeringsstatus.
      *
-     * @param biljettId biljett id
+     * @param biljettId
+     *            biljett id
      * @return BiljettResponse
      */
     @GET

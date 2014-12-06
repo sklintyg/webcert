@@ -1,15 +1,5 @@
 package se.inera.webcert.service.intyg;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
-
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,7 +7,6 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
@@ -27,14 +16,26 @@ import se.inera.certificate.model.common.MinimalUtlatande;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.v1.rivtabp20.RevokeMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
+import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
+import se.inera.webcert.service.draft.IntygSignatureServiceImpl;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManagerImpl;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 public abstract class AbstractIntygServiceTest {
     
@@ -52,9 +53,6 @@ public abstract class AbstractIntygServiceTest {
     protected GetCertificateForCareResponderInterface getCertificateService;
     
     @Mock
-    protected OmsandningRepository omsandningRepository;
-
-    @Mock
     protected RegisterCertificateResponderInterface intygSender;
     
     @Mock
@@ -65,24 +63,37 @@ public abstract class AbstractIntygServiceTest {
 
     @Mock
     protected IntygModuleFacade moduleFacade;
-    
+
+    @Mock
+    protected IntygRepository intygRepository;
+
+    @Mock
+    protected OmsandningRepository omsandningRepository;
+
+    @Mock
+    protected LogService logService;
+
+    @Mock
+    protected NotificationService notificationService;
+
     // Here we test the real converter
     @Spy
     protected IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();
-        
-    @Mock
-    protected WebCertUserService webCertUserService;
-    
-    @Mock
-    protected LogService logService;
-    
+
     // Here we use the real config manager
     @Spy
     protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
-    
+
+    @Mock
+    protected WebCertUserService webCertUserService;
+
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();
-    
+
+    @InjectMocks
+    protected IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
+
+
     protected JAXBContext jaxbContext;
     
     @Before
