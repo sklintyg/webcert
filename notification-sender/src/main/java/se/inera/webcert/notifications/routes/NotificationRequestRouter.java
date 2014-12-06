@@ -1,7 +1,5 @@
 package se.inera.webcert.notifications.routes;
 
-import static org.apache.camel.builder.PredicateBuilder.and;
-
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.builder.RouteBuilder;
@@ -16,41 +14,37 @@ import se.inera.webcert.notifications.service.WebcertRepositoryService;
 
 public class NotificationRequestRouter extends RouteBuilder {
     
-    @Autowired
-    WebcertRepositoryService webcertRepositoryService;
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationRequestRouter.class);
     
     @Autowired
-    IntygsTypChecker intygsTypChecker;
+    private WebcertRepositoryService webcertRepositoryService;
+    
+    @Autowired
+    private IntygsTypChecker intygsTypChecker;
 
     @Autowired
-    GetIntygPropertiesProcessor getIntygPropertiesProcessor; 
+    private GetIntygPropertiesProcessor getIntygPropertiesProcessor;
 
     private Namespaces ns = new Namespaces("not", "urn:inera:webcert:notifications:1");
-
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationRequestRouter.class); 
 
     @Override
     public void configure() throws Exception {
         from("ref:receiveNotificationRequestEndpoint").routeId("notificationRequestRouter")
         .setHeader(RouteHeaders.INTYGS_ID, ns.xpath("/not:NotificationRequest/not:intygsId/text()"))
         .setHeader(RouteHeaders.INTYGS_TYP, ns.xpath("/not:NotificationRequest/not:intygsTyp/text()"))
-        .setHeader(RouteHeaders.VARDENHET_HSA_ID, ns.xpath("/not:NotificationRequest/not:hoSPerson/not:vardenhet/not:hsaId/text()"))
+        .setHeader(RouteHeaders.HANDELSE, ns.xpath("/not:NotificationRequest/not:handelse/text()"))
+        .setHeader(RouteHeaders.LOGISK_ADRESS, ns.xpath("/not:NotificationRequest/not:utfardandeEnhetsId/text()"))
         .filter(isOfAllowedType())
         .process(getIntygPropertiesProcessor)
         .choice()
             .when(header(RouteHeaders.SAKNAS_I_DB))
-                .log(LoggingLevel.DEBUG, LOG, "No intyg found in database, stopping route.")
+                .log(LoggingLevel.DEBUG, LOG, "Intyg was not found in database, stopping route.")
                 .stop()
-            .when(ns.xpath("/not:NotificationRequest/not:handelse[text() = 'INTYGSUTKAST_RADERAT']"))
-                .setHeader(RouteHeaders.RADERAT, constant("INTYGSUTKAST_RADERAT"))
-                .to("ref:processNotificationRequestEndpoint")
+            .when(header(RouteHeaders.INTEGRERAD_ENHET).isEqualTo(Boolean.FALSE))
+                .log(LoggingLevel.DEBUG, LOG, "Intyg does not belong to an integrated unit, stopping route.")
+                .stop()
             .otherwise()
-                .filter(isFromIntegratedVardenhet())
                 .to("ref:processNotificationRequestEndpoint");
-    }
-
-    private Predicate isFromIntegratedVardenhet() {
-        return method(webcertRepositoryService, "isVardenhetIntegrerad").isEqualTo(Boolean.TRUE);
     }
     
     private Predicate isOfAllowedType() {

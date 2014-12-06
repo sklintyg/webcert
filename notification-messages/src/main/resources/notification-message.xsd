@@ -10,6 +10,7 @@
       <xs:element name="handelseTidpunkt" type="xs:dateTime"></xs:element>
       <xs:element name="intygsId" type="xs:string"></xs:element>
       <xs:element name="intygsTyp" type="xs:string"></xs:element>
+      <xs:element name="utfardandeEnhetsId" type="tns:nonEmptyString" minOccurs="0" />
       <xs:element name="hoSPerson" type="tns:hoSPersonType"></xs:element>
     </xs:sequence>
   </xs:complexType>
@@ -28,6 +29,12 @@
       <xs:element name="enhetsNamn" type="xs:string"></xs:element>
     </xs:sequence>
   </xs:complexType>
+  
+  <xs:simpleType name="nonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:simpleType name="handelseType">
     <xs:restriction base="xs:string">

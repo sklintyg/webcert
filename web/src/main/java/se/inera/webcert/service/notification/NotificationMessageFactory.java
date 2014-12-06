@@ -19,7 +19,7 @@ public class NotificationMessageFactory {
 
     public static NotificationRequestType createNotificationFromRevokedCertificate(Intyg intyg) {
 
-        NotificationRequestType nrt = createNotification(intyg);
+        NotificationRequestType nrt = createNotification(intyg, true);
         nrt.setHandelse(HandelseType.INTYG_MAKULERAT);
 
         return nrt;
@@ -27,7 +27,7 @@ public class NotificationMessageFactory {
 
     public static NotificationRequestType createNotificationFromSentCertificate(Intyg intyg) {
 
-        NotificationRequestType nrt = createNotification(intyg);
+        NotificationRequestType nrt = createNotification(intyg, true);
         nrt.setHandelse(HandelseType.INTYG_SKICKAT_FK);
 
         return nrt;
@@ -37,7 +37,7 @@ public class NotificationMessageFactory {
 
     public static NotificationRequestType createNotificationFromChangedCertificateDraft(Intyg utkast) {
 
-        NotificationRequestType nrt = createNotification(utkast);
+        NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYGSUTKAST_ANDRAT);
 
         return nrt;
@@ -45,7 +45,7 @@ public class NotificationMessageFactory {
 
     public static NotificationRequestType createNotificationFromDeletedDraft(Intyg utkast) {
 
-        NotificationRequestType nrt = createNotification(utkast);
+        NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYGSUTKAST_RADERAT);
 
         return nrt;
@@ -53,7 +53,7 @@ public class NotificationMessageFactory {
 
     public static NotificationRequestType createNotificationFromSignedDraft(Intyg utkast) {
 
-        NotificationRequestType nrt = createNotification(utkast);
+        NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYGSUTKAST_SIGNERAT);
 
         return nrt;
@@ -61,7 +61,7 @@ public class NotificationMessageFactory {
 
     public static NotificationRequestType createNotificationFromCreatedDraft(Intyg utkast) {
 
-        NotificationRequestType nrt = createNotification(utkast);
+        NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYGSUTKAST_SKAPAT);
 
         return nrt;
@@ -111,7 +111,7 @@ public class NotificationMessageFactory {
 
     /* -- Non-public helper methods -- */
 
-    static NotificationRequestType createNotification(Intyg intyg) {
+    static NotificationRequestType createNotification(Intyg intyg, boolean includeHsaPerson) {
 
         VardenhetType vt = getVardenhetType(intyg.getEnhetsId(), intyg.getEnhetsNamn());
         HoSPersonType hspt = getHoSPersonType(intyg.getSenastSparadAv().getNamn(), intyg.getSenastSparadAv().getHsaId(), vt);

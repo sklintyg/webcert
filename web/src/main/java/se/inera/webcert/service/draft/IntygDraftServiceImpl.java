@@ -1,6 +1,10 @@
 package se.inera.webcert.service.draft;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
@@ -13,7 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.dto.*;
+import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
+import se.inera.certificate.modules.support.api.dto.ExternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.certificate.modules.support.api.dto.ValidationMessage;
+import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.AbstractVardenhet;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
@@ -25,9 +35,16 @@ import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.services.PUService;
-import se.inera.webcert.service.draft.dto.*;
+import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
+import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
+import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
+import se.inera.webcert.service.draft.dto.DraftValidation;
+import se.inera.webcert.service.draft.dto.DraftValidationStatus;
+import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
-import se.inera.webcert.service.dto.*;
+import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
@@ -35,9 +52,7 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -221,15 +236,11 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Override
     public Intyg getDraft(String intygId) {
-        Intyg intyg = getIntygAsDraft(intygId);
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
-        logService.logReadOfIntyg(logRequest);
-        return intyg;
+        return getIntygAsDraft(intygId);
     }
 
     @Override
     public SignatureTicket createDraftHash(String intygsId) {
-
         Intyg intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         intygRepository.save(intyg);
@@ -239,7 +250,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     @Override
     public SignatureTicket serverSignature(String intygsId) {
-
         Intyg intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         intygRepository.save(intyg);
@@ -329,7 +339,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     private CreateNewDraftRequest createNewDraftRequestForCopying(String newDraftIntygId, String intygType, IntygsStatus status,
-            CreateNewDraftCopyRequest request, Person person) {
+                                                                  CreateNewDraftCopyRequest request, Person person) {
 
         Patient patient = new Patient();
         patient.setPersonnummer(person.getPersonnummer());
@@ -570,14 +580,14 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         NotificationRequestType notificationRequestType = null;
 
         switch (event) {
-        case CHANGED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(intyg);
-            break;
-        case CREATED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(intyg);
-            break;
-        case DELETED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(intyg);
+            case CHANGED:
+                notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(intyg);
+                break;
+            case CREATED:
+                notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(intyg);
+                break;
+            case DELETED:
+                notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(intyg);
         }
 
         notificationService.notify(notificationRequestType);

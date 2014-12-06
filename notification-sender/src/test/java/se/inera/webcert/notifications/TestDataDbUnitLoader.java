@@ -55,7 +55,7 @@ public class TestDataDbUnitLoader {
     }
     
     private String getIntygModelData(String intygsId) {
-        String modelFilePath = "intyg/" + intygsId + ".json";
+        String modelFilePath = "utlatande/utlatande-intyg-1.json";
         return TestDataUtil.readRequestFromFile(modelFilePath);
     }
     
@@ -68,7 +68,7 @@ public class TestDataDbUnitLoader {
         IDataSet dataSet = getDataSet(testDataFile);
         
         IDatabaseConnection dbConn = new DatabaseDataSourceConnection(dataSource);
-        DatabaseOperation.CLEAN_INSERT.execute(dbConn, dataSet);
+        DatabaseOperation.INSERT.execute(dbConn, dataSet);
     }
     
     private IDataSet getDataSet(String filePath) throws DatabaseUnitException, IOException {

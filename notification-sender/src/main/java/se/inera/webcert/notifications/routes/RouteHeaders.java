@@ -12,7 +12,9 @@ public interface RouteHeaders {
 
     public static final String LOGISK_ADRESS = "logiskAdress";
 
-    public static final String RADERAT = "INTYGSUTKAST_RADERAT";
+    public static final String HANDELSE = "handelse";
 
     public static final String SAKNAS_I_DB = "SAKNAS_I_DB";
+
+    public static final String INTEGRERAD_ENHET = "integreradEnhet";
 }
