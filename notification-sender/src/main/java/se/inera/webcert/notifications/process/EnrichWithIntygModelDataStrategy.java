@@ -31,7 +31,7 @@ import com.jayway.jsonpath.internal.spi.mapper.JacksonMappingProvider;
 public class EnrichWithIntygModelDataStrategy {
 
     public static final JsonPath DIAGNOS_KOD_JSONP = JsonPath.compile("$.diagnosKod");
-    public static final JsonPath DIAGNOS_BESKR_JSONP = JsonPath.compile("$.diagnosBeskrivning");
+    public static final JsonPath DIAGNOS_BESKR_JSONP = JsonPath.compile("$.diagnosBeskrivning1");
 
     public static final JsonPath NEDSATT_25_JSONP = JsonPath.compile("$.nedsattMed25");
     public static final JsonPath NEDSATT_50_JSONP = JsonPath.compile("$.nedsattMed50");
@@ -98,7 +98,7 @@ public class EnrichWithIntygModelDataStrategy {
             return null;
         }
         
-        String diagnosBeskr = extractString(DIAGNOS_KOD_JSONP, jsonCtx);
+        String diagnosBeskr = extractString(DIAGNOS_BESKR_JSONP, jsonCtx);
         
         DiagnosType dt = new DiagnosType();        
         dt.setCode(diagnosKod);

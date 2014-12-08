@@ -8,7 +8,7 @@
     "patientPersonnummer" : "19121212-1212",
     "avstangningSmittskydd" : false,
     "diagnosKod" : "S47",
-    "diagnosBeskrivning" : "Klämskada på överarm",
+    "diagnosBeskrivning1" : "Klämskada på överarm",
     "sjukdomsforlopp" : "Patienten klämde höger överarm vid olycka i hemmet. Problemen har pågått en längre tid.",
     "funktionsnedsattning" : "Kraftigt nedsatt rörlighet i överarmen pga skadan. Böj- och sträckförmågan är mycket dålig. Smärtar vid rörelse vilket ger att patienten inte kan använda armen särkilt mycket.",
     "undersokningAvPatienten" : "2011-01-26",

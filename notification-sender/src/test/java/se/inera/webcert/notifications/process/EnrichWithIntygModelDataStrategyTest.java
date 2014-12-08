@@ -3,6 +3,7 @@ package se.inera.webcert.notifications.process;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -71,6 +72,7 @@ public class EnrichWithIntygModelDataStrategyTest {
         assertNotNull(res);
         assertEquals("S47", res.getCode());
         assertNotNull(res.getDisplayName());
+        assertTrue(res.getDisplayName().contains("Klämskada"));
     }
     
     @Test
