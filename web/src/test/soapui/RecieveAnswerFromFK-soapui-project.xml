@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project activeEnvironment="Default" name="RecieveQuestionFromFK" resourceRoot="" soapui-version="5.0.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="ReceiveQuestionResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://integration.webcert.inera.se/}ReceiveQuestionResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:9088/services/receive-question/v1.0?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9088/services/receive-question/v1.0?wsdl"><con:part><con:url>http://localhost:9088/services/receive-question/v1.0?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReceiveQuestionResponderImplService" targetNamespace="http://integration.webcert.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://integration.webcert.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20">
-  <wsdl:import location="http://localhost:9088/services/receive-question/v1.0?wsdl=ReceiveMedicalCertificateQuestionResponderInterface.wsdl" namespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20"></wsdl:import>
-  <wsdl:binding name="ReceiveQuestionResponderImplServiceSoapBinding" type="ns1:ReceiveMedicalCertificateQuestionResponderInterface">
+<con:soapui-project activeEnvironment="Default" name="RecieveAnswerFromFK" resourceRoot="" soapui-version="5.0.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="ReceiveAnswerResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://integration.webcert.inera.se/}ReceiveAnswerResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:9088/services/receive-answer/v1.0?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9088/services/receive-answer/v1.0?wsdl"><con:part><con:url>http://localhost:9088/services/receive-answer/v1.0?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReceiveAnswerResponderImplService" targetNamespace="http://integration.webcert.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://integration.webcert.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswer:1:rivtabp20">
+  <wsdl:import location="http://localhost:9088/services/receive-answer/v1.0?wsdl=ReceiveMedicalCertificateAnswerResponderInterface.wsdl" namespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswer:1:rivtabp20"></wsdl:import>
+  <wsdl:binding name="ReceiveAnswerResponderImplServiceSoapBinding" type="ns1:ReceiveMedicalCertificateAnswerResponderInterface">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <wsdl:operation name="ReceiveMedicalCertificateQuestion">
-      <soap:operation soapAction="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" style="document"/>
-      <wsdl:input name="ReceiveMedicalCertificateQuestion">
-        <soap:header message="ns1:ReceiveMedicalCertificateQuestion" part="LogicalAddress" use="literal"></soap:header>
+    <wsdl:operation name="ReceiveMedicalCertificateAnswer">
+      <soap:operation soapAction="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1" style="document"/>
+      <wsdl:input name="ReceiveMedicalCertificateAnswer">
+        <soap:header message="ns1:ReceiveMedicalCertificateAnswer" part="LogicalAddress" use="literal"></soap:header>
         <soap:body parts="parameters" use="literal"/>
       </wsdl:input>
-      <wsdl:output name="ReceiveMedicalCertificateQuestionResponse">
+      <wsdl:output name="ReceiveMedicalCertificateAnswerResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
-  <wsdl:service name="ReceiveQuestionResponderImplService">
-    <wsdl:port binding="tns:ReceiveQuestionResponderImplServiceSoapBinding" name="ReceiveQuestionResponderImplPort">
-      <soap:address location="http://localhost:9088/services/receive-question/v1.0"/>
+  <wsdl:service name="ReceiveAnswerResponderImplService">
+    <wsdl:port binding="tns:ReceiveAnswerResponderImplServiceSoapBinding" name="ReceiveAnswerResponderImplPort">
+      <soap:address location="http://localhost:9088/services/receive-answer/v1.0"/>
     </wsdl:port>
   </wsdl:service>
-</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:9088/services/receive-question/v1.0?wsdl=ReceiveMedicalCertificateQuestionResponderInterface.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReceiveMedicalCertificateQuestionResponderInterface" targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:ns2="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20">
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:9088/services/receive-answer/v1.0?wsdl=ReceiveMedicalCertificateAnswerResponderInterface.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReceiveMedicalCertificateAnswerResponderInterface" targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswer:1:rivtabp20" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:ns2="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswer:1:rivtabp20">
   <wsdl:types>
     <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:insuranceprocess:healthreporting:medcertqa:1" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns2="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns1="urn:iso:21090:dt:1">
       <xs:import namespace="urn:iso:21090:dt:1"/>
@@ -28,6 +28,12 @@
         <xs:sequence>
           <xs:element name="meddelandeText" type="xs:string"/>
           <xs:element name="signeringsTidpunkt" type="xs:dateTime"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="fkKontaktType">
+        <xs:sequence>
+          <xs:element name="kontakt" type="xs:string"/>
           <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
         </xs:sequence>
       </xs:complexType>
@@ -42,12 +48,6 @@
           <xs:element name="lakarutlatande-id" type="xs:string"/>
           <xs:element name="signeringsTidpunkt" type="xs:dateTime"/>
           <xs:element name="patient" type="ns2:patientType"/>
-          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
-        </xs:sequence>
-      </xs:complexType>
-      <xs:complexType name="fkKontaktType">
-        <xs:sequence>
-          <xs:element name="kontakt" type="xs:string"/>
           <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
         </xs:sequence>
       </xs:complexType>
@@ -70,41 +70,40 @@
         </xs:restriction>
       </xs:simpleType>
     </xs:schema>
-    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:ns2="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:medcertqa:1">
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1" xmlns:ns2="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:medcertqa:1">
       <xs:import namespace="urn:riv:insuranceprocess:healthreporting:medcertqa:1"/>
       <xs:import namespace="urn:riv:insuranceprocess:healthreporting:2"/>
-      <xs:element name="Question" type="tns:QuestionFromFkType"/>
-      <xs:element name="ReceiveMedicalCertificateQuestion" type="tns:ReceiveMedicalCertificateQuestionType"/>
-      <xs:element name="ReceiveMedicalCertificateQuestionResponse" type="tns:ReceiveMedicalCertificateQuestionResponseType"/>
-      <xs:complexType name="ReceiveMedicalCertificateQuestionType">
+      <xs:element name="Answer" type="tns:AnswerFromFkType"/>
+      <xs:element name="ReceiveMedicalCertificateAnswer" type="tns:ReceiveMedicalCertificateAnswerType"/>
+      <xs:element name="ReceiveMedicalCertificateAnswerResponse" type="tns:ReceiveMedicalCertificateAnswerResponseType"/>
+      <xs:complexType name="ReceiveMedicalCertificateAnswerType">
         <xs:sequence>
-          <xs:element name="Question" type="tns:QuestionFromFkType"/>
+          <xs:element name="Answer" type="tns:AnswerFromFkType"/>
           <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
         </xs:sequence>
       </xs:complexType>
-      <xs:complexType name="QuestionFromFkType">
+      <xs:complexType name="AnswerFromFkType">
         <xs:sequence>
-          <xs:element name="fkReferens-id" type="xs:string"/>
+          <xs:element name="vardReferens-id" type="xs:string"/>
+          <xs:element minOccurs="0" name="fkReferens-id" type="xs:string"/>
           <xs:element name="amne" type="ns1:Amnetyp"/>
           <xs:element name="fraga" type="ns1:innehallType"/>
+          <xs:element name="svar" type="ns1:innehallType"/>
           <xs:element name="avsantTidpunkt" type="xs:dateTime"/>
           <xs:element maxOccurs="unbounded" minOccurs="0" name="fkKontaktInfo" nillable="true" type="ns1:fkKontaktType"/>
           <xs:element name="adressVard" type="ns1:vardAdresseringsType"/>
-          <xs:element minOccurs="0" name="fkMeddelanderubrik" type="xs:string"/>
-          <xs:element maxOccurs="unbounded" minOccurs="0" name="fkKomplettering" nillable="true" type="ns1:kompletteringType"/>
-          <xs:element minOccurs="0" name="fkSistaDatumForSvar" type="xs:date"/>
           <xs:element name="lakarutlatande" type="ns1:lakarutlatandeEnkelType"/>
           <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
         </xs:sequence>
       </xs:complexType>
-      <xs:complexType name="ReceiveMedicalCertificateQuestionResponseType">
+      <xs:complexType name="ReceiveMedicalCertificateAnswerResponseType">
         <xs:sequence>
           <xs:element minOccurs="0" name="result" type="ns2:ResultOfCall"/>
           <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
         </xs:sequence>
       </xs:complexType>
     </xs:schema>
-    <xs:schema targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20">
+    <xs:schema targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswer:1:rivtabp20" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswer:1:rivtabp20">
       <xs:complexType final="extension restriction" name="localDateTime">
         <xs:complexContent>
           <xs:extension base="tns:baseLocal">
@@ -121,13 +120,6 @@
       </xs:complexType>
       <xs:complexType abstract="true" name="abstractPartial">
         <xs:sequence/>
-      </xs:complexType>
-      <xs:complexType final="extension restriction" name="localDate">
-        <xs:complexContent>
-          <xs:extension base="tns:baseLocal">
-            <xs:sequence/>
-          </xs:extension>
-        </xs:complexContent>
       </xs:complexType>
     </xs:schema>
     <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:insuranceprocess:healthreporting:2" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns1="urn:iso:21090:dt:1">
@@ -299,6 +291,15 @@
         <xs:attribute name="controlActRoot" type="xs:string"/>
         <xs:attribute name="controlActExtension" type="xs:string"/>
       </xs:complexType>
+      <xs:complexType name="PQ">
+        <xs:complexContent>
+          <xs:extension base="tns:ANY">
+            <xs:sequence/>
+            <xs:attribute name="value" type="xs:double"/>
+            <xs:attribute name="unit" type="xs:string"/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
       <xs:complexType name="CD">
         <xs:complexContent>
           <xs:extension base="tns:ANY">
@@ -308,15 +309,6 @@
             <xs:attribute name="codeSystemName" type="xs:string"/>
             <xs:attribute name="codeSystemVersion" type="xs:string"/>
             <xs:attribute name="displayName" type="xs:string"/>
-          </xs:extension>
-        </xs:complexContent>
-      </xs:complexType>
-      <xs:complexType name="PQ">
-        <xs:complexContent>
-          <xs:extension base="tns:ANY">
-            <xs:sequence/>
-            <xs:attribute name="value" type="xs:double"/>
-            <xs:attribute name="unit" type="xs:string"/>
           </xs:extension>
         </xs:complexContent>
       </xs:complexType>
@@ -460,39 +452,41 @@
       </xs:complexType>
     </xs:schema>
   </wsdl:types>
-  <wsdl:message name="ReceiveMedicalCertificateQuestionResponse">
-    <wsdl:part element="ns2:ReceiveMedicalCertificateQuestionResponse" name="parameters"></wsdl:part>
+  <wsdl:message name="ReceiveMedicalCertificateAnswerResponse">
+    <wsdl:part element="ns2:ReceiveMedicalCertificateAnswerResponse" name="parameters"></wsdl:part>
   </wsdl:message>
-  <wsdl:message name="ReceiveMedicalCertificateQuestion">
+  <wsdl:message name="ReceiveMedicalCertificateAnswer">
     <wsdl:part element="wsa:To" name="LogicalAddress"></wsdl:part>
-    <wsdl:part element="ns2:ReceiveMedicalCertificateQuestion" name="parameters"></wsdl:part>
+    <wsdl:part element="ns2:ReceiveMedicalCertificateAnswer" name="parameters"></wsdl:part>
   </wsdl:message>
-  <wsdl:portType name="ReceiveMedicalCertificateQuestionResponderInterface">
-    <wsdl:operation name="ReceiveMedicalCertificateQuestion">
-      <wsdl:input message="ns1:ReceiveMedicalCertificateQuestion" name="ReceiveMedicalCertificateQuestion"></wsdl:input>
-      <wsdl:output message="ns1:ReceiveMedicalCertificateQuestionResponse" name="ReceiveMedicalCertificateQuestionResponse"></wsdl:output>
+  <wsdl:portType name="ReceiveMedicalCertificateAnswerResponderInterface">
+    <wsdl:operation name="ReceiveMedicalCertificateAnswer">
+      <wsdl:input message="ns1:ReceiveMedicalCertificateAnswer" name="ReceiveMedicalCertificateAnswer"></wsdl:input>
+      <wsdl:output message="ns1:ReceiveMedicalCertificateAnswerResponse" name="ReceiveMedicalCertificateAnswerResponse"></wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
-</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:9088/services/receive-question/v1.0</con:endpoint></con:endpoints><con:operation isOneWay="false" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" name="ReceiveMedicalCertificateQuestion" bindingOperationName="ReceiveMedicalCertificateQuestion" type="Request-Response" outputName="ReceiveMedicalCertificateQuestionResponse" inputName="ReceiveMedicalCertificateQuestion" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9088/services/receive-question/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:add="http://www.w3.org/2005/08/addressing" xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:9088/services/receive-answer/v1.0</con:endpoint></con:endpoints><con:operation isOneWay="false" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1" name="ReceiveMedicalCertificateAnswer" bindingOperationName="ReceiveMedicalCertificateAnswer" type="Request-Response" outputName="ReceiveMedicalCertificateAnswerResponse" inputName="ReceiveMedicalCertificateAnswer" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9088/services/receive-answer/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:add="http://www.w3.org/2005/08/addressing" xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1" xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
    <soapenv:Header>
-      <add:To>FK12323234</add:To>
+      <add:To>WC12323234</add:To>
    </soapenv:Header>
    <soapenv:Body>
-      <urn:ReceiveMedicalCertificateQuestion>
-         <urn:Question>
+      <urn:ReceiveMedicalCertificateAnswer>
+         <urn:Answer>
+            <urn:vardReferens-id>23</urn:vardReferens-id>
+            <!--Optional:-->
             <urn:fkReferens-id>123456</urn:fkReferens-id>
             <urn:amne>Ovrigt</urn:amne>
             <urn:fraga>
-               <urn1:meddelandeText>Detta är en fråga från FK</urn1:meddelandeText>
-               <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>
+               <urn1:meddelandeText>En följd fråga</urn1:meddelandeText>
+               <urn1:signeringsTidpunkt>2014-12-09T11:00:00.000</urn1:signeringsTidpunkt>
                <!--You may enter ANY elements at this point-->
             </urn:fraga>
-            <urn:avsantTidpunkt>2014-12-07T21:00:00.000</urn:avsantTidpunkt>
-            <!--Zero or more repetitions:-->
-            <urn:fkKontaktInfo>
-               <urn1:kontakt>Blahonga</urn1:kontakt>
+            <urn:svar>
+               <urn1:meddelandeText>Detta är FKs svar på frågan som vården ställde</urn1:meddelandeText>
+               <urn1:signeringsTidpunkt>2014-12-09T11:00:00.000</urn1:signeringsTidpunkt>
                <!--You may enter ANY elements at this point-->
-            </urn:fkKontaktInfo>
+            </urn:svar>
+            <urn:avsantTidpunkt>2014-12-09T21:00:00.000</urn:avsantTidpunkt>
             <urn:adressVard>
                <urn1:hosPersonal>
                   <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1B01"/>
@@ -509,7 +503,7 @@
                <!--You may enter ANY elements at this point-->
             </urn:adressVard>
             <urn:lakarutlatande>
-               <urn1:lakarutlatande-id>865a5a4f-8dc8-476a-a4fb-1cc148909939</urn1:lakarutlatande-id>
+               <urn1:lakarutlatande-id>010789db-a69d-47d2-83e1-971cc8345143</urn1:lakarutlatande-id>
                <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>
                <urn1:patient>
                   <urn2:person-id root="1.2.752.129.2.1.3.1" extension="19520614-2597"/>
@@ -517,9 +511,8 @@
                </urn1:patient>
                <!--You may enter ANY elements at this point-->
             </urn:lakarutlatande>
-            <!--You may enter ANY elements at this point-->
-         </urn:Question>
+         </urn:Answer>
          <!--You may enter ANY elements at this point-->
-      </urn:ReceiveMedicalCertificateQuestion>
+      </urn:ReceiveMedicalCertificateAnswer>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
