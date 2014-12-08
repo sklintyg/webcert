@@ -1,10 +1,6 @@
 package se.inera.webcert.service.diagnos;
 
-import java.util.List;
-
 import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
-import se.inera.webcert.service.diagnos.dto.DiagnosResponseType;
-import se.inera.webcert.service.diagnos.model.Diagnos;
 
 /**
  * Supplies services related to diagnosises.

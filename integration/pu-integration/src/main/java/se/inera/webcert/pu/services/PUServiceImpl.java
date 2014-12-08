@@ -58,10 +58,11 @@ public class PUServiceImpl implements PUService {
     }
 
     private String normalizeId(String personId) {
-        if (personId.length() == 13)
+        if (personId.length() == 13) {
             return personId.substring(0, 8) + personId.substring(9);
-        else
+        } else {
             return personId;
+        }
     }
 
     private String buildAdress(SvenskAdressTYPE adress) {

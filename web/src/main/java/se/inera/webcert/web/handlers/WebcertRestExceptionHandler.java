@@ -1,21 +1,19 @@
 package se.inera.webcert.web.handlers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.inera.webcert.service.exception.FeatureNotAvailableException;
+import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.webcert.service.exception.WebCertServiceException;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.inera.webcert.service.exception.FeatureNotAvailableException;
-import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.webcert.service.exception.WebCertServiceException;
-
 /**
  * Exception handler for REST services. Runtime exceptions thrown as {@link WebCertServiceException}
- * WebCertServiceException are logged as
- * warnings. All other runtime exceptions thrown are treated as errors and
+ * WebCertServiceException are logged as warnings. All other runtime exceptions thrown are treated as errors and
  * logged as such.
  *
  * @author nikpet
@@ -45,7 +43,7 @@ public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeExcep
 
     /**
      * Exceptions thrown by us should be logged as warnings as they are thrown deliberately.
-     * 
+     *
      * @param wcse
      *            A WebCertServiceException
      * @return
@@ -60,7 +58,7 @@ public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeExcep
 
     /**
      * All other runtime exceptions are logged as errors as they are not thrown deliberately.
-     * 
+     *
      * @param re
      *            A RuntimeException
      * @return

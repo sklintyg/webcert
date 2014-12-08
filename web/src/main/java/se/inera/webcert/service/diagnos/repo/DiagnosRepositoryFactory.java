@@ -25,7 +25,7 @@ public class DiagnosRepositoryFactory {
 
     private static final String UTF_8 = "UTF-8";
 
-    private static Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
 
     private List<String> diagnosCodeFiles;
 

@@ -42,7 +42,7 @@ public interface WebcertFeatureService {
     boolean isModuleFeatureActive(String moduleFeatureName, String moduleName);
 
     /**
-     * Check if a module feature is active
+     * Check if a module feature is active.
      *
      * @param moduleFeature
      *            The module feature as Enum
