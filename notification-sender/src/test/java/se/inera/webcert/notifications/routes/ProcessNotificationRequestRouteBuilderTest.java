@@ -74,7 +74,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
         CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn().getBody(CertificateStatusUpdateForCareType.class);
         assertNotNull(statusUpdateType);
         assertEquals(HandelsekodCodeRestrictionType.HAN_1, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
-        assertNull(statusUpdateType.getUtlatande().getFragorOchSvar());
+        assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());
     }
     
     @Test
@@ -121,10 +121,11 @@ public class ProcessNotificationRequestRouteBuilderTest {
         
         CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn().getBody(CertificateStatusUpdateForCareType.class);
         assertNotNull(statusUpdateType);
+        assertNotNull(statusUpdateType.getUtlatande().getSkapadAv());
         assertEquals(HandelsekodCodeRestrictionType.HAN_4, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
         assertTrue(statusUpdateType.getUtlatande().getArbetsformaga().isEmpty());
         assertNull(statusUpdateType.getUtlatande().getDiagnos());
-        assertNull(statusUpdateType.getUtlatande().getFragorOchSvar());
+        assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());
     }
 
     @Test
