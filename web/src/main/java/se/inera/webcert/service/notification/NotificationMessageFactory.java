@@ -43,11 +43,18 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
+    /**
+     * The INTYGSUTKAST_RADERAT is a bit special since we must set utfardandeEnhetsId.
+     * 
+     * @param utkast
+     * @return
+     */
     public static NotificationRequestType createNotificationFromDeletedDraft(Intyg utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYGSUTKAST_RADERAT);
-
+        nrt.setUtfardandeEnhetsId(utkast.getEnhetsId());
+        
         return nrt;
     }
 
