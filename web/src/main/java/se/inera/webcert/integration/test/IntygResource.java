@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.Signatur;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.repository.SignaturRepository;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
@@ -26,12 +28,21 @@ public class IntygResource {
     @Autowired
     private IntygRepository intygRepository;
 
+    @Autowired
+    private SignaturRepository signaturRepository;
+
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraft(@PathParam("id") String id) {
         Intyg intyg = intygRepository.findOne(id);
         if (intyg != null) {
+            if (intyg.getSignaturer() != null) {
+                for (Signatur signatur : intyg.getSignaturer()) {
+                    signaturRepository.delete(signatur);
+                }
+                intyg.setSignaturer(null);
+            }
             intygRepository.delete(intyg);
         }
         return Response.ok().build();
@@ -88,6 +99,7 @@ public class IntygResource {
         }
         return Response.ok().build();
     }
+
     @PUT
     @Path("/{id}/komplett")
     @Produces(MediaType.APPLICATION_JSON)
