@@ -1,5 +1,7 @@
 package se.inera.webcert.notifications.routes;
 
+import javax.xml.bind.JAXBException;
+
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.util.toolbox.AggregationStrategies;
@@ -43,7 +45,11 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
         onException(NonRecoverableCertificateStatusUpdateServiceException.class)
         .handled(true)
         .to("errorHandlerEndpoint");
-        
+
+        onException(JAXBException.class)
+        .handled(true)
+        .to("errorHandlerEndpoint");
+
         from("ref:processNotificationRequestEndpoint").routeId("processNotificationRequest")
         .unmarshal("notificationRequestJaxb")
         .processRef("createAndInitCertificateStatusRequestProcessor")
