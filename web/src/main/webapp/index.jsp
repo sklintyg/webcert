@@ -55,30 +55,33 @@
         </div>
         <div class="col-xs-6">
           <h1>Välkommen till Webcert</h1>
-          <p>Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och kommunicera med Försäkringskassan om läkarintyg FK 7263. För närvarande stödjer tjänsten följande intyg:</p>
-          <ul>
-            <li>Läkarintyg FK 7263</li>
-            <li>Transportstyrelsens läkarintyg</li>
-            <li>Transportstyrelsens läkarintyg, diabetes</li>
-          </ul>
-          <p>För att logga in i Webcert behövs SITHS-kort eller e-legitimation.</p>
+          <p>Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och
+            kommunicera med Försäkringskassan om ett läkarintyg.</p>
+
+          <p>För att logga in i Webcert behövs SITHS-kort.</p>
+
           <div collapse="!showLoginDesc" class="collapse">
-            <h2>Om inloggning</h2>
-            <p>Om du arbetar för ett landsting eller en region ska du logga in med SITHS-kort, är du privatläkare väljer du inloggning med e-legitimation.</p>
-            <p>Inloggning med SITHS-kort kräver även medarbetaruppdrag "Vård och behandling" i Hälso- och sjukvårdens adressregister, HSA-katalogen.</p>
-            <p>Inloggning med e-legitimation kräver att du är läkare enligt Socialstyrelsens register över legitimerad hälso- och sjukvårdspersonal, HOSP.</p>
-            <h3>Inloggning med SITHS-kort</h3>
-            <p>Om du som arbetar för ett landsting eller en region inte kan logga in kan det bero på att HSA-katalogen inte är uppdaterad och att du därmed saknar medarbetaruppdraget ”Vård och behandling”.</p>
-            <h3>Privatläkare med e-legitimation</h3>
-            <p>Om du som privatläkare inte kan logga in kan det bero på att information om din yrkeslegitimation ännu inte har hämtas från Socialstyrelsens register över legitimerad hälso- och sjukvårdspersonal, HOSP. Information inhämtas varannan vecka.</p>
+            <h2>Att logga in</h2>
+
+            <p>Du som arbetar för ett landsting eller en region ska logga in med SITHS-kort. Inloggning med SITHS-kort
+              kräver även medarbetaruppdrag ”Vård och behandling” i Hälso- och sjukvårdens adressregister,
+              HSA-katalogen.</p>
+
+            <h3>Problem med att logga in</h3>
+
+            <p>Om du inte kan logga in kan det bero på att HSA-katalogen inte är uppdaterad och att du därför saknar
+              medarbetaruppdraget "Vård och behandling".</p>
+
             <h3>Support och kundservice</h3>
-            <p>Om du tror att något är fel kan du kontakta <a href="http://www.inera.se/KONTAKT_KUNDSERVICE/Felanmalan-och-support/">Ineras Nationella kundservice</a>. Kontrollera gärna följande innan du kontaktar supporten.</p>
+
+            <p>Om du tror att något är fel kan du kontakta
+              <a href="http://www.inera.se/KONTAKT_KUNDSERVICE/Felanmalan-och-support/">Ineras Nationella kundservice</a>.
+              Kontrollera gärna följande innan du kontaktar supporten.</p>
+
             <ul>
-              <li>att SITHS-kortet eller e-legitimationen sitter i kortläsaren</li>
-              <li>att du angett rätt lösenord</li>
+              <li>att SITHS-kortet sitter i kortläsaren</li>
+              <li>att du angett rätt pinkod</li>
             </ul>
-            <h2>Om e-legitimation</h2>
-            <p>Här hittar du <a href="https://minavardkontakter.se/C125755F00329208/p/KONT-8ZSGV8?opendocument">mer information om e-legitimation</a> och om hur du gör för att <a href="http://www.e-legitimation.se">skaffa en e-legitimation</a>.</p>
             <p>För att kunna använda Webcerts funktioner behöver du någon av följande webbläsare:</p>
             <ul>
               <li>Internet Explorer 8 eller efterföljande versioner.</li>
