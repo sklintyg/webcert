@@ -193,7 +193,7 @@
             </systemProperty>
             <systemProperty>
               <name>jetty.port</name>
-              <value>9090</value>
+              <value>9070</value>
             </systemProperty>
             <systemProperty>
               <name>java.awt.headless</name>
@@ -226,6 +226,11 @@
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
             <version>${geronimo-jms-specs.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.connector.version}</version>
           </dependency>
         </dependencies>
       </plugin>
