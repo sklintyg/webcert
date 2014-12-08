@@ -22,14 +22,10 @@ import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
-import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
-import se.inera.webcert.service.notification.NotificationMessageFactory;
-import se.inera.webcert.service.notification.NotificationService;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
@@ -49,9 +45,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
-
-    @Autowired
-    private NotificationService notificationService;
 
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
@@ -73,9 +66,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         // Create the draft
         String nyttUtkastsId = createNewDraft(utkastsParams, unitMIU);
 
-        // Notify stakeholders
-        notify(intygsUtkastService.getDraft(nyttUtkastsId));
-
         // Return a success response
         return createSuccessResponse(nyttUtkastsId);
     }
@@ -90,21 +80,11 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         // Create draft request
         CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utlatandeRequest, unitMIU);
 
-        // Persist the draft request to registry
+        // Add the creating vardenhet to registry
         addVardenhetToRegistry(draftRequest);
 
         // Create draft and return its id
-        String draftId = intygsUtkastService.createNewDraft(draftRequest);
-        return draftId;
-    }
-
-    /**
-     * Method notifies any stakeholder that a new certificate draft has been created.
-     * @param draft a certificate entity object
-     */
-    private void notify(Intyg draft) {
-        NotificationRequestType requestType = NotificationMessageFactory.createNotificationFromCreatedDraft(draft);
-        notificationService.notify(requestType);
+        return intygsUtkastService.createNewDraft(draftRequest);
     }
 
     /**

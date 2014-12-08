@@ -53,10 +53,7 @@ import java.util.*;
 public class FragaSvarServiceImpl implements FragaSvarService {
 
     public enum Event {
-        QUESTION_RECEIVED_FROM_FK,
         QUESTION_SENT_TO_FK,
-        ANSWER_RECEIVED_FROM_FK,
-        ANSWER_RECEIVED_FROM_FK_CLOSED,
         ANSWER_SENT_TO_FK;
     }
 
@@ -246,6 +243,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
                     .getErrorText());
         }
+        
+        // Notify stakeholders
+        sendNotification(saved, Event.ANSWER_SENT_TO_FK);
 
         return saved;
 
@@ -328,7 +328,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Notify stakeholders
-        notify(saved, Event.QUESTION_SENT_TO_FK);
+        sendNotification(saved, Event.QUESTION_SENT_TO_FK);
 
         return saved;
     }
@@ -516,16 +516,17 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return fragaSvar;
     }
 
-    private void notify(FragaSvar fragaSvar, Event event) {
+    private void sendNotification(FragaSvar fragaSvar, Event event) {
 
         NotificationRequestType notificationRequestType = null;
 
         switch (event) {
-            case QUESTION_RECEIVED_FROM_FK:
-                notificationRequestType = NotificationMessageFactory.createNotificationFromQuestionFromFK(fragaSvar);
-                break;
             case QUESTION_SENT_TO_FK:
                 notificationRequestType = NotificationMessageFactory.createNotificationFromQuestionToFK(fragaSvar);
+                break;
+            case ANSWER_SENT_TO_FK:
+                notificationRequestType = NotificationMessageFactory.createNotificationFromAnswerFromFK(fragaSvar);
+                break;
         }
 
         notificationService.notify(notificationRequestType);

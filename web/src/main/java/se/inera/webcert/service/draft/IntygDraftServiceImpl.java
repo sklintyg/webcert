@@ -110,9 +110,13 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
 
-        Intyg persistedIntyg = persistNewDraft(request, intygJsonModel);
+        Intyg savedDraft = persistNewDraft(request, intygJsonModel);
+        
+        LOG.debug("Draft '{}' created and persisted", savedDraft.getIntygsId());
+        
+        sendNotification(savedDraft, Event.CREATED);
 
-        return persistedIntyg.getIntygsId();
+        return savedDraft.getIntygsId();
     }
 
     private void populateRequestWithIntygId(CreateNewDraftRequest request) {
@@ -161,11 +165,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         draft.setSenastSparadAv(creator);
         draft.setSkapadAv(creator);
 
-        Intyg savedDraft = intygRepository.save(draft);
-
-        LOG.debug("Draft '{}' persisted", savedDraft.getIntygsId());
-
-        return savedDraft;
+        return saveDraft(draft);
     }
 
     private String getPopulatedModelFromIntygModule(String intygType, CreateNewDraftHolder draftRequest) {
@@ -222,13 +222,13 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
     public Intyg getIntygAsDraft(String intygId) {
 
-        LOG.debug("Fetching Intyg '{}'", intygId);
+        LOG.debug("Fetching draft '{}'", intygId);
 
         Intyg intyg = intygRepository.findOne(intygId);
 
         if (intyg == null) {
-            LOG.warn("Intyg '{}' was not found", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
+            LOG.warn("Draft '{}' was not found", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The draft could not be found");
         }
 
         return intyg;
@@ -301,9 +301,11 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             IntygsStatus status = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE : IntygsStatus.DRAFT_INCOMPLETE;
 
             CreateNewDraftRequest newDraftRequest = createNewDraftRequestForCopying(newDraftIntygId, intygType, status, copyRequest, person);
-            Intyg persistedIntyg = persistNewDraft(newDraftRequest, newDraftModelAsJson);
+            Intyg savedDraft = persistNewDraft(newDraftRequest, newDraftModelAsJson);
+            
+            sendNotification(savedDraft, Event.CREATED);
 
-            return new CreateNewDraftCopyResponse(intygType, persistedIntyg.getIntygsId());
+            return new CreateNewDraftCopyResponse(intygType, savedDraft.getIntygsId());
 
         } catch (ModuleException me) {
             LOG.error("Module exception occured when trying to make a copy of " + orgIntygsId);
@@ -360,46 +362,47 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         LOG.debug("Saving and validating Intyg '{}'", intygId);
 
-        Intyg intyg = intygRepository.findOne(intygId);
+        Intyg draft = intygRepository.findOne(intygId);
 
-        if (intyg == null) {
+        if (draft == null) {
             LOG.warn("Intyg '{}' was not found", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
         }
 
         // check that the draft is still a draft
-        if (!isTheDraftStillADraft(intyg.getStatus())) {
+        if (!isTheDraftStillADraft(draft.getStatus())) {
             LOG.error("Intyg '{}' can not be updated since it is no longer a draft", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "This intyg can not be updated since it is no longer a draft");
         }
 
-        String intygType = intyg.getIntygsTyp();
+        String intygType = draft.getIntygsTyp();
         String draftAsJson = request.getDraftAsJson();
 
         // Update draft with user information
-        updateWithUser(intyg, draftAsJson);
+        updateWithUser(draft, draftAsJson);
 
         // Is draft valid?
         DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
 
         IntygsStatus intygStatus = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE : IntygsStatus.DRAFT_INCOMPLETE;
-        intyg.setStatus(intygStatus);
+        draft.setStatus(intygStatus);
 
         // Save the updated draft
-        intyg = saveIntyg(intyg);
-        LOG.debug("Draft '{}' updated", intyg.getIntygsId());
+        draft = saveDraft(draft);
+        LOG.debug("Draft '{}' updated", draft.getIntygsId());
 
         // Notify stakeholders when a draft has been changed/updated
-        notify(intyg, Event.CHANGED);
+        sendNotification(draft, Event.CHANGED);
 
         return draftValidation;
     }
 
     @Transactional
-    private Intyg saveIntyg(Intyg intyg) {
-        Intyg persistedDraft = intygRepository.save(intyg);
-        return persistedDraft;
+    private Intyg saveDraft(Intyg draft) {
+        Intyg savedDraft = intygRepository.save(draft);
+        LOG.debug("Draft '{}' saved", savedDraft.getIntygsId());
+        return savedDraft;
     }
 
     @Override
@@ -463,19 +466,18 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    @Transactional
     public Intyg setForwardOnDraft(String intygsId, Boolean forwarded) {
 
-        Intyg intyg = intygRepository.findOne(intygsId);
+        Intyg draft = intygRepository.findOne(intygsId);
 
-        if (intyg == null) {
+        if (draft == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "Could not find Intyg with id: " + intygsId);
         }
 
-        intyg.setVidarebefordrad(forwarded);
+        draft.setVidarebefordrad(forwarded);
 
-        return intygRepository.save(intyg);
+        return saveDraft(draft);
     }
 
     @Override
@@ -521,12 +523,13 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         deleteUnsignedDraft(intyg);
 
         // Notify stakeholders when a draft is deleted
-        notify(intyg, Event.DELETED);
+        sendNotification(intyg, Event.DELETED);
     }
 
     @Transactional
-    private void deleteUnsignedDraft(Intyg intyg) {
-        intygRepository.delete(intyg);
+    private void deleteUnsignedDraft(Intyg draft) {
+        intygRepository.delete(draft);
+        LOG.debug("Deleteing draft '{}'", draft.getIntygsId());
     }
 
     private void updateWithUser(Intyg intyg) {
@@ -575,21 +578,23 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return ALL_DRAFT_STATUSES.contains(intygStatus);
     }
 
-    private void notify(Intyg intyg, Event event) {
+    private void sendNotification(Intyg draft, Event event) {
 
         NotificationRequestType notificationRequestType = null;
 
         switch (event) {
             case CHANGED:
-                notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(intyg);
+                notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(draft);
                 break;
             case CREATED:
-                notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(intyg);
+                notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(draft);
                 break;
             case DELETED:
-                notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(intyg);
+                notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(draft);
         }
-
+        
+        LOG.debug("Sending notification for draft '{}' for event {}", draft.getIntygsId(), event);
+        
         notificationService.notify(notificationRequestType);
     }
 
