@@ -283,7 +283,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             LOG.info("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);
-        }
+        } 
     }
 
     @Override
@@ -517,14 +517,11 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
             AttributedURIType uri = new AttributedURIType();
             uri.setValue(logicalAddress);
-
-            // Revoke certificate
-            RevokeMedicalCertificateResponseType response = revokeService.revokeMedicalCertificate(uri, request);
-
             // Notify stakeholders when a certificate is revoked
             notify(intygsId, Event.REVOKE);
 
-            // Setup return statement
+            RevokeMedicalCertificateResponseType response = revokeService.revokeMedicalCertificate(uri, request);
+
             ResultOfCall resultOfCall = response.getResult();
 
             switch (resultOfCall.getResultCode()) {
@@ -552,8 +549,13 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     private void notify(String intygId, Event event) {
-        Intyg intyg = lookupIntyg(intygId);
-        notify(intyg, event);
+        Intyg intyg = intygRepository.findOne(intygId);
+
+        if (intyg != null) {
+            notify(intyg, event);
+        } else {
+            LOG.debug("Intyg '{}' was not found", intygId);
+        }
     }
 
     private void notify(Intyg intyg, Event event) {
@@ -568,17 +570,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
 
         notificationService.notify(notificationRequestType);
-    }
-
-    private Intyg lookupIntyg(String intygId) {
-        Intyg intyg = intygRepository.findOne(intygId);
-
-        if (intyg == null) {
-            LOG.warn("Intyg '{}' was not found", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Intyg could not be found");
-        }
-
-        return intyg;
     }
 
 }
