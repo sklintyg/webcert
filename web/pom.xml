@@ -92,7 +92,7 @@
       <artifactId>ts-diabetes</artifactId>
     </dependency>
 
-    <!-- Interactions -->    
+    <!-- Interactions -->
     <dependency>
       <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
       <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
@@ -299,7 +299,7 @@
     </dependency>
 
 
-    
+
   </dependencies>
 
   <build>
@@ -405,6 +405,11 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connector.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2db.connector.version}</version>
           </dependency>
         </dependencies>
       </plugin>
