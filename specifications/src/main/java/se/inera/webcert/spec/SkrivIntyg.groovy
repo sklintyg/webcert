@@ -1,5 +1,6 @@
 package se.inera.webcert.spec
 
+import org.openqa.selenium.Keys
 import se.inera.webcert.pages.SokSkrivValjIntygTypPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 
@@ -100,4 +101,29 @@ class SkrivIntyg {
         }
         true
     }
+
+    String diagnos1Text() {
+        def result
+        Browser.drive {
+            result = page.diagnos.diagnos1Text.value()
+        }
+        result
+    }
+
+    String diagnos2Text() {
+        def result
+        Browser.drive {
+            result = page.diagnos.diagnos2Text.value()
+        }
+        result
+    }
+
+    String diagnos3Text() {
+        def result
+        Browser.drive {
+            result = page.diagnos.diagnos3Text.value()
+        }
+        result
+    }
+
 }

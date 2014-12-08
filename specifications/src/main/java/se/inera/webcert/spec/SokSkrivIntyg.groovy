@@ -118,6 +118,21 @@ class SokSkrivIntyg {
         true
     }
 
+    def oppnaKopieraDialogen() {
+        Browser.drive {
+            page.copyButton.click()
+        }
+    }
+
+    boolean annanEnhetTextVisas() {
+        Browser.drive {
+            waitFor {
+                page.annanEnhetText.isDisplayed()
+            }
+        }
+        true
+    }
+
     def kopieraVisatIntyg() {
         Browser.drive {
             page.copy()
@@ -128,6 +143,19 @@ class SokSkrivIntyg {
         Browser.drive {
             page.makulera()
         }
+    }
+
+    def visaSokSkrivIntyg() {
+        Browser.drive {
+
+        }
+    }
+
+    def kanEjMakuleraVisatIntyg() {
+        Browser.drive {
+            page.kanInteMakulera()
+        }
+        true
     }
 
     def makuleraBekraftelseVisas() {

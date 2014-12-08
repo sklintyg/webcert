@@ -18,7 +18,7 @@ import org.joda.time.LocalDateTime;
 @Entity
 @Table(name = "INTEGRERADE_VARDENHETER")
 public class IntegreradEnhet {
-    
+
     @Id
     @Column(name = "ENHETS_ID")
     private String enhetsId;
@@ -31,15 +31,15 @@ public class IntegreradEnhet {
 
     @Column(name = "VARDGIVAR_NAMN")
     private String vardgivarNamn;
-    
+
     @Column(name = "SKAPAD_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime skapadDatum;
-    
+
     @Column(name = "SENASTE_KONTROLL_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime senasteKontrollDatum;
-    
+
     @PrePersist
     void onPrePersist() {
         if (skapadDatum == null) {
@@ -51,7 +51,7 @@ public class IntegreradEnhet {
     void onPreUpdate() {
         senasteKontrollDatum = LocalDateTime.now();
     }
-    
+
     @Override
     public String toString() {
         return "IntegreradEnhet [enhetsId=" + enhetsId + ", enhetsNamn=" + enhetsNamn + ", vardgivarId=" + vardgivarId + ", vardgivarNamn="
@@ -105,6 +105,4 @@ public class IntegreradEnhet {
     public void setSenasteKontrollDatum(LocalDateTime senasteKontrollDatum) {
         this.senasteKontrollDatum = senasteKontrollDatum;
     }
-    
-    
 }

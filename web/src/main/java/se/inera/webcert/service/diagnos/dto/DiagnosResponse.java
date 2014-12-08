@@ -11,23 +11,23 @@ public class DiagnosResponse {
     private Diagnos diagnos;
 
     private List<Diagnos> diagnoser;
-    
+
     public DiagnosResponse() {
-        
+
     }
-    
+
     public static DiagnosResponse ok(Diagnos diagnos) {
         DiagnosResponse diagnosResponse = new DiagnosResponse();
         diagnosResponse.setDiagnos(diagnos);
         return diagnosResponse;
     }
-    
+
     public static DiagnosResponse ok(List<Diagnos> diagnoser) {
         DiagnosResponse diagnosResponse = new DiagnosResponse();
         diagnosResponse.setDiagnoser(diagnoser);
         return diagnosResponse;
     }
-    
+
     public static DiagnosResponse invalidCode() {
         DiagnosResponse diagnosResponse = new DiagnosResponse();
         diagnosResponse.setInvalidCode();
@@ -39,7 +39,7 @@ public class DiagnosResponse {
         diagnosResponse.setNotFound();
         return diagnosResponse;
     }
-    
+
     public DiagnosResponseType getResultat() {
         return resultat;
     }
@@ -47,7 +47,7 @@ public class DiagnosResponse {
     private void setInvalidCode() {
         this.resultat = DiagnosResponseType.INVALID_CODE;
     }
-    
+
     private void setNotFound() {
         this.resultat = DiagnosResponseType.NOT_FOUND;
     }

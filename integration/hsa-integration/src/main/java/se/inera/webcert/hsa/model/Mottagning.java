@@ -1,9 +1,9 @@
 package se.inera.webcert.hsa.model;
 
+import org.joda.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.joda.time.LocalDateTime;
 
 /**
  * @author andreaskaltenbach
@@ -11,7 +11,7 @@ import org.joda.time.LocalDateTime;
 public class Mottagning extends AbstractVardenhet {
 
     private static final long serialVersionUID = 6427228467181041893L;
-    
+
     private LocalDateTime start;
     private LocalDateTime end;
 

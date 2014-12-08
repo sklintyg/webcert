@@ -26,6 +26,7 @@ import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.pu.model.Person;
+import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
@@ -284,8 +285,8 @@ public class IntygDraftServiceImplTest {
 
         when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
 
-        Person person = new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga");
-        when(puService.getPerson(PATIENT_SSN)).thenReturn(person);
+        PersonSvar personSvar = new PersonSvar(new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"), PersonSvar.Status.FOUND);
+        when(puService.getPerson(PATIENT_SSN)).thenReturn(personSvar);
 
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
@@ -324,7 +325,7 @@ public class IntygDraftServiceImplTest {
 
         when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
 
-        when(puService.getPerson(PATIENT_SSN)).thenReturn(null);
+        when(puService.getPerson(PATIENT_SSN)).thenReturn(new PersonSvar(null, PersonSvar.Status.NOT_FOUND));
 
         CreateNewDraftCopyRequest copyReq = buildCopyRequest();
         draftService.createNewDraftCopy(copyReq);
@@ -341,8 +342,8 @@ public class IntygDraftServiceImplTest {
 
         when(intygService.fetchExternalIntygData(INTYG_ID)).thenReturn(ich);
 
-        Person person = new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga");
-        when(puService.getPerson(PATIENT_NEW_SSN)).thenReturn(person);
+        PersonSvar personSvar = new PersonSvar(new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"), PersonSvar.Status.FOUND);
+        when(puService.getPerson(PATIENT_NEW_SSN)).thenReturn(personSvar);
 
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);

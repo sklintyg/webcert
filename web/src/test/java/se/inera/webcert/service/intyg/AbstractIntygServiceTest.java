@@ -7,6 +7,7 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
@@ -31,33 +32,35 @@ import se.inera.webcert.web.service.WebCertUserService;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
+
 import java.io.IOException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 public abstract class AbstractIntygServiceTest {
-    
+
     protected static final String CONFIG_AS_JSON = "{config-as-json}";
 
     protected static final String INTYG_ID = "intyg-1";
-    
+
     protected static final String INTYG_TYP_FK = "fk7263";
 
     protected static final String INTYG_INTERNAL_JSON_MODEL = "{internal-model-as-json}";
-    
+
     protected static final String INTYG_EXTERNAL_JSON_MODEL = "{external-model-as-json}";
 
     @Mock
     protected GetCertificateForCareResponderInterface getCertificateService;
-    
+
     @Mock
     protected RegisterCertificateResponderInterface intygSender;
-    
+
     @Mock
     protected SendMedicalCertificateResponderInterface sendService;
-    
+
     @Mock
     protected RevokeMedicalCertificateResponderInterface revokeService;
 
@@ -69,6 +72,9 @@ public abstract class AbstractIntygServiceTest {
 
     @Mock
     protected OmsandningRepository omsandningRepository;
+
+    @Mock
+    protected WebCertUserService webCertUserService;
 
     @Mock
     protected LogService logService;
@@ -84,28 +90,24 @@ public abstract class AbstractIntygServiceTest {
     @Spy
     protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
 
-    @Mock
-    protected WebCertUserService webCertUserService;
+    @InjectMocks
+    protected IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();
 
-    @InjectMocks
-    protected IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
-
-
     protected JAXBContext jaxbContext;
-    
+
     @Before
     public void setupJaxb() throws JAXBException {
         jaxbContext = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
     }
-    
+
     @Before
     public void setupDefaultAuthorization() {
-        when(webCertUserService.isAuthorizedForUnit(anyString())).thenReturn(true);
+        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(false);
     }
-    
+
     @Before
     public void setupOmsandningSave() {
         when(omsandningRepository.save(any(Omsandning.class))).thenAnswer(new Answer<Omsandning>() {
@@ -115,19 +117,19 @@ public abstract class AbstractIntygServiceTest {
             }
         });
     }
-    
+
     protected Utlatande makeUtlatande() throws Exception {
         return new CustomObjectMapper().readValue(
                 new ClassPathResource("IntygServiceTest/utlatande.json").getFile(), MinimalUtlatande.class);
     }
-    
+
     protected GetCertificateForCareResponseType makeIntygstjanstResponse() throws JAXBException, IOException {
-        
+
         ClassPathResource response = new ClassPathResource("IntygServiceTest/response-get-certificate.xml");
-        
+
         return jaxbContext.createUnmarshaller()
                 .unmarshal(new StreamSource(response.getInputStream()), GetCertificateForCareResponseType.class)
                 .getValue();
     }
-    
+
 }

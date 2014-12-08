@@ -23,20 +23,177 @@ class IntegrationMedJournalsystem {
 
     def visaIntygViaIntegration(String intygId) {
         Browser.drive {
-            go "/integration/" + intygId
+            go "/visa/intyg/" + intygId
             waitFor {
                 at VisaFk7263Page
             }
         }
     }
 
-    def visaUtkastViaIntegration(String intygId) {
+    def visaIntygViaIntegrationMedPersonnummer(String intygId, String personnummer) {
         Browser.drive {
-            go "/integration/" + intygId
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer
+            waitFor {
+                at VisaFk7263Page
+            }
+        }
+    }
+
+    boolean intygLaddat(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                if (expected) {
+                    at VisaPage
+                    page.intygLaddat(expected)
+                }
+                true
+            }
+        }
+    }
+
+    def visaUtkastViaIntegrationMedPersonnummer(String intygId, String personnummer) {
+        Browser.drive {
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer
             waitFor {
                 at EditCertPage
             }
         }
+    }
+
+    def visaUtkastViaIntegrationMedPersonnummerSignerandeLakare(String intygId, String personnummer, String signerandeLakare) {
+        Browser.drive {
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn=" + personnummer + "&responsibleHospName=" + signerandeLakare
+            waitFor {
+                at EditCertPage
+            }
+        }
+    }
+
+    def nyttPersonnummerMeddelandeVisas() {
+        Browser.drive {
+            waitFor {
+                page.nyttPersonnummer.isDisplayed()
+            }
+        }
+        true
+    }
+
+    def signerandeLakareMeddelandeVisas(expected) {
+        Browser.drive {
+            waitFor {
+                (expected == page.signerandeLakare.text()) && page.signerandeLakare.isDisplayed()
+            }
+        }
+        true
+    }
+
+    def verifieraNamnOchPersonnummer(String expected) {
+        Browser.drive {
+            waitFor {
+                expected == page.namnOchPersonnummer.text()
+            }
+        }
+        true
+    }
+
+    def kopieraIntyg(String intygId) {
+        Browser.drive {
+            waitFor {
+                page.copyButton.isDisplayed()
+            }
+            page.copy()
+        }
+    }
+
+    def stangAvKopieraDialogen() {
+        Browser.drive {
+            page.copyButton.click()
+            waitFor {
+                doneLoading()
+            }
+            page.kopieraDialogVisaInteIgen.click()
+            page.kopieraDialogKopieraKnapp.click()
+            page.kopieraDialogAvbrytKnapp.click()
+        }
+    }
+
+    def aktiveraKopieraDialogen() {
+        Browser.deleteCookie("wc.dontShowCopyDialog");
+    }
+
+    def kopieraIntygUtanDialog() {
+        Browser.drive {
+            waitFor {
+                page.copyButton.isDisplayed()
+            }
+            page.copyButton.click()
+        }
+        true
+    }
+
+    def intygsFelVisas() {
+        Browser.drive {
+            waitFor {
+                page.intygFel.isDisplayed()
+            }
+        }
+        true
+    }
+
+    def intygetSynligt() {
+        Browser.drive {
+            waitFor {
+                page.intygLaddat.isDisplayed()
+            }
+        }
+        true
+    }
+
+    def visaUtkastViaIntegration(String intygId) {
+        Browser.drive {
+            go "/visa/intyg/" + intygId
+            waitFor {
+                at EditCertPage
+            }
+        }
+        true
+    }
+
+
+    boolean skickaKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.skickaKnapp.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
+    boolean skrivUtKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.skrivUtKnapp.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
+    boolean kopieraKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.kopieraKnapp.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
+    boolean makuleraKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                page.makuleraKnapp.isDisplayed() == expected
+            }
+        }
+        true
     }
 
     boolean verifieraTillbakaknappBorta() {
@@ -55,6 +212,19 @@ class IntegrationMedJournalsystem {
             }
             waitFor() {
                 page.errorPanel.isDisplayed()
+            }
+        }
+
+        true
+    }
+
+    boolean integrationBorttagetMeddelandeVisas() {
+        Browser.drive {
+            waitFor {
+                at EditCertPage
+            }
+            waitFor() {
+                page.integrationBorttaget.isDisplayed()
             }
         }
 

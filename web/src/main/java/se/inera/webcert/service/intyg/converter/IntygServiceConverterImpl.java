@@ -98,7 +98,7 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.intyg.converter.IntygServiceConverter#buildSendTypeFromUtlatande(se.inera.certificate
      * .model.Utlatande)

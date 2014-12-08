@@ -1,8 +1,0 @@
-!contents -R2 -g -p -f -h
-
-!see <IneraWebcert.AllTests.WebTests.BesvaraFraga.BesvaraFragaFranLankTillIntyg
-!see <IneraWebcert.AllTests.WebTests.BesvaraFraga.BesvaraFragaFranUthoppsLank
-!see <IneraWebcert.AllTests.WebTests.BesvaraFraga.BesvaraFragaFranFragaSvarLista
-!see <IneraWebcert.AllTests.WebTests.BesvaraFraga.BesvaraFragaForIntygPaAnnanEnhet
-!see <IneraWebcert.AllTests.WebTests.BesvaraFraga.BesvaraFragaForEjExisterandeIntyg
-

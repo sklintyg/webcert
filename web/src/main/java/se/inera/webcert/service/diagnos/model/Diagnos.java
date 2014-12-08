@@ -1,9 +1,9 @@
 package se.inera.webcert.service.diagnos.model;
 
 public class Diagnos implements Comparable<Diagnos> {
-    
+
     private String kod;
-    
+
     private String beskrivning;
 
     public String getKod() {
@@ -26,5 +26,4 @@ public class Diagnos implements Comparable<Diagnos> {
     public int compareTo(Diagnos d) {
         return getKod().compareTo(d.getKod());
     }
-    
 }

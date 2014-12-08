@@ -29,7 +29,7 @@
       <directory>${project.build.directory}</directory>
       <outputDirectory>/lib</outputDirectory>
       <includes>
-        <include>webcert-liquibase-runner-*-jar-with-dependencies.jar</include>
+        <include>webcert-liquibase-runner-jar-with-dependencies.jar</include>
       </includes>
       <excludes>
         <exclude>dummy.txt</exclude>

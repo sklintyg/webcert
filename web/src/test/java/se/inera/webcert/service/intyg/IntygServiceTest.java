@@ -1,19 +1,5 @@
 package se.inera.webcert.service.intyg;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayOutputStream;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
@@ -46,6 +31,19 @@ import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayOutputStream;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author andreaskaltenbach
@@ -77,7 +75,7 @@ public class IntygServiceTest {
 
     @Mock
     private LogService logservice;
-    
+
     @InjectMocks
     private IntygServiceImpl intygService = new IntygServiceImpl();
 
@@ -135,7 +133,7 @@ public class IntygServiceTest {
 
     @Before
     public void setupDefaultAuthorization() {
-        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
     }
 
     @Before
@@ -159,13 +157,15 @@ public class IntygServiceTest {
         // setup module API behavior for conversion from external to internal
         when(moduleFacade.convertFromExternalToInternal(eq(CERTIFICATE_TYPE), eq(EXT_JSON))).thenReturn(INT_JSON);
 
+        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
+
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID);
 
         // ensure that correct WS call is made to intygstjanst
         verify(getCertificateForCareResponder).getCertificateForCare(LOGICAL_ADDRESS, request);
         verify(moduleFacade).convertFromTransportToExternal(eq(CERTIFICATE_TYPE), any(UtlatandeType.class));
         verify(moduleFacade).convertFromExternalToInternal(CERTIFICATE_TYPE, EXT_JSON);
-        
+
         assertEquals(INT_JSON, intygData.getContents());
         assertEquals(CERTIFICATE_ID, intygData.getMetaData().getId());
         assertEquals("19121212-1212", intygData.getMetaData().getPatientId());
@@ -191,7 +191,7 @@ public class IntygServiceTest {
         request.setCertificateId(CERTIFICATE_ID);
         when(getCertificateForCareResponder.getCertificateForCare(LOGICAL_ADDRESS, request)).thenReturn(
                 intygtjanstResponse);
-        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(false);
 
         intygService.fetchIntygData(CERTIFICATE_ID);
     }
@@ -244,6 +244,8 @@ public class IntygServiceTest {
         ExternalModelResponse unmarshallResponse = new ExternalModelResponse("<external-json/>", utlatande);
         when(moduleFacade.convertFromTransportToExternal(eq(CERTIFICATE_TYPE), any(UtlatandeType.class))).thenReturn(unmarshallResponse);
 
+        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
+
         intygService.fetchExternalIntygData(CERTIFICATE_ID);
 
         // ensure that correct WS call is made to intygstjanst
@@ -271,7 +273,7 @@ public class IntygServiceTest {
         request.setCertificateId(CERTIFICATE_ID);
         when(getCertificateForCareResponder.getCertificateForCare(LOGICAL_ADDRESS, request)).thenReturn(
                 intygtjanstResponse);
-        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(false);
         intygService.fetchExternalIntygData(CERTIFICATE_ID);
     }
 

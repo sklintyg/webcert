@@ -12,6 +12,7 @@ import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUp
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileType;
 import se.inera.webcert.pu.model.Person;
+import se.inera.webcert.pu.model.PersonSvar;
 
 import javax.xml.ws.soap.SOAPFaultException;
 
@@ -26,7 +27,7 @@ public class PUServiceImpl implements PUService {
     private String logicaladdress;
 
     @Override
-    public Person getPerson(String personId) {
+    public PersonSvar getPerson(String personId) {
         String normalizedId = normalizeId(personId);
 
         LOG.debug("Looking up person '{}'({})", normalizedId, personId);
@@ -35,38 +36,42 @@ public class PUServiceImpl implements PUService {
         parameters.getPersonId().add(normalizedId);
         try {
             LookupResidentForFullProfileResponseType response = service.lookupResidentForFullProfile(logicaladdress, parameters);
-            
             if (response.getResident().isEmpty()) {
                 LOG.warn("No person '{}'({}) found", normalizedId, personId);
-                return null;
+                return new PersonSvar(null, PersonSvar.Status.NOT_FOUND);
             }
-            
+
             ResidentType resident = response.getResident().get(0);
             NamnTYPE namn = resident.getPersonpost().getNamn();
 
             SvenskAdressTYPE adress = resident.getPersonpost().getFolkbokforingsadress();
 
             String adressRader = buildAdress(adress);
-            Person person = new Person(personId, namn.getFornamn(), namn.getMellannamn(), namn.getEfternamn(), adressRader, adress.getPostNr(), adress.getPostort());
+            Person person = new Person(personId, namn.getFornamn(), namn.getMellannamn(), namn.getEfternamn(), adressRader, adress.getPostNr(),
+                    adress.getPostort());
             LOG.debug("Person '{}' found", normalizedId);
-            return person;
+            return new PersonSvar(person, PersonSvar.Status.FOUND);
         } catch (SOAPFaultException e) {
             LOG.warn("Error occured, no person '{}'({}) found", normalizedId, personId);
-            throw e;
+            return new PersonSvar(null, PersonSvar.Status.ERROR);
         }
     }
 
     private String normalizeId(String personId) {
-        return personId.substring(0,8) + personId.substring(9);
+        if (personId.length() == 13) {
+            return personId.substring(0, 8) + personId.substring(9);
+        } else {
+            return personId;
+        }
     }
 
     private String buildAdress(SvenskAdressTYPE adress) {
         return joinIgnoreNulls(", ", adress.getCareOf(), adress.getUtdelningsadress1(), adress.getUtdelningsadress2());
     }
 
-    private String joinIgnoreNulls(String separator, String...values) {
+    private String joinIgnoreNulls(String separator, String... values) {
         StringBuilder builder = new StringBuilder();
-        for (String value: values) {
+        for (String value : values) {
             if (value != null) {
                 if (builder.length() > 0) {
                     builder.append(separator);

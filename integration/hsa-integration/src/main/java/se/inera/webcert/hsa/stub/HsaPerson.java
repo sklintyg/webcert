@@ -14,9 +14,9 @@ public class HsaPerson {
     private List<HsaSpecialicering> specialiseringar = new ArrayList<HsaSpecialicering>();
 
     private List<String> enhetIds = new ArrayList<String>();
-    
+
     private String titel;
-    
+
     private List<String> legitimeradeYrkesgrupper = new ArrayList<String>();
 
     public HsaPerson() {

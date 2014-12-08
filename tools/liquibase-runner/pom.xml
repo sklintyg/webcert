@@ -91,6 +91,7 @@
   </dependencies>
 
   <build>
+	<finalName>webcert-liquibase-runner</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>

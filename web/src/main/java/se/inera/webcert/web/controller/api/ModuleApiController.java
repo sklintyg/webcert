@@ -1,17 +1,14 @@
 package se.inera.webcert.web.controller.api;
 
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.webcert.web.controller.AbstractApiController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.certificate.modules.registry.IntygModuleRegistry;
-import se.inera.webcert.web.controller.AbstractApiController;
 
 /**
  * Controller managing module wiring.

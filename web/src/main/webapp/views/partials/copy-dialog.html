@@ -1,0 +1,34 @@
+<div id="{{dialogId}}" class="modal-header">
+	<button class="close" ng-click="button2click()">×</button>
+	<h3 ng-focus="dialog.focus" tabindex="-1">
+		<span message key="{{titleId}}"></span>
+	</h3>
+</div>
+<div class="modal-body">
+  <p>
+    Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma information.
+    <span ng-show="model.otherCareUnit != undefined" id="annanVardenhet"> Då intyget är utfärdat på en annan vårdenhet kommer adressuppgifterna ersättas med de för den vårdenhet du är inloggad på.</span>
+    <span ng-show="model.patientId != undefined"> För denna patient finns nytt person-id och informationen kommer därför uppdateras i det nya intyget.</span> I de fall patienten har ändrat namn eller adress så uppdateras den informationen.
+  </p>
+  <p>Uppgifterna i intygsutkastet går att ändra innan det signeras.</p>
+  Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.
+</div>
+<div class="modal-footer">
+  <div class="webcert-top-padding-section form-inline">
+    <label class="checkbox"><input id="dontShowAgain" type="checkbox" ng-model="model.dontShowCopyInfo"> Visa inte denna information igen</label>
+  </div>
+  <div class="webcert-top-padding-section form-inline">
+    <button id="{{button1id}}" class="btn btn-success" ng-disabled="!dialog.acceptprogressdone" ng-click="button1click()">
+      <img ng-hide="dialog.acceptprogressdone" ng-src="/img/ajax-loader-small-green.gif"/>
+      <span message key="{{button1text}}"></span>
+    </button>
+    <button id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
+      <span message key="{{button2text}}"></span>
+    </button>
+    <div class="webcert-top-padding-section" data-ng-show="dialog.showerror">
+      <div class="alert alert-danger alert-dialog-error">
+        <span message key="{{dialog.errormessageid}}"></span>
+      </div>
+    </div>
+  </div>
+</div>

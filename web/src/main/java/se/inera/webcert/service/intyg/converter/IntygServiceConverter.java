@@ -11,13 +11,13 @@ import se.inera.webcert.service.intyg.dto.IntygMetadata;
 
 public interface IntygServiceConverter {
 
-    public abstract SendType buildSendTypeFromUtlatande(Utlatande utlatande);
-    
-    public abstract List<IntygItem> convertToListOfIntygItem(List<CertificateMetaType> source);
-    
-    public abstract IntygMetadata convertToIntygMetadata(String patientId, CertificateMetaType source);
+    SendType buildSendTypeFromUtlatande(Utlatande utlatande);
 
-    public abstract RevokeType buildRevokeTypeFromUtlatande(Utlatande utlatande, String revokeMessage);
-    
-    public abstract String extractUtlatandeId(Utlatande utlatande);
+    List<IntygItem> convertToListOfIntygItem(List<CertificateMetaType> source);
+
+    IntygMetadata convertToIntygMetadata(String patientId, CertificateMetaType source);
+
+    RevokeType buildRevokeTypeFromUtlatande(Utlatande utlatande, String revokeMessage);
+
+    String extractUtlatandeId(Utlatande utlatande);
 }

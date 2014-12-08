@@ -1,10 +1,10 @@
 package se.inera.webcert.hsa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author andreaskaltenbach
@@ -108,7 +108,7 @@ public class Vardgivare implements SelectableVardenhet, Comparable<Vardgivare>, 
     public int compareTo(Vardgivare annanVardgivare) {
         return getNamn().compareTo(annanVardgivare.getNamn());
     }
-    
+
     @Override
     public String toString() {
         return new StringBuilder(getNamn()).append(":").append(getId()).toString();

@@ -1,19 +1,21 @@
 package se.inera.webcert.pages.fk7263
 
-import se.inera.certificate.page.AbstractPage
+import se.inera.webcert.pages.VisaPage
 
-class VisaFk7263Page extends AbstractPage {
-
-    static at = { js.doneLoading && $("#viewCertAndQA").isDisplayed() }
+class VisaFk7263Page extends VisaPage {
 
     static content = {
 
         // messages
         intygSaknas { $("#cert-load-error") }
         intygLaddat { $('#intyg-vy-laddad') }
+        intygFel { $("#cert-inline-error") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
         certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+
+        // copy dialog
+        annanEnhetText { $("#annanVardenhet")}
 
         // header
         webcertLogoLink(required: false) { $("#webcertLogoLink") }
@@ -26,8 +28,10 @@ class VisaFk7263Page extends AbstractPage {
         // intyg top panel
         tillbakaButton(required: false) { $("#tillbakaButton")}
         copyButton { $("#copyBtn") }
-        makuleraButton { $("#makuleraBtn") }
+        makuleraButton(required: false) { $("#makuleraBtn") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
+        kopieraDialogAvbrytKnapp { $("#button2copy-dialog") }
+        kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
         skickaDialogCheck { $("#patientSamtycke") }
@@ -37,6 +41,8 @@ class VisaFk7263Page extends AbstractPage {
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
 
         // INTYG
+        nyttPersonnummer { $("#nyttPersonnummer") }
+        namnOchPersonnummer { $("#patientNamnPersonnummer") }
 
         // smittskydd
         smittskydd { $("#smittskydd") }
@@ -140,6 +146,16 @@ class VisaFk7263Page extends AbstractPage {
             doneLoading()
         }
         makuleraDialogKopieraKnapp.click()
+    }
+
+    boolean exists(content) {
+        content
+    }
+
+    def kanInteMakulera() {
+        waitFor {
+            !exists(makuleraButton)
+        }
     }
 
     def send() {

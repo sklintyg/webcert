@@ -3,13 +3,13 @@ package se.inera.webcert.integration.registry.dto;
 public class IntegreradEnhetEntry {
 
     private String enhetsId;
-    
+
     private String enhetsNamn;
-    
+
     private String vardgivareId;
-    
+
     private String vardgivareNamn;
-        
+
     public IntegreradEnhetEntry(String enhetsId, String vardgivareId) {
         super();
         this.enhetsId = enhetsId;
@@ -55,5 +55,4 @@ public class IntegreradEnhetEntry {
     public void setVardgivareNamn(String vardgivareNamn) {
         this.vardgivareNamn = vardgivareNamn;
     }
-    
 }

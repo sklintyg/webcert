@@ -159,7 +159,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
             GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygId);
 
-            verifyEnhetsAuth(intygResponse.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
+            verifyEnhetsAuth(intygResponse.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension(), true);
 
             String patientId = intygResponse.getCertificate().getPatient().getPersonId().getExtension();
             IntygMetadata metaData = serviceConverter.convertToIntygMetadata(patientId, intygResponse.getMeta());
@@ -278,8 +278,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
-    protected void verifyEnhetsAuth(String enhetsId) {
-        if (!webCertUserService.isAuthorizedForUnit(enhetsId)) {
+    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
             LOG.info("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);
@@ -394,7 +394,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         GetCertificateForCareResponseType intygResponse = fetchIntygFromIntygstjanst(intygsId);
         UtlatandeType utlatandeType = intygResponse.getCertificate();
 
-        verifyEnhetsAuth(utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension());
+        verifyEnhetsAuth(utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension(), false);
 
         return sendIntyg(omsandning, sendConfig, utlatandeType);
     }
@@ -404,7 +404,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         String intygsId = omsandning.getIntygId();
         String recipient = sendConfig.getRecipient();
         String intygsTyp = utlatandeType.getTypAvUtlatande().getCode();
-        
+
         try {
             LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
 
@@ -491,7 +491,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.intyg.IntygService#revokeIntyg(java.lang.String, java.lang.String)
      */
     public IntygServiceResult revokeIntyg(String intygsId, String revokeMessage) {
@@ -503,7 +503,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
             checkIfCertificateIsRevoked(intygResponse);
 
-            verifyEnhetsAuth(intygResponse.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension());
+            verifyEnhetsAuth(intygResponse.getCertificate().getSkapadAv().getEnhet().getEnhetsId().getExtension(), false);
 
             UtlatandeType utlatandeType = intygResponse.getCertificate();
             String intygsTyp = utlatandeType.getTypAvUtlatande().getCode();

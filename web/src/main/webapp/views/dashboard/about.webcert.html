@@ -7,16 +7,16 @@
           Webcert är en tjänst som gör det möjligt att utfärda elektroniska läkarintyg och samla dem på ett ställe.
           Intyg som kan utfärdas i Webcert är:</p>
         <ul>
-          <li>Läkarintyg FK 7263</li>
-          <li>Transportstyrelsens läkarintyg</li>
-          <li>Transportstyrelsens läkarintyg, diabetes</li>
+          <li wc-feature-active feature="hanteraIntygsutkast" intygstyp="fk7263">Läkarintyg FK 7263</li>
+          <li wc-feature-active feature="hanteraIntygsutkast" intygstyp="ts-bas">Transportstyrelsens läkarintyg</li>
+          <li wc-feature-active feature="hanteraIntygsutkast" intygstyp="ts-diabetes">Transportstyrelsens läkarintyg, diabetes</li>
         </ul>
         <p>
           I kommande versioner av tjänsten blir det möjligt att utfärda fler typer av läkarintyg. </p>
 
         <h4>Användarkrav för Webcert</h4>
         <ul>
-          <li>SITHS-kort (kallas även eTjänstekort eller tjänstekort) eller en e-legitimation</li>
+          <li>SITHS-kort (kallas även eTjänstekort eller tjänstekort)</li>
           <li>legitimeringskod kopplad till SITHS-kortet som används vid inloggning</li>
           <li>underskriftskod kopplad till SITHS-kortet som används för att signera intyg (endast läkare)</li>
           <li>kortläsare</li>
@@ -73,9 +73,8 @@
         <h4>Adress till vårdenheten</h4>
         <p>
           Intyg som utfärdas i Webcert innehåller adress- och kontaktinformation till den eller de vårdenheter du
-          arbetar för. För privatläkare hämtas dessa uppgifter från den information du lämnade vid registreringen. För
-          landstingsanställda läkare hämtas uppgifterna från HSA. Om du upptäcker att adress- och kontaktinformation är
-          fel, så kan informationen ändras antingen i "Mina uppgifter" eller i HSA. </p>
+          arbetar för. För landstingsanställda läkare hämtas uppgifterna från HSA. Om du upptäcker att adress- och kontaktinformation är
+          fel, så kan informationen ändras i HSA. </p>
         <h4>
           Ansvarig för Webcert: </h4>
         <p><a href="http://www.inera.se" target="_blank">Inera AB</a><br>

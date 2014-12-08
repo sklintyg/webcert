@@ -1,0 +1,32 @@
+Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg via djupintegration med ett uppdaterat personnummer och kopierar intyget.
+
+!3 Välj patient och visa intyget
+
+| script | !-SokSkrivIntyg-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+| sok skriv intyg sidan visas sa smaningom |
+
+!4 Testa har ett felaktigt personnummer.
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration med | intyg-fit-1 | personnummer | 19520617-2339 |
+| nytt personnummer meddelande visas|
+| kopiera intyg | intyg-fit-1 |
+| verifiera namn och personnummer | Björn Anders Daniel Pärsson - 19520617-2339 |
+
+| script | !-HanteraUtkast-! |
+| radera utkast |
+
+<<<<<<< HEAD
+!4 Detta test har ett felaktigt personnummer. Om man valt att inte visa kopieringsdialogen så ska felet visas tillsammans med intyget. 
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration med | intyg-fit-1 | personnummer | 19520617-233 |
+| nytt personnummer meddelande visas |
+| stang av kopiera dialogen |
+| kopiera intyg utan dialog |
+| intygs fel visas |
+| intyget synligt |
+| aktivera kopiera dialogen |
+=======
+| script | !-IntegrationMedJournalsystem-! |
+| integration borttaget meddelande visas |
+>>>>>>> Fitnesse-test för meddelande och rättigheter vid makulering och borttagning av utkast och intyg.

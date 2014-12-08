@@ -1,9 +1,9 @@
 package se.inera.webcert.service.monitoring.dto;
 
 public class HealthStatus {
-    
+
     private final long measurement;
-    
+
     private final boolean ok;
 
     public HealthStatus(long measurement, boolean ok) {

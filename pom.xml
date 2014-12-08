@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>0-SNAPSHOT</version>
+    <version>1.0.1</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -446,6 +446,25 @@
     </dependencies>
 
   </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>se.inera.intyg.common</groupId>
+            <artifactId>common-build-tools</artifactId>
+            <version>${common.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <configLocation>checkstyle/checkstyle.xml</configLocation>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
   <repositories>
     <repository>

@@ -1,19 +1,5 @@
 package se.inera.logsender;
 
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
-import javax.xml.ws.WebServiceException;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.stereotype.Component;
-
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
 import se.inera.log.messages.Patient;
@@ -40,6 +25,19 @@ import se.riv.ehr.log.v1.ResourceType;
 import se.riv.ehr.log.v1.ResourcesType;
 import se.riv.ehr.log.v1.SystemType;
 import se.riv.ehr.log.v1.UserType;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
+import javax.jms.QueueBrowser;
+import javax.jms.Session;
+import javax.xml.ws.WebServiceException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -149,11 +147,11 @@ public class LogSender {
         activity.setStartDate(source.getTimestamp());
         activity.setPurpose(source.getPurpose().getType());
         activity.setActivityLevel(source.getActivityLevel());
-        
+
         if (StringUtils.isNotEmpty(source.getActivityArgs())) {
             activity.setActivityArgs(source.getActivityArgs());
         }
-        
+
         logType.setActivity(activity);
 
         UserType user = new UserType();
@@ -205,11 +203,11 @@ public class LogSender {
         try {
             StoreLogResponseType response = loggTjanstResponder.storeLog(logicalAddress, request);
             switch (response.getResultType().getResultCode()) {
-                case OK:
-                case INFO:
-                    break;
-                default:
-                    throw new LoggtjanstExecutionException();
+            case OK:
+            case INFO:
+                break;
+            default:
+                throw new LoggtjanstExecutionException();
             }
         } catch (WebServiceException e) {
             throw new LoggtjanstExecutionException(e);

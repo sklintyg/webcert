@@ -7,14 +7,13 @@ import se.inera.webcert.service.intyg.dto.IntygPdf;
 
 public interface IntygModuleFacade {
 
-    public abstract UtlatandeType convertFromInternalToTransport(String intygType, String intygJsonModel) throws IntygModuleFacadeException;
-    
-    public abstract Utlatande convertFromInternalToExternal(String intygType, String intygJsonModel) throws IntygModuleFacadeException;
-    
-    public abstract ExternalModelResponse convertFromTransportToExternal(String intygType, UtlatandeType utlatandeType) throws IntygModuleFacadeException;
-    
-    public abstract String convertFromExternalToInternal(String intygType, String externalIntygJsonModel) throws IntygModuleFacadeException;
-    
-    public abstract IntygPdf convertFromExternalToPdfDocument(String intygType, String externalIntygJsonModel) throws IntygModuleFacadeException;
-    
+    UtlatandeType convertFromInternalToTransport(String intygType, String intygJsonModel) throws IntygModuleFacadeException;
+
+    Utlatande convertFromInternalToExternal(String intygType, String intygJsonModel) throws IntygModuleFacadeException;
+
+    ExternalModelResponse convertFromTransportToExternal(String intygType, UtlatandeType utlatandeType) throws IntygModuleFacadeException;
+
+    String convertFromExternalToInternal(String intygType, String externalIntygJsonModel) throws IntygModuleFacadeException;
+
+    IntygPdf convertFromExternalToPdfDocument(String intygType, String externalIntygJsonModel) throws IntygModuleFacadeException;
 }

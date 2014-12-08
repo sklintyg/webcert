@@ -48,7 +48,9 @@ class FeatureModuler extends RestClientFixture{
         }
         catch(HttpResponseException e) {
             status = e.statusCode
-            ex = true
+            if (status == 403) {
+                ex = true
+            }
         }
     }
 

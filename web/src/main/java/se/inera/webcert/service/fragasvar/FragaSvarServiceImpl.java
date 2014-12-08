@@ -43,7 +43,13 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author andreaskaltenbach
@@ -191,7 +197,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         FragaSvar fragaSvar = lookupFragaSvar(fragaSvarsId);
 
         // Is user authorized to save an answer to this question?
-        verifyEnhetsAuth(fragaSvar.getVardperson().getEnhetsId());
+        verifyEnhetsAuth(fragaSvar.getVardperson().getEnhetsId(), false);
 
         if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "FragaSvar with id "
@@ -271,6 +277,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         // Fetch from Intygstjansten
         IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(intygId);
 
+        // Get utfardande vardperson
+        Vardperson vardPerson = FragaSvarConverter.convert(externalIntygData.getExternalModel().getSkapadAv());
+
+        // Is user authorized to save an answer to this question?
+        verifyEnhetsAuth(vardPerson.getEnhetsId(), false);
         // Verksamhetsregel FS-001 (Is the certificate sent to FK)
         if (!isCertificateSentToFK(externalIntygData.getMetaData().getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
@@ -282,12 +293,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-XXX: Cannot save Fraga when certificate is revoked!");
         }
-
-        // Get utfardande vardperson
-        Vardperson vardPerson = FragaSvarConverter.convert(externalIntygData.getExternalModel().getSkapadAv());
-
-        // Is user authorized to save an answer to this question?
-        verifyEnhetsAuth(vardPerson.getEnhetsId());
 
         IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(externalIntygData.getExternalModel());
 
@@ -440,7 +445,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     /* --------------------- Protected scope --------------------- */
 
     protected void verifyEnhetsAuth(String enhetsId) {
-        if (!webCertUserService.isAuthorizedForUnit(enhetsId)) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId, false)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);
         }
@@ -454,7 +459,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         FragaSvarFilter filter = new FragaSvarFilter();
 
         if (StringUtils.isNotEmpty(params.getEnhetId())) {
-            verifyEnhetsAuth(params.getEnhetId());
+            verifyEnhetsAuth(params.getEnhetId(), true);
             filter.getEnhetsIds().add(params.getEnhetId());
         } else {
             WebCertUser user = webCertUserService.getWebCertUser();
@@ -496,7 +501,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return false;
     }
 
-    private boolean isCertificateSentToFK(List<IntygStatus> statuses) {
+protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+    if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
+        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                "User not authorized for for enhet " + enhetsId);
+    }
+}
+
+private boolean isCertificateSentToFK(List<IntygStatus> statuses) {
         if (statuses != null) {
             for (IntygStatus status : statuses) {
                 if (FORSAKRINGSKASSAN.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {

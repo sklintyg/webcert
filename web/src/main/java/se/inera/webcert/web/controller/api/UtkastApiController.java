@@ -37,15 +37,15 @@ import se.inera.webcert.web.controller.api.dto.QueryIntygResponse;
 
 /**
  * API controller for REST services concerning certificate drafts.
- * 
+ *
  * @author npet
  *
  */
 @Path("/utkast")
 public class UtkastApiController extends AbstractApiController {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(UtkastApiController.class);
-    
+
     private static final List<IntygsStatus> ALL_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
             IntygsStatus.DRAFT_INCOMPLETE);
 
@@ -54,16 +54,16 @@ public class UtkastApiController extends AbstractApiController {
     private static final List<IntygsStatus> INCOMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_INCOMPLETE);
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
-    
+
     @Autowired
     private IntygDraftService intygDraftService;
-    
+
     @Autowired
     private IntygRepository intygRepository;
-    
+
     /**
      * Creates a filtered query to get drafts for a specific unit.
-     * 
+     *
      * @param filterParameters
      * @return
      */
@@ -72,9 +72,9 @@ public class UtkastApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response filterDraftsForUnit(@QueryParam("") QueryIntygParameter filterParameters) {
-        
+
         abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
-        
+
         IntygFilter intygFilter = createIntygFilter(filterParameters);
         QueryIntygResponse queryResponse = performIntygFilterQuery(intygFilter);
 
@@ -119,7 +119,7 @@ public class UtkastApiController extends AbstractApiController {
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
     }
-    
+
     /**
      * Returns a list of doctors that have one or more unsigned intyg.
      *
@@ -129,7 +129,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getLakareWithDraftsByEnheter() {
-        
+
         abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
         WebCertUser user = getWebCertUserService().getWebCertUser();
@@ -139,10 +139,10 @@ public class UtkastApiController extends AbstractApiController {
 
         return Response.ok().entity(lakareWithDraftsByEnhet).build();
     }
-    
+
     /**
-     * Create a new draft
-     * 
+     * Create a new draft.
+     *
      * @param intygsTyp
      * @param request
      * @return
@@ -152,9 +152,9 @@ public class UtkastApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createNewDraft(@PathParam("intygsTyp") String intygsTyp, CreateNewIntygRequest request) {
-        
+
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        
+
         if (!request.isValid()) {
             LOG.error("Request is invalid: " + request.toString());
             return Response.status(Status.BAD_REQUEST).build();
@@ -172,7 +172,7 @@ public class UtkastApiController extends AbstractApiController {
 
         return Response.ok().entity(idOfCreatedDraft).build();
     }
-    
+
     private CreateNewDraftRequest createServiceRequest(CreateNewIntygRequest req) {
         CreateNewDraftRequest srvReq = new CreateNewDraftRequest();
 

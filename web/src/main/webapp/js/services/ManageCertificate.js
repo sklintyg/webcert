@@ -1,7 +1,7 @@
 angular.module('webcert').factory('webcert.ManageCertificate',
-    [ '$http', '$log', '$location', '$window', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
+    [ '$http', '$routeParams', '$log', '$location', '$window', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
         'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.CertificateService',
-        function($http, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
+        function($http, $routeParams, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
             featureService, messageService, CertificateService) {
             'use strict';
 
@@ -126,13 +126,15 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 }
             }
 
-            function _createCopyDraft($scope, dialogModel, cert, onSuccess, onError) {
+            function _createCopyDraft(cert, onSuccess, onError) {
                 var valdVardenhet = User.getValdVardenhet();
                 CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
                 CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
                 CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
                 CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
                 CreateCertificateDraft.intygType = cert.intygType;
+
+                CreateCertificateDraft.nyttPatientPersonnummer = $routeParams.patientId;
 
                 CreateCertificateDraft.copyIntygToDraft(cert, function(data) {
                     $log.debug('Successfully requested copy draft');
@@ -142,7 +144,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 }, function(error) {
                     $log.debug('Create copy failed: ' + error.message);
                     if (onError) {
-                        onError();
+                        onError(error.errorCode);
                     }
                 });
             }
@@ -164,22 +166,32 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 if ($cookieStore.get(COPY_DIALOG_COOKIE)) {
                     $log.debug('copy cert without dialog' + cert);
                     $scope.widgetState.activeErrorMessageKey = null;
-                    _createCopyDraft($scope, dialogModel, cert, function(draftResponse) {
+                    $scope.widgetState.inlineErrorMessageKey = null;
+                    _createCopyDraft(cert, function(draftResponse) {
                         goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
-                    }, function() {
-                        $scope.widgetState.activeErrorMessageKey = 'error.failedtocopyintyg';
+                    }, function(errorCode) {
+                        if (errorCode === 'DATA_NOT_FOUND') {
+                            $scope.widgetState.inlineErrorMessageKey = 'error.failedtocopyintyg.personidnotfound';
+                        }
+                        else {
+                            $scope.widgetState.inlineErrorMessageKey = 'error.failedtocopyintyg';
+                        }
                     });
                 } else {
+
+                    var otherCareUnit = false;
+                    if (cert.intygMetadata !== undefined && User.getValdVardenhet() !== cert.intygMetadata.skapadAv.vardenhet.enhetsid) {
+                        otherCareUnit = true;
+                    }
+
+                    dialogModel.otherCareUnit = otherCareUnit;
+                    dialogModel.patientId = $routeParams.patientId;
 
                     copyDialog = dialogService.showDialog($scope, {
                         dialogId: 'copy-dialog',
                         titleId: 'label.copycert',
-                        templateUrl: '/views/partials/check-dialog.html',
+                        templateUrl: '/views/partials/copy-dialog.html',
                         model: dialogModel,
-                        bodyText: '<p>Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma ' +
-                            'information. I de fall patienten har ändrat namn eller adress så uppdateras den informationen.</p>' +
-                            '<p>Uppgifterna i intygsutkastet går att ändra innan det signeras.</p>' +
-                            'Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.',
                         button1click: function() {
                             $log.debug('copy cert from dialog' + cert);
                             if (dialogModel.dontShowCopyInfo) {
@@ -188,12 +200,18 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
                             $scope.dialog.showerror = false;
                             $scope.dialog.acceptprogressdone = false;
-                            _createCopyDraft($scope, dialogModel, cert, function(draftResponse) {
+                            _createCopyDraft(cert, function(draftResponse) {
                                 $scope.dialog.acceptprogressdone = true;
                                 $scope.widgetState.createErrorMessageKey = undefined;
                                 copyDialog.close();
                                 goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
-                            }, function() {
+                            }, function(errorCode) {
+                                if (errorCode === 'DATA_NOT_FOUND') {
+                                    $scope.dialog.errormessageid = 'error.failedtocopyintyg.personidnotfound';
+                                }
+                                else {
+                                    $scope.dialog.errormessageid = 'error.failedtocopyintyg';
+                                }
                                 $scope.dialog.acceptprogressdone = true;
                                 $scope.dialog.showerror = true;
                             });

@@ -173,6 +173,8 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         // Notify stakeholders when a draft has been signed
         notify(intyg);
 
+        intygService.storeIntyg(intyg);
+
         return ticket;
     }
 

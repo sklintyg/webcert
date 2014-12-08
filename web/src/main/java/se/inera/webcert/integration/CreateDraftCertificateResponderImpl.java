@@ -1,12 +1,9 @@
 package se.inera.webcert.integration;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
@@ -27,6 +24,8 @@ import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 
+import java.util.List;
+
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateDraftCertificateResponderImpl.class);
@@ -39,10 +38,10 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private CreateNewDraftRequestBuilder draftRequestBuilder;
-    
+
     @Autowired
     private CreateDraftCertificateValidator validator;
-    
+
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
@@ -57,6 +56,11 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             return createValidationErrorResponse(validationResults);
         }
 
+        String invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
+        String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
+
+        LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
+
         // Check if the invoking health personal has MIU rights on care unit
         MiuInformationType unitMIU = checkMIU(utkastsParams);
         if (unitMIU == null) {
@@ -66,7 +70,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         // Create the draft
         String nyttUtkastsId = createNewDraft(utkastsParams, unitMIU);
 
-        // Return a success response
         return createSuccessResponse(nyttUtkastsId);
     }
 
@@ -170,23 +173,21 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         response.setUtlatandeId(utlId);
         return response;
     }
-    
+
     private void addVardenhetToRegistry(CreateNewDraftRequest utkastsRequest) {
-        
+
         Vardenhet vardenhet = utkastsRequest.getVardenhet();
         Vardgivare vardgivare = vardenhet.getVardgivare();
-                
+
         IntegreradEnhetEntry integreradEnhet = new IntegreradEnhetEntry(vardenhet.getHsaId(),
                 vardenhet.getNamn(), vardgivare.getHsaId(), vardgivare.getNamn());
-        
+
         boolean result = integreradeEnheterRegistry.addIfNotExistsIntegreradEnhet(integreradEnhet);
-        
+
         if (result) {
             LOG.info("Added unit '{}' to registry of integrated units", vardenhet.getHsaId());
         } else {
             LOG.debug("Unit '{}' was alredy present in the registry of integrated units", vardenhet.getHsaId());
         }
-        
     }
-    
 }

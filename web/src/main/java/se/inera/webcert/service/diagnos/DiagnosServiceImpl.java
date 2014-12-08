@@ -22,22 +22,22 @@ import se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory;
 /**
  * Implementation of DiagnosService. Supplies services for getting a diagnosis by code
  * or searching for diagnosies.
- * 
+ *
  * @author npet
  *
  */
 @Service
 public class DiagnosServiceImpl implements DiagnosService {
-    
+
     /**
-     * A regular expression for validating a 'swedish' ICD-10 code. 
-     * 
-     * The code should start with an upper-case letter 
-     * and should be followed by two digits, 
-     * then an optional '.', 
+     * A regular expression for validating a 'swedish' ICD-10 code.
+     *
+     * The code should start with an upper-case letter
+     * and should be followed by two digits,
+     * then an optional '.',
      * followed by an optional digit,
      * finishing with an optional upper-case letter.
-     * 
+     *
      * Tested with: A11, A11.1, A11.1X, A111, A111X
      */
     private static final String ICD10_CODE_REGEXP = "^[A-Z]\\d{2}\\.{0,1}\\d{0,1}[A-Z]{0,1}$";
@@ -66,44 +66,44 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.diagnos.DiagnosService#getDiagnosisByCode(java.lang.String)
      */
     @Override
     public DiagnosResponse getDiagnosisByCode(String code) {
-        
-        if(!validateDiagnosisCode(code)) {
+
+        if (!validateDiagnosisCode(code)) {
             return DiagnosResponse.invalidCode();
         }
-        
+
         Diagnos diagnos = diagnosRepo.getDiagnosByCode(code);
-        
+
         if (diagnos != null) {
             return DiagnosResponse.ok(diagnos);
         }
-        
+
         return DiagnosResponse.notFound();
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
     public DiagnosResponse searchDiagnosisByCode(String codeFragment, int nbrOfResults) {
-        
+
         Assert.isTrue((nbrOfResults > 0), "nbrOfResults must be larger that 0");
-        
-        if(!validateDiagnosisCode(codeFragment)) {
+
+        if (!validateDiagnosisCode(codeFragment)) {
             return DiagnosResponse.invalidCode();
         }
-        
+
         List<Diagnos> matches = diagnosRepo.searchDiagnosisByCode(codeFragment);
 
         if (matches.isEmpty()) {
-            return DiagnosResponse.notFound(); 
+            return DiagnosResponse.notFound();
         }
-            
+
         if (matches.size() <= nbrOfResults) {
             return DiagnosResponse.ok(matches);
         }
@@ -115,41 +115,40 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String)
      */
     @Override
     public DiagnosResponse searchDiagnosisByCode(String codeFragment) {
-        
-        if(!validateDiagnosisCode(codeFragment)) {
+
+        if (!validateDiagnosisCode(codeFragment)) {
             return DiagnosResponse.invalidCode();
         }
-        
+
         List<Diagnos> matches = diagnosRepo.searchDiagnosisByCode(codeFragment);
-        
+
         if (matches.isEmpty()) {
-            return DiagnosResponse.notFound(); 
+            return DiagnosResponse.notFound();
         }
-        
+
         return DiagnosResponse.ok(matches);
     }
 
-    
     /**
      * Perform a regex validation on the diagnosis code, the code
      * is trimmed before checked.
-     * 
+     *
      * @param diagnosisCode
      * @return true if the diagnosisCode matches the regexp
      */
     public boolean validateDiagnosisCode(String diagnosisCode) {
-        
-        if (StringUtils.isNotBlank(diagnosisCode)) {           
+
+        if (StringUtils.isNotBlank(diagnosisCode)) {
             Pattern p = Pattern.compile(ICD10_CODE_REGEXP);
             Matcher m = p.matcher(diagnosisCode.trim());
             return m.matches();
         }
-        
+
         return false;
     }
 }
