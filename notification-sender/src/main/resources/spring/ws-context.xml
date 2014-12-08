@@ -1,17 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xmlns:cxf="http://cxf.apache.org/core" xmlns:http="http://cxf.apache.org/transports/http/configuration"
+  xmlns:sec="http://cxf.apache.org/configuration/security"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+    http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+    http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+    http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+    http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
+
+  <cxf:bus>
+    <cxf:features>
+      <cxf:logging />
+    </cxf:features>
+  </cxf:bus>
 
   <jaxws:client id="certificateStatusUpdateForCareClient"
     serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface"
-    address="${certificatestatusupdateforcare.endpoint.url}" />
+    address="${certificatestatusupdateforcare.ws.endpoint.url}">
+    <jaxws:properties>
+      <entry key="schema-validation-enabled" value="true" />
+    </jaxws:properties>
+  </jaxws:client>
 
+  <beans profile="test,qa,prod">
+    <http:conduit
+      name="{urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCare:1:rivtabp21}CertificateStatusUpdateForCareResponderPort.http-conduit">
+      <http:client AllowChunking="false" AutoRedirect="true"
+        Connection="Keep-Alive" />
+      <http:tlsClientParameters disableCNCheck="true">
+
+        <sec:keyManagers keyPassword="${ntjp.ws.key.manager.password}">
+          <sec:keyStore file="${ntjp.ws.certificate.file}"
+            password="${ntjp.ws.certificate.password}" type="${ntjp.ws.certificate.type}" />
+        </sec:keyManagers>
+        <sec:trustManagers>
+          <sec:keyStore file="${ntjp.ws.truststore.file}"
+            password="${ntjp.ws.truststore.password}" type="${ntjp.ws.truststore.type}" />
+        </sec:trustManagers>
+
+        <sec:cipherSuitesFilter>
+          <!-- these filters ensure that a cipher suite with export-suitable 
+            or null encryption is used, but exclude anonymous Diffie-Hellman key change 
+            as this is vulnerable to man-in-the-middle attacks -->
+          <sec:include>.*_EXPORT_.*</sec:include>
+          <sec:include>.*_EXPORT1024_.*</sec:include>
+          <sec:include>.*_WITH_DES_.*</sec:include>
+          <sec:include>.*_WITH_AES_.*</sec:include>
+          <sec:include>.*_WITH_NULL_.*</sec:include>
+          <sec:exclude>.*_DH_anon_.*</sec:exclude>
+        </sec:cipherSuitesFilter>
+      </http:tlsClientParameters>
+    </http:conduit>
+  </beans>
+  
+  <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare -->
   <beans profile="dev">
-    
-    <jaxws:endpoint address="/certificate-status-update-for-care-stub" implementor="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub"/>
-    
+    <jaxws:endpoint address="/certificate-status-update-for-care-stub"
+      implementor="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub" />
   </beans>
 
 </beans>  
