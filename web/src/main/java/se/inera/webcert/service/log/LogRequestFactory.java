@@ -8,7 +8,10 @@ import se.inera.certificate.model.Vardgivare;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.log.dto.LogRequest;
 
-public class LogRequestFactory {
+public final class LogRequestFactory {
+
+    private LogRequestFactory() {
+    }
 
     public static LogRequest createLogRequestFromDraft(Intyg draft) {
 

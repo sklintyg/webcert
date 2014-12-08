@@ -2,7 +2,9 @@ package se.inera.webcert.pu.model;
 
 public class PersonSvar {
 
-    public enum Status {FOUND, NOT_FOUND, ERROR}
+    public enum Status {
+        FOUND, NOT_FOUND, ERROR
+    }
 
     private final Person person;
     private final Status status;

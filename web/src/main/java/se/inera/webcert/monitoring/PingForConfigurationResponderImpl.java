@@ -1,18 +1,11 @@
 package se.inera.webcert.monitoring;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.annotation.PostConstruct;
-import javax.jws.WebParam;
-
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
 import se.inera.webcert.service.monitoring.HealthCheckService;
 import se.inera.webcert.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
@@ -20,9 +13,14 @@ import se.riv.itintegration.monitoring.v1.ConfigurationType;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
 
+import javax.annotation.PostConstruct;
+import javax.jws.WebParam;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Implements PingForConfiguration and returns various statuses about the health of the application.
- * 
+ *
  * @author nikpet
  */
 public class PingForConfigurationResponderImpl implements PingForConfigurationResponderInterface {
@@ -41,7 +39,9 @@ public class PingForConfigurationResponderImpl implements PingForConfigurationRe
     private HealthCheckService healthCheck;
 
     @Override
-    public PingForConfigurationResponseType pingForConfiguration(@WebParam(partName = "LogicalAddress", name = "LogicalAddress", targetNamespace = "urn:riv:itintegration:registry:1", header = true) String logicalAddress, @WebParam(partName = "parameters", name = "PingForConfiguration", targetNamespace = "urn:riv:itintegration:monitoring:PingForConfigurationResponder:1") PingForConfigurationType parameters) {
+    public PingForConfigurationResponseType pingForConfiguration(
+            @WebParam(partName = "LogicalAddress", name = "LogicalAddress", targetNamespace = "urn:riv:itintegration:registry:1", header = true) String logicalAddress,
+            @WebParam(partName = "parameters", name = "PingForConfiguration", targetNamespace = "urn:riv:itintegration:monitoring:PingForConfigurationResponder:1") PingForConfigurationType parameters) {
         PingForConfigurationResponseType response = new PingForConfigurationResponseType();
         response.setPingDateTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
         LOG.info("Version String: " + projectVersion);

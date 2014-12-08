@@ -34,7 +34,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public List<FragaSvar> fragaSvarForIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
-        abortIfFragaSvarNotActive(intygsTyp); 
+        abortIfFragaSvarNotActive(intygsTyp);
         return fragaSvarService.getFragaSvar(intygsId);
     }
 
@@ -60,12 +60,12 @@ public class FragaSvarModuleApiController extends AbstractApiController {
         return Response.ok(fragaSvarResponse).build();
     }
 
-
     @POST
     @Path("/{intygsTyp}/{intygsId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createQuestion(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId, CreateQuestionParameter parameter) {
+    public Response createQuestion(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId,
+            CreateQuestionParameter parameter) {
         abortIfFragaSvarNotActive(intygsTyp);
         LOG.debug("New question for cert {} with subject {}", intygsId, parameter.getAmne());
         FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygsId, parameter.getAmne(), parameter.getFrageText());
@@ -87,7 +87,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
         abortIfFragaSvarNotActive(intygsTyp);
         return fragaSvarService.openQuestionAsUnhandled(fragasvarId);
     }
-    
+
     private void abortIfFragaSvarNotActive(String intygsTyp) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_FRAGOR, intygsTyp);
     }

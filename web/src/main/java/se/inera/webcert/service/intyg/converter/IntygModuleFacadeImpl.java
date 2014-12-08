@@ -1,12 +1,9 @@
 package se.inera.webcert.service.intyg.converter;
 
-import javax.xml.bind.JAXBException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType;
 import se.inera.certificate.model.Utlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
@@ -24,6 +21,8 @@ import se.inera.certificate.modules.support.api.dto.TransportModelVersion;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 
+import javax.xml.bind.JAXBException;
+
 @Component
 public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
@@ -31,7 +30,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-    
+
     @Autowired
     private IntygModuleModelJaxbUtil jaxbUtil;
 
@@ -52,7 +51,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
 
             ExternalModelHolder extHolder = new ExternalModelHolder(externalIntygJsonModel);
-            InternalModelResponse internalModelReponse  = moduleApi.convertExternalToInternal(extHolder);
+            InternalModelResponse internalModelReponse = moduleApi.convertExternalToInternal(extHolder);
             return internalModelReponse.getInternalModel();
         } catch (ModuleException me) {
             throw new IntygModuleFacadeException("Exception occured when converting from external to internal", me);
@@ -112,5 +111,4 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             throw new IntygModuleFacadeException("A ModuleNotFoundException was throw when converting from internal to external", e);
         }
     }
-    
 }

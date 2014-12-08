@@ -21,7 +21,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.service.integration.IntegreradeEnheterService#addIfNotExistsIntegreradEnhet(se.inera.webcert
      * .service.integration.dto.IntegreradEnhetEntry)
@@ -52,15 +52,15 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.integration.IntegreradeEnheterService#isEnhetIntegrerad(java.lang.String)
      */
     @Override
     @Transactional()
     public boolean isEnhetIntegrerad(String enhetHsaId) {
-        
+
         IntegreradEnhet ie = integreradEnhetRepository.findOne(enhetHsaId);
-        
+
         if (ie == null) {
             LOG.debug("Unit {} is not in the registry of integrated units", enhetHsaId);
             return false;

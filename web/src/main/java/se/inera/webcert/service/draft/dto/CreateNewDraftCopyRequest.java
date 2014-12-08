@@ -8,9 +8,9 @@ import se.inera.webcert.service.dto.Vardenhet;
 public class CreateNewDraftCopyRequest {
 
     private String originalIntygId;
-    
+
     private String nyttPatientPersonnummer;
-    
+
     private HoSPerson hosPerson;
 
     private Vardenhet vardenhet;
@@ -18,11 +18,11 @@ public class CreateNewDraftCopyRequest {
     public CreateNewDraftCopyRequest() {
 
     }
-    
+
     public boolean containsNyttPatientPersonnummer() {
         return StringUtils.isNotBlank(nyttPatientPersonnummer);
     }
-    
+
     public String getOriginalIntygId() {
         return originalIntygId;
     }
@@ -54,5 +54,4 @@ public class CreateNewDraftCopyRequest {
     public void setVardenhet(Vardenhet vardenhet) {
         this.vardenhet = vardenhet;
     }
-
 }

@@ -1,13 +1,12 @@
 package se.inera.webcert.service.diagnos.repo;
 
-import java.util.List;
-
 import se.inera.webcert.service.diagnos.model.Diagnos;
+
+import java.util.List;
 
 public interface DiagnosRepository {
 
-    public abstract Diagnos getDiagnosByCode(String code);
+    Diagnos getDiagnosByCode(String code);
 
-    public abstract List<Diagnos> searchDiagnosisByCode(String codeFragment);
-
+    List<Diagnos> searchDiagnosisByCode(String codeFragment);
 }

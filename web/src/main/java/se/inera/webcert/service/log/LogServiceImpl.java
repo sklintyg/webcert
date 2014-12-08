@@ -36,13 +36,13 @@ public class LogServiceImpl implements LogService {
 
     private static final String PRINTED_AS_PDF = "Intyget utskrivet som PDF";
     private static final String PRINTED_AS_DRAFT = "Intyget utskrivet som utkast";
-    
+
     @Autowired(required = false)
     private JmsTemplate jmsTemplate;
 
     @Value("${pdlLogging.systemId}")
     private String systemId;
-    
+
     @Value("${pdlLogging.systemName}")
     private String systemName;
 
@@ -65,7 +65,7 @@ public class LogServiceImpl implements LogService {
     public void logPrintOfIntygAsPDF(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_PDF)));
     }
-    
+
     @Override
     public void logPrintOfIntygAsDraft(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_DRAFT)));
@@ -75,7 +75,7 @@ public class LogServiceImpl implements LogService {
     public void logSendIntygToRecipient(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new SendIntygToRecipientMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo())));
     }
-    
+
     private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg) {
 
         populateWithCurrentUserAndCareUnit(logMsg);

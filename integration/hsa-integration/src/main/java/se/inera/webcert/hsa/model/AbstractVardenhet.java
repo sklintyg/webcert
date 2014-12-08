@@ -98,7 +98,7 @@ public abstract class AbstractVardenhet implements SelectableVardenhet, Comparab
     public int compareTo(AbstractVardenhet annanVardenhet) {
         return getNamn().compareTo(annanVardenhet.getNamn());
     }
-    
+
     @Override
     public String toString() {
         return new StringBuilder(getNamn()).append(":").append(getId()).toString();

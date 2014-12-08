@@ -11,7 +11,7 @@ import java.util.List;
  * @author andreaskaltenbach
  */
 public class OutgoingMail {
-    
+
     private String from;
     private List<String> recipients = new ArrayList<>();
     private String subject;
@@ -58,28 +58,37 @@ public class OutgoingMail {
     // Eclipse-generated equals implementation, based on recipients, subject and body
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         OutgoingMail other = (OutgoingMail) obj;
         if (body == null) {
-            if (other.body != null)
+            if (other.body != null) {
                 return false;
-        } else if (!body.equals(other.body))
+            }
+        } else if (!body.equals(other.body)) {
             return false;
+        }
         if (recipients == null) {
-            if (other.recipients != null)
+            if (other.recipients != null) {
                 return false;
-        } else if (!recipients.equals(other.recipients))
+            }
+        } else if (!recipients.equals(other.recipients)) {
             return false;
+        }
         if (subject == null) {
-            if (other.subject != null)
+            if (other.subject != null) {
                 return false;
-        } else if (!subject.equals(other.subject))
+            }
+        } else if (!subject.equals(other.subject)) {
             return false;
+        }
         return true;
     }
 }

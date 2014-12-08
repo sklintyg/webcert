@@ -1,5 +1,11 @@
 package se.inera.webcert.web.controller.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -9,16 +15,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
-
 /**
  * Controller for accessing the users security context.
- * 
+ *
  * @author npet
  *
  */
@@ -29,7 +28,7 @@ public class UserApiController extends AbstractApiController {
 
     /**
      * Retrieves the security context of the logged in user as JSON.
-     * 
+     *
      * @return
      */
     @GET
@@ -41,7 +40,7 @@ public class UserApiController extends AbstractApiController {
 
     /**
      * Changes the selected care unit in the security context for the logged in user.
-     * 
+     *
      * @param request
      * @return
      */

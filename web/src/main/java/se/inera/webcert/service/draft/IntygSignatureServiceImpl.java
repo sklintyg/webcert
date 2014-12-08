@@ -1,11 +1,6 @@
 package se.inera.webcert.service.draft;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -13,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.webcert.eid.services.SignatureService;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.intyg.model.Intyg;
@@ -28,7 +22,11 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 @Service
 public class IntygSignatureServiceImpl implements IntygSignatureService {
@@ -52,7 +50,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
     @Autowired
     private SignatureService signatureService;
-    
+
     @Autowired
     private LogService logService;
 
@@ -84,7 +82,6 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
         return statusTicket;
     }
-
 
     @Override
     @Transactional
@@ -127,7 +124,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         ticket = ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
 
         intygService.storeIntyg(intyg);
-        
+
         return ticket;
     }
 
@@ -152,7 +149,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         ticketTracker.updateStatus(statusTicket.getId(), SignatureTicket.Status.SIGNERAD);
 
         intygService.storeIntyg(intyg);
-        
+
         return statusTicket;
     }
 

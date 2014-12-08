@@ -37,11 +37,11 @@ public class Omsandning {
     @Column(name = "GALLRINGSDATUM")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime gallringsdatum;
-    
+
     @Column(name = "OPERATION")
     @Enumerated(EnumType.STRING)
     private OmsandningOperation operation;
-    
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "KONFIGURATION")
@@ -50,7 +50,7 @@ public class Omsandning {
     public Omsandning() {
         super();
     }
-    
+
     public Omsandning(OmsandningOperation operation, String intygId) {
         super();
         this.intygId = intygId;

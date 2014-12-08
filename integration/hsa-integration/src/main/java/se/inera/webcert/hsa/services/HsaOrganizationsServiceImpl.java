@@ -1,15 +1,15 @@
 package se.inera.webcert.hsa.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimaps;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.ifv.hsawsresponder.v3.AddressType;
 import se.inera.ifv.hsawsresponder.v3.AttributeListType;
 import se.inera.ifv.hsawsresponder.v3.AttributeValueListType;
@@ -30,14 +30,11 @@ import se.inera.webcert.hsa.model.AbstractVardenhet;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimaps;
-
 import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -105,11 +102,11 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         String enhetNamn = miuInformationType.getCareUnitName();
 
         String enhetDn = fetchDistinguishedName(enhetHsaId, enhetNamn);
-        
+
         if (enhetDn == null) {
             return vardenheter;
         }
-        
+
         LOG.debug("DN for unit '{}' is '{}'", enhetHsaId, enhetDn);
 
         List<CareUnitType> careUnits = fetchSubEnheter(vardgivare, enhetDn);
@@ -168,14 +165,14 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
 
         HsawsSimpleLookupResponseType lookupResponse = client.callHsawsSimpleLookup(lookupType);
         switch (lookupResponse.getResponseValues().size()) {
-            case 0:
-                LOG.error("Enhet {} med hsaId {} saknas.", namn, hsaId);
-                return null;
-            case 1:
-                return lookupResponse.getResponseValues().get(0).getDN();
-            default:
-                LOG.warn("hsaId {} används till fler än 1 enhet. Detta är troligen ett konfigurations-fel i HSA-katalogen.", hsaId);
-                return lookupResponse.getResponseValues().get(0).getDN();
+        case 0:
+            LOG.error("Enhet {} med hsaId {} saknas.", namn, hsaId);
+            return null;
+        case 1:
+            return lookupResponse.getResponseValues().get(0).getDN();
+        default:
+            LOG.warn("hsaId {} används till fler än 1 enhet. Detta är troligen ett konfigurations-fel i HSA-katalogen.", hsaId);
+            return lookupResponse.getResponseValues().get(0).getDN();
         }
     }
 
@@ -233,19 +230,19 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
     }
 
     private Mottagning fetchMottagning(String mottagningsHsaId) {
-        
+
         GetHsaUnitResponseType response = client.callGetHsaunit(mottagningsHsaId);
-        
+
         LOG.debug("Fetching data for mottagning '{}'", mottagningsHsaId);
-        
+
         if (response == null) {
             LOG.error("Mottagning '{}' was not found in HSA. Inconsistent data in HSA", mottagningsHsaId);
             return null;
         }
-        
+
         Mottagning mottagning = new Mottagning(response.getHsaIdentity(), response.getName(), response.getStartDate(), response.getEndDate());
         updateWithContactInformation(mottagning, response);
-        
+
         return mottagning;
     }
 
@@ -329,24 +326,24 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         return vardgivare;
     }
 
-	@Override
-	public Vardenhet getVardenhet(String careUnitHsaId) {
-		
-		LOG.debug("Getting info on vardenhet '{}'", careUnitHsaId);
-		
-		// get the basic details
-		GetHsaUnitResponseType response = client.callGetHsaunit(careUnitHsaId);
-		
-		Vardenhet vardenhet = new Vardenhet(careUnitHsaId, response.getName(),
+    @Override
+    public Vardenhet getVardenhet(String careUnitHsaId) {
+
+        LOG.debug("Getting info on vardenhet '{}'", careUnitHsaId);
+
+        // get the basic details
+        GetHsaUnitResponseType response = client.callGetHsaunit(careUnitHsaId);
+
+        Vardenhet vardenhet = new Vardenhet(careUnitHsaId, response.getName(),
                 response.getStartDate(), response.getEndDate());
-		
-		// update with unit contact details
-		updateWithContactInformation(vardenhet, response);
-		
-		// update with the workplace code for this unit
-		String unitWorkplaceCode = getWorkplaceCode(vardenhet.getId());
+
+        // update with unit contact details
+        updateWithContactInformation(vardenhet, response);
+
+        // update with the workplace code for this unit
+        String unitWorkplaceCode = getWorkplaceCode(vardenhet.getId());
         vardenhet.setArbetsplatskod(unitWorkplaceCode);
-        
-		return vardenhet;
-	}
+
+        return vardenhet;
+    }
 }

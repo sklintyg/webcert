@@ -15,51 +15,51 @@ import se.inera.webcert.service.diagnos.model.Diagnos;
 
 /**
  * Factory responsible for creating the DiagnosRepository out of supplied code files.
- * 
+ *
  * @author npet
  *
  */
 public class DiagnosRepositoryFactory {
-    
+
     private static final String SPACE = " ";
 
     private static final String UTF_8 = "UTF-8";
-    
+
     private static Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
-    
+
     private List<String> diagnosCodeFiles;
-    
+
     public DiagnosRepositoryFactory(List<String> diagnosCodeFiles) {
         this.diagnosCodeFiles = diagnosCodeFiles;
     }
-    
+
     public DiagnosRepository createAndInitDiagnosRepository() {
         try {
-            
+
             DiagnosRepositoryImpl diagnosRepoImpl = new DiagnosRepositoryImpl();
 
             for (String kodfile : diagnosCodeFiles) {
                 populateRepoFromDiagnosisCodeFile(kodfile, diagnosRepoImpl);
             }
-            
+
             LOG.info("Created DiagnosRepository containing {} diagnoses", diagnosRepoImpl.nbrOfDiagosis());
-            
+
             return diagnosRepoImpl;
-            
+
         } catch (IOException e) {
             LOG.error("Exception occured when initiating DiagnosRepository");
             throw new RuntimeException("Exception occured when initiating repo", e);
         }
     }
-    
+
     public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) throws IOException {
 
         if (StringUtils.isBlank(fileUrl)) {
             return;
         }
-        
+
         LOG.debug("Loading diagnosis file {}", fileUrl);
-        
+
         Resource fileRes = new ClassPathResource(fileUrl);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(fileRes.getInputStream(), UTF_8));
@@ -69,7 +69,7 @@ public class DiagnosRepositoryFactory {
             Diagnos diagnos = createDiagnosFromString(line);
             diagnosRepository.addDiagnos(diagnos);
         }
-        
+
         reader.close();
     }
 
@@ -78,7 +78,7 @@ public class DiagnosRepositoryFactory {
         if (StringUtils.isBlank(diagnosStr)) {
             return null;
         }
-        
+
         // remove excess space in the string
         diagnosStr = StringUtils.normalizeSpace(diagnosStr);
 

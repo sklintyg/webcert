@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class JavaMailSenderAroundAdvice {
 
     @Autowired
-    MailStore mailStore;
+    private MailStore mailStore;
 
     private String mailHost;
 

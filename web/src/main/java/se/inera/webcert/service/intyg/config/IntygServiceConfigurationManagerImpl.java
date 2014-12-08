@@ -20,15 +20,15 @@ public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigu
 
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     public IntygServiceConfigurationManagerImpl() {
-        
+
     }
 
     public IntygServiceConfigurationManagerImpl(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
-    
+
     @Override
     public <T> T unmarshallConfig(String configAsJson, Class<T> configClazz) {
         try {
@@ -52,5 +52,4 @@ public class IntygServiceConfigurationManagerImpl implements IntygServiceConfigu
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
-
 }

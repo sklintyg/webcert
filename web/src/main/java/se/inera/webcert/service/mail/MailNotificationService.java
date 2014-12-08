@@ -8,6 +8,8 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 public interface MailNotificationService {
 
     void sendMailForIncomingQuestion(FragaSvar fragaSvar);
+
     void sendMailForIncomingAnswer(FragaSvar fragaSvar);
-    public String intygsUrl(FragaSvar fragaSvar);
+
+    String intygsUrl(FragaSvar fragaSvar);
 }

@@ -4,6 +4,5 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftce
 
 public interface CreateDraftCertificateValidator {
 
-    public abstract ValidationResult validate(UtlatandeType utlatande);
-
+    ValidationResult validate(UtlatandeType utlatande);
 }

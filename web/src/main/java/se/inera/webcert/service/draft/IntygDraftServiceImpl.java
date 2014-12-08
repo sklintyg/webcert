@@ -277,8 +277,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
                 LOG.error("No person data was found using '{}'", patientPersonnummer);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No person data found using '"
                         + patientPersonnummer + "'");
-            }
-            else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
+            } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
                 LOG.error("External error while looking up person data '{}'", patientPersonnummer);
 
                 // If there is a problem with the external system use old patient information.
@@ -289,25 +288,26 @@ public class IntygDraftServiceImpl implements IntygDraftService {
                     String[] namn = efternamn.split(" ");
                     if (namn.length > 0) {
                         fornamn = Strings.join(" ", java.util.Arrays.copyOfRange(namn, 0, namn.length - 1));
-                        if (namn.length > 1)
+                        if (namn.length > 1) {
                             efternamn = namn[namn.length - 1];
-                        else
+                        } else {
                             efternamn = "";
+                        }
                     }
                 }
                 person = new Person(
-                    patientPersonnummer,
-                    fornamn,
-                    Strings.join(" ", template.getExternalModel().getPatient().getMellannamn()),
-                    efternamn,
-                    template.getExternalModel().getPatient().getPostadress(),
-                    template.getExternalModel().getPatient().getPostnummer(),
-                    template.getExternalModel().getPatient().getPostort());
-            }
-            else if (personSvar.getStatus() != PersonSvar.Status.FOUND) {
+                        patientPersonnummer,
+                        fornamn,
+                        Strings.join(" ", template.getExternalModel().getPatient().getMellannamn()),
+                        efternamn,
+                        template.getExternalModel().getPatient().getPostadress(),
+                        template.getExternalModel().getPatient().getPostnummer(),
+                        template.getExternalModel().getPatient().getPostort());
+            } else if (personSvar.getStatus() != PersonSvar.Status.FOUND) {
                 LOG.error("Unknown status while looking up person data '{}'", patientPersonnummer);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Unknown status while looking up person data '"
-                        + patientPersonnummer + "'");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                        "Unknown status while looking up person data '"
+                                + patientPersonnummer + "'");
             }
 
             String newDraftIntygId = intygsIdStrategy.createId();

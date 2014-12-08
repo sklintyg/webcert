@@ -3,7 +3,7 @@ package se.inera.webcert.web.controller.api.dto;
 public class CopyIntygResponse {
 
     private String intygsUtkastId;
-    
+
     private String intygsTyp;
 
     public CopyIntygResponse(String intygsUtkastId, String intygsTyp) {
@@ -27,5 +27,4 @@ public class CopyIntygResponse {
     public void setIntygsTyp(String intygsTyp) {
         this.intygsTyp = intygsTyp;
     }
-    
 }

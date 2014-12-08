@@ -1,12 +1,9 @@
 package se.inera.webcert.integration;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
@@ -22,11 +19,12 @@ import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
-import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
+
+import java.util.List;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
@@ -40,10 +38,10 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private CreateNewDraftRequestBuilder draftRequestBuilder;
-    
+
     @Autowired
     private CreateDraftCertificateValidator validator;
-    
+
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
@@ -52,15 +50,15 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
 
         UtlatandeType utkastsParams = parameters.getUtlatande();
-        
+
         ValidationResult validationResults = validator.validate(utkastsParams);
-        
+
         if (validationResults.hasErrors()) {
             String errMsgs = validationResults.getErrorMessagesAsString();
             LOG.warn("UtlatandeType did not validate correctly: {}", errMsgs);
             return createErrorResponse(errMsgs, ErrorIdType.VALIDATION_ERROR);
         }
-                
+
         String invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
@@ -79,9 +77,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         CreateNewDraftRequest utkastsRequest = draftRequestBuilder.buildCreateNewDraftRequest(utkastsParams, unitMIU);
 
         String nyttUtkastsId = intygsUtkastService.createNewDraft(utkastsRequest);
-        
+
         addVardenhetToRegistry(utkastsRequest);
-        
+
         return createSuccessResponse(nyttUtkastsId);
     }
 
@@ -123,23 +121,21 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         return response;
     }
-    
+
     private void addVardenhetToRegistry(CreateNewDraftRequest utkastsRequest) {
-        
+
         Vardenhet vardenhet = utkastsRequest.getVardenhet();
         Vardgivare vardgivare = vardenhet.getVardgivare();
-                
+
         IntegreradEnhetEntry integreradEnhet = new IntegreradEnhetEntry(vardenhet.getHsaId(),
                 vardenhet.getNamn(), vardgivare.getHsaId(), vardgivare.getNamn());
-        
+
         boolean result = integreradeEnheterRegistry.addIfNotExistsIntegreradEnhet(integreradEnhet);
-        
+
         if (result) {
             LOG.info("Added unit '{}' to registry of integrated units", vardenhet.getHsaId());
         } else {
             LOG.debug("Unit '{}' was alredy present in the registry of integrated units", vardenhet.getHsaId());
         }
-        
     }
-    
 }

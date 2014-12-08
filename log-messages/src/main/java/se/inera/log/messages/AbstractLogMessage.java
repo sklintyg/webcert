@@ -1,9 +1,9 @@
 package se.inera.log.messages;
 
+import org.joda.time.LocalDateTime;
+
 import java.io.Serializable;
 import java.util.UUID;
-
-import org.joda.time.LocalDateTime;
 
 /**
  * Base class for all log messages.
@@ -17,13 +17,13 @@ public class AbstractLogMessage implements Serializable {
     private String logId;
 
     private String systemId;
-    
+
     private String systemName;
-    
+
     private String activityLevel;
 
     private String activityArgs;
-    
+
     private ActivityType activityType;
 
     private LocalDateTime timestamp;
@@ -44,9 +44,14 @@ public class AbstractLogMessage implements Serializable {
     /**
      * Constructor for a log message.
      *
-     * @param activityType Något av dessa värden ska anges: Läsa, Skriva, Signera, Utskrift, Vidimera, Radera och Nödöppning
-     * @param purpose      kan vara något av dessa värden: Vård och behandling, Kvalitetssäkring, Annan dokumentation enligt lag, Statistik, Administration och Kvalitetsregister.
-     * @param resourceType Kan vara kemlabbsvar, journaltext, remiss, översikt, samtycke, patientrelation, sätta spärr, rapport osv.
+     * @param activityType
+     *            Något av dessa värden ska anges: Läsa, Skriva, Signera, Utskrift, Vidimera, Radera och Nödöppning
+     * @param purpose
+     *            kan vara något av dessa värden: Vård och behandling, Kvalitetssäkring, Annan dokumentation enligt lag,
+     *            Statistik, Administration och Kvalitetsregister.
+     * @param resourceType
+     *            Kan vara kemlabbsvar, journaltext, remiss, översikt, samtycke, patientrelation, sätta spärr, rapport
+     *            osv.
      */
     public AbstractLogMessage(ActivityType activityType, ActivityPurpose purpose, String resourceType) {
         this.logId = UUID.randomUUID().toString();
@@ -55,7 +60,7 @@ public class AbstractLogMessage implements Serializable {
         this.resourceType = resourceType;
         this.timestamp = LocalDateTime.now();
     }
-    
+
     public AbstractLogMessage(ActivityType activityType) {
         this(activityType, ActivityPurpose.CARE_TREATMENT, RESOURCE_TYPE);
     }
@@ -107,7 +112,7 @@ public class AbstractLogMessage implements Serializable {
     public void setActivityArgs(String activityArgs) {
         this.activityArgs = activityArgs;
     }
-    
+
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }

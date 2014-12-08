@@ -15,7 +15,7 @@ public class LogRequest {
 
     private String intygCareGiverId;
     private String intygCareGiverName;
-    
+
     private String additionalInfo;
 
     public LogRequest() {

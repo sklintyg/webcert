@@ -25,9 +25,9 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-        
+
     private IdValidator idValidator;
-    
+
     @PostConstruct
     public void init() {
         SimpleIdValidatorBuilder validatorBuilder = new SimpleIdValidatorBuilder();
@@ -36,7 +36,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.integration.validator.CreateDraftCertificateValidator#validate(se.inera.certificate.clinicalprocess
      * .healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType)
@@ -54,9 +54,9 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     public void validateTypAvUtlatande(UtlatandeTyp typAvUtlatande, ValidationResult errors) {
-    
+
         String intygsTyp = typAvUtlatande.getCode();
-    
+
         if (!moduleRegistry.moduleExists(intygsTyp)) {
             errors.addError("Intyg {0} is not supported", intygsTyp);
         }
@@ -100,25 +100,25 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     public void validateId(II iI, String name, ValidationResult errors) {
-        
+
         Id id = new Id(iI.getRoot(), iI.getExtension());
-        
+
         if (StringUtils.isBlank(iI.getRoot())) {
             errors.addError("Element {0} is missing root element", name);
             return;
         }
-        
+
         if (!idValidator.isValidationSupported(id)) {
             errors.addError("Validation is not supported for root {1} in element {0}", name, id.getRoot());
             return;
         }
-        
+
         List<String> results = idValidator.validate(id);
-        
+
         if (!results.isEmpty()) {
             String resultsStr = StringUtils.join(results, ", ");
             errors.addError("Id element {0} has errors: [{1}]", name, resultsStr);
         }
-        
+
     }
 }

@@ -13,7 +13,11 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -64,7 +68,9 @@ public class IntygIntegrationController {
      */
     @GET
     @Path("/{intygId}")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId,
+            @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn,
+            @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
 
         Boolean draft = true;
         String intygType;
@@ -97,7 +103,8 @@ public class IntygIntegrationController {
         return buildRedirectResponse(uriInfo, intygType, intygId, alternatePatientSSn, responsibleHospName, draft);
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn, String responsibleHospName, Boolean draft) {
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn,
+            String responsibleHospName, Boolean draft) {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
@@ -107,7 +114,7 @@ public class IntygIntegrationController {
         urlParams.put(PARAM_PATIENT_SSN, alternatePatientSSn);
 
         String urlFragmentTemplate;
-        if(draft) {
+        if (draft) {
             urlParams.put(PARAM_HOSP_NAME, responsibleHospName);
             urlFragmentTemplate = this.urlUtkastFragmentTemplate;
         } else {

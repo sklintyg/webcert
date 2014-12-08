@@ -61,7 +61,7 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
 
     @Override
     public GetHsaUnitResponseType getHsaUnit(AttributedURIType logicalAddress, AttributedURIType id,
-                                             LookupHsaObjectType parameters) throws HsaWsFault {
+            LookupHsaObjectType parameters) throws HsaWsFault {
         if (parameters.getHsaIdentity().endsWith("-finns-ej")) {
             return null;
         }
@@ -113,7 +113,7 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
      */
     @Override
     public GetMiuForPersonResponseType getMiuForPerson(AttributedURIType logicalAddress, AttributedURIType id,
-                                                       GetMiuForPersonType parameters) throws HsaWsFault {
+            GetMiuForPersonType parameters) throws HsaWsFault {
         GetMiuForPersonResponseType response = new GetMiuForPersonResponseType();
 
         for (Medarbetaruppdrag medarbetaruppdrag : hsaService.getMedarbetaruppdrag()) {
@@ -167,7 +167,7 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
      */
     @Override
     public HsawsSimpleLookupResponseType hsawsSimpleLookup(AttributedURIType logicalAddress, AttributedURIType id,
-                                                           HsawsSimpleLookupType parameters) throws HsaWsFault {
+            HsawsSimpleLookupType parameters) throws HsaWsFault {
 
         HsawsSimpleLookupResponseType response = new HsawsSimpleLookupResponseType();
 
@@ -193,7 +193,7 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
         if (vardenhet == null) {
             return null;
         }
-        
+
         AttributeValueListType attributeList = new AttributeValueListType();
         attributeList.setDN(enhetsId);
 
@@ -208,7 +208,7 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
                         return mottagning.getId();
                     }
                 }
-        );
+                );
 
         AttributeValuePairType membersAttribute = new AttributeValuePairType();
         membersAttribute.setAttribute("hsaHealthCareUnitMember");
@@ -228,7 +228,7 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
      */
     @Override
     public GetCareUnitResponseType getCareUnit(AttributedURIType logicalAddress, AttributedURIType id,
-                                               LookupHsaObjectType parameters) throws HsaWsFault {
+            LookupHsaObjectType parameters) throws HsaWsFault {
 
         for (Vardgivare vardgivare : hsaService.getVardgivare()) {
             for (Vardenhet vardenhet : vardgivare.getVardenheter()) {
@@ -254,19 +254,19 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
 
     @Override
     public IsAuthorizedToSystemResponseType isAuthorizedToSystem(AttributedURIType logicalAddress,
-                                                                 AttributedURIType id, IsAuthorizedToSystemType parameters) throws HsaWsFault {
+            AttributedURIType id, IsAuthorizedToSystemType parameters) throws HsaWsFault {
         return null;
     }
 
     @Override
     public VpwGetPublicUnitsResponseType vpwGetPublicUnits(AttributedURIType logicalAddress, AttributedURIType id,
-                                                           VpwGetPublicUnitsType parameters) throws HsaWsFault {
+            VpwGetPublicUnitsType parameters) throws HsaWsFault {
         return null;
     }
 
     @Override
     public GetCareUnitListResponseType getCareUnitList(AttributedURIType logicalAddress, AttributedURIType id,
-                                                       LookupHsaObjectType parameters) throws HsaWsFault {
+            LookupHsaObjectType parameters) throws HsaWsFault {
 
         GetCareUnitListResponseType response = new GetCareUnitListResponseType();
 
@@ -293,13 +293,13 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
 
     @Override
     public GetPriceUnitsForAuthResponseType getPriceUnitsForAuth(AttributedURIType logicalAddress,
-                                                                 AttributedURIType id, GetPriceUnitsForAuthType parameters) throws HsaWsFault {
+            AttributedURIType id, GetPriceUnitsForAuthType parameters) throws HsaWsFault {
         return null;
     }
 
     @Override
     public GetHsaPersonResponseType getHsaPerson(AttributedURIType logicalAddress, AttributedURIType id,
-                                                 GetHsaPersonType parameters) throws HsaWsFault {
+            GetHsaPersonType parameters) throws HsaWsFault {
 
         String hsaId = parameters.getHsaIdentity();
 
@@ -320,13 +320,13 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
 
         user.setSpecialityCodes(userSpecCodes);
         user.setSpecialityNames(userSpecNames);
-        
+
         user.setTitle(hsaPerson.getTitel());
-        
+
         HsaTitles userHsaTitles = new HsaTitles();
-        
+
         userHsaTitles.getHsaTitle().addAll(hsaPerson.getLegitimeradeYrkesgrupper());
-        
+
         user.setHsaTitles(userHsaTitles);
 
         UserInformations userInfos = new UserInformations();
@@ -349,19 +349,19 @@ public class HsaWebServiceStub implements HsaWsResponderInterface {
 
     @Override
     public GetCareUnitMembersResponseType getCareUnitMembers(AttributedURIType logicalAddress, AttributedURIType id,
-                                                             LookupHsaObjectType parameters) throws HsaWsFault {
+            LookupHsaObjectType parameters) throws HsaWsFault {
         return null;
     }
 
     @Override
     public GetHospPersonResponseType getHospPerson(AttributedURIType logicalAddress, AttributedURIType id,
-                                                   GetHospPersonType parameters) throws HsaWsFault {
+            GetHospPersonType parameters) throws HsaWsFault {
         return null;
     }
 
     @Override
     public GetInformationListResponseType getInformationList(AttributedURIType logicalAddress, AttributedURIType id,
-                                                             GetInformationListType parameters) throws HsaWsFault {
+            GetInformationListType parameters) throws HsaWsFault {
         return null;
     }
 }
