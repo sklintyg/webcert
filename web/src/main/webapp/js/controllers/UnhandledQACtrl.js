@@ -2,7 +2,7 @@
  * Controller for logic related to listing questions and answers
  */
 angular.module('webcert').controller('webcert.UnhandledQACtrl',
-    [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
+    ['$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
         'common.fragaSvarCommonService', 'webcert.ManageCertificate', 'webcert.QuestionAnswer',
         function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService,
             fragaSvarCommonService, ManageCertificate, QuestionAnswer) {
@@ -323,9 +323,10 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
             $scope.onVidareBefordradChange = function(qa) {
                 qa.updateInProgress = true;
-                $log.debug('onVidareBefordradChange: fragaSvarId: ' + qa.internReferens + " intysTyp: " + qa.intygsReferens.intygsTyp)
-                fragaSvarCommonService.setVidareBefordradState(qa.internReferens, qa.intygsReferens.intygsTyp, 
-                     qa.vidarebefordrad, function(result) {
+                $log.debug('onVidareBefordradChange: fragaSvarId: ' + qa.internReferens + ' intysTyp: ' +
+                qa.intygsReferens.intygsTyp);
+                fragaSvarCommonService.setVidareBefordradState(qa.internReferens, qa.intygsReferens.intygsTyp,
+                    qa.vidarebefordrad, function(result) {
                         qa.updateInProgress = false;
 
                         if (result !== null) {
@@ -334,8 +335,8 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                             qa.vidarebefordrad = !qa.vidarebefordrad;
                             dialogService
                                 .showErrorMessageDialog('Kunde inte markera/avmarkera frågan som ' +
-                                    'vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. ' +
-                                    'Annars kan du kontakta supporten');
+                                'vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. ' +
+                                'Annars kan du kontakta supporten');
                         }
                     });
             };
@@ -343,7 +344,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
             $scope.openIntyg = function(intygsReferens) {
                 $log.debug('open intyg ' + intygsReferens.intygsId);
                 $location.url('/fragasvar/' + intygsReferens.intygsTyp.toLowerCase() + '/' +
-                    intygsReferens.intygsId, true);
+                intygsReferens.intygsId, true);
             };
 
             // Handle vidarebefordra dialog

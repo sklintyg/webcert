@@ -1,7 +1,7 @@
 /* global MODULE_CONFIG, wcMessages */
 window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
-var app = angular.module('webcert', [ 'ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize', 'common' ]);
+var app = angular.module('webcert', ['ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize', 'common']);
 
 app.config(function($routeProvider) {
     'use strict';
@@ -65,7 +65,7 @@ app.config(function($routeProvider) {
         });
 });
 
-app.config([ '$httpProvider', 'common.http403ResponseInterceptorProvider',
+app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider',
     function($httpProvider, http403ResponseInterceptorProvider) {
         'use strict';
 
@@ -139,24 +139,23 @@ app.constant('datepickerPopupConfig', {
 
 // IE8 doesn't have Array.indexOf function, check and add it as early as possible
 function checkAddIndexOf() {
-    if (!Array.prototype.indexOf)
-    {
-        Array.prototype.indexOf = function(elt /*, from*/)
-        {
+    'use strict';
+
+    if (!Array.prototype.indexOf) {
+        Array.prototype.indexOf = function(elt /*, from*/) {
             var len = this.length >>> 0;
 
             var from = Number(arguments[1]) || 0;
-            from = (from < 0)
-                ? Math.ceil(from)
-                : Math.floor(from);
-            if (from < 0)
+            from = (from < 0) ? Math.ceil(from) : Math.floor(from);
+            if (from < 0) {
                 from += len;
+            }
 
-            for (; from < len; from++)
-            {
+            for (; from < len; from++) {
                 if (from in this &&
-                    this[from] === elt)
+                    this[from] === elt) {
                     return from;
+                }
             }
             return -1;
         };
@@ -164,7 +163,7 @@ function checkAddIndexOf() {
 }
 
 // Inject language resources
-app.run([ '$log', '$rootScope', '$window', 'common.messageService', 'common.User',
+app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.User',
     function($log, $rootScope, $window, messageService, User) {
         'use strict';
 
@@ -180,11 +179,9 @@ app.run([ '$log', '$rootScope', '$window', 'common.messageService', 'common.User
         $window.dialogDoneLoading = true;
 
         $rootScope.$on('$routeChangeStart', function() {
-            $log.debug('$window.doneLoading = false;')
             $window.doneLoading = false;
         });
         $rootScope.$on('$routeChangeSuccess', function() {
-            $log.debug('$window.doneLoading = true;')
             $window.doneLoading = true;
         });
     }]);
@@ -198,7 +195,7 @@ $.get('/api/modules/map').then(function(modules) {
 
     if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'true') {
         modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/js/module.min.js?' +
-            MODULE_CONFIG.BUILD_NUMBER));
+        MODULE_CONFIG.BUILD_NUMBER));
         // All dependencies in module-deps.json are included in module.min.js
         // All dependencies in app-deps.json are included in app.min.js
 
