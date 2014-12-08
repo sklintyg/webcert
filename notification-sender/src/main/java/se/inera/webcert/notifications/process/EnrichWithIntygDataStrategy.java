@@ -15,6 +15,8 @@ import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 
 public class EnrichWithIntygDataStrategy {
 
+    private static final String HSAID_ROOT = "1.2.752.129.2.1.4.1";
+
     private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygDataStrategy.class);
 
     public CertificateStatusUpdateForCareType enrichWithIntygProperties(CertificateStatusUpdateForCareType statusUpdateType, Intyg intygsUtkast) {
@@ -22,13 +24,13 @@ public class EnrichWithIntygDataStrategy {
         LOG.debug("Enriching CertificateStatusUpdateForCareType with data from intygsutkast {}", intygsUtkast.getIntygsId());
 
         UtlatandeType utlatandeType = statusUpdateType.getUtlatande();
-        
+
         decorateWithHoSPerson(utlatandeType, intygsUtkast);
         decorateWithSignDate(utlatandeType, intygsUtkast);
 
         return statusUpdateType;
     }
-    
+
     private void decorateWithSignDate(UtlatandeType utlatandeType, Intyg intygsUtkast) {
         if (IntygsStatus.SIGNED.equals(intygsUtkast.getStatus())) {
             LOG.debug("Status is SIGNED, getting signed date");
@@ -60,7 +62,7 @@ public class EnrichWithIntygDataStrategy {
 
     private HsaId createHsaId(String id) {
         HsaId hsaId = new HsaId();
-        hsaId.setRoot("adf");
+        hsaId.setRoot(HSAID_ROOT);
         hsaId.setExtension(id);
         return hsaId;
     }
