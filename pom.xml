@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.1</version>
+    <version>0-SNAPSHOT</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -260,31 +260,7 @@
       </dependency>
 
       <!-- Integration -->
-      <dependency>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-core</artifactId>
-        <version>2.13.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-cxf</artifactId>
-        <version>2.13.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-jms</artifactId>
-        <version>2.13.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-jaxb</artifactId>
-        <version>2.13.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-camel</artifactId>
-        <version>${activemq.version}</version>
-      </dependency>
+
 
       <!-- Spring family -->
       <dependency>
@@ -434,7 +410,7 @@
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-test-spring</artifactId>
-        <version>2.13.3</version>
+        <version>${camel.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
