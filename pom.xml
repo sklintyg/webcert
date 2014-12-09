@@ -34,6 +34,7 @@
     <insuranceprocess-healthreporting.version>0-SNAPSHOT</insuranceprocess-healthreporting.version>
     <itintegration-monitoring.version>0-SNAPSHOT</itintegration-monitoring.version>
     <ehr-logstore.version>0-SNAPSHOT</ehr-logstore.version>
+    <schema.common.version>0-SNAPSHOT</schema.common.version>
 
     <!-- Tools -->
     <liquibase-runner.version>0-SNAPSHOT</liquibase-runner.version>
@@ -169,6 +170,11 @@
       </dependency>
 
       <!-- Schemas -->
+      <dependency>
+        <groupId>se.inera.intyg.schemas</groupId>
+        <artifactId>schema-common</artifactId>
+        <version>${schema.common.version}</version>
+      </dependency>
       <dependency>
         <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
         <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>

@@ -11,14 +11,12 @@
   <properties>
     <schema.dir>${basedir}/src/main/resources</schema.dir>
     <bindings.dir>${basedir}/src/main/resources/bindings</bindings.dir>
-    <schema.common.version>0-SNAPSHOT</schema.common.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>se.inera.intyg.schemas</groupId>
       <artifactId>schema-common</artifactId>
-      <version>${schema.common.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jvnet.jaxb2_commons</groupId>
