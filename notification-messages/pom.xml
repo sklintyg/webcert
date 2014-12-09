@@ -1,12 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>se.inera.intyg.webcert</groupId>
     <artifactId>webcert</artifactId>
     <version>0-SNAPSHOT</version>
   </parent>
+
   <artifactId>notification-messages</artifactId>
+
+  <name>Webcert (Notification Messages)</name>
 
   <properties>
     <schema.dir>${basedir}/src/main/resources</schema.dir>
@@ -16,7 +21,7 @@
   <dependencies>
     <dependency>
       <groupId>se.inera.intyg.schemas</groupId>
-      <artifactId>schema-common</artifactId>
+      <artifactId>schemas-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jvnet.jaxb2_commons</groupId>
