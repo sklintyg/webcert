@@ -11,7 +11,7 @@
     inera_tomcat_folder: "/var/lib/{{ tomcat_service }}"
     etc_folder: "{{ inera_tomcat_folder }}/etc"
     webapps_folder: "{{ inera_tomcat_folder }}/webapps"
-    version: 3.0.0-b5
+    version: 3.0.0-b15
 
   roles:
     - webcert
