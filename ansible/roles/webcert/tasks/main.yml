@@ -38,6 +38,18 @@
   get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
       dest={{ webapps_folder }}/log-sender.war
 
+- name: remove old version of unpacked notification-sender war
+  file: state=absent
+      path={{ webapps_folder }}/notification-sender
+
+- name: remove old version of notification-sender war
+  file: state=absent
+      path={{ webapps_folder }}/notification-sender.war
+
+- name: Download notification-sender war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/notification-sender/{{ version }}/notification-sender-{{ version }}.war
+      dest={{ webapps_folder }}/notification-sender.war
+
 - name: Create version file
   template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
