@@ -16,12 +16,12 @@ public class GetIntygPropertiesProcessor implements Processor {
 
     @Autowired
     private WebcertRepositoryService webcertRepositoryService;
-  
+
     private static final Logger LOG = LoggerFactory.getLogger(GetIntygPropertiesProcessor.class);
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        
+
         String intygsId = exchange.getIn().getHeader(RouteHeaders.INTYGS_ID, String.class);
         String logiskAddress = exchange.getIn().getHeader(RouteHeaders.LOGISK_ADRESS, String.class);
         String handelseStr = exchange.getIn().getHeader(RouteHeaders.HANDELSE, String.class);
@@ -29,11 +29,11 @@ public class GetIntygPropertiesProcessor implements Processor {
 
         if (HandelseType.INTYGSUTKAST_RADERAT.equals(handelse)) {
             LOG.debug("Event is {}, do not fetch Intyg {} from database since it is already deleted", handelse, intygsId);
-            
-            //TODO; null check logisk adress, throw exception if no present
+
+            // TODO; null check logisk adress, throw exception if no present
             return;
         }
-        
+
         Intyg intyg = webcertRepositoryService.getIntygsUtkast(intygsId);
 
         if (intyg == null) {
@@ -43,28 +43,28 @@ public class GetIntygPropertiesProcessor implements Processor {
         }
 
         String status = intyg.getStatus().toString();
-        
+
         LOG.debug("Set status: {} on intygsID: {} ", status, intygsId);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, status);
 
-        //If logical address header is null, use enhetsId from the entity as logical address
+        // If logical address header is null, use enhetsId from the entity as logical address
         if (StringUtils.isBlank(logiskAddress)) {
             logiskAddress = intyg.getEnhetsId();
             LOG.debug("Set logisk adress: {} on intygsID: {} ", logiskAddress, intygsId);
             exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, logiskAddress);
         }
-        
-        if(!webcertRepositoryService.isVardenhetIntegrerad(logiskAddress)) {
+
+        if (!webcertRepositoryService.isVardenhetIntegrerad(logiskAddress)) {
             LOG.debug("Unit {} on Intyg {} is NOT integrated", logiskAddress, intygsId);
             exchange.getIn().setHeader(RouteHeaders.INTEGRERAD_ENHET, Boolean.FALSE);
         } else {
             exchange.getIn().setHeader(RouteHeaders.INTEGRERAD_ENHET, Boolean.TRUE);
         }
-        
+
     }
-    
+
     private HandelseType convertToHandelseType(String handelseStr) {
         return HandelseType.fromValue(handelseStr);
     }
-    
+
 }

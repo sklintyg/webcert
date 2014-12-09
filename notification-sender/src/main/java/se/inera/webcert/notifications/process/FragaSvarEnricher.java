@@ -28,7 +28,7 @@ public class FragaSvarEnricher {
 
         return statusUpdateType;
     }
-    
+
     public CertificateStatusUpdateForCareType enrichWithNbrOfHandledQuestionsForIntyg(CertificateStatusUpdateForCareType statusUpdateType,
             Long nbrOfHandledQuestionsForIntyg) {
         LOG.debug("Adding nbr of handled questions to CertificateStatusUpdateForCareType: {}", nbrOfHandledQuestionsForIntyg);
@@ -37,7 +37,7 @@ public class FragaSvarEnricher {
 
         return statusUpdateType;
     }
-    
+
     public CertificateStatusUpdateForCareType enrichWithNbrOfHandledAndAnsweredQuestionsForIntyg(CertificateStatusUpdateForCareType statusUpdateType,
             Long nbrOfHandledAndAnsweredQuestionsForIntyg) {
         LOG.debug("Adding nbr of handled and answered questions to CertificateStatusUpdateForCareType: {}", nbrOfHandledAndAnsweredQuestionsForIntyg);
@@ -46,7 +46,7 @@ public class FragaSvarEnricher {
 
         return statusUpdateType;
     }
-    
+
     private int longToInt(Long value) {
         return (value != null) ? value.intValue() : -1;
     }

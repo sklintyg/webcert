@@ -7,10 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
-public class TestDataUtil {
-    
+public final class TestDataUtil {
+
+    private TestDataUtil() {
+
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(TestDataUtil.class);
-    
+
     public static String readRequestFromFile(String filePath) {
         try {
             LOG.info("Reading test data from: {}", filePath);
@@ -19,6 +23,6 @@ public class TestDataUtil {
         } catch (IOException e) {
             LOG.error("Could not read test data from: {}, error {}", filePath, e.getMessage());
             return null;
-        }   
-    }
+        }
+   }
 }

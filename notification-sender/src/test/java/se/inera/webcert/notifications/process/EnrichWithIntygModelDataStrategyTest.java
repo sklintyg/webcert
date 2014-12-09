@@ -17,15 +17,14 @@ import se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy.N
 
 import com.jayway.jsonpath.ReadContext;
 
-
 public class EnrichWithIntygModelDataStrategyTest {
 
     private EnrichWithIntygModelDataStrategy enricher;
-    
+
     private ReadContext intyg1JsonCtx;
-    
+
     private ReadContext intyg2JsonCtx;
-    
+
     @Before
     public void setup() {
         enricher = new EnrichWithIntygModelDataStrategy();
@@ -34,52 +33,51 @@ public class EnrichWithIntygModelDataStrategyTest {
         String intyg2json = TestDataUtil.readRequestFromFile("utlatande/utlatande-intyg-2.json");
         intyg2JsonCtx = enricher.setupJsonContext(intyg2json);
     }
-    
+
     @Test
     public void testExtractArbetsformagor() {
-        
+
         List<ArbetsformagaType> arbetsformagor = enricher.extractArbetsformagor(intyg1JsonCtx);
         assertEquals(2, arbetsformagor.size());
     }
-    
+
     @Test
     public void testExtractArbetsformagaNotFound() {
-      
+
         ArbetsformagaType res = enricher.extractToArbArbetsformagaType("100", EnrichWithIntygModelDataStrategy.NEDSATT_100_JSONP, intyg1JsonCtx);
         assertNull(res);
     }
-    
+
     @Test
     public void testExtractArbetsformagaWith25() {
-        
+
         ArbetsformagaType res = enricher.extractToArbArbetsformagaType("25", EnrichWithIntygModelDataStrategy.NEDSATT_25_JSONP, intyg1JsonCtx);
         assertNotNull(res);
         assertNotNull(res.getPeriod());
         assertNotNull(res.getPeriod().getFrom());
         assertNotNull(res.getPeriod().getTom());
-        assertNotNull(res.getVarde());   
+        assertNotNull(res.getVarde());
     }
-    
+
     @Test
     public void testExtractNedsattning() {
         NedsattningsPeriod res = enricher.extractToNedsattningsPeriod(EnrichWithIntygModelDataStrategy.NEDSATT_25_JSONP, intyg1JsonCtx);
         assertNotNull(res);
     }
-    
+
     @Test
-    public void testExtractDiagnosKod() {        
+    public void testExtractDiagnosKod() {
         DiagnosType res = enricher.extractDiagnos(intyg1JsonCtx);
         assertNotNull(res);
         assertEquals("S47", res.getCode());
         assertNotNull(res.getDisplayName());
         assertTrue(res.getDisplayName().contains("Klämskada"));
     }
-    
+
     @Test
-    public void testExtractDiagnosKodNotFound() {        
+    public void testExtractDiagnosKodNotFound() {
         DiagnosType res = enricher.extractDiagnos(intyg2JsonCtx);
         assertNull(res);
     }
-    
-    
+
 }

@@ -13,12 +13,12 @@ import se.inera.webcert.notifications.process.IntygsTypChecker;
 import se.inera.webcert.notifications.service.WebcertRepositoryService;
 
 public class NotificationRequestRouter extends RouteBuilder {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRequestRouter.class);
-    
+
     @Autowired
     private WebcertRepositoryService webcertRepositoryService;
-    
+
     @Autowired
     private IntygsTypChecker intygsTypChecker;
 
@@ -46,7 +46,7 @@ public class NotificationRequestRouter extends RouteBuilder {
             .otherwise()
                 .to("ref:processNotificationRequestEndpoint");
     }
-    
+
     private Predicate isOfAllowedType() {
         return method(intygsTypChecker).isEqualTo(Boolean.TRUE);
     }

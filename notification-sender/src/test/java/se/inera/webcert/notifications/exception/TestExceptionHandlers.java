@@ -29,34 +29,37 @@ import se.inera.webcert.notifications.service.exception.NonRecoverableCertificat
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration({"/spring/test-properties-context.xml", "/spring/beans-context.xml", "/spring/test-service-context.xml", "/spring/camel-context.xml"})
+@ContextConfiguration({ "/spring/test-properties-context.xml", "/spring/beans-context.xml", "/spring/test-service-context.xml",
+        "/spring/camel-context.xml" })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-@ActiveProfiles( profiles = "unittest" )
+@ActiveProfiles(profiles = "unittest")
 public class TestExceptionHandlers {
-    
+    // Expect this number of messages
+    private static final int EXPECTED_MESSAGE_COUNT = 4;
+
     @Autowired
-    CamelContext camelContext;
+    private CamelContext camelContext;
 
     @Produce(uri = "direct:processNotificationRequestEndpoint")
-    ProducerTemplate processNotificationRequestEndpoint;
-    
+    private ProducerTemplate processNotificationRequestEndpoint;
+
     @EndpointInject(uri = "mock:certificateStatusUpdateEndpoint")
-    MockEndpoint mockCertificateStatusUpdateEndpoint;
-    
+    private MockEndpoint mockCertificateStatusUpdateEndpoint;
+
     private static final String VARDENHET_1_ADDR = "vardenhet-1";
-    
+
     @Test
     public void testApplicationException() throws InterruptedException {
         mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                    throw new CertificateStatusUpdateServiceException("Testing application error, with exhausted retries");
+                throw new CertificateStatusUpdateServiceException("Testing application error, with exhausted retries");
             }
         });
-        // Check for 7 messages, 1 original and 6 retries
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(4);
+        // Check for 4 messages, 1 original and 3 retries
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(EXPECTED_MESSAGE_COUNT);
         String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
-        
+
         Exchange exchange = buildExchange(requestPayload);
 
         processNotificationRequestEndpoint.send(exchange);
@@ -68,13 +71,13 @@ public class TestExceptionHandlers {
         mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                    throw new NonRecoverableCertificateStatusUpdateServiceException("Testing technical error");
+                throw new NonRecoverableCertificateStatusUpdateServiceException("Testing technical error");
             }
         });
 
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
         String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
-        
+
         Exchange exchange = buildExchange(requestPayload);
 
         processNotificationRequestEndpoint.send(exchange);

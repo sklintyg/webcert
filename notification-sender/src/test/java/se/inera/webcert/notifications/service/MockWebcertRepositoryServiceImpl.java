@@ -12,10 +12,12 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 
 public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryService {
 
-    private List<String> VALID_INTYGS_ID = Arrays.asList("intyg-1", "intyg-3");
+    private static final int NUMBER_OF_QUESTIONS = 3;
 
-    private List<String> INTEGRATED_UNITS = Arrays.asList("vardenhet-1", "vardenhet-3");
-    
+    private List<String> validIntygsId = Arrays.asList("intyg-1", "intyg-3");
+
+    private List<String> integratedUnits = Arrays.asList("vardenhet-1", "vardenhet-3");
+
     private TestIntygProducer intygProducer = new TestIntygProducer();
 
     @Override
@@ -32,17 +34,17 @@ public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryServic
 
     @Override
     public boolean isIntygsUtkastPresent(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
-        return (VALID_INTYGS_ID.contains(intygsId));
+        return (validIntygsId.contains(intygsId));
     }
 
     @Override
     public boolean isVardenhetIntegrerad(@Header(RouteHeaders.VARDENHET_HSA_ID) String vardenhetHsaId) {
-        return INTEGRATED_UNITS.contains(vardenhetHsaId);
+        return integratedUnits.contains(vardenhetHsaId);
     }
 
     @Override
     public Long countNbrOfQuestionsForIntyg(String intygsId) {
-        return new Long(3);
+        return new Long(NUMBER_OF_QUESTIONS);
     }
 
     @Override

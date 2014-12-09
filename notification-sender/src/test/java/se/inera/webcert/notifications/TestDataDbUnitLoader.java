@@ -21,56 +21,55 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 
 public class TestDataDbUnitLoader {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(TestDataDbUnitLoader.class);
-    
+
     private String dataFile;
-    
+
     private List<String> intygsIds = new ArrayList<String>();
-    
+
     @Autowired
     private DataSource dataSource;
-    
+
     @Autowired
     private IntygRepository intygRepository;
-    
+
     public void loadTestData() throws Exception {
         loadBasicData();
         loadModelsOnIntyg();
     }
-    
+
     public void loadModelsOnIntyg() {
-        
+
         List<String> intygsIdList = getIntygsIds();
-        
+
         LOG.info("Inserting model data into intyg {}", intygsIdList);
-        
-        
+
         for (String intygsId : intygsIdList) {
             Intyg intyg = intygRepository.findOne(intygsId);
             intyg.setModel(getIntygModelData(intygsId));
             intygRepository.save(intyg);
         }
-        
+
     }
-    
+
     private String getIntygModelData(String intygsId) {
         String modelFilePath = "utlatande/utlatande-intyg-1.json";
         return TestDataUtil.readRequestFromFile(modelFilePath);
     }
-    
+
     public void loadBasicData() throws Exception {
-        
+
         String testDataFile = getDataFile();
-        
+
         LOG.info("Loading test data into database from '{}'", testDataFile);
-        
+
         IDataSet dataSet = getDataSet(testDataFile);
-        
+
         IDatabaseConnection dbConn = new DatabaseDataSourceConnection(dataSource);
         DatabaseOperation.INSERT.execute(dbConn, dataSet);
     }
-    
+
     private IDataSet getDataSet(String filePath) throws DatabaseUnitException, IOException {
         ClassPathResource resource = new ClassPathResource(filePath);
         return new FlatXmlDataSetBuilder().build(resource.getInputStream());
