@@ -1,0 +1,17 @@
+---
+# This playbook deploys WebCert 
+
+- hosts: all
+  sudo: yes 
+  vars: 
+    inera_root: /opt/inera
+    config_repo: "https://github.com/sklintyg/webcert-konfiguration.git"
+    config_folder: "{{ inera_root }}/webcert-konfiguration"
+    tomcat_service: inera-tomcat
+    inera_tomcat_folder: "/var/lib/{{ tomcat_service }}"
+    etc_folder: "{{ inera_tomcat_folder }}/etc"
+    webapps_folder: "{{ inera_tomcat_folder }}/webapps"
+    version: 3.0.0-b5
+
+  roles:
+    - webcert
