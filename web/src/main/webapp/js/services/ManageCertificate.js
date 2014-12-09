@@ -265,6 +265,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 sendDialog = dialogService.showDialog($scope, {
                     dialogId: 'send-dialog',
                     titleId: titleId,
+                    bodyText: 'Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.',
                     templateUrl: '/views/partials/send-dialog.html',
                     model: $scope.dialogSend,
                     button1click: function() {
