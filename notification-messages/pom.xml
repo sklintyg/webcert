@@ -53,7 +53,7 @@
             <binding>
               <dependencyResource>
                 <groupId>se.inera.intyg.schemas</groupId>
-                <artifactId>schema-common</artifactId>
+                <artifactId>schemas-common</artifactId>
                 <resource>bindings/general-binding.xjb</resource>
               </dependencyResource>
             </binding>
