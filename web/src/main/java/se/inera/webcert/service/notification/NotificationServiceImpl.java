@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.notifications.message.v1.ObjectFactory;
 
@@ -17,6 +19,7 @@ import javax.jms.Session;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+
 import java.io.StringWriter;
 
 /**
@@ -42,9 +45,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void notify(NotificationRequestType notificationRequestType) {
+        Assert.notNull(notificationRequestType, "notificationRequestType must not be null");
         send(notificationRequestType);
     }
-
 
     /* -- Package visibility -- */
 
