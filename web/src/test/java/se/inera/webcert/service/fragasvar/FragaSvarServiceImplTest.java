@@ -1,4 +1,4 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.fragasvar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -59,6 +59,7 @@ import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.fragasvar.FragaSvarServiceImpl;
+import se.inera.webcert.service.fragasvar.dto.FrageStallare;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
@@ -531,21 +532,70 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test
-    public void testCloseAshandledOk() {
+    public void testCloseQuestionToFKAsHandledOK() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
-        fragaSvar.setFrageStallare("WC");
+        fragaSvar.setFrageStallare(FrageStallare.WEBCERT.getKod());
         fragaSvar.setFrageText("Fråga till FK");
         fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
-
-        ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
+        
+        ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
-        when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.save(fsCapture.capture())).thenReturn(fragaSvar);
 
         service.closeQuestionAsHandled(1L);
-
+        
         verify(fragasvarRepositoryMock).findOne(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
-        assertEquals(Status.CLOSED,capture.getValue().getStatus());
+        assertEquals(Status.CLOSED,fsCapture.getValue().getStatus());
+    }
+    
+    @Test
+    public void testCloseQuestionFromFKAsHandledOK() {
+        // This is a question from FK that we have no intention to answer so we close it
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        fragaSvar.setFrageText("Fråga från FK till WC");
+        fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
+        
+        ArgumentCaptor<NotificationRequestType> notCapture = ArgumentCaptor.forClass(NotificationRequestType.class);
+                
+        ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
+        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.save(fsCapture.capture())).thenReturn(fragaSvar);
+
+        service.closeQuestionAsHandled(1L);
+        
+        verify(notificationServiceMock).notify(notCapture.capture());
+        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
+        
+        assertEquals(Status.CLOSED,fsCapture.getValue().getStatus());
+        assertEquals(HandelseType.FRAGA_FRAN_FK_HANTERAD, notCapture.getValue().getHandelse());
+    }
+    
+    @Test
+    public void testCloseAnsweredQuestionToFKAsHandledOK() {
+        // This is a question that we sent to FK that has been answered so we now have to close it
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setFrageStallare(FrageStallare.WEBCERT.getKod());
+        fragaSvar.setFrageText("Fråga från WC till FK");
+        fragaSvar.setStatus(Status.ANSWERED);
+        fragaSvar.setSvarsText("Med ett svar från FK");
+        
+        ArgumentCaptor<NotificationRequestType> notCapture = ArgumentCaptor.forClass(NotificationRequestType.class);
+                
+        ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
+        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.save(fsCapture.capture())).thenReturn(fragaSvar);
+
+        service.closeQuestionAsHandled(1L);
+        
+        verify(notificationServiceMock).notify(notCapture.capture());
+        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
+        
+        assertEquals(Status.CLOSED,fsCapture.getValue().getStatus());
+        assertEquals(HandelseType.SVAR_FRAN_FK_HANTERAD, notCapture.getValue().getHandelse());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -555,10 +605,28 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test
-    public void testOpenAsUnhandledOk() {
+    public void testOpenAsUnhandledFromFKNoAnsw() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
-        fragaSvar.setFrageStallare("WC");
-        fragaSvar.setFrageText("Fråga till FK");
+        fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
+        fragaSvar.setFrageText("Fråga till WC från FK");
+        fragaSvar.setStatus(Status.CLOSED);
+
+        ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
+        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fragaSvar);
+
+        service.openQuestionAsUnhandled(1L);
+
+        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
+        assertEquals(Status.PENDING_INTERNAL_ACTION,capture.getValue().getStatus());
+    }
+    
+    @Test
+    public void testOpenAsUnhandledToFKNoAnsw() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setFrageStallare(FrageStallare.WEBCERT.getKod());
+        fragaSvar.setFrageText("Fråga till FK från WC");
         fragaSvar.setStatus(Status.CLOSED);
 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
@@ -571,7 +639,25 @@ public class FragaSvarServiceImplTest {
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         assertEquals(Status.PENDING_EXTERNAL_ACTION,capture.getValue().getStatus());
     }
+    
+    @Test
+    public void testOpenAsUnhandledFromWCWithAnswer() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.setFrageStallare(FrageStallare.WEBCERT.getKod());
+        fragaSvar.setFrageText("Fråga till FK från WC");
+        fragaSvar.setSvarsText("Med ett svar från FK");
+        fragaSvar.setStatus(Status.CLOSED);
 
+        ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
+        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fragaSvar);
+
+        service.openQuestionAsUnhandled(1L);
+
+        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
+        assertEquals(Status.ANSWERED,capture.getValue().getStatus());
+    }
 
     @Test(expected = WebCertServiceException.class)
     public void testOpenAsUnhandledNotFound() {
@@ -582,7 +668,7 @@ public class FragaSvarServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void testOpenAsUnhandledInvalidState() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
-        fragaSvar.setFrageStallare("FK");
+        fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
         fragaSvar.setFrageText("Fråga från FK");
         fragaSvar.setSvarsText("Svar till FK från WC");
         fragaSvar.setStatus(Status.CLOSED);
