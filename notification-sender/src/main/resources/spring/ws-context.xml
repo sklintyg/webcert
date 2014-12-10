@@ -55,9 +55,9 @@
   </beans>
   
   <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare -->
-  <beans profile="dev">
+  <beans profile="dev,test,qa">
     <jaxws:endpoint address="/certificate-status-update-for-care-stub"
       implementor="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub" />
   </beans>
 
-</beans>  
+</beans>
