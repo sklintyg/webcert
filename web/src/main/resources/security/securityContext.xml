@@ -17,7 +17,7 @@
   <security:http security="none" pattern="/css/**"/>
   <security:http security="none" pattern="/js/**"/>
   <security:http security="none" pattern="/img/**"/>
-  <security:http security="none" pattern="/welcome.jsp"/>
+  
   <security:http security="none" pattern="/version.jsp"/>
   <security:http security="none" pattern="/index.jsp"/>
   <security:http security="none" pattern="/healthcheck.jsp"/>
@@ -27,7 +27,7 @@
   <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/monitoring/**"/>
   <security:http security="none" pattern="/favicon.ico"/>
-
+  
   <!-- Logger for SAML messages and events -->
   <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger"/>
 
@@ -60,6 +60,15 @@
 
   <bean id="http403ForbiddenEntryPoint"
         class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+
+  <!-- =============================================================== -->
+  <!-- These URLs are unsecured in all modes except prod               -->
+  <!-- =============================================================== -->
+  <beans profile="dev,demo,local,test,qa">
+    <security:http security="none" pattern="/welcome.jsp"/>
+    <!-- This enables access to notification-sender if it is co-deployed with Webcert as the root application -->
+    <security:http security="none" pattern="/notification-sender/**"/>
+  </beans>
 
   <!-- =============================================================== -->
   <!-- Dev and demo profile only supports Fake login                   -->
