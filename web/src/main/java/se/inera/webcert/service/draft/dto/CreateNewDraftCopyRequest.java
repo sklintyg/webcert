@@ -8,6 +8,8 @@ import se.inera.webcert.service.dto.Vardenhet;
 public class CreateNewDraftCopyRequest {
 
     private String originalIntygId;
+    
+    private String typ;
 
     private String nyttPatientPersonnummer;
 
@@ -29,6 +31,14 @@ public class CreateNewDraftCopyRequest {
 
     public void setOriginalIntygId(String originalIntygId) {
         this.originalIntygId = originalIntygId;
+    }
+
+    public String getTyp() {
+        return typ;
+    }
+
+    public void setTyp(String typ) {
+        this.typ = typ;
     }
 
     public String getNyttPatientPersonnummer() {

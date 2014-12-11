@@ -27,6 +27,9 @@ public class Omsandning {
     @Column(name = "INTYG_ID")
     private String intygId;
 
+    @Column(name = "INTYG_TYP")
+    private String intygTyp;
+
     @Column(name = "NASTA_FORSOK")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime nastaForsok;
@@ -37,11 +40,11 @@ public class Omsandning {
     @Column(name = "GALLRINGSDATUM")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime gallringsdatum;
-
+    
     @Column(name = "OPERATION")
     @Enumerated(EnumType.STRING)
     private OmsandningOperation operation;
-
+    
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "KONFIGURATION")
@@ -50,16 +53,17 @@ public class Omsandning {
     public Omsandning() {
         super();
     }
-
-    public Omsandning(OmsandningOperation operation, String intygId) {
+    
+    public Omsandning(OmsandningOperation operation, String intygId, String intygTyp) {
         super();
         this.intygId = intygId;
+        this.intygTyp = intygTyp;
         this.operation = operation;
     }
 
     @Override
     public String toString() {
-        return "Omsandning [id=" + id + ", intygId=" + intygId + ", nastaForsok=" + nastaForsok + ", antalForsok=" + antalForsok
+        return "Omsandning [id=" + id + ", intygId=" + intygId + ", intygTyp=" + intygTyp + ", nastaForsok=" + nastaForsok + ", antalForsok=" + antalForsok
                 + ", gallringsdatum=" + gallringsdatum + ", operation=" + operation + "]";
     }
 
@@ -77,6 +81,14 @@ public class Omsandning {
 
     public void setIntygId(String intygId) {
         this.intygId = intygId;
+    }
+
+    public String getIntygTyp() {
+        return intygTyp;
+    }
+
+    public void setIntygTyp(String intygTyp) {
+        this.intygTyp = intygTyp;
     }
 
     public LocalDateTime getNastaForsok() {

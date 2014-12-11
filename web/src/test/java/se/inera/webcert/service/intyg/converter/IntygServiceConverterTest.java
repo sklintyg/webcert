@@ -13,8 +13,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.model.Utlatande;
-import se.inera.certificate.model.common.MinimalUtlatande;
+import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl.Operation;
 
@@ -44,7 +43,7 @@ public class IntygServiceConverterTest {
         assertEquals("En Läkare", res.getAdressVard().getHosPersonal().getFullstandigtNamn());
         assertEquals("Personal HSA-ID", res.getAdressVard().getHosPersonal().getPersonalId().getExtension());
         assertEquals("Kir mott", res.getAdressVard().getHosPersonal().getEnhet().getEnhetsnamn());
-        assertEquals("enhet", res.getAdressVard().getHosPersonal().getEnhet().getEnhetsId().getExtension());
+        assertEquals("VardenhetY", res.getAdressVard().getHosPersonal().getEnhet().getEnhetsId().getExtension());
         assertEquals("123456789011", res.getAdressVard().getHosPersonal().getEnhet().getArbetsplatskod().getExtension());
         assertEquals("Landstinget Norrland", res.getAdressVard().getHosPersonal().getEnhet().getVardgivare().getVardgivarnamn());
         assertEquals("VardgivarId", res.getAdressVard().getHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
@@ -89,7 +88,7 @@ public class IntygServiceConverterTest {
     private Utlatande createUtlatandeFromJson() throws Exception {
         // TODO Auto-generated method stub
         return new CustomObjectMapper().readValue(
-                new ClassPathResource("IntygServiceTest/utlatande.json").getFile(), MinimalUtlatande.class);
+                new ClassPathResource("IntygServiceTest/utlatande.json").getFile(), Utlatande.class);
     }
     
 }

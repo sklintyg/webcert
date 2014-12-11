@@ -17,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.certificate.modules.fk7263.model.Constants;
 import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
@@ -59,9 +59,7 @@ public class LegacyIntygIntegrationController {
     @Path("/{intygId}/questions")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId) {
 
-        IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId);
-
-        String intygType = intygData.getMetaData().getType();
+        String intygType = Constants.FK7263;
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
 

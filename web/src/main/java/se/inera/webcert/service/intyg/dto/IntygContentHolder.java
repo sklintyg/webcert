@@ -1,6 +1,8 @@
 package se.inera.webcert.service.intyg.dto;
 
-import se.inera.certificate.model.Utlatande;
+import java.util.List;
+
+import se.inera.certificate.model.common.internal.Utlatande;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
@@ -9,34 +11,33 @@ public class IntygContentHolder {
     @JsonRawValue
     private final String contents;
 
-    private final IntygMetadata metaData;
+    private final Utlatande utlatande;
+    private final List<IntygStatus> statuses;
+    private final boolean revoked;
 
-    private final Utlatande externalModel;
 
-    public IntygContentHolder(String contents, IntygMetadata metaData) {
+    public IntygContentHolder(String contents, Utlatande utlatande, List<IntygStatus> statuses, boolean revoked) {
         super();
         this.contents = contents;
-        this.metaData = metaData;
-        this.externalModel = null;
-    }
-
-    public IntygContentHolder(String contents, Utlatande externalModel, IntygMetadata metaData) {
-        super();
-        this.contents = contents;
-        this.metaData = metaData;
-        this.externalModel = externalModel;
+        this.utlatande = utlatande;
+        this.statuses = statuses;
+        this.revoked = revoked;
     }
 
     public String getContents() {
         return contents;
     }
 
-    public IntygMetadata getMetaData() {
-        return metaData;
+    public Utlatande getUtlatande() {
+        return utlatande;
     }
 
-    public Utlatande getExternalModel() {
-        return externalModel;
+    public List<IntygStatus> getStatuses() {
+        return statuses;
+    }
+
+    public boolean isRevoked() {
+        return revoked;
     }
 
 }

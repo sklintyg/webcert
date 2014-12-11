@@ -97,15 +97,15 @@ public class QuestionResource {
     }
 
     @POST
-    @Path("/skickafraga/{vardgivare}/{enhet}/{intygId}")
+    @Path("/skickafraga/{vardgivare}/{enhet}/{intygId}/{typ}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    public Response askQuestion(@PathParam("vardgivare") final String vardgivarId,
-            @PathParam("enhet") final String enhetsId, @PathParam("intygId") final String intygId, CreateQuestionParameter parameter) {
+    public Response askQuestion(@PathParam("vardgivare") final String vardgivarId, 
+            @PathParam("enhet") final String enhetsId, @PathParam("intygId") final String intygId, @PathParam("typ") final String typ, CreateQuestionParameter parameter) {
         SecurityContext originalContext = SecurityContextHolder.getContext();
         SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
         try {
-            FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygId, parameter.getAmne(), parameter.getFrageText());
+            FragaSvar fragaSvarResponse =  fragaSvarService.saveNewQuestion(intygId, typ, parameter.getAmne(), parameter.getFrageText());
             return Response.ok(fragaSvarResponse).build();
         } finally {
             SecurityContextHolder.setContext(originalContext);

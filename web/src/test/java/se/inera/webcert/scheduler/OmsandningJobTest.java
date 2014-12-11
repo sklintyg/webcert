@@ -43,7 +43,7 @@ public class OmsandningJobTest {
     @Test
     public void testSandOm1Intyg() {
         List<Omsandning> list = new ArrayList<>();
-        list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1"));
+        list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1", "typ"));
         when(intygService.storeIntyg(any(Omsandning.class))).thenReturn(IntygServiceResult.OK);
         
         when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
@@ -56,8 +56,8 @@ public class OmsandningJobTest {
     @Test
     public void testSandOm2Intyg() {
         List<Omsandning> list = new ArrayList<>();
-        list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1"));
-        list.add(new Omsandning(OmsandningOperation.SEND_INTYG, "intyg-2"));
+        list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1", "typ1"));
+        list.add(new Omsandning(OmsandningOperation.SEND_INTYG, "intyg-2", "typ1"));
         when(intygService.storeIntyg(any(Omsandning.class))).thenReturn(IntygServiceResult.OK);
         when(intygService.sendIntyg(any(Omsandning.class))).thenReturn(IntygServiceResult.RESCHEDULED);
         
@@ -72,7 +72,7 @@ public class OmsandningJobTest {
     public void testSandOmAndFailHard() {
         List<Omsandning> list = new ArrayList<>();
         for (int i = 0; i < OmsandningJob.MAX_RESENDS_PER_CYCLE + 1; i++) {
-            list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-" + i));
+            list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-" + i, "typ" + i));
         }
         when(intygService.storeIntyg(any(Omsandning.class))).thenReturn(IntygServiceResult.RESCHEDULED);
         when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);

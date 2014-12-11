@@ -68,7 +68,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
             CreateQuestionParameter parameter) {
         abortIfFragaSvarNotActive(intygsTyp);
         LOG.debug("New question for cert {} with subject {}", intygsId, parameter.getAmne());
-        FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygsId, parameter.getAmne(), parameter.getFrageText());
+        FragaSvar fragaSvarResponse = fragaSvarService.saveNewQuestion(intygsId, intygsTyp, parameter.getAmne(), parameter.getFrageText());
         return Response.ok(fragaSvarResponse).build();
     }
 
