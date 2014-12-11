@@ -13,7 +13,7 @@
 
 | script | !-IntegrationMedJournalsystem-! |
 | visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | 19520614-2597 | signerande lakare | Per+Persson |
-| signerande lakare meddelande visas | Per+Persson |
+| signerande lakare meddelande visas | Per Persson |
 
 !3 Ta bort utkastet
 
