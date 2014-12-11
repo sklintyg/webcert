@@ -22,9 +22,9 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeT
 
 @Component
 public class IntygModuleModelJaxbUtilImpl implements IntygModuleModelJaxbUtil {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(IntygModuleModelJaxbUtilImpl.class);
-    
+
     private JAXBContext jaxbContext;
 
     @PostConstruct
@@ -46,21 +46,28 @@ public class IntygModuleModelJaxbUtilImpl implements IntygModuleModelJaxbUtil {
         return this.jaxbContext;
     }
 
-    /* (non-Javadoc)
-     * @see se.inera.webcert.service.intyg.converter.IntygModuleModelJaxbUtil#unmarshallFromXmlToTransport(java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * se.inera.webcert.service.intyg.converter.IntygModuleModelJaxbUtil#unmarshallFromXmlToTransport(java.lang.String)
      */
     @Override
     public UtlatandeType unmarshallFromXmlToTransport(String xml) throws JAXBException {
         StreamSource source = new StreamSource(new StringReader(xml));
         Unmarshaller unmarshaller = getJaxbContext().createUnmarshaller();
-        
+
         JAXBElement<UtlatandeType> jaxbElement = unmarshaller.unmarshal(source, UtlatandeType.class);
-        
+
         return jaxbElement.getValue();
     }
-    
-    /* (non-Javadoc)
-     * @see se.inera.webcert.service.intyg.converter.IntygModuleModelJaxbUtil#marshallFromTransportToXml(se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeType)
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * se.inera.webcert.service.intyg.converter.IntygModuleModelJaxbUtil#marshallFromTransportToXml(se.inera.certificate
+     * .clinicalprocess.healthcond.certificate.v1.UtlatandeType)
      */
     @Override
     public String marshallFromTransportToXml(UtlatandeType utlatandeTyp) throws JAXBException {
@@ -69,5 +76,5 @@ public class IntygModuleModelJaxbUtilImpl implements IntygModuleModelJaxbUtil {
         getJaxbContext().createMarshaller().marshal(jaxbElement, writer);
         return writer.toString();
     }
-    
+
 }

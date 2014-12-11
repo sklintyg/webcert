@@ -12,7 +12,7 @@ public class CreateNewDraftCopyRequest {
     private String typ;
 
     private String nyttPatientPersonnummer;
-    
+
     private HoSPerson hosPerson;
 
     private Vardenhet vardenhet;
@@ -20,11 +20,11 @@ public class CreateNewDraftCopyRequest {
     public CreateNewDraftCopyRequest() {
 
     }
-    
+
     public boolean containsNyttPatientPersonnummer() {
         return StringUtils.isNotBlank(nyttPatientPersonnummer);
     }
-    
+
     public String getOriginalIntygId() {
         return originalIntygId;
     }
@@ -64,5 +64,4 @@ public class CreateNewDraftCopyRequest {
     public void setVardenhet(Vardenhet vardenhet) {
         this.vardenhet = vardenhet;
     }
-
 }

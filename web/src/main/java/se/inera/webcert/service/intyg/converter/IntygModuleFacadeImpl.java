@@ -62,5 +62,4 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             throw new IntygModuleFacadeException("Exception occured when retrieving certificate", e);
         }
     }
-
 }

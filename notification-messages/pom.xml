@@ -1,0 +1,81 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>se.inera.intyg.webcert</groupId>
+    <artifactId>webcert</artifactId>
+    <version>0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>notification-messages</artifactId>
+
+  <name>Webcert (Notification Messages)</name>
+
+  <properties>
+    <schema.dir>${basedir}/src/main/resources</schema.dir>
+    <bindings.dir>${basedir}/src/main/resources/bindings</bindings.dir>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>se.inera.intyg.schemas</groupId>
+      <artifactId>schemas-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jvnet.jaxb2_commons</groupId>
+      <artifactId>jaxb2-basics-runtime</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.11.0</version>
+        <executions>
+          <execution>
+            <id>generate_from_xsds</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <schemaDirectory>${schema.dir}</schemaDirectory>
+          <schemaIncludes>
+            <schemaInclude>notification-message.xsd</schemaInclude>
+          </schemaIncludes>
+          <bindingDirectory>${bindings.dir}</bindingDirectory>
+          <bindings>
+            <binding>
+              <dependencyResource>
+                <groupId>se.inera.intyg.schemas</groupId>
+                <artifactId>schemas-common</artifactId>
+                <resource>bindings/general-binding.xjb</resource>
+              </dependencyResource>
+            </binding>
+          </bindings>
+          <generateDirectory>${project.build.directory}/generated</generateDirectory>
+          <verbose>true</verbose>
+          <args>
+            <arg>-XhashCode</arg>
+            <arg>-Xequals</arg>
+            <arg>-XtoString</arg>
+            <arg>-Xinheritance</arg>
+          </args>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb2-basics</artifactId>
+            <version>${jaxb.commons.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

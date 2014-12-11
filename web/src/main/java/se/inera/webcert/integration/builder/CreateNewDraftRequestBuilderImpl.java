@@ -21,70 +21,70 @@ import se.inera.webcert.service.dto.Vardgivare;
 
 @Component
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(CreateNewDraftRequestBuilderImpl.class);
-	
-	private static final String SPACE = " ";
-	
-	@Autowired
-	private HsaOrganizationsService hsaOrganizationsService;
 
-	@Override
-	public CreateNewDraftRequest buildCreateNewDraftRequest(UtlatandeType utlatande, MiuInformationType miuOnUnit) {
-		CreateNewDraftRequest utkastsRequest = new CreateNewDraftRequest();
-						
-		utkastsRequest.setIntygType(utlatande.getTypAvUtlatande().getCode());
-		
-		Patient patient = createPatient(utlatande.getPatient());
-		utkastsRequest.setPatient(patient);
-		
-		Vardenhet vardenhet = createVardenhetFromMIU(miuOnUnit);
-		utkastsRequest.setVardenhet(vardenhet);
-				
-		HoSPerson hosPerson = createHoSPerson(utlatande.getSkapadAv());
-		utkastsRequest.setHosPerson(hosPerson);
-		return utkastsRequest;
-	}
+    private static final Logger LOG = LoggerFactory.getLogger(CreateNewDraftRequestBuilderImpl.class);
 
-	private Vardenhet createVardenhetFromMIU(MiuInformationType miu) {
-		
-		se.inera.webcert.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService.getVardenhet(miu.getCareUnitHsaIdentity());
-		
-		Vardenhet vardenhet = new Vardenhet();
-		vardenhet.setNamn(hsaVardenhet.getNamn());
-		vardenhet.setHsaId(hsaVardenhet.getId());
-		vardenhet.setArbetsplatskod(hsaVardenhet.getArbetsplatskod());
-		vardenhet.setPostadress(hsaVardenhet.getPostadress());
-		vardenhet.setPostnummer(hsaVardenhet.getPostnummer());
-		vardenhet.setPostort(hsaVardenhet.getPostort());
-		vardenhet.setTelefonnummer(hsaVardenhet.getTelefonnummer());
-		
-		Vardgivare vardgivare = new Vardgivare();
-		vardgivare.setHsaId(miu.getCareGiver());
-		vardgivare.setNamn(miu.getCareGiverName());
-		vardenhet.setVardgivare(vardgivare);
-		
-		return vardenhet;
-	}
+    private static final String SPACE = " ";
 
-	private HoSPerson createHoSPerson(HosPersonalType hoSPersonType) {
-		HoSPerson hoSPerson = new HoSPerson();
-		hoSPerson.setNamn(hoSPersonType.getFullstandigtNamn());
-		hoSPerson.setHsaId(hoSPersonType.getPersonalId().getExtension());
-		hoSPerson.setForskrivarkod(hoSPerson.getForskrivarkod());
-		return hoSPerson;
-	}
+    @Autowired
+    private HsaOrganizationsService hsaOrganizationsService;
 
-	private Patient createPatient(PatientType patientType) {
-		Patient patient = new Patient();
-		patient.setPersonnummer(patientType.getPersonId().getExtension());
-		patient.setFornamn(joinNames(patientType.getFornamn()));
-		patient.setMellannamn(joinNames(patientType.getMellannamn()));
-		patient.setEfternamn(patientType.getEfternamn());
-		return patient;
-	}
-	
-	private static String joinNames(List<String> names) {
-		return StringUtils.join(names, SPACE);
-	}
+    @Override
+    public CreateNewDraftRequest buildCreateNewDraftRequest(UtlatandeType utlatande, MiuInformationType miuOnUnit) {
+        CreateNewDraftRequest utkastsRequest = new CreateNewDraftRequest();
+
+        utkastsRequest.setIntygType(utlatande.getTypAvUtlatande().getCode());
+
+        Patient patient = createPatient(utlatande.getPatient());
+        utkastsRequest.setPatient(patient);
+
+        Vardenhet vardenhet = createVardenhetFromMIU(miuOnUnit);
+        utkastsRequest.setVardenhet(vardenhet);
+
+        HoSPerson hosPerson = createHoSPerson(utlatande.getSkapadAv());
+        utkastsRequest.setHosPerson(hosPerson);
+        return utkastsRequest;
+    }
+
+    private Vardenhet createVardenhetFromMIU(MiuInformationType miu) {
+
+        se.inera.webcert.hsa.model.Vardenhet hsaVardenhet = hsaOrganizationsService.getVardenhet(miu.getCareUnitHsaIdentity());
+
+        Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setNamn(hsaVardenhet.getNamn());
+        vardenhet.setHsaId(hsaVardenhet.getId());
+        vardenhet.setArbetsplatskod(hsaVardenhet.getArbetsplatskod());
+        vardenhet.setPostadress(hsaVardenhet.getPostadress());
+        vardenhet.setPostnummer(hsaVardenhet.getPostnummer());
+        vardenhet.setPostort(hsaVardenhet.getPostort());
+        vardenhet.setTelefonnummer(hsaVardenhet.getTelefonnummer());
+
+        Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setHsaId(miu.getCareGiver());
+        vardgivare.setNamn(miu.getCareGiverName());
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
+    }
+
+    private HoSPerson createHoSPerson(HosPersonalType hoSPersonType) {
+        HoSPerson hoSPerson = new HoSPerson();
+        hoSPerson.setNamn(hoSPersonType.getFullstandigtNamn());
+        hoSPerson.setHsaId(hoSPersonType.getPersonalId().getExtension());
+        hoSPerson.setForskrivarkod(hoSPerson.getForskrivarkod());
+        return hoSPerson;
+    }
+
+    private Patient createPatient(PatientType patientType) {
+        Patient patient = new Patient();
+        patient.setPersonnummer(patientType.getPersonId().getExtension());
+        patient.setFornamn(joinNames(patientType.getFornamn()));
+        patient.setMellannamn(joinNames(patientType.getMellannamn()));
+        patient.setEfternamn(patientType.getEfternamn());
+        return patient;
+    }
+
+    private static String joinNames(List<String> names) {
+        return StringUtils.join(names, SPACE);
+    }
 }

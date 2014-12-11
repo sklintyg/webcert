@@ -27,7 +27,7 @@ import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
 
 /**
  * Service for getting the health status of the application.
- * 
+ *
  * @author npet
  *
  */
@@ -35,27 +35,27 @@ import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
 public class HealthCheckServiceImpl implements HealthCheckService {
 
     private static final Logger LOG = LoggerFactory.getLogger(HealthCheckServiceImpl.class);
-    
-    private static final long startTime = System.currentTimeMillis();
-    
+
+    private static final long START_TIME = System.currentTimeMillis();
+
     private static final String CURR_TIME_SQL = "SELECT CURRENT_TIME()";
-    
+
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
-    
+
     @Autowired
     private HSAWebServiceCalls hsaService;
 
     @PersistenceContext
     private EntityManager entityManager;
-    
+
     @Autowired
     @Qualifier("jmsFactory")
     private ConnectionFactory connectionFactory;
 
     @Autowired
     private OmsandningRepository omsandningRepository;
-    
+
     @Autowired
     @Qualifier("pingIntygstjanstForConfigurationClient")
     private PingForConfigurationResponderInterface intygstjanstPingForConfiguration;
@@ -96,7 +96,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         logStatus("getJMSStatus", status);
         return status;
     }
-    
+
     public HealthStatus checkSignatureQueue() {
         boolean ok;
         long size = -1;
@@ -106,13 +106,13 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         } catch (Exception e) {
             ok = false;
         }
-        
+
         String result = ok ? "OK" : "FAIL";
         LOG.info("Operation getSignaturQueueSize completed with result {}, queue size is {}", result, size);
-        
+
         return new HealthStatus(size, ok);
     }
-    
+
     public HealthStatus checkIntygstjanst() {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -124,16 +124,16 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     }
 
     public HealthStatus checkUptime() {
-        long uptime = System.currentTimeMillis() - startTime;
+        long uptime = System.currentTimeMillis() - START_TIME;
         LOG.info("Current system uptime is {}", DurationFormatUtils.formatDurationWords(uptime, true, true));
         return new HealthStatus(uptime, true);
     }
-    
+
     public String checkUptimeAsString() {
         HealthStatus uptime = checkUptime();
         return DurationFormatUtils.formatDurationWords(uptime.getMeasurement(), true, true);
     }
-    
+
     private boolean pingIntygstjanst() {
         try {
             PingForConfigurationType parameters = new PingForConfigurationType();
@@ -144,7 +144,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
             return false;
         }
     }
-    
+
     private boolean checkJmsConnection() {
         Connection connection = null;
         try {
@@ -169,12 +169,12 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return timestamp != null;
 
     }
-    
+
     private void logStatus(String operation, HealthStatus status) {
         String result = status.isOk() ? "OK" : "FAIL";
-        LOG.info("Operation {} completed with result {} in {} ms", new Object[]{operation, result, status.getMeasurement()});
+        LOG.info("Operation {} completed with result {} in {} ms", new Object[] { operation, result, status.getMeasurement() });
     }
-    
+
     private HealthStatus createStatus(boolean ok, StopWatch stopWatch) {
         return new HealthStatus(stopWatch.getTime(), ok);
     }

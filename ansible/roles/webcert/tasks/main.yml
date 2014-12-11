@@ -1,0 +1,62 @@
+---
+
+- name: stop tomcat
+  service: name={{ tomcat_service }} state=stopped pattern=org.apache.catalina.startup.Bootstrap
+
+- name: remove old version of liquibase-runner
+  file: state=absent
+      path=/tmp/webcert-liquibase-runner.jar
+
+- name: Download war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}-jar-with-dependencies.jar
+      dest=/tmp/webcert-liquibase-runner.jar
+
+- name: run liquibase update
+  command: java -jar /tmp/webcert-liquibase-runner.jar --changeLogFile="changelog/changelog.xml" --contexts=none update chdir=/opt/inera/liquibase
+
+- name: remove old version of unpacked ROOT war
+  file: state=absent
+      path={{ webapps_folder }}/ROOT
+
+- name: remove old version of ROOT war
+  file: state=absent
+      path={{ webapps_folder }}/ROOT.war
+
+- name: Download ROOT war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-web/{{ version }}/webcert-web-{{ version }}.war
+      dest={{ webapps_folder }}/ROOT.war
+
+- name: remove old version of unpacked log-sender war
+  file: state=absent
+      path={{ webapps_folder }}/log-sender
+
+- name: remove old version of log-sender war
+  file: state=absent
+      path={{ webapps_folder }}/log-sender.war
+
+- name: Download log-sender war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
+      dest={{ webapps_folder }}/log-sender.war
+
+- name: remove old version of unpacked notification-sender war
+  file: state=absent
+      path={{ webapps_folder }}/notification-sender
+
+- name: remove old version of notification-sender war
+  file: state=absent
+      path={{ webapps_folder }}/notification-sender.war
+
+- name: Download notification-sender war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/notification-sender/{{ version }}/notification-sender-{{ version }}.war
+      dest={{ webapps_folder }}/notification-sender.war
+
+- name: Create version file
+  template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
+
+- name: update configuration
+  git: repo={{ config_repo }}
+    dest={{ config_folder }}
+    version=master
+
+- name: start tomcat
+  service: name={{ tomcat_service }} state=started pattern=org.apache.catalina.startup.Bootstrap

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
@@ -23,11 +24,8 @@ import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.persistence.fragasvar.model.Amne;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.webcert.persistence.fragasvar.model.Status;
-import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
+import se.inera.webcert.persistence.fragasvar.model.*;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.fragasvar.repository.VantarPa;
@@ -35,12 +33,15 @@ import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeatureService;
+import se.inera.webcert.service.fragasvar.dto.FrageStallare;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;
+import se.inera.webcert.service.notification.NotificationMessageFactory;
+import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -59,18 +60,39 @@ import java.util.Map;
 @Transactional
 public class FragaSvarServiceImpl implements FragaSvarService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
+    private enum NotificationEvent {
+        QUESTION_SENT_TO_FK,
+        ANSWER_SENT_TO_FK,
+        QUESTION_FROM_FK_HANDLED,
+        ANSWER_FROM_FK_HANDLED;
+    }
 
-    private static final String WEBCERT = "WC";
-    private static final String FORSAKRINGSKASSAN = "FK";
+    private static final Logger LOG = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
     private static final StatusType SENT_STATUS_TYPE = StatusType.SENT;
     private static final StatusType REVOKED_STATUS_TYPE = StatusType.CANCELLED;
 
-    private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(Amne.ARBETSTIDSFORLAGGNING, Amne.AVSTAMNINGSMOTE,
-            Amne.KONTAKT, Amne.OVRIGT);
+    private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(
+            Amne.ARBETSTIDSFORLAGGNING,
+            Amne.AVSTAMNINGSMOTE,
+            Amne.KONTAKT,
+            Amne.OVRIGT);
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
+
+    private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
+
+    @Value("${sendquestiontofk.logicaladdress}")
+    private String sendQuestionToFkLogicalAddress;
+
+    @Value("${sendanswertofk.logicaladdress}")
+    private String sendAnswerToFkLogicalAddress;
+
+    @Autowired
+    private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
+
+    @Autowired
+    private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
 
     @Autowired
     private FragaSvarRepository fragaSvarRepository;
@@ -82,21 +104,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private WebCertUserService webCertUserService;
 
     @Autowired
-    private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClient;
-
-    @Autowired
-    private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClient;
-
-    @Autowired
     private WebcertFeatureService webcertFeatureService;
 
-    @Value("${sendquestiontofk.logicaladdress}")
-    private String sendQuestionToFkLogicalAddress;
+    @Autowired
+    private NotificationService notificationService;
 
-    @Value("${sendanswertofk.logicaladdress}")
-    private String sendAnswerToFkLogicalAddress;
-
-    private static FragaSvarSenasteHandelseDatumComparator senasteHandelseDatumComparator = new FragaSvarSenasteHandelseDatumComparator();
+    /* --------------------- Public scope --------------------- */
 
     @Override
     public FragaSvar processIncomingQuestion(FragaSvar fragaSvar) {
@@ -117,7 +130,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new IllegalStateException("No question found with internal ID " + internId);
         }
 
-        if (FORSAKRINGSKASSAN.equals(fragaSvar.getFrageStallare())) {
+        if (FrageStallare.FORSAKRINGSKASSAN.equals(fragaSvar.getFrageStallare())) {
             throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
 
@@ -174,6 +187,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     public FragaSvar saveSvar(Long fragaSvarsId, String svarsText) {
+
         // Input sanity check
         if (StringUtils.isEmpty(svarsText)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
@@ -181,11 +195,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Look up entity in repository
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarsId);
-        if (fragaSvar == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Could not find FragaSvar with id:" + fragaSvarsId);
-        }
+        FragaSvar fragaSvar = lookupFragaSvar(fragaSvarsId);
 
         // Is user authorized to save an answer to this question?
         verifyEnhetsAuth(fragaSvar.getVardperson().getEnhetsId(), false);
@@ -212,6 +222,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         LocalDateTime now = new LocalDateTime();
+
         // Ok, lets save the answer
         fragaSvar.setVardAktorHsaId(user.getHsaId());
         fragaSvar.setVardAktorNamn(user.getNamn());
@@ -224,25 +235,32 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Send to external party (FK)
         SendMedicalCertificateAnswerType sendType = new SendMedicalCertificateAnswerType();
-        AnswerToFkType answer = FKAnswerConverter.convert(saved);
 
+        AnswerToFkType answer = FKAnswerConverter.convert(saved);
         sendType.setAnswer(answer);
+
         AttributedURIType logicalAddress = new AttributedURIType();
         logicalAddress.setValue(sendAnswerToFkLogicalAddress);
-        SendMedicalCertificateAnswerResponseType response = sendAnswerToFKClient.sendMedicalCertificateAnswer(logicalAddress,
-                sendType);
+
+        SendMedicalCertificateAnswerResponseType response =
+                sendAnswerToFKClient.sendMedicalCertificateAnswer(logicalAddress, sendType);
+
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOG.error("Failed to send answer to FK, result was " + response.getResult().toString());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
                     .getErrorText());
         }
+
+        // Notify stakeholders
+        sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
+
         return saved;
 
     }
 
     @Override
     public FragaSvar saveNewQuestion(String intygId, String typ, Amne amne, String frageText) {
-        // Input sanity check
+        //  Argument check
         if (StringUtils.isEmpty(frageText)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "frageText cannot be empty!");
@@ -264,9 +282,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Is user authorized to save an answer to this question?
         verifyEnhetsAuth(vardPerson.getEnhetsId(), false);
-
         // Verksamhetsregel FS-001 (Is the certificate sent to FK)
-        if (!isSentToFK(intyg.getStatuses())) {
+        if (!isCertificateSentToFK(intyg.getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-001: Certificate must be sent to FK first before sending question!");
         }
@@ -281,7 +298,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 .convertToIntygsReferens(intyg.getUtlatande());
 
         FragaSvar fraga = new FragaSvar();
-        fraga.setFrageStallare(WEBCERT);
+        fraga.setFrageStallare(FrageStallare.WEBCERT.getKod());
         fraga.setAmne(amne);
         fraga.setFrageText(frageText);
         LocalDateTime now = new LocalDateTime();
@@ -295,6 +312,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         WebCertUser user = webCertUserService.getWebCertUser();
         fraga.setVardAktorHsaId(user.getHsaId());
         fraga.setVardAktorNamn(user.getNamn());
+
         // Ok, lets save the question
         FragaSvar saved = fragaSvarRepository.save(fraga);
 
@@ -302,56 +320,29 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         SendMedicalCertificateQuestionType sendType = new SendMedicalCertificateQuestionType();
         QuestionToFkType question = FKQuestionConverter.convert(saved);
         sendType.setQuestion(question);
+
         AttributedURIType logicalAddress = new AttributedURIType();
         logicalAddress.setValue(sendQuestionToFkLogicalAddress);
-        SendMedicalCertificateQuestionResponseType response = sendQuestionToFKClient.sendMedicalCertificateQuestion(
-                logicalAddress, sendType);
+
+        SendMedicalCertificateQuestionResponseType response =
+                sendQuestionToFKClient.sendMedicalCertificateQuestion(logicalAddress, sendType);
+
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOG.error("Failed to send question to FK, result was " + response.getResult().toString());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
                     .getErrorText());
         }
+
+        // Notify stakeholders
+        sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);
+
         return saved;
-
-    }
-
-    private void validateAcceptsQuestions(FragaSvar fragaSvar) {
-        String intygsTyp = fragaSvar.getIntygsReferens().getIntygsTyp();
-        if (!webcertFeatureService.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR, intygsTyp)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Intygstyp '" + intygsTyp + "' stödjer ej fragasvar.");
-        }
-    }
-
-    private boolean isRevoked(List<IntygStatus> statuses) {
-        if (statuses != null) {
-            for (IntygStatus status : statuses) {
-                if (REVOKED_STATUS_TYPE.equals(status.getType())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean isSentToFK(List<IntygStatus> statuses) {
-        if (statuses != null) {
-            for (IntygStatus status : statuses) {
-                if (FORSAKRINGSKASSAN.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     @Override
     public FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched) {
         // Look up entity in repository
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
-        if (fragaSvar == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Could not find FragaSvar with id:" + frageSvarId);
-        }
+        FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
         // Set & save new vidarebefordrad state
         fragaSvar.setVidarebefordrad(isDispatched);
         return fragaSvarRepository.save(fragaSvar);
@@ -359,35 +350,49 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Override
     public FragaSvar closeQuestionAsHandled(Long frageSvarId) {
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
-        if (fragaSvar == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Could not find FragaSvar with id:" + frageSvarId);
+        FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
+        
+        NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
+        
+        if (notificationEvent != null) {
+            sendNotification(fragaSvar, notificationEvent);
         }
 
         fragaSvar.setStatus(Status.CLOSED);
         return fragaSvarRepository.save(fragaSvar);
     }
 
+    private NotificationEvent determineNotificationEvent(FragaSvar fragaSvar) {
+        
+        FrageStallare frageStallare = FrageStallare.getByKod(fragaSvar.getFrageStallare());
+        Status fragaSvarStatus = fragaSvar.getStatus();
+                
+        if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare) && Status.PENDING_INTERNAL_ACTION.equals(fragaSvarStatus)) {
+            return NotificationEvent.QUESTION_FROM_FK_HANDLED;
+        }
+        
+        if (FrageStallare.WEBCERT.equals(frageStallare) && Status.ANSWERED.equals(fragaSvarStatus)) {
+            return NotificationEvent.ANSWER_FROM_FK_HANDLED;
+        }
+        
+        return null;
+    }
+    
     @Override
     public FragaSvar openQuestionAsUnhandled(Long frageSvarId) {
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
-        if (fragaSvar == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Could not find FragaSvar with id:" + frageSvarId);
-        }
+        FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
 
-        // Enforce business rule FS-011
-        if (!WEBCERT.equals(fragaSvar.getFrageStallare())
-                && !StringUtils.isEmpty(fragaSvar.getSvarsText())) {
+        // Enforce business rule FS-011, from FK + answer should remain closed
+        if (!FrageStallare.WEBCERT.equals(fragaSvar.getFrageStallare())
+                && StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "FS-011: Cant revert status for question " + frageSvarId);
         }
 
-        if (fragaSvar.getSvarsText() != null && !fragaSvar.getSvarsText().isEmpty()) {
+        if (StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
-            if (fragaSvar.getFrageStallare().equalsIgnoreCase(WEBCERT)) {
+            if (FrageStallare.WEBCERT.equals(fragaSvar.getFrageStallare())) {
                 fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
             } else {
                 fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
@@ -396,7 +401,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
         return fragaSvarRepository.save(fragaSvar);
     }
-
 
     @Override
     public QueryFragaSvarResponse filterFragaSvar(QueryFragaSvarParameter filterParameters) {
@@ -413,57 +417,13 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return response;
     }
 
-    private FragaSvarFilter createFragaSvarFilter(QueryFragaSvarParameter params) {
-
-        FragaSvarFilter filter = new FragaSvarFilter();
-
-        if (StringUtils.isNotEmpty(params.getEnhetId())) {
-            verifyEnhetsAuth(params.getEnhetId(), true);
-            filter.getEnhetsIds().add(params.getEnhetId());
-        } else {
-            WebCertUser user = webCertUserService.getWebCertUser();
-            filter.getEnhetsIds().addAll(user.getIdsOfSelectedVardenhet());
-        }
-
-        if (StringUtils.isNotEmpty(params.getVantarPa())) {
-            filter.setVantarPa(VantarPa.valueOf(params.getVantarPa()));
-        }
-
-        filter.setChangedFrom(params.getChangedFrom());
-        if (params.getChangedTo() != null) {
-            filter.setChangedTo(params.getChangedTo().plusDays(1));
-        }
-        filter.setHsaId(params.getHsaId());
-        filter.setQuestionFromFK(getSafeBooleanValue(params.getQuestionFromFK()));
-        filter.setQuestionFromWC(getSafeBooleanValue(params.getQuestionFromWC()));
-        filter.setReplyLatest(params.getReplyLatest());
-        filter.setVidarebefordrad(params.getVidarebefordrad());
-
-        filter.setPageSize(params.getPageSize() == null ? DEFAULT_PAGE_SIZE : params.getPageSize());
-        filter.setStartFrom(params.getStartFrom() == null ? Integer.valueOf(0) : params.getStartFrom());
-
-        return filter;
-    }
-
-    private boolean getSafeBooleanValue(Boolean booleanObj) {
-        return (booleanObj != null) && booleanObj;
-    }
-
-    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
-        if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + enhetsId);
-        }
-
-    }
-
     @Override
     public List<Lakare> getFragaSvarHsaIdByEnhet(String enhetsId) {
 
         List<String> enhetsIdParams = new ArrayList<>();
 
         if (enhetsId != null) {
-            verifyEnhetsAuth(enhetsId, true);
+            verifyEnhetsAuth(enhetsId);
             enhetsIdParams.add(enhetsId);
         } else {
             WebCertUser user = webCertUserService.getWebCertUser();
@@ -504,4 +464,120 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         return resultsMap;
     }
+
+    /* --------------------- Protected scope --------------------- */
+
+    protected void verifyEnhetsAuth(String enhetsId) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId, false)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsId);
+        }
+
+    }
+
+    /* --------------------- Private scope --------------------- */
+
+    private FragaSvarFilter createFragaSvarFilter(QueryFragaSvarParameter params) {
+
+        FragaSvarFilter filter = new FragaSvarFilter();
+
+        if (StringUtils.isNotEmpty(params.getEnhetId())) {
+            verifyEnhetsAuth(params.getEnhetId(), true);
+            filter.getEnhetsIds().add(params.getEnhetId());
+        } else {
+            WebCertUser user = webCertUserService.getWebCertUser();
+            filter.getEnhetsIds().addAll(user.getIdsOfSelectedVardenhet());
+        }
+
+        if (StringUtils.isNotEmpty(params.getVantarPa())) {
+            filter.setVantarPa(VantarPa.valueOf(params.getVantarPa()));
+        }
+
+        filter.setChangedFrom(params.getChangedFrom());
+        if (params.getChangedTo() != null) {
+            filter.setChangedTo(params.getChangedTo().plusDays(1));
+        }
+        filter.setHsaId(params.getHsaId());
+        filter.setQuestionFromFK(getSafeBooleanValue(params.getQuestionFromFK()));
+        filter.setQuestionFromWC(getSafeBooleanValue(params.getQuestionFromWC()));
+        filter.setReplyLatest(params.getReplyLatest());
+        filter.setVidarebefordrad(params.getVidarebefordrad());
+
+        filter.setPageSize(params.getPageSize() == null ? DEFAULT_PAGE_SIZE : params.getPageSize());
+        filter.setStartFrom(params.getStartFrom() == null ? Integer.valueOf(0) : params.getStartFrom());
+
+        return filter;
+    }
+
+    private boolean getSafeBooleanValue(Boolean booleanObj) {
+        return (booleanObj != null) && booleanObj;
+    }
+
+    private boolean isCertificateRevoked(List<IntygStatus> statuses) {
+        if (statuses != null) {
+            for (IntygStatus status : statuses) {
+                if (REVOKED_STATUS_TYPE.equals(status.getType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsId);
+        }
+    }
+
+    private boolean isCertificateSentToFK(List<IntygStatus> statuses) {
+        if (statuses != null) {
+            for (IntygStatus status : statuses) {
+                if (FrageStallare.FORSAKRINGSKASSAN.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private FragaSvar lookupFragaSvar(Long frageSvarId) {
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
+        if (fragaSvar == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Could not find FragaSvar with id:" + frageSvarId);
+        }
+        return fragaSvar;
+    }
+
+    private void sendNotification(FragaSvar fragaSvar, NotificationEvent event) {
+
+        NotificationRequestType notificationRequestType = null;
+
+        switch (event) {
+        case QUESTION_SENT_TO_FK:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromQuestionToFK(fragaSvar);
+            break;
+        case ANSWER_SENT_TO_FK:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromAnswerFromFK(fragaSvar);
+            break;
+        case QUESTION_FROM_FK_HANDLED:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(fragaSvar);
+            break;
+        case ANSWER_FROM_FK_HANDLED:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedAnswerFromFK(fragaSvar);
+        }
+
+        notificationService.notify(notificationRequestType);
+    }
+
+    private void validateAcceptsQuestions(FragaSvar fragaSvar) {
+        String intygsTyp = fragaSvar.getIntygsReferens().getIntygsTyp();
+        if (!webcertFeatureService.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR, intygsTyp)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Intygstyp '" + intygsTyp
+                    + "' stödjer ej fragasvar.");
+        }
+    }
+
 }

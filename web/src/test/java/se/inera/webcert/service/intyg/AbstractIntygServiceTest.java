@@ -26,13 +26,16 @@ import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.v1.rivtabp20.RevokeMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
+import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
+import se.inera.webcert.service.draft.IntygSignatureServiceImpl;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManagerImpl;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
 public abstract class AbstractIntygServiceTest {
@@ -47,9 +50,6 @@ public abstract class AbstractIntygServiceTest {
     protected GetCertificateForCareResponderInterface getCertificateService;
 
     @Mock
-    protected OmsandningRepository omsandningRepository;
-
-    @Mock
     protected RegisterCertificateResponderInterface intygSender;
 
     @Mock
@@ -61,9 +61,11 @@ public abstract class AbstractIntygServiceTest {
     @Mock
     protected IntygModuleFacade moduleFacade;
 
-    // Here we test the real converter
-    @Spy
-    protected IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();
+    @Mock
+    protected IntygRepository intygRepository;
+
+    @Mock
+    protected OmsandningRepository omsandningRepository;
 
     @Mock
     protected WebCertUserService webCertUserService;
@@ -71,9 +73,19 @@ public abstract class AbstractIntygServiceTest {
     @Mock
     protected LogService logService;
 
+    @Mock
+    protected NotificationService notificationService;
+
+    // Here we test the real converter
+    @Spy
+    protected IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();
+
     // Here we use the real config manager
     @Spy
     protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
+
+    @InjectMocks
+    protected IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();

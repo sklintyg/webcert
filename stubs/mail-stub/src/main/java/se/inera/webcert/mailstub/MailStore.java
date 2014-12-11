@@ -36,7 +36,7 @@ public class MailStore {
 
     public void waitToContinue() {
         synchronized (this) {
-            if(doWait) {
+            if (doWait) {
                 try {
                     this.wait(MAX_TIMEOUT);
                 } catch (InterruptedException e) {

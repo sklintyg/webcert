@@ -3,9 +3,9 @@ package se.inera.webcert.service.intyg.dto;
 public class IntygRecipient {
 
     private String id;
-    
+
     private String name;
-    
+
     public IntygRecipient(String id, String name) {
         super();
         this.id = id;
@@ -27,5 +27,5 @@ public class IntygRecipient {
     public void setName(String name) {
         this.name = name;
     }
-    
+
 }

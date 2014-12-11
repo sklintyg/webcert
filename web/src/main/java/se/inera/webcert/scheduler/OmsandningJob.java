@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepositoryCustom;
 import se.inera.webcert.service.intyg.IntygOmsandningService;
-import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 
 @Component
@@ -53,7 +52,7 @@ public class OmsandningJob {
     private boolean performOperation(Omsandning omsandning) {
 
         IntygServiceResult res = null;
-        
+
         switch (omsandning.getOperation()) {
         case STORE_INTYG:
             res = intygService.storeIntyg(omsandning);
@@ -64,9 +63,9 @@ public class OmsandningJob {
         default:
             res = IntygServiceResult.FAILED;
         }
-        
-        LOG.warn("Performed operation {} on intyg {} with result {}", new Object[]{omsandning.getOperation(), omsandning.getIntygId(), res});
-        
+
+        LOG.warn("Performed operation {} on intyg {} with result {}", new Object[] { omsandning.getOperation(), omsandning.getIntygId(), res });
+
         return (IntygServiceResult.OK.equals(res));
     }
 }

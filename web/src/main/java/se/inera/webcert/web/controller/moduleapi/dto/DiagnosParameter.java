@@ -2,7 +2,7 @@ package se.inera.webcert.web.controller.moduleapi.dto;
 
 /**
  * Parameter object for DiagnosService.
- * 
+ *
  * @author npet
  *
  */
@@ -11,7 +11,7 @@ public class DiagnosParameter {
     private String codeFragment;
 
     // This will by default return all matches
-    private int nbrOfResults  = -1;
+    private int nbrOfResults = -1;
 
     public DiagnosParameter() {
 

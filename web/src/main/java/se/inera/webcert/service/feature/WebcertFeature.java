@@ -10,11 +10,11 @@ public enum WebcertFeature {
     FRAN_JOURNALSYSTEM("franJournalsystem");
 
     private String name;
-    
+
     private WebcertFeature(String name) {
         this.name = name;
     }
-    
+
     public String getName() {
         return name;
     }

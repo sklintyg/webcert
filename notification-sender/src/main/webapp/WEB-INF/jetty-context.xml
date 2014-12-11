@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<!--
+  This file is used when running Jetty embedded from maven with target
+
+  > mvn jetty:run
+
+  See the jetty-maven-plugin in the pom.xml file of this project.
+
+-->
+<Configure id="webAppContext" class="org.eclipse.jetty.webapp.WebAppContext">
+  <Call name="setAttribute">
+    <Arg>org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern</Arg>
+    <Arg>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</Arg>
+  </Call>
+  <New id="DataSource" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>jdbc/webcert</Arg>
+    <Arg>
+      <New class="org.apache.commons.dbcp2.BasicDataSource">
+        <Set name="driverClassName">org.h2.Driver</Set>
+        <Set name="url">jdbc:h2:~/temp/webcert</Set>
+        <Set name="username">sa</Set>
+        <Set name="password"></Set>
+      </New>
+    </Arg>
+  </New>
+  <New id="ConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref id="webAppContext" />
+    </Arg>
+    <Arg>jms/ConnectionFactory</Arg>
+    <Arg>
+      <New class="org.apache.activemq.ActiveMQConnectionFactory">
+        <Arg>tcp://localhost:61616</Arg>
+      </New>
+    </Arg>
+  </New>
+  <New id="NotificationQueue" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref id="webAppContext" />
+    </Arg>
+    <Arg>jms/NotificationQueue</Arg>
+    <Arg>
+      <New class="org.apache.activemq.command.ActiveMQQueue">
+        <Arg>NOTIFICATIONSENDER.QUEUE</Arg>
+      </New>
+    </Arg>
+  </New>
+
+</Configure>

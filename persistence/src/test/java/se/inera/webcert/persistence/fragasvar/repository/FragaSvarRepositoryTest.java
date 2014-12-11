@@ -39,11 +39,13 @@ public class FragaSvarRepositoryTest {
     @PersistenceContext
     private EntityManager em;
 
+    private static final String INTYGS_ID = "abc123";
+    
     private LocalDateTime FRAGE_SIGN_DATE = new LocalDateTime("2013-03-01T11:11:11");
     private LocalDateTime FRAGE_SENT_DATE = new LocalDateTime("2013-03-01T12:00:00");
     private LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2013-04-01T11:11:11");
     private LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2013-04-01T12:00:00");
-    private IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk", "Sven Persson",
+    private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk", "Sven Persson",
             FRAGE_SENT_DATE);
     private static String ENHET_1_ID = "ENHET_1_ID";
     private static String ENHET_2_ID = "ENHET_2_ID";
@@ -152,10 +154,40 @@ public class FragaSvarRepositoryTest {
         assertEquals(2, result.size());
 
     }
+    
+    @Test
+    public void testCountByIntyg() {
+        
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.ANSWERED, true));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED, true));
+                
+        Long res = fragasvarRepository.countByIntyg(INTYGS_ID);
+        assertEquals(5L, res.longValue());
+        
+        res = fragasvarRepository.countAnsweredByIntyg(INTYGS_ID);
+        assertEquals(1L, res.longValue());
+        
+        res = fragasvarRepository.countHandledByIntyg(INTYGS_ID);
+        assertEquals(2L, res.longValue());
+        
+        res = fragasvarRepository.countHandledAndAnsweredByIntyg(INTYGS_ID);
+        assertEquals(1L, res.longValue());
+        
+    }
+    
+    
     private FragaSvar buildFragaSvarFraga(String enhetsId) {
         return buildFragaSvarFraga(enhetsId, Status.PENDING_EXTERNAL_ACTION);
     }
+    
     private FragaSvar buildFragaSvarFraga(String enhetsId, Status status) {
+        return buildFragaSvarFraga(enhetsId, status, false);
+    }
+    
+    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, boolean answered) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
@@ -170,11 +202,15 @@ public class FragaSvarRepositoryTest {
         f.setFrageText("Detta var ju otydligt formulerat!");
         f.setIntygsReferens(INTYGS_REFERENS);
         f.setStatus(status);
+        
+        if (answered) {
+            f.setSvarsText("Ett svar på frågan");
+        }
 
         return f;
     }
 
-    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String hsaid, String hsaNamn) {
+    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String hsaid, String hsaNamn)  {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
@@ -191,7 +227,7 @@ public class FragaSvarRepositoryTest {
         f.setFrageText("Detta var ju otydligt formulerat!");
         f.setIntygsReferens(INTYGS_REFERENS);
         f.setStatus(status);
-
+        
         return f;
     }
 

@@ -18,7 +18,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.DiagnosParameter;
 
 /**
  * Controller exposing diagnosis services to be used by modules.
- * 
+ *
  * @author npet
  *
  */
@@ -32,7 +32,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
 
     /**
      * Returns a diagnosis by its code.
-     * 
+     *
      * @param code
      * @return
      */
@@ -47,14 +47,15 @@ public class DiagnosModuleApiController extends AbstractApiController {
         DiagnosResponse diagnosResponse = diagnosService.getDiagnosisByCode(code);
         return Response.ok(diagnosResponse).build();
     }
-    
+
     /**
      * Search for diagnosises using a code fragment. The fragment "A04" will return all
      * diagnosises whose code starts with this fragment. The number of results returned
      * by the service can be limited by setting the 'NbrOfResults' parameter to a positive
-     * number. 
-     * 
-     * @param parameter A parameter object.
+     * number.
+     *
+     * @param parameter
+     *            A parameter object.
      * @return
      */
     @POST
@@ -62,7 +63,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response searchDiagnosisByCode(DiagnosParameter parameter) {
-        
+
         LOG.debug("Searching for diagnosises using code fragment: {}", parameter.getCodeFragment());
 
         DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByCode(parameter.getCodeFragment(), parameter.getNbrOfResults());

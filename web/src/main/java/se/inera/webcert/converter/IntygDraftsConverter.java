@@ -1,16 +1,9 @@
 package se.inera.webcert.converter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.service.intyg.dto.IntygItem;
@@ -18,6 +11,12 @@ import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.web.controller.api.dto.IntygSource;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public final class IntygDraftsConverter {
 
@@ -40,11 +39,11 @@ public final class IntygDraftsConverter {
         }
 
     };
-    
+
     private static Predicate removeArchivedIntygStatusesPredicate = new Predicate() {
-        
+
         private final List<StatusType> archivedStatuses = Arrays.asList(StatusType.DELETED, StatusType.RESTORED);
-        
+
         @Override
         public boolean evaluate(Object obj) {
             if (obj instanceof IntygStatus) {
@@ -66,19 +65,19 @@ public final class IntygDraftsConverter {
         List<ListIntygEntry> allIntyg = new ArrayList<ListIntygEntry>();
 
         ListIntygEntry intygEntry;
-        
+
         // add all signed intyg
         for (IntygItem cert : signedIntygList) {
             intygEntry = convertIntygItemToListIntygEntry(cert);
             allIntyg.add(intygEntry);
         }
-        
+
         // add alldrafts
         for (Intyg intyg : draftIntygList) {
             intygEntry = convertIntygToListIntygEntry(intyg);
             allIntyg.add(intygEntry);
         }
-        
+
         // sort according to signedUpdate date and then reverse so that last is on top.
         Collections.sort(allIntyg, intygEntryDateComparator);
         Collections.reverse(allIntyg);
@@ -120,9 +119,9 @@ public final class IntygDraftsConverter {
 
         return ie;
     }
-    
+
     private static StatusType convertIntygsStatusToStatusType(IntygsStatus intygsStatus) {
-        
+
         switch (intygsStatus) {
         case DRAFT_COMPLETE:
             return StatusType.DRAFT_COMPLETE;
@@ -154,15 +153,14 @@ public final class IntygDraftsConverter {
         if (intygStatuses == null || intygStatuses.isEmpty()) {
             return StatusType.UNKNOWN;
         }
-        
+
         CollectionUtils.filter(intygStatuses, removeArchivedIntygStatusesPredicate);
-        
+
         if (intygStatuses.isEmpty()) {
             return StatusType.UNKNOWN;
         }
-        
+
         IntygStatus latestStatus = Collections.max(intygStatuses, intygStatusComparator);
         return latestStatus.getType();
     }
-
 }

@@ -7,18 +7,17 @@ public interface IntygOmsandningService {
 
     /**
      * Trigger a new attempt to store a certificate in the Intygtjanst.
-     * 
+     *
      * @param omsandning
      * @return
      */
-    public abstract IntygServiceResult storeIntyg(Omsandning omsandning);
-        
+    IntygServiceResult storeIntyg(Omsandning omsandning);
+
     /**
      * Triggers a new attempt to send a certificate to a recipient.
-     * 
+     *
      * @param omsandning
      * @return
      */
-    public abstract IntygServiceResult sendIntyg(Omsandning omsandning);
-        
+    IntygServiceResult sendIntyg(Omsandning omsandning);
 }

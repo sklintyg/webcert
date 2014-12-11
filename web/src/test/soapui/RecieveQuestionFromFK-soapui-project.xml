@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="RecieveQuestionFromFK" resourceRoot="" soapui-version="5.0.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="ReceiveQuestionResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://integration.webcert.inera.se/}ReceiveQuestionResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:9088/services/receive-question/v1.0?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:9088/services/receive-question/v1.0?wsdl"><con:part><con:url>http://localhost:9088/services/receive-question/v1.0?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReceiveQuestionResponderImplService" targetNamespace="http://integration.webcert.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://integration.webcert.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20">
+  <wsdl:import location="http://localhost:9088/services/receive-question/v1.0?wsdl=ReceiveMedicalCertificateQuestionResponderInterface.wsdl" namespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20"></wsdl:import>
+  <wsdl:binding name="ReceiveQuestionResponderImplServiceSoapBinding" type="ns1:ReceiveMedicalCertificateQuestionResponderInterface">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="ReceiveMedicalCertificateQuestion">
+      <soap:operation soapAction="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" style="document"/>
+      <wsdl:input name="ReceiveMedicalCertificateQuestion">
+        <soap:header message="ns1:ReceiveMedicalCertificateQuestion" part="LogicalAddress" use="literal"></soap:header>
+        <soap:body parts="parameters" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ReceiveMedicalCertificateQuestionResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ReceiveQuestionResponderImplService">
+    <wsdl:port binding="tns:ReceiveQuestionResponderImplServiceSoapBinding" name="ReceiveQuestionResponderImplPort">
+      <soap:address location="http://localhost:9088/services/receive-question/v1.0"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:9088/services/receive-question/v1.0?wsdl=ReceiveMedicalCertificateQuestionResponderInterface.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ReceiveMedicalCertificateQuestionResponderInterface" targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:ns2="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20">
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:insuranceprocess:healthreporting:medcertqa:1" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns2="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns1="urn:iso:21090:dt:1">
+      <xs:import namespace="urn:iso:21090:dt:1"/>
+      <xs:import namespace="urn:riv:insuranceprocess:healthreporting:2"/>
+      <xs:complexType name="innehallType">
+        <xs:sequence>
+          <xs:element name="meddelandeText" type="xs:string"/>
+          <xs:element name="signeringsTidpunkt" type="xs:dateTime"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="vardAdresseringsType">
+        <xs:sequence>
+          <xs:element name="hosPersonal" type="ns2:hosPersonalType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="lakarutlatandeEnkelType">
+        <xs:sequence>
+          <xs:element name="lakarutlatande-id" type="xs:string"/>
+          <xs:element name="signeringsTidpunkt" type="xs:dateTime"/>
+          <xs:element name="patient" type="ns2:patientType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="fkKontaktType">
+        <xs:sequence>
+          <xs:element name="kontakt" type="xs:string"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="kompletteringType">
+        <xs:sequence>
+          <xs:element name="falt" type="xs:string"/>
+          <xs:element name="text" type="xs:string"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="Amnetyp">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="Komplettering_av_lakarintyg"/>
+          <xs:enumeration value="Makulering_av_lakarintyg"/>
+          <xs:enumeration value="Avstamningsmote"/>
+          <xs:enumeration value="Kontakt"/>
+          <xs:enumeration value="Arbetstidsforlaggning"/>
+          <xs:enumeration value="Paminnelse"/>
+          <xs:enumeration value="Ovrigt"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:ns2="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns1="urn:riv:insuranceprocess:healthreporting:medcertqa:1">
+      <xs:import namespace="urn:riv:insuranceprocess:healthreporting:medcertqa:1"/>
+      <xs:import namespace="urn:riv:insuranceprocess:healthreporting:2"/>
+      <xs:element name="Question" type="tns:QuestionFromFkType"/>
+      <xs:element name="ReceiveMedicalCertificateQuestion" type="tns:ReceiveMedicalCertificateQuestionType"/>
+      <xs:element name="ReceiveMedicalCertificateQuestionResponse" type="tns:ReceiveMedicalCertificateQuestionResponseType"/>
+      <xs:complexType name="ReceiveMedicalCertificateQuestionType">
+        <xs:sequence>
+          <xs:element name="Question" type="tns:QuestionFromFkType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="QuestionFromFkType">
+        <xs:sequence>
+          <xs:element name="fkReferens-id" type="xs:string"/>
+          <xs:element name="amne" type="ns1:Amnetyp"/>
+          <xs:element name="fraga" type="ns1:innehallType"/>
+          <xs:element name="avsantTidpunkt" type="xs:dateTime"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="fkKontaktInfo" nillable="true" type="ns1:fkKontaktType"/>
+          <xs:element name="adressVard" type="ns1:vardAdresseringsType"/>
+          <xs:element minOccurs="0" name="fkMeddelanderubrik" type="xs:string"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="fkKomplettering" nillable="true" type="ns1:kompletteringType"/>
+          <xs:element minOccurs="0" name="fkSistaDatumForSvar" type="xs:date"/>
+          <xs:element name="lakarutlatande" type="ns1:lakarutlatandeEnkelType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReceiveMedicalCertificateQuestionResponseType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="result" type="ns2:ResultOfCall"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema targetNamespace="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestion:1:rivtabp20">
+      <xs:complexType final="extension restriction" name="localDateTime">
+        <xs:complexContent>
+          <xs:extension base="tns:baseLocal">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType abstract="true" name="baseLocal">
+        <xs:complexContent>
+          <xs:extension base="tns:abstractPartial">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType abstract="true" name="abstractPartial">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:complexType final="extension restriction" name="localDate">
+        <xs:complexContent>
+          <xs:extension base="tns:baseLocal">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:insuranceprocess:healthreporting:2" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns1="urn:iso:21090:dt:1">
+      <xs:import namespace="urn:iso:21090:dt:1"/>
+      <xs:complexType name="hosPersonalType">
+        <xs:sequence>
+          <xs:element name="personal-id" type="ns1:II"/>
+          <xs:element minOccurs="0" name="fullstandigtNamn" type="xs:string"/>
+          <xs:element minOccurs="0" name="forskrivarkod" type="xs:string"/>
+          <xs:element name="enhet" type="tns:enhetType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="enhetType">
+        <xs:sequence>
+          <xs:element name="enhets-id" type="ns1:II"/>
+          <xs:element minOccurs="0" name="arbetsplatskod" type="ns1:II"/>
+          <xs:element name="enhetsnamn" type="xs:string"/>
+          <xs:element minOccurs="0" name="postadress" type="xs:string"/>
+          <xs:element minOccurs="0" name="postnummer" type="xs:string"/>
+          <xs:element minOccurs="0" name="postort" type="xs:string"/>
+          <xs:element minOccurs="0" name="telefonnummer" type="xs:string"/>
+          <xs:element minOccurs="0" name="epost" type="xs:string"/>
+          <xs:element minOccurs="0" name="vardgivare" type="tns:vardgivareType"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="vardgivareType">
+        <xs:sequence>
+          <xs:element name="vardgivare-id" type="ns1:II"/>
+          <xs:element name="vardgivarnamn" type="xs:string"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="patientType">
+        <xs:sequence>
+          <xs:element name="person-id" type="ns1:II"/>
+          <xs:element minOccurs="0" name="fullstandigtNamn" type="xs:string"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ResultOfCall">
+        <xs:sequence>
+          <xs:element name="resultCode" type="xs:string"/>
+          <xs:element minOccurs="0" name="infoText" type="xs:string"/>
+          <xs:element minOccurs="0" name="errorId" type="xs:string"/>
+          <xs:element minOccurs="0" name="errorText" type="xs:string"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="ResultCodeEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="OK"/>
+          <xs:enumeration value="ERROR"/>
+          <xs:enumeration value="INFO"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="ErrorIdEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="VALIDATION_ERROR"/>
+          <xs:enumeration value="TRANSFORMATION_ERROR"/>
+          <xs:enumeration value="APPLICATION_ERROR"/>
+          <xs:enumeration value="TECHNICAL_ERROR"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:types:1" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:types:1" xmlns:ns1="urn:iso:21090:dt:1">
+      <xs:import namespace="urn:iso:21090:dt:1"/>
+      <xs:complexType name="utlatandeTyp">
+        <xs:complexContent>
+          <xs:extension base="ns1:CD">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="utlatandeId">
+        <xs:complexContent>
+          <xs:extension base="ns1:II">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="personId">
+        <xs:complexContent>
+          <xs:extension base="ns1:II">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="hsaId">
+        <xs:complexContent>
+          <xs:extension base="ns1:II">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="arbetsplatsKod">
+        <xs:complexContent>
+          <xs:extension base="ns1:II">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="dateInterval">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="from" type="xs:string"/>
+          <xs:element minOccurs="0" name="tom" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="partialDateInterval">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="from" type="xs:string"/>
+          <xs:element minOccurs="0" name="tom" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="CV">
+        <xs:sequence/>
+        <xs:attribute name="code" type="xs:string"/>
+        <xs:attribute name="codeSystem" type="xs:string"/>
+        <xs:attribute name="codeSystemName" type="xs:string"/>
+        <xs:attribute name="codeSystemVersion" type="xs:string"/>
+        <xs:attribute name="displayName" type="xs:string"/>
+        <xs:attribute name="originalText" type="xs:string"/>
+      </xs:complexType>
+      <xs:complexType name="typAvUtlatandeTyp">
+        <xs:complexContent>
+          <xs:extension base="tns:CV">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="II">
+        <xs:sequence/>
+        <xs:attribute name="root" type="xs:string"/>
+        <xs:attribute name="extension" type="xs:string"/>
+        <xs:attribute name="identifierName" type="xs:string"/>
+      </xs:complexType>
+      <xs:complexType name="PQ">
+        <xs:sequence/>
+        <xs:attribute name="value" type="xs:double"/>
+        <xs:attribute name="unit" type="xs:string"/>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema targetNamespace="urn:iso:21090:dt:1" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:iso:21090:dt:1">
+      <xs:complexType name="II">
+        <xs:complexContent>
+          <xs:extension base="tns:ANY">
+            <xs:sequence/>
+            <xs:attribute name="root" type="xs:string"/>
+            <xs:attribute name="extension" type="xs:string"/>
+            <xs:attribute name="identifierName" type="xs:string"/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ANY">
+        <xs:complexContent>
+          <xs:extension base="tns:HXIT">
+            <xs:sequence/>
+            <xs:attribute name="nullFlavor" type="tns:NullFlavor"/>
+            <xs:attribute name="flavorId" type="xs:string"/>
+            <xs:attribute name="updateMode" type="tns:UpdateMode"/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType abstract="true" name="HXIT">
+        <xs:sequence/>
+        <xs:attribute name="validTimeLow" type="xs:string"/>
+        <xs:attribute name="validTimeHigh" type="xs:string"/>
+        <xs:attribute name="controlActRoot" type="xs:string"/>
+        <xs:attribute name="controlActExtension" type="xs:string"/>
+      </xs:complexType>
+      <xs:complexType name="CD">
+        <xs:complexContent>
+          <xs:extension base="tns:ANY">
+            <xs:sequence/>
+            <xs:attribute name="code" type="xs:string"/>
+            <xs:attribute name="codeSystem" type="xs:string"/>
+            <xs:attribute name="codeSystemName" type="xs:string"/>
+            <xs:attribute name="codeSystemVersion" type="xs:string"/>
+            <xs:attribute name="displayName" type="xs:string"/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PQ">
+        <xs:complexContent>
+          <xs:extension base="tns:ANY">
+            <xs:sequence/>
+            <xs:attribute name="value" type="xs:double"/>
+            <xs:attribute name="unit" type="xs:string"/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:simpleType name="NullFlavor">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="NI"/>
+          <xs:enumeration value="INV"/>
+          <xs:enumeration value="OTH"/>
+          <xs:enumeration value="NINF"/>
+          <xs:enumeration value="PINF"/>
+          <xs:enumeration value="UNC"/>
+          <xs:enumeration value="DER"/>
+          <xs:enumeration value="UNK"/>
+          <xs:enumeration value="ASKU"/>
+          <xs:enumeration value="NAV"/>
+          <xs:enumeration value="QS"/>
+          <xs:enumeration value="NASK"/>
+          <xs:enumeration value="TRC"/>
+          <xs:enumeration value="MSK"/>
+          <xs:enumeration value="NA"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="UpdateMode">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="A"/>
+          <xs:enumeration value="AU"/>
+          <xs:enumeration value="U"/>
+          <xs:enumeration value="R"/>
+          <xs:enumeration value="I"/>
+          <xs:enumeration value="D"/>
+          <xs:enumeration value="K"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+    <xs:schema blockDefault="#all" elementFormDefault="qualified" targetNamespace="http://www.w3.org/2005/08/addressing" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.w3.org/2005/08/addressing">
+      <!--Constructs from the WS-Addressing Core-->
+      <xs:element name="EndpointReference" type="tns:EndpointReferenceType"/>
+      <xs:complexType name="EndpointReferenceType">
+        <xs:sequence>
+          <xs:element name="Address" type="tns:AttributedURIType"/>
+          <xs:element minOccurs="0" name="ReferenceParameters" type="tns:ReferenceParametersType"/>
+          <xs:element minOccurs="0" ref="tns:Metadata"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <xs:complexType name="ReferenceParametersType">
+        <xs:sequence>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##any" processContents="lax"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <xs:element name="Metadata" type="tns:MetadataType"/>
+      <xs:complexType name="MetadataType">
+        <xs:sequence>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##any" processContents="lax"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <xs:element name="MessageID" type="tns:AttributedURIType"/>
+      <xs:element name="RelatesTo" type="tns:RelatesToType"/>
+      <xs:complexType name="RelatesToType">
+        <xs:simpleContent>
+          <xs:extension base="xs:anyURI">
+            <xs:attribute default="http://www.w3.org/2005/08/addressing/reply" name="RelationshipType" type="tns:RelationshipTypeOpenEnum" use="optional"/>
+            <xs:anyAttribute namespace="##other" processContents="lax"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:simpleType name="RelationshipTypeOpenEnum">
+        <xs:union memberTypes="tns:RelationshipType xs:anyURI"/>
+      </xs:simpleType>
+      <xs:simpleType name="RelationshipType">
+        <xs:restriction base="xs:anyURI">
+          <xs:enumeration value="http://www.w3.org/2005/08/addressing/reply"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="ReplyTo" type="tns:EndpointReferenceType"/>
+      <xs:element name="From" type="tns:EndpointReferenceType"/>
+      <xs:element name="FaultTo" type="tns:EndpointReferenceType"/>
+      <xs:element name="To" type="tns:AttributedURIType"/>
+      <xs:element name="Action" type="tns:AttributedURIType"/>
+      <xs:complexType name="AttributedURIType">
+        <xs:simpleContent>
+          <xs:extension base="xs:anyURI">
+            <xs:anyAttribute namespace="##other" processContents="lax"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <!--Constructs from the WS-Addressing SOAP binding-->
+      <xs:attribute name="IsReferenceParameter" type="xs:boolean"/>
+      <xs:simpleType name="FaultCodesOpenEnumType">
+        <xs:union memberTypes="tns:FaultCodesType xs:QName"/>
+      </xs:simpleType>
+      <xs:simpleType name="FaultCodesType">
+        <xs:restriction base="xs:QName">
+          <xs:enumeration value="tns:InvalidAddressingHeader"/>
+          <xs:enumeration value="tns:InvalidAddress"/>
+          <xs:enumeration value="tns:InvalidEPR"/>
+          <xs:enumeration value="tns:InvalidCardinality"/>
+          <xs:enumeration value="tns:MissingAddressInEPR"/>
+          <xs:enumeration value="tns:DuplicateMessageID"/>
+          <xs:enumeration value="tns:ActionMismatch"/>
+          <xs:enumeration value="tns:MessageAddressingHeaderRequired"/>
+          <xs:enumeration value="tns:DestinationUnreachable"/>
+          <xs:enumeration value="tns:ActionNotSupported"/>
+          <xs:enumeration value="tns:EndpointUnavailable"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="RetryAfter" type="tns:AttributedUnsignedLongType"/>
+      <xs:complexType name="AttributedUnsignedLongType">
+        <xs:simpleContent>
+          <xs:extension base="xs:unsignedLong">
+            <xs:anyAttribute namespace="##other" processContents="lax"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:element name="ProblemHeaderQName" type="tns:AttributedQNameType"/>
+      <xs:complexType name="AttributedQNameType">
+        <xs:simpleContent>
+          <xs:extension base="xs:QName">
+            <xs:anyAttribute namespace="##other" processContents="lax"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:element name="ProblemHeader" type="tns:AttributedAnyType"/>
+      <xs:complexType name="AttributedAnyType">
+        <xs:sequence>
+          <xs:any namespace="##any" processContents="lax"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+      <xs:element name="ProblemIRI" type="tns:AttributedURIType"/>
+      <xs:element name="ProblemAction" type="tns:ProblemActionType"/>
+      <xs:complexType name="ProblemActionType">
+        <xs:sequence>
+          <xs:element minOccurs="0" ref="tns:Action"/>
+          <xs:element minOccurs="0" name="SoapAction" type="xs:anyURI"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="ReceiveMedicalCertificateQuestionResponse">
+    <wsdl:part element="ns2:ReceiveMedicalCertificateQuestionResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ReceiveMedicalCertificateQuestion">
+    <wsdl:part element="wsa:To" name="LogicalAddress"></wsdl:part>
+    <wsdl:part element="ns2:ReceiveMedicalCertificateQuestion" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ReceiveMedicalCertificateQuestionResponderInterface">
+    <wsdl:operation name="ReceiveMedicalCertificateQuestion">
+      <wsdl:input message="ns1:ReceiveMedicalCertificateQuestion" name="ReceiveMedicalCertificateQuestion"></wsdl:input>
+      <wsdl:output message="ns1:ReceiveMedicalCertificateQuestionResponse" name="ReceiveMedicalCertificateQuestionResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:9088/services/receive-question/v1.0</con:endpoint></con:endpoints><con:operation isOneWay="false" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" name="ReceiveMedicalCertificateQuestion" bindingOperationName="ReceiveMedicalCertificateQuestion" type="Request-Response" outputName="ReceiveMedicalCertificateQuestionResponse" inputName="ReceiveMedicalCertificateQuestion" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:9088/services/receive-question/v1.0</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:add="http://www.w3.org/2005/08/addressing" xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1" xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1" xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
+   <soapenv:Header>
+      <add:To>FK12323234</add:To>
+   </soapenv:Header>
+   <soapenv:Body>
+      <urn:ReceiveMedicalCertificateQuestion>
+         <urn:Question>
+            <urn:fkReferens-id>123456</urn:fkReferens-id>
+            <urn:amne>Ovrigt</urn:amne>
+            <urn:fraga>
+               <urn1:meddelandeText>Detta är en fråga från FK</urn1:meddelandeText>
+               <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>
+               <!--You may enter ANY elements at this point-->
+            </urn:fraga>
+            <urn:avsantTidpunkt>2014-12-07T21:00:00.000</urn:avsantTidpunkt>
+            <!--Zero or more repetitions:-->
+            <urn:fkKontaktInfo>
+               <urn1:kontakt>Blahonga</urn1:kontakt>
+               <!--You may enter ANY elements at this point-->
+            </urn:fkKontaktInfo>
+            <urn:adressVard>
+               <urn1:hosPersonal>
+                  <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1B01"/>
+                  <urn2:fullstandigtNamn>Ivar Integration</urn2:fullstandigtNamn>
+                  <urn2:enhet>
+                     <urn2:enhets-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A02"/>
+                     <urn2:enhetsnamn>WebCert-Integration Enhet 1</urn2:enhetsnamn>
+                     <urn2:vardgivare>
+                        <urn2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A01"/>
+                        <urn2:vardgivarnamn>WebCert-Integration Vårdgivare 1</urn2:vardgivarnamn>
+                     </urn2:vardgivare>
+                  </urn2:enhet>
+               </urn1:hosPersonal>
+               <!--You may enter ANY elements at this point-->
+            </urn:adressVard>
+            <urn:lakarutlatande>
+               <urn1:lakarutlatande-id>865a5a4f-8dc8-476a-a4fb-1cc148909939</urn1:lakarutlatande-id>
+               <urn1:signeringsTidpunkt>2014-12-07T21:00:00.000</urn1:signeringsTidpunkt>
+               <urn1:patient>
+                  <urn2:person-id root="1.2.752.129.2.1.3.1" extension="19520614-2597"/>
+                  <urn2:fullstandigtNamn>Per Peter Svensson Pärsson</urn2:fullstandigtNamn>	
+               </urn1:patient>
+               <!--You may enter ANY elements at this point-->
+            </urn:lakarutlatande>
+            <!--You may enter ANY elements at this point-->
+         </urn:Question>
+         <!--You may enter ANY elements at this point-->
+      </urn:ReceiveMedicalCertificateQuestion>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>

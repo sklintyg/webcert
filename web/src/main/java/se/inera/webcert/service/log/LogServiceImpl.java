@@ -8,17 +8,13 @@ import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
-import se.inera.log.messages.AbstractLogMessage;
-import se.inera.log.messages.Enhet;
-import se.inera.log.messages.IntygPrintMessage;
-import se.inera.log.messages.IntygReadMessage;
-import se.inera.log.messages.Patient;
-import se.inera.log.messages.SendIntygToRecipientMessage;
+import se.inera.log.messages.*;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
@@ -36,13 +32,14 @@ public class LogServiceImpl implements LogService {
 
     private static final String PRINTED_AS_PDF = "Intyget utskrivet som PDF";
     private static final String PRINTED_AS_DRAFT = "Intyget utskrivet som utkast";
-    
+
     @Autowired(required = false)
+    @Qualifier("jmsPDLLogTemplate")
     private JmsTemplate jmsTemplate;
 
     @Value("${pdlLogging.systemId}")
     private String systemId;
-    
+
     @Value("${pdlLogging.systemName}")
     private String systemName;
 
@@ -65,7 +62,7 @@ public class LogServiceImpl implements LogService {
     public void logPrintOfIntygAsPDF(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_PDF)));
     }
-    
+
     @Override
     public void logPrintOfIntygAsDraft(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_DRAFT)));
@@ -75,7 +72,7 @@ public class LogServiceImpl implements LogService {
     public void logSendIntygToRecipient(LogRequest logRequest) {
         send(populateLogMessage(logRequest, new SendIntygToRecipientMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo())));
     }
-    
+
     private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg) {
 
         populateWithCurrentUserAndCareUnit(logMsg);

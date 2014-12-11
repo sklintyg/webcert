@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:inera:webcert:notifications:1"
+  targetNamespace="urn:inera:webcert:notifications:1" elementFormDefault="qualified">
+
+  <xs:element name="NotificationRequest" type="tns:notificationRequestType"/>
+
+  <xs:complexType name="notificationRequestType">
+    <xs:sequence>
+      <xs:element name="handelse" type="tns:handelseType"></xs:element>
+      <xs:element name="handelseTidpunkt" type="xs:dateTime"></xs:element>
+      <xs:element name="intygsId" type="xs:string"></xs:element>
+      <xs:element name="intygsTyp" type="xs:string"></xs:element>
+      <xs:element name="utfardandeEnhetsId" type="tns:nonEmptyString" minOccurs="0" />
+      <xs:element name="hoSPerson" type="tns:hoSPersonType"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="hoSPersonType">
+    <xs:sequence>
+      <xs:element name="hsaId" type="xs:string"></xs:element>
+      <xs:element name="fullstandigtNamn" type="xs:string"></xs:element>
+      <xs:element name="vardenhet" type="tns:vardenhetType"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+        
+  <xs:complexType name="vardenhetType">
+    <xs:sequence>
+      <xs:element name="hsaId" type="xs:string"></xs:element>
+      <xs:element name="enhetsNamn" type="xs:string"></xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:simpleType name="nonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="handelseType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="INTYGSUTKAST_SKAPAT">
+        <xs:annotation>
+          <xs:documentation>HAN1: Intygsutkast skapat</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="INTYGSUTKAST_SIGNERAT">
+        <xs:annotation>
+          <xs:documentation>HAN2: Intyg signerat</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="INTYG_SKICKAT_FK">
+        <xs:annotation>
+          <xs:documentation>HAN3: Intyg skickat till FK</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="INTYGSUTKAST_RADERAT">
+        <xs:annotation>
+          <xs:documentation>HAN4: Intygsutkast raderat</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="INTYG_MAKULERAT">
+        <xs:annotation>
+          <xs:documentation>HAN5: Intyg makulerat</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="FRAGA_FRAN_FK">
+        <xs:annotation>
+          <xs:documentation>HAN6: Ny fråga från FK</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="SVAR_FRAN_FK">
+        <xs:annotation>
+          <xs:documentation>HAN7: Nytt svar från FK</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="FRAGA_TILL_FK">
+        <xs:annotation>
+          <xs:documentation>HAN8: Ny fråga till FK</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="FRAGA_FRAN_FK_HANTERAD">
+        <xs:annotation>
+          <xs:documentation>HAN9: Hanterad fråga från FK</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="SVAR_FRAN_FK_HANTERAD">
+        <xs:annotation>
+          <xs:documentation>HAN10: Hanterat svar från FK</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="INTYGSUTKAST_ANDRAT">
+        <xs:annotation>
+          <xs:documentation>HAN11: Intygsutkast ändrat</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

@@ -484,7 +484,7 @@
                <urn1:fullstandigtNamn>Ivar Integration</urn1:fullstandigtNamn>
                <urn1:enhet>
                   <urn1:enhets-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A02"/>
-                  <urn1:enhetsnamn>Sjukhuset</urn1:enhetsnamn>
+                  <urn1:enhetsnamn>WebCert-Integration Enhet 1</urn1:enhetsnamn>
                   <!--You may enter ANY elements at this point-->
                </urn1:enhet>
                <!--You may enter ANY elements at this point-->
@@ -503,7 +503,7 @@
          <urn1:utlatande>
             <urn1:typAvUtlatande code="fk7263"/>
             <urn1:patient>
-               <urn1:person-id root="1.2.752.129.2.1.3.1" extension="19121212+1212"/>
+               <urn1:person-id root="1.2.752.129.2.1.3.1" extension="19121212-1212"/>
                <!--Zero or more repetitions:-->
                <urn1:fornamn>Tolvan</urn1:fornamn>
                <urn1:efternamn>Tolvansson</urn1:efternamn>

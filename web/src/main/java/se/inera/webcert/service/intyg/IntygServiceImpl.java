@@ -33,6 +33,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
@@ -54,6 +55,8 @@ import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.notification.NotificationMessageFactory;
+import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
@@ -61,6 +64,10 @@ import se.inera.webcert.web.service.WebCertUserService;
  */
 @Service
 public class IntygServiceImpl implements IntygService, IntygOmsandningService {
+
+    public enum Event {
+        REGISTER, SEND, REVOKE;
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
 
@@ -77,22 +84,22 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     private RegisterCertificateResponderInterface intygSender;
 
     @Autowired
-    private OmsandningRepository omsandningRepository;
-
-    @Autowired
-    private IntygRepository intygRepository;
-
-    @Autowired
     private WebCertUserService webCertUserService;
 
     @Autowired
-    private LogService logService;
+    private GetRecipientsForCertificateResponderInterface getRecipientsForCertificateService;
+
+    @Autowired
+    private RevokeMedicalCertificateResponderInterface revokeService;
 
     @Autowired
     private SendMedicalCertificateResponderInterface sendService;
 
     @Autowired
-    private RevokeMedicalCertificateResponderInterface revokeService;
+    private OmsandningRepository omsandningRepository;
+
+    @Autowired
+    private IntygRepository intygRepository;
 
     @Autowired
     private IntygModuleFacade modelFacade;
@@ -104,7 +111,11 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     private IntygServiceConfigurationManager configurationManager;
 
     @Autowired
-    private GetRecipientsForCertificateResponderInterface getRecipientsForCertificateService;
+    private LogService logService;
+
+    @Autowired
+    private NotificationService notificationService;
+
 
     @Override
     public IntygContentHolder fetchIntygData(String intygId, String typ) {
@@ -155,8 +166,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         ResultType resultType = response.getResult();
 
         if (resultType.getResultCode() != ResultCodeType.OK) {
-            LOG.error("Retrieving list of recipients for type '{}' failed with error id; {}, msg; {}", new Object[] { intygType,
-                    resultType.getErrorId(), resultType.getResultText() });
+            LOG.error("Retrieving list of recipients for type '{}' failed with error id; {}, msg; {}", new Object[] {
+                    intygType, resultType.getErrorId(), resultType.getResultText() });
             return recipientsList;
         }
 
@@ -288,6 +299,9 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
             logService.logSendIntygToRecipient(logRequest);
 
+            // Notify stakeholders when a certificate is sent
+            notify(intygsId, Event.SEND);
+
             return IntygServiceResult.OK;
 
         } catch (ExternalServiceCallException esce) {
@@ -323,6 +337,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
         AttributedURIType uri = new AttributedURIType();
         uri.setValue(logicalAddress);
+        // Notify stakeholders when a certificate is revoked
+        notify(intygsId, Event.REVOKE);
 
         RevokeMedicalCertificateResponseType response = revokeService.revokeMedicalCertificate(uri, request);
 
@@ -347,4 +363,29 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     public void setLogicalAddress(String logicalAddress) {
         this.logicalAddress = logicalAddress;
     }
+
+    private void notify(String intygId, Event event) {
+        Intyg intyg = intygRepository.findOne(intygId);
+
+        if (intyg != null) {
+            notify(intyg, event);
+        } else {
+            LOG.debug("Intyg '{}' was not found", intygId);
+        }
+    }
+
+    private void notify(Intyg intyg, Event event) {
+        NotificationRequestType notificationRequestType = null;
+
+        switch (event) {
+        case REVOKE:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromRevokedCertificate(intyg);
+            break;
+        case SEND:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromSentCertificate(intyg);
+        }
+
+        notificationService.notify(notificationRequestType);
+    }
+
 }

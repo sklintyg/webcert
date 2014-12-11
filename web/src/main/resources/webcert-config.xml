@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (C) 2013 Inera AB (http://www.inera.se) This file is part 
-  of Inera Certificate Web (http://code.google.com/p/inera-certificate-web). 
-  Inera Certificate Web is free software: you can redistribute it and/or modify 
-  it under the terms of the GNU Affero General Public License as published 
-  by the Free Software Foundation, either version 3 of the License, or (at 
-  your option) any later version. Inera Certificate Web is distributed in the 
-  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
-  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-  GNU Affero General Public License for more details. You should have received 
-  a copy of the GNU Affero General Public License along with this program. 
-  If not, see <http://www.gnu.org/licenses/>. -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-  xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:http="http://cxf.apache.org/transports/http/configuration"
-  xmlns:sec="http://cxf.apache.org/configuration/security" xmlns:task="http://www.springframework.org/schema/task"
-  xmlns:util="http://www.springframework.org/schema/util" 
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:http="http://cxf.apache.org/transports/http/configuration"
+    xmlns:sec="http://cxf.apache.org/configuration/security"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
@@ -30,6 +22,7 @@
       location="file:${credentials.file}, file:${webcert.config.file}"
       order="1" ignore-resource-not-found="false" ignore-unresolvable="true" />
   </beans>
+
   <beans profile="dev,test,local">
     <!-- Config file could be missing in dev and test -->
     <context:property-placeholder
@@ -48,28 +41,22 @@
 
     <context:annotation-config />
     <context:component-scan base-package="se.inera.webcert" />
-    <task:annotation-driven scheduler="scheduler"
-      executor="threadPoolTaskExecutor" />
+    <context:component-scan base-package="se.inera.webcert.web.service" />
+
+    <task:annotation-driven scheduler="scheduler" executor="threadPoolTaskExecutor" />
     <task:scheduler id="scheduler" pool-size="1" />
-    <task:executor id="threadPoolTaskExecutor" pool-size="10"
-      queue-capacity="100" rejection-policy="CALLER_RUNS" />
+    <task:executor id="threadPoolTaskExecutor" pool-size="10" queue-capacity="100" rejection-policy="CALLER_RUNS" />
 
     <import resource="classpath:repository-context.xml" />
     <import resource="security/securityContext.xml" />
     <import resource="classpath:/hsa-services-config.xml" />
     <import resource="classpath:/signature-services-config.xml" />
     <import resource="classpath:/pu-services-config.xml" />
-
     <import resource="classpath:jms-config.xml" />
-
     <import resource="classpath:/mail-stub-context.xml" />
-
     <import resource="classpath*:module-config.xml" />
     <import resource="classpath*:wc-module-cxf-servlet.xml" />
 
-
-    <context:component-scan base-package="se.inera.webcert.web.service" />
-    
     <util:properties id="webcertFeatures" location="classpath:/features.properties" />
     
     <bean id="messageSource"

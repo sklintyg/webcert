@@ -15,16 +15,34 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
+import se.inera.webcert.service.draft.TicketTracker;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.util.ReflectionUtils;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
+
+    private static final String INTYG_ID = "abc123";
+
+    @Before
+    public void setup() {
+        WebCertUser user = new WebCertUser();
+        user.setNamn("Dr Dengroth");
+        user.setHsaId("AAA");
+
+        when(webCertUserService.getWebCertUser()).thenReturn(user);
+
+        ReflectionUtils.setTypedField(intygSignatureService, new TicketTracker());
+        ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
+    }
 
     @Before
     public void setupDefaultAuthorization() {

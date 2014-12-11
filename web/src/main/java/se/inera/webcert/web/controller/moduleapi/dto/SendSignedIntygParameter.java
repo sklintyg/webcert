@@ -3,11 +3,11 @@ package se.inera.webcert.web.controller.moduleapi.dto;
 public class SendSignedIntygParameter {
 
     private String recipient;
-    
+
     private boolean patientConsent;
-    
+
     public SendSignedIntygParameter() {
-        
+
     }
 
     public String getRecipient() {
@@ -25,5 +25,4 @@ public class SendSignedIntygParameter {
     public void setPatientConsent(boolean patientConsent) {
         this.patientConsent = patientConsent;
     }
-
 }

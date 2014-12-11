@@ -1,12 +1,9 @@
 package se.inera.webcert.integration;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
@@ -22,11 +19,12 @@ import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
-import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
+
+import java.util.List;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
@@ -40,53 +38,69 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private CreateNewDraftRequestBuilder draftRequestBuilder;
-    
+
     @Autowired
     private CreateDraftCertificateValidator validator;
-    
+
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
     @Override
-    @Transactional
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
 
         UtlatandeType utkastsParams = parameters.getUtlatande();
-        
+
+        // Validate draft parameters
         ValidationResult validationResults = validator.validate(utkastsParams);
-        
         if (validationResults.hasErrors()) {
-            String errMsgs = validationResults.getErrorMessagesAsString();
-            LOG.warn("UtlatandeType did not validate correctly: {}", errMsgs);
-            return createErrorResponse(errMsgs, ErrorIdType.VALIDATION_ERROR);
+            return createValidationErrorResponse(validationResults);
         }
-                
+
         String invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
 
-        MiuInformationType unitMIU = checkIfInvokingPersonHasMIUsOnUnit(
-                invokingUserHsaId, invokingUnitHsaId);
-
+        // Check if the invoking health personal has MIU rights on care unit
+        MiuInformationType unitMIU = checkMIU(utkastsParams);
         if (unitMIU == null) {
-            String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId,
-                    invokingUnitHsaId);
-            LOG.error(errMsg);
-            return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
+            return createMIUErrorResponse(utkastsParams);
         }
 
-        CreateNewDraftRequest utkastsRequest = draftRequestBuilder.buildCreateNewDraftRequest(utkastsParams, unitMIU);
+        // Create the draft
+        String nyttUtkastsId = createNewDraft(utkastsParams, unitMIU);
 
-        String nyttUtkastsId = intygsUtkastService.createNewDraft(utkastsRequest);
-        
-        addVardenhetToRegistry(utkastsRequest);
-        
         return createSuccessResponse(nyttUtkastsId);
     }
 
-    private MiuInformationType checkIfInvokingPersonHasMIUsOnUnit(
-            String invokingUserHsaId, String invokingUnitHsaId) {
+    @Transactional
+    private String createNewDraft(UtlatandeType utlatandeRequest, MiuInformationType unitMIU) {
+
+        String invokingUserHsaId = utlatandeRequest.getSkapadAv().getPersonalId().getExtension();
+        String invokingUnitHsaId = utlatandeRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension();
+        LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
+
+        // Create draft request
+        CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utlatandeRequest, unitMIU);
+
+        // Add the creating vardenhet to registry
+        addVardenhetToRegistry(draftRequest);
+
+        // Create draft and return its id
+        return intygsUtkastService.createNewDraft(draftRequest);
+    }
+
+    /**
+     * Method checks if invoking person, i.e the health care personal,
+     * is entitled to look at the information
+     *
+     * @param utlatandeType
+     * @return
+     */
+    private MiuInformationType checkMIU(UtlatandeType utlatandeType) {
+
+        String invokingUserHsaId = utlatandeType.getSkapadAv().getPersonalId().getExtension();
+        String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
         List<MiuInformationType> miusOnUnit = hsaPersonService.checkIfPersonHasMIUsOnUnit(invokingUserHsaId, invokingUnitHsaId);
 
@@ -102,44 +116,78 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
     }
 
+    /**
+     * The response sent back to caller when an error is raised
+     * @param errorMsg
+     * @param errorType
+     * @return
+     */
     private CreateDraftCertificateResponseType createErrorResponse(String errorMsg, ErrorIdType errorType) {
-        CreateDraftCertificateResponseType response = new CreateDraftCertificateResponseType();
         ResultType result = ResultTypeUtil.errorResult(errorType, errorMsg);
-        response.setResult(result);
 
+        CreateDraftCertificateResponseType response = new CreateDraftCertificateResponseType();
+        response.setResult(result);
         return response;
     }
 
+    /**
+     * Builds a specific MIU error response
+     * @param utlatandeType
+     * @return
+     */
+    private CreateDraftCertificateResponseType createMIUErrorResponse(UtlatandeType utlatandeType) {
+
+        String invokingUserHsaId = utlatandeType.getSkapadAv().getPersonalId().getExtension();
+        String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
+
+        String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId, invokingUnitHsaId);
+        LOG.error(errMsg);
+        return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
+    }
+
+    /**
+     * Builds a specific validation error response
+     * @param validationResults
+     * @return
+     */
+    private CreateDraftCertificateResponseType createValidationErrorResponse(ValidationResult validationResults) {
+        String errMsgs = validationResults.getErrorMessagesAsString();
+        LOG.warn("UtlatandeType did not validate correctly: {}", errMsgs);
+        return createErrorResponse(errMsgs, ErrorIdType.VALIDATION_ERROR);
+    }
+
+    /**
+     * The response sent back to caller when creating a certificate draft succeeded
+     * @param nyttUtkastsId
+     * @return
+     */
     private CreateDraftCertificateResponseType createSuccessResponse(String nyttUtkastsId) {
-        CreateDraftCertificateResponseType response = new CreateDraftCertificateResponseType();
         ResultType result = ResultTypeUtil.okResult();
-        response.setResult(result);
 
         UtlatandeId utlId = new UtlatandeId();
         utlId.setRoot("utlatandeId");
         utlId.setExtension(nyttUtkastsId);
 
+        CreateDraftCertificateResponseType response = new CreateDraftCertificateResponseType();
+        response.setResult(result);
         response.setUtlatandeId(utlId);
-
         return response;
     }
-    
+
     private void addVardenhetToRegistry(CreateNewDraftRequest utkastsRequest) {
-        
+
         Vardenhet vardenhet = utkastsRequest.getVardenhet();
         Vardgivare vardgivare = vardenhet.getVardgivare();
-                
+
         IntegreradEnhetEntry integreradEnhet = new IntegreradEnhetEntry(vardenhet.getHsaId(),
                 vardenhet.getNamn(), vardgivare.getHsaId(), vardgivare.getNamn());
-        
+
         boolean result = integreradeEnheterRegistry.addIfNotExistsIntegreradEnhet(integreradEnhet);
-        
+
         if (result) {
             LOG.info("Added unit '{}' to registry of integrated units", vardenhet.getHsaId());
         } else {
             LOG.debug("Unit '{}' was alredy present in the registry of integrated units", vardenhet.getHsaId());
         }
-        
     }
-    
 }

@@ -11,7 +11,7 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                 controller: function($scope) {
 
                     $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
-                    $scope.units.unshift({id: 'wc-all', namn: 'Alla mottagningar på denna vårdenhet'});
+                    $scope.units.unshift({id: 'wc-all', namn: 'Alla frågor och svar på denna vårdenhet'});
                     $scope.selectedUnit = null;
 
                     $scope.$on('wc-stat-update', function(event, message) {

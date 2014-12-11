@@ -1,4 +1,4 @@
-package se.inera.webcert.service;
+package se.inera.webcert.service.fragasvar;
 
 import org.junit.Assert;
 import org.junit.Before;

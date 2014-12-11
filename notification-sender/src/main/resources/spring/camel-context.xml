@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:camel="http://camel.apache.org/schema/spring"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+  
+  <bean id="processNotificationRequestRouteBuilder" class="se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteBuilder" />
+  
+  <bean id="notificationRequestRouter" class="se.inera.webcert.notifications.routes.NotificationRequestRouter" />
+
+  <camel:camelContext id="webcertNotification">
+    
+    <camel:routeBuilder ref="processNotificationRequestRouteBuilder"/>
+    
+    <camel:routeBuilder ref="notificationRequestRouter"/>
+    
+    <!-- Endpoint connected to AMQ to recieve messages on -->    
+    <camel:endpoint id="receiveNotificationRequestEndpoint" uri="${receiveNotificationRequestEndpointUri}"/>
+    
+    <!-- Outgoing endpoint to CertificateStatusUpdateForCare service -->
+    <camel:endpoint id="sendCertificateStatusUpdateEndpoint" uri="${sendCertificateStatusUpdateEndpointUri}"/>
+    
+    <!-- Endpoint for retrieving an Intyg entity from repository -->
+    <camel:endpoint id="getIntygFromWebcertRepositoryServiceEndpoint" uri="${getIntygFromWebcertRepositoryServiceEndpointUri}"/>
+    <camel:endpoint id="getIntygModelFromWebcertRepositoryServiceEndpoint" uri="${getIntygModelFromWebcertRepositoryServiceEndpointUri}"/>
+    
+    <camel:endpoint id="getNbrOfQuestionsEndpoint" uri="${getNbrOfQuestionsEndpointUri}"/>
+    <camel:endpoint id="getNbrOfAnsweredQuestionsEndpoint" uri="${getNbrOfAnsweredQuestionsEndpointUri}" />
+    <camel:endpoint id="getNbrOfHandledQuestionsEndpoint" uri="${getNbrOfAnsweredQuestionsEndpointUri}" />
+    <camel:endpoint id="getNbrOfHandledAndAnsweredQuestionsEndpoint" uri="${getNbrOfHandledAndAnsweredQuestionsEndpointUri}" />
+    
+    <!-- Endpoint pointing to the processNotificationRequest route -->
+    <camel:endpoint id="processNotificationRequestEndpoint" uri="${processNotificationRequestEndpointUri}"/>
+    
+    <!-- Error handling endpoint -->
+    <camel:endpoint id="errorHandlerEndpoint" uri="${errorHandlerEndpointUri}"/>
+
+    <camel:endpoint id="redeliveryExhaustedEndpoint" uri="${redeliveryExhaustedEndpointUri}"/>
+    
+    <camel:dataFormats>
+      <camel:jaxb id="notificationRequestJaxb" contextPath="se.inera.webcert.notifications.message.v1"/>
+    </camel:dataFormats>
+    
+  </camel:camelContext>
+  
+</beans>

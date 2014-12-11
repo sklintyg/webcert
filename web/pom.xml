@@ -59,6 +59,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>log-messages</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>notification-messages</artifactId>
+    </dependency>
 
     
 
@@ -404,6 +408,11 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connector.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2db.connector.version}</version>
           </dependency>
         </dependencies>
       </plugin>

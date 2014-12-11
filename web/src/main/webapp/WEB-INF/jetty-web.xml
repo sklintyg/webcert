@@ -8,14 +8,14 @@
   See the jetty-maven-plugin in the pom.xml file of this project.
 
 -->
-<Configure id="wac" class="org.eclipse.jetty.webapp.WebAppContext">
+<Configure id="webAppContext" class="org.eclipse.jetty.webapp.WebAppContext">
   <Call name="setAttribute">
     <Arg>org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern</Arg>
     <Arg>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</Arg>
   </Call>
   <New id="DataSource" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
-      <Ref refid="wac" />
+      <Ref refid="webAppContext" />
     </Arg>
     <Arg>jdbc/webcert</Arg>
     <Arg>
@@ -28,7 +28,7 @@
   </New>
   <New id="ConnectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
-      <Ref refid="wac" />
+      <Ref refid="webAppContext" />
     </Arg>
     <Arg>jms/ConnectionFactory</Arg>
     <Arg>
@@ -39,7 +39,7 @@
   </New>
   <New id="Queue" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
-      <Ref refid="wac" />
+      <Ref refid="webAppContext" />
     </Arg>
     <Arg>jms/Queue</Arg>
     <Arg>
@@ -48,4 +48,16 @@
       </New>
     </Arg>
   </New>
+  <New id="NotificationQueue" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref refid="webAppContext" />
+    </Arg>
+    <Arg>jms/NotificationQueue</Arg>
+    <Arg>
+      <New class="org.apache.activemq.command.ActiveMQQueue">
+        <Arg>NOTIFICATIONSENDER.QUEUE</Arg>
+      </New>
+    </Arg>
+  </New>
+
 </Configure>

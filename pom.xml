@@ -34,6 +34,7 @@
     <insuranceprocess-healthreporting.version>0-SNAPSHOT</insuranceprocess-healthreporting.version>
     <itintegration-monitoring.version>0-SNAPSHOT</itintegration-monitoring.version>
     <ehr-logstore.version>0-SNAPSHOT</ehr-logstore.version>
+    <schemas-common.version>0-SNAPSHOT</schemas-common.version>
 
     <!-- Tools -->
     <liquibase-runner.version>0-SNAPSHOT</liquibase-runner.version>
@@ -45,6 +46,8 @@
     <module>persistence</module>
     <module>log-messages</module>
     <module>log-sender</module>
+    <module>notification-messages</module>
+    <module>notification-sender</module>
     <module>integration/eid-integration</module>
     <module>integration/hsa-integration</module>
     <module>integration/pu-integration</module>
@@ -101,11 +104,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>overvakning</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>hsa-integration</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -117,6 +115,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>pu-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>notification-messages</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -167,6 +170,11 @@
       </dependency>
 
       <!-- Schemas -->
+      <dependency>
+        <groupId>se.inera.intyg.schemas</groupId>
+        <artifactId>schemas-common</artifactId>
+        <version>${schemas-common.version}</version>
+      </dependency>
       <dependency>
         <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
         <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
@@ -250,6 +258,9 @@
           </exclusion>
         </exclusions>
       </dependency>
+
+      <!-- Integration -->
+
 
       <!-- Spring family -->
       <dependency>
@@ -397,6 +408,12 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-test-spring</artifactId>
+        <version>${camel.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>${mockito-core.version}</version>
@@ -409,7 +426,27 @@
         </exclusions>
       </dependency>
     </dependencies>
+
   </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>se.inera.intyg.common</groupId>
+            <artifactId>common-build-tools</artifactId>
+            <version>${common.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <configLocation>checkstyle/checkstyle.xml</configLocation>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
   <repositories>
     <repository>

@@ -6,6 +6,5 @@ import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 
 public interface CreateNewDraftRequestBuilder {
 
-	CreateNewDraftRequest buildCreateNewDraftRequest(UtlatandeType utlatandeRequest, MiuInformationType unitMIU);
-
+    CreateNewDraftRequest buildCreateNewDraftRequest(UtlatandeType utlatandeRequest, MiuInformationType unitMIU);
 }

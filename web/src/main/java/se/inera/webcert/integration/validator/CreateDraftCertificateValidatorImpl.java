@@ -16,10 +16,10 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-        
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * se.inera.webcert.integration.validator.CreateDraftCertificateValidator#validate(se.inera.certificate.clinicalprocess
      * .healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType)
@@ -37,9 +37,9 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
     }
 
     public void validateTypAvUtlatande(UtlatandeTyp typAvUtlatande, ValidationResult errors) {
-    
+
         String intygsTyp = typAvUtlatande.getCode();
-    
+
         if (!moduleRegistry.moduleExists(intygsTyp)) {
             errors.addError("Intyg {0} is not supported", intygsTyp);
         }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<not:NotificationRequest xmlns:not="urn:inera:webcert:notifications:1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:inera:webcert:notifications:1 notification-message.xsd ">
+  <not:handelse>INTYGSUTKAST_SKAPAT</not:handelse>
+  <not:handelseTidpunkt>2001-12-31T12:00:00</not:handelseTidpunkt>
+  <not:intygsId>not:intygsId</not:intygsId>
+  <not:intygsTyp>not:intygsTyp</not:intygsTyp>
+  <not:hoSPerson>
+    <not:hsaId>not:hsaId</not:hsaId>
+    <not:fullstandigtNamn>not:fullstandigtNamn</not:fullstandigtNamn>
+    <not:vardenhet>
+      <not:hsaId>not:hsaId</not:hsaId>
+      <not:enhetsNamn>not:enhetsNamn</not:enhetsNamn>
+    </not:vardenhet>
+  </not:hoSPerson>
+</not:NotificationRequest>

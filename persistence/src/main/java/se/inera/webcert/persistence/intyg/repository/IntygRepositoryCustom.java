@@ -51,4 +51,20 @@ public interface IntygRepositoryCustom extends IntygFilteredRepositoryCustom {
             + "WHERE i.enhetsId = :enhetsid AND i.status IN (:statuses) "
             + "ORDER BY i.senastSparadAv.namn ASC")
     List<Object[]> findDistinctLakareFromIntygEnhetAndStatuses(@Param("enhetsid") String enhetsid, @Param("statuses") List<IntygsStatus> statuses);
+
+    /**
+     * Return the status of a draft
+     * @param intygsId
+     * @return
+     */
+    @Query("SELECT i.status from Intyg i WHERE i.intygsId = :intygsId")
+    IntygsStatus getIntygsStatus(@Param("intygsId") String intygsId);
+
+    /**
+     * Return the HSA-ID for the Enhet on which the Intyg was created
+     * @param intygsId
+     * @return
+     */
+    @Query("SELECT i.enhetsId from Intyg i WHERE i.intygsId = :intygsId")
+    String getIntygsVardenhetsHsaId(@Param("intygsId") String intygsId);
 }

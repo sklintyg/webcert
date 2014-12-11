@@ -63,7 +63,7 @@ public class IntygApiController extends AbstractApiController {
 
     /**
      * Create a copy of a certificate.
-     * 
+     *
      * @param request
      * @param intygsTyp
      * @param orgIntygsId

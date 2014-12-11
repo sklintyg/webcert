@@ -1,6 +1,6 @@
 angular.module('webcert').controller('webcert.ChoosePatientCtrl',
-    [ '$location', '$scope', 'webcert.CreateCertificateDraft', '$timeout',
-        function($location, $scope, CreateCertificateDraft, $timeout) {
+    ['$location', '$scope', 'webcert.CreateCertificateDraft',
+        function($location, $scope, CreateCertificateDraft) {
             'use strict';
 
             $scope.widgetState = {

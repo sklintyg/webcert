@@ -107,7 +107,8 @@ public class IntygIntegrationController {
         return buildRedirectResponse(uriInfo, typ, intygId, alternatePatientSSn, responsibleHospName, draft);
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn, String responsibleHospName, Boolean draft) {
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn,
+            String responsibleHospName, Boolean draft) {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
@@ -117,7 +118,7 @@ public class IntygIntegrationController {
         urlParams.put(PARAM_PATIENT_SSN, alternatePatientSSn);
 
         String urlFragmentTemplate;
-        if(draft) {
+        if (draft) {
             urlParams.put(PARAM_HOSP_NAME, responsibleHospName);
             urlFragmentTemplate = this.urlUtkastFragmentTemplate;
         } else {

@@ -1,8 +1,22 @@
 package se.inera.webcert.integration.test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,25 +30,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.service.fragasvar.FragaSvarService;
-import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Bean for inserting questions directly into the database.
@@ -86,12 +84,12 @@ public class QuestionResource {
     @Path("/svara/{vardgivare}/{enhet}/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    public Response answer(@PathParam("vardgivare") final String vardgivarId, 
+    public Response answer(@PathParam("vardgivare") final String vardgivarId,
             @PathParam("enhet") final String enhetsId, @PathParam("id") final Long frageSvarId, String svarsText) {
         SecurityContext originalContext = SecurityContextHolder.getContext();
         SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
         try {
-            FragaSvar fragaSvarResponse =  fragaSvarService.saveSvar(frageSvarId, svarsText);
+            FragaSvar fragaSvarResponse = fragaSvarService.saveSvar(frageSvarId, svarsText);
             return Response.ok(fragaSvarResponse).build();
         } finally {
             SecurityContextHolder.setContext(originalContext);
@@ -181,6 +179,7 @@ public class QuestionResource {
             @Override
             public void setAuthentication(Authentication authentication) {
             }
+
             @Override
             public Authentication getAuthentication() {
                 return new Authentication() {
@@ -188,26 +187,32 @@ public class QuestionResource {
                     public Object getPrincipal() {
                         return user;
                     }
+
                     @Override
                     public boolean isAuthenticated() {
                         return true;
                     }
+
                     @Override
                     public String getName() {
                         return "questionResource";
                     }
+
                     @Override
                     public Collection<? extends GrantedAuthority> getAuthorities() {
                         return null;
                     }
+
                     @Override
                     public Object getCredentials() {
                         return null;
                     }
+
                     @Override
                     public Object getDetails() {
                         return null;
                     }
+
                     @Override
                     public void setAuthenticated(boolean isAuthenticated) {
                     }
@@ -215,7 +220,7 @@ public class QuestionResource {
             }
         };
     }
-    
+
     // Create a fake WebCertUser which is authorized for the given care giver and unit
     private static WebCertUser getWebCertUser(String vardgivarId, String enhetsId) {
         WebCertUser user = new WebCertUser();

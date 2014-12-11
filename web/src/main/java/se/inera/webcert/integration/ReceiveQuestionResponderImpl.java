@@ -13,13 +13,18 @@ import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.logging.LogMarkers;
 import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.webcert.converter.FragaSvarConverter;
+import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.validator.QuestionAnswerValidator;
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionResponseType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.mail.MailNotificationService;
+import se.inera.webcert.service.notification.NotificationMessageFactory;
+import se.inera.webcert.service.notification.NotificationService;
 
 /**
  * @author andreaskaltenbach
@@ -38,23 +43,67 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
     @Autowired
     private FragaSvarService fragaSvarService;
 
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+
     @Override
     public ReceiveMedicalCertificateQuestionResponseType receiveMedicalCertificateQuestion(
             AttributedURIType logicalAddress, ReceiveMedicalCertificateQuestionType request) {
+
         ReceiveMedicalCertificateQuestionResponseType response = new ReceiveMedicalCertificateQuestionResponseType();
 
+        // Validate incoming request
         List<String> validationMessages = QuestionAnswerValidator.validate(request);
         if (!validationMessages.isEmpty()) {
             response.setResult(ResultOfCallUtil.failResult(StringUtils.join(validationMessages, ",")));
             return response;
         }
 
+        // Transform to a FragaSvar object
         FragaSvar fragaSvar = converter.convert(request.getQuestion());
 
         LOGGER.info(LogMarkers.MONITORING, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(), fragaSvar.getExternReferens());
 
-        fragaSvar = fragaSvarService.processIncomingQuestion(fragaSvar);
+        // Notify stakeholders
+        notify(processQuestion(fragaSvar));
 
+        // Set result and send response back to caller
+        response.setResult(ResultOfCallUtil.okResult());
+        return response;
+    }
+
+    private FragaSvar processQuestion(FragaSvar fragaSvar) {
+        FragaSvar fs = fragaSvarService.processIncomingQuestion(fragaSvar);
+        return fs;
+    }
+
+    private void notify(FragaSvar fragaSvar) {
+
+        String careUnitId = fragaSvar.getVardperson().getEnhetsId();
+
+        if (integreradeEnheterRegistry.isEnhetIntegrerad(careUnitId)) {
+            sendNotificationToQueue(fragaSvar);
+        } else {
+            sendNotificationByMail(fragaSvar);
+        }
+    }
+
+    private void sendNotificationToQueue(FragaSvar fragaSvar) {
+        NotificationRequestType notificationRequestType = null;
+
+        if (fragaSvar.getStatus() == Status.CLOSED) {
+            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(fragaSvar);
+        } else {
+            notificationRequestType = NotificationMessageFactory.createNotificationFromQuestionFromFK(fragaSvar);
+        }
+
+        notificationService.notify(notificationRequestType);
+    }
+
+    private void sendNotificationByMail(FragaSvar fragaSvar) {
         // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingQuestion(fragaSvar);
@@ -64,12 +113,10 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
             String enhetsId = fragaSvar.getVardperson().getEnhetsId();
             String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
             LOGGER.error("Notification mail for question '" + frageId
-                      +  "' concerning certificate '" + intygsId
-                      + "' couldn't be sent to " + enhetsId
-                      + " (" + enhetsNamn + "): " + e.getMessage());
+                    + "' concerning certificate '" + intygsId
+                    + "' couldn't be sent to " + enhetsId
+                    + " (" + enhetsNamn + "): " + e.getMessage());
         }
-
-        response.setResult(ResultOfCallUtil.okResult());
-        return response;
     }
+
 }

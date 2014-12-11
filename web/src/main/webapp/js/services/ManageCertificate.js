@@ -126,7 +126,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 }
             }
 
-            function _createCopyDraft($scope, dialogModel, cert, onSuccess, onError) {
+            function _createCopyDraft(cert, onSuccess, onError) {
                 var valdVardenhet = User.getValdVardenhet();
                 CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
                 CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
@@ -167,10 +167,10 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     $log.debug('copy cert without dialog' + cert);
                     $scope.widgetState.activeErrorMessageKey = null;
                     $scope.widgetState.inlineErrorMessageKey = null;
-                    _createCopyDraft($scope, dialogModel, cert, function(draftResponse) {
+                    _createCopyDraft(cert, function(draftResponse) {
                         goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                     }, function(errorCode) {
-                        if (errorCode == 'DATA_NOT_FOUND') {
+                        if (errorCode === 'DATA_NOT_FOUND') {
                             $scope.widgetState.inlineErrorMessageKey = 'error.failedtocopyintyg.personidnotfound';
                         }
                         else {
@@ -200,13 +200,13 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
                             $scope.dialog.showerror = false;
                             $scope.dialog.acceptprogressdone = false;
-                            _createCopyDraft($scope, dialogModel, cert, function(draftResponse) {
+                            _createCopyDraft(cert, function(draftResponse) {
                                 $scope.dialog.acceptprogressdone = true;
                                 $scope.widgetState.createErrorMessageKey = undefined;
                                 copyDialog.close();
                                 goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                             }, function(errorCode) {
-                                if (errorCode == 'DATA_NOT_FOUND') {
+                                if (errorCode === 'DATA_NOT_FOUND') {
                                     $scope.dialog.errormessageid = 'error.failedtocopyintyg.personidnotfound';
                                 }
                                 else {
@@ -265,6 +265,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 sendDialog = dialogService.showDialog($scope, {
                     dialogId: 'send-dialog',
                     titleId: titleId,
+                    bodyText: 'Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.',
                     templateUrl: '/views/partials/send-dialog.html',
                     model: $scope.dialogSend,
                     button1click: function() {
