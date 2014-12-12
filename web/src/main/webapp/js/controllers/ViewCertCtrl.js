@@ -2,8 +2,9 @@
  * Controller for logic related to viewing signed certs
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
-    [ '$rootScope', '$routeParams', '$scope', '$window', '$location', '$q', 'common.dialogService', 'webcert.ManageCertificate',
-        function($rootScope, $routeParams, $scope, $window, $location, $q, dialogService, ManageCertificate) {
+    [ '$rootScope', '$routeParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
+        'webcert.ManageCertificate', 'common.CookieService',
+        function($rootScope, $routeParams, $scope, $window, $location, $q, dialogService, ManageCertificate, CookieService) {
             'use strict';
 
             // Check if the user used the special qa-link to get here.
@@ -33,8 +34,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
             };
 
             var unbindCheckHandledEvent = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl){
-                debugger;
-                if(newUrl !== currentUrl){  // if we're changing url
+                if(newUrl !== currentUrl && !CookieService.isSkipShowUnhandledDialogSet()){  // if we're changing url
                     $event.preventDefault();
                     var deferred = $q.defer();
                     $scope.$broadcast('hasUnhandledQasEvent', deferred);
@@ -76,6 +76,10 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                             $window.location.href = newUrl;
                         }
                     });
+                } else {
+                    unbindCheckHandledEvent();
+                    $event.preventDefault();
+                    $window.location.href = newUrl;
                 }
             });
             $scope.$on('$destroy', unbindCheckHandledEvent);
