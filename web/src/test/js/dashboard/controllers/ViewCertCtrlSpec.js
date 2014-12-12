@@ -147,6 +147,7 @@ describe('ViewCertCtrl', function() {
                 var args = dialogService.showDialog.mostRecentCall.args;
                 var dialogOptions = args[1];
                 // press the handled button
+
                 dialogOptions.button3click();
                 // no action is taken, just close the dialog
                 // modal is closed
