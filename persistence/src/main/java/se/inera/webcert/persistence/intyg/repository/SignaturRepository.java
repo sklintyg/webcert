@@ -8,9 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import se.inera.webcert.persistence.intyg.model.Signatur;
 
-public interface SignaturRepository extends CrudRepository<Signatur, Long> {
+public interface SignaturRepository extends CrudRepository<Signatur, String> {
     
-    @Query("SELECT s from Signatur s WHERE s.intygId = :intygsId")
+    @Query("SELECT s from Signatur s WHERE s.intygsId = :intygsId")
     List<Signatur> findSignaturerForIntyg(@Param("intygsId") String intygsId);
     
 }

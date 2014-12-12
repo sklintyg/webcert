@@ -36,15 +36,7 @@ public class IntygResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraft(@PathParam("id") String id) {
         Intyg intyg = intygRepository.findOne(id);
-        if (intyg != null) {
-            if (intyg.getSignaturer() != null) {
-                for (Signatur signatur : intyg.getSignaturer()) {
-                    signaturRepository.delete(signatur);
-                }
-                intyg.setSignaturer(null);
-            }
-            intygRepository.delete(intyg);
-        }
+        intygRepository.delete(intyg);
         return Response.ok().build();
     }
 

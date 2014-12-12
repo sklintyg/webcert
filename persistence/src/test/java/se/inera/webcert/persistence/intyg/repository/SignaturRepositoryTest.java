@@ -10,6 +10,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.joda.time.LocalDateTime;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Signatur;
 import se.inera.webcert.persistence.intyg.repository.util.IntygTestUtil;
 
+@Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
 @ActiveProfiles({ "dev", "unit-testing" })
@@ -32,8 +36,17 @@ public class SignaturRepositoryTest {
     @Autowired
     private SignaturRepository signaturRepository;
 
+    @Autowired
+    private IntygRepository intygRepository;
+
     @PersistenceContext
     private EntityManager em;
+
+    @Before
+    public void setup() {
+        Intyg intyg = IntygTestUtil.buildIntyg(INTYG_ID);
+        intygRepository.save(intyg);
+    }
 
     @Test
     public void testPersistAndFindOne() {
@@ -42,11 +55,11 @@ public class SignaturRepositoryTest {
 
         Signatur savedSignatur = signaturRepository.save(signatur);
         assertNotNull(savedSignatur);
-        assertNotNull(savedSignatur.getSignaturId());
+        assertNotNull(savedSignatur.getIntygsId());
 
-        long signaturId = savedSignatur.getSignaturId();
+        String signaturId = savedSignatur.getIntygsId();
 
-        Signatur foundSignatur = signaturRepository.findOne(new Long(signaturId));
+        Signatur foundSignatur = signaturRepository.findOne(signaturId);
         assertNotNull(foundSignatur);
 
     }
@@ -56,9 +69,9 @@ public class SignaturRepositoryTest {
 
         Signatur signatur = IntygTestUtil.buildSignatur(INTYG_ID, "Dr Dengroth", LocalDateTime.now());
         signaturRepository.save(signatur);
-        
+
         List<Signatur> signaturer = signaturRepository.findSignaturerForIntyg(INTYG_ID);
-        
+
         assertThat(signaturer, hasSize(1));
     }
 

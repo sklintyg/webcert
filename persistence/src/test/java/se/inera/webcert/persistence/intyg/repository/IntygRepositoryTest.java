@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.hamcrest.core.IsNull;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +60,21 @@ public class IntygRepositoryTest {
 
         assertThat(read.getModel(), is(equalTo(IntygTestUtil.MODEL)));
         
-        assertThat(read.getSignaturer(), hasSize(0));
+        assertThat(read.getSignatur(), is(nullValue()));
+    }
+    
+    @Test
+    public void testFindOneWithSignature() {
+        
+        Intyg intyg = IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID);
+        String intygsId = intyg.getIntygsId();
+        intyg.setSignatur(IntygTestUtil.buildSignatur(intygsId, "A", LocalDateTime.now()));
+        
+        Intyg saved = intygRepository.save(intyg);
+        Intyg read = intygRepository.findOne(intygsId);
+
+        assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
+        assertThat(read.getSignatur(), is(notNullValue()));
     }
     
     @Test
