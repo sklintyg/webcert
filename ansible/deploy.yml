@@ -1,0 +1,10 @@
+# This playbook deploys WebCert 
+
+- hosts: all
+  sudo: yes 
+  vars: 
+    version: 3.0.0-b16
+    config_version: master
+
+  roles:
+    - webcert

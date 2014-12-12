@@ -3,16 +3,19 @@
 - name: stop tomcat
   service: name={{ tomcat_service }} state=stopped pattern=org.apache.catalina.startup.Bootstrap
 
-- name: remove old version of liquibase-runner
-  file: state=absent
-      path=/tmp/webcert-liquibase-runner.jar
-
-- name: Download war
+- name: create release directory
+  file: path={{ releases_folder }} state=directory
+  
+- name: download webcert-liquibase-runner-{{ version }}.jar
   get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}-jar-with-dependencies.jar
-      dest=/tmp/webcert-liquibase-runner.jar
+      dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar
 
 - name: run liquibase update
-  command: java -jar /tmp/webcert-liquibase-runner.jar --changeLogFile="changelog/changelog.xml" --contexts=none update chdir=/opt/inera/liquibase
+  command: java -jar {{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar --changeLogFile="changelog/changelog.xml" --username="{{ database_username }}" --password="{{ database_password }}" --url="{{ database_url }}" --driver="{{ database_driver }}" --contexts=none update
+
+- name: Download webcert-web-{{ version }}.war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-web/{{ version }}/webcert-web-{{ version }}.war
+      dest={{ releases_folder }}
 
 - name: remove old version of unpacked ROOT war
   file: state=absent
@@ -22,9 +25,12 @@
   file: state=absent
       path={{ webapps_folder }}/ROOT.war
 
-- name: Download ROOT war
-  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-web/{{ version }}/webcert-web-{{ version }}.war
-      dest={{ webapps_folder }}/ROOT.war
+- name: Deploy webcert-web-{{ version }}.war as ROOT.war
+  command: cp {{ releases_folder }}/webcert-web-{{ version }}.war {{ webapps_folder }}/ROOT.war
+
+- name: Download log-sender-{{ version }}.war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
+      dest={{ releases_folder }}
 
 - name: remove old version of unpacked log-sender war
   file: state=absent
@@ -34,9 +40,12 @@
   file: state=absent
       path={{ webapps_folder }}/log-sender.war
 
-- name: Download log-sender war
-  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
-      dest={{ webapps_folder }}/log-sender.war
+- name: Deploy log-sender-{{ version }}.war as log-sender.war
+  command: cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war
+
+- name: Download notification-sender-{{ version }}.war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/notification-sender/{{ version }}/notification-sender-{{ version }}.war
+      dest={{ releases_folder }}
 
 - name: remove old version of unpacked notification-sender war
   file: state=absent
@@ -46,17 +55,15 @@
   file: state=absent
       path={{ webapps_folder }}/notification-sender.war
 
-- name: Download notification-sender war
-  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/notification-sender/{{ version }}/notification-sender-{{ version }}.war
-      dest={{ webapps_folder }}/notification-sender.war
+- name: Deploy notification-sender-{{ version }}.war as notification-sender.war
+  command: cp {{ releases_folder }}/notification-sender-{{ version }}.war {{ webapps_folder }}/notification-sender.war
 
 - name: Create version file
   template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
 - name: update configuration
-  git: repo={{ config_repo }}
-    dest={{ config_folder }}
-    version=master
+  command: chdir={{ config_folder }} git checkout {{ config_version }}
+  command: chdir={{ config_folder }} git pull origin
 
 - name: start tomcat
   service: name={{ tomcat_service }} state=started pattern=org.apache.catalina.startup.Bootstrap

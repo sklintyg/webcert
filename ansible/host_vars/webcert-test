@@ -1,0 +1,6 @@
+---
+# file: host_vars/intygstjanst-test
+tomcat_conf: /usr/local/tomcat7/conf
+tomcat_bin: /usr/local/tomcat7/bin
+tomcat_lib: /usr/local/tomcat7/lib
+activemq_broker_url: "tcp://localhost:61616"
