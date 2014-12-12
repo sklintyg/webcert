@@ -180,7 +180,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 } else {
 
                     var otherCareUnit = false;
-                    if (cert.intygMetadata !== undefined && User.getValdVardenhet() !== cert.intygMetadata.skapadAv.vardenhet.enhetsid) {
+                    if (cert.grundData !== undefined && User.getValdVardenhet() !== cert.grundData.skapadAv.vardenhet.enhetsid) {
                         otherCareUnit = true;
                     }
 
