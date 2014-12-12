@@ -1,7 +1,5 @@
 package se.inera.webcert.service.intyg.converter;
 
-import iso.v21090.dt.v1.II;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,14 +10,13 @@ import org.springframework.stereotype.Component;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateStatusType;
-import se.inera.certificate.model.Id;
-import se.inera.certificate.model.Utlatande;
+import se.inera.certificate.model.CertificateState;
+import se.inera.certificate.model.Status;
+import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
+import se.inera.ifv.insuranceprocess.healthreporting.util.ModelConverter;
 import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
 import se.inera.webcert.service.intyg.dto.IntygItem;
@@ -44,6 +41,20 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return metaData;
     }
 
+    public IntygMetadata convertToIntygMetadata(Utlatande utlatande, CertificateMetaData meta) {
+        IntygMetadata metaData = new IntygMetadata();
+        metaData.setPatientId(utlatande.getGrundData().getPatient().getPersonId());
+        metaData.setId(utlatande.getId());
+        metaData.setType(utlatande.getTyp());
+        metaData.setFromDate(meta.getValidFrom());
+        metaData.setTomDate(meta.getValidTo());
+
+        metaData.setStatuses(convertListOfStatusToListOfIntygStatus(meta.getStatus()));
+
+        return metaData;
+    }
+
+    @Override
     public List<IntygItem> convertToListOfIntygItem(List<CertificateMetaType> source) {
         List<IntygItem> intygItems = new ArrayList<>();
         for (CertificateMetaType certificateMetaType : source) {
@@ -79,7 +90,38 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return new IntygStatus(statusType, source.getTarget(), source.getTimestamp());
     }
 
+    @Override
+    public List<IntygStatus> convertListOfStatusToListOfIntygStatus(List<Status> source) {
+        List<IntygStatus> intygStatus = new ArrayList<>();
+        for (Status status : source) {
+            intygStatus.add(convertToIntygStatus(status));
+        }
+        return intygStatus;
+    }
+
+    private IntygStatus convertToIntygStatus(Status source) {
+        StatusType statusType = convertStatusType(source.getType());
+        return new IntygStatus(statusType, source.getTarget(), source.getTimestamp());
+    }
+
     private StatusType convertStatusType(se.inera.certificate.clinicalprocess.healthcond.certificate.v1.StatusType statusType) {
+        switch (statusType) {
+        case RECEIVED:
+            return StatusType.RECEIVED;
+        case SENT:
+            return StatusType.SENT;
+        case CANCELLED:
+            return StatusType.CANCELLED;
+        case DELETED:
+            return StatusType.DELETED;
+        case RESTORED:
+            return StatusType.RESTORED;
+        default:
+            return StatusType.UNKNOWN;
+        }
+    };
+
+    private StatusType convertStatusType(CertificateState statusType) {
         switch (statusType) {
         case RECEIVED:
             return StatusType.RECEIVED;
@@ -106,77 +148,34 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
     @Override
     public SendType buildSendTypeFromUtlatande(Utlatande utlatande) {
 
-        String utlatandeId = extractUtlatandeId(utlatande);
-
         // Lakarutlatande
-        LakarutlatandeEnkelType utlatandeType = new LakarutlatandeEnkelType();
-        utlatandeType.setLakarutlatandeId(utlatandeId);
-        utlatandeType.setPatient(buildPatientTypeFromUtlatande(utlatande));
-        utlatandeType.setSigneringsTidpunkt(utlatande.getSigneringsdatum());
+        LakarutlatandeEnkelType utlatandeType = ModelConverter.toLakarutlatandeEnkelType(utlatande);
 
         // Vardadress
-        VardAdresseringsType vardAdressType = new VardAdresseringsType();
-        vardAdressType.setHosPersonal(buildHosPersonalTypeFromUtlatande(utlatande));
+        VardAdresseringsType vardAdressType = ModelConverter.toVardAdresseringsType(utlatande.getGrundData());
 
         SendType sendType = new SendType();
         sendType.setLakarutlatande(utlatandeType);
         sendType.setAdressVard(vardAdressType);
-        sendType.setVardReferensId(buildVardReferensId(Operation.SEND, utlatandeId));
+        sendType.setVardReferensId(buildVardReferensId(Operation.SEND, utlatande.getId()));
         sendType.setAvsantTidpunkt(LocalDateTime.now());
 
         return sendType;
     }
 
-    private HosPersonalType buildHosPersonalTypeFromUtlatande(Utlatande utlatande) {
-
-        HosPersonalType hosPersonalType = new HosPersonalType();
-
-        II hosPersonId = new II();
-        hosPersonId.setExtension(utlatande.getSkapadAv().getId().getExtension());
-        hosPersonId.setRoot(utlatande.getSkapadAv().getId().getRoot());
-
-        hosPersonalType.setPersonalId(hosPersonId);
-        hosPersonalType.setEnhet(buildEnhetFromUtlatande(utlatande));
-        hosPersonalType.setFullstandigtNamn(utlatande.getSkapadAv().getNamn());
-        hosPersonalType.setForskrivarkod(utlatande.getSkapadAv().getForskrivarkod());
-
-        return hosPersonalType;
-    }
-
-    private PatientType buildPatientTypeFromUtlatande(Utlatande utlatande) {
-
-        PatientType patientType = new PatientType();
-        patientType.setFullstandigtNamn(concatPatientName(utlatande.getPatient().getFornamn(), utlatande.getPatient().getMellannamn(),
-                utlatande.getPatient().getEfternamn()));
-
-        II personId = new II();
-        personId.setRoot(utlatande.getPatient().getId().getRoot());
-        personId.setExtension(utlatande.getPatient().getId().getExtension());
-
-        patientType.setPersonId(personId);
-
-        return patientType;
-    }
-
     @Override
     public RevokeType buildRevokeTypeFromUtlatande(Utlatande utlatande, String revokeMessage) {
 
-        String utlatandeId = extractUtlatandeId(utlatande);
-
         // Lakarutlatande
-        LakarutlatandeEnkelType utlatandeType = new LakarutlatandeEnkelType();
-        utlatandeType.setLakarutlatandeId(utlatandeId);
-        utlatandeType.setPatient(buildPatientTypeFromUtlatande(utlatande));
-        utlatandeType.setSigneringsTidpunkt(utlatande.getSigneringsdatum());
+        LakarutlatandeEnkelType utlatandeType = ModelConverter.toLakarutlatandeEnkelType(utlatande);
 
         // Vardadress
-        VardAdresseringsType vardAdressType = new VardAdresseringsType();
-        vardAdressType.setHosPersonal(buildHosPersonalTypeFromUtlatande(utlatande));
+        VardAdresseringsType vardAdressType = ModelConverter.toVardAdresseringsType(utlatande.getGrundData());
 
         RevokeType revokeType = new RevokeType();
         revokeType.setLakarutlatande(utlatandeType);
         revokeType.setAdressVard(vardAdressType);
-        revokeType.setVardReferensId(buildVardReferensId(Operation.REVOKE, utlatandeId));
+        revokeType.setVardReferensId(buildVardReferensId(Operation.REVOKE, utlatande.getId()));
         revokeType.setAvsantTidpunkt(LocalDateTime.now());
 
         if (revokeMessage != null) {
@@ -184,48 +183,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         }
 
         return revokeType;
-    }
-
-    private EnhetType buildEnhetFromUtlatande(Utlatande utlatande) {
-
-        EnhetType enhet = new EnhetType();
-        enhet.setEnhetsnamn(utlatande.getSkapadAv().getVardenhet().getNamn());
-
-        II enhetsId = new II();
-        enhetsId.setRoot(utlatande.getSkapadAv().getVardenhet().getId().getRoot());
-        enhetsId.setExtension(utlatande.getSkapadAv().getVardenhet().getId().getExtension());
-        enhet.setEnhetsId(enhetsId);
-
-        if (utlatande.getSkapadAv().getVardenhet().getArbetsplatskod() != null) {
-            II arbetsplatsKod = new II();
-            arbetsplatsKod.setRoot(utlatande.getSkapadAv().getVardenhet().getArbetsplatskod().getRoot());
-            arbetsplatsKod.setExtension(utlatande.getSkapadAv().getVardenhet().getArbetsplatskod().getExtension());
-            enhet.setArbetsplatskod(arbetsplatsKod);
-        }
-
-        VardgivareType vardGivare = new VardgivareType();
-
-        II vardGivarId = new II();
-        vardGivarId.setRoot(utlatande.getSkapadAv().getVardenhet().getVardgivare().getId().getRoot());
-        vardGivarId.setExtension(utlatande.getSkapadAv().getVardenhet().getVardgivare().getId().getExtension());
-        vardGivare.setVardgivareId(vardGivarId);
-
-        vardGivare.setVardgivarnamn(utlatande.getSkapadAv().getVardenhet().getVardgivare().getNamn());
-        enhet.setVardgivare(vardGivare);
-
-        return enhet;
-    }
-
-    public String extractUtlatandeId(Utlatande utlatande) {
-
-        if (utlatande == null) {
-            return null;
-        }
-
-        Id id = utlatande.getId();
-
-        return (id.getExtension() != null) ? id.getExtension() : id.getRoot();
-
     }
 
     public String concatPatientName(List<String> fNames, List<String> mNames, String lName) {

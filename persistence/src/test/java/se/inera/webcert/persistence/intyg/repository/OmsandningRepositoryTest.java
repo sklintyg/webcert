@@ -24,6 +24,7 @@ public class OmsandningRepositoryTest {
     private static final String CONFIGURATION = "{do-important-stuff: true}";
 
     private static final String INTYG_ID = "intyg-1";
+    private static final String INTYG_TYP = "typ-1";
     
     @Autowired
     private OmsandningRepositoryCustom repository;
@@ -45,7 +46,7 @@ public class OmsandningRepositoryTest {
     
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     private Long saveOmsandning(OmsandningOperation op, String intygId, boolean addConfig) {
-        Omsandning oms1 = new Omsandning(op, intygId);
+        Omsandning oms1 = new Omsandning(op, intygId, INTYG_TYP);
         oms1.setGallringsdatum(LocalDateTime.now().plusHours(1));
         oms1.setNastaForsok(LocalDateTime.now().plusMinutes(10));
         if (addConfig) {

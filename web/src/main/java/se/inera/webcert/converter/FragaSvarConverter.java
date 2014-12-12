@@ -1,12 +1,15 @@
 package se.inera.webcert.converter;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.IdUtil;
-import se.inera.certificate.model.HosPersonal;
-import se.inera.certificate.model.Utlatande;
+import se.inera.certificate.model.common.internal.HoSPersonal;
+import se.inera.certificate.model.common.internal.Patient;
+import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.schema.Constants;
 import se.inera.webcert.medcertqa.v1.FkKontaktType;
 import se.inera.webcert.medcertqa.v1.KompletteringType;
 import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
@@ -20,9 +23,7 @@ import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author andreaskaltenbach
@@ -83,25 +84,23 @@ public class FragaSvarConverter {
     /**
      * Converts a from common models {@link HosPersonal} to an {@link Vardperson} new instance.
      */
-    public static Vardperson convert(HosPersonal source) {
+    public static Vardperson convert(HoSPersonal source) {
         Vardperson vardperson = new Vardperson();
-        vardperson.setHsaId(source.getId().getExtension());
-        vardperson.setNamn(source.getNamn());
-        vardperson.setForskrivarKod(source.getForskrivarkod());
-        vardperson.setEnhetsId(source.getVardenhet().getId().getExtension());
+        vardperson.setHsaId(source.getPersonId());
+        vardperson.setNamn(source.getFullstandigtNamn());
+        vardperson.setForskrivarKod(source.getForskrivarKod());
+        vardperson.setEnhetsId(source.getVardenhet().getEnhetsid());
 
-        if (source.getVardenhet().getArbetsplatskod() != null) {
-            vardperson.setArbetsplatsKod(source.getVardenhet().getArbetsplatskod().getExtension());
-        }
+        vardperson.setArbetsplatsKod(source.getVardenhet().getArbetsplatsKod());
 
-        vardperson.setEnhetsnamn(source.getVardenhet().getNamn());
+        vardperson.setEnhetsnamn(source.getVardenhet().getEnhetsnamn());
         vardperson.setPostadress(source.getVardenhet().getPostadress());
         vardperson.setPostnummer(source.getVardenhet().getPostnummer());
         vardperson.setPostort(source.getVardenhet().getPostort());
         vardperson.setTelefonnummer(source.getVardenhet().getTelefonnummer());
         vardperson.setEpost(source.getVardenhet().getEpost());
-        vardperson.setVardgivarId(source.getVardenhet().getVardgivare().getId().getExtension());
-        vardperson.setVardgivarnamn(source.getVardenhet().getVardgivare().getNamn());
+        vardperson.setVardgivarId(source.getVardenhet().getVardgivare().getVardgivarid());
+        vardperson.setVardgivarnamn(source.getVardenhet().getVardgivare().getVardgivarnamn());
 
         return vardperson;
     }
@@ -154,16 +153,16 @@ public class FragaSvarConverter {
      */
     public static IntygsReferens convertToIntygsReferens(Utlatande utlatande) {
         IntygsReferens intygsReferens = new IntygsReferens();
-        intygsReferens.setIntygsId(IdUtil.generateStringId(utlatande.getId().getRoot(), utlatande.getId().getExtension()));
-        intygsReferens.setIntygsTyp(utlatande.getTyp().getCode());
-        intygsReferens.setPatientId(toCommonId(utlatande.getPatient().getId()));
-        intygsReferens.setPatientNamn(utlatande.getPatient().getFullstandigtNamn());
-        intygsReferens.setSigneringsDatum(utlatande.getSigneringsdatum());
+        intygsReferens.setIntygsId(utlatande.getId());
+        intygsReferens.setIntygsTyp(utlatande.getTyp());
+        intygsReferens.setPatientId(toCommonId(utlatande.getGrundData().getPatient()));
+        intygsReferens.setPatientNamn(utlatande.getGrundData().getPatient().getFullstandigtNamn());
+        intygsReferens.setSigneringsDatum(utlatande.getGrundData().getSigneringsdatum());
         return intygsReferens;
     }
 
-    private static Id toCommonId(se.inera.certificate.model.Id id) {
-        return new Id(id.getRoot(), id.getExtension());
+    private static Id toCommonId(Patient patient) {
+        return new Id(patient.isSamordningsNummer() ? Constants.SAMORDNING_ID_OID : Constants.PERSON_ID_OID, patient.getPersonId());
     }
 
 }

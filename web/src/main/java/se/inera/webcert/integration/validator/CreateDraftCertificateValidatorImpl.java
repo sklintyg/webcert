@@ -1,11 +1,5 @@
 package se.inera.webcert.integration.validator;
 
-import iso.v21090.dt.v1.II;
-
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,24 +9,13 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftce
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.PatientType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeTyp;
-import se.inera.certificate.model.Id;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
-import se.inera.certificate.validate.IdValidator;
-import se.inera.certificate.validate.SimpleIdValidatorBuilder;
 
 @Component
 public class CreateDraftCertificateValidatorImpl implements CreateDraftCertificateValidator {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
-    private IdValidator idValidator;
-
-    @PostConstruct
-    public void init() {
-        SimpleIdValidatorBuilder validatorBuilder = new SimpleIdValidatorBuilder();
-        this.idValidator = validatorBuilder.withSimpleHsaIdValidator().withPersonnummerValidator(true).withSamordningsnummerValidator(true).build();
-    }
 
     /*
      * (non-Javadoc)
@@ -64,8 +47,6 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
 
     private void validatePatient(PatientType patient, ValidationResult errors) {
 
-        validateId(patient.getPersonId(), "person-id", errors);
-
         if (StringUtils.isBlank(patient.getEfternamn())) {
             errors.addError("efternamn is required");
         }
@@ -81,8 +62,6 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
             errors.addError("Physicians full name is required");
         }
 
-        validateId(skapadAv.getPersonalId(), "personal-id", errors);
-
         validateEnhet(skapadAv.getEnhet(), errors);
     }
 
@@ -94,30 +73,6 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
 
         if (StringUtils.isBlank(enhet.getEnhetsnamn())) {
             errors.addError("enhetsnamn is required");
-        }
-
-        validateId(enhet.getEnhetsId(), "enhets-id", errors);
-    }
-
-    public void validateId(II iI, String name, ValidationResult errors) {
-
-        Id id = new Id(iI.getRoot(), iI.getExtension());
-
-        if (StringUtils.isBlank(iI.getRoot())) {
-            errors.addError("Element {0} is missing root element", name);
-            return;
-        }
-
-        if (!idValidator.isValidationSupported(id)) {
-            errors.addError("Validation is not supported for root {1} in element {0}", name, id.getRoot());
-            return;
-        }
-
-        List<String> results = idValidator.validate(id);
-
-        if (!results.isEmpty()) {
-            String resultsStr = StringUtils.join(results, ", ");
-            errors.addError("Id element {0} has errors: [{1}]", name, resultsStr);
         }
 
     }

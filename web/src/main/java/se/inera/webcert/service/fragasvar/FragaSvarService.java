@@ -36,7 +36,7 @@ public interface FragaSvarService {
     /**
      * Create a new FragaSvar instance for a certificate and send it to external receiver (FK).
      */
-    FragaSvar saveNewQuestion(String intygId, Amne amne, String frageText);
+    FragaSvar saveNewQuestion(String intygId, String typ, Amne amne, String frageText);
 
     /**
      * Set the dispatch state for the specified {@link FragaSvar} entity.

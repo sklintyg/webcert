@@ -1,10 +1,6 @@
 package se.inera.webcert.service.log;
 
-import se.inera.certificate.model.Id;
-import se.inera.certificate.model.Patient;
-import se.inera.certificate.model.Utlatande;
-import se.inera.certificate.model.Vardenhet;
-import se.inera.certificate.model.Vardgivare;
+import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.service.log.dto.LogRequest;
 
@@ -30,36 +26,20 @@ public final class LogRequestFactory {
         return logRequest;
     }
 
-    public static LogRequest createLogRequestFromExternalModel(Utlatande utlatande) {
+    public static LogRequest createLogRequestFromUtlatande(Utlatande utlatande) {
 
         LogRequest logRequest = new LogRequest();
-        logRequest.setIntygId(extractIntygIdFromId(utlatande.getId()));
+        logRequest.setIntygId(utlatande.getId());
 
-        Patient patient = utlatande.getPatient();
+        logRequest.setPatientId(utlatande.getGrundData().getPatient().getPersonId());
+        logRequest.setPatientName(utlatande.getGrundData().getPatient().getFullstandigtNamn());
 
-        logRequest.setPatientId(patient.getId().getExtension());
+        logRequest.setIntygCareUnitId(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
+        logRequest.setIntygCareUnitName(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
 
-        logRequest.setPatientName(patient.getFullstandigtNamn());
-
-        Vardenhet skapadAvVardenhet = utlatande.getSkapadAv().getVardenhet();
-
-        logRequest.setIntygCareUnitId(skapadAvVardenhet.getId().getExtension());
-        logRequest.setIntygCareUnitName(skapadAvVardenhet.getNamn());
-
-        Vardgivare skapadAvVardgivare = skapadAvVardenhet.getVardgivare();
-
-        logRequest.setIntygCareGiverId(skapadAvVardgivare.getId().getExtension());
-        logRequest.setIntygCareGiverName(skapadAvVardgivare.getNamn());
+        logRequest.setIntygCareGiverId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
+        logRequest.setIntygCareGiverName(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());
 
         return logRequest;
-    }
-
-    private static String extractIntygIdFromId(Id id) {
-
-        if (id.getExtension() != null) {
-            return id.getExtension();
-        }
-
-        return id.getRoot();
     }
 }

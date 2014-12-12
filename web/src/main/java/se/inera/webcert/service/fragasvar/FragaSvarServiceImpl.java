@@ -259,9 +259,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    public FragaSvar saveNewQuestion(String intygId, Amne amne, String frageText) {
-
-        // Argument check
+    public FragaSvar saveNewQuestion(String intygId, String typ, Amne amne, String frageText) {
+        //  Argument check
         if (StringUtils.isEmpty(frageText)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "frageText cannot be empty!");
@@ -276,26 +275,27 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Fetch from Intygstjansten
-        IntygContentHolder externalIntygData = intygService.fetchExternalIntygData(intygId);
+        IntygContentHolder intyg = intygService.fetchIntygData(intygId, typ);
 
         // Get utfardande vardperson
-        Vardperson vardPerson = FragaSvarConverter.convert(externalIntygData.getExternalModel().getSkapadAv());
+        Vardperson vardPerson = FragaSvarConverter.convert(intyg.getUtlatande().getGrundData().getSkapadAv());
 
         // Is user authorized to save an answer to this question?
         verifyEnhetsAuth(vardPerson.getEnhetsId(), false);
         // Verksamhetsregel FS-001 (Is the certificate sent to FK)
-        if (!isCertificateSentToFK(externalIntygData.getMetaData().getStatuses())) {
+        if (!isCertificateSentToFK(intyg.getStatuses())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-001: Certificate must be sent to FK first before sending question!");
         }
 
         // Verify that certificate is not revoked
-        if (isCertificateRevoked(externalIntygData.getMetaData().getStatuses())) {
+        if (intyg.isRevoked()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "FS-XXX: Cannot save Fraga when certificate is revoked!");
         }
 
-        IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(externalIntygData.getExternalModel());
+        IntygsReferens intygsReferens = FragaSvarConverter
+                .convertToIntygsReferens(intyg.getUtlatande());
 
         FragaSvar fraga = new FragaSvar();
         fraga.setFrageStallare(FrageStallare.WEBCERT.getKod());

@@ -22,17 +22,7 @@ public interface IntygService {
      * @throws se.inera.certificate.integration.rest.exception.ModuleCallFailedException
      *             if a call to the module API fails
      */
-    IntygContentHolder fetchIntygData(String intygId);
-
-    /**
-     * Fetches the intyg data from the Intygstjanst and returns the intyg content in external model representation.
-     *
-     * @throws se.inera.certificate.integration.exception.ExternalWebServiceCallFailedException
-     *             if there occurs a problem fetching intyg data from the intygstjanst
-     * @throws se.inera.certificate.integration.rest.exception.ModuleCallFailedException
-     *             if a call to the module API fails
-     */
-    IntygContentHolder fetchExternalIntygData(String intygId);
+    IntygContentHolder fetchIntygData(String intygId, String typ);
 
     /**
      * Returns all certificates for the given patient within all the given units.
@@ -51,7 +41,7 @@ public interface IntygService {
      * @param intygId
      * @return
      */
-    IntygPdf fetchIntygAsPdf(String intygId);
+    IntygPdf fetchIntygAsPdf(String intygId, String typ);
 
     /**
      * Registers a given certificate in the Intygstjanst.
@@ -65,12 +55,13 @@ public interface IntygService {
      * Instructs Intygstjanst to deliver the given certifiate to an external recipient.
      *
      * @param intygId
+     * @param typ
      * @param recipient
      * @param hasPatientConsent
      * @return
      */
-    IntygServiceResult sendIntyg(String intygId, String recipient, boolean hasPatientConsent);
-
+    IntygServiceResult sendIntyg(String intygId, String typ, String recipient, boolean hasPatientConsent);
+    
     /**
      * Retrieves a list over available recipients for a particular type of certificate.
      *
@@ -83,8 +74,10 @@ public interface IntygService {
      * Instructs Intygstjanst to revoke the given certificate.
      *
      * @param intygId
+     * @param intygType
      * @param revokeMessage
      * @return
      */
-    IntygServiceResult revokeIntyg(String intygId, String revokeMessage);
+    IntygServiceResult revokeIntyg(String intygId, String intygType, String revokeMessage);
+    
 }

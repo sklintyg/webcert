@@ -1,5 +1,13 @@
 package se.inera.webcert.service.intyg;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+
+import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -9,11 +17,12 @@ import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.model.Utlatande;
-import se.inera.certificate.model.common.MinimalUtlatande;
+import se.inera.certificate.model.Status;
+import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
+import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.v1.rivtabp20.RevokeMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
@@ -29,17 +38,6 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
-
-import java.io.IOException;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
-
 public abstract class AbstractIntygServiceTest {
 
     protected static final String CONFIG_AS_JSON = "{config-as-json}";
@@ -47,10 +45,6 @@ public abstract class AbstractIntygServiceTest {
     protected static final String INTYG_ID = "intyg-1";
 
     protected static final String INTYG_TYP_FK = "fk7263";
-
-    protected static final String INTYG_INTERNAL_JSON_MODEL = "{internal-model-as-json}";
-
-    protected static final String INTYG_EXTERNAL_JSON_MODEL = "{external-model-as-json}";
 
     @Mock
     protected GetCertificateForCareResponderInterface getCertificateService;
@@ -95,12 +89,22 @@ public abstract class AbstractIntygServiceTest {
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();
-
-    protected JAXBContext jaxbContext;
-
+    
+    protected String json;
+    protected Utlatande utlatande;
+    protected CertificateResponse certificateResponse;
+    protected CertificateResponse revokedCertificateResponse;
+    
     @Before
-    public void setupJaxb() throws JAXBException {
-        jaxbContext = JAXBContext.newInstance(GetCertificateForCareResponseType.class);
+    public void setupIntygstjanstResponse() throws Exception {
+
+        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
+        CertificateMetaData metaData = new CertificateMetaData();
+        metaData.setStatus(new ArrayList<Status>());
+        certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+        revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, true);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
     }
 
     @Before
@@ -117,19 +121,4 @@ public abstract class AbstractIntygServiceTest {
             }
         });
     }
-
-    protected Utlatande makeUtlatande() throws Exception {
-        return new CustomObjectMapper().readValue(
-                new ClassPathResource("IntygServiceTest/utlatande.json").getFile(), MinimalUtlatande.class);
-    }
-
-    protected GetCertificateForCareResponseType makeIntygstjanstResponse() throws JAXBException, IOException {
-
-        ClassPathResource response = new ClassPathResource("IntygServiceTest/response-get-certificate.xml");
-
-        return jaxbContext.createUnmarshaller()
-                .unmarshal(new StreamSource(response.getInputStream()), GetCertificateForCareResponseType.class)
-                .getValue();
-    }
-
 }

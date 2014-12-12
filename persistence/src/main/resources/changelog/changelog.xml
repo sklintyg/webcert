@@ -364,4 +364,12 @@
     </createTable>
   </changeSet>
 
+  <changeSet id="9" author="bb">
+    <addColumn tableName="OMSANDNING">
+      <column name="INTYG_TYP" type="varchar(255)" defaultValue="fk7263">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

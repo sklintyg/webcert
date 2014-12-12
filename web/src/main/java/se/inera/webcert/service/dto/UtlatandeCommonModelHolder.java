@@ -1,6 +1,6 @@
 package se.inera.webcert.service.dto;
 
-import se.inera.certificate.model.Utlatande;
+import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.webcert.service.intyg.dto.IntygMetadata;
 
 /**

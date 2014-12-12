@@ -1,17 +1,8 @@
 package se.inera.webcert.web.controller.integration;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.web.service.WebCertUserService;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -23,9 +14,19 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import se.inera.certificate.modules.fk7263.model.Constants;
+import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -58,8 +59,8 @@ public class IntygIntegrationController {
     private WebCertUserService webCertUserService;
 
     /**
-     * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
-     * the certificate. Can be used for all types of certificates.
+     * Fetches an FK certificate from IT or webcert and then performs a redirect to the view that displays
+     * the certificate.
      *
      * @param uriInfo
      * @param intygId
@@ -68,12 +69,25 @@ public class IntygIntegrationController {
      */
     @GET
     @Path("/{intygId}")
-    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId,
-            @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn,
-            @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
+        return redirectToIntyg(uriInfo, intygId, Constants.FK7263, alternatePatientSSn, responsibleHospName);
+    }
 
-        Boolean draft = true;
-        String intygType;
+    /**
+     * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
+     * the certificate. Can be used for all types of certificates.
+     *
+     * @param uriInfo
+     * @param intygId
+     *            The id of the certificate to view.
+     * @param typ The type of certificate
+     * @return
+     */
+    @GET
+    @Path("/{typ}/{intygId}")
+    public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typ, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
+
+        Boolean draft = false;
 
         if (StringUtils.isBlank(intygId)) {
             return Response.serverError().build();
@@ -83,24 +97,14 @@ public class IntygIntegrationController {
 
         Intyg draftData = intygRepository.findOne(intygId);
         if (draftData != null && !draftData.getStatus().equals(IntygsStatus.SIGNED)) {
-            intygType = draftData.getIntygsTyp();
-        } else {
-            draft = false;
-            try {
-                IntygContentHolder intygData = intygService.fetchExternalIntygData(intygId);
-                intygType = intygData.getMetaData().getType();
-            } catch (WebCertServiceException e) {
-                // Intyget kunde inte läsas av någon anledning. Släpp igenom detta utan fel eftersom den här
-                // controllerns enda uppgift är att skicka vidare användaren till rätt sida. Vad som ska hända därefter
-                // är upp till den controllern. I dagsläget skickar vi vidare användaren till fk7263 eftersom det är det
-                // enda intyget som stöds.
-                intygType = "fk7263";
-            }
+            draft = true;
         }
+        
+        LOG.debug("Redirecting to view intyg {} of type {}", intygId, typ);
 
-        LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
+        webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM);
 
-        return buildRedirectResponse(uriInfo, intygType, intygId, alternatePatientSSn, responsibleHospName, draft);
+        return buildRedirectResponse(uriInfo, typ, intygId, alternatePatientSSn, responsibleHospName, draft);
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn,
