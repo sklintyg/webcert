@@ -11,8 +11,9 @@ describe('ViewCertCtrl', function() {
     var $location;
     var $window;
     var modalMock;
-    var newUrl = '/url/a';
-    var currentUrl = '/url/b';
+    var newUrl = 'http://server/#/app/new';
+    var currentUrl = '/app/new';
+    var CookieService;
 
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
@@ -25,6 +26,9 @@ describe('ViewCertCtrl', function() {
         $provide.value('$window', {location:{href:currentUrl}});
         manageCertificateSpy = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getCertType' ]);
         $provide.value('webcert.ManageCertificate', manageCertificateSpy);
+
+        CookieService = jasmine.createSpyObj('CookieService', [ 'isSkipShowUnhandledDialogSet' ]);
+        $provide.value('common.CookieService', CookieService);
     }));
 
     // Get references to the object we want to test from the context.
@@ -42,6 +46,11 @@ describe('ViewCertCtrl', function() {
                 { $rootScope: $rootScope, $scope: $scope });
 
             spyOn($scope, '$broadcast');
+
+            // setup the current location
+            $location.url(currentUrl);
+            //newUrl = $location.url();
+            //$window.location.href = currentUrl;
         }])
     );
 
@@ -71,33 +80,57 @@ describe('ViewCertCtrl', function() {
 
     });
 
-    describe('#checkHasUnhandledMessages', function() {
+    describe('#checkCookieService', function() {
+        it('should check that cookie service isSkipShowUnhandledDialog is true', function(){
+            // ----- arrange
+            // spy on the defferd
+            var deferred = $q.defer();
+            spyOn($q, 'defer').andReturn(deferred);
+            CookieService.isSkipShowUnhandledDialogSet.andReturn(true);
 
-        var newUrl = '/url/a';
-        var currentUrl = '/url/b';
+            // ------ act
+            // kick off the window change event
+
+            // promises are resolved/dispatched only on next $digest cycle
+            $rootScope.$apply();
+
+            $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
+
+            deferred.resolve(false);
+
+
+            // ------ assert
+            expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
+
+            expect($scope.$broadcast).not.toHaveBeenCalledWith('hasUnhandledQasEvent', deferred);
+
+            expect($window.location.href).toEqual(newUrl);
+
+        });
+
+    });
+
+    describe('#checkHasUnhandledMessages', function() {
 
         beforeEach(function(){
             // the below is run before each sub test as a means to fire a location change event and so opening the dialog.
             // ----- arrange
             // spy on the defferd
             var deferred = $q.defer();
-            //noinspection JSUnresolvedFunction
             spyOn($q, 'defer').andReturn(deferred);
+            CookieService.isSkipShowUnhandledDialogSet.andReturn(false);
 
             // ------ act
-            // kick off the window change event
+
+            // promises are resolved/dispatched only on next $digest cycle
+            deferred.resolve(true);
+            $rootScope.$apply();
 
             $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
 
-            var areThereUnhandledMessages = true;
-            deferred.resolve(areThereUnhandledMessages);
-
-            // promises are resolved/dispatched only on next $digest cycle
-            $rootScope.$apply();
-
             // ------ assert
             expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
-
+            expect(CookieService.isSkipShowUnhandledDialogSet).toHaveBeenCalled();
             expect($scope.$broadcast).toHaveBeenCalledWith('hasUnhandledQasEvent', deferred);
 
             // dialog should be opened
@@ -131,7 +164,7 @@ describe('ViewCertCtrl', function() {
                 // inside the handled button click, test that :
                 var args = dialogService.showDialog.mostRecentCall.args;
                 var dialogOptions = args[1];
-                // press the handled button
+                // press the not handled button
                 dialogOptions.button2click();
                 // no action is taken, just close the dialog
                 // modal is closed
@@ -146,8 +179,7 @@ describe('ViewCertCtrl', function() {
                 // inside the handled button click, test that :
                 var args = dialogService.showDialog.mostRecentCall.args;
                 var dialogOptions = args[1];
-                // press the handled button
-
+                // press the back button
                 dialogOptions.button3click();
                 // no action is taken, just close the dialog
                 // modal is closed
