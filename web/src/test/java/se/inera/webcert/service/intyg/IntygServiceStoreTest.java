@@ -7,12 +7,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.xml.ws.WebServiceException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
@@ -23,6 +20,8 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
+
+import javax.xml.ws.WebServiceException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceStoreTest extends AbstractIntygServiceTest {
@@ -38,7 +37,7 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
         responseType.setResult(result);
         result.setResultCode(ResultCodeType.OK);
 
-        when(intygSender.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenReturn(responseType);
+        when(registerService.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenReturn(responseType);
 
         Intyg intyg = new Intyg();
         intyg.setIntygsId(INTYG_ID);
@@ -66,7 +65,7 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
         result.setResultCode(ResultCodeType.ERROR);
         result.setResultText("Error occured!");
         result.setErrorId(ErrorIdType.TECHNICAL_ERROR);
-        when(intygSender.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenReturn(responseType);
+        when(registerService.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenReturn(responseType);
 
         Intyg intyg = new Intyg();
         intyg.setIntygsId(INTYG_ID);
@@ -91,7 +90,7 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
         responseType.setResult(result);
         result.setResultCode(ResultCodeType.INFO);
         result.setResultText("This is something important!");
-        when(intygSender.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenReturn(responseType);
+        when(registerService.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenReturn(responseType);
 
         Intyg intyg = new Intyg();
         intyg.setIntygsId(INTYG_ID);
@@ -118,7 +117,7 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
         result.setResultCode(ResultCodeType.ERROR);
         result.setResultText("Error occured!");
         result.setErrorId(ErrorIdType.TECHNICAL_ERROR);
-        when(intygSender.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenThrow(new WebServiceException());
+        when(registerService.registerCertificate(anyString(), any(RegisterCertificateType.class))).thenThrow(new WebServiceException());
 
         Intyg intyg = new Intyg();
         intyg.setIntygsId(INTYG_ID);

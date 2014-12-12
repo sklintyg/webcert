@@ -1,7 +1,5 @@
 package se.inera.webcert.integration;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
@@ -9,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.logging.LogMarkers;
 import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.webcert.converter.FragaSvarConverter;
@@ -25,6 +22,8 @@ import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
+
+import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -68,7 +67,7 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
         LOGGER.info(LogMarkers.MONITORING, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(), fragaSvar.getExternReferens());
 
         // Notify stakeholders
-        notify(processQuestion(fragaSvar));
+        sendNotification(processQuestion(fragaSvar));
 
         // Set result and send response back to caller
         response.setResult(ResultOfCallUtil.okResult());
@@ -80,7 +79,7 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
         return fs;
     }
 
-    private void notify(FragaSvar fragaSvar) {
+    private void sendNotification(FragaSvar fragaSvar) {
 
         String careUnitId = fragaSvar.getVardperson().getEnhetsId();
 
@@ -96,7 +95,9 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
 
         if (fragaSvar.getStatus() == Status.CLOSED) {
             notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(fragaSvar);
+            LOGGER.debug("Notification sent: a closed question with id '{}' (related to certificate with id '{}') was received from FK.", fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
         } else {
+            LOGGER.debug("Notification sent: a question with id '{}' (related to certificate with id '{}') was received from FK.", fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
             notificationRequestType = NotificationMessageFactory.createNotificationFromQuestionFromFK(fragaSvar);
         }
 

@@ -1,5 +1,10 @@
 package se.inera.webcert.service.intyg;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -7,9 +12,9 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.Utlatande;
@@ -32,37 +37,23 @@ import se.inera.webcert.web.service.WebCertUserService;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
-
 import java.io.IOException;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
 
 public abstract class AbstractIntygServiceTest {
 
     protected static final String CONFIG_AS_JSON = "{config-as-json}";
 
     protected static final String INTYG_ID = "intyg-1";
-
     protected static final String INTYG_TYP_FK = "fk7263";
 
     protected static final String INTYG_INTERNAL_JSON_MODEL = "{internal-model-as-json}";
-
     protected static final String INTYG_EXTERNAL_JSON_MODEL = "{external-model-as-json}";
+
+
+    // -- Just plain mock objects
 
     @Mock
     protected GetCertificateForCareResponderInterface getCertificateService;
-
-    @Mock
-    protected RegisterCertificateResponderInterface intygSender;
-
-    @Mock
-    protected SendMedicalCertificateResponderInterface sendService;
-
-    @Mock
-    protected RevokeMedicalCertificateResponderInterface revokeService;
 
     @Mock
     protected IntygModuleFacade moduleFacade;
@@ -71,16 +62,31 @@ public abstract class AbstractIntygServiceTest {
     protected IntygRepository intygRepository;
 
     @Mock
-    protected OmsandningRepository omsandningRepository;
-
-    @Mock
-    protected WebCertUserService webCertUserService;
+    protected ListCertificatesForCareResponderInterface listCertificateService;
 
     @Mock
     protected LogService logService;
 
     @Mock
     protected NotificationService notificationService;
+
+    @Mock
+    protected OmsandningRepository omsandningRepository;
+
+    @Mock
+    protected RegisterCertificateResponderInterface registerService;
+
+    @Mock
+    protected RevokeMedicalCertificateResponderInterface revokeService;
+
+    @Mock
+    protected SendMedicalCertificateResponderInterface sendService;
+
+    @Mock
+    protected WebCertUserService webcertUserService;
+
+
+    // -- Spy objects --
 
     // Here we test the real converter
     @Spy
@@ -90,13 +96,20 @@ public abstract class AbstractIntygServiceTest {
     @Spy
     protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
 
+
+    // -- Injected mock objects --
+
     @InjectMocks
     protected IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();
 
+
     protected JAXBContext jaxbContext;
+
+
+    // -- Setup and teardown --
 
     @Before
     public void setupJaxb() throws JAXBException {
@@ -105,7 +118,7 @@ public abstract class AbstractIntygServiceTest {
 
     @Before
     public void setupDefaultAuthorization() {
-        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(false);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(false);
     }
 
     @Before
@@ -118,10 +131,8 @@ public abstract class AbstractIntygServiceTest {
         });
     }
 
-    protected Utlatande makeUtlatande() throws Exception {
-        return new CustomObjectMapper().readValue(
-                new ClassPathResource("IntygServiceTest/utlatande.json").getFile(), MinimalUtlatande.class);
-    }
+
+    // -- Creator methods --
 
     protected GetCertificateForCareResponseType makeIntygstjanstResponse() throws JAXBException, IOException {
 
@@ -131,5 +142,11 @@ public abstract class AbstractIntygServiceTest {
                 .unmarshal(new StreamSource(response.getInputStream()), GetCertificateForCareResponseType.class)
                 .getValue();
     }
+
+    protected Utlatande makeUtlatande() throws Exception {
+        return new CustomObjectMapper().readValue(
+                new ClassPathResource("IntygServiceTest/utlatande.json").getFile(), MinimalUtlatande.class);
+    }
+
 
 }

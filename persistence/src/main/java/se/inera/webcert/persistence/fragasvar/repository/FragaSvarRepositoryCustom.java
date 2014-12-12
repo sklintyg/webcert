@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 
 public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCustom {
+
     /**
      * Should return a list of {@link FragaSvar} entities in the repository that has an enhetsId matching one of the
      * supplied list of id's. Is also discards any entity with {@link se.inera.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
@@ -41,7 +42,7 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
     /**
      * Returns a list of all unique hsaId and name (of vardperson who signed the certificate the FragaSvar is linked to) where matches the supplied id.
      *
-     * @param enhetsid
+     * @param enhetsIds
      * @return A list of Object[] where the first [0] value is the HsaId and the second [1] is the name
      */
     @Query("SELECT DISTINCT fs.vardperson.hsaId, fs.vardperson.namn FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) ORDER BY fs.vardperson.namn ASC")

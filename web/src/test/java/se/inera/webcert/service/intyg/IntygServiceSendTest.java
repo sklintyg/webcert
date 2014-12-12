@@ -70,7 +70,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         user.setNamn(hoSPerson.getNamn());
         user.setHsaId(hoSPerson.getHsaId());
 
-        when(webCertUserService.getWebCertUser()).thenReturn(user);
+        when(webcertUserService.getWebCertUser()).thenReturn(user);
 
         ReflectionUtils.setTypedField(intygSignatureService, new TicketTracker());
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
@@ -111,7 +111,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
 
         // Send the certificate
-        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, "FK", true);
         assertEquals(IntygServiceResult.OK, res);
@@ -151,7 +151,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, INTYG_ID);
         omsandning.setConfiguration(CONFIG_AS_JSON);
 
-        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, "FK", true);
         assertEquals(IntygServiceResult.RESCHEDULED, res);
@@ -174,7 +174,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         WebServiceException wse = new WebServiceException(new ConnectException("Could not connect..."));
         when(sendService.sendMedicalCertificate(any(AttributedURIType.class), any(SendMedicalCertificateRequestType.class))).thenThrow(wse);
 
-        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
+        when(webcertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, "FK", true);
         assertEquals(IntygServiceResult.RESCHEDULED, res);

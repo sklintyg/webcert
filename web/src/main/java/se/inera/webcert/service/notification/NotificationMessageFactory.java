@@ -129,7 +129,6 @@ public class NotificationMessageFactory {
 
     static NotificationRequestType createNotification(FragaSvar fragaSvar) {
 
-
         VardenhetType vt = getVardenhetType(fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn());
         HoSPersonType hspt = getHoSPersonType(fragaSvar.getVardperson().getNamn(), fragaSvar.getVardperson().getHsaId(), vt);
 

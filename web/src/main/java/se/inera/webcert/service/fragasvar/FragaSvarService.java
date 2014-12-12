@@ -1,15 +1,14 @@
 package se.inera.webcert.service.fragasvar;
 
-import java.util.List;
-import java.util.Map;
-
 import org.joda.time.LocalDateTime;
-
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author andreaskaltenbach
@@ -53,9 +52,17 @@ public interface FragaSvarService {
      * Sets the status of a FragaSvar as "closed"
      *
      * @param frageSvarId
-     * @return
+     * @return the FragaSvar-object that has been closed
      */
     FragaSvar closeQuestionAsHandled(Long frageSvarId);
+
+    /**
+     * Close all questions related to a certificate.
+     *
+     * @param intygsId the certificates unique identifier
+     * @return an array with FragaSvar-objects that has been closed.
+     */
+    FragaSvar[] closeAllNonClosedQuestions(String intygsId);
 
     /**
      * A FragaSvar is set as unhandled.
@@ -89,4 +96,5 @@ public interface FragaSvarService {
      * @return
      */
     Map<String, Long> getNbrOfUnhandledFragaSvarForCareUnits(List<String> vardenheterIds);
+
 }

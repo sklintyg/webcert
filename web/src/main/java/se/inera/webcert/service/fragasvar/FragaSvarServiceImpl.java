@@ -24,7 +24,11 @@ import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
-import se.inera.webcert.persistence.fragasvar.model.*;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.webcert.persistence.fragasvar.model.Status;
+import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.fragasvar.repository.VantarPa;
@@ -49,6 +53,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -249,7 +254,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
                     .getErrorText());
         }
-        
+
         // Notify stakeholders
         sendNotification(saved, Event.ANSWER_SENT_TO_FK);
 
@@ -350,9 +355,42 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Override
     public FragaSvar closeQuestionAsHandled(Long frageSvarId) {
         FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
+        return closeQuestionAsHandled(fragaSvar);
+    }
 
+    FragaSvar closeQuestionAsHandled(FragaSvar fragaSvar) {
         fragaSvar.setStatus(Status.CLOSED);
         return fragaSvarRepository.save(fragaSvar);
+    }
+
+    /**
+     * Looks upp all questions related to a specific certificate and
+     * sets a question's status to CLOSED if not already closed.
+     *
+     * @param intygsId
+     *            the certificates unique identifier
+     * @return an array with FragaSvar objects whose status has been set to closed
+     */
+    @Override
+    public FragaSvar[] closeAllNonClosedQuestions(String intygsId) {
+
+        List<FragaSvar> list = fragaSvarRepository.findByIntygsReferensIntygsId(intygsId);
+        ListIterator<FragaSvar> iterator = list.listIterator();
+
+        List<FragaSvar> al = new ArrayList<FragaSvar>();
+
+        while (iterator.hasNext()) {
+            FragaSvar fragaSvar = iterator.next();
+            if (fragaSvar.getStatus() != Status.CLOSED) {
+                al.add(closeQuestionAsHandled(fragaSvar));
+            }
+        }
+
+        if (al.isEmpty()) {
+            return new FragaSvar[0];
+        }
+
+        return al.toArray(new FragaSvar[al.size()]);
     }
 
     @Override
@@ -501,14 +539,14 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return false;
     }
 
-protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
-    if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
-        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                "User not authorized for for enhet " + enhetsId);
+    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsId);
+        }
     }
-}
 
-private boolean isCertificateSentToFK(List<IntygStatus> statuses) {
+    private boolean isCertificateSentToFK(List<IntygStatus> statuses) {
         if (statuses != null) {
             for (IntygStatus status : statuses) {
                 if (FORSAKRINGSKASSAN.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
@@ -519,11 +557,11 @@ private boolean isCertificateSentToFK(List<IntygStatus> statuses) {
         return false;
     }
 
-    private FragaSvar lookupFragaSvar(Long frageSvarId) {
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(frageSvarId);
+    private FragaSvar lookupFragaSvar(Long fragaSvarId) {
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarId);
         if (fragaSvar == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Could not find FragaSvar with id:" + frageSvarId);
+                    "Could not find FragaSvar with id:" + fragaSvarId);
         }
         return fragaSvar;
     }
@@ -533,15 +571,22 @@ private boolean isCertificateSentToFK(List<IntygStatus> statuses) {
         NotificationRequestType notificationRequestType = null;
 
         switch (event) {
-            case QUESTION_SENT_TO_FK:
-                notificationRequestType = NotificationMessageFactory.createNotificationFromQuestionToFK(fragaSvar);
-                break;
-            case ANSWER_SENT_TO_FK:
-                notificationRequestType = NotificationMessageFactory.createNotificationFromAnswerFromFK(fragaSvar);
-                break;
+        case QUESTION_SENT_TO_FK:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromQuestionToFK(fragaSvar);
+            notificationService.notify(notificationRequestType);
+            LOG.debug("Notification sent: a question with id '{}' (related to certificate '{}') was sent to FK", fragaSvar.getInternReferens(),
+                    fragaSvar.getIntygsReferens().getIntygsId());
+            break;
+        case ANSWER_SENT_TO_FK:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromAnswerFromFK(fragaSvar);
+            notificationService.notify(notificationRequestType);
+            LOG.debug("Notification sent: an answer with id '{}' (related to certificate '{}') was sent to FK", fragaSvar.getInternReferens(),
+                    fragaSvar.getIntygsReferens().getIntygsId());
+            break;
+        default:
+            LOG.error("Cannot send notification. Event not captured!");
         }
 
-        notificationService.notify(notificationRequestType);
     }
 
     private void validateAcceptsQuestions(FragaSvar fragaSvar) {
