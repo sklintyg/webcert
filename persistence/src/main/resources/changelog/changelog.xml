@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd"
-        logicalFilePath="classpath:changelog/changelog.xml">
+  logicalFilePath="classpath:changelog/changelog.xml">
 
   <changeSet id="1" author="me">
     <!-- initial creation of tables -->
 
     <createTable tableName="FRAGASVAR">
       <column name="internReferens" type="bigint">
-      <constraints unique="true" nullable="false" />
+        <constraints unique="true" nullable="false" />
       </column>
       <column name="AMNE" type="varchar(255)">
         <constraints nullable="false" />
@@ -125,12 +125,13 @@
     </createTable>
 
     <!-- Add auto incremented id column to table -->
-    <addAutoIncrement columnDataType="bigint" columnName="internReferens"
-      incrementBy="1" startWith="1" tableName="FRAGASVAR" />
+    <addAutoIncrement columnDataType="bigint"
+      columnName="internReferens" incrementBy="1" startWith="1"
+      tableName="FRAGASVAR" />
 
     <createTable tableName="KOMPLETTERING">
       <column name="FRAGASVAR_ID" type="bigint">
-      <constraints nullable="false" />
+        <constraints nullable="false" />
       </column>
       <column name="FALT" type="varchar(255)">
         <constraints nullable="false" />
@@ -146,7 +147,7 @@
 
     <createTable tableName="EXTERNA_KONTAKTER">
       <column name="FRAGASVAR_ID" type="bigint">
-      <constraints nullable="false" />
+        <constraints nullable="false" />
       </column>
       <column name="KONTAKT" type="varchar(255)">
         <constraints nullable="false" />
@@ -201,32 +202,32 @@
   </changeSet>
 
   <changeSet id="3" author="bb">
-    <createIndex
-            indexName="IDX_FRAGASVAR_INTYGS_ID"
-            tableName="FRAGASVAR"
-            unique="false">
-        <column name="INTYGS_ID"/>
+    <createIndex indexName="IDX_FRAGASVAR_INTYGS_ID"
+      tableName="FRAGASVAR" unique="false">
+      <column name="INTYGS_ID" />
     </createIndex>
-    <createIndex
-            indexName="IDX_FRAGASVAR_ENHETS_ID_STATUS"
-            tableName="FRAGASVAR"
-            unique="false">
-        <column name="ENHETS_ID"/>
-        <column name="STATUS"/>
+    <createIndex indexName="IDX_FRAGASVAR_ENHETS_ID_STATUS"
+      tableName="FRAGASVAR" unique="false">
+      <column name="ENHETS_ID" />
+      <column name="STATUS" />
     </createIndex>
   </changeSet>
 
   <changeSet id="4" author="np">
     <!-- Change data type -->
-    <modifyDataType tableName="KOMPLETTERING" columnName="TEXT" newDataType="text"/>
+    <modifyDataType tableName="KOMPLETTERING" columnName="TEXT"
+      newDataType="text" />
     <!-- Re-apply not null constraint that was lost during data type change -->
-    <addNotNullConstraint tableName="KOMPLETTERING" columnName="TEXT" columnDataType="text"/>
+    <addNotNullConstraint tableName="KOMPLETTERING"
+      columnName="TEXT" columnDataType="text" />
   </changeSet>
+
+  <!-- Below is 3.0 + -->
 
   <changeSet id="5" author="mc">
     <createTable tableName="INTYG">
       <column name="INTYGS_ID" type="varchar(64)">
-        <constraints unique="true" nullable="false" />
+        <constraints primaryKey="true" nullable="false" />
       </column>
       <column name="INTYGS_TYP" type="varchar(255)">
         <constraints nullable="false" />
@@ -283,82 +284,82 @@
   </changeSet>
 
   <changeSet id="6" author="ps">
-      <createTable tableName="SIGNATUR">
-          <column name="SIGNATUR_ID" type="bigint">
-              <constraints unique="true" nullable="false" />
-          </column>
-          <column name="SIGNERINGS_DATUM" type="datetime">
-              <constraints nullable="true" />
-          </column>
-          <column name="SIGNERAD_AV" type="varchar(255)">
-              <constraints nullable="false"/>
-          </column>
-          <column name="INTYG_ID" type="varchar(255)">
-              <constraints nullable="false"/>
-          </column>
-          <column name="INTYG_DATA" type="clob">
-              <constraints nullable="false"/>
-          </column>
-          <column name="INTYG_HASH" type="clob">
-              <constraints nullable="false"/>
-          </column>
-          <column name="SIGNATUR_DATA" type="clob">
-              <constraints nullable="false"/>
-          </column>
-      </createTable>
-      <!-- Add auto incremented id column to table -->
-      <addAutoIncrement columnDataType="bigint" columnName="SIGNATUR_ID"
-                        incrementBy="1" startWith="1" tableName="SIGNATUR" />
+    <createTable tableName="SIGNATUR">
+      <column name="INTYG_ID" type="varchar(64)">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="SIGNERINGS_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="SIGNERAD_AV" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="INTYG_DATA" type="clob">
+        <constraints nullable="false" />
+      </column>
+      <column name="INTYG_HASH" type="clob">
+        <constraints nullable="false" />
+      </column>
+      <column name="SIGNATUR_DATA" type="clob">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint constraintName="SIGNATUR_INTYG_FK"
+      baseColumnNames="INTYG_ID" baseTableName="SIGNATUR"
+      referencedColumnNames="INTYGS_ID" referencedTableName="INTYG" />
+
   </changeSet>
 
   <changeSet id="7" author="rl">
-      <createTable tableName="OMSANDNING">
-          <column name="OMSANDNING_ID" type="bigint">
-              <constraints unique="true" nullable="false" />
-          </column>
-          <column name="INTYG_ID" type="varchar(255)">
-              <constraints nullable="false" />
-          </column>
-          <column name="NASTA_FORSOK" type="datetime">
-              <constraints nullable="false"/>
-          </column>
-          <column name="ANTAL_FORSOK" type="int">
-              <constraints nullable="false"/>
-          </column>
-          <column name="GALLRINGSDATUM" type="datetime">
-              <constraints nullable="true"/>
-          </column>
-          <column name="OPERATION" type="varchar(32)">
-          	<constraints nullable="false"/>
-          </column>
-          <column name="KONFIGURATION" type="clob">
-          	<constraints nullable="true"/>
-          </column>
-      </createTable>
-      <!-- Add auto incremented id column to table -->
-      <addAutoIncrement columnDataType="bigint" columnName="OMSANDNING_ID"
-                        incrementBy="1" startWith="1" tableName="OMSANDNING" />
+    <createTable tableName="OMSANDNING">
+      <column name="OMSANDNING_ID" type="bigint">
+        <constraints unique="true" nullable="false" />
+      </column>
+      <column name="INTYG_ID" type="varchar(64)">
+        <constraints nullable="false" />
+      </column>
+      <column name="NASTA_FORSOK" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="ANTAL_FORSOK" type="int">
+        <constraints nullable="false" />
+      </column>
+      <column name="GALLRINGSDATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="OPERATION" type="varchar(32)">
+        <constraints nullable="false" />
+      </column>
+      <column name="KONFIGURATION" type="clob">
+        <constraints nullable="true" />
+      </column>
+    </createTable>
+    <!-- Add auto incremented id column to table -->
+    <addAutoIncrement columnDataType="bigint"
+      columnName="OMSANDNING_ID" incrementBy="1" startWith="1"
+      tableName="OMSANDNING" />
   </changeSet>
-  
+
   <changeSet id="8" author="np">
     <createTable tableName="INTEGRERADE_VARDENHETER">
       <column name="ENHETS_ID" type="varchar(32)">
-        <constraints unique="true" nullable="false"/>
+        <constraints primaryKey="true" nullable="false" />
       </column>
       <column name="ENHETS_NAMN" type="varchar(255)">
         <constraints nullable="false" />
       </column>
       <column name="VARDGIVAR_ID" type="varchar(32)">
-        <constraints nullable="false"/>
+        <constraints nullable="false" />
       </column>
       <column name="VARDGIVAR_NAMN" type="varchar(255)">
         <constraints nullable="false" />
       </column>
       <column name="SKAPAD_DATUM" type="datetime">
-        <constraints nullable="false"/>
+        <constraints nullable="false" />
       </column>
       <column name="SENASTE_KONTROLL_DATUM" type="datetime">
-        <constraints nullable="true"/>
+        <constraints nullable="true" />
       </column>
     </createTable>
   </changeSet>
