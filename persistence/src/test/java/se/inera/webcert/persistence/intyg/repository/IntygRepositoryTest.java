@@ -2,7 +2,6 @@ package se.inera.webcert.persistence.intyg.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.notNullValue;
@@ -10,12 +9,10 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.hamcrest.core.IsNull;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.model.Signatur;
 import se.inera.webcert.persistence.intyg.repository.util.IntygTestUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,9 +34,6 @@ public class IntygRepositoryTest {
 
     @Autowired
     private IntygRepository intygRepository;
-    
-    @Autowired
-    private SignaturRepository signaturRepository;
 
     @PersistenceContext
     private EntityManager em;
