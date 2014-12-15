@@ -1,17 +1,5 @@
 package se.inera.webcert.integration.test;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.model.Signatur;
-import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.persistence.intyg.repository.SignaturRepository;
-import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.dto.Vardenhet;
-import se.inera.webcert.service.dto.Vardgivare;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -22,14 +10,22 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
+import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
+import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.webcert.service.dto.Vardgivare;
+
 @Transactional
 public class IntygResource {
 
     @Autowired
     private IntygRepository intygRepository;
-
-    @Autowired
-    private SignaturRepository signaturRepository;
 
     @DELETE
     @Path("/{id}")
