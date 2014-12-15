@@ -20,26 +20,39 @@
 
     <!-- Common -->
     <common.version>0-SNAPSHOT</common.version>
+    <common.version.range>(,2.1.0]</common.version.range>
 
     <!-- Intygstjanst -->
     <intygstjanst.version>0-SNAPSHOT</intygstjanst.version>
+    <intygstjanst.version.range>(,2.1.0]</intygstjanst.version.range>
 
     <!-- Intygstyper -->
+    <!-- Intygstyper -->
     <fk7263.version>0-SNAPSHOT</fk7263.version>
+    <fk7263.version.range>(,2.1.0]</fk7263.version.range>
+
     <ts-bas.version>0-SNAPSHOT</ts-bas.version>
+    <ts-bas.version.range>(,1.1.0]</ts-bas.version.range>
+
     <ts-diabetes.version>0-SNAPSHOT</ts-diabetes.version>
+    <ts-diabetes.version.range>(,1.1.0]</ts-diabetes.version.range>
 
     <!-- Schemas -->
     <clinicalprocess-healthcond-certificate.version>0-SNAPSHOT</clinicalprocess-healthcond-certificate.version>
+    <clinicalprocess-healthcond-certificate.version.range>(,1.0.0]</clinicalprocess-healthcond-certificate.version.range>
+
     <insuranceprocess-healthreporting.version>0-SNAPSHOT</insuranceprocess-healthreporting.version>
+    <insuranceprocess-healthreporting.version.range>(,1.0.0]</insuranceprocess-healthreporting.version.range>
+
     <itintegration-monitoring.version>0-SNAPSHOT</itintegration-monitoring.version>
+    <itintegration-monitoring.version.range>(,1.0.0]</itintegration-monitoring.version.range>
+
     <ehr-logstore.version>0-SNAPSHOT</ehr-logstore.version>
+    <ehr-logstore.version.range>(,1.0.0]</ehr-logstore.version.range>
+
     <schemas-common.version>0-SNAPSHOT</schemas-common.version>
+    <schemas-common.version.range>(,2.1.0]</schemas-common.version.range>
 
-    <!-- Tools -->
-    <liquibase-runner.version>0-SNAPSHOT</liquibase-runner.version>
-
-    <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
   </properties>
 
   <modules>
@@ -194,13 +207,6 @@
         <groupId>se.riv.ehr.logstore</groupId>
         <artifactId>ehr-logstore-interactions</artifactId>
         <version>${ehr-logstore.version}</version>
-      </dependency>
-
-      <!-- Tools -->
-      <dependency>
-        <groupId>se.inera.intyg.tools</groupId>
-        <artifactId>liquibase-runner</artifactId>
-        <version>${liquibase-runner.version}</version>
       </dependency>
 
       <!-- Authentication -->
@@ -432,41 +438,56 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack-build-tools</id>
-            <phase>package</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>se.inera.intyg.common</groupId>
-                  <artifactId>common-build-tools</artifactId>
-                  <version>${common.version}</version>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}/build-tools</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>se.inera.intyg.common</groupId>
-            <artifactId>common-build-tools</artifactId>
-            <version>${common.version}</version>
-          </dependency>
-        </dependencies>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
         <configuration>
-          <configLocation>checkstyle/checkstyle.xml</configLocation>
+          <includeProperties>
+            common.version, intygstjanst.version, fk7263.version, ts-bas.version, ts-diabetes.version,
+            clinicalprocess-healthcond-certificate.version, insuranceprocess-healthreporting.version,
+            itintegration-monitoring.version, ehr-logstore.version, schemas-common.version
+          </includeProperties>
+          <properties>
+            <property>
+              <name>common.version</name>
+              <version>${common.version.range}</version>
+            </property>
+            <property>
+              <name>intygstjanst.version</name>
+              <version>${intygstjanst.version.range}</version>
+            </property>
+            <property>
+              <name>fk7263.version</name>
+              <version>${fk7263.version.range}</version>
+            </property>
+            <property>
+              <name>ts-bas.version</name>
+              <version>${ts-bas.version.range}</version>
+            </property>
+            <property>
+              <name>ts-diabetes.version</name>
+              <version>${ts-diabetes.version.range}</version>
+            </property>
+            <property>
+              <name>clinicalprocess-healthcond-certificate.version</name>
+              <version>${clinicalprocess-healthcond-certificate.version.range}</version>
+            </property>
+            <property>
+              <name>insuranceprocess-healthreporting.version</name>
+              <version>${insuranceprocess-healthreporting.version.range}</version>
+            </property>
+            <property>
+              <name>itintegration-monitoring.version</name>
+              <version>${itintegration-monitoring.version.range}</version>
+            </property>
+            <property>
+              <name>ehr-logstore.version</name>
+              <version>${ehr-logstore.version.range}</version>
+            </property>
+            <property>
+              <name>schemas-common.version</name>
+              <version>${schemas-common.version.range}</version>
+            </property>
+          </properties>
         </configuration>
       </plugin>
     </plugins>
@@ -480,7 +501,7 @@
         <enabled>true</enabled>
       </releases>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
     <repository>
