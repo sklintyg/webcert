@@ -8,6 +8,8 @@ public class SaveAndValidateDraftRequest {
 
     private String draftAsJson;
 
+    private Boolean autoSave;
+
     private HoSPerson savedBy;
 
     public SaveAndValidateDraftRequest() {
@@ -29,6 +31,10 @@ public class SaveAndValidateDraftRequest {
     public void setDraftAsJson(String draftAsJson) {
         this.draftAsJson = draftAsJson;
     }
+
+    public Boolean getAutoSave() { return autoSave; }
+
+    public void setAutoSave(Boolean autoSave) { this.autoSave = autoSave; }
 
     public HoSPerson getSavedBy() {
         return savedBy;

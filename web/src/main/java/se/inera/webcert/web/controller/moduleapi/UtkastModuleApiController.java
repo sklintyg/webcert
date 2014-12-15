@@ -22,14 +22,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
@@ -97,15 +90,16 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, byte[] draftCertificate) {
+    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @DefaultValue("false") @QueryParam("autoSave") boolean autoSave,  byte[] draftCertificate) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         LOG.debug("Saving Intyg with id {}", intygsId);
+        LOG.debug("Autosave is {}", autoSave);
 
         String draftAsJson = fromBytesToString(draftCertificate);
 
-        SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, draftAsJson);
+        SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, draftAsJson, autoSave);
         DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
 
         SaveDraftResponse responseEntity = buildSaveDraftResponse(draftValidation);
@@ -113,11 +107,12 @@ public class UtkastModuleApiController extends AbstractApiController {
         return Response.ok().entity(responseEntity).build();
     }
 
-    private SaveAndValidateDraftRequest createSaveAndValidateDraftRequest(String intygId, String draftAsJson) {
+    private SaveAndValidateDraftRequest createSaveAndValidateDraftRequest(String intygId, String draftAsJson, Boolean autoSave) {
         SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
 
         request.setIntygId(intygId);
         request.setDraftAsJson(draftAsJson);
+        request.setAutoSave(autoSave);
 
         HoSPerson savedBy = createHoSPersonFromUser();
         request.setSavedBy(savedBy);
