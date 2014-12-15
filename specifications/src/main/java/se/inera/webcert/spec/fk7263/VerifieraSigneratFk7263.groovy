@@ -179,6 +179,10 @@ class VerifieraSigneratFk7263 {
         getStringResult(getCurrentMethodName())
     }
 
+    String prognosBedomning() {
+        getStringResult(getCurrentMethodName())
+    }
+
     String arbetsformagaPrognos() {
         getStringResult(getCurrentMethodName())
     }
