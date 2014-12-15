@@ -1,0 +1,20 @@
+---
+# file: group_vars/all
+profile: test
+inera_root: /opt/inera
+releases_folder: "{{ inera_root }}/releases"
+config_folder: "{{ inera_root }}/webcert-konfiguration"
+tomcat_service: inera-tomcat
+inera_tomcat_folder: "/var/lib/{{ tomcat_service }}"
+etc_folder: "{{ inera_tomcat_folder }}/etc"
+webapps_folder: "{{ inera_tomcat_folder }}/webapps"
+database_username: webcert
+database_password: webcert
+database_driver: com.mysql.jdbc.Driver
+database_url: "jdbc:mysql://localhost:3306/webcert?useCompression=true"
+database_pool_maxActive: 20
+database_pool_maxIdle: 20
+database_pool_minIdle: 10
+database_pool_initialSize: 10
+activemq_username: ""
+activemq_password: ""

@@ -167,9 +167,6 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.User'
     function($log, $rootScope, $window, messageService, User) {
         'use strict';
 
-        // add IndexOf to IE8
-        checkAddIndexOf();
-
         $rootScope.lang = 'sv';
         $rootScope.DEFAULT_LANG = 'sv';
         User.setUserContext(MODULE_CONFIG.USERCONTEXT);
