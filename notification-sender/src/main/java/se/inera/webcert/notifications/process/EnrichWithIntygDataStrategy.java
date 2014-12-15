@@ -33,9 +33,9 @@ public class EnrichWithIntygDataStrategy {
 
     private void decorateWithSignDate(UtlatandeType utlatandeType, Intyg intygsUtkast) {
         if (IntygsStatus.SIGNED.equals(intygsUtkast.getStatus())) {
-            LOG.debug("Status is SIGNED, getting signed date");
-            Signatur latestSignatur = intygsUtkast.getLatestSignatur();
-            utlatandeType.setSigneringsdatum(latestSignatur.getSigneringsDatum());
+            LOG.debug("Status is SIGNED, getting signed date from signature");
+            Signatur signatur = intygsUtkast.getSignatur();
+            utlatandeType.setSigneringsdatum(signatur.getSigneringsDatum());
         }
     }
 

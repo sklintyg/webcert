@@ -21,13 +21,12 @@
     "vardgivarId": "vardgivare-1",
     "vardgivarNamn": "Vårdgivare 1",
     "vidarebefordrad": false,
-    "signaturer":[{
-    	"signaturId": 1,
-    	"signeringsDatum": "2014-01-01T12:00:00.000",
-    	"signeradAv": "person-1",
-    	"intygId": "intyg-2",
-    	"intygData": "--intyg-data--",
-    	"intygHash": "--intyg-hash--",
-    	"signatur": "--intyg-signatur--"
-    }]
+    "signatur": {
+        "signeringsDatum": "2014-01-01T12:00:00.000",
+        "signeradAv": "person-1",
+        "intygId": "intyg-2",
+        "intygData": "--intyg-data--",
+        "intygHash": "--intyg-hash--",
+        "signatur": "--intyg-signatur--"
+    }
 }
