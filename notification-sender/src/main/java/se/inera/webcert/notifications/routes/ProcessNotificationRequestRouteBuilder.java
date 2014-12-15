@@ -18,21 +18,20 @@ import se.inera.webcert.notifications.service.exception.NonRecoverableCertificat
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
-    
     private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilder.class);
-        
+
     @Autowired
     private EnrichWithIntygModelDataStrategy intygModelEnricher;
-    
+
     @Autowired
     private EnrichWithIntygDataStrategy intygPropertiesEnricher;
-    
+
     @Autowired
     private FragaSvarEnricher fragaSvarEnricher;
-    
+
     @Value("${errorhanding.maxRedeliveries}")
     private int maxRedeliveries;
-    
+
     @Value("${errorhanding.redeliveryDelay}")
     private long redeliveryDelay;
 
@@ -73,7 +72,7 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
                         .to("sendCertificateStatusUpdateEndpoint")
                     .otherwise()
                         .to("sendCertificateStatusUpdateEndpoint");
-                                
+
         from("errorHandlerEndpoint").routeId("errorLogging")
             .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}").getText())
             .stop();

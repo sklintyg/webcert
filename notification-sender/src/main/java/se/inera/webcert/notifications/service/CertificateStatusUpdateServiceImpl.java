@@ -23,7 +23,7 @@ public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpda
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.notifications.service.CertificateStatusUpdateService#sendStatusUpdate(java.lang.String,
      * se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.
      * CertificateStatusUpdateForCareType)

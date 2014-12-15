@@ -26,109 +26,110 @@ import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.message.v1.HandelseType;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration({"/spring/test-properties-context.xml", "/spring/beans-context.xml", "/spring/test-service-context.xml", "/spring/camel-context.xml"})
+@ContextConfiguration({ "/spring/test-properties-context.xml", "/spring/beans-context.xml", "/spring/test-service-context.xml",
+        "/spring/camel-context.xml" })
 @MockEndpointsAndSkip("direct:processNotificationRequestEndpoint")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-@ActiveProfiles( profiles = "unittest" )
+@ActiveProfiles(profiles = "unittest")
 public class NotificationRequestRouterTest {
-    
+
     @Autowired
-    CamelContext camelContext;
-    
+    private CamelContext camelContext;
+
     @Autowired
-    ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     @Produce(uri = "direct:recieveNotificationRequestEndpoint")
-    ProducerTemplate recieveNotificationRequestEndpoint;
-    
+    private ProducerTemplate recieveNotificationRequestEndpoint;
+
     @EndpointInject(uri = "mock:direct:processNotificationRequestEndpoint")
-    MockEndpoint mockProcessNotificationRequestEndpoint;
-    
+    private MockEndpoint mockProcessNotificationRequestEndpoint;
+
     @Test
     public void testRouter() throws Exception {
-        
+
         mockProcessNotificationRequestEndpoint.expectedMessageCount(1);
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_ID, "intyg-1");
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_TYP, "fk7263");
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_SKAPAT.toString());
-                
+
         String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-skapat-notification.xml");
-        
+
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
-        
+
         recieveNotificationRequestEndpoint.send(exchange);
-        
+
         assertIsSatisfied(mockProcessNotificationRequestEndpoint);
     }
 
     @Test
     public void testLogiskAdress() throws Exception {
-        
+
         mockProcessNotificationRequestEndpoint.expectedMessageCount(1);
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_ID, "intyg-2");
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_TYP, "fk7263");
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_SIGNERAT.toString());
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_STATUS, "SIGNED");
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.LOGISK_ADRESS, "vardenhet-1");
-        
+
         String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
-        
+
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
-        
+
         recieveNotificationRequestEndpoint.send(exchange);
-        
+
         assertIsSatisfied(mockProcessNotificationRequestEndpoint);
     }
 
     @Test
     public void testDeletedMessage() throws Exception {
-        
+
         mockProcessNotificationRequestEndpoint.expectedMessageCount(1);
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_ID, "intyg-4");
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.INTYGS_TYP, "fk7263");
-        //mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.LOGISK_ADRESS, "vardenhet-1");
+        // mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.LOGISK_ADRESS, "vardenhet-1");
         mockProcessNotificationRequestEndpoint.expectedHeaderReceived(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_RADERAT.toString());
-        
+
         String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-raderat-notification.xml");
-        
+
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
-        
+
         recieveNotificationRequestEndpoint.send(exchange);
-        
+
         assertIsSatisfied(mockProcessNotificationRequestEndpoint);
-        
+
     }
 
     @Test
     public void testIntygDoesNotExist() throws Exception {
-        
+
         mockProcessNotificationRequestEndpoint.expectedMessageCount(0);
-        
+
         String requestPayload = TestDataUtil.readRequestFromFile("data/intyg-not-in-db.xml");
-        
+
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
-        
+
         recieveNotificationRequestEndpoint.send(exchange);
-        
+
         assertIsSatisfied(mockProcessNotificationRequestEndpoint);
-        
+
     }
-    
+
     @Test
     public void testIntygWithOtherTypeThanFk7263() throws Exception {
-        
+
         mockProcessNotificationRequestEndpoint.expectedMessageCount(0);
-        
+
         String requestPayload = TestDataUtil.readRequestFromFile("data/intyg-with-wrong-type.xml");
-        
+
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
-        
+
         recieveNotificationRequestEndpoint.send(exchange);
-        
+
         assertIsSatisfied(mockProcessNotificationRequestEndpoint);
-        
+
     }
-    
+
     protected Exchange wrapRequestInExchange(Object request, CamelContext camelContext) {
 
         Exchange exchange = new DefaultExchange(camelContext);

@@ -1,0 +1,30 @@
+!contents -R2 -g -p -f -h
+
+!3 Ladda ett maximalt fk7263
+
+|Intyg|
+|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
+|19121212-1212|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fit-1|sml|nej|nej|
+
+!3 Logga in
+
+| script | !-SokSkrivIntyg-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+| sok skriv intyg sidan visas sa smaningom |
+| valj patient | 19121212-1212 |
+| valj intygstyp sidan visas |
+| visa intyg | webcert-fit-1 |
+| visa intyg sidan visas |
+
+!3 Verifiera att fälten i intyget syns och innehåller korrekt data
+
+| Verifiera Signerat Fk7263 |
+| smittskydd? | diagnosKod? | diagnosBeskrivning?  | diagnosKod2? | diagnosBeskrivning2? | diagnosKod3? | diagnosBeskrivning3? | samsjuklighet? | sjukdomsforlopp? | funktionsnedsattning? | undersokningAvPatienten?    | telefonkontaktMedPatienten? | journaluppgifter?         | annanReferensBeskrivning? | aktivitetsbegransning?                                             | rekommendationKontaktArbetsformedlingen?  | rekommendationKontaktForetagshalsovarden?   | rekommendationOvrigt?  | atgardInomSjukvarden? | annanAtgard? | rehabilitering?| nuvarandeArbetsuppgifter? | arbetsloshet?      | foraldrarledighet?| nedsattMed25from?| nedsattMed25tom?| nedsattMed25Beskrivning? | nedsattMed50from?| nedsattMed50tom? | nedsattMed50Beskrivning? | nedsattMed75from? | nedsattMed75tom? | nedsattMed75Beskrivning? | nedsattMed100from? | nedsattMed100tom?  | arbetsformagaPrognos?                                                                                                                                                                                                                                                             | prognos10? | arbetsformagaPrognosGarInteAttBedomaBeskrivning? |  kontaktMedFk? | kommentar? | forskrivarkodOchArbetsplatskod? | signeringsdatum?   | vardperson_namn?   | vardperson_enhetsnamn? | vardperson_postadress? | vardperson_postnummer? | vardperson_postort? | vardperson_telefonnummer? |
+| true        |             |                      |              |                      |              |                      | false          |                  | Illamående och diarré.|false                        | false                       | false                     |                           | Patienten arbetar i kök, sjukdomen omöjliggör kontakt med matvaror.| false                                      | false                                      |                        |                       |              |                |                           | false              |  false            |                  |                 |                          | 17 juni 2011     | 30 juni 2011     |                          |                   |                  |                          | 5 juni 2011        | 16 juni 2011       | Patienten kan inte utöva sitt yrke förrän en förbättring sker med avseende på yrseln. Det är förenat med livsfara att utföra trapetskonster och samtidigt lida av yrsel. Patientens besvär kommer dock att först minska för att därefter helt upphöra efter genomförd behandling. | JA         |                                                  | false         |            | 123456789011                    | 1 april 2013       | IFV1239877878-104B | IFV1239877878-1042     | Lasarettsvägen 13      | 85150                  | Sundsvall              | 060-1818000         |
+
+!3 Ta bort intyget
+
+| ta bort intyg |
+| id |
+| webcert-fit-1 |
+     

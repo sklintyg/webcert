@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HandelseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 
@@ -50,7 +49,7 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
     public Map<String, HandelsekodCodeRestrictionType> getExchange() {
         return (Map<String, HandelsekodCodeRestrictionType>) store;
     }
-    
+
     public void reset() {
         this.store.clear();
         this.counter.set(0);

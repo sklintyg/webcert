@@ -16,7 +16,6 @@ import javax.jms.Session;
 import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HandelseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
 import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub;
@@ -37,6 +35,10 @@ import se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareRespond
 @ActiveProfiles(profiles = { "integration", "dev" })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestNotifications {
+
+    private static final int MESSAGES_EXPECTED = 3;
+
+    private static final int SECONDS_TO_WAIT = 10;
 
     @Autowired
     private JmsTemplate jmsTemplate;
@@ -54,7 +56,7 @@ public class TestNotifications {
     public void resetStub() {
         this.certificateStatusUpdateForCareResponderStub.reset();
     }
-    
+
     private void sendMessage(final String message) {
         jmsTemplate.send(queue, new MessageCreator() {
             public Message createMessage(Session session) throws JMSException {
@@ -94,11 +96,11 @@ public class TestNotifications {
         sendMessage(requestPayload3);
         assertIsSatisfied(camelContext);
 
-        await().atMost(10, TimeUnit.SECONDS).until(new Callable<Boolean>() {
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 int numberOfReceivedMessages = certificateStatusUpdateForCareResponderStub.getNumberOfReceivedMessages();
-                return (numberOfReceivedMessages == 3);
+                return (numberOfReceivedMessages == MESSAGES_EXPECTED);
             }
         });
         Map<String, HandelsekodCodeRestrictionType> exchange = certificateStatusUpdateForCareResponderStub.getExchange();
