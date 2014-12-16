@@ -1,37 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Inera Medcert - Sjukintygsapplikation
-
-Copyright (C) 2010-2011 Inera AB (http://www.inera.se)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses />.
--->
+<!-- Inera Medcert - Sjukintygsapplikation Copyright (C) 2010-2011 Inera 
+  AB (http://www.inera.se) This program is free software: you can redistribute 
+  it and/or modify it under the terms of the GNU General Public License as 
+  published by the Free Software Foundation, either version 3 of the License, 
+  or (at your option) any later version. This program is distributed in the 
+  hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+  GNU General Public License for more details. You should have received a copy 
+  of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses 
+  />. -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:http="http://cxf.apache.org/transports/http/configuration"
-       xmlns:jaxws="http://cxf.apache.org/jaxws"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-        http://cxf.apache.org/transports/http/configuration
-        http://cxf.apache.org/schemas/configuration/http-conf.xsd
-        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:http="http://cxf.apache.org/transports/http/configuration"
+  xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:sec="http://cxf.apache.org/configuration/security"
+  xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
 
-  <jaxws:client id="puClient" serviceClass="se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface"
-                address="${putjanst.endpoint.url}">
+  <jaxws:client id="puClient"
+    serviceClass="se.inera.population.residentmaster.v1.LookupResidentForFullProfileResponderInterface"
+    address="${putjanst.endpoint.url}">
   </jaxws:client>
 
-  <bean id="puService" class="se.inera.webcert.pu.services.PUServiceImpl"/>
+  <bean id="puService" class="se.inera.webcert.pu.services.PUServiceImpl" />
+
+  <beans profile="qa,prod">
+    <http:conduit
+      name="{urn:riv:population:residentmaster:LookupResidentForFullProfile:1:rivtabp21}LookupResidentForFullProfileResponderInterfacePort.http-conduit">
+      <http:client AllowChunking="false" AutoRedirect="true"
+        Connection="Keep-Alive" />
+      <http:tlsClientParameters disableCNCheck="true">
+        <sec:keyManagers keyPassword="${ntjp.ws.key.manager.password}">
+          <sec:keyStore file="${ntjp.ws.certificate.file}"
+            password="${ntjp.ws.certificate.password}" type="${ntjp.ws.certificate.type}" />
+        </sec:keyManagers>
+        <sec:trustManagers>
+          <sec:keyStore file="${ntjp.ws.truststore.file}"
+            password="${ntjp.ws.truststore.password}" type="${ntjp.ws.truststore.type}" />
+        </sec:trustManagers>
+
+        <sec:cipherSuitesFilter>
+          <!-- these filters ensure that a cipher suite with export-suitable 
+            or null encryption is used, but exclude anonymous Diffie-Hellman key change 
+            as this is vulnerable to man-in-the-middle attacks -->
+          <sec:include>.*_EXPORT_.*</sec:include>
+          <sec:include>.*_EXPORT1024_.*</sec:include>
+          <sec:include>.*_WITH_DES_.*</sec:include>
+          <sec:include>.*_WITH_AES_.*</sec:include>
+          <sec:include>.*_WITH_NULL_.*</sec:include>
+          <sec:exclude>.*_DH_anon_.*</sec:exclude>
+        </sec:cipherSuitesFilter>
+      </http:tlsClientParameters>
+    </http:conduit>
+  </beans>
 
 </beans>

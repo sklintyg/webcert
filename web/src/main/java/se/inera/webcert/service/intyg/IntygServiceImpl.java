@@ -88,9 +88,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     private ListCertificatesForCareResponderInterface listCertificateService;
 
     @Autowired
-    private RegisterCertificateResponderInterface intygSender;
-
-    @Autowired
     private WebCertUserService webCertUserService;
 
     @Autowired

@@ -309,10 +309,13 @@
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
     </dependency>
-
-
-    
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -377,11 +380,11 @@
             </systemProperty>
             <systemProperty>
               <name>credentials.file</name>
-              <value>${project.basedir}/credentials.properties</value>
+              <value>${project.basedir}/webcert-dummy-credentials.properties</value>
             </systemProperty>
             <systemProperty>
               <name>webcert.config.file</name>
-              <value>${project.basedir}/webcert.properties</value>
+              <value>${project.basedir}/webcert-dev.properties</value>
             </systemProperty>
             <systemProperty>
               <name>webcert.logback.file</name>
