@@ -32,6 +32,11 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateRequestType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
+import se.inera.ifv.insuranceprocess.healthreporting.util.ModelConverter;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.intyg.model.Intyg;
@@ -285,30 +290,49 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
         String intygsId = omsandning.getIntygId();
         String recipient = sendConfig.getRecipient();
+        // TODO: Currently, we are not able to provide recipient in call
         String intygsTyp = omsandning.getIntygTyp();
         
         try {
             LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
 
-            modelFacade.sendCertificate(intygsTyp, intyg.getContents(), recipient);
+            AttributedURIType address = new AttributedURIType();
+            address.setValue(logicalAddress);
+            SendMedicalCertificateRequestType parameters = new SendMedicalCertificateRequestType();
+            SendType send = new SendType();
+            send.setAdressVard(ModelConverter.toVardAdresseringsType(intyg.getUtlatande().getGrundData()));
+            send.setLakarutlatande(ModelConverter.toLakarutlatandeEnkelType(intyg.getUtlatande()));
+            send.setAvsantTidpunkt(LocalDateTime.now());
+            send.setVardReferensId(intyg.getUtlatande().getId());
+            parameters.setSend(send);
 
-            omsandningRepository.delete(omsandning);
+            SendMedicalCertificateResponseType response = sendService.sendMedicalCertificate(address, parameters);
 
-            // send PDL log event
-            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
-            logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
-            logService.logSendIntygToRecipient(logRequest);
+            // check whether call was successful or not
+            if (response.getResult().getResultCode() == ResultCodeEnum.ERROR) {
+                String message = response.getResult().getErrorId() + " : " + response.getResult().getErrorText();
+                LOG.error("Module problems occured when trying to send intyg " + intygsId + " : " + message);
+                scheduleResend(omsandning);
+                return IntygServiceResult.RESCHEDULED;
+            }  else {
+                if (response.getResult().getResultCode() == ResultCodeEnum.INFO) {
+                    String message = response.getResult().getInfoText();
+                    LOG.warn("Warning occured when trying to send intyg " + intygsId + " : " + message);
+                }
+                omsandningRepository.delete(omsandning);
+    
+                // send PDL log event
+                LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
+                logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
+                logService.logSendIntygToRecipient(logRequest);
+    
+                // Notify stakeholders when a certificate is sent
+                notify(intygsId, Event.SEND);
+    
+                return IntygServiceResult.OK;
+            }
 
-            // Notify stakeholders when a certificate is sent
-            notify(intygsId, Event.SEND);
-
-            return IntygServiceResult.OK;
-
-        } catch (ExternalServiceCallException esce) {
-            LOG.error("An WebServiceException occured when trying to fetch and send intyg: " + intygsId, esce);
-            scheduleResend(omsandning);
-            return IntygServiceResult.RESCHEDULED;
-        } catch (ModuleException | IntygModuleFacadeException e) {
+        } catch (RuntimeException e) {
             LOG.error("Module problems occured when trying to send intyg " + intygsId, e);
             omsandningRepository.delete(omsandning);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
