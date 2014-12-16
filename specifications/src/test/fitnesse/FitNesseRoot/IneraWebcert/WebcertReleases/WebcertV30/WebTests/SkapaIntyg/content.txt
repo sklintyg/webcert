@@ -7,6 +7,7 @@
 !see <IneraWebcert.AllTests.WebTests.SkapaIntyg.SigneraIntygEjLakareFk7263
 !see <IneraWebcert.AllTests.WebTests.SkapaIntyg.SigneraIntygFk7263
 !see <IneraWebcert.AllTests.WebTests.SkapaIntyg.SkrivIntygFk7263
+!see <IneraWebcert.AllTests.WebTests.SkapaIntyg.SkrivIntygFk7263AutoSpar
 !see <IneraWebcert.AllTests.WebTests.SkapaIntyg.SkrivIntygFk7263MinimalMedVariationer
 !see <IneraWebcert.AllTests.WebTests.SkapaIntyg.SkrivIntygFk7263Smittskydd
 !see <IneraWebcert.AllTests.WebTests.SkapaIntyg.SkrivIntygFk7263SmittskyddMinimaltMedVariationer

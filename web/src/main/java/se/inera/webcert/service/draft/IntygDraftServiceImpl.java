@@ -428,7 +428,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         LOG.debug("Draft '{}' updated", draft.getIntygsId());
 
         // Notify stakeholders when a draft has been changed/updated
-        sendNotification(draft, Event.CHANGED);
+        if (!request.getAutoSave()) {
+            sendNotification(draft, Event.CHANGED);
+        }
 
         return draftValidation;
     }
