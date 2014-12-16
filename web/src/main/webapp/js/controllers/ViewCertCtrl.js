@@ -3,8 +3,8 @@
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
     [ '$rootScope', '$routeParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
-        'webcert.ManageCertificate', 'common.CookieService',
-        function($rootScope, $routeParams, $scope, $window, $location, $q, dialogService, ManageCertificate, CookieService) {
+        'webcert.ManageCertificate', 'common.UserPreferencesService',
+        function($rootScope, $routeParams, $scope, $window, $location, $q, dialogService, ManageCertificate, UserPreferencesService) {
             'use strict';
 
             // Check if the user used the special qa-link to get here.
@@ -30,11 +30,16 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
 
             $scope.widgetState = {
                 certificateType: $routeParams.certificateType,
-                fragaSvarAvailable: false
+                fragaSvarAvailable: false,
+                skipShowUnhandledDialog : false,
+                setSkipShowUnhandledDialog : function(widgetState){
+                    UserPreferencesService.setSkipShowUnhandledDialog(widgetState.skipShowUnhandledDialog);
+                }
             };
 
             var unbindCheckHandledEvent = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl){
-                if(newUrl !== currentUrl && !CookieService.isSkipShowUnhandledDialogSet()){  // if we're changing url
+                if(newUrl !== currentUrl && !UserPreferencesService.isSkipShowUnhandledDialogSet()){  // if we're changing url
+                    $scope.widgetState.skipShowUnhandledDialog = UserPreferencesService.isSkipShowUnhandledDialogSet();
                     $event.preventDefault();
                     var deferred = $q.defer();
                     $scope.$broadcast('hasUnhandledQasEvent', deferred);
@@ -77,9 +82,9 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                         }
                     });
                 } else {
+                    //$event.preventDefault();
                     unbindCheckHandledEvent();
-                    $event.preventDefault();
-                    $window.location.href = newUrl;
+                    //$window.location.href = newUrl;
                 }
             });
             $scope.$on('$destroy', unbindCheckHandledEvent);
