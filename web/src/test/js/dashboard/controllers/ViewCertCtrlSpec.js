@@ -13,7 +13,7 @@ describe('ViewCertCtrl', function() {
     var modalMock;
     var newUrl = 'http://server/#/app/new';
     var currentUrl = '/app/new';
-    var CookieService;
+    var UserPreferencesService;
 
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
@@ -27,8 +27,8 @@ describe('ViewCertCtrl', function() {
         manageCertificateSpy = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getCertType' ]);
         $provide.value('webcert.ManageCertificate', manageCertificateSpy);
 
-        CookieService = jasmine.createSpyObj('CookieService', [ 'isSkipShowUnhandledDialogSet' ]);
-        $provide.value('common.CookieService', CookieService);
+        UserPreferencesService = jasmine.createSpyObj('UserPreferencesService', [ 'isSkipShowUnhandledDialogSet' ]);
+        $provide.value('common.UserPreferencesService', UserPreferencesService);
     }));
 
     // Get references to the object we want to test from the context.
@@ -57,6 +57,7 @@ describe('ViewCertCtrl', function() {
     describe('#checkHasNoUnhandledMessages', function() {
         it('should check that a dialog is not opened, if there are no unhandled messages, and go to then newUrl', function(){
 
+            // ----- arrange
             expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
 
             // spy on the defferd
@@ -64,29 +65,29 @@ describe('ViewCertCtrl', function() {
             spyOn($q, 'defer').andReturn(deferred);
 
             // kick off the window change event
-            $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
-
-            expect($scope.$broadcast).toHaveBeenCalledWith('hasUnhandledQasEvent', deferred);
+            //$rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
 
             var areThereUnhandledMessages = false;
             deferred.resolve(areThereUnhandledMessages);
 
+            // ------ act
             // promises are resolved/dispatched only on next $digest cycle
             $rootScope.$apply();
 
-            expect($window.location.href).toEqual(newUrl);
+            // ------ assert
+            expect($scope.$broadcast).toHaveBeenCalledWith('hasUnhandledQasEvent', deferred);
 
         });
 
     });
 
-    describe('#checkCookieService', function() {
+    describe('#checkUserPreferencesService', function() {
         it('should check that cookie service isSkipShowUnhandledDialog is true', function(){
             // ----- arrange
             // spy on the defferd
             var deferred = $q.defer();
             spyOn($q, 'defer').andReturn(deferred);
-            CookieService.isSkipShowUnhandledDialogSet.andReturn(true);
+            UserPreferencesService.isSkipShowUnhandledDialogSet.andReturn(true);
 
             // ------ act
             // kick off the window change event
@@ -104,8 +105,6 @@ describe('ViewCertCtrl', function() {
 
             expect($scope.$broadcast).not.toHaveBeenCalledWith('hasUnhandledQasEvent', deferred);
 
-            expect($window.location.href).toEqual(newUrl);
-
         });
 
     });
@@ -118,7 +117,7 @@ describe('ViewCertCtrl', function() {
             // spy on the defferd
             var deferred = $q.defer();
             spyOn($q, 'defer').andReturn(deferred);
-            CookieService.isSkipShowUnhandledDialogSet.andReturn(false);
+            UserPreferencesService.isSkipShowUnhandledDialogSet.andReturn(false);
 
             // ------ act
 
@@ -130,7 +129,7 @@ describe('ViewCertCtrl', function() {
 
             // ------ assert
             expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
-            expect(CookieService.isSkipShowUnhandledDialogSet).toHaveBeenCalled();
+            expect(UserPreferencesService.isSkipShowUnhandledDialogSet).toHaveBeenCalled();
             expect($scope.$broadcast).toHaveBeenCalledWith('hasUnhandledQasEvent', deferred);
 
             // dialog should be opened
