@@ -37,6 +37,8 @@ var wcMessages = {
         'label.qacheckhanterad.title' : 'Markera besvarade frågor som hanterade',
         'label.qacheckhanterad.body' : '<p>Det finns besvarade frågor som inte är markerade som hanterade.<br>En besvarad fråga som markeras som hanterad anses avslutad och flyttas till \"Hanterade frågor och svar\"</p>',
         'label.qacheckhanterad.igen' : 'Visa inte det här meddelandet igen',
+        'label.qacheckhanterad.checkbox' : 'Visa inte det här meddelandet igen',
+        'label.qacheckhanterad.help.checkbox' : 'Visa inte det här meddelandet igen',
         'label.qacheckhanterad.hanterad' : 'Hanterade',
         'label.qacheckhanterad.ejhanterad' : 'Ej Hanterade',
         'label.qacheckhanterad.tillbaka' : 'Tillbaka',
