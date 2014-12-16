@@ -285,6 +285,7 @@ public class IntygDraftServiceImplTest {
         request.setIntygId(INTYG_ID);
         request.setDraftAsJson(INTYG_JSON);
         request.setSavedBy(hoSPerson);
+        request.setAutoSave(false);
         return request;
     }
 
