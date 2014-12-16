@@ -290,14 +290,13 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
         String intygsId = omsandning.getIntygId();
         String recipient = sendConfig.getRecipient();
-        // TODO: Currently, we are not able to provide recipient in call
         String intygsTyp = omsandning.getIntygTyp();
         
         try {
             LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
 
             AttributedURIType address = new AttributedURIType();
-            address.setValue(logicalAddress);
+            address.setValue(recipient);
             SendMedicalCertificateRequestType parameters = new SendMedicalCertificateRequestType();
             SendType send = new SendType();
             send.setAdressVard(ModelConverter.toVardAdresseringsType(intyg.getUtlatande().getGrundData()));
