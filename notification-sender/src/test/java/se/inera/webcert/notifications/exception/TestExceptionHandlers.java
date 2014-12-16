@@ -2,6 +2,8 @@ package se.inera.webcert.notifications.exception;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
+import java.io.IOException;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
@@ -15,6 +17,8 @@ import org.apache.camel.impl.DefaultMessage;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -34,6 +38,9 @@ import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles(profiles = "unittest")
 public class TestExceptionHandlers {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(TestExceptionHandlers.class);
+    
     // Expect this number of messages
     private static final int EXPECTED_MESSAGE_COUNT = 4;
 
@@ -51,8 +58,12 @@ public class TestExceptionHandlers {
     @Test
     public void testApplicationException() throws InterruptedException {
         mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
+            
+            private int attempts = 1;
+            
             @Override
             public void process(Exchange exchange) throws Exception {
+                LOG.debug("Recieving {}", attempts++);
                 throw new CertificateStatusUpdateServiceException("Testing application error, with exhausted retries");
             }
         });
@@ -69,13 +80,36 @@ public class TestExceptionHandlers {
     @Test
     public void testTechnicalException() throws InterruptedException {
         mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
+            private int attempts = 1;
             @Override
             public void process(Exchange exchange) throws Exception {
+                LOG.debug("Recieving {}", attempts++);
                 throw new NonRecoverableCertificateStatusUpdateServiceException("Testing technical error");
             }
         });
 
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
+
+        Exchange exchange = buildExchange(requestPayload);
+
+        processNotificationRequestEndpoint.send(exchange);
+        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+    }
+    
+    @Test
+    public void testWithWrappedIOExceptionShouldCauseResend() throws InterruptedException {
+        mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
+            private int attempts = 1;
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                LOG.debug("Recieving {}", attempts++);
+                IOException ioe = new IOException("This is the IO exception");
+                throw new javax.xml.ws.WebServiceException("This is the WebServiceException", ioe);
+            }
+        });
+
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(EXPECTED_MESSAGE_COUNT);
         String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
 
         Exchange exchange = buildExchange(requestPayload);
