@@ -682,4 +682,27 @@ class SvaraOchFraga {
             }
         }
     }
+
+    def lamnaFragaSvar() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                page.tillbakaButtonClick()
+            }
+        }
+    }
+
+    boolean lamnaFragaSvarEjHanteradDialogVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                expected == page.qaCheckEjHanteradDialog.isDisplayed()
+            }
+        }
+        true
+    }
 }

@@ -40,6 +40,11 @@ class VisaFragaSvarPage extends AbstractPage {
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
+
+
+        tillbakaButton { $("#tillbakaButton") }
+
+        qaCheckEjHanteradDialog {$("#qa-check-hanterad-dialog")}
     }
 
     def copy() {
@@ -152,6 +157,10 @@ class VisaFragaSvarPage extends AbstractPage {
 
     def qaSvarstext(String internid) {
         $("#answerText-${internid}")
+    }
+
+    def tillbakaButtonClick() {
+        tillbakaButton.click()
     }
 
 }

@@ -24,6 +24,7 @@ class UnhandledQAPage extends AbstractPage {
         fetchMoreBtn { $("#hamtaFler") }
 
         logoutLink { $("#logoutLink") }
+
     }
 
     def visaAllaFragor() {
@@ -61,4 +62,5 @@ class UnhandledQAPage extends AbstractPage {
     def logout() {
         logoutLink.click()
     }
+
 }
