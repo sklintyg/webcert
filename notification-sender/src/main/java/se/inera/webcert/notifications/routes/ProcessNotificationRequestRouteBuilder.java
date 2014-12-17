@@ -75,11 +75,11 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
                         .to("sendCertificateStatusUpdateEndpoint");
                                 
         from("errorHandlerEndpoint").routeId("errorLogging")
-            .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}").getText())
+            .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
             .stop();
 
         from("redeliveryExhaustedEndpoint").routeId("redeliveryErrorLogging")
-            .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}").getText())
+            .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
             .stop();
     }
 }
