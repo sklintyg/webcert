@@ -1,8 +1,14 @@
 package se.inera.webcert.service.diagnos.repo;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.*;
+import org.apache.lucene.store.RAMDirectory;
 import se.inera.webcert.service.diagnos.model.Diagnos;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +27,10 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
     private Map<String, Diagnos> diagnoses = new TreeMap<String, Diagnos>();
 
     private SortedSet<String> diagnoisCodesSet = new TreeSet<String>();
+
+    private RAMDirectory index = new RAMDirectory();
+    private IndexReader indexReader;
+    private IndexSearcher indexSearcher;
 
     /*
      * (non-Javadoc)
@@ -60,6 +70,44 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
         return matches;
     }
 
+    public RAMDirectory getLuceneIndex() {
+        return index;
+    }
+
+    @Override
+    public void openLuceneIndexReader() throws IOException {
+        indexReader = DirectoryReader.open(index);
+        indexSearcher = new IndexSearcher(indexReader);
+    }
+
+    @Override
+    public List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults) {
+        BooleanQuery query = new BooleanQuery();
+        String[] terms = searchString.toLowerCase().split(" +");
+        for (String term : terms) {
+            term = term.trim();
+            if (term.length() > 0) {
+                query.add(new PrefixQuery(new Term("description", term)), BooleanClause.Occur.MUST);
+            }
+        }
+
+        if (indexSearcher == null) {
+            throw new RuntimeException("Lucene index searcher is not opened");
+        }
+
+        List<Diagnos> matches = new ArrayList<Diagnos>();
+        try {
+            TopDocs results = indexSearcher.search(query, nbrOfResults);
+            for (ScoreDoc hit : results.scoreDocs) {
+                matches.add(diagnoses.get(indexSearcher.doc(hit.doc).get("code")));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("IOException occurred in lucene index search", e);
+        }
+
+        return matches;
+    }
+
     public String sanitizeCodeValue(String codeValue) {
 
         if (StringUtils.isBlank(codeValue)) {
@@ -88,4 +136,5 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
     public int nbrOfDiagosis() {
         return diagnoses.size();
     }
+
 }

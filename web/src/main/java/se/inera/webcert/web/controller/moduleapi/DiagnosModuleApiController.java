@@ -69,4 +69,21 @@ public class DiagnosModuleApiController extends AbstractApiController {
         DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByCode(parameter.getCodeFragment(), parameter.getNbrOfResults());
         return Response.ok(diagnosResponse).build();
     }
+
+    /**
+     * Search for diagnosises using a description fragment. The number of results returned
+     * by the service can be limited by setting the 'NbrOfResults' parameter to a positive
+     * number.
+     */
+    @POST
+    @Path("/beskrivning/sok")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response searchDiagnosisByDescription(DiagnosParameter parameter) {
+
+        LOG.debug("Searching for diagnosises using description fragment: {}", parameter.getDescriptionSearchString());
+
+        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByDescription(parameter.getDescriptionSearchString(), parameter.getNbrOfResults());
+        return Response.ok(diagnosResponse).build();
+    }
 }

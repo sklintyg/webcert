@@ -1,5 +1,6 @@
 package se.inera.webcert.service.diagnos;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -90,6 +91,7 @@ public class DiagnosServiceImpl implements DiagnosService {
      *
      * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
+    @Override
     public DiagnosResponse searchDiagnosisByCode(String codeFragment, int nbrOfResults) {
 
         Assert.isTrue((nbrOfResults > 0), "nbrOfResults must be larger that 0");
@@ -111,6 +113,33 @@ public class DiagnosServiceImpl implements DiagnosService {
         LOG.debug("Returning {} diagnosises out of a match of {}", nbrOfResults, matches.size());
 
         return DiagnosResponse.ok(matches.subList(0, nbrOfResults));
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
+     */
+    @Override
+    public DiagnosResponse searchDiagnosisByDescription(String searchString, int nbrOfResults) {
+
+        Assert.isTrue((nbrOfResults > 0), "nbrOfResults must be larger that 0");
+
+        if (searchString == null) {
+            return DiagnosResponse.invalidSearchString();
+        }
+        searchString = searchString.trim();
+        if (searchString.length() == 0) {
+            return DiagnosResponse.invalidSearchString();
+        }
+
+        List<Diagnos> matches = diagnosRepo.searchDiagnosisByDescription(searchString, nbrOfResults);
+
+        if (matches.isEmpty()) {
+            return DiagnosResponse.notFound();
+        }
+
+        return DiagnosResponse.ok(matches);
     }
 
     /*
@@ -141,6 +170,7 @@ public class DiagnosServiceImpl implements DiagnosService {
      * @param diagnosisCode
      * @return true if the diagnosisCode matches the regexp
      */
+    @Override
     public boolean validateDiagnosisCode(String diagnosisCode) {
 
         if (StringUtils.isNotBlank(diagnosisCode)) {

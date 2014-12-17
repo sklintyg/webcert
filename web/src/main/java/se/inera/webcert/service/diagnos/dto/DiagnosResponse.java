@@ -34,6 +34,12 @@ public class DiagnosResponse {
         return diagnosResponse;
     }
 
+    public static DiagnosResponse invalidSearchString() {
+        DiagnosResponse diagnosResponse = new DiagnosResponse();
+        diagnosResponse.setInvalidSearchString();
+        return diagnosResponse;
+    }
+
     public static DiagnosResponse notFound() {
         DiagnosResponse diagnosResponse = new DiagnosResponse();
         diagnosResponse.setNotFound();
@@ -47,6 +53,8 @@ public class DiagnosResponse {
     private void setInvalidCode() {
         this.resultat = DiagnosResponseType.INVALID_CODE;
     }
+
+    private void setInvalidSearchString() { this.resultat = DiagnosResponseType.INVALID_SEARCH_STRING; }
 
     private void setNotFound() {
         this.resultat = DiagnosResponseType.NOT_FOUND;

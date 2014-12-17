@@ -6,6 +6,14 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -54,6 +62,9 @@ public class DiagnosRepositoryFactory {
 
     public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) throws IOException {
 
+        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
+        IndexWriter writer = new IndexWriter(diagnosRepository.getLuceneIndex(), iwc);
+
         if (StringUtils.isBlank(fileUrl)) {
             return;
         }
@@ -68,7 +79,15 @@ public class DiagnosRepositoryFactory {
             String line = reader.readLine();
             Diagnos diagnos = createDiagnosFromString(line);
             diagnosRepository.addDiagnos(diagnos);
+
+            Document doc = new Document();
+            doc.add(new StringField("code", diagnos.getKod(), Field.Store.YES));
+            doc.add(new TextField("description", diagnos.getBeskrivning(), Field.Store.YES));
+            writer.addDocument(doc);
         }
+
+        writer.close();
+        diagnosRepository.openLuceneIndexReader();
 
         reader.close();
     }

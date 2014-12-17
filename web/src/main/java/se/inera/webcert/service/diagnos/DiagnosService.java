@@ -40,6 +40,17 @@ public interface DiagnosService {
     DiagnosResponse searchDiagnosisByCode(String codeFragment, int nbrOfResults);
 
     /**
+     * Searches the repository for descriptions matching searchString. Limits the number of matches returned.
+     *
+     * @param descriptionFragment
+     *            The string to search for in descriptions.
+     * @param nbrOfResults
+     *            The number of results to return, must be larger than 0.
+     * @return
+     */
+    DiagnosResponse searchDiagnosisByDescription(String searchString, int nbrOfResults);
+
+    /**
      * Validates that the supplied code fragment is syntactically correct.
      *
      * @param codeFragment

@@ -93,4 +93,24 @@ public class DiagnosServiceTest {
         assertTrue("A184D is a valid code", service.validateDiagnosisCode("A184D"));
         assertTrue("A18.4D is a valid code", service.validateDiagnosisCode("A18.4D"));
     }
+
+    @Test
+    public void testSearchDiagnosisByDescription() {
+        DiagnosResponse res = service.searchDiagnosisByDescription("infekt", 5);
+        assertNotNull(res);
+        assertEquals(DiagnosResponseType.OK, res.getResultat());
+        assertEquals("Should return 5 results", 5, res.getDiagnoser().size());
+        assertEquals("A040", res.getDiagnoser().get(0).getKod());
+        assertEquals("A041", res.getDiagnoser().get(1).getKod());
+        assertEquals("A042", res.getDiagnoser().get(2).getKod());
+        assertEquals("A043", res.getDiagnoser().get(3).getKod());
+        assertEquals("A072", res.getDiagnoser().get(4).getKod());
+
+        assertEquals("Null should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
+            service.searchDiagnosisByDescription(null, 5).getResultat());
+        assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
+            service.searchDiagnosisByDescription("", 5).getResultat());
+        assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
+            service.searchDiagnosisByDescription(" ", 5).getResultat());
+    }
 }

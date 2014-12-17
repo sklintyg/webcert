@@ -13,6 +13,11 @@ public enum DiagnosResponseType {
     INVALID_CODE,
 
     /**
+     * The search string is not valid.
+     */
+    INVALID_SEARCH_STRING,
+
+    /**
      * A match was found using the code.
      */
     OK;

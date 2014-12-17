@@ -19,6 +19,16 @@
 | diagnos1 text? | diagnos2 text? | diagnos3 text? |
 | Virusvårtor, ospecificerade | Falska kokoppor | Annan och icke specificerad infektion orsakad av ortopoxvirus |
 
+!3 Ange diagnosbeskrivningar och verifiera koden
+
+| Populera Fk7263 |
+| diagnos1Text | diagnos2Text | diagnos3Text |
+| Akut | lung | infla |
+
+| skriv intyg |
+| diagnos1 kod? | diagnos2 kod? | diagnos3 kod? |
+| A060 | A065 | E790 |
+
 !3 Ta bort utkastet
 
 | ta bort utkast |

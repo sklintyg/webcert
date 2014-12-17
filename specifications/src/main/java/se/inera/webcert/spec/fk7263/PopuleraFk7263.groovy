@@ -92,21 +92,47 @@ class PopuleraFk7263 {
 
             if (diagnos1 != null) {
                 page.diagnos.diagnos1 = diagnos1
+                waitFor {
+                    page.$('#diagnoseCode + UL').isDisplayed()
+                }
                 // diagnos1Text kommer sättas med enter i detta fält
                 page.diagnos.diagnos1 << Keys.ENTER
             }
-            // Diagnostext fälten är nu read only.
-/*            if (diagnos1Text != null) page.diagnos.diagnos1Text = diagnos1Text*/
+            if (diagnos1Text != null) {
+                page.diagnos.diagnos1Text = diagnos1Text
+                waitFor {
+                    page.$('#diagnoseDescription + UL').isDisplayed()
+                }
+                page.diagnos.diagnos1Text << Keys.ENTER
+            }
             if (diagnos2 != null) {
                 page.diagnos.diagnos2 = diagnos2
+                waitFor {
+                    page.$('#diagnoseCodeOpt1 + UL').isDisplayed()
+                }
                 page.diagnos.diagnos2 << Keys.ENTER
             }
-/*            if (diagnos2Text != null) page.diagnos.diagnos2Text = diagnos2Text*/
+            if (diagnos2Text != null) {
+                page.diagnos.diagnos2Text = diagnos2Text
+                waitFor {
+                    page.$('#diagnoseDescriptionOpt1 + UL').isDisplayed()
+                }
+                page.diagnos.diagnos2Text << Keys.ENTER
+            }
             if (diagnos3 != null) {
                 page.diagnos.diagnos3 = diagnos3
+                waitFor {
+                    page.$('#diagnoseCodeOpt2 + UL').isDisplayed()
+                }
                 page.diagnos.diagnos3 << Keys.ENTER
             }
-/*            if (diagnos3Text != null) page.diagnos.diagnos3Text = diagnos3Text*/
+            if (diagnos3Text != null) {
+                page.diagnos.diagnos3Text = diagnos3Text
+                waitFor {
+                    page.$('#diagnoseDescriptionOpt2 + UL').isDisplayed()
+                }
+                page.diagnos.diagnos3Text << Keys.ENTER
+            }
             if (diagnosFortydligande != null) page.diagnos.fortydligande = diagnosFortydligande
 
             if (diagnosSamsjuklighet != null) page.diagnos.samsjuklighet = diagnosSamsjuklighet

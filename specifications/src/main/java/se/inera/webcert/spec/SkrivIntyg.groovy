@@ -102,6 +102,30 @@ class SkrivIntyg {
         true
     }
 
+    String diagnos1Kod() {
+        def result
+        Browser.drive {
+            result = page.diagnos.diagnos1.value()
+        }
+        result
+    }
+
+    String diagnos2Kod() {
+        def result
+        Browser.drive {
+            result = page.diagnos.diagnos2.value()
+        }
+        result
+    }
+
+    String diagnos3Kod() {
+        def result
+        Browser.drive {
+            result = page.diagnos.diagnos3.value()
+        }
+        result
+    }
+
     String diagnos1Text() {
         def result
         Browser.drive {
