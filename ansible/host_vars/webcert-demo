@@ -3,4 +3,4 @@
 tomcat_conf: /var/lib/tomcat7/conf
 tomcat_bin: /usr/share/tomcat7/bin
 tomcat_lib: /usr/share/tomcat7/lib
-activemq_broker_url: "tcp://10.250.35.51:61616"
+activemq_broker_url: "tcp://localhost:61616"
