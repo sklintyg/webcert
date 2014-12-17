@@ -127,7 +127,7 @@ public class IntygServiceTest {
 
         // ensure that correctcall is made to intygstjanst
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        
+
         assertEquals(json, intygData.getContents());
         assertEquals(CERTIFICATE_ID, intygData.getUtlatande().getId());
         assertEquals("19121212-1212", intygData.getUtlatande().getGrundData().getPatient().getPersonId());

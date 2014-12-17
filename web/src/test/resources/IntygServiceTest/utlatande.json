@@ -32,7 +32,7 @@
     },
 
     "avstangningSmittskydd":false,
-    
+
     "undersokningAvPatienten" : "2011-01-26",
     "telefonkontaktMedPatienten" : "2011-01-12",
     "journaluppgifter" : "2010-01-14",
@@ -51,7 +51,7 @@
     "kontaktMedFk" : true,
 
     "sjukdomsforlopp" : "Bedömttillstånd: Patienten klämde höger överarm vid olycka i hemmet.\nProblemen har pågått en längre tid.",
-    
+
     "diagnosKod" : "S47",
     "diagnosBeskrivning": "Medicinskttillstånd: Klämskada på överarm",
 
