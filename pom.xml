@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -19,26 +19,21 @@
   <properties>
 
     <!-- Common -->
-    <common.version>0-SNAPSHOT</common.version>
-
+    <common.version>2.1.0-b10</common.version>
     <!-- Intygstjanst -->
-    <intygstjanst.version>0-SNAPSHOT</intygstjanst.version>
-
+    <intygstjanst.version>2.1.0-b17</intygstjanst.version>
     <!-- Intygstyper -->
-    <fk7263.version>0-SNAPSHOT</fk7263.version>
-    <ts-bas.version>0-SNAPSHOT</ts-bas.version>
-    <ts-diabetes.version>0-SNAPSHOT</ts-diabetes.version>
-
+    <fk7263.version>2.1.0-b13</fk7263.version>
+    <ts-bas.version>1.1.0-b13</ts-bas.version>
+    <ts-diabetes.version>1.1.0-b13</ts-diabetes.version>
     <!-- Schemas -->
-    <clinicalprocess-healthcond-certificate.version>0-SNAPSHOT</clinicalprocess-healthcond-certificate.version>
-    <insuranceprocess-healthreporting.version>0-SNAPSHOT</insuranceprocess-healthreporting.version>
-    <itintegration-monitoring.version>0-SNAPSHOT</itintegration-monitoring.version>
-    <ehr-logstore.version>0-SNAPSHOT</ehr-logstore.version>
-    <schemas-common.version>0-SNAPSHOT</schemas-common.version>
-
+    <clinicalprocess-healthcond-certificate.version>1.0.0-b7</clinicalprocess-healthcond-certificate.version>
+    <insuranceprocess-healthreporting.version>1.0.0-b7</insuranceprocess-healthreporting.version>
+    <itintegration-monitoring.version>1.0.0-b7</itintegration-monitoring.version>
+    <ehr-logstore.version>1.0.0-b7</ehr-logstore.version>
+    <schemas-common.version>2.1.0-b7</schemas-common.version>
     <!-- Tools -->
-    <liquibase-runner.version>0-SNAPSHOT</liquibase-runner.version>
-
+    <liquibase-runner.version>2.0.0-b2</liquibase-runner.version>
     <checkstyle.basedir>${project.basedir}</checkstyle.basedir>
   </properties>
 
