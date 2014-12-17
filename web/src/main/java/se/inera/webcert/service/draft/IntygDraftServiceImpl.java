@@ -325,9 +325,20 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
             CreateNewDraftHolder moduleRequest = createModuleRequestForCopying(newDraftIntygId, copyRequest, person);
 
+            String internalModelString = null;
+            Intyg webcertIntyg = intygRepository.findOne(orgIntygsId);
+            //Check for data in the webcert database first:
+            if (webcertIntyg != null) {
+                internalModelString = webcertIntyg.getModel();
+            }
+            // Get data from Intygstjänsten since it is not present in webcert
+            else if (webcertIntyg == null) {
+                internalModelString = template.getContents();
+            }
+
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(moduleRequest,
-                    new InternalModelHolder(template.getContents()));
+                    new InternalModelHolder(internalModelString));
             String newDraftModelAsJson = draftResponse.getInternalModel();
 
             LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(newDraftModelAsJson), intygType);
