@@ -2,6 +2,10 @@ package se.inera.webcert.notifications.exception;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
+import java.io.IOException;
+
+import javax.xml.ws.WebServiceException;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Exchange;
@@ -81,6 +85,25 @@ public class TestExceptionHandlers {
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
     }
 
+    @Test
+    public void testWebserviceException() throws InterruptedException {
+        mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                IOException ioe = new IOException("This is an IOException");
+                    throw new WebServiceException("Testing with an WebServiceException wrapping another exception", ioe);
+            }
+        });
+        // Check for 7 messages, 1 original and 6 retries
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(4);
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
+        
+        Exchange exchange = buildExchange(requestPayload);
+
+        processNotificationRequestEndpoint.send(exchange);
+        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+    }
+    
     private Exchange buildExchange(String requestPayload) {
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");

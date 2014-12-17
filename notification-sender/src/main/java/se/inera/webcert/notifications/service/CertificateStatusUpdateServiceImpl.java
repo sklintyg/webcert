@@ -32,15 +32,24 @@ public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpda
     public void sendStatusUpdate(@Header(RouteHeaders.INTYGS_ID) String intygsId, CertificateStatusUpdateForCareType request,
             @Header(RouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
 
-        LOG.debug("Sending status update for intyg '{}'", intygsId);
+        LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, intygsId);
 
-        CertificateStatusUpdateForCareResponseType response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
+        CertificateStatusUpdateForCareResponseType response = null;
+
+        try {
+            response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
+        } catch (Exception e) {
+            LOG.error("Exception occured when sending status update", e);
+            throw e;
+        }
+
         ResultType result = response.getResult();
         switch (result.getResultCode()) {
         case ERROR:
             if (result.getErrorId().equals(ErrorIdType.TECHNICAL_ERROR)) {
                 throw new NonRecoverableCertificateStatusUpdateServiceException(String.format(
-                        "CertificateStatusUpdateServiceImpl failed with non-recoverable error code: %s and message %s", result.getErrorId(), result.getResultText()));
+                        "CertificateStatusUpdateServiceImpl failed with non-recoverable error code: %s and message %s", result.getErrorId(),
+                        result.getResultText()));
             } else {
                 throw new CertificateStatusUpdateServiceException(String.format(
                         "CertificateStatusUpdateServiceImpl failed with error code: %s and message %s", result.getErrorId(), result.getResultText()));
@@ -51,7 +60,7 @@ public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpda
         case OK:
             break;
         default:
-            //This should never happen.
+            // This should never happen.
             throw new CertificateStatusUpdateServiceException();
         }
 
