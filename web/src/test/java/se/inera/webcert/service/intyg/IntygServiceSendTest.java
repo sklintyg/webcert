@@ -16,6 +16,11 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3.wsaddressing10.AttributedURIType;
 
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.RecipientType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateRequestType;
@@ -44,6 +49,18 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         user.setHsaId("AAA");
 
         when(webCertUserService.getWebCertUser()).thenReturn(user);
+        
+        GetRecipientsForCertificateResponseType response = new GetRecipientsForCertificateResponseType();
+        response.setResult(ResultTypeUtil.okResult());
+
+        RecipientType recipient = new RecipientType();
+        recipient.setId("Fk");
+        recipient.setName("Försäkringskassan");
+        recipient.setLogicalAdress("FKORG");
+        response.getRecipient().add(recipient);
+
+        when(getRecipientsForCertificateService.getRecipientsForCertificate(any(String.class), any(GetRecipientsForCertificateType.class)))
+            .thenReturn(response);
 
         ReflectionUtils.setTypedField(intygSignatureService, new TicketTracker());
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());

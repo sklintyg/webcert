@@ -17,6 +17,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.Status;
@@ -45,6 +46,9 @@ public abstract class AbstractIntygServiceTest {
     protected static final String INTYG_ID = "intyg-1";
 
     protected static final String INTYG_TYP_FK = "fk7263";
+
+    @Mock
+    protected GetRecipientsForCertificateResponderInterface getRecipientsForCertificateService;
 
     @Mock
     protected GetCertificateForCareResponderInterface getCertificateService;

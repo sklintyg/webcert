@@ -6,10 +6,13 @@ public class IntygRecipient {
 
     private String name;
 
-    public IntygRecipient(String id, String name) {
+    private String logicalAddress;
+
+    public IntygRecipient(String id, String name, String logicalAddress) {
         super();
         this.id = id;
         this.name = name;
+        this.logicalAddress = logicalAddress;
     }
 
     public String getId() {
@@ -26,6 +29,14 @@ public class IntygRecipient {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLogicalAddress() {
+        return logicalAddress;
+    }
+
+    public void setLogicalAddress(String logicalAddress) {
+        this.logicalAddress = logicalAddress;
     }
 
 }

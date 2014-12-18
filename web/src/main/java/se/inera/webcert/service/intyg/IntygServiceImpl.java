@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponseType;
@@ -182,7 +183,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
 
         for (RecipientType recipientType : response.getRecipient()) {
-            recipientsList.add(new IntygRecipient(recipientType.getId(), recipientType.getName()));
+            recipientsList.add(new IntygRecipient(recipientType.getId(), recipientType.getName(), recipientType.getLogicalAdress()));
         }
 
         return recipientsList;
@@ -252,7 +253,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygServiceResult sendIntyg(Omsandning omsandning) {
         SendIntygConfiguration sendConfig = configurationManager.unmarshallConfig(omsandning.getConfiguration(), SendIntygConfiguration.class);
-        IntygContentHolder intyg = fetchIntygData(omsandning.getIntygTyp(), omsandning.getIntygId());
+        IntygContentHolder intyg = fetchIntygData(omsandning.getIntygId(), omsandning.getIntygTyp());
         return sendIntyg(omsandning, sendConfig, intyg);
     }
 
@@ -331,7 +332,13 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
 
             AttributedURIType address = new AttributedURIType();
-            address.setValue(recipient);
+            
+            String targetAddress = findLogicalAddressForRecipient(intygsTyp, recipient);
+            if (targetAddress == null) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, 
+                        "No recipient matching the logical address " + recipient + " found");
+            }
+            address.setValue(targetAddress);
 
             SendType send = new SendType();
             send.setAdressVard(ModelConverter.toVardAdresseringsType(intyg.getUtlatande().getGrundData()));
@@ -373,6 +380,15 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             omsandningRepository.delete(omsandning);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
+    }
+
+    private String findLogicalAddressForRecipient(String intygType, String recipient) {
+        for (IntygRecipient r : fetchListOfRecipientsForIntyg(intygType)) {
+            if (r.getId().equalsIgnoreCase(recipient)) {
+                return r.getLogicalAddress();
+            }
+        }
+        return null;
     }
 
     protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
