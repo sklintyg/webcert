@@ -259,7 +259,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean hasPatientConsent) {
 
-        IntygContentHolder intyg = fetchIntygData(typ, intygsId);
+        IntygContentHolder intyg = fetchIntygData(intygsId, typ);
 
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent);
         String sendConfigAsJson = configurationManager.marshallConfig(sendConfig);
