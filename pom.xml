@@ -27,19 +27,13 @@
     <intygstjanst.version.range>(,2.1.0]</intygstjanst.version.range>
 
     <!-- Intygstyper -->
-    <!-- Intygstyper -->
-    <fk7263.version>0-SNAPSHOT</fk7263.version>
-    <fk7263.version.range>(,2.1.0]</fk7263.version.range>
-
-    <ts-bas.version>0-SNAPSHOT</ts-bas.version>
-    <ts-bas.version.range>(,1.1.0]</ts-bas.version.range>
-
-    <ts-diabetes.version>0-SNAPSHOT</ts-diabetes.version>
-    <ts-diabetes.version.range>(,1.1.0]</ts-diabetes.version.range>
+    <intygstyper.version>0-SNAPSHOT</intygstyper.version>
+    <intygstyper.version.range>(,2.1.0]</intygstyper.version.range>
 
     <!-- Schemas -->
     <clinicalprocess-healthcond-certificate.version>0-SNAPSHOT</clinicalprocess-healthcond-certificate.version>
-    <clinicalprocess-healthcond-certificate.version.range>(,1.0.0]</clinicalprocess-healthcond-certificate.version.range>
+    <clinicalprocess-healthcond-certificate.version.range>(,1.0.0]
+    </clinicalprocess-healthcond-certificate.version.range>
 
     <insuranceprocess-healthreporting.version>0-SNAPSHOT</insuranceprocess-healthreporting.version>
     <insuranceprocess-healthreporting.version.range>(,1.0.0]</insuranceprocess-healthreporting.version.range>
@@ -169,18 +163,17 @@
       <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>fk7263</artifactId>
-        <version>${fk7263.version}</version>
+        <version>${intygstyper.version}</version>
       </dependency>
-      <dependency>
+      <!--<dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>ts-bas</artifactId>
-        <version>${ts-bas.version}</version>
-      </dependency>
-      <dependency>
+        <version>${intygstyper.version}</version>
+      </dependency>--><!--<dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>ts-diabetes</artifactId>
-        <version>${ts-diabetes.version}</version>
-      </dependency>
+        <version>${intygstyper.version}</version>
+      </dependency>-->
 
       <!-- Schemas -->
       <dependency>
@@ -266,7 +259,6 @@
       </dependency>
 
       <!-- Integration -->
-
 
       <!-- Spring family -->
       <dependency>
@@ -442,9 +434,9 @@
         <artifactId>versions-maven-plugin</artifactId>
         <configuration>
           <includeProperties>
-            common.version, intygstjanst.version, fk7263.version, ts-bas.version, ts-diabetes.version,
-            clinicalprocess-healthcond-certificate.version, insuranceprocess-healthreporting.version,
-            itintegration-monitoring.version, ehr-logstore.version, schemas-common.version
+            common.version, intygstjanst.version, intygstyper.version, clinicalprocess-healthcond-certificate.version,
+            insuranceprocess-healthreporting.version, itintegration-monitoring.version, ehr-logstore.version,
+            schemas-common.version
           </includeProperties>
           <properties>
             <property>
@@ -456,16 +448,8 @@
               <version>${intygstjanst.version.range}</version>
             </property>
             <property>
-              <name>fk7263.version</name>
-              <version>${fk7263.version.range}</version>
-            </property>
-            <property>
-              <name>ts-bas.version</name>
-              <version>${ts-bas.version.range}</version>
-            </property>
-            <property>
-              <name>ts-diabetes.version</name>
-              <version>${ts-diabetes.version.range}</version>
+              <name>intygstyper.version</name>
+              <version>${intygstyper.version.range}</version>
             </property>
             <property>
               <name>clinicalprocess-healthcond-certificate.version</name>
