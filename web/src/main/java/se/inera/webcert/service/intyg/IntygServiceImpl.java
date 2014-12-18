@@ -1,8 +1,5 @@
 package se.inera.webcert.service.intyg;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponseType;
@@ -32,8 +28,14 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateRequestType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
+import se.inera.ifv.insuranceprocess.healthreporting.util.ModelConverter;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
 import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
@@ -41,6 +43,7 @@ import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.webcert.service.intyg.config.SendIntygConfiguration;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
@@ -59,6 +62,9 @@ import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author andreaskaltenbach
  */
@@ -66,7 +72,7 @@ import se.inera.webcert.web.service.WebCertUserService;
 public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
     public enum Event {
-        REGISTER, SEND, REVOKE;
+        REVOKE, SEND;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
@@ -116,6 +122,10 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private FragaSvarService fragaSvarService;
+
+    /* --------------------- Public scope --------------------- */
 
     @Override
     public IntygContentHolder fetchIntygData(String intygId, String typ) {
@@ -196,15 +206,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
-    protected void verifyEnhetsAuth(String enhetsId, boolean readOnlyOperation) {
-        if (!webCertUserService.isAuthorizedForUnit(enhetsId, readOnlyOperation)) {
-            LOG.info("User not authorized for enhet");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + enhetsId);
-        }
-
-    }
-
     @Override
     public IntygServiceResult storeIntyg(Intyg intyg) {
         Omsandning omsandning = createOmsandning(OmsandningOperation.STORE_INTYG, intyg.getIntygsId(), intyg.getIntygsTyp(), null);
@@ -248,24 +249,11 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
-    private void registerIntyg(Intyg intyg) throws IntygModuleFacadeException, ModuleException {
-        LOG.debug("Attempting to register intyg {}", intyg.getIntygsId());
-        modelFacade.registerCertificate(intyg.getIntygsTyp(), intyg.getModel());
-        LOG.debug("Successfully registered intyg {}", intyg.getIntygsId());
-    }
-
-    private void scheduleResend(Omsandning omsandning) {
-        omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
-        omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
-        omsandningRepository.save(omsandning);
-        LOG.info("Rescheduled {}", omsandning.toString());
-    }
-
     @Override
     public IntygServiceResult sendIntyg(Omsandning omsandning) {
-            SendIntygConfiguration sendConfig = configurationManager.unmarshallConfig(omsandning.getConfiguration(), SendIntygConfiguration.class);
-            IntygContentHolder intyg = fetchIntygData(omsandning.getIntygTyp(), omsandning.getIntygId());
-            return sendIntyg(omsandning, sendConfig, intyg);
+        SendIntygConfiguration sendConfig = configurationManager.unmarshallConfig(omsandning.getConfiguration(), SendIntygConfiguration.class);
+        IntygContentHolder intyg = fetchIntygData(omsandning.getIntygTyp(), omsandning.getIntygId());
+        return sendIntyg(omsandning, sendConfig, intyg);
     }
 
     @Override
@@ -281,53 +269,20 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         return sendIntyg(omsandning, sendConfig, intyg);
     }
 
-    public IntygServiceResult sendIntyg(Omsandning omsandning, SendIntygConfiguration sendConfig, IntygContentHolder intyg) {
-
-        String intygsId = omsandning.getIntygId();
-        String recipient = sendConfig.getRecipient();
-        String intygsTyp = omsandning.getIntygTyp();
-        
-        try {
-            LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
-
-            modelFacade.sendCertificate(intygsTyp, intyg.getContents(), recipient);
-
-            omsandningRepository.delete(omsandning);
-
-            // send PDL log event
-            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
-            logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
-            logService.logSendIntygToRecipient(logRequest);
-
-            // Notify stakeholders when a certificate is sent
-            notify(intygsId, Event.SEND);
-
-            return IntygServiceResult.OK;
-
-        } catch (ExternalServiceCallException esce) {
-            LOG.error("An WebServiceException occured when trying to fetch and send intyg: " + intygsId, esce);
-            scheduleResend(omsandning);
-            return IntygServiceResult.RESCHEDULED;
-        } catch (ModuleException | IntygModuleFacadeException e) {
-            LOG.error("Module problems occured when trying to send intyg " + intygsId, e);
-            omsandningRepository.delete(omsandning);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-        }
-    }
-
     /*
      * (non-Javadoc)
      * 
      * @see se.inera.webcert.service.intyg.IntygService#revokeIntyg(java.lang.String, java.lang.String)
      */
+    @Override
     public IntygServiceResult revokeIntyg(String intygsId, String typ, String revokeMessage) {
         LOG.info("Attempting to revoke intyg {}", intygsId);
 
         IntygContentHolder intyg = fetchIntygData(intygsId, typ);
 
         if (intyg.isRevoked()) {
-            LOG.info("Certificate is revoked");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is revoked");
+            LOG.info("Certificate with id '{}' is already revoked", intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is already revoked");
         }
 
         RevokeType revokeType = serviceConverter.buildRevokeTypeFromUtlatande(intyg.getUtlatande(), revokeMessage);
@@ -337,23 +292,23 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
         AttributedURIType uri = new AttributedURIType();
         uri.setValue(logicalAddress);
-        // Notify stakeholders when a certificate is revoked
-        notify(intygsId, Event.REVOKE);
 
+        // Revoke the certificate
         RevokeMedicalCertificateResponseType response = revokeService.revokeMedicalCertificate(uri, request);
 
+        // Take care of the response
         ResultOfCall resultOfCall = response.getResult();
 
         switch (resultOfCall.getResultCode()) {
         case OK:
             LOG.info("Successfully revoked intyg {}", intygsId);
-            return IntygServiceResult.OK;
+            return whenSuccessfulRevoke(intygsId);
         case INFO:
             LOG.warn("Call to revoke intyg {} returned an info message: {}", intygsId, resultOfCall.getInfoText());
-            return IntygServiceResult.OK;
+            return whenSuccessfulRevoke(intygsId);
         case ERROR:
-            LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}", new Object[] { intygsId, resultOfCall.getErrorText(),
-                    resultOfCall.getErrorId() });
+            LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}",
+                    new Object[] { intygsId, resultOfCall.getErrorText(), resultOfCall.getErrorId() });
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, resultOfCall.getErrorText());
         default:
             return IntygServiceResult.FAILED;
@@ -364,28 +319,151 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         this.logicalAddress = logicalAddress;
     }
 
-    private void notify(String intygId, Event event) {
-        Intyg intyg = intygRepository.findOne(intygId);
+    /* --------------------- Protected scope --------------------- */
 
-        if (intyg != null) {
-            notify(intyg, event);
-        } else {
-            LOG.debug("Intyg '{}' was not found", intygId);
+    protected IntygServiceResult sendIntyg(Omsandning omsandning, SendIntygConfiguration sendConfig, IntygContentHolder intyg) {
+
+        String intygsId = omsandning.getIntygId();
+        String recipient = sendConfig.getRecipient();
+        String intygsTyp = omsandning.getIntygTyp();
+
+        try {
+            LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
+
+            AttributedURIType address = new AttributedURIType();
+            address.setValue(recipient);
+
+            SendType send = new SendType();
+            send.setAdressVard(ModelConverter.toVardAdresseringsType(intyg.getUtlatande().getGrundData()));
+            send.setLakarutlatande(ModelConverter.toLakarutlatandeEnkelType(intyg.getUtlatande()));
+            send.setAvsantTidpunkt(LocalDateTime.now());
+            send.setVardReferensId(intyg.getUtlatande().getId());
+
+            SendMedicalCertificateRequestType parameters = new SendMedicalCertificateRequestType();
+            parameters.setSend(send);
+
+            SendMedicalCertificateResponseType response = sendService.sendMedicalCertificate(address, parameters);
+
+            // check whether call was successful or not
+            if (response.getResult().getResultCode() == ResultCodeEnum.ERROR) {
+                String message = response.getResult().getErrorId() + " : " + response.getResult().getErrorText();
+                LOG.error("Module problems occured when trying to send intyg " + intygsId + " : " + message);
+                scheduleResend(omsandning);
+                return IntygServiceResult.RESCHEDULED;
+            }  else {
+                if (response.getResult().getResultCode() == ResultCodeEnum.INFO) {
+                    String message = response.getResult().getInfoText();
+                    LOG.warn("Warning occured when trying to send intyg " + intygsId + " : " + message);
+                }
+                omsandningRepository.delete(omsandning);
+
+                // send PDL log event
+                LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
+                logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
+                logService.logSendIntygToRecipient(logRequest);
+
+                // Notify stakeholders when a certificate is sent
+                sendNotification(intygsId, Event.SEND);
+
+                return IntygServiceResult.OK;
+            }
+
+        } catch (RuntimeException e) {
+            LOG.error("Module problems occured when trying to send intyg " + intygsId, e);
+            omsandningRepository.delete(omsandning);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
     }
 
-    private void notify(Intyg intyg, Event event) {
-        NotificationRequestType notificationRequestType = null;
+    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
+        if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
+            LOG.info("User not authorized for enhet");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsId);
+        }
+    }
+
+    /* --------------------- Private scope --------------------- */
+
+    private void registerIntyg(Intyg intyg) throws IntygModuleFacadeException, ModuleException {
+        LOG.debug("Attempting to register intyg {}", intyg.getIntygsId());
+        modelFacade.registerCertificate(intyg.getIntygsTyp(), intyg.getModel());
+        LOG.debug("Successfully registered intyg {}", intyg.getIntygsId());
+    }
+
+    private void scheduleResend(Omsandning omsandning) {
+        omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
+        omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
+        omsandningRepository.save(omsandning);
+        LOG.info("Rescheduled {}", omsandning.toString());
+    }
+
+    /**
+     * @see se.inera.webcert.service.intyg.IntygServiceImpl#sendNotification(se.inera.webcert.persistence.intyg.model.Intyg,
+     *      se.inera.webcert.service.intyg.IntygServiceImpl.Event)
+     */
+    private void sendNotification(String intygId, Event event) {
+        Intyg intyg = intygRepository.findOne(intygId);
+
+        if (intyg != null) {
+            sendNotification(intyg, event);
+        } else {
+            LOG.debug("Intyg '{}' was not found - no notification sent.", intygId);
+        }
+    }
+
+    /**
+     * Send a notification message to stakeholders informing that
+     * an event of some type for this certificate has occurred.
+     *
+     * @param intyg
+     *            the certificate that has been revoked
+     * @param event
+     *            the event for this notification
+     */
+    private void sendNotification(Intyg intyg, Event event) {
 
         switch (event) {
         case REVOKE:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromRevokedCertificate(intyg);
+            sendRevokedNotification(intyg);
             break;
         case SEND:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromSentCertificate(intyg);
+            NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromSentCertificate(intyg);
+            notificationService.notify(notificationRequestType);
+            LOG.debug("Notification sent: certificate with id '{}' has been sent to FK", intyg.getIntygsId());
         }
 
+    }
+
+    /**
+     * Send a notification message to stakeholders informing that
+     * a question related to a revoked certificate has been closed.
+     *
+     * @param intyg
+     *            the certificate that has been revoked
+     */
+    private void sendRevokedNotification(Intyg intyg) {
+        // First: send a notification informing stakeholders that this certificate has been revoked
+        NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromRevokedCertificate(intyg);
         notificationService.notify(notificationRequestType);
+        LOG.debug("Notification sent: certificate with id '{}' was revoked", intyg.getIntygsId());
+
+        // Second: send a notification informing stakeholders that all questions related to the revoked
+        // certificate has been closed.
+        FragaSvar[] array = fragaSvarService.closeAllNonClosedQuestions(intyg.getIntygsId());
+        for (int i = 0; i < array.length; i++) {
+            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(array[i]);
+            notificationService.notify(notificationRequestType);
+            LOG.debug("Notification sent: question with id '{}' (related with certificate with id '{}') was closed", array[i].getInternReferens(),
+                    intyg.getIntygsId());
+        }
+    }
+
+    private IntygServiceResult whenSuccessfulRevoke(String intygsId) {
+        // Notify stakeholders when a certificate is revoked
+        sendNotification(intygsId, Event.REVOKE);
+        // Return OK
+        return IntygServiceResult.OK;
     }
 
 }

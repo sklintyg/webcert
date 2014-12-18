@@ -2,7 +2,11 @@ package se.inera.webcert.service.notification;
 
 import org.joda.time.LocalDateTime;
 
-import se.inera.webcert.notifications.message.v1.*;
+import se.inera.webcert.notifications.message.v1.HandelseType;
+import se.inera.webcert.notifications.message.v1.HoSPersonType;
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
+import se.inera.webcert.notifications.message.v1.ObjectFactory;
+import se.inera.webcert.notifications.message.v1.VardenhetType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 
@@ -128,7 +132,6 @@ public class NotificationMessageFactory {
     }
 
     static NotificationRequestType createNotification(FragaSvar fragaSvar) {
-
 
         VardenhetType vt = getVardenhetType(fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn());
         HoSPersonType hspt = getHoSPersonType(fragaSvar.getVardperson().getNamn(), fragaSvar.getVardperson().getHsaId(), vt);

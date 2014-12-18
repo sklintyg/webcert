@@ -133,7 +133,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         ticket = clientSignature(ticket, intyg.getModel(), rawSignatur, user.getHsaId());
 
         // Notify stakeholders when certificate has been signed
-        notify(intyg);
+        sendNotification(intyg);
 
         return ticket;
     }
@@ -164,16 +164,14 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         // Update user information ("senast sparad av")
         intyg = updateIntygForSignering(intyg, user.getHsaId(), user.getNamn());
 
-        // Save certificate wth new status
+        // Save certificate draft with a new status
         saveIntyg(intyg, IntygsStatus.SIGNED);
 
-        // Sign draft
+        // Sign the certificate draft
         SignatureTicket ticket = serverSignature(intygsId, intyg.getModel(), "Signatur", user.getHsaId());
 
         // Notify stakeholders when a draft has been signed
-        notify(intyg);
-
-        intygService.storeIntyg(intyg);
+        sendNotification(intyg);
 
         return ticket;
     }
@@ -273,9 +271,10 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         }
     }
 
-    private void notify(Intyg intyg) {
+    private void sendNotification(Intyg intyg) {
         NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromSignedDraft(intyg);
         notificationService.notify(notificationRequestType);
+        LOG.debug("Notification sent: a certificate draft with id '{}' was signed", intyg.getIntygsId());
     }
 
 }

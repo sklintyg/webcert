@@ -1,11 +1,5 @@
 package se.inera.webcert.service.draft;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -58,6 +52,12 @@ import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class IntygDraftServiceImpl implements IntygDraftService {
 
@@ -97,7 +97,6 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     @Autowired
     private WebCertUserService webCertUserService;
 
-
     @Override
     @Transactional
     public String createNewDraft(CreateNewDraftRequest request) {
@@ -112,9 +111,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
 
         Intyg savedDraft = persistNewDraft(request, intygJsonModel);
-        
+
         LOG.debug("Draft '{}' created and persisted", savedDraft.getIntygsId());
-        
+
         sendNotification(savedDraft, Event.CREATED);
 
         return savedDraft.getIntygsId();
@@ -337,7 +336,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
             CreateNewDraftRequest newDraftRequest = createNewDraftRequestForCopying(newDraftIntygId, intygType, status, copyRequest, person);
             Intyg savedDraft = persistNewDraft(newDraftRequest, newDraftModelAsJson);
-            
+
             sendNotification(savedDraft, Event.CREATED);
 
             return new CreateNewDraftCopyResponse(intygType, savedDraft.getIntygsId());
@@ -376,7 +375,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     private CreateNewDraftRequest createNewDraftRequestForCopying(String newDraftIntygId, String intygType, IntygsStatus status,
-                                                                  CreateNewDraftCopyRequest request, Person person) {
+            CreateNewDraftCopyRequest request, Person person) {
 
         Patient patient = new Patient();
         patient.setPersonnummer(person.getPersonnummer());
@@ -616,21 +615,30 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private void sendNotification(Intyg draft, Event event) {
 
         NotificationRequestType notificationRequestType = null;
+        String logMsg = "";
 
         switch (event) {
-            case CHANGED:
-                notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(draft);
-                break;
-            case CREATED:
-                notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(draft);
-                break;
-            case DELETED:
-                notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(draft);
+        case CHANGED:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(draft);
+            logMsg = "Notification sent: certificate draft with id '{}' was changed/updated.";
+            break;
+        case CREATED:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(draft);
+            logMsg = "Notification sent: certificate draft with id '{}' was created.";
+            break;
+        case DELETED:
+            notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(draft);
+            logMsg = "Notification sent: certificate draft with id '{}' was deleted.";
+            break;
+        default:
+            logMsg = "IntygDraftServiceImpl.sendNotification(Intyg, Event) was called but with an unhandled event. No notification was sent.";
         }
-        
-        LOG.debug("Sending notification for draft '{}' for event {}", draft.getIntygsId(), event);
-        
-        notificationService.notify(notificationRequestType);
+
+        if (notificationRequestType != null) {
+            notificationService.notify(notificationRequestType);
+        }
+
+        LOG.debug(logMsg, draft.getIntygsId());
     }
 
 }

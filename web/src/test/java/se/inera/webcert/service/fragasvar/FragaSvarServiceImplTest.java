@@ -9,13 +9,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +24,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
@@ -69,8 +63,12 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
@@ -114,7 +112,7 @@ public class FragaSvarServiceImplTest {
 
     @Before
     public void setUpLoggerFactory() throws Exception {
-        ReflectionUtils.setStaticFinalAttribute(FragaSvarServiceImpl.class, "LOG", loggerMock);
+        ReflectionUtils.setStaticFinalAttribute(FragaSvarServiceImpl.class, "LOGGER", loggerMock);
     }
 
     @Before
@@ -671,15 +669,15 @@ public class FragaSvarServiceImplTest {
 
 /*    @Test
     public void testVerifyEnhetsAuthOK() {
-        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
+        when(webcertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(true);
         service.verifyEnhetsAuth("enhet");
 
-        verify(webCertUserService).isAuthorizedForUnit(anyString());
+        verify(webcertUserService).isAuthorizedForUnit(anyString());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testVerifyEnhetsAuthFail() {
-        when(webCertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
+        when(webcertUserService.isAuthorizedForUnit(any(String.class))).thenReturn(false);
         service.verifyEnhetsAuth("<doesnt-exist>");
 
     }*/
