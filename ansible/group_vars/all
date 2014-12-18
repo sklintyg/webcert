@@ -3,7 +3,9 @@
 profile: test
 inera_root: /opt/inera
 releases_folder: "{{ inera_root }}/releases"
+config_repository: https://github.com/sklintyg/webcert-konfiguration.git
 config_folder: "{{ inera_root }}/webcert-konfiguration"
+config_etc_folder: "{{ config_folder }}/test"
 tomcat_service: inera-tomcat
 inera_tomcat_folder: "/var/lib/{{ tomcat_service }}"
 etc_folder: "{{ inera_tomcat_folder }}/etc"

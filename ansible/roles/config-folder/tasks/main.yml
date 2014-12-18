@@ -1,0 +1,8 @@
+---
+
+- name: checkout config repo
+  git: repo="{{ config_repository }}"
+       dest="{{ config_folder }}"
+
+- name: create etc folder link
+  file: src="{{ config_etc_folder }}" dest="{{ etc_folder }}" state=link

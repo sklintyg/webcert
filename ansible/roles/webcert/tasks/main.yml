@@ -61,9 +61,10 @@
 - name: Create version file
   template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
-- name: update configuration
-  command: chdir={{ config_folder }} git checkout {{ config_version }}
-  command: chdir={{ config_folder }} git pull origin
+- name: update configuration to {{ config_version }}
+  git: repo={{ config_repository }}
+       dest={{ config_folder }}
+       version={{ config_version }}
 
 - name: start tomcat
   service: name={{ tomcat_service }} state=started pattern=org.apache.catalina.startup.Bootstrap
