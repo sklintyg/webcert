@@ -5,11 +5,19 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
   profile="!dev">
+  
+  <!-- Creates a persistence context based upon a container-supplied data source retrieved using JNDI -->
 
   <context:annotation-config />
 
   <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/jdbc/webcert" />
+  </bean>
+   
+  <!-- Verifies that the database is in the correct state -->
+  <bean id="liquibaseDbChecker" class="se.inera.webcert.persistance.liquibase.DbChecker">
+    <constructor-arg ref="dataSource" />
+    <constructor-arg value="changelog/changelog.xml" />
   </bean>
 
   <bean id="entityManagerFactory"

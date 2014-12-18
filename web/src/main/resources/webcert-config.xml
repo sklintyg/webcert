@@ -69,7 +69,7 @@
       </property>
     </bean>
 
-    <!-- Expose healthCheckService for use in health-check.jsp -->
+    <!-- Exposes healthCheckService for use in health-check.jsp -->
     <bean
       class="org.springframework.web.context.support.ServletContextAttributeExporter">
       <property name="attributes">
@@ -79,6 +79,7 @@
       </property>
     </bean>
 
+    <!-- JSON mappers and providers -->
     <bean id="objectMapper"
       class="se.inera.certificate.integration.json.CustomObjectMapper" />
 

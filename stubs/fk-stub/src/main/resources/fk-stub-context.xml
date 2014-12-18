@@ -4,7 +4,7 @@
        xmlns:jaxws="http://cxf.apache.org/jaxws"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
-       profile="dev,demo,local,test,qa">
+       profile="dev,wc-all-stubs,wc-fk-stub">
 
   <jaxws:endpoint address="/send-question-stub" implementor="se.inera.webcert.fkstub.SendQuestionStub"/>
   <jaxws:endpoint address="/send-answer-stub" implementor="se.inera.webcert.fkstub.SendAnswerStub"/>

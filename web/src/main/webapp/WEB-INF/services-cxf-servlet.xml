@@ -33,6 +33,7 @@
   <import resource="classpath:/mail-stub-rest-api-context.xml" />
   <import resource="classpath:/intygstjanst-stub-context.xml" />
   <import resource="classpath:/loggtjanst-stub-context.xml" />
+  <import resource="/webcert-stub-context.xml" />
 
   <cxf:bus>
     <cxf:features>
@@ -67,32 +68,5 @@
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
-  
-  <!-- REST service for inserting questions directly into the database for testing purposes -->
-  <beans profile="dev,local,test,qa">
-      <jaxrs:server address="/questions">
-          <jaxrs:serviceBeans>
-              <ref bean="questionBean" />
-          </jaxrs:serviceBeans>
-          <jaxrs:providers>
-              <ref bean="jacksonJsonProvider" />
-          </jaxrs:providers>
-          <jaxrs:extensionMappings>
-              <entry key="json" value="application/json" />
-          </jaxrs:extensionMappings>
-      </jaxrs:server>
-      <bean id="questionBean" class="se.inera.webcert.integration.test.QuestionResource" />
-      <jaxrs:server address="/intyg">
-          <jaxrs:serviceBeans>
-              <bean class="se.inera.webcert.integration.test.IntygResource" />
-          </jaxrs:serviceBeans>
-          <jaxrs:providers>
-              <ref bean="jacksonJsonProvider" />
-          </jaxrs:providers>
-          <jaxrs:extensionMappings>
-              <entry key="json" value="application/json" />
-          </jaxrs:extensionMappings>
-      </jaxrs:server>
-  </beans>
   
 </beans>

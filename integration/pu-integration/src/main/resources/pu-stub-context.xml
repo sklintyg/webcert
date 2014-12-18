@@ -4,7 +4,7 @@
        xmlns:jaxws="http://cxf.apache.org/jaxws"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"
-       profile="dev,test,demo,local">
+       profile="dev,wc-all-stubs,wc-pu-stub">
 
   <jaxws:endpoint address="/pu" implementor="se.inera.webcert.pu.stub.LookupResidentForFullProfileWsStub"/>
 

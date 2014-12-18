@@ -20,9 +20,9 @@
     <Arg>jdbc/webcert</Arg>
     <Arg>
       <New class="com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource">
-        <Set name="Url">jdbc:mysql://localhost:3306/webcert</Set>
-        <Set name="User">webcert</Set>
-        <Set name="Password">webcert</Set>
+        <Set name="Url">jdbc:mysql://localhost:3306/webcert_141212</Set>
+        <Set name="User">inera</Set>
+        <Set name="Password">inera</Set>
       </New>
     </Arg>
   </New>

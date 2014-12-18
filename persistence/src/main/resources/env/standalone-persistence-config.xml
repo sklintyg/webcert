@@ -7,6 +7,8 @@
        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
   profile="dev">
+  
+  <!-- Creates a persistence context based upon an embedded H2 database -->
 
   <context:annotation-config />
 
@@ -31,7 +33,7 @@
     </property>
   </bean>
 
-  <!-- Start web console for H2 in dev mode -->
+  <!-- Start web console for H2 in dev mode, disabled when running unit tests -->
   <beans profile="!unit-testing">
     <bean id="org.h2.tools.Server" class="org.h2.tools.Server"
       factory-method="createTcpServer" init-method="start"

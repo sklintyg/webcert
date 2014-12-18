@@ -1,0 +1,36 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
+  profile="dev,wc-all-stubs,wc-webcert-stub">
+
+  <!-- REST services for inserting questions and certificate drafts directly 
+    into the database for testing purposes -->
+    
+  <jaxrs:server address="/questions">
+    <jaxrs:serviceBeans>
+      <bean class="se.inera.webcert.integration.test.QuestionResource" />
+    </jaxrs:serviceBeans>
+    <jaxrs:providers>
+      <ref bean="jacksonJsonProvider" />
+    </jaxrs:providers>
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json" />
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+
+  <jaxrs:server address="/intyg">
+    <jaxrs:serviceBeans>
+      <bean class="se.inera.webcert.integration.test.IntygResource" />
+    </jaxrs:serviceBeans>
+    <jaxrs:providers>
+      <ref bean="jacksonJsonProvider" />
+    </jaxrs:providers>
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json" />
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+
+</beans>
