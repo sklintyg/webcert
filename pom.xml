@@ -192,11 +192,6 @@
       </dependency>
 
       <!-- Tools -->
-      <dependency>
-        <groupId>se.inera.intyg.tools</groupId>
-        <artifactId>liquibase-runner</artifactId>
-        <version>${liquibase-runner.version}</version>
-      </dependency>
 
       <!-- Authentication -->
       <dependency>

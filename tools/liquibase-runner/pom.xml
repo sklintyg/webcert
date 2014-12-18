@@ -27,10 +27,6 @@
       <artifactId>webcert-persistence</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>se.inera.intyg.tools</groupId>
-          <artifactId>liquibase-runner</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>se.inera.intyg.intygstjanst</groupId>
           <artifactId>intygstjanst-specifications</artifactId>
         </exclusion>
