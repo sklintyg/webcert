@@ -32,17 +32,9 @@ public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpda
     public void sendStatusUpdate(@Header(RouteHeaders.INTYGS_ID) String intygsId, CertificateStatusUpdateForCareType request,
             @Header(RouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
 
-        LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, intygsId);
+        LOG.debug("Sending status update for intyg '{}'", intygsId);
 
-        CertificateStatusUpdateForCareResponseType response = null;
-
-        try {
-            response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
-        } catch (Exception e) {
-            LOG.error("Exception occured when sending status update", e);
-            throw e;
-        }
-
+        CertificateStatusUpdateForCareResponseType response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
         ResultType result = response.getResult();
         switch (result.getResultCode()) {
         case ERROR:
