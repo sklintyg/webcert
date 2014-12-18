@@ -21,7 +21,7 @@
     </jaxws:client>
   </beans>
 
-  <beans profile="!dev">
+  <beans profile="wc-security-test,wc-security-prod">
     <http:conduit
       name="{urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateQuestion:1:rivtabp20}SendMedicalCertificateQuestionResponderInterfacePort.http-conduit">
       <http:client AllowChunking="false" AutoRedirect="true"
@@ -102,7 +102,7 @@
       address="${intygstjanst.pingforconfiguration.endpoint.url}" />
   </beans>
 
-  <beans profile="!dev">
+  <beans profile="wc-security-test,wc-security-prod">
     <http:conduit
       name="{urn:riv:clinicalprocess:healthcond:certificate:GetCertificateForCare:1:rivtabp21}GetCertificateForCareResponderInterfacePort.http-conduit">
       <http:client AllowChunking="false" AutoRedirect="true"

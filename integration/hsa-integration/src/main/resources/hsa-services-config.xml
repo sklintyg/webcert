@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses />.
     <property name="hsaLogicalAddress" value="${hsa.ws.service.logicaladdress}"/>
   </bean>
 
-  <beans profile="!dev">
+  <beans profile="wc-security-test,wc-security-prod">
 
     <http:conduit name="{urn:riv:hsa:HsaWs:3}HsaWsResponderInterfacePort.http-conduit">
       <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive"/>

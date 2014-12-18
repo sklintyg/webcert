@@ -25,7 +25,7 @@
 
   <bean id="puService" class="se.inera.webcert.pu.services.PUServiceImpl" />
 
-  <beans profile="!dev">
+  <beans profile="wc-security-test,wc-security-prod">
     <http:conduit
       name="{urn:riv:population:residentmaster:LookupResidentForFullProfile:1:rivtabp21}LookupResidentForFullProfileResponderInterfacePort.http-conduit">
       <http:client AllowChunking="false" AutoRedirect="true"

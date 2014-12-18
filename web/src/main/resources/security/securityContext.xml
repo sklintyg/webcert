@@ -62,18 +62,18 @@
         class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
   <!-- =============================================================== -->
-  <!-- These URLs are unsecured in all modes except prod               -->
+  <!-- These URLs are unsecured in all profiles except wc-security-prod -->
   <!-- =============================================================== -->
-  <beans profile="dev,demo,local,test,qa">
+  <beans profile="dev,wc-security-dev,wc-security-test">
     <security:http security="none" pattern="/welcome.jsp"/>
     <!-- This enables access to notification-sender if it is co-deployed with Webcert as the root application -->
     <security:http security="none" pattern="/notification-sender/**"/>
   </beans>
 
   <!-- =============================================================== -->
-  <!-- Dev and demo profile only supports Fake login                   -->
+  <!-- The dev and wc-security-dev profiles only supports Fake login -->
   <!-- =============================================================== -->
-  <beans profile="dev,demo,local">
+  <beans profile="dev,wc-security-dev">
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -85,9 +85,9 @@
   </beans>
 
   <!-- =============================================================== -->
-  <!-- Test and QA profile support both Säkerhetstjänst and Fake login -->
+  <!-- The wc-security-test profile support both Säkerhetstjänst and Fake login -->
   <!-- =============================================================== -->
-  <beans profile="test,qa">
+  <beans profile="wc-security-test">
     <security:http entry-point-ref="samlEntryPoint" pattern="/saml/**">
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -109,9 +109,9 @@
   </beans>
 
   <!-- =============================================================== -->
-  <!-- Prod profile only supports Säkerhetstjänst login                -->
+  <!-- The wc-security-prod profile only supports Säkerhetstjänst login -->
   <!-- =============================================================== -->
-  <beans profile="prod">
+  <beans profile="wc-security-prod">
     <security:http entry-point-ref="samlEntryPoint" pattern="/saml/**">
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
@@ -127,7 +127,7 @@
     </security:authentication-manager>
   </beans>
 
-  <beans profile="dev,demo,local,test,qa">
+  <beans profile="dev,wc-security-dev,wc-security-test">
     <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
@@ -143,7 +143,7 @@
     </bean>
   </beans>
 
-  <beans profile="test,qa,prod">
+  <beans profile="wc-security-test,wc-security-prod">
     <bean id="samlFilter" class="org.springframework.security.web.FilterChainProxy">
       <security:filter-chain-map request-matcher="ant">
         <security:filter-chain pattern="/saml/login/**" filters="samlEntryPoint"/>

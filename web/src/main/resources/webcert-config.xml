@@ -13,7 +13,7 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <import resource="classpath:repository-context.xml" />
+  <import resource="classpath:/repository-context.xml" />
   <import resource="security/securityContext.xml" />
   <import resource="classpath:/hsa-services-config.xml" />
   <import resource="classpath:/signature-services-config.xml" />
@@ -41,10 +41,12 @@
     <context:property-placeholder
       location="classpath:/webcert-dev.properties"
       order="1" ignore-unresolvable="true" />
-    
+      
+  </beans>
+  
+  <beans profile="dev,wc-init-data">    
     <!-- In dev mode we bootstrap data -->
     <bean id="FragaSvarBootstrapBean" class="se.inera.webcert.service.util.FragaSvarBootstrapBean" />
-    
   </beans>
 
   <beans>
