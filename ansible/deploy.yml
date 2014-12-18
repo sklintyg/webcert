@@ -4,7 +4,7 @@
   sudo: yes 
   vars: 
     version: 3.0.0-b21
-    config_version: master
+    config_version: webcert-3.0.0-b21
 
   roles:
     - webcert
