@@ -58,6 +58,14 @@ class HanteraUtkast {
         }
     }
 
+    boolean editeraFk7263SidanVisas() {
+        Browser.drive {
+            waitFor {
+                at se.inera.webcert.pages.fk7263.EditCertPage
+            }
+        }
+    }
+
     boolean visaIntygSidanVisas() {
         Browser.drive {
             waitFor {

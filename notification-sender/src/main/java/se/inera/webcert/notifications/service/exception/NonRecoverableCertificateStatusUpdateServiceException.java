@@ -13,5 +13,9 @@ public class NonRecoverableCertificateStatusUpdateServiceException extends Excep
     public NonRecoverableCertificateStatusUpdateServiceException(Throwable cause) {
         super(cause);
     }
+    
+    public NonRecoverableCertificateStatusUpdateServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

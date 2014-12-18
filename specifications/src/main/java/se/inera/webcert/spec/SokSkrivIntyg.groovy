@@ -4,6 +4,7 @@ import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
+import org.openqa.selenium.Keys
 
 class SokSkrivIntyg {
 
@@ -101,6 +102,22 @@ class SokSkrivIntyg {
             }
             page.copy(intygId)
         }
+    }
+
+    def intygsid
+
+    def kopieraIntygOchGaTillVisaSida(String intygId) {
+        Browser.drive {
+            waitFor {
+                page.copyBtn(intygId).isDisplayed()
+            }
+            page.copy(intygId)
+
+        }
+    }
+
+    String intygsid() {
+        intygsid
     }
 
     def skickaVisatIntyg() {
@@ -211,6 +228,15 @@ class SokSkrivIntyg {
         }
     }
     // END
+
+    boolean visaEditIntygSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at se.inera.webcert.pages.fk7263.EditCertPage
+            }
+            intygsid = currentUrl.substring(currentUrl.lastIndexOf("/") + 1)
+        }
+    }
 
     boolean visaTsBasSidanVisas() {
         Browser.drive {

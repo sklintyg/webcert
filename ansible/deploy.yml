@@ -3,7 +3,7 @@
 - hosts: all
   sudo: yes 
   vars: 
-    version: 3.0.0-b16
+    version: 3.0.0-b18
     config_version: master
 
   roles:

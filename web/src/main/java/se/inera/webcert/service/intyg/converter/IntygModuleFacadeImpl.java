@@ -52,14 +52,4 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             throw new IntygModuleFacadeException("Exception occured when retrieving certificate", e);
         }
     }
-    
-    @Override
-    public void sendCertificate(String intygType, String internalIntygJsonModel, String recipient) throws ModuleException, IntygModuleFacadeException {
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            moduleApi.sendCertificate(new InternalModelHolder(internalIntygJsonModel), recipient);
-        } catch (ModuleNotFoundException e) {
-            throw new IntygModuleFacadeException("Exception occured when retrieving certificate", e);
-        }
-    }
 }

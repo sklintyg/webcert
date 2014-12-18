@@ -1,6 +1,11 @@
 package se.inera.webcert.service.draft;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
+
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -8,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.webcert.eid.services.SignatureService;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
@@ -15,7 +21,6 @@ import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.Signatur;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.persistence.intyg.repository.SignaturRepository;
 import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
@@ -25,11 +30,7 @@ import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class IntygSignatureServiceImpl implements IntygSignatureService {
@@ -38,9 +39,6 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
     @Autowired
     private IntygRepository intygRepository;
-
-    @Autowired
-    private SignaturRepository signaturRepository;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -91,6 +89,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         intygRepository.save(intyg);
 
         SignatureTicket statusTicket = createSignatureTicket(intyg.getIntygsId(), intyg.getModel());
+
         return statusTicket;
     }
 
@@ -123,31 +122,41 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Kunde inte validera intyget", e);
         }
 
-        // Update user information ("senast sparat av")
-        intyg = updateIntygForSignering(intyg, user.getHsaId(), user.getNamn());
-
-        // Save certificate wth new status
-        saveIntyg(intyg, IntygsStatus.SIGNED);
-
-        // Create new signature
-        ticket = clientSignature(ticket, intyg.getModel(), rawSignatur, user.getHsaId());
+        // Create and persist the new signature
+        ticket = createAndPersistSignature(intyg, ticket, rawSignatur, user);
 
         // Notify stakeholders when certificate has been signed
         sendNotification(intyg);
 
-        return ticket;
+        return ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
     }
 
-    private SignatureTicket clientSignature(SignatureTicket ticket, String payload, String rawSignature, String userId) {
+    private SignatureTicket createAndPersistSignature(Intyg intyg, SignatureTicket ticket, String rawSignature, WebCertUser user) {
+
+        String payload = intyg.getModel();
 
         if (!ticket.getHash().equals(createHash(payload))) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Intyget är modifierat");
+            LOG.error("Signing of Intyg '{}' failed since the payload has been modified since signing was initialized", intyg.getIntygsId());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Internal error signing intyg, the payload of intyg "
+                    + intyg.getIntygsId() + " has been modified since signing was initialized");
         }
 
-        // Create and save a new signature
-        createAndSaveSignature(ticket, payload, rawSignature, userId);
+        Signatur signatur = new Signatur(new LocalDateTime(), user.getHsaId(), ticket.getIntygsId(), payload, ticket.getHash(), rawSignature);
 
-        return ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
+        // Update user information ("senast sparat av")
+        updateIntygForSignering(intyg, user.getHsaId(), user.getNamn());
+
+        // Add signature to Intyg and set status as signed
+        intyg.setSignatur(signatur);
+        intyg.setStatus(IntygsStatus.SIGNED);
+
+        // Persist intyg with signature
+        Intyg savedIntyg = intygRepository.save(intyg);
+
+        // Send to Intygstjanst
+        intygService.storeIntyg(savedIntyg);
+
+        return ticket;
     }
 
     @Override
@@ -158,54 +167,19 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         // Fetch the certificate
         Intyg intyg = getIntygForSignering(intygsId);
 
+        // On server side we need to create our own signature ticket
+        SignatureTicket ticket = createSignatureTicket(intygsId, intyg.getModel());
+
         // Fetch Webcert user
         WebCertUser user = webCertUserService.getWebCertUser();
 
-        // Update user information ("senast sparad av")
-        intyg = updateIntygForSignering(intyg, user.getHsaId(), user.getNamn());
-
-        // Save certificate draft with a new status
-        saveIntyg(intyg, IntygsStatus.SIGNED);
-
-        // Sign the certificate draft
-        SignatureTicket ticket = serverSignature(intygsId, intyg.getModel(), "Signatur", user.getHsaId());
+        // Create and persist signature
+        ticket = createAndPersistSignature(intyg, ticket, "Signatur", user);
 
         // Notify stakeholders when a draft has been signed
         sendNotification(intyg);
 
-        return ticket;
-    }
-
-    private SignatureTicket serverSignature(String intygsId, String payload, String rawSignature, String userId) {
-
-        // On server side we need to create our own signature ticket
-        SignatureTicket statusTicket = createSignatureTicket(intygsId, payload);
-
-        // Create and save a new signature
-        createAndSaveSignature(statusTicket, payload, rawSignature, userId);
-
-        return ticketTracker.updateStatus(statusTicket.getId(), SignatureTicket.Status.SIGNERAD);
-
-        // return statusTicket;
-    }
-
-    private void createAndSaveSignature(SignatureTicket ticket, String payload, String rawSignature, String userId) {
-        Signatur signatur = new Signatur(new LocalDateTime(), userId, ticket.getIntygsId(), payload, ticket.getHash(), rawSignature);
-        signaturRepository.save(signatur);
-    }
-
-    /**
-     * Save a certificate draft to repository and Intygstjänsten
-     *
-     * @param intyg
-     *            the certificate draft to save
-     * @param intygsStatus
-     *            set certificate draft status
-     */
-    private void saveIntyg(Intyg intyg, IntygsStatus intygsStatus) {
-        intyg.setStatus(intygsStatus);
-        intygRepository.save(intyg);
-        intygService.storeIntyg(intyg);
+        return ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
     }
 
     private Intyg getIntygForSignering(String intygId) {
@@ -213,24 +187,16 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
         if (intyg == null) {
             LOG.warn("Intyg '{}' was not found", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Internal error signing intyg, the intyg " + intygId
+                    + " could not be found");
         } else if (intyg.getStatus() != IntygsStatus.DRAFT_COMPLETE) {
-            LOG.warn("Intyg '{}' med status '{}' kunde inte signeras", intygId, intyg.getStatus());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "The intyg was not in state " + IntygsStatus.DRAFT_COMPLETE);
+            LOG.warn("Intyg '{}' med status '{}' kunde inte signeras. Måste vara i status {}", intygId, intyg.getStatus(),
+                    IntygsStatus.DRAFT_COMPLETE);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Internal error signing intyg, the intyg " + intygId
+                    + " was not in state " + IntygsStatus.DRAFT_COMPLETE);
         }
 
         return intyg;
-    }
-
-    /**
-     * Update certificate with "senast sparad av" information
-     *
-     * @param intyg
-     * @param user
-     * @return
-     */
-    private Intyg updateIntygForSignering(Intyg intyg, WebCertUser user) {
-        return updateIntygForSignering(intyg, user.getHsaId(), user.getNamn());
     }
 
     /**
@@ -255,8 +221,9 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
             ticketTracker.trackTicket(statusTicket);
             return statusTicket;
         } catch (IllegalStateException e) {
-            LOG.error("Fel vid hashgenerering intyg {}. {}", intygId, e);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Internal error signing intyg", e);
+            LOG.error("Error occured when generating signing hash for intyg {}: {}", intygId, e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                    "Internal error signing intyg " + intygId + ", problem when creating signing ticket", e);
         }
     }
 

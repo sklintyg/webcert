@@ -7,12 +7,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.joda.time.LocalDate;
-import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.datetime.joda.DateTimeFormatterFactory;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.ArbetsformagaType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
@@ -39,10 +37,10 @@ public class EnrichWithIntygModelDataStrategy {
     public static final JsonPath NEDSATT_100_JSONP = JsonPath.compile("$.nedsattMed100");
 
     private static final String ARBETSFORMAGA_UNIT = "%";
-    
+
     private static final String DIAGNOS_CODESYSTEM = "1.2.752.116.1.1.1.1.1";
     private static final String DIAGNOS_CODESYSTEM_NAME = "ICD-10";
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygModelDataStrategy.class);
 
     private static final Configuration PARSER_JACKSON_CONFIGURATION = Configuration
@@ -52,7 +50,7 @@ public class EnrichWithIntygModelDataStrategy {
             .build();
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd");
-    
+
     private Map<String, JsonPath> jsonPaths = new HashMap<String, JsonPath>();
 
     public EnrichWithIntygModelDataStrategy() {
@@ -79,28 +77,28 @@ public class EnrichWithIntygModelDataStrategy {
         utlatandeType.getArbetsformaga().addAll(arbetsFormagor);
 
         DiagnosType diagnosType = extractDiagnos(jsonCtx);
-        
+
         if (diagnosType != null) {
             utlatandeType.setDiagnos(diagnosType);
         }
-        
+
         return statusUpdateType;
     }
 
     public DiagnosType extractDiagnos(ReadContext jsonCtx) {
-        
+
         LOG.debug("Extracting diagnos info from JSON model");
-        
+
         String diagnosKod = extractString(DIAGNOS_KOD_JSONP, jsonCtx);
-        
+
         if (diagnosKod == null) {
             LOG.debug("Diagnos code was not found in model");
             return null;
         }
-        
+
         String diagnosBeskr = extractString(DIAGNOS_BESKR_JSONP, jsonCtx);
-        
-        DiagnosType dt = new DiagnosType();        
+
+        DiagnosType dt = new DiagnosType();
         dt.setCode(diagnosKod);
         dt.setCodeSystem(DIAGNOS_CODESYSTEM);
         dt.setCodeSystemName(DIAGNOS_CODESYSTEM_NAME);
@@ -159,7 +157,7 @@ public class EnrichWithIntygModelDataStrategy {
     private LocalDate parseToLocalDate(String str) {
         return LocalDate.parse(str, DATE_FORMAT);
     }
-    
+
     public String extractString(JsonPath jsonPath, ReadContext jsonCtx) {
         try {
             return jsonCtx.read(jsonPath);
@@ -168,7 +166,7 @@ public class EnrichWithIntygModelDataStrategy {
             return null;
         }
     }
-    
+
     public NedsattningsPeriod extractToNedsattningsPeriod(JsonPath jsonPath, ReadContext jsonCtx) {
         try {
             return jsonCtx.read(jsonPath, NedsattningsPeriod.class);
@@ -177,9 +175,22 @@ public class EnrichWithIntygModelDataStrategy {
             return null;
         }
     }
-        
+
     public static class NedsattningsPeriod {
-        public String from;
-        public String tom;
+        private String from;
+        private String tom;
+
+        public String getFrom() {
+            return from;
+        }
+        public void setFrom(String from) {
+            this.from = from;
+        }
+        public String getTom() {
+            return tom;
+        }
+        public void setTom(String tom) {
+            this.tom = tom;
+        }
     }
 }

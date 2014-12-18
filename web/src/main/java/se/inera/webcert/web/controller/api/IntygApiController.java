@@ -79,7 +79,7 @@ public class IntygApiController extends AbstractApiController {
 
         LOG.debug("Attempting to create a draft copy of {} with id '{}'", intygsTyp, orgIntygsId);
 
-        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, request);
+        CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
 
         CreateNewDraftCopyResponse serviceResponse = intygDraftService.createNewDraftCopy(serviceRequest);
 
@@ -91,11 +91,11 @@ public class IntygApiController extends AbstractApiController {
         return Response.ok().entity(response).build();
     }
 
-    private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, CopyIntygRequest copyRequest) {
+    private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest) {
 
         CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest();
         req.setOriginalIntygId(originalIntygId);
-
+        req.setTyp(intygsTyp);
         req.setHosPerson(createHoSPersonFromUser());
         req.setVardenhet(createVardenhetFromUser());
 

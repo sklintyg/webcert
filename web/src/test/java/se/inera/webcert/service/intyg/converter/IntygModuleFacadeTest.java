@@ -35,9 +35,6 @@ public class IntygModuleFacadeTest {
     @Mock
     private ModuleApi moduleApi;
 
-    @Mock
-    private IntygModuleModelJaxbUtil jaxbUtil;
-
     @InjectMocks
     private IntygModuleFacadeImpl moduleFacade = new IntygModuleFacadeImpl();
 

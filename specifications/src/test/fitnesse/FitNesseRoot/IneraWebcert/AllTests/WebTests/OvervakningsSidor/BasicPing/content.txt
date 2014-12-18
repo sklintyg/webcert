@@ -8,5 +8,5 @@ Testet beskriver fallet när ett externt system använder vårt REST API för ö
 | hsa | =~/OK[0-9]+/ |
 | intygstjanst | =~/OK[0-9]+/ |
 | uptime | =~/OK[0-9]+/ |
-| signature-queue | OK0 |
+| signature-queue | =~/OK[0-9]+/ |
 

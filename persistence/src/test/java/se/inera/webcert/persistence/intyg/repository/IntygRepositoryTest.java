@@ -2,7 +2,6 @@ package se.inera.webcert.persistence.intyg.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.Matchers.notNullValue;
@@ -10,7 +9,6 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.model.Signatur;
 import se.inera.webcert.persistence.intyg.repository.util.IntygTestUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -37,9 +34,6 @@ public class IntygRepositoryTest {
 
     @Autowired
     private IntygRepository intygRepository;
-    
-    @Autowired
-    private SignaturRepository signaturRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -59,7 +53,21 @@ public class IntygRepositoryTest {
 
         assertThat(read.getModel(), is(equalTo(IntygTestUtil.MODEL)));
         
-        assertThat(read.getSignaturer(), hasSize(0));
+        assertThat(read.getSignatur(), is(nullValue()));
+    }
+    
+    @Test
+    public void testFindOneWithSignature() {
+        
+        Intyg intyg = IntygTestUtil.buildIntyg(IntygTestUtil.ENHET_1_ID);
+        String intygsId = intyg.getIntygsId();
+        intyg.setSignatur(IntygTestUtil.buildSignatur(intygsId, "A", LocalDateTime.now()));
+        
+        Intyg saved = intygRepository.save(intyg);
+        Intyg read = intygRepository.findOne(intygsId);
+
+        assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
+        assertThat(read.getSignatur(), is(notNullValue()));
     }
     
     @Test

@@ -12,6 +12,4 @@ public interface IntygModuleFacade {
  
     public abstract void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException;
     
-    public abstract void sendCertificate(String intygType, String internalIntygJsonModel, String recipient) throws ModuleException, IntygModuleFacadeException;
-    
 }

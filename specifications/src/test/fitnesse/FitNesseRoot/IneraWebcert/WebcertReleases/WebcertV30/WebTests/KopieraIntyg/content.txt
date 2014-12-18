@@ -4,3 +4,4 @@
 !see <IneraWebcert.AllTests.WebTests.KopieraIntyg.KopieraTidigareSigneratFk7263
 !see <IneraWebcert.AllTests.WebTests.KopieraIntyg.KopieraTidigareUtkastFk7263
 !see <IneraWebcert.AllTests.WebTests.KopieraIntyg.KopieraVisaSigneratFk7263
+!see <IneraWebcert.AllTests.WebTests.KopieraIntyg.KopieraIntygSomSkapatsMedWebcert
