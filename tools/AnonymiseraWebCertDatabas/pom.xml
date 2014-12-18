@@ -3,14 +3,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
-    <groupId>se.inera.intyg.webcert</groupId>
-    <artifactId>webcert</artifactId>
+    <groupId>se.inera.intyg.common</groupId>
+    <artifactId>common-pom</artifactId>
     <version>0-SNAPSHOT</version>
-    <relativePath>../../</relativePath>
   </parent>
-    
+
   <groupId>se.inera.webcert.tools</groupId>
   <artifactId>anonymisera-webcert-databas</artifactId>
   <version>1.0.5</version>
@@ -56,7 +55,7 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-dbcp2</artifactId>
     </dependency>
-              
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -136,5 +135,5 @@
       </plugin>
     </plugins>
   </build>
-  
+
 </project>
