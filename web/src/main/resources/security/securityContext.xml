@@ -67,8 +67,10 @@
   <!-- =============================================================== -->
   <beans profile="dev,wc-security-dev,wc-security-test">
     <security:http security="none" pattern="/welcome.jsp"/>
-    <!-- This enables access to notification-sender if it is co-deployed with Webcert as the root application -->
+    <!-- This enables access to the stubs of log-sender and notification-sender 
+        if they are co-deployed with Webcert as the root application -->
     <security:http security="none" pattern="/notification-sender/**"/>
+    <security:http security="none" pattern="/log-sender/**"/>
   </beans>
 
   <!-- =============================================================== -->
