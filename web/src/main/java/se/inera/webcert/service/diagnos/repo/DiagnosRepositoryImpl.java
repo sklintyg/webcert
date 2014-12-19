@@ -1,6 +1,9 @@
 package se.inera.webcert.service.diagnos.repo;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -82,21 +85,23 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
 
     @Override
     public List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults) {
+        List<Diagnos> matches = new ArrayList<Diagnos>();
+
         BooleanQuery query = new BooleanQuery();
-        String[] terms = searchString.toLowerCase().split(" +");
-        for (String term : terms) {
-            term = term.trim();
-            if (term.length() > 0) {
+        StandardAnalyzer analyzer = new StandardAnalyzer();
+        try {
+            TokenStream tokenStream = analyzer.tokenStream("description", searchString);
+            CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
+            tokenStream.reset();
+            while (tokenStream.incrementToken()) {
+                String term = charTermAttribute.toString();
                 query.add(new PrefixQuery(new Term("description", term)), BooleanClause.Occur.MUST);
             }
-        }
 
-        if (indexSearcher == null) {
-            throw new RuntimeException("Lucene index searcher is not opened");
-        }
+            if (indexSearcher == null) {
+                throw new RuntimeException("Lucene index searcher is not opened");
+            }
 
-        List<Diagnos> matches = new ArrayList<Diagnos>();
-        try {
             TopDocs results = indexSearcher.search(query, nbrOfResults);
             for (ScoreDoc hit : results.scoreDocs) {
                 matches.add(diagnoses.get(indexSearcher.doc(hit.doc).get("code")));
