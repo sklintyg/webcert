@@ -1,12 +1,11 @@
-Testet beskriver fallet när en användare försöka att lämna fråga svar list med ej hanterat svar. 
+!contents -R2 -g -p -f -h
+
+Testet beskriver fallet när en användare försöka att lämna fråga svar listen med ej hanterat svar. 
 En dialog skulle visas med följande knappar : hantera, ej hantera, tillbaka.
 Hantera : alla ej hanterad svar skulle sen blir hanterad, status = CLOSED.
 Ej Hnaterad : inget åtgärd, men browser gå till den nya länk.
 Tillbaka : inget åtgärd, bara gå tillbaks till fråga svar lista.
 https://inera-certificate.atlassian.net/browse/INTYG-928
 
-!3 Logga in
 
-| script | !-LoggaIn-! |
-| logga in som | eva_centrum-vast |
 

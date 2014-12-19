@@ -27,3 +27,11 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 | script | !-SvaraOchFraga-! |
 | lamna fraga svar|
 | lamna fraga svar ej hanterad dialog visas |
+
+!3 Verifiera att fraga svar blir hanterad när man klicka på hantera knappen
+
+| script | !-SvaraOchFraga-! |
+| klicka pa hantera knappen|
+| lista med ohanterade fragor visas |
+| svar ar borta | $internReferens1 |
+
