@@ -68,11 +68,11 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                     modal.close('button3 close');
                                 },
                                 button1text: 'label.qacheckhanterad.hanterad',
-                                button1id: 'button1checkhanterad-dialog',
+                                button1id: 'button1checkhanterad-dialog-hantera',
                                 button2text: 'label.qacheckhanterad.ejhanterad',
-                                button2id: 'button1checkhanterad-dialog',
+                                button2id: 'button1checkhanterad-dialog-ejhantera',
                                 button3text: 'label.qacheckhanterad.tillbaka',
-                                button3id: 'button1checkhanterad-dialog',
+                                button3id: 'button1checkhanterad-dialog-tillbaka',
                                 autoClose: true
                             });
                         } else {

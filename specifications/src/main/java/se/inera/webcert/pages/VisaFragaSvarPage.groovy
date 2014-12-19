@@ -44,7 +44,12 @@ class VisaFragaSvarPage extends AbstractPage {
 
         tillbakaButton { $("#tillbakaButton") }
 
+        hanteraButton { $("#button1checkhanterad-dialog-hantera") }
+        ejHanteraButton { $("#button1checkhanterad-dialog-ejhantera") }
+        hanteraTillbakaButton { $("#button1checkhanterad-dialog-tillbaka") }
+
         qaCheckEjHanteradDialog {$("#qa-check-hanterad-dialog")}
+
     }
 
     def copy() {
@@ -160,7 +165,22 @@ class VisaFragaSvarPage extends AbstractPage {
     }
 
     def tillbakaButtonClick() {
-        tillbakaButton.click()
+        $("#tillbakaButton").click()
     }
 
+    def hanteraButtonClick() {
+        hanteraButton.click()
+    }
+
+    def ejHanteraButtonClick() {
+        ejHanteraButton.click()
+    }
+
+    def hanteraTillbakaButtonClick() {
+        hanteraTillbakaButton.click()
+    }
+
+    def preferenceSkipShowUnhandledCheck(){
+        $("#preferenceSkipShowUnhandledDialog").click()
+    }
 }
