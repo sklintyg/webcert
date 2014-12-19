@@ -48,12 +48,6 @@
       <artifactId>ehr-logstore-interactions</artifactId>
     </dependency>
 
-    <!-- JSON input/output -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-    </dependency>
-
     <!-- Logging -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -187,11 +181,15 @@
             </systemProperty>
             <systemProperty>
               <name>credentials.file</name>
-              <value>${project.basedir}/credentials-dummy.properties</value>
+              <value>${project.basedir}/log-sender-dummy-credentials.properties</value>
             </systemProperty>
             <systemProperty>
               <name>logsender.config.file</name>
-              <value>${project.basedir}/logsender-dummy.properties</value>
+              <value>${project.basedir}/log-sender-dev.properties</value>
+            </systemProperty>
+            <systemProperty>
+              <name>logsender.logback.file</name>
+              <value>${project.basedir}/log-sender-logback.xml</value>
             </systemProperty>
             <systemProperty>
               <name>jetty.port</name>

@@ -4,18 +4,8 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <beans profile="qa,prod">
-    <!-- All config files must be present in qa and prod -->
-    <context:property-placeholder
-      location="classpath:default.properties, classpath:webcert-notification-route-params.properties, file:${notification-sender.config.file}, file:${credentials.file}"
-      order="1" ignore-resource-not-found="false" ignore-unresolvable="true" />
-  </beans>
-
-  <beans profile="dev,test">
-    <!-- Some config files, like credentials, could be missing in dev and test -->
-    <context:property-placeholder
-      location="classpath:default.properties, classpath:webcert-notification-route-params.properties, file:${notification-sender.config.file}"
-      order="1" ignore-resource-not-found="true" ignore-unresolvable="true" />
-  </beans>
+  <context:property-placeholder
+    location="classpath:default.properties, classpath:webcert-notification-route-params.properties, file:${notification-sender.config.file}, file:${credentials.file}"
+    order="1" ignore-resource-not-found="false" ignore-unresolvable="false" />
 
 </beans>

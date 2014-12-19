@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:jaxws="http://cxf.apache.org/jaxws"
-    xmlns:http="http://cxf.apache.org/transports/http/configuration"
-    xmlns:sec="http://cxf.apache.org/configuration/security"
-    xmlns:cxf="http://cxf.apache.org/core"
-    xsi:schemaLocation="
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+  xmlns:http="http://cxf.apache.org/transports/http/configuration"
+  xmlns:sec="http://cxf.apache.org/configuration/security" xmlns:cxf="http://cxf.apache.org/core"
+  xsi:schemaLocation="
       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
       http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
       http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
       http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-      http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
-    ">
+      http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
 
   <cxf:bus>
     <cxf:features>
-      <cxf:logging/>
+      <cxf:logging />
     </cxf:features>
   </cxf:bus>
 
   <jaxws:client id="storeLogClient"
-                serviceClass="se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface"
-                address="${loggtjanst.endpoint.url}">
+    serviceClass="se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface"
+    address="${loggtjanst.endpoint.url}">
     <jaxws:properties>
-      <entry key="schema-validation-enabled" value="true"/>
+      <entry key="schema-validation-enabled" value="true" />
     </jaxws:properties>
   </jaxws:client>
 
-  <beans profile="test,qa,prod">
+  <beans profile="wc-security-test,wc-security-prod">
     <http:conduit
-            name="{urn:riv:ehr:log:store:StoreLog:1:rivtabp21}StoreLogResponderInterfacePort.http-conduit">
-      <http:client AllowChunking="false" AutoRedirect="true" Connection="Keep-Alive"/>
+      name="{urn:riv:ehr:log:store:StoreLog:1:rivtabp21}StoreLogResponderInterfacePort.http-conduit">
+      <http:client AllowChunking="false" AutoRedirect="true"
+        Connection="Keep-Alive" />
       <http:tlsClientParameters disableCNCheck="true">
 
         <sec:keyManagers keyPassword="${sakerhetstjanst.ws.key.manager.password}">
-          <sec:keyStore file="${sakerhetstjanst.ws.certificate.file}" password="${sakerhetstjanst.ws.certificate.password}"
-                        type="${sakerhetstjanst.ws.certificate.type}"/>
+          <sec:keyStore file="${sakerhetstjanst.ws.certificate.file}"
+            password="${sakerhetstjanst.ws.certificate.password}" type="${sakerhetstjanst.ws.certificate.type}" />
         </sec:keyManagers>
         <sec:trustManagers>
-          <sec:keyStore file="${sakerhetstjanst.ws.truststore.file}" password="${sakerhetstjanst.ws.truststore.password}" type="${sakerhetstjanst.ws.truststore.type}"/>
+          <sec:keyStore file="${sakerhetstjanst.ws.truststore.file}"
+            password="${sakerhetstjanst.ws.truststore.password}" type="${sakerhetstjanst.ws.truststore.type}" />
         </sec:trustManagers>
 
         <sec:cipherSuitesFilter>
-          <!-- these filters ensure that a cipher suite with export-suitable or null encryption is used, but exclude anonymous Diffie-Hellman key change
+          <!-- these filters ensure that a cipher suite with export-suitable 
+            or null encryption is used, but exclude anonymous Diffie-Hellman key change 
             as this is vulnerable to man-in-the-middle attacks -->
           <sec:include>.*_EXPORT_.*</sec:include>
           <sec:include>.*_EXPORT1024_.*</sec:include>

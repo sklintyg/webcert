@@ -170,7 +170,11 @@
           <systemProperties>
             <systemProperty>
               <name>spring.profiles.active</name>
-              <value>dev</value>
+              <value>${system.mode}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>credentials.file</name>
+              <value>${basedir}/notification-sender-dummy-credentials.properties</value>
             </systemProperty>
             <systemProperty>
               <name>notification-sender.logback.file</name>
@@ -178,7 +182,7 @@
             </systemProperty>
             <systemProperty>
               <name>notification-sender.config.file</name>
-              <value>${basedir}/notification-sender-jetty.properties</value>
+              <value>${basedir}/notification-sender-dev.properties</value>
             </systemProperty>
             <systemProperty>
               <name>catalina.base</name>

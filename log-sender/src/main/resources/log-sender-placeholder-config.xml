@@ -1,30 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:http="http://cxf.apache.org/transports/http/configuration"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:http="http://cxf.apache.org/transports/http/configuration"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
-  <beans profile="qa,prod">
-    <!-- Config file must be present in qa and prod -->
-    <context:property-placeholder
-      location="file:${credentials.file}, file:${logsender.config.file}" order="1" 
-      ignore-resource-not-found="false" ignore-unresolvable="true"/>
-  </beans>
-
-  <beans profile="dev,test">
-    <!-- Config file could be missing in dev and test -->
-    <context:property-placeholder
-      location="file:${credentials.file}, file:${logsender.config.file}" order="1" 
-      ignore-resource-not-found="true" ignore-unresolvable="true"/>
-  </beans>
-
-  <beans>
-    <context:property-placeholder
-      location="classpath:default.properties, classpath:default.${spring.profiles.active}.properties" order="2"
-      ignore-resource-not-found="true"/>
-  </beans>
+  <!-- Config files must be present -->
+  <context:property-placeholder
+    location="classpath:default.properties, file:${logsender.config.file}, file:${credentials.file}"
+    order="1" ignore-resource-not-found="false" ignore-unresolvable="false" />
 
 </beans>

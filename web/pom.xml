@@ -390,10 +390,6 @@
               <name>webcert.logback.file</name>
               <value>${project.basedir}/webcert-logback.xml</value>
             </systemProperty>
-            <systemProperty>
-              <name>logsender.config.file</name>
-              <value>classpath:fk7263-logback.xml</value>
-            </systemProperty>
           </systemProperties>
         </configuration>
         <dependencies>

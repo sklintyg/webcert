@@ -23,7 +23,7 @@
     </jaxws:properties>
   </jaxws:client>
 
-  <beans profile="test,qa,prod">
+  <beans profile="wc-security-test,wc-security-prod">
     <http:conduit
       name="{urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCare:1:rivtabp21}CertificateStatusUpdateForCareResponderInterfacePort.http-conduit">
       <http:client AllowChunking="false" AutoRedirect="true"
@@ -55,7 +55,7 @@
   </beans>
   
   <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare -->
-  <beans profile="dev,test,qa">
+  <beans profile="dev,wc-notificationsender-stub">
     <jaxws:endpoint address="/certificate-status-update-for-care-stub"
       implementor="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub" />
   </beans>
