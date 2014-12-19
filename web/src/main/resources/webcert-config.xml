@@ -29,22 +29,14 @@
   
   <context:component-scan base-package="se.inera.webcert" />
   
-  <beans profile="!dev">
+  <beans>
     <!-- All config files must be present in other modes than dev -->
     <context:property-placeholder
       location="file:${credentials.file}, file:${webcert.config.file}"
       order="1" ignore-unresolvable="true"/>
   </beans>
-
-  <beans profile="dev">
-    <!-- This is the default config file used for dev mode -->
-    <context:property-placeholder
-      location="classpath:/webcert-dev.properties"
-      order="1" ignore-unresolvable="true" />
-      
-  </beans>
   
-  <beans profile="dev,wc-init-data">    
+  <beans profile="dev,wc-init-data">
     <!-- In dev mode we bootstrap data -->
     <bean id="FragaSvarBootstrapBean" class="se.inera.webcert.service.util.FragaSvarBootstrapBean" />
   </beans>
