@@ -7,7 +7,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>0-SNAPSHOT</version>
+    <version>1.0.4</version>
   </parent>
 
   <groupId>se.inera.webcert.tools</groupId>
