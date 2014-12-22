@@ -7,7 +7,7 @@
   file: path={{ releases_folder }} state=directory
   
 - name: download webcert-liquibase-runner-{{ version }}.jar
-  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}-jar-with-dependencies.jar
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.jar
       dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar
 
 - name: run liquibase update

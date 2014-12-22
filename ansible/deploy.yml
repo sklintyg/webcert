@@ -3,8 +3,8 @@
 - hosts: all
   sudo: yes 
   vars: 
-    version: 3.0.0-b21
-    config_version: webcert-3.0.0-b21
+    version: 3.0.0-b22
+    config_version: master
 
   roles:
     - webcert
