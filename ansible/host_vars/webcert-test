@@ -1,6 +1,6 @@
 ---
 # file: host_vars/intygstjanst-test
-profile: test,wc-security-test
+profile: test,wc-all-stubs,wc-security-test
 tomcat_conf: /usr/local/tomcat7/conf
 tomcat_bin: /usr/local/tomcat7/bin
 tomcat_lib: /usr/local/tomcat7/lib
