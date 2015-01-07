@@ -1,7 +1,6 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    [ '$filter', '$location', '$log', '$scope', '$cookieStore', 'webcert.CreateCertificateDraft',
-        'common.dialogService', 'webcert.ManageCertificate',
-        function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft, dialogService,
+    [ '$filter', '$location', '$log', '$scope', '$cookieStore', 'webcert.CreateCertificateDraft', 'webcert.ManageCertificate',
+        function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft,
             ManageCertificate) {
             'use strict';
 
