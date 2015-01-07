@@ -4,10 +4,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             ManageCertificate) {
             'use strict';
 
-            if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.fornamn ||
-                !CreateCertificateDraft.efternamn) {
-                $location.url('/create/index', true);
-            }
+            /**
+             * Page state
+             */
+            var changePatientUrl = '/create/index';
 
             // Page setup
             $scope.focusFirstInput = true;
@@ -20,7 +20,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.filterForm = {
-                intygFilter: 'current'
+                intygFilter: 'current' // possible values: current, revoked, all
             };
 
             $scope.personnummer = CreateCertificateDraft.personnummer;
@@ -31,38 +31,64 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             $scope.intygType = 'default';
             $scope.certificateTypeText = '';
 
-            $scope.certTypes = [
-/*                {
-                    id: 'default',
-                    label: ''
-                }*/
-            ];
+            // Format: { id: 'default', label: '' }
+            $scope.certTypes = [];
 
-            ManageCertificate.getCertTypes(function(types) {
+            /**
+             * Private functions
+             * @private
+             */
 
-                $scope.certTypes = types;
-                $scope.intygType = CreateCertificateDraft.intygType;
+            function onPageLoad() {
+
+                // Redirect to index if pnr and name isn't specified
+                if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.fornamn ||
+                    !CreateCertificateDraft.efternamn) {
+                    $location.url(changePatientUrl, true);
+                }
+
+                // Load cert types user can choose from
+                ManageCertificate.getCertTypes(function(types) {
+
+                    $scope.certTypes = types;
+                    $scope.intygType = CreateCertificateDraft.intygType;
+                });
+
+                // Load certs for person with specified pnr
+                ManageCertificate.getCertificatesForPerson($scope.personnummer, function(data) {
+                    $scope.widgetState.doneLoading = false;
+                    $scope.widgetState.certListUnhandled = data;
+                    $scope.updateCertList();
+                }, function(errorData) {
+                    $scope.widgetState.doneLoading = false;
+                    $log.debug('Query Error' + errorData);
+                    $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
+                });
+
+                // Prepare copy dialog
+                ManageCertificate.initCopyDialog($scope);
+            }
+
+            /**
+             * Watches
+             */
+
+            $scope.$watch('filterForm.intygFilter', function() {
+                $scope.updateCertList();
             });
+
+            /**
+             * Exposed to scope
+             */
 
             $scope.updateCertList = function() {
                 $scope.widgetState.currentList =
                     $filter('TidigareIntygFilter')($scope.widgetState.certListUnhandled, $scope.filterForm.intygFilter);
             };
 
-            ManageCertificate.getCertificatesForPerson($scope.personnummer, function(data) {
-                $scope.widgetState.doneLoading = false;
-                $scope.widgetState.certListUnhandled = data;
-                $scope.updateCertList();
-            }, function(errorData) {
-                $scope.widgetState.doneLoading = false;
-                $log.debug('Query Error' + errorData);
-                $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
-            });
-
-            /**
-             * Private functions
-             * @private
-             */
+            $scope.changePatient = function() {
+                $location.path(changePatientUrl);
+            };
 
             $scope.createDraft = function() {
                 CreateCertificateDraft.intygType = $scope.intygType;
@@ -75,18 +101,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 });
             };
 
-            /**
-             * Exposed to scope
-             */
-
-            $scope.changePatient = function() {
-                $location.path('/create/index');
-            };
-
-            $scope.$watch('filterForm.intygFilter', function() {
-                $scope.updateCertList();
-            });
-
             $scope.openIntyg = function(cert) {
                 if (cert.source === 'WC') {
                     $location.path('/' + cert.intygType + '/edit/' + cert.intygId);
@@ -95,8 +109,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 }
             };
 
-            ManageCertificate.initCopyDialog($scope);
             $scope.copyIntyg = function(cert) {
                 ManageCertificate.copy($scope, cert);
             };
+
+            onPageLoad();
         }]);
