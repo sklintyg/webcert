@@ -372,4 +372,14 @@
     </addColumn>
   </changeSet>
 
+  <changeSet id="10" author="np">
+    <createIndex tableName="INTYG" indexName="IDX_INTYG_ENHETS_ID_STATUS" unique="false">
+      <column name="ENHETS_ID" />
+      <column name="STATUS" />
+    </createIndex>
+    <createIndex tableName="INTYG" indexName="IDX_INTYG_PATIENT_PERSONNUMMER" unique="false">
+      <column name="PATIENT_PERSONNUMMER"/>
+    </createIndex>
+  </changeSet>
+
 </databaseChangeLog>
