@@ -6,7 +6,19 @@ package se.inera.webcert.persistence.intyg.model;
  * @author marced
  */
 public enum IntygsStatus {
+
+    /**
+     * Work in progress, invalid.
+     */
     DRAFT_INCOMPLETE,
+
+    /**
+     * Valid and ready for signing.
+     */
     DRAFT_COMPLETE,
-    SIGNED
+
+    /**
+     * Signed and valid.
+     */
+    SIGNED;
 }

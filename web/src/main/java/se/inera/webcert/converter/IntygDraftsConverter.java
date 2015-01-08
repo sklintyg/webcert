@@ -1,22 +1,22 @@
 package se.inera.webcert.converter;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
-import se.inera.webcert.web.controller.api.dto.IntygSource;
-import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygStatus;
+import se.inera.webcert.service.intyg.dto.StatusType;
+import se.inera.webcert.web.controller.api.dto.IntygSource;
+import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 
 public final class IntygDraftsConverter {
 
@@ -74,7 +74,7 @@ public final class IntygDraftsConverter {
 
         // add alldrafts
         for (Intyg intyg : draftIntygList) {
-            intygEntry = convertIntygToListIntygEntry(intyg);
+            intygEntry = convertIntygsUtkastToListIntygEntry(intyg);
             allIntyg.add(intygEntry);
         }
 
@@ -92,7 +92,7 @@ public final class IntygDraftsConverter {
         ListIntygEntry intygEntry;
 
         for (Intyg cert : draftIntygList) {
-            intygEntry = convertIntygToListIntygEntry(cert);
+            intygEntry = convertIntygsUtkastToListIntygEntry(cert);
             allIntyg.add(intygEntry);
         }
 
@@ -102,36 +102,20 @@ public final class IntygDraftsConverter {
         return allIntyg;
     }
 
-    public static ListIntygEntry convertIntygToListIntygEntry(Intyg intyg) {
+    public static ListIntygEntry convertIntygsUtkastToListIntygEntry(Intyg intygsUtkast) {
 
         ListIntygEntry ie = new ListIntygEntry();
 
-        ie.setIntygId(intyg.getIntygsId());
-        ie.setIntygType(intyg.getIntygsTyp());
+        ie.setIntygId(intygsUtkast.getIntygsId());
+        ie.setIntygType(intygsUtkast.getIntygsTyp());
         ie.setSource(IntygSource.WC);
-        ie.setUpdatedSignedBy(intyg.getSenastSparadAv().getNamn());
-        ie.setLastUpdatedSigned(intyg.getSenastSparadDatum());
-        ie.setPatientId(intyg.getPatientPersonnummer());
-        ie.setVidarebefordrad(intyg.getVidarebefordrad());
-
-        StatusType status = convertIntygsStatusToStatusType(intyg.getStatus());
-        ie.setStatus(status.toString());
+        ie.setUpdatedSignedBy(intygsUtkast.getSenastSparadAv().getNamn());
+        ie.setLastUpdatedSigned(intygsUtkast.getSenastSparadDatum());
+        ie.setPatientId(intygsUtkast.getPatientPersonnummer());
+        ie.setVidarebefordrad(intygsUtkast.getVidarebefordrad());
+        ie.setStatus(intygsUtkast.getStatus().toString());
 
         return ie;
-    }
-
-    private static StatusType convertIntygsStatusToStatusType(IntygsStatus intygsStatus) {
-
-        switch (intygsStatus) {
-        case DRAFT_COMPLETE:
-            return StatusType.DRAFT_COMPLETE;
-        case DRAFT_INCOMPLETE:
-            return StatusType.DRAFT_INCOMPLETE;
-        case SIGNED:
-            return StatusType.SIGNED;
-        default:
-            return StatusType.UNKNOWN;
-        }
     }
 
     public static ListIntygEntry convertIntygItemToListIntygEntry(IntygItem intygItem) {

@@ -44,7 +44,7 @@ public class IntygDraftsConverterTest {
 
         List<IntygItem> signedIntygList = TestIntygFactory.createListWithIntygItems();
 
-        List<Intyg> draftIntygList = TestIntygFactory.createListWithIntygDrafts();
+        List<Intyg> draftIntygList = TestIntygFactory.createListWithIntygsUtkast();
 
         List<ListIntygEntry> res = IntygDraftsConverter.merge(signedIntygList, draftIntygList);
 
@@ -64,7 +64,7 @@ public class IntygDraftsConverterTest {
         String updatedSignedByHsaId = "HSA1234";
         String patientId = "19121212-1212";
 
-        List<Intyg> draftIntygList = Arrays.asList(TestIntygFactory.createIntyg(id, modfied, type, updatedSignedBy,
+        List<Intyg> draftIntygList = Arrays.asList(TestIntygFactory.createIntygsUtkast(id, modfied, type, updatedSignedBy,
                 updatedSignedByHsaId, IntygsStatus.DRAFT_COMPLETE, patientId));
 
         List<ListIntygEntry> res = IntygDraftsConverter.convertIntygToListEntries(draftIntygList);

@@ -42,7 +42,7 @@ public class IntygApiControllerTest {
             IntygsStatus.DRAFT_INCOMPLETE);
     private static List<IntygsStatus> DRAFT_COMPLETE_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE);
 
-    private static List<Intyg> intygDrafts = TestIntygFactory.createListWithIntygDrafts();
+    private static List<Intyg> intygDrafts = TestIntygFactory.createListWithIntygsUtkast();
 
     private static List<IntygItem> intygSigned = TestIntygFactory.createListWithIntygItems();
 

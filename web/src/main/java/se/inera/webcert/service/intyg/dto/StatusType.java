@@ -3,21 +3,6 @@ package se.inera.webcert.service.intyg.dto;
 public enum StatusType {
 
     /**
-     * Work in progress.
-     */
-    DRAFT_INCOMPLETE,
-
-    /**
-     * Valid and ready for signing.
-     */
-    DRAFT_COMPLETE,
-
-    /**
-     * Signed and valid.
-     */
-    SIGNED,
-
-    /**
      * Received and registered by Intygstjanst.
      */
     RECEIVED,
