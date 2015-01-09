@@ -37,7 +37,6 @@ describe('ManageCertificate', function() {
         $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat']));
         $provide.value('common.User', User);
         $provide.value('common.CertificateService', {});
-//        $provide.value('$location', jasmine.createSpyObj('$location', ['url'])); // { url: function(url) { return url !== undefined ? this.url = url : this.url; }}
         $provide.value('common.messageService', {});
 
     }));
