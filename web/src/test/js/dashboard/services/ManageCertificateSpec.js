@@ -4,29 +4,55 @@ describe('ManageCertificate', function() {
     var ManageCertificate;
     var $httpBackend;
     var featureService;
+    var dialogService;
+    var $cookieStore;
+    var $location;
 
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
         featureService = {
-            features:{
+            features: {
                 HANTERA_INTYGSUTKAST: 'hanteraIntygsutkast'
             },
             isFeatureActive: jasmine.createSpy('isFeatureActive')
         };
+
+        var User = {
+            getValdVardenhet: function() {
+                return {
+                    id: 'enhet1',
+                    namn: 'Vårdenheten'
+                };
+            }
+        };
+
+        dialogService = {
+            showDialog: function($scope, options) {
+
+            }
+        };
+
         $provide.value('common.featureService', featureService);
-        $provide.value('common.dialogService', {});
-        $provide.value('common.statService', {});
-        $provide.value('common.User', {});
+        $provide.value('common.dialogService', dialogService);
+        $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat']));
+        $provide.value('common.User', User);
         $provide.value('common.CertificateService', {});
+//        $provide.value('$location', jasmine.createSpyObj('$location', ['url'])); // { url: function(url) { return url !== undefined ? this.url = url : this.url; }}
         $provide.value('common.messageService', {});
+
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.ManageCertificate', '$httpBackend', 'common.messageService',
-        function(_ManageCertificate_, _$httpBackend_, _messageService_) {
+    beforeEach(angular.mock.inject(['webcert.ManageCertificate', '$httpBackend', '$cookieStore', '$location',
+        'common.messageService',
+        function(_ManageCertificate_, _$httpBackend_, _$cookieStore_, _$location_, _messageService_) {
             ManageCertificate = _ManageCertificate_;
             $httpBackend = _$httpBackend_;
-            _messageService_.getProperty = function() { return 'Välj typ av intyg'; };
+            $cookieStore = _$cookieStore_;
+            $location = _$location_;
+            _messageService_.getProperty = function() {
+                return 'Välj typ av intyg';
+            };
         }]));
 
     describe('#getCertTypes', function() {
@@ -89,6 +115,134 @@ describe('ManageCertificate', function() {
 
             expect(onSuccess).not.toHaveBeenCalled();
             expect(onError).toHaveBeenCalled();
+        });
+    });
+
+    describe('#getCertificatesForPerson', function() {
+
+        var personId;
+        beforeEach(function() {
+            personId = '19121212-1212';
+        });
+
+        it('should call onSuccess callback with list of certificates for person from the server', function() {
+            var onSuccess = jasmine.createSpy('onSuccess');
+            var onError = jasmine.createSpy('onError');
+
+            featureService.isFeatureActive.andReturn(true);
+
+            $httpBackend.expectGET('/api/intyg/person/' + personId).respond([
+                { 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false }
+            ]);
+
+            ManageCertificate.getCertificatesForPerson(personId, onSuccess, onError);
+            $httpBackend.flush();
+
+            expect(onSuccess).toHaveBeenCalledWith([
+                { 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false }
+            ]);
+            expect(onError).not.toHaveBeenCalled();
+        });
+
+        it('should call onError if the list cannot be fetched from the server', function() {
+            var onSuccess = jasmine.createSpy('onSuccess');
+            var onError = jasmine.createSpy('onError');
+            $httpBackend.expectGET('/api/intyg/person/' + personId).respond(500);
+
+            ManageCertificate.getCertificatesForPerson(personId, onSuccess, onError);
+            $httpBackend.flush();
+
+            expect(onSuccess).not.toHaveBeenCalled();
+            expect(onError).toHaveBeenCalled();
+        });
+    });
+
+    describe('#copy', function() {
+
+        var $scope;
+        var cert;
+
+        beforeEach(function() {
+            $scope = {
+                widgetState: {
+                    activeErrorMessageKey: null,
+                    inlineErrorMessageKey: null,
+                    createErrorMessageKey: undefined
+                },
+                dialog: {
+                    showerror: false,
+                    acceptprogressdone: false,
+                    errormessageid: null
+                }
+            };
+            cert = {
+                'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false
+            };
+
+            spyOn(dialogService, 'showDialog').andCallFake(function($scope, options) {
+                options.button1click();
+
+                return {
+                    opened: { then: function() {} },
+                    close: function() {}
+                };
+            });
+
+            spyOn($location, 'url').andCallThrough();
+        });
+
+        it('should immediately request a utkast copy of cert if the copy cookie is set', function() {
+
+            $cookieStore.put(ManageCertificate.COPY_DIALOG_COOKIE, true);
+
+            $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
+                {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
+            );
+            ManageCertificate.copy($scope, cert);
+            $httpBackend.flush();
+
+            expect(dialogService.showDialog).not.toHaveBeenCalled();
+            expect($location.url).toHaveBeenCalledWith('/fk7263/edit/nytt-utkast-id', true);
+
+            $cookieStore.remove(ManageCertificate.COPY_DIALOG_COOKIE);
+        });
+
+        it('should show the copy dialog if the copy cookie is not set', function() {
+
+            $cookieStore.remove(ManageCertificate.COPY_DIALOG_COOKIE);
+            $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
+                {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
+            );
+            ManageCertificate.copy($scope, cert);
+            $httpBackend.flush();
+
+            expect(dialogService.showDialog).toHaveBeenCalled();
+            expect($location.url).toHaveBeenCalledWith('/fk7263/edit/nytt-utkast-id', true);
+        });
+    });
+
+    describe('_createCopyDraft', function() {
+
+        var cert;
+        beforeEach(function() {
+            cert = {
+                'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false
+            };
+        });
+
+        it('should request a copy and redirect to the edit page', function() {
+
+            var onSuccess = jasmine.createSpy('onSuccess');
+            var onError = jasmine.createSpy('onError');
+
+            $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
+                {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
+            );
+            ManageCertificate.__test__.createCopyDraft(cert, onSuccess, onError);
+            $httpBackend.flush();
+
+            expect(onSuccess).toHaveBeenCalledWith({'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'});
+            expect(onError).not.toHaveBeenCalled();
         });
     });
 });

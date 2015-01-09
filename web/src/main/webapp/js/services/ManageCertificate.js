@@ -53,9 +53,9 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             /*
              * Load certificate list of all certificates for a person
              */
-            function _getCertificatesForPerson(requestConfig, onSuccess, onError) {
-                $log.debug('_getCertificatesForPerson type:' + requestConfig);
-                var restPath = '/api/intyg/person/' + requestConfig;
+            function _getCertificatesForPerson(personId, onSuccess, onError) {
+                $log.debug('_getCertificatesForPerson type:' + personId);
+                var restPath = '/api/intyg/person/' + personId;
                 $http.get(restPath).success(function(data) {
                     $log.debug('got data:' + data);
                     onSuccess(data);
@@ -111,7 +111,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            var COPY_DIALOG_COOKIE = 'wc.dontShowCopyDialog';
+            var _COPY_DIALOG_COOKIE = 'wc.dontShowCopyDialog';
             var copyDialog = {
                 isOpen: false
             };
@@ -159,11 +159,11 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 var dialogModel = {
                     dontShowCopyInfo: false
                 };
-                if($cookieStore.get(COPY_DIALOG_COOKIE) === undefined) {
-                    $cookieStore.put(COPY_DIALOG_COOKIE, dialogModel.dontShowCopyInfo);
+                if($cookieStore.get(_COPY_DIALOG_COOKIE) === undefined) {
+                    $cookieStore.put(_COPY_DIALOG_COOKIE, dialogModel.dontShowCopyInfo);
                 }
 
-                if ($cookieStore.get(COPY_DIALOG_COOKIE)) {
+                if ($cookieStore.get(_COPY_DIALOG_COOKIE)) {
                     $log.debug('copy cert without dialog' + cert);
                     $scope.widgetState.activeErrorMessageKey = null;
                     $scope.widgetState.inlineErrorMessageKey = null;
@@ -195,7 +195,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                         button1click: function() {
                             $log.debug('copy cert from dialog' + cert);
                             if (dialogModel.dontShowCopyInfo) {
-                                $cookieStore.put(COPY_DIALOG_COOKIE, dialogModel.dontShowCopyInfo);
+                                $cookieStore.put(_COPY_DIALOG_COOKIE, dialogModel.dontShowCopyInfo);
                             }
 
                             $scope.dialog.showerror = false;
@@ -358,7 +358,13 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 makulera: _makulera,
                 initSend: _initSend,
                 send: _send,
+//                copyDialog: _copyDialog,
+                COPY_DIALOG_COOKIE: _COPY_DIALOG_COOKIE,
                 initCopyDialog: _initCopyDialog,
-                copy: _copy
+                copy: _copy,
+
+                __test__: {
+                    createCopyDraft: _createCopyDraft
+                }
             };
         }]);
