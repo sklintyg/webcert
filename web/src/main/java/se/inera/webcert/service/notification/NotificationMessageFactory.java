@@ -8,7 +8,7 @@ import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.notifications.message.v1.ObjectFactory;
 import se.inera.webcert.notifications.message.v1.VardenhetType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Utkast;
 
 /**
  * Factory class exposing methods which creates notifications messages.
@@ -21,17 +21,17 @@ public class NotificationMessageFactory {
 
     /* -- Create notification messages based on certificate -- */
 
-    public static NotificationRequestType createNotificationFromRevokedCertificate(Intyg intyg) {
+    public static NotificationRequestType createNotificationFromRevokedCertificate(Utkast utkast) {
 
-        NotificationRequestType nrt = createNotification(intyg, true);
+        NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYG_MAKULERAT);
 
         return nrt;
     }
 
-    public static NotificationRequestType createNotificationFromSentCertificate(Intyg intyg) {
+    public static NotificationRequestType createNotificationFromSentCertificate(Utkast utkast) {
 
-        NotificationRequestType nrt = createNotification(intyg, true);
+        NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYG_SKICKAT_FK);
 
         return nrt;
@@ -39,7 +39,7 @@ public class NotificationMessageFactory {
 
     /* -- Create notification messages from certificate draft -- */
 
-    public static NotificationRequestType createNotificationFromChangedCertificateDraft(Intyg utkast) {
+    public static NotificationRequestType createNotificationFromChangedCertificateDraft(Utkast utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYGSUTKAST_ANDRAT);
@@ -53,7 +53,7 @@ public class NotificationMessageFactory {
      * @param utkast
      * @return
      */
-    public static NotificationRequestType createNotificationFromDeletedDraft(Intyg utkast) {
+    public static NotificationRequestType createNotificationFromDeletedDraft(Utkast utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYGSUTKAST_RADERAT);
@@ -62,7 +62,7 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
-    public static NotificationRequestType createNotificationFromSignedDraft(Intyg utkast) {
+    public static NotificationRequestType createNotificationFromSignedDraft(Utkast utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYGSUTKAST_SIGNERAT);
@@ -70,7 +70,7 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
-    public static NotificationRequestType createNotificationFromCreatedDraft(Intyg utkast) {
+    public static NotificationRequestType createNotificationFromCreatedDraft(Utkast utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
         nrt.setHandelse(HandelseType.INTYGSUTKAST_SKAPAT);
@@ -122,13 +122,13 @@ public class NotificationMessageFactory {
 
     /* -- Non-public helper methods -- */
 
-    static NotificationRequestType createNotification(Intyg intyg, boolean includeHsaPerson) {
+    static NotificationRequestType createNotification(Utkast utkast, boolean includeHsaPerson) {
 
-        VardenhetType vt = getVardenhetType(intyg.getEnhetsId(), intyg.getEnhetsNamn());
-        HoSPersonType hspt = getHoSPersonType(intyg.getSenastSparadAv().getNamn(), intyg.getSenastSparadAv().getHsaId(), vt);
+        VardenhetType vt = getVardenhetType(utkast.getEnhetsId(), utkast.getEnhetsNamn());
+        HoSPersonType hspt = getHoSPersonType(utkast.getSenastSparadAv().getNamn(), utkast.getSenastSparadAv().getHsaId(), vt);
 
-        return getNotificationRequestType(intyg.getSenastSparadDatum(), hspt,
-                intyg.getIntygsId(), intyg.getIntygsTyp());
+        return getNotificationRequestType(utkast.getSenastSparadDatum(), hspt,
+                utkast.getIntygsId(), utkast.getIntygsTyp());
     }
 
     static NotificationRequestType createNotification(FragaSvar fragaSvar) {

@@ -1,6 +1,6 @@
 package se.inera.webcert.service.draft.dto;
 
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
@@ -11,7 +11,7 @@ public class CreateNewDraftRequest {
 
     private String intygType;
 
-    private IntygsStatus status;
+    private UtkastStatus status;
 
     private Patient patient;
 
@@ -23,7 +23,7 @@ public class CreateNewDraftRequest {
 
     }
 
-    public CreateNewDraftRequest(String intygId, String intygType, IntygsStatus status, HoSPerson hosPerson,
+    public CreateNewDraftRequest(String intygId, String intygType, UtkastStatus status, HoSPerson hosPerson,
             Vardenhet vardenhet, Patient patient) {
         this.intygId = intygId;
         this.intygType = intygType;
@@ -49,11 +49,11 @@ public class CreateNewDraftRequest {
         this.intygType = intygType;
     }
 
-    public IntygsStatus getStatus() {
+    public UtkastStatus getStatus() {
         return status;
     }
 
-    public void setStatus(IntygsStatus status) {
+    public void setStatus(UtkastStatus status) {
         this.status = status;
     }
 

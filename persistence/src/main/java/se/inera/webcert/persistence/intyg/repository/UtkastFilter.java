@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 
-public class IntygFilter {
+public class UtkastFilter {
 
     private String unitHsaId;
 
@@ -19,13 +19,13 @@ public class IntygFilter {
 
     private LocalDateTime savedTo;
 
-    private List<IntygsStatus> statusList = new ArrayList<>();
+    private List<UtkastStatus> statusList = new ArrayList<>();
 
     private Integer startFrom;
 
     private Integer pageSize;
 
-    public IntygFilter(String unitHsaId) {
+    public UtkastFilter(String unitHsaId) {
         this.unitHsaId = unitHsaId;
     }
 
@@ -73,11 +73,11 @@ public class IntygFilter {
         this.savedTo = savedTo;
     }
 
-    public List<IntygsStatus> getStatusList() {
+    public List<UtkastStatus> getStatusList() {
         return statusList;
     }
 
-    public void setStatusList(List<IntygsStatus> statusList) {
+    public void setStatusList(List<UtkastStatus> statusList) {
         this.statusList = statusList;
     }
 

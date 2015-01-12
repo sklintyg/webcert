@@ -2,7 +2,7 @@ package se.inera.webcert.notifications;
 
 import org.joda.time.LocalDateTime;
 
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Utkast;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -12,18 +12,18 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.joda.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.joda.ser.LocalDateTimeSerializer;
 
-public class TestIntygProducer {
+public class TestUtkastProducer {
 
     private ObjectMapper objMapper;
 
-    public Intyg buildIntyg(String pathToJsonFile) {
+    public Utkast buildUtkast(String pathToJsonFile) {
         try {
-            String intygJson = TestDataUtil.readRequestFromFile(pathToJsonFile);
-            if (intygJson == null) {
+            String jsonModel = TestDataUtil.readRequestFromFile(pathToJsonFile);
+            if (jsonModel == null) {
                 return null;
             }
             ObjectMapper objectMapper = getObjectMapper();
-            return objectMapper.readValue(intygJson, Intyg.class);
+            return objectMapper.readValue(jsonModel, Utkast.class);
         } catch (Exception e) {
             throw new RuntimeException("Error occured when reading intyg json: " + e.getMessage());
         }

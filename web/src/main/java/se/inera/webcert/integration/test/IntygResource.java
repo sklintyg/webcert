@@ -13,10 +13,10 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
@@ -25,14 +25,14 @@ import se.inera.webcert.service.dto.Vardgivare;
 public class IntygResource {
 
     @Autowired
-    private IntygRepository intygRepository;
+    private UtkastRepository utkastRepository;
 
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraft(@PathParam("id") String id) {
-        Intyg intyg = intygRepository.findOne(id);
-        intygRepository.delete(intyg);
+        Utkast utkast = utkastRepository.findOne(id);
+        utkastRepository.delete(utkast);
         return Response.ok().build();
     }
 
@@ -40,38 +40,38 @@ public class IntygResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createDraft(CreateNewDraftRequest request) {
-        Intyg draft = new Intyg();
+        Utkast utkast = new Utkast();
 
         se.inera.webcert.service.dto.Patient patient = request.getPatient();
 
-        draft.setPatientPersonnummer(patient.getPersonnummer());
-        draft.setPatientFornamn(patient.getFornamn());
-        draft.setPatientMellannamn(patient.getMellannamn());
-        draft.setPatientEfternamn(patient.getEfternamn());
+        utkast.setPatientPersonnummer(patient.getPersonnummer());
+        utkast.setPatientFornamn(patient.getFornamn());
+        utkast.setPatientMellannamn(patient.getMellannamn());
+        utkast.setPatientEfternamn(patient.getEfternamn());
 
-        draft.setIntygsId(request.getIntygId());
-        draft.setIntygsTyp(request.getIntygType());
+        utkast.setIntygsId(request.getIntygId());
+        utkast.setIntygsTyp(request.getIntygType());
 
-        draft.setStatus(IntygsStatus.DRAFT_INCOMPLETE);
+        utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
         Vardenhet vardenhet = request.getVardenhet();
 
-        draft.setEnhetsId(vardenhet.getHsaId());
-        draft.setEnhetsNamn(vardenhet.getNamn());
+        utkast.setEnhetsId(vardenhet.getHsaId());
+        utkast.setEnhetsNamn(vardenhet.getNamn());
 
         Vardgivare vardgivare = vardenhet.getVardgivare();
 
-        draft.setVardgivarId(vardgivare.getHsaId());
-        draft.setVardgivarNamn(vardgivare.getNamn());
+        utkast.setVardgivarId(vardgivare.getHsaId());
+        utkast.setVardgivarNamn(vardgivare.getNamn());
 
         VardpersonReferens vardPerson = new VardpersonReferens();
         vardPerson.setNamn(request.getHosPerson().getNamn());
         vardPerson.setHsaId(request.getHosPerson().getHsaId());
 
-        draft.setSenastSparadAv(vardPerson);
-        draft.setSkapadAv(vardPerson);
+        utkast.setSenastSparadAv(vardPerson);
+        utkast.setSkapadAv(vardPerson);
 
-        intygRepository.save(draft);
+        utkastRepository.save(utkast);
 
         return Response.ok().build();
     }
@@ -80,10 +80,10 @@ public class IntygResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateDraft(@PathParam("id") String id, String model) {
-        Intyg intyg = intygRepository.findOne(id);
-        if (intyg != null) {
-            intyg.setModel(model);
-            intygRepository.save(intyg);
+        Utkast utkast = utkastRepository.findOne(id);
+        if (utkast != null) {
+            utkast.setModel(model);
+            utkastRepository.save(utkast);
         }
         return Response.ok().build();
     }
@@ -92,10 +92,10 @@ public class IntygResource {
     @Path("/{id}/komplett")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateDraft(@PathParam("id") String id) {
-        Intyg intyg = intygRepository.findOne(id);
-        if (intyg != null) {
-            intyg.setStatus(IntygsStatus.DRAFT_COMPLETE);
-            intygRepository.save(intyg);
+        Utkast utkast = utkastRepository.findOne(id);
+        if (utkast != null) {
+            utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
+            utkastRepository.save(utkast);
         }
         return Response.ok().build();
     }

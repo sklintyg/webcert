@@ -6,9 +6,9 @@ import java.util.List;
 import org.apache.camel.Header;
 
 import se.inera.webcert.notifications.TestDataUtil;
-import se.inera.webcert.notifications.TestIntygProducer;
+import se.inera.webcert.notifications.TestUtkastProducer;
 import se.inera.webcert.notifications.routes.RouteHeaders;
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Utkast;
 
 public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryService {
 
@@ -18,22 +18,22 @@ public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryServic
 
     private List<String> integratedUnits = Arrays.asList("vardenhet-1", "vardenhet-3");
 
-    private TestIntygProducer intygProducer = new TestIntygProducer();
+    private TestUtkastProducer utkastProducer = new TestUtkastProducer();
 
     @Override
-    public Intyg getIntygsUtkast(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+    public Utkast getUtkast(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
         String pathToIntygJson = "intyg/" + intygsId + ".json";
-        return intygProducer.buildIntyg(pathToIntygJson);
+        return utkastProducer.buildUtkast(pathToIntygJson);
     }
 
     @Override
-    public String getIntygsUtkastModel(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+    public String getModelFromUtkast(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
         String pathToJsonFile = "utlatande/utlatande-" + intygsId + ".json";
         return TestDataUtil.readRequestFromFile(pathToJsonFile);
     }
 
     @Override
-    public boolean isIntygsUtkastPresent(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+    public boolean isUtkastPresent(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
         return (validIntygsId.contains(intygsId));
     }
 

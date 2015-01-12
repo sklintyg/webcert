@@ -14,7 +14,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -24,9 +23,15 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
 
+/**
+ * A draft of a certificate.
+ * 
+ * @author marced
+ *
+ */
 @Entity
 @Table(name = "INTYG")
-public class Intyg {
+public class Utkast {
 
     private static final String UTF_8 = "UTF-8";
 
@@ -85,7 +90,7 @@ public class Intyg {
 
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
-    private IntygsStatus status;
+    private UtkastStatus status;
 
     @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
     private Boolean vidarebefordrad = Boolean.FALSE;
@@ -114,9 +119,9 @@ public class Intyg {
             return false;
         }
 
-        Intyg intygInstance = (Intyg) o;
+        Utkast otherUtkast = (Utkast) o;
 
-        if (intygsId != null ? !intygsId.equals(intygInstance.intygsId) : intygInstance.intygsId != null) {
+        if (intygsId != null ? !intygsId.equals(otherUtkast.intygsId) : otherUtkast.intygsId != null) {
             return false;
         }
 
@@ -232,11 +237,11 @@ public class Intyg {
         this.model = toBytes(model);
     }
 
-    public IntygsStatus getStatus() {
+    public UtkastStatus getStatus() {
         return status;
     }
 
-    public void setStatus(IntygsStatus status) {
+    public void setStatus(UtkastStatus status) {
         this.status = status;
     }
 

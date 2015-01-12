@@ -26,10 +26,10 @@ import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
@@ -63,8 +63,8 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         CHANGED, CREATED, DELETED;
     }
 
-    private static final List<IntygsStatus> ALL_DRAFT_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
-            IntygsStatus.DRAFT_INCOMPLETE);
+    private static final List<UtkastStatus> ALL_DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
+            UtkastStatus.DRAFT_INCOMPLETE);
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftServiceImpl.class);
 
@@ -72,7 +72,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private CreateIntygsIdStrategy intygsIdStrategy;
 
     @Autowired
-    private IntygRepository intygRepository;
+    private UtkastRepository utkastRepository;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -100,7 +100,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     public String createNewDraft(CreateNewDraftRequest request) {
 
         populateRequestWithIntygId(request);
-        request.setStatus(IntygsStatus.DRAFT_INCOMPLETE);
+        request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
         String intygType = request.getIntygType();
 
@@ -108,13 +108,13 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String intygJsonModel = getPopulatedModelFromIntygModule(intygType, draftRequest);
 
-        Intyg savedDraft = persistNewDraft(request, intygJsonModel);
+        Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
 
-        LOG.debug("Draft '{}' created and persisted", savedDraft.getIntygsId());
+        LOG.debug("Utkast '{}' created and persisted", savedUtkast.getIntygsId());
 
-        sendNotification(savedDraft, Event.CREATED);
+        sendNotification(savedUtkast, Event.CREATED);
 
-        return savedDraft.getIntygsId();
+        return savedUtkast.getIntygsId();
     }
 
     private void populateRequestWithIntygId(CreateNewDraftRequest request) {
@@ -130,40 +130,40 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         LOG.debug("Created id '{}' for the new draft", generatedIntygId);
     }
 
-    private Intyg persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
+    private Utkast persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
 
-        Intyg draft = new Intyg();
+        Utkast utkast = new Utkast();
 
         se.inera.webcert.service.dto.Patient patient = request.getPatient();
 
-        draft.setPatientPersonnummer(patient.getPersonnummer());
-        draft.setPatientFornamn(patient.getFornamn());
-        draft.setPatientMellannamn(patient.getMellannamn());
-        draft.setPatientEfternamn(patient.getEfternamn());
+        utkast.setPatientPersonnummer(patient.getPersonnummer());
+        utkast.setPatientFornamn(patient.getFornamn());
+        utkast.setPatientMellannamn(patient.getMellannamn());
+        utkast.setPatientEfternamn(patient.getEfternamn());
 
-        draft.setIntygsId(request.getIntygId());
-        draft.setIntygsTyp(request.getIntygType());
+        utkast.setIntygsId(request.getIntygId());
+        utkast.setIntygsTyp(request.getIntygType());
 
-        draft.setStatus(request.getStatus());
+        utkast.setStatus(request.getStatus());
 
-        draft.setModel(draftAsJson);
+        utkast.setModel(draftAsJson);
 
         Vardenhet vardenhet = request.getVardenhet();
 
-        draft.setEnhetsId(vardenhet.getHsaId());
-        draft.setEnhetsNamn(vardenhet.getNamn());
+        utkast.setEnhetsId(vardenhet.getHsaId());
+        utkast.setEnhetsNamn(vardenhet.getNamn());
 
         Vardgivare vardgivare = vardenhet.getVardgivare();
 
-        draft.setVardgivarId(vardgivare.getHsaId());
-        draft.setVardgivarNamn(vardgivare.getNamn());
+        utkast.setVardgivarId(vardgivare.getHsaId());
+        utkast.setVardgivarNamn(vardgivare.getNamn());
 
         VardpersonReferens creator = UpdateUserUtil.createVardpersonFromHosPerson(request.getHosPerson());
 
-        draft.setSenastSparadAv(creator);
-        draft.setSkapadAv(creator);
+        utkast.setSenastSparadAv(creator);
+        utkast.setSkapadAv(creator);
 
-        return saveDraft(draft);
+        return saveDraft(utkast);
     }
 
     private String getPopulatedModelFromIntygModule(String intygType, CreateNewDraftHolder draftRequest) {
@@ -218,11 +218,11 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }
 
-    public Intyg getIntygAsDraft(String intygId) {
+    public Utkast getIntygAsDraft(String intygId) {
 
         LOG.debug("Fetching draft '{}'", intygId);
 
-        Intyg intyg = intygRepository.findOne(intygId);
+        Utkast intyg = utkastRepository.findOne(intygId);
 
         if (intyg == null) {
             LOG.warn("Draft '{}' was not found", intygId);
@@ -233,24 +233,24 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    public Intyg getDraft(String intygId) {
+    public Utkast getDraft(String intygId) {
         return getIntygAsDraft(intygId);
     }
 
     @Override
     public SignatureTicket createDraftHash(String intygsId) {
-        Intyg intyg = getIntygAsDraft(intygsId);
+        Utkast intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
-        intygRepository.save(intyg);
+        utkastRepository.save(intyg);
 
         return signatureService.createDraftHash(intygsId);
     }
 
     @Override
     public SignatureTicket serverSignature(String intygsId) {
-        Intyg intyg = getIntygAsDraft(intygsId);
+        Utkast intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
-        intygRepository.save(intyg);
+        utkastRepository.save(intyg);
 
         return signatureService.serverSignature(intygsId);
     }
@@ -323,7 +323,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             CreateNewDraftHolder moduleRequest = createModuleRequestForCopying(newDraftIntygId, copyRequest, person);
 
             String internalModelString = null;
-            Intyg webcertIntyg = intygRepository.findOne(orgIntygsId);
+            Utkast webcertIntyg = utkastRepository.findOne(orgIntygsId);
             //Check for data in the webcert database first:
             if (webcertIntyg != null) {
                 internalModelString = webcertIntyg.getModel();
@@ -341,10 +341,10 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(newDraftModelAsJson), intygType);
 
             DraftValidation draftValidation = validateDraft(newDraftIntygId, intygType, newDraftModelAsJson);
-            IntygsStatus status = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE : IntygsStatus.DRAFT_INCOMPLETE;
+            UtkastStatus status = (draftValidation.isDraftValid()) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
 
             CreateNewDraftRequest newDraftRequest = createNewDraftRequestForCopying(newDraftIntygId, intygType, status, copyRequest, person);
-            Intyg savedDraft = persistNewDraft(newDraftRequest, newDraftModelAsJson);
+            Utkast savedDraft = persistNewDraft(newDraftRequest, newDraftModelAsJson);
 
             sendNotification(savedDraft, Event.CREATED);
 
@@ -383,7 +383,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         return new CreateNewDraftHolder(newDraftIntygId, hosPerson, patient);
     }
 
-    private CreateNewDraftRequest createNewDraftRequestForCopying(String newDraftIntygId, String intygType, IntygsStatus status,
+    private CreateNewDraftRequest createNewDraftRequestForCopying(String newDraftIntygId, String intygType, UtkastStatus status,
             CreateNewDraftCopyRequest request, Person person) {
 
         Patient patient = new Patient();
@@ -403,40 +403,40 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         String intygId = request.getIntygId();
 
-        LOG.debug("Saving and validating Intyg '{}'", intygId);
+        LOG.debug("Saving and validating utkast '{}'", intygId);
 
-        Intyg draft = intygRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findOne(intygId);
 
-        if (draft == null) {
-            LOG.warn("Intyg '{}' was not found", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The intyg could not be found");
+        if (utkast == null) {
+            LOG.warn("Utkast '{}' was not found", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
         }
 
         // check that the draft is still a draft
-        if (!isTheDraftStillADraft(draft.getStatus())) {
-            LOG.error("Intyg '{}' can not be updated since it is no longer a draft", intygId);
+        if (!isTheDraftStillADraft(utkast.getStatus())) {
+            LOG.error("Utkast '{}' can not be updated since it is no longer in draft mode", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "This intyg can not be updated since it is no longer a draft");
+                    "This utkast can not be updated since it is no longer in draft mode");
         }
 
-        String intygType = draft.getIntygsTyp();
+        String intygType = utkast.getIntygsTyp();
         String draftAsJson = request.getDraftAsJson();
 
         // Keep persisted json for comparsion  
-        String persistedJson = draft.getModel();
+        String persistedJson = utkast.getModel();
 
         // Update draft with user information
-        updateWithUser(draft, draftAsJson);
+        updateWithUser(utkast, draftAsJson);
 
         // Is draft valid?
         DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
 
-        IntygsStatus intygStatus = (draftValidation.isDraftValid()) ? IntygsStatus.DRAFT_COMPLETE : IntygsStatus.DRAFT_INCOMPLETE;
-        draft.setStatus(intygStatus);
+        UtkastStatus utkastStatus = (draftValidation.isDraftValid()) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
+        utkast.setStatus(utkastStatus);
 
         // Save the updated draft
-        draft = saveDraft(draft);
-        LOG.debug("Draft '{}' updated", draft.getIntygsId());
+        utkast = saveDraft(utkast);
+        LOG.debug("Utkast '{}' updated", utkast.getIntygsId());
 
 
         // Notify stakeholders when a draft has been changed/updated
@@ -444,7 +444,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             if (moduleApi.isModelChanged(persistedJson, draftAsJson)) {
                 LOG.debug("*** Detected changes in model, sending notification! ***");
-                sendNotification(draft, Event.CHANGED);
+                sendNotification(utkast, Event.CHANGED);
             }
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
@@ -455,10 +455,10 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
 
     @Transactional
-    private Intyg saveDraft(Intyg draft) {
-        Intyg savedDraft = intygRepository.save(draft);
-        LOG.debug("Draft '{}' saved", savedDraft.getIntygsId());
-        return savedDraft;
+    private Utkast saveDraft(Utkast utkast) {
+        Utkast savedUtkast = utkastRepository.save(utkast);
+        LOG.debug("Draft '{}' saved", savedUtkast.getIntygsId());
+        return savedUtkast;
     }
 
     @Override
@@ -512,7 +512,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         List<Lakare> lakareList = new ArrayList<>();
 
-        List<Object[]> result = intygRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFT_STATUSES);
+        List<Object[]> result = utkastRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFT_STATUSES);
 
         for (Object[] lakareArr : result) {
             lakareList.add(new Lakare((String) lakareArr[0], (String) lakareArr[1]));
@@ -522,18 +522,18 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    public Intyg setForwardOnDraft(String intygsId, Boolean forwarded) {
+    public Utkast setForwardOnDraft(String intygsId, Boolean forwarded) {
 
-        Intyg draft = intygRepository.findOne(intygsId);
+        Utkast utkast = utkastRepository.findOne(intygsId);
 
-        if (draft == null) {
+        if (utkast == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                    "Could not find Intyg with id: " + intygsId);
+                    "Could not find Utkast with id: " + intygsId);
         }
 
-        draft.setVidarebefordrad(forwarded);
+        utkast.setVidarebefordrad(forwarded);
 
-        return saveDraft(draft);
+        return saveDraft(utkast);
     }
 
     @Override
@@ -546,7 +546,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             return resultsMap;
         }
 
-        List<Object[]> countResults = intygRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES);
+        List<Object[]> countResults = utkastRepository.countIntygWithStatusesGroupedByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES);
 
         for (Object[] resultArr : countResults) {
             resultsMap.put((String) resultArr[0], (Long) resultArr[1]);
@@ -560,48 +560,48 @@ public class IntygDraftServiceImpl implements IntygDraftService {
 
         LOG.debug("Deleting draft with id '{}'", intygId);
 
-        Intyg intyg = intygRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findOne(intygId);
 
         // check that the draft exists
-        if (intyg == null) {
+        if (utkast == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                    "The intyg could not be deleted since it could not be found");
+                    "The draft could not be deleted since it could not be found");
         }
 
         // check that the draft is still unsigned
-        if (!isTheDraftStillADraft(intyg.getStatus())) {
+        if (!isTheDraftStillADraft(utkast.getStatus())) {
             LOG.error("Intyg '{}' can not be deleted since it is no longer a draft", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "The intyg can not be deleted since it is no longer a draft");
+                    "The draft can not be deleted since it is no longer a draft");
         }
 
         // Delete draft from repository
-        deleteUnsignedDraft(intyg);
+        deleteUnsignedDraft(utkast);
 
         // Notify stakeholders when a draft is deleted
-        sendNotification(intyg, Event.DELETED);
+        sendNotification(utkast, Event.DELETED);
     }
 
     @Transactional
-    private void deleteUnsignedDraft(Intyg draft) {
-        intygRepository.delete(draft);
-        LOG.debug("Deleteing draft '{}'", draft.getIntygsId());
+    private void deleteUnsignedDraft(Utkast utkast) {
+        utkastRepository.delete(utkast);
+        LOG.debug("Deleteing draft '{}'", utkast.getIntygsId());
     }
 
-    private void updateWithUser(Intyg intyg) {
-        updateWithUser(intyg, intyg.getModel());
+    private void updateWithUser(Utkast utkast) {
+        updateWithUser(utkast, utkast.getModel());
     }
 
-    private void updateWithUser(Intyg intyg, String draftAsJson) {
+    private void updateWithUser(Utkast utkast, String modelJson) {
         WebCertUser user = webCertUserService.getWebCertUser();
         se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = UpdateUserUtil.createUserObject(user);
-        intyg.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
+        utkast.setSenastSparadAv(vardPersonRef);
 
         try {
-            InternalModelHolder internalModel = new InternalModelHolder(draftAsJson);
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intyg.getIntygsTyp());
+            InternalModelHolder internalModel = new InternalModelHolder(modelJson);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
             InternalModelResponse updatedInternal = moduleApi.updateBeforeSave(internalModel, hosPerson);
-            intyg.setModel(updatedInternal.getInternalModel());
+            utkast.setModel(updatedInternal.getInternalModel());
         } catch (ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
         } catch (ModuleNotFoundException e) {
@@ -609,26 +609,26 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         }
     }
 
-    private boolean isTheDraftStillADraft(IntygsStatus intygStatus) {
-        return ALL_DRAFT_STATUSES.contains(intygStatus);
+    private boolean isTheDraftStillADraft(UtkastStatus utkastStatus) {
+        return ALL_DRAFT_STATUSES.contains(utkastStatus);
     }
 
-    private void sendNotification(Intyg draft, Event event) {
+    private void sendNotification(Utkast utkast, Event event) {
 
         NotificationRequestType notificationRequestType = null;
         String logMsg = "";
 
         switch (event) {
         case CHANGED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(draft);
+            notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(utkast);
             logMsg = "Notification sent: certificate draft with id '{}' was changed/updated.";
             break;
         case CREATED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(draft);
+            notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(utkast);
             logMsg = "Notification sent: certificate draft with id '{}' was created.";
             break;
         case DELETED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(draft);
+            notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(utkast);
             logMsg = "Notification sent: certificate draft with id '{}' was deleted.";
             break;
         default:
@@ -639,7 +639,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
             notificationService.notify(notificationRequestType);
         }
 
-        LOG.debug(logMsg, draft.getIntygsId());
+        LOG.debug(logMsg, utkast.getIntygsId());
     }
 
 }

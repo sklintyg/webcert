@@ -12,8 +12,9 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Utkast;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
@@ -24,12 +25,9 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
     @Test
     public void testStoreIntyg() throws Exception {
 
-        Intyg intyg = new Intyg();
-        intyg.setIntygsId(INTYG_ID);
-        intyg.setIntygsTyp(INTYG_TYP_FK);
-        intyg.setModel(json);
+        Utkast utkast = createUtkast();
 
-        IntygServiceResult res = intygService.storeIntyg(intyg);
+        IntygServiceResult res = intygService.storeIntyg(utkast);
         assertEquals(IntygServiceResult.OK, res);
         
         verify(omsandningRepository).save(any(Omsandning.class));
@@ -44,12 +42,9 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
 
         Mockito.doThrow(new ExternalServiceCallException("")).when(moduleFacade).registerCertificate(INTYG_TYP_FK, json);
 
-        Intyg intyg = new Intyg();
-        intyg.setIntygsId(INTYG_ID);
-        intyg.setIntygsTyp(INTYG_TYP_FK);
-        intyg.setModel(json);
+        Utkast utkast = createUtkast();
 
-        IntygServiceResult res = intygService.storeIntyg(intyg);
+        IntygServiceResult res = intygService.storeIntyg(utkast);
         assertEquals(IntygServiceResult.RESCHEDULED, res);
         
         // this error should schedule a resend
@@ -61,13 +56,10 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
 
         Mockito.doThrow(new IntygModuleFacadeException("")).when(moduleFacade).registerCertificate(INTYG_TYP_FK, json);
 
-        Intyg intyg = new Intyg();
-        intyg.setIntygsId(INTYG_ID);
-        intyg.setIntygsTyp(INTYG_TYP_FK);
-        intyg.setModel(json);
+        Utkast utkast = createUtkast();
 
         try {
-            intygService.storeIntyg(intyg);
+            intygService.storeIntyg(utkast);
             Assert.fail("WebCertServiceException expected");
         } catch (WebCertServiceException expected) {
             // Expected
@@ -76,6 +68,15 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
         // this error should not schedule a resend
         verify(omsandningRepository, times(1)).save(any(Omsandning.class));
         verify(omsandningRepository, times(1)).delete(any(Omsandning.class));
+    }
+
+    private Utkast createUtkast() {
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(INTYG_ID);
+        utkast.setIntygsTyp(INTYG_TYP_FK);
+        utkast.setStatus(UtkastStatus.SIGNED);
+        utkast.setModel(json);
+        return utkast;
     }
 
 }

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.notifications.service.WebcertRepositoryService;
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Utkast;
 
 public class GetIntygPropertiesProcessor implements Processor {
 
@@ -34,28 +34,28 @@ public class GetIntygPropertiesProcessor implements Processor {
             return;
         }
 
-        Intyg intyg = webcertRepositoryService.getIntygsUtkast(intygsId);
+        Utkast utkast = webcertRepositoryService.getUtkast(intygsId);
 
-        if (intyg == null) {
-            LOG.debug("Intyg with intygsID: {} not found in database!", intygsId);
+        if (utkast == null) {
+            LOG.debug("Utkast '{}' not found in database!", intygsId);
             exchange.getIn().setHeader(RouteHeaders.SAKNAS_I_DB, "SAKNAS_I_DB");
             return;
         }
 
-        String status = intyg.getStatus().toString();
+        String status = utkast.getStatus().toString();
 
-        LOG.debug("Set status: {} on intygsID: {} ", status, intygsId);
+        LOG.debug("Utkast '{}' has status {}", intygsId, status);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, status);
 
         // If logical address header is null, use enhetsId from the entity as logical address
         if (StringUtils.isBlank(logiskAddress)) {
-            logiskAddress = intyg.getEnhetsId();
-            LOG.debug("Set logisk adress: {} on intygsID: {} ", logiskAddress, intygsId);
+            logiskAddress = utkast.getEnhetsId();
+            LOG.debug("Logisk adress not set, using logisk adress '{}' for Utkast '{}'", logiskAddress, intygsId);
             exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, logiskAddress);
         }
 
         if (!webcertRepositoryService.isVardenhetIntegrerad(logiskAddress)) {
-            LOG.debug("Unit {} on Intyg {} is NOT integrated", logiskAddress, intygsId);
+            LOG.debug("Unit '{}' on Utkast '{}' is NOT integrated", logiskAddress, intygsId);
             exchange.getIn().setHeader(RouteHeaders.INTEGRERAD_ENHET, Boolean.FALSE);
         } else {
             exchange.getIn().setHeader(RouteHeaders.INTEGRERAD_ENHET, Boolean.TRUE);

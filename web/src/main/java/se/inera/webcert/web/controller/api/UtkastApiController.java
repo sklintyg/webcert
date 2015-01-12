@@ -20,17 +20,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.repository.IntygFilter;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.intyg.repository.UtkastFilter;
+import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.CreateNewIntygRequest;
+import se.inera.webcert.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
 import se.inera.webcert.web.controller.api.dto.QueryIntygResponse;
@@ -46,12 +46,12 @@ public class UtkastApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastApiController.class);
 
-    private static final List<IntygsStatus> ALL_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
-            IntygsStatus.DRAFT_INCOMPLETE);
+    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
+            UtkastStatus.DRAFT_INCOMPLETE);
 
-    private static final List<IntygsStatus> COMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE);
+    private static final List<UtkastStatus> COMPLETE_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE);
 
-    private static final List<IntygsStatus> INCOMPLETE_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_INCOMPLETE);
+    private static final List<UtkastStatus> INCOMPLETE_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_INCOMPLETE);
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
@@ -59,7 +59,7 @@ public class UtkastApiController extends AbstractApiController {
     private IntygDraftService intygDraftService;
 
     @Autowired
-    private IntygRepository intygRepository;
+    private UtkastRepository utkastRepository;
 
     /**
      * Creates a filtered query to get drafts for a specific unit.
@@ -75,45 +75,45 @@ public class UtkastApiController extends AbstractApiController {
 
         abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        IntygFilter intygFilter = createIntygFilter(filterParameters);
-        QueryIntygResponse queryResponse = performIntygFilterQuery(intygFilter);
+        UtkastFilter utkastFilter = createUtkastFilter(filterParameters);
+        QueryIntygResponse queryResponse = performUtkastFilterQuery(utkastFilter);
 
         return Response.ok(queryResponse).build();
     }
 
-    private IntygFilter createIntygFilter(QueryIntygParameter filterParameters) {
+    private UtkastFilter createUtkastFilter(QueryIntygParameter filterParameters) {
         WebCertUser user = getWebCertUserService().getWebCertUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
 
-        IntygFilter intygFilter = new IntygFilter(selectedUnitHsaId);
+        UtkastFilter utkastFilter = new UtkastFilter(selectedUnitHsaId);
 
         if (filterParameters != null) {
             if (Boolean.FALSE.equals(filterParameters.getComplete())) {
-                intygFilter.setStatusList(INCOMPLETE_DRAFTS);
+                utkastFilter.setStatusList(INCOMPLETE_DRAFTS);
             } else if (Boolean.TRUE.equals(filterParameters.getComplete())) {
-                intygFilter.setStatusList(COMPLETE_DRAFTS);
+                utkastFilter.setStatusList(COMPLETE_DRAFTS);
             } else {
-                intygFilter.setStatusList(ALL_DRAFTS);
+                utkastFilter.setStatusList(ALL_DRAFTS);
             }
 
-            intygFilter.setSavedFrom(filterParameters.getSavedFrom());
-            intygFilter.setSavedTo(filterParameters.getSavedTo());
-            intygFilter.setSavedByHsaId(filterParameters.getSavedBy());
-            intygFilter.setForwarded(filterParameters.getForwarded());
-            intygFilter.setPageSize(filterParameters.getPageSize() == null ? DEFAULT_PAGE_SIZE : filterParameters.getPageSize());
-            intygFilter.setStartFrom(filterParameters.getStartFrom() == null ? 0 : filterParameters.getStartFrom());
+            utkastFilter.setSavedFrom(filterParameters.getSavedFrom());
+            utkastFilter.setSavedTo(filterParameters.getSavedTo());
+            utkastFilter.setSavedByHsaId(filterParameters.getSavedBy());
+            utkastFilter.setForwarded(filterParameters.getForwarded());
+            utkastFilter.setPageSize(filterParameters.getPageSize() == null ? DEFAULT_PAGE_SIZE : filterParameters.getPageSize());
+            utkastFilter.setStartFrom(filterParameters.getStartFrom() == null ? 0 : filterParameters.getStartFrom());
         }
 
-        return intygFilter;
+        return utkastFilter;
     }
 
-    private QueryIntygResponse performIntygFilterQuery(IntygFilter filter) {
+    private QueryIntygResponse performUtkastFilterQuery(UtkastFilter filter) {
 
-        List<Intyg> intygList = intygRepository.filterIntyg(filter);
+        List<Utkast> intygList = utkastRepository.filterIntyg(filter);
 
-        List<ListIntygEntry> listIntygEntries = IntygDraftsConverter.convertIntygToListEntries(intygList);
+        List<ListIntygEntry> listIntygEntries = IntygDraftsConverter.convertUtkastsToListIntygEntries(intygList);
 
-        int totalCountOfFilteredIntyg = intygRepository.countFilterIntyg(filter);
+        int totalCountOfFilteredIntyg = utkastRepository.countFilterIntyg(filter);
 
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
@@ -121,7 +121,7 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     /**
-     * Returns a list of doctors that have one or more unsigned intyg.
+     * Returns a list of doctors that have one or more unsigned utkast.
      *
      * @return a list of {@link se.inera.webcert.service.dto.Lakare} objects.
      */
@@ -151,7 +151,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/{intygsTyp}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createNewDraft(@PathParam("intygsTyp") String intygsTyp, CreateNewIntygRequest request) {
+    public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
@@ -160,20 +160,18 @@ public class UtkastApiController extends AbstractApiController {
             return Response.status(Status.BAD_REQUEST).build();
         }
 
-        String intygType = request.getIntygType();
-
-        LOG.debug("Attempting to create draft of type '{}'", intygType);
+        LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
         CreateNewDraftRequest serviceRequest = createServiceRequest(request);
 
-        String idOfCreatedDraft = intygDraftService.createNewDraft(serviceRequest);
+        String utkastId = intygDraftService.createNewDraft(serviceRequest);
 
-        LOG.debug("Created a new draft of type '{}' with id '{}'", intygType, idOfCreatedDraft);
+        LOG.debug("Created a new draft of type '{}' with id '{}'", intygsTyp, utkastId);
 
-        return Response.ok().entity(idOfCreatedDraft).build();
+        return Response.ok().entity(utkastId).build();
     }
 
-    private CreateNewDraftRequest createServiceRequest(CreateNewIntygRequest req) {
+    private CreateNewDraftRequest createServiceRequest(CreateUtkastRequest req) {
         CreateNewDraftRequest srvReq = new CreateNewDraftRequest();
 
         srvReq.setIntygType(req.getIntygType());

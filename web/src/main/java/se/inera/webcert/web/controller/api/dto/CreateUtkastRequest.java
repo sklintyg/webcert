@@ -2,7 +2,7 @@ package se.inera.webcert.web.controller.api.dto;
 
 import org.apache.commons.lang.StringUtils;
 
-public class CreateNewIntygRequest {
+public class CreateUtkastRequest {
 
     private String intygType;
 
@@ -20,7 +20,7 @@ public class CreateNewIntygRequest {
 
     private String patientPostort;
 
-    public CreateNewIntygRequest() {
+    public CreateUtkastRequest() {
 
     }
 

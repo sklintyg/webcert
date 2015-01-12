@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.certificate.modules.fk7263.model.Constants;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -53,7 +53,7 @@ public class IntygIntegrationController {
     private IntygService intygService;
 
     @Autowired
-    private IntygRepository intygRepository;
+    private UtkastRepository utkastRepository;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -87,28 +87,26 @@ public class IntygIntegrationController {
     @Path("/{typ}/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typ, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
 
-        Boolean draft = false;
+        Boolean isUtkast = false;
 
         if (StringUtils.isBlank(intygId)) {
             return Response.serverError().build();
         }
 
-        webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM);
-
-        Intyg draftData = intygRepository.findOne(intygId);
-        if (draftData != null && !draftData.getStatus().equals(IntygsStatus.SIGNED)) {
-            draft = true;
+        Utkast utkast = utkastRepository.findOne(intygId);
+        if (utkast != null && !utkast.getStatus().equals(UtkastStatus.SIGNED)) {
+            isUtkast = true;
         }
         
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, typ);
 
         webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM);
 
-        return buildRedirectResponse(uriInfo, typ, intygId, alternatePatientSSn, responsibleHospName, draft);
+        return buildRedirectResponse(uriInfo, typ, intygId, alternatePatientSSn, responsibleHospName, isUtkast);
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId, String alternatePatientSSn,
-            String responsibleHospName, Boolean draft) {
+            String responsibleHospName, Boolean isUtkast) {
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
@@ -118,7 +116,7 @@ public class IntygIntegrationController {
         urlParams.put(PARAM_PATIENT_SSN, alternatePatientSSn);
 
         String urlFragmentTemplate;
-        if (draft) {
+        if (isUtkast) {
             urlParams.put(PARAM_HOSP_NAME, responsibleHospName);
             urlFragmentTemplate = this.urlUtkastFragmentTemplate;
         } else {

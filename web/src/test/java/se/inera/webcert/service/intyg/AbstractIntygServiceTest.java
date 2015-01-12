@@ -27,7 +27,7 @@ import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.v1.rivtabp20.RevokeMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
 import se.inera.webcert.persistence.intyg.model.Omsandning;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
 import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
 import se.inera.webcert.service.draft.IntygSignatureServiceImpl;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
@@ -66,7 +66,7 @@ public abstract class AbstractIntygServiceTest {
     protected IntygModuleFacade moduleFacade;
 
     @Mock
-    protected IntygRepository intygRepository;
+    protected UtkastRepository intygRepository;
 
     @Mock
     protected OmsandningRepository omsandningRepository;

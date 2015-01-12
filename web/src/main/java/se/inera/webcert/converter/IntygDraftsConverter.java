@@ -11,7 +11,7 @@ import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Utkast;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;
@@ -58,78 +58,78 @@ public final class IntygDraftsConverter {
 
     }
 
-    public static List<ListIntygEntry> merge(List<IntygItem> signedIntygList, List<Intyg> draftIntygList) {
+    public static List<ListIntygEntry> merge(List<IntygItem> intygList, List<Utkast> utkastList) {
 
-        LOG.debug("Merging intyg, signed {}, drafts {}", signedIntygList.size(), draftIntygList.size());
+        LOG.debug("Merging intyg, signed {}, drafts {}", intygList.size(), utkastList.size());
 
-        List<ListIntygEntry> allIntyg = new ArrayList<ListIntygEntry>();
+        List<ListIntygEntry> listIntygEntries = new ArrayList<ListIntygEntry>();
 
         ListIntygEntry intygEntry;
 
         // add all signed intyg
-        for (IntygItem cert : signedIntygList) {
+        for (IntygItem cert : intygList) {
             intygEntry = convertIntygItemToListIntygEntry(cert);
-            allIntyg.add(intygEntry);
+            listIntygEntries.add(intygEntry);
         }
 
         // add alldrafts
-        for (Intyg intyg : draftIntygList) {
-            intygEntry = convertIntygsUtkastToListIntygEntry(intyg);
-            allIntyg.add(intygEntry);
+        for (Utkast intyg : utkastList) {
+            intygEntry = convertUtkastToListIntygEntry(intyg);
+            listIntygEntries.add(intygEntry);
         }
 
         // sort according to signedUpdate date and then reverse so that last is on top.
-        Collections.sort(allIntyg, intygEntryDateComparator);
-        Collections.reverse(allIntyg);
+        Collections.sort(listIntygEntries, intygEntryDateComparator);
+        Collections.reverse(listIntygEntries);
 
-        return allIntyg;
+        return listIntygEntries;
     }
 
-    public static List<ListIntygEntry> convertIntygToListEntries(List<Intyg> draftIntygList) {
+    public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList) {
 
-        List<ListIntygEntry> allIntyg = new ArrayList<ListIntygEntry>();
+        List<ListIntygEntry> listIntygEntries = new ArrayList<ListIntygEntry>();
 
         ListIntygEntry intygEntry;
 
-        for (Intyg cert : draftIntygList) {
-            intygEntry = convertIntygsUtkastToListIntygEntry(cert);
-            allIntyg.add(intygEntry);
+        for (Utkast cert : utkastList) {
+            intygEntry = convertUtkastToListIntygEntry(cert);
+            listIntygEntries.add(intygEntry);
         }
 
-        Collections.sort(allIntyg, intygEntryDateComparator);
-        Collections.reverse(allIntyg);
+        Collections.sort(listIntygEntries, intygEntryDateComparator);
+        Collections.reverse(listIntygEntries);
 
-        return allIntyg;
+        return listIntygEntries;
     }
 
-    public static ListIntygEntry convertIntygsUtkastToListIntygEntry(Intyg intygsUtkast) {
+    public static ListIntygEntry convertUtkastToListIntygEntry(Utkast utkast) {
 
-        ListIntygEntry ie = new ListIntygEntry();
+        ListIntygEntry entry = new ListIntygEntry();
 
-        ie.setIntygId(intygsUtkast.getIntygsId());
-        ie.setIntygType(intygsUtkast.getIntygsTyp());
-        ie.setSource(IntygSource.WC);
-        ie.setUpdatedSignedBy(intygsUtkast.getSenastSparadAv().getNamn());
-        ie.setLastUpdatedSigned(intygsUtkast.getSenastSparadDatum());
-        ie.setPatientId(intygsUtkast.getPatientPersonnummer());
-        ie.setVidarebefordrad(intygsUtkast.getVidarebefordrad());
-        ie.setStatus(intygsUtkast.getStatus().toString());
+        entry.setIntygId(utkast.getIntygsId());
+        entry.setIntygType(utkast.getIntygsTyp());
+        entry.setSource(IntygSource.WC);
+        entry.setUpdatedSignedBy(utkast.getSenastSparadAv().getNamn());
+        entry.setLastUpdatedSigned(utkast.getSenastSparadDatum());
+        entry.setPatientId(utkast.getPatientPersonnummer());
+        entry.setVidarebefordrad(utkast.getVidarebefordrad());
+        entry.setStatus(utkast.getStatus().toString());
 
-        return ie;
+        return entry;
     }
 
     public static ListIntygEntry convertIntygItemToListIntygEntry(IntygItem intygItem) {
 
-        ListIntygEntry ie = new ListIntygEntry();
+        ListIntygEntry entry = new ListIntygEntry();
 
-        ie.setIntygId(intygItem.getId());
-        ie.setIntygType(intygItem.getType());
-        ie.setStatus(findLatestStatus(intygItem.getStatuses()).toString());
-        ie.setSource(IntygSource.IT);
-        ie.setLastUpdatedSigned(intygItem.getSignedDate());
-        ie.setUpdatedSignedBy(intygItem.getSignedBy());
+        entry.setIntygId(intygItem.getId());
+        entry.setIntygType(intygItem.getType());
+        entry.setStatus(findLatestStatus(intygItem.getStatuses()).toString());
+        entry.setSource(IntygSource.IT);
+        entry.setLastUpdatedSigned(intygItem.getSignedDate());
+        entry.setUpdatedSignedBy(intygItem.getSignedBy());
 
-        return ie;
+        return entry;
     }
 
     public static StatusType findLatestStatus(List<IntygStatus> intygStatuses) {

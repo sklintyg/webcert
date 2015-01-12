@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Utkast;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.IntygSignatureService;
 import se.inera.webcert.service.draft.dto.DraftValidation;
@@ -74,16 +74,16 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
-        Intyg intyg = draftService.getDraft(intygsId);
+        Utkast utkast = draftService.getDraft(intygsId);
         
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logReadOfIntyg(logRequest);
 
         IntygDraftHolder draftHolder = new IntygDraftHolder();
 
-        draftHolder.setVidarebefordrad(intyg.getVidarebefordrad());
-        draftHolder.setStatus(intyg.getStatus());
-        draftHolder.setContent(intyg.getModel());
+        draftHolder.setVidarebefordrad(utkast.getVidarebefordrad());
+        draftHolder.setStatus(utkast.getStatus());
+        draftHolder.setContent(utkast.getModel());
 
         return Response.ok(draftHolder).build();
     }
@@ -93,21 +93,20 @@ public class UtkastModuleApiController extends AbstractApiController {
      *
      * @param intygsId
      *            The id of the certificate.
-     * @param draftCertificate
+     * @param payload
      *            Object holding the certificate and its current status.
      */
     @PUT
     @Path("/{intygsTyp}/{intygsId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @DefaultValue("false") @QueryParam("autoSave") boolean autoSave,  byte[] draftCertificate) {
+    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
-        LOG.debug("Saving Intyg with id {}", intygsId);
-        LOG.debug("Autosave is {}", autoSave);
+        LOG.debug("Saving utkast with id '{}', autosave is {}", intygsId, autoSave);
 
-        String draftAsJson = fromBytesToString(draftCertificate);
+        String draftAsJson = fromBytesToString(payload);
 
         SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, draftAsJson, autoSave);
         DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
@@ -191,9 +190,9 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         LOG.debug("Logging printout of draft intyg '{}'", intygsId);
 
-        Intyg draft = draftService.getDraft(intygsId);
+        Utkast utkast = draftService.getDraft(intygsId);
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(draft);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
 
         logService.logPrintOfIntygAsDraft(logRequest);
 

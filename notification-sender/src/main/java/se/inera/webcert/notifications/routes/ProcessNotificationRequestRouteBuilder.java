@@ -15,7 +15,7 @@ import se.inera.webcert.notifications.process.EnrichWithIntygDataStrategy;
 import se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy;
 import se.inera.webcert.notifications.process.FragaSvarEnricher;
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilder.class);
@@ -63,7 +63,7 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
                 .enrich("getIntygModelFromWebcertRepositoryServiceEndpoint", AggregationStrategies.bean(intygModelEnricher, "enrichWithArbetsformagorAndDiagnos"))
                 //Check if intyg is signed, in that case enrich with fråga & svar
                 .choice()
-                    .when(header(RouteHeaders.INTYGS_STATUS).isEqualTo(IntygsStatus.SIGNED))
+                    .when(header(RouteHeaders.INTYGS_STATUS).isEqualTo(UtkastStatus.SIGNED))
                         .log(LoggingLevel.DEBUG, LOG, "Enriching with data from fragasvar")
                         .enrich("getNbrOfQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfQuestionsForIntyg"))
                         .enrich("getNbrOfAnsweredQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfAnsweredQuestionsForIntyg"))

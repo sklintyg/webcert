@@ -42,10 +42,10 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
@@ -79,7 +79,7 @@ public class IntygDraftServiceImplTest {
     private static final String PATIENT_NEW_SSN = "19121212-1414";
 
     @Mock
-    private IntygRepository intygRepository;
+    private UtkastRepository mockUtkastRepository;
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -110,9 +110,9 @@ public class IntygDraftServiceImplTest {
     @InjectMocks
     private IntygDraftService draftService = new IntygDraftServiceImpl();
 
-    private Intyg intygDraft;
+    private Utkast utkast;
 
-    private Intyg intygSigned;
+    private Utkast signedUtkast;
 
     private HoSPerson hoSPerson;
 
@@ -145,31 +145,31 @@ public class IntygDraftServiceImplTest {
         vardperson.setHsaId(hoSPerson.getHsaId());
         vardperson.setNamn(hoSPerson.getNamn());
 
-        intygDraft = createIntyg(INTYG_ID, INTYG_TYPE, IntygsStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
-        intygSigned = createIntyg(INTYG_ID, INTYG_TYPE, IntygsStatus.SIGNED, INTYG_JSON, vardperson);
+        utkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
+        signedUtkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
     }
 
-    private Intyg createIntyg(String intygId, String type, IntygsStatus status, String model, VardpersonReferens vardperson) {
-        Intyg intyg = new Intyg();
-        intyg.setIntygsId(intygId);
-        intyg.setIntygsTyp(type);
-        intyg.setStatus(status);
-        intyg.setModel(model);
-        intyg.setSkapadAv(vardperson);
-        intyg.setSenastSparadAv(vardperson);
-        return intyg;
+    private Utkast createUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygId);
+        utkast.setIntygsTyp(type);
+        utkast.setStatus(status);
+        utkast.setModel(model);
+        utkast.setSkapadAv(vardperson);
+        utkast.setSenastSparadAv(vardperson);
+        return utkast;
     }
 
     @Test
     public void testDeleteDraftThatIsUnsigned() {
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
 
         draftService.deleteUnsignedDraft(INTYG_ID);
 
-        verify(intygRepository).findOne(INTYG_ID);
-        verify(intygRepository).delete(intygDraft);
+        verify(mockUtkastRepository).findOne(INTYG_ID);
+        verify(mockUtkastRepository).delete(utkast);
         verify(notificationService).notify(notificationRequestTypeArgumentCaptor.capture());
 
         // Assert notification message
@@ -181,21 +181,21 @@ public class IntygDraftServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatIsSigned() {
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygSigned);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
         draftService.deleteUnsignedDraft(INTYG_ID);
 
-        verify(intygRepository).findOne(INTYG_ID);
+        verify(mockUtkastRepository).findOne(INTYG_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatDoesNotExist() {
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(null);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
 
         draftService.deleteUnsignedDraft(INTYG_ID);
 
-        verify(intygRepository).findOne(INTYG_ID);
+        verify(mockUtkastRepository).findOne(INTYG_ID);
     }
 
     @Test
@@ -207,10 +207,10 @@ public class IntygDraftServiceImplTest {
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
         WebCertUser user = createUser();
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
-        when(intygRepository.save(intygDraft)).thenReturn(intygDraft);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getWebCertUser()).thenReturn(user);
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
@@ -220,7 +220,7 @@ public class IntygDraftServiceImplTest {
 
         DraftValidation res = draftService.saveAndValidateDraft(request);
 
-        verify(intygRepository).save(any(Intyg.class));
+        verify(mockUtkastRepository).save(any(Utkast.class));
         verify(notificationService).notify(notificationRequestTypeArgumentCaptor.capture());
 
         assertNotNull("An DraftValidation should be returned", res);
@@ -256,11 +256,11 @@ public class IntygDraftServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftThatIsSigned() {
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygSigned);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
         draftService.saveAndValidateDraft(buildSaveAndValidateRequest());
 
-        verify(intygRepository).findOne(INTYG_ID);
+        verify(mockUtkastRepository).findOne(INTYG_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -271,7 +271,7 @@ public class IntygDraftServiceImplTest {
         WebCertUser user = createUser();
 
         when(userService.getWebCertUser()).thenReturn(user);
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelResponse("{}"));
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenThrow(ModuleException.class);
@@ -309,11 +309,11 @@ public class IntygDraftServiceImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        when(intygRepository.save(any(Intyg.class))).thenAnswer(new Answer<Intyg>() {
+        when(mockUtkastRepository.save(any(Utkast.class))).thenAnswer(new Answer<Utkast>() {
             @Override
-            public Intyg answer(InvocationOnMock invocation) throws Throwable {
+            public Utkast answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
-                return (Intyg) args[0];
+                return (Utkast) args[0];
             }
         });
 
@@ -324,7 +324,7 @@ public class IntygDraftServiceImplTest {
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
 
         verify(mockIdStrategy).createId();
-        verify(intygRepository).save(any(Intyg.class));
+        verify(mockUtkastRepository).save(any(Utkast.class));
     }
 
     private IntygContentHolder createIntygContentHolder() throws Exception {
@@ -371,11 +371,11 @@ public class IntygDraftServiceImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        when(intygRepository.save(any(Intyg.class))).thenAnswer(new Answer<Intyg>() {
+        when(mockUtkastRepository.save(any(Utkast.class))).thenAnswer(new Answer<Utkast>() {
             @Override
-            public Intyg answer(InvocationOnMock invocation) throws Throwable {
+            public Utkast answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
-                return (Intyg) args[0];
+                return (Utkast) args[0];
             }
         });
 
@@ -388,7 +388,7 @@ public class IntygDraftServiceImplTest {
         assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
 
         verify(mockIdStrategy).createId();
-        verify(intygRepository).save(any(Intyg.class));
+        verify(mockUtkastRepository).save(any(Utkast.class));
     }
 
     private CreateNewDraftCopyRequest buildCopyRequest() {

@@ -12,8 +12,8 @@ import java.util.List;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;
@@ -29,11 +29,11 @@ public class IntygDraftsConverterTest {
     @Test
     public void testMergeWithEmptyLists() {
 
-        List<IntygItem> signedIntygList = new ArrayList<>();
+        List<IntygItem> intygList = new ArrayList<>();
 
-        List<Intyg> draftIntygList = new ArrayList<>();
+        List<Utkast> utkastList = new ArrayList<>();
 
-        List<ListIntygEntry> res = IntygDraftsConverter.merge(signedIntygList, draftIntygList);
+        List<ListIntygEntry> res = IntygDraftsConverter.merge(intygList, utkastList);
 
         assertNotNull(res);
         assertTrue(res.isEmpty());
@@ -42,11 +42,11 @@ public class IntygDraftsConverterTest {
     @Test
     public void testMergeWithBothListsFilled() {
 
-        List<IntygItem> signedIntygList = TestIntygFactory.createListWithIntygItems();
+        List<IntygItem> intygList = TestIntygFactory.createListWithIntygItems();
 
-        List<Intyg> draftIntygList = TestIntygFactory.createListWithIntygsUtkast();
+        List<Utkast> utkastList = TestIntygFactory.createListWithUtkast();
 
-        List<ListIntygEntry> res = IntygDraftsConverter.merge(signedIntygList, draftIntygList);
+        List<ListIntygEntry> res = IntygDraftsConverter.merge(intygList, utkastList);
 
         assertNotNull(res);
         assertFalse(res.isEmpty());
@@ -64,10 +64,10 @@ public class IntygDraftsConverterTest {
         String updatedSignedByHsaId = "HSA1234";
         String patientId = "19121212-1212";
 
-        List<Intyg> draftIntygList = Arrays.asList(TestIntygFactory.createIntygsUtkast(id, modfied, type, updatedSignedBy,
-                updatedSignedByHsaId, IntygsStatus.DRAFT_COMPLETE, patientId));
+        List<Utkast> utkastList = Arrays.asList(TestIntygFactory.createUtkast(id, modfied, type, updatedSignedBy,
+                updatedSignedByHsaId, UtkastStatus.DRAFT_COMPLETE, patientId));
 
-        List<ListIntygEntry> res = IntygDraftsConverter.convertIntygToListEntries(draftIntygList);
+        List<ListIntygEntry> res = IntygDraftsConverter.convertUtkastsToListIntygEntries(utkastList);
 
         assertNotNull(res);
         assertEquals(1, res.size());

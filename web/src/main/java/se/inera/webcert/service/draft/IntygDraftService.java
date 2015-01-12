@@ -3,7 +3,7 @@ package se.inera.webcert.service.draft;
 import java.util.List;
 import java.util.Map;
 
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.intyg.model.Utkast;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
@@ -22,13 +22,13 @@ public interface IntygDraftService {
 
     List<Lakare> getLakareWithDraftsByEnhet(String enhetsId);
 
-    Intyg setForwardOnDraft(String intygsId, Boolean forwarded);
+    Utkast setForwardOnDraft(String intygsId, Boolean forwarded);
 
     Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds);
 
     void deleteUnsignedDraft(String intygId);
 
-    Intyg getDraft(String intygId);
+    Utkast getDraft(String intygId);
 
     SignatureTicket createDraftHash(String intygsId);
 

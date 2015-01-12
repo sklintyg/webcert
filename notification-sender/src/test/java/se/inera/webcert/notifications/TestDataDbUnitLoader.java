@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
 
 public class TestDataDbUnitLoader {
 
@@ -32,7 +32,7 @@ public class TestDataDbUnitLoader {
     private DataSource dataSource;
 
     @Autowired
-    private IntygRepository intygRepository;
+    private UtkastRepository utkastRepository;
 
     public void loadTestData() throws Exception {
         loadBasicData();
@@ -46,14 +46,14 @@ public class TestDataDbUnitLoader {
         LOG.info("Inserting model data into intyg {}", intygsIdList);
 
         for (String intygsId : intygsIdList) {
-            Intyg intyg = intygRepository.findOne(intygsId);
-            intyg.setModel(getIntygModelData(intygsId));
-            intygRepository.save(intyg);
+            Utkast utkast = utkastRepository.findOne(intygsId);
+            utkast.setModel(getModelData(intygsId));
+            utkastRepository.save(utkast);
         }
 
     }
 
-    private String getIntygModelData(String intygsId) {
+    private String getModelData(String intygsId) {
         String modelFilePath = "utlatande/utlatande-intyg-1.json";
         return TestDataUtil.readRequestFromFile(modelFilePath);
     }

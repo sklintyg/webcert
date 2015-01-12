@@ -2,7 +2,7 @@ package se.inera.webcert.web.controller.moduleapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 
 /**
  * Container for a draft and its current status.
@@ -13,7 +13,7 @@ public class IntygDraftHolder {
 
     private boolean vidarebefordrad;
 
-    private IntygsStatus status;
+    private UtkastStatus status;
 
     @JsonRawValue
     private String content;
@@ -30,11 +30,11 @@ public class IntygDraftHolder {
         this.vidarebefordrad = vidarebefordrad;
     }
 
-    public IntygsStatus getStatus() {
+    public UtkastStatus getStatus() {
         return status;
     }
 
-    public void setStatus(IntygsStatus status) {
+    public void setStatus(UtkastStatus status) {
         this.status = status;
     }
 

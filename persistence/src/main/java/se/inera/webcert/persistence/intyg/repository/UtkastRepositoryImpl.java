@@ -14,25 +14,25 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.intyg.model.UtkastStatus;
 
-public class IntygRepositoryImpl implements IntygFilteredRepositoryCustom {
+public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public List<Intyg> filterIntyg(IntygFilter filter) {
+    public List<Utkast> filterIntyg(UtkastFilter filter) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Intyg> cq = cb.createQuery(Intyg.class);
-        Root<Intyg> root = cq.from(Intyg.class);
+        CriteriaQuery<Utkast> cq = cb.createQuery(Utkast.class);
+        Root<Utkast> root = cq.from(Utkast.class);
 
         cq.where(createPredicate(filter, cb, root));
         cq.orderBy(cb.desc(root.get("senastSparadDatum")));
 
-        TypedQuery<Intyg> query = entityManager.createQuery(cq);
+        TypedQuery<Utkast> query = entityManager.createQuery(cq);
 
         if (filter.hasPageSizeAndStartFrom()) {
             query.setMaxResults(filter.getPageSize());
@@ -42,11 +42,11 @@ public class IntygRepositoryImpl implements IntygFilteredRepositoryCustom {
         return query.getResultList();
     }
 
-    public int countFilterIntyg(IntygFilter filter) {
+    public int countFilterIntyg(UtkastFilter filter) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Intyg> root = cq.from(Intyg.class);
+        Root<Utkast> root = cq.from(Utkast.class);
         cq.select(cb.count(root));
 
         cq.where(createPredicate(filter, cb, root));
@@ -56,7 +56,7 @@ public class IntygRepositoryImpl implements IntygFilteredRepositoryCustom {
         return ((Long) query.getSingleResult()).intValue();
     }
 
-    private Predicate createPredicate(IntygFilter filter, CriteriaBuilder builder, Root<Intyg> root) {
+    private Predicate createPredicate(UtkastFilter filter, CriteriaBuilder builder, Root<Utkast> root) {
 
         Predicate pred = builder.conjunction();
 
@@ -67,7 +67,7 @@ public class IntygRepositoryImpl implements IntygFilteredRepositoryCustom {
         }
 
         if (!filter.getStatusList().isEmpty()) {
-            pred = builder.and(pred, root.<IntygsStatus>get("status").in(filter.getStatusList()));
+            pred = builder.and(pred, root.<UtkastStatus>get("status").in(filter.getStatusList()));
         }
 
         if (filter.getForwarded() != null) {

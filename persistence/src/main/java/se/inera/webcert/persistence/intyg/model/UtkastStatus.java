@@ -1,11 +1,11 @@
 package se.inera.webcert.persistence.intyg.model;
 
 /**
- * Possible statuses for a Certificate (WIP) Entity in Webcert.
+ * Possible statuses for a Utkast entity in Webcert.
  *
  * @author marced
  */
-public enum IntygsStatus {
+public enum UtkastStatus {
 
     /**
      * Work in progress, invalid.
