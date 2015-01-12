@@ -23,7 +23,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.Utla
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest {

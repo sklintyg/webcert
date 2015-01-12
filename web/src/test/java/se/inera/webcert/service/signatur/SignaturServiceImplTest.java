@@ -1,4 +1,4 @@
-package se.inera.webcert.service.draft;
+package se.inera.webcert.service.signatur;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,17 +38,19 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.SignaturServiceImpl;
+import se.inera.webcert.service.signatur.SignaturTicketTracker;
+import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IntygSignatureServiceImplTest {
+public class SignaturServiceImplTest {
 
     private static final String INTYG_ID = "abc123";
 
@@ -81,7 +83,7 @@ public class IntygSignatureServiceImplTest {
     private ModuleApi moduleApi;
 
     @InjectMocks
-    private IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
+    private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
 
     private Utkast utkast;
 
@@ -125,7 +127,6 @@ public class IntygSignatureServiceImplTest {
         when(webcertUserService.getWebCertUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
-        ReflectionUtils.setTypedField(intygSignatureService, new TicketTracker());
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
     }
 
@@ -157,9 +158,9 @@ public class IntygSignatureServiceImplTest {
     @Test
     public void getSignatureHashReturnsTicket() throws ModuleNotFoundException, ModuleException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
-        SignatureTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
         assertEquals(INTYG_ID, ticket.getIntygsId());
-        assertEquals(SignatureTicket.Status.BEARBETAR, ticket.getStatus());
+        assertEquals(SignaturTicket.Status.BEARBETAR, ticket.getStatus());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -173,7 +174,7 @@ public class IntygSignatureServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void clientSignatureFailsIfIntygWasModified() throws IOException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
-        SignatureTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
 
         completedUtkast.setModel("{}");
 
@@ -189,9 +190,9 @@ public class IntygSignatureServiceImplTest {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
 
-        SignatureTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
-        SignatureTicket status = intygSignatureService.ticketStatus(ticket.getId());
-        assertEquals(SignatureTicket.Status.BEARBETAR, status.getStatus());
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
+        SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
+        assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
 
         String signature = "{\"signatur\":\"SIGNATURE\"}";
         when(signatureService.validateSiths(hoSPerson.getHsaId(), ticket.getHash(), "SIGNATURE")).thenReturn(true);
@@ -200,7 +201,7 @@ public class IntygSignatureServiceImplTest {
         ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
 
         // Do the call
-        SignatureTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
+        SignaturTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
 
         verify(intygService).storeIntyg(completedUtkast);
         verify(notificationService).notify(notificationRequestTypeArgumentCaptor.capture());
@@ -212,7 +213,7 @@ public class IntygSignatureServiceImplTest {
 
         // Assert ticket status has changed from BEARBETAR to SIGNERAD
         status = intygSignatureService.ticketStatus(ticket.getId());
-        assertEquals(SignatureTicket.Status.SIGNERAD, status.getStatus());
+        assertEquals(SignaturTicket.Status.SIGNERAD, status.getStatus());
 
         // Assert notification message
         NotificationRequestType notificationRequestType = notificationRequestTypeArgumentCaptor.getValue();

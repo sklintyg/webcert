@@ -1,4 +1,4 @@
-package se.inera.webcert.service.draft.dto;
+package se.inera.webcert.service.utkast.dto;
 
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.service.dto.HoSPerson;

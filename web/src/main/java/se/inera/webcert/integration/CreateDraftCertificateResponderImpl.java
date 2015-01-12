@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
@@ -19,10 +20,10 @@ import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
-import se.inera.webcert.service.draft.IntygDraftService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
+import se.inera.webcert.service.utkast.UtkastService;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     private static final Logger LOG = LoggerFactory.getLogger(CreateDraftCertificateResponderImpl.class);
 
     @Autowired
-    private IntygDraftService intygsUtkastService;
+    private UtkastService utkastService;
 
     @Autowired
     private HsaPersonService hsaPersonService;
@@ -87,7 +88,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         addVardenhetToRegistry(draftRequest);
 
         // Create draft and return its id
-        return intygsUtkastService.createNewDraft(draftRequest);
+        return utkastService.createNewDraft(draftRequest);
     }
 
     /**

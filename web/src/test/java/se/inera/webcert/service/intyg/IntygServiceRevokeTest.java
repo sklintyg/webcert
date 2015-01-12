@@ -37,11 +37,11 @@ import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.webcert.service.draft.TicketTracker;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
+import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.util.ReflectionUtils;
 
 import javax.xml.ws.WebServiceException;
@@ -82,7 +82,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         when(webCertUserService.getWebCertUser()).thenReturn(user);
 
-        ReflectionUtils.setTypedField(intygSignatureService, new TicketTracker());
+        ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
     }
 

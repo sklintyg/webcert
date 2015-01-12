@@ -1,4 +1,4 @@
-package se.inera.webcert.service.draft.dto;
+package se.inera.webcert.service.utkast.dto;
 
 import java.util.ArrayList;
 import java.util.List;

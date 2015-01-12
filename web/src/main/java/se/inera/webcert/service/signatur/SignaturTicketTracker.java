@@ -1,29 +1,30 @@
-package se.inera.webcert.service.draft;
+package se.inera.webcert.service.signatur;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import se.inera.webcert.service.draft.dto.SignatureTicket;
+
+import se.inera.webcert.service.signatur.dto.SignaturTicket;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 @Component
-public class TicketTracker {
+public class SignaturTicketTracker {
     private static final int TICKET_TIMEOUT = 300;
 
-    private static final Logger LOG = LoggerFactory.getLogger(TicketTracker.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SignaturTicketTracker.class);
 
-    private Map<String, SignatureTicket> ticketMap = new HashMap<>();
+    private Map<String, SignaturTicket> ticketMap = new HashMap<>();
 
-    public synchronized SignatureTicket getTicket(String ticketId) {
+    public synchronized SignaturTicket getTicket(String ticketId) {
         prune();
         return ticketMap.get(ticketId);
     }
 
-    public synchronized void trackTicket(SignatureTicket ticket) {
+    public synchronized void trackTicket(SignaturTicket ticket) {
         LOG.info("Tracking {}", ticket);
         if (!ticketMap.containsKey(ticket.getId())) {
             ticketMap.put(ticket.getId(), ticket);
@@ -34,7 +35,7 @@ public class TicketTracker {
 
     private void prune() {
         LocalDateTime cutoff = new LocalDateTime().minusSeconds(TICKET_TIMEOUT);
-        Iterator<Map.Entry<String, SignatureTicket>> iterator = ticketMap.entrySet().iterator();
+        Iterator<Map.Entry<String, SignaturTicket>> iterator = ticketMap.entrySet().iterator();
         while (iterator.hasNext()) {
             if (iterator.next().getValue().getTimestamp().isBefore(cutoff)) {
                 iterator.remove();
@@ -42,8 +43,8 @@ public class TicketTracker {
         }
     }
 
-    public synchronized SignatureTicket updateStatus(String id, SignatureTicket.Status status) {
-        SignatureTicket ticket = getTicket(id);
+    public synchronized SignaturTicket updateStatus(String id, SignaturTicket.Status status) {
+        SignaturTicket ticket = getTicket(id);
         if (ticket != null) {
             LOG.info("Updating status {}", ticket);
             ticket = ticket.withStatus(status);

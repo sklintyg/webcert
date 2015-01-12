@@ -30,11 +30,11 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
-import se.inera.webcert.service.draft.TicketTracker;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.util.ReflectionUtils;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -62,7 +62,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(getRecipientsForCertificateService.getRecipientsForCertificate(any(String.class), any(GetRecipientsForCertificateType.class)))
             .thenReturn(response);
 
-        ReflectionUtils.setTypedField(intygSignatureService, new TicketTracker());
+        ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
     }
 

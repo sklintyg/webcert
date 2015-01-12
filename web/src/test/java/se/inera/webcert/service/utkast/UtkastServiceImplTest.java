@@ -1,4 +1,4 @@
-package se.inera.webcert.service.draft;
+package se.inera.webcert.service.utkast;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -49,11 +49,6 @@ import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
-import se.inera.webcert.service.draft.dto.DraftValidation;
-import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
@@ -62,10 +57,17 @@ import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.utkast.UtkastService;
+import se.inera.webcert.service.utkast.UtkastServiceImpl;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
+import se.inera.webcert.service.utkast.dto.DraftValidation;
+import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.webcert.web.service.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IntygDraftServiceImplTest {
+public class UtkastServiceImplTest {
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
@@ -108,7 +110,7 @@ public class IntygDraftServiceImplTest {
     };
 
     @InjectMocks
-    private IntygDraftService draftService = new IntygDraftServiceImpl();
+    private UtkastService draftService = new UtkastServiceImpl();
 
     private Utkast utkast;
 

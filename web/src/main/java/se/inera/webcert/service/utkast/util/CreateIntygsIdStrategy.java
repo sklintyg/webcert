@@ -1,4 +1,4 @@
-package se.inera.webcert.service.draft.util;
+package se.inera.webcert.service.utkast.util;
 
 /**
  * Strategy for generating an id for a new Intyg.

@@ -1,8 +1,8 @@
-package se.inera.webcert.service.draft;
+package se.inera.webcert.service.signatur;
 
-import se.inera.webcert.service.draft.dto.SignatureTicket;
+import se.inera.webcert.service.signatur.dto.SignaturTicket;
 
-public interface IntygSignatureService {
+public interface SignaturService {
 
     /**
      * This method is used when signing using other methods than NetId.
@@ -10,7 +10,7 @@ public interface IntygSignatureService {
      * @param intygId intygid
      * @return SignatureTicket
      */
-    SignatureTicket serverSignature(String intygId);
+    SignaturTicket serverSignature(String intygId);
 
     /**
      * This method is used when signing using NetId
@@ -19,7 +19,7 @@ public interface IntygSignatureService {
      * @param rawSignatur
      * @return
      */
-    SignatureTicket clientSignature(String biljettId, String rawSignatur);
+    SignaturTicket clientSignature(String biljettId, String rawSignatur);
 
     /**
      * Checks the status of the signing ticket.
@@ -27,7 +27,7 @@ public interface IntygSignatureService {
      * @param biljettId
      * @return The signing ticket corresponding to the supplied biljettId or a blank ticket no ticket was found.
      */
-    SignatureTicket ticketStatus(String biljettId);
+    SignaturTicket ticketStatus(String biljettId);
 
     /**
      * This method is used to generate a signing ticket based on the payload of an Intyg.
@@ -35,6 +35,6 @@ public interface IntygSignatureService {
      * @param intygId The id of the draft to generate signing ticket for
      * @return
      */
-    SignatureTicket createDraftHash(String intygId);
+    SignaturTicket createDraftHash(String intygId);
 
 }

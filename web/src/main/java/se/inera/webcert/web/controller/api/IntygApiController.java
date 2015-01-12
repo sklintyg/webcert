@@ -23,12 +23,12 @@ import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.draft.IntygDraftService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.utkast.UtkastService;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CopyIntygRequest;
 import se.inera.webcert.web.controller.api.dto.CopyIntygResponse;
@@ -55,7 +55,7 @@ public class IntygApiController extends AbstractApiController {
     private UtkastRepository utkastRepository;
 
     @Autowired
-    private IntygDraftService intygDraftService;
+    private UtkastService intygDraftService;
 
     public IntygApiController() {
 

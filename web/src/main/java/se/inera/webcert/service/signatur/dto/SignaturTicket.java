@@ -1,8 +1,8 @@
-package se.inera.webcert.service.draft.dto;
+package se.inera.webcert.service.signatur.dto;
 
 import org.joda.time.LocalDateTime;
 
-public class SignatureTicket {
+public class SignaturTicket {
 
     public enum Status {
         BEARBETAR, SIGNERAD, OKAND
@@ -48,7 +48,7 @@ public class SignatureTicket {
         return timestamp;
     }
 
-    public SignatureTicket withStatus(Status status) {
+    public SignaturTicket withStatus(Status status) {
         return new SignatureTicket(id, status, intygsId, signeringstid, hash, new LocalDateTime());
     }
 

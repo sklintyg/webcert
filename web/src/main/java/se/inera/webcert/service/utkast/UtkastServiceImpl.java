@@ -1,4 +1,4 @@
-package se.inera.webcert.service.draft;
+package se.inera.webcert.service.utkast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,14 +33,6 @@ import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
-import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
-import se.inera.webcert.service.draft.dto.DraftValidation;
-import se.inera.webcert.service.draft.dto.DraftValidationStatus;
-import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.dto.SignatureTicket;
-import se.inera.webcert.service.draft.util.CreateIntygsIdStrategy;
 import se.inera.webcert.service.draft.util.UpdateUserUtil;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Lakare;
@@ -54,10 +46,19 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.SignaturService;
+import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.webcert.service.utkast.dto.DraftValidation;
+import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
+import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.webcert.web.service.WebCertUserService;
 
 @Service
-public class IntygDraftServiceImpl implements IntygDraftService {
+public class UtkastServiceImpl implements UtkastService {
 
     public enum Event {
         CHANGED, CREATED, DELETED;
@@ -66,7 +67,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private static final List<UtkastStatus> ALL_DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
             UtkastStatus.DRAFT_INCOMPLETE);
 
-    private static final Logger LOG = LoggerFactory.getLogger(IntygDraftServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
 
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
@@ -81,7 +82,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     private IntygService intygService;
 
     @Autowired
-    private IntygSignatureService signatureService;
+    private SignaturService signatureService;
 
     @Autowired
     private LogService logService;
@@ -238,7 +239,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    public SignatureTicket createDraftHash(String intygsId) {
+    public SignaturTicket createDraftHash(String intygsId) {
         Utkast intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         utkastRepository.save(intyg);
@@ -247,7 +248,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
     }
 
     @Override
-    public SignatureTicket serverSignature(String intygsId) {
+    public SignaturTicket serverSignature(String intygsId) {
         Utkast intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         utkastRepository.save(intyg);
@@ -498,7 +499,7 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         draftValidation.setStatus(DraftValidationStatus.INVALID);
 
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
-            draftValidation.addMessage(new se.inera.webcert.service.draft.dto.DraftValidationMessage(validationMsg.getField(), validationMsg
+            draftValidation.addMessage(new se.inera.webcert.service.utkast.dto.DraftValidationMessage(validationMsg.getField(), validationMsg
                     .getMessage()));
         }
 

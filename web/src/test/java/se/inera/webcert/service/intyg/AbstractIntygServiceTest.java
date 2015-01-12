@@ -29,7 +29,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.r
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.draft.IntygSignatureServiceImpl;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManagerImpl;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
@@ -37,6 +36,7 @@ import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.SignaturServiceImpl;
 import se.inera.webcert.web.service.WebCertUserService;
 
 public abstract class AbstractIntygServiceTest {
@@ -89,7 +89,7 @@ public abstract class AbstractIntygServiceTest {
     protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
 
     @InjectMocks
-    protected IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
+    protected SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();

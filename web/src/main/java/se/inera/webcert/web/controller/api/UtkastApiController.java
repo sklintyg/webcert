@@ -24,11 +24,11 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.draft.IntygDraftService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.utkast.UtkastService;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
@@ -56,7 +56,7 @@ public class UtkastApiController extends AbstractApiController {
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
     @Autowired
-    private IntygDraftService intygDraftService;
+    private UtkastService intygDraftService;
 
     @Autowired
     private UtkastRepository utkastRepository;

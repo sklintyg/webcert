@@ -9,7 +9,7 @@ import se.inera.webcert.persistence.utkast.model.UtkastStatus;
  *
  * @author nikpet
  */
-public class IntygDraftHolder {
+public class DraftHolder {
 
     private boolean vidarebefordrad;
 
@@ -18,7 +18,7 @@ public class IntygDraftHolder {
     @JsonRawValue
     private String content;
 
-    public IntygDraftHolder() {
+    public DraftHolder() {
 
     }
 

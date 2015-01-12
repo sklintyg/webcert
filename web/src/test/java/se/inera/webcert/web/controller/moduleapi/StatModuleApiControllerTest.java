@@ -27,8 +27,8 @@ import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -44,7 +44,7 @@ public class StatModuleApiControllerTest {
     private FragaSvarService fragaSvarService;
 
     @Mock
-    private IntygDraftService intygDraftService;
+    private UtkastService intygDraftService;
 
     @Captor
     private ArgumentCaptor<List<String>> listCaptor;

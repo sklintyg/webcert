@@ -1,4 +1,4 @@
-package se.inera.webcert.service.draft;
+package se.inera.webcert.service.signatur;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -27,7 +27,6 @@ import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.draft.dto.SignatureTicket;
 import se.inera.webcert.service.draft.util.UpdateUserUtil;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
@@ -35,14 +34,15 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.web.service.WebCertUserService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class IntygSignatureServiceImpl implements IntygSignatureService {
+public class SignaturServiceImpl implements SignaturService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IntygSignatureServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SignaturServiceImpl.class);
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -51,7 +51,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
     private WebCertUserService webCertUserService;
 
     @Autowired
-    private TicketTracker ticketTracker;
+    private SignaturTicketTracker ticketTracker;
 
     @Autowired
     private IntygService intygService;
@@ -72,18 +72,18 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
     private IntygModuleRegistry moduleRegistry;
 
     @Override
-    public SignatureTicket ticketStatus(String ticketId) {
-        SignatureTicket ticket = ticketTracker.getTicket(ticketId);
+    public SignaturTicket ticketStatus(String ticketId) {
+        SignaturTicket ticket = ticketTracker.getTicket(ticketId);
         if (ticket != null && ticket.getId().equals(ticketId)) {
             return ticket;
         } else {
-            return new SignatureTicket(ticketId, SignatureTicket.Status.OKAND, null, null, null, new LocalDateTime());
+            return new SignaturTicket(ticketId, SignaturTicket.Status.OKAND, null, null, new LocalDateTime());
         }
     }
 
     @Override
     @Transactional
-    public SignatureTicket createDraftHash(String intygId) {
+    public SignaturTicket createDraftHash(String intygId) {
         LOG.debug("Hash for clientsignature of draft '{}'", intygId);
 
         // Fetch the certificate draft
@@ -100,17 +100,17 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         // Save the certificate draft
         utkastRepository.save(utkast);
 
-        SignatureTicket statusTicket = createSignatureTicket(utkast.getIntygsId(), utkast.getModel());
+        SignaturTicket statusTicket = createSignatureTicket(utkast.getIntygsId(), utkast.getModel());
 
         return statusTicket;
     }
 
     @Override
     @Transactional
-    public SignatureTicket clientSignature(String ticketId, String rawSignatur) {
+    public SignaturTicket clientSignature(String ticketId, String rawSignatur) {
 
         // Lookup signature ticket
-        SignatureTicket ticket = ticketTracker.getTicket(ticketId);
+        SignaturTicket ticket = ticketTracker.getTicket(ticketId);
 
         if (ticket == null) {
             LOG.warn("Ticket '{}' hittades ej", ticketId);
@@ -140,10 +140,10 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         // Notify stakeholders when certificate has been signed
         sendNotification(utkast);
 
-        return ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
+        return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
 
-    private SignatureTicket createAndPersistSignature(Utkast utkast, SignatureTicket ticket, String rawSignature, WebCertUser user) {
+    private SignaturTicket createAndPersistSignature(Utkast utkast, SignaturTicket ticket, String rawSignature, WebCertUser user) {
 
         String payload = utkast.getModel();
 
@@ -171,12 +171,12 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
 
     @Override
     @Transactional
-    public SignatureTicket serverSignature(String intygsId) {
+    public SignaturTicket serverSignature(String intygsId) {
         LOG.debug("Signera utkast '{}'", intygsId);
 
         Utkast intyg = getUtkastForSignering(intygsId);
         // On server side we need to create our own signature ticket
-        SignatureTicket ticket = createDraftHash(intygsId);
+        SignaturTicket ticket = createSignatureTicket(intygsId, intyg.getModel());
 
         // Fetch Webcert user
         WebCertUser user = webCertUserService.getWebCertUser();
@@ -190,7 +190,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         // Notify stakeholders when a draft has been signed
         sendNotification(intyg);
 
-        return ticketTracker.updateStatus(ticket.getId(), SignatureTicket.Status.SIGNERAD);
+        return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
 
     private Utkast getUtkastForSignering(String intygId) {
@@ -237,7 +237,7 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         try {
             String hash = createHash(payload);
             String id = UUID.randomUUID().toString();
-            SignatureTicket statusTicket = new SignatureTicket(id, SignatureTicket.Status.BEARBETAR, intygId, signeringstid, hash, new LocalDateTime());
+            SignaturTicket statusTicket = new SignaturTicket(id, SignaturTicket.Status.BEARBETAR, intygId, hash, new LocalDateTime());
             ticketTracker.trackTicket(statusTicket);
             return statusTicket;
         } catch (IllegalStateException e) {
