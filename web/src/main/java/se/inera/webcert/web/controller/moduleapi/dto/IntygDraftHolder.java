@@ -2,7 +2,7 @@ package se.inera.webcert.web.controller.moduleapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
 /**
  * Container for a draft and its current status.

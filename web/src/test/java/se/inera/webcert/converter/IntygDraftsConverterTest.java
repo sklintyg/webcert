@@ -12,8 +12,8 @@ import java.util.List;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;

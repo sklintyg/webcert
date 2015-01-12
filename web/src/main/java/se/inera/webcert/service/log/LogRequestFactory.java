@@ -1,7 +1,7 @@
 package se.inera.webcert.service.log;
 
 import se.inera.certificate.model.common.internal.Utlatande;
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.log.dto.LogRequest;
 
 public final class LogRequestFactory {

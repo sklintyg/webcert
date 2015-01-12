@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 
 public class TestDataDbUnitLoader {
 

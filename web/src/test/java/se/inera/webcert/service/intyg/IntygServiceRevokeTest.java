@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
@@ -33,9 +34,9 @@ import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
-import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.service.draft.TicketTracker;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
@@ -44,6 +45,7 @@ import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.util.ReflectionUtils;
 
 import javax.xml.ws.WebServiceException;
+
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashSet;

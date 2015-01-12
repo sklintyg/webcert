@@ -12,8 +12,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.persistence.intyg.model.Omsandning;
-import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
+import se.inera.webcert.persistence.utkast.model.Omsandning;
+import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
+import se.inera.webcert.persistence.utkast.repository.OmsandningRepositoryCustom;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })

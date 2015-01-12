@@ -8,7 +8,7 @@ import org.junit.Test;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.inera.webcert.notifications.TestUtkastProducer;
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 
 public class EnrichWithIntygDataStrategyTest {
 

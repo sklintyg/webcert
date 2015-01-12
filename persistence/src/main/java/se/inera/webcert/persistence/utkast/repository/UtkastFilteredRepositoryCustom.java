@@ -1,8 +1,8 @@
-package se.inera.webcert.persistence.intyg.repository;
+package se.inera.webcert.persistence.utkast.repository;
 
 import java.util.List;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 
 public interface UtkastFilteredRepositoryCustom {
 

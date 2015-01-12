@@ -15,7 +15,7 @@ import se.inera.webcert.notifications.process.EnrichWithIntygDataStrategy;
 import se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy;
 import se.inera.webcert.notifications.process.FragaSvarEnricher;
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilder.class);

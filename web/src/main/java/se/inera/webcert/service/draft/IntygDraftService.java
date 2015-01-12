@@ -3,7 +3,7 @@ package se.inera.webcert.service.draft;
 import java.util.List;
 import java.util.Map;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;

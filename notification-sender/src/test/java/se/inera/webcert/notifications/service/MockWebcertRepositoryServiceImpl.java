@@ -8,7 +8,7 @@ import org.apache.camel.Header;
 import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.TestUtkastProducer;
 import se.inera.webcert.notifications.routes.RouteHeaders;
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 
 public class MockWebcertRepositoryServiceImpl implements WebcertRepositoryService {
 

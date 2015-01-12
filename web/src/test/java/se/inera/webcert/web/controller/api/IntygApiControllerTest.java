@@ -9,9 +9,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
-import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.test.TestIntygFactory;

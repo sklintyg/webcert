@@ -12,9 +12,9 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.model.Omsandning;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.Omsandning;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;

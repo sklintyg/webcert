@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
+import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
 import se.inera.webcert.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;

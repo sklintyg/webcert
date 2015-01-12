@@ -2,7 +2,7 @@ package se.inera.webcert.notifications;
 
 import org.joda.time.LocalDateTime;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;

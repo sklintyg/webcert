@@ -8,7 +8,7 @@ import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.notifications.message.v1.ObjectFactory;
 import se.inera.webcert.notifications.message.v1.VardenhetType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 
 /**
  * Factory class exposing methods which creates notifications messages.

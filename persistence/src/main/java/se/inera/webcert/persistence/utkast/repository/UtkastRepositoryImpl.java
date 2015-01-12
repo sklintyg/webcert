@@ -1,4 +1,4 @@
-package se.inera.webcert.persistence.intyg.repository;
+package se.inera.webcert.persistence.utkast.repository;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
 public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 

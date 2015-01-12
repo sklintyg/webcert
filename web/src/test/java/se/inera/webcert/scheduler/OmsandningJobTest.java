@@ -14,9 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.webcert.persistence.intyg.model.Omsandning;
-import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
-import se.inera.webcert.persistence.intyg.repository.OmsandningRepositoryCustom;
+import se.inera.webcert.persistence.utkast.model.Omsandning;
+import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
+import se.inera.webcert.persistence.utkast.repository.OmsandningRepositoryCustom;
 import se.inera.webcert.service.intyg.IntygOmsandningService;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 

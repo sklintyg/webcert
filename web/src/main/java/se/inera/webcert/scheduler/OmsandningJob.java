@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.webcert.persistence.intyg.model.Omsandning;
-import se.inera.webcert.persistence.intyg.repository.OmsandningRepositoryCustom;
+import se.inera.webcert.persistence.utkast.model.Omsandning;
+import se.inera.webcert.persistence.utkast.repository.OmsandningRepositoryCustom;
 import se.inera.webcert.service.intyg.IntygOmsandningService;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 

@@ -1,9 +1,10 @@
-package se.inera.webcert.persistence.intyg.repository;
+package se.inera.webcert.persistence.utkast.repository;
 
 import org.joda.time.LocalDateTime;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import se.inera.webcert.persistence.intyg.model.Omsandning;
+
+import se.inera.webcert.persistence.utkast.model.Omsandning;
 
 import java.util.List;
 

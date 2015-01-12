@@ -28,8 +28,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificaterespo
 import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.persistence.intyg.model.Omsandning;
-import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
+import se.inera.webcert.persistence.utkast.model.Omsandning;
+import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
 import se.inera.webcert.service.draft.TicketTracker;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;

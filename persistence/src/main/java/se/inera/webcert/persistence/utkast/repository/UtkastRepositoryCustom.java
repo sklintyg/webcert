@@ -1,12 +1,12 @@
-package se.inera.webcert.persistence.intyg.repository;
+package se.inera.webcert.persistence.utkast.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
 public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     /**

@@ -37,11 +37,11 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.model.Omsandning;
-import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
-import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
-import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
+import se.inera.webcert.persistence.utkast.model.Omsandning;
+import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
@@ -412,7 +412,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     /**
-     * @see se.inera.webcert.service.intyg.IntygServiceImpl#sendNotification(se.inera.webcert.persistence.intyg.model.Utkast,
+     * @see se.inera.webcert.service.intyg.IntygServiceImpl#sendNotification(se.inera.webcert.persistence.utkast.model.Utkast,
      *      se.inera.webcert.service.intyg.IntygServiceImpl.Event)
      */
     private void sendNotification(String intygId, Event event) {

@@ -1,6 +1,6 @@
 package se.inera.webcert.service.draft.dto;
 
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;

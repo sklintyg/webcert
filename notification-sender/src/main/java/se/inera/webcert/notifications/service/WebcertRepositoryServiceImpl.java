@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 
 /**
  * Simple facade for the Intyg respository so header values from Camel

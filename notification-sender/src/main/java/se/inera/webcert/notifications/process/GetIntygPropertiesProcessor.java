@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.notifications.service.WebcertRepositoryService;
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 
 public class GetIntygPropertiesProcessor implements Processor {
 

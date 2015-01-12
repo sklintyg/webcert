@@ -30,7 +30,7 @@ import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/spring/test-properties-context.xml", "/spring/beans-context.xml", "/spring/test-service-context.xml",

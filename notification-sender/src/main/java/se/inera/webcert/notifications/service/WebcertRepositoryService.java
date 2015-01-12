@@ -1,6 +1,6 @@
 package se.inera.webcert.notifications.service;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 
 public interface WebcertRepositoryService {
 

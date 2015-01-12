@@ -11,7 +11,7 @@ import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;

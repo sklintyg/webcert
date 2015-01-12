@@ -8,10 +8,10 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HosPersonalType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
-import se.inera.webcert.persistence.intyg.model.Signatur;
-import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
+import se.inera.webcert.persistence.utkast.model.Signatur;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 
 public class EnrichWithIntygDataStrategy {
 

@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
+
+import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.IntygSignatureService;
 import se.inera.webcert.service.draft.dto.DraftValidation;
@@ -37,6 +38,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
+
 
 /**
  * Controller for module interaction with drafts.

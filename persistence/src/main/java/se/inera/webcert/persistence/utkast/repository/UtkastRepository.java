@@ -1,8 +1,8 @@
-package se.inera.webcert.persistence.intyg.repository;
+package se.inera.webcert.persistence.utkast.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import se.inera.webcert.persistence.intyg.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 
 public interface UtkastRepository extends CrudRepository<Utkast, String>, UtkastRepositoryCustom {
 

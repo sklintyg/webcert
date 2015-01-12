@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.converter.IntygDraftsConverter;
-import se.inera.webcert.persistence.intyg.model.Utkast;
-import se.inera.webcert.persistence.intyg.model.UtkastStatus;
-import se.inera.webcert.persistence.intyg.repository.UtkastRepository;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
