@@ -33,7 +33,7 @@ import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.DraftValidationMessage;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
+import se.inera.webcert.web.controller.moduleapi.dto.SignaturTicketResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
@@ -204,15 +204,15 @@ public class UtkastModuleApiController extends AbstractApiController {
      *
      * @param intygsId
      *            intyg id
-     * @return BiljettResponse
+     * @return SignaturTicketResponse
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/signeraserver")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
+    public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignatureTicket biljett = signatureService.serverSignature(intygsId);
-        return new BiljettResponse(biljett);
+        SignaturTicket ticket = utkastService.serverSignature(intygsId);
+        return new SignaturTicketResponse(ticket);
     }
 
     /**
@@ -226,12 +226,12 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{biljettId}/signeraklient")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId, byte[] rawSignatur) {
+    public SignaturTicketResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId, byte[] rawSignatur) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
         String draftAsJson = fromBytesToString(rawSignatur);
-        SignaturTicket biljett = signaturService.clientSignature(biljettId, draftAsJson);
-        return new BiljettResponse(biljett);
+        SignaturTicket ticket = signaturService.clientSignature(biljettId, draftAsJson);
+        return new SignaturTicketResponse(ticket);
     }
 
     /**
@@ -239,15 +239,15 @@ public class UtkastModuleApiController extends AbstractApiController {
      *
      * @param intygsId
      *            intyg id
-     * @return BiljettResponse
+     * @return SignaturTicketResponse
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/signeringshash")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
+    public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignaturTicket biljett = utkastService.createDraftHash(intygsId);
-        return new BiljettResponse(biljett);
+        SignaturTicket ticket = utkastService.createDraftHash(intygsId);
+        return new SignaturTicketResponse(ticket);
     }
 
     /**
@@ -255,14 +255,14 @@ public class UtkastModuleApiController extends AbstractApiController {
      *
      * @param biljettId
      *            biljett id
-     * @return BiljettResponse
+     * @return SignaturTicketResponse
      */
     @GET
     @Path("/{intygsTyp}/{biljettId}/signeringsstatus")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse biljettStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId) {
+    public SignaturTicketResponse biljettStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignaturTicket biljett = signaturService.ticketStatus(biljettId);
-        return new BiljettResponse(biljett);
+        SignaturTicket ticket = signaturService.ticketStatus(biljettId);
+        return new SignaturTicketResponse(ticket);
     }
 }
