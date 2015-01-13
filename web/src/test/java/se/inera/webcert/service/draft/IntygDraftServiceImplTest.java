@@ -211,9 +211,9 @@ public class IntygDraftServiceImplTest {
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
         when(intygRepository.save(intygDraft)).thenReturn(intygDraft);
-        when(userService.getWebCertUser()).thenReturn(user);
         when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
-        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(
+        when(userService.getWebCertUser()).thenReturn(user);
+        when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
                 new InternalModelResponse("{}"));
 
         ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
@@ -273,7 +273,7 @@ public class IntygDraftServiceImplTest {
         when(userService.getWebCertUser()).thenReturn(user);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygDraft);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-        when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(new InternalModelResponse("{}"));
+        when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelResponse("{}"));
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenThrow(ModuleException.class);
 
         ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);

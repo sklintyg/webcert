@@ -8,7 +8,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.Arrays;
 
+import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +20,17 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.registry.ModuleNotFoundException;
+import se.inera.certificate.modules.support.api.ModuleApi;
+import se.inera.certificate.modules.support.api.dto.HoSPersonal;
+import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
+import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.eid.services.SignatureService;
+import se.inera.webcert.hsa.model.Mottagning;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
@@ -62,6 +74,12 @@ public class IntygSignatureServiceImplTest {
     @Mock
     private WebCertUserService webcertUserService;
 
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+
+    @Mock 
+    private ModuleApi moduleApi;
+
     @InjectMocks
     private IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
 
@@ -73,8 +91,14 @@ public class IntygSignatureServiceImplTest {
 
     private HoSPerson hoSPerson;
 
+    private Vardenhet vardenhet;
+
+    private Vardgivare vardgivare;
+
+    private InternalModelResponse internalModelResponse;
+
     @Before
-    public void setup() {
+    public void setup() throws ModuleException, ModuleNotFoundException {
         hoSPerson = new HoSPerson();
         hoSPerson.setHsaId("AAA");
         hoSPerson.setNamn("Dr Dengroth");
@@ -86,11 +110,21 @@ public class IntygSignatureServiceImplTest {
         intygDraft = createIntyg(INTYG_ID, INTYG_TYPE, IntygsStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
         intygCompleted = createIntyg(INTYG_ID, INTYG_TYPE, IntygsStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson);
         intygSigned = createIntyg(INTYG_ID, INTYG_TYPE, IntygsStatus.SIGNED, INTYG_JSON, vardperson);
+        
+        internalModelResponse = new InternalModelResponse(INTYG_JSON);
+        vardenhet = new Vardenhet("testID", "testNamn");
+        vardgivare = new Vardgivare("123", "vardgivare");
 
         WebCertUser user = new WebCertUser();
         user.setNamn(hoSPerson.getNamn());
         user.setHsaId(hoSPerson.getHsaId());
+
+        user.setValdVardenhet(vardenhet);
+        user.setValdVardgivare(vardgivare);
+
         when(webcertUserService.getWebCertUser()).thenReturn(user);
+        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
         ReflectionUtils.setTypedField(intygSignatureService, new TicketTracker());
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
     }
@@ -121,7 +155,7 @@ public class IntygSignatureServiceImplTest {
     }
 
     @Test
-    public void getSignatureHashReturnsTicket() {
+    public void getSignatureHashReturnsTicket() throws ModuleNotFoundException, ModuleException {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(intygCompleted);
         SignatureTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
         assertEquals(INTYG_ID, ticket.getIntygsId());

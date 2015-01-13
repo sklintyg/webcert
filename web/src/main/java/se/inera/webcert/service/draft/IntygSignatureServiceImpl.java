@@ -14,14 +14,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.certificate.modules.registry.IntygModuleRegistry;
+import se.inera.certificate.modules.registry.ModuleNotFoundException;
+import se.inera.certificate.modules.support.api.ModuleApi;
+import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
+import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.eid.services.SignatureService;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.intyg.model.Intyg;
 import se.inera.webcert.persistence.intyg.model.IntygsStatus;
 import se.inera.webcert.persistence.intyg.model.Signatur;
+import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
 import se.inera.webcert.persistence.intyg.repository.IntygRepository;
 import se.inera.webcert.service.draft.dto.SignatureTicket;
+import se.inera.webcert.service.draft.util.UpdateUserUtil;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
@@ -61,13 +69,16 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     @Override
     public SignatureTicket ticketStatus(String ticketId) {
         SignatureTicket ticket = ticketTracker.getTicket(ticketId);
         if (ticket != null && ticket.getId().equals(ticketId)) {
             return ticket;
         } else {
-            return new SignatureTicket(ticketId, SignatureTicket.Status.OKAND, null, null, new LocalDateTime());
+            return new SignatureTicket(ticketId, SignatureTicket.Status.OKAND, null, null, null, new LocalDateTime());
         }
     }
 
@@ -82,13 +93,15 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
         // Fetch Webcert user
         WebCertUser user = webCertUserService.getWebCertUser();
 
+        LocalDateTime signeringstid = LocalDateTime.now();
+        
         // Update certificate with user information
-        intyg = updateIntygForSignering(intyg, user.getHsaId(), user.getNamn());
+        intyg = updateIntygForSignering(intyg, user, signeringstid);
 
         // Save the certificate
         intygRepository.save(intyg);
 
-        SignatureTicket statusTicket = createSignatureTicket(intyg.getIntygsId(), intyg.getModel());
+        SignatureTicket statusTicket = createSignatureTicket(intyg.getIntygsId(), intyg.getModel(), signeringstid);
 
         return statusTicket;
     }
@@ -141,11 +154,9 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
                     + intyg.getIntygsId() + " has been modified since signing was initialized");
         }
 
-        Signatur signatur = new Signatur(new LocalDateTime(), user.getHsaId(), ticket.getIntygsId(), payload, ticket.getHash(), rawSignature);
+        Signatur signatur = new Signatur(ticket.getSigneringstid(), user.getHsaId(), ticket.getIntygsId(), payload, ticket.getHash(), rawSignature);
 
         // Update user information ("senast sparat av")
-        updateIntygForSignering(intyg, user.getHsaId(), user.getNamn());
-
         // Add signature to Intyg and set status as signed
         intyg.setSignatur(signatur);
         intyg.setStatus(IntygsStatus.SIGNED);
@@ -164,14 +175,14 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
     public SignatureTicket serverSignature(String intygsId) {
         LOG.debug("Signera utkast '{}'", intygsId);
 
-        // Fetch the certificate
-        Intyg intyg = getIntygForSignering(intygsId);
-
         // On server side we need to create our own signature ticket
-        SignatureTicket ticket = createSignatureTicket(intygsId, intyg.getModel());
+        SignatureTicket ticket = createDraftHash(intygsId);
 
         // Fetch Webcert user
         WebCertUser user = webCertUserService.getWebCertUser();
+
+        // Fetch the certificate
+        Intyg intyg = getIntygForSignering(intygsId);
 
         // Create and persist signature
         ticket = createAndPersistSignature(intyg, ticket, "Signatur", user);
@@ -207,17 +218,27 @@ public class IntygSignatureServiceImpl implements IntygSignatureService {
      * @param userName
      * @return
      */
-    private Intyg updateIntygForSignering(Intyg intyg, String userId, String userName) {
-        intyg.getSenastSparadAv().setHsaId(userId);
-        intyg.getSenastSparadAv().setNamn(userName);
+    private Intyg updateIntygForSignering(Intyg intyg, WebCertUser user, LocalDateTime signeringstid) {
+        VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
+        intyg.setSenastSparadAv(vardpersonReferens);
+        try {
+            InternalModelHolder internalModel = new InternalModelHolder(intyg.getModel());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intyg.getIntygsTyp());
+            InternalModelResponse updatedInternal = moduleApi.updateBeforeSigning(internalModel, UpdateUserUtil.createUserObject(user), signeringstid);
+            intyg.setModel(updatedInternal.getInternalModel());
+        } catch (ModuleException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
+        } catch (ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
+        }
         return intyg;
     }
 
-    private SignatureTicket createSignatureTicket(String intygId, String payload) {
+    private SignatureTicket createSignatureTicket(String intygId, String payload, LocalDateTime signeringstid) {
         try {
             String hash = createHash(payload);
             String id = UUID.randomUUID().toString();
-            SignatureTicket statusTicket = new SignatureTicket(id, SignatureTicket.Status.BEARBETAR, intygId, hash, new LocalDateTime());
+            SignatureTicket statusTicket = new SignatureTicket(id, SignatureTicket.Status.BEARBETAR, intygId, signeringstid, hash, new LocalDateTime());
             ticketTracker.trackTicket(statusTicket);
             return statusTicket;
         } catch (IllegalStateException e) {
