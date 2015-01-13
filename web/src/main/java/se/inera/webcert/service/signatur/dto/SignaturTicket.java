@@ -15,7 +15,7 @@ public class SignaturTicket {
     private final LocalDateTime timestamp;
     private final LocalDateTime signeringstid;
 
-    public SignatureTicket(String id, Status status, String intygsId, LocalDateTime signeringstid, String hash, LocalDateTime timestamp) {
+    public SignaturTicket(String id, Status status, String intygsId, LocalDateTime signeringstid, String hash, LocalDateTime timestamp) {
         this.id = id;
         this.status = status;
         this.intygsId = intygsId;
@@ -49,7 +49,7 @@ public class SignaturTicket {
     }
 
     public SignaturTicket withStatus(Status status) {
-        return new SignatureTicket(id, status, intygsId, signeringstid, hash, new LocalDateTime());
+        return new SignaturTicket(id, status, intygsId, signeringstid, hash, new LocalDateTime());
     }
 
     @Override

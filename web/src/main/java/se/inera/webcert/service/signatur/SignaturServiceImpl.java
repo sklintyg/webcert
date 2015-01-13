@@ -26,6 +26,7 @@ import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.draft.util.UpdateUserUtil;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
@@ -77,7 +78,7 @@ public class SignaturServiceImpl implements SignaturService {
         if (ticket != null && ticket.getId().equals(ticketId)) {
             return ticket;
         } else {
-            return new SignaturTicket(ticketId, SignaturTicket.Status.OKAND, null, null, new LocalDateTime());
+            return new SignaturTicket(ticketId, SignaturTicket.Status.OKAND, null, null, null, new LocalDateTime());
         }
     }
 
