@@ -212,6 +212,7 @@ public class IntygDraftServiceImplTest {
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
         when(intygRepository.save(intygDraft)).thenReturn(intygDraft);
         when(userService.getWebCertUser()).thenReturn(user);
+        when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
         when(mockModuleApi.updateInternal(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(
                 new InternalModelResponse("{}"));
 

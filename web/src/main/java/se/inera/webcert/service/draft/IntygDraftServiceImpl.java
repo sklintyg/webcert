@@ -424,6 +424,9 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         String intygType = draft.getIntygsTyp();
         String draftAsJson = request.getDraftAsJson();
 
+        // Keep persisted json for comparsion  
+        String persistedJson = draft.getModel();
+
         // Update draft with user information
         updateWithUser(draft, draftAsJson);
 
@@ -437,13 +440,21 @@ public class IntygDraftServiceImpl implements IntygDraftService {
         draft = saveDraft(draft);
         LOG.debug("Draft '{}' updated", draft.getIntygsId());
 
+
         // Notify stakeholders when a draft has been changed/updated
-        if (!request.getAutoSave()) {
-            sendNotification(draft, Event.CHANGED);
+        try {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            if (moduleApi.isModelChanged(persistedJson, draftAsJson)) {
+                LOG.debug("*** Detected changes in model, sending notification! ***");
+                sendNotification(draft, Event.CHANGED);
+            }
+        } catch (ModuleException | ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
 
         return draftValidation;
     }
+
 
     @Transactional
     private Intyg saveDraft(Intyg draft) {
