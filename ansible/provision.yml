@@ -1,11 +1,4 @@
 ---
 # This playbook provisions the environment for WebCert 
 
-- hosts: all
-  sudo: yes 
-
-  roles:
-    - webcert-systemvariabler
-    - webcert-resurser
-    - webcert-jarfiler
-    - config-folder
+- include: provision_tomcat.yml
