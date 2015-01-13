@@ -127,7 +127,9 @@ public class SignaturServiceImplTest {
         when(webcertUserService.getWebCertUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
+        
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
+        ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
     private Utkast createUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {

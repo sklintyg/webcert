@@ -232,6 +232,8 @@ public class SignaturServiceImpl implements SignaturService {
         } catch (ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
         }
+        
+        return utkast;
     }
 
     private SignatureTicket createSignatureTicket(String intygId, String payload, LocalDateTime signeringstid) {
