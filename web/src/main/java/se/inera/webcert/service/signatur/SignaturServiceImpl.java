@@ -96,12 +96,12 @@ public class SignaturServiceImpl implements SignaturService {
         LocalDateTime signeringstid = LocalDateTime.now();
         
         // Update certificate with user information
-        utkast = updateUtkastForSignering(utkast, user.getHsaId(), user.getNamn());
+        utkast = updateUtkastForSignering(utkast, user, signeringstid);
 
         // Save the certificate draft
         utkastRepository.save(utkast);
 
-        SignaturTicket statusTicket = createSignatureTicket(utkast.getIntygsId(), utkast.getModel());
+        SignaturTicket statusTicket = createSignaturTicket(utkast.getIntygsId(), utkast.getModel(), signeringstid);
 
         return statusTicket;
     }
@@ -175,21 +175,20 @@ public class SignaturServiceImpl implements SignaturService {
     public SignaturTicket serverSignature(String intygsId) {
         LOG.debug("Signera utkast '{}'", intygsId);
 
-        Utkast intyg = getUtkastForSignering(intygsId);
         // On server side we need to create our own signature ticket
-        SignaturTicket ticket = createSignatureTicket(intygsId, intyg.getModel());
+        SignaturTicket ticket = createDraftHash(intygsId);
 
         // Fetch Webcert user
         WebCertUser user = webCertUserService.getWebCertUser();
 
         // Fetch the certificate
-        Intyg intyg = getIntygForSignering(intygsId);
+        Utkast utkast = getUtkastForSignering(intygsId);
 
         // Create and persist signature
-        ticket = createAndPersistSignature(intyg, ticket, "Signatur", user);
+        ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
         // Notify stakeholders when a draft has been signed
-        sendNotification(intyg);
+        sendNotification(utkast);
 
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
@@ -219,14 +218,14 @@ public class SignaturServiceImpl implements SignaturService {
      * @param userName
      * @return
      */
-    private Intyg updateIntygForSignering(Intyg intyg, WebCertUser user, LocalDateTime signeringstid) {
+    private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
         VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
-        intyg.setSenastSparadAv(vardpersonReferens);
+        utkast.setSenastSparadAv(vardpersonReferens);
         try {
-            InternalModelHolder internalModel = new InternalModelHolder(intyg.getModel());
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intyg.getIntygsTyp());
+            InternalModelHolder internalModel = new InternalModelHolder(utkast.getModel());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
             InternalModelResponse updatedInternal = moduleApi.updateBeforeSigning(internalModel, UpdateUserUtil.createUserObject(user), signeringstid);
-            intyg.setModel(updatedInternal.getInternalModel());
+            utkast.setModel(updatedInternal.getInternalModel());
         } catch (ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
         } catch (ModuleNotFoundException e) {
@@ -236,11 +235,11 @@ public class SignaturServiceImpl implements SignaturService {
         return utkast;
     }
 
-    private SignatureTicket createSignatureTicket(String intygId, String payload, LocalDateTime signeringstid) {
+    private SignaturTicket createSignaturTicket(String intygId, String payload, LocalDateTime signeringstid) {
         try {
             String hash = createHash(payload);
             String id = UUID.randomUUID().toString();
-            SignaturTicket statusTicket = new SignaturTicket(id, SignaturTicket.Status.BEARBETAR, intygId, hash, new LocalDateTime());
+            SignaturTicket statusTicket = new SignaturTicket(id, SignaturTicket.Status.BEARBETAR, intygId, signeringstid, hash, new LocalDateTime());
             ticketTracker.trackTicket(statusTicket);
             return statusTicket;
         } catch (IllegalStateException e) {

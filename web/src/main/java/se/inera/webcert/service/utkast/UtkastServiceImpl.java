@@ -596,7 +596,7 @@ public class UtkastServiceImpl implements UtkastService {
     private void updateWithUser(Utkast utkast, String modelJson) {
         WebCertUser user = webCertUserService.getWebCertUser();
         se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = UpdateUserUtil.createUserObject(user);
-        utkast.setSenastSparadAv(vardPersonRef);
+        utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
 
         try {
             InternalModelHolder internalModel = new InternalModelHolder(modelJson);
