@@ -32,6 +32,5 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 
 | script | !-SvaraOchFraga-! |
 | klicka pa hantera knappen|
-| lista med ohanterade fragor visas |
 | svar ar borta | $internReferens1 |
 
