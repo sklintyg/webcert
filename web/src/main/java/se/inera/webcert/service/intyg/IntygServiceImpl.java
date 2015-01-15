@@ -187,11 +187,11 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     @Override
-    public IntygPdf fetchIntygAsPdf(String intygTyp, String intygId) {
+    public IntygPdf fetchIntygAsPdf(String intygId, String intygTyp) {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygId);
 
-            IntygContentHolder intyg = fetchIntygData(intygTyp, intygId);
+            IntygContentHolder intyg = fetchIntygData(intygId, intygTyp);
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents());
 
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
