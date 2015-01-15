@@ -28,11 +28,13 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
 
     private static final String HSAID_ROOT = "1.2.752.129.2.1.4.1";
 
+    private static final String TYPAVUTLATANDE_FK7263_CODE = "FK7263";
+
+    private static final String TYPAVUTLATANDE_FK7263_DISPLAYNAME = "Läkarintyg enligt 3 kap. 8 § lagen (1962:381) om allmän försäkring";
+
     private static final String TYPAVUTLATANDE_CODESYSTEM = "f6fb361a-e31d-48b8-8657-99b63912dd9b";
 
     private static final String TYPAVUTLATANDE_CODESYSTEM_NAME = "kv_utlåtandetyp_intyg";
-
-    private static final String TYPAVUTLATANDE_DISPLAYNAME = "Läkarintyg enligt 3 kap. 8 § lagen (1962:381) om allmän försäkring";
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -49,7 +51,8 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         UtlatandeId utlatandeId = createUtlatandeId(intygsId);
         utlatandeType.setUtlatandeId(utlatandeId);
 
-        TypAvUtlatandeTyp typAvUtlatande = createTypAvUtlatande(request);
+        // FK7263 is hard-coded as typAvUtlatande
+        TypAvUtlatandeTyp typAvUtlatande = createTypAvUtlatande();
         utlatandeType.setTypAvUtlatande(typAvUtlatande);
 
         HandelseType handelseType = new HandelseType();
@@ -105,12 +108,12 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         return utlatandeId;
     }
 
-    private TypAvUtlatandeTyp createTypAvUtlatande(NotificationRequestType request) {
+    private TypAvUtlatandeTyp createTypAvUtlatande() {
         TypAvUtlatandeTyp typAvUtlatande = new TypAvUtlatandeTyp();
-        typAvUtlatande.setCode(request.getIntygsTyp());
+        typAvUtlatande.setCode(TYPAVUTLATANDE_FK7263_CODE);
         typAvUtlatande.setCodeSystem(TYPAVUTLATANDE_CODESYSTEM);
         typAvUtlatande.setCodeSystemName(TYPAVUTLATANDE_CODESYSTEM_NAME);
-        typAvUtlatande.setDisplayName(TYPAVUTLATANDE_DISPLAYNAME);
+        typAvUtlatande.setDisplayName(TYPAVUTLATANDE_FK7263_DISPLAYNAME);
         return typAvUtlatande;
     }
 

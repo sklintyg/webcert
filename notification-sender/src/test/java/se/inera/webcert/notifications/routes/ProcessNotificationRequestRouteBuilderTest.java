@@ -56,6 +56,8 @@ public class ProcessNotificationRequestRouteBuilderTest {
 
     private static final String VARDENHET_1_ADDR = "vardenhet-1";
 
+    private static final String FK7263 = "FK7263";
+
     @Test
     public void testWithSkapat() throws Exception {
 
@@ -77,6 +79,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
         CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn()
                 .getBody(CertificateStatusUpdateForCareType.class);
         assertNotNull(statusUpdateType);
+        assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
         assertEquals(HandelsekodCodeRestrictionType.HAN_1, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
         assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());
     }
@@ -102,6 +105,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
         CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn()
                 .getBody(CertificateStatusUpdateForCareType.class);
         assertNotNull(statusUpdateType);
+        assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
         assertEquals(HandelsekodCodeRestrictionType.HAN_2, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
         assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());
         assertEquals(1, statusUpdateType.getUtlatande().getArbetsformaga().size());
@@ -128,6 +132,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
                 .getBody(CertificateStatusUpdateForCareType.class);
         assertNotNull(statusUpdateType);
         assertNotNull(statusUpdateType.getUtlatande().getSkapadAv());
+        assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
         assertEquals(HandelsekodCodeRestrictionType.HAN_4, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
         assertTrue(statusUpdateType.getUtlatande().getArbetsformaga().isEmpty());
         assertNull(statusUpdateType.getUtlatande().getDiagnos());
