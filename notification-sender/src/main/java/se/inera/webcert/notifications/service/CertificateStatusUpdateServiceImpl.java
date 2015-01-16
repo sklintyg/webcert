@@ -47,11 +47,11 @@ public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpda
         switch (result.getResultCode()) {
         case ERROR:
             if (result.getErrorId().equals(ErrorIdType.TECHNICAL_ERROR)) {
-                throw new NonRecoverableCertificateStatusUpdateServiceException(String.format(
-                        "CertificateStatusUpdateServiceImpl failed with non-recoverable error code: %s and message %s", result.getErrorId(), result.getResultText()));
-            } else {
                 throw new CertificateStatusUpdateServiceException(String.format(
                         "CertificateStatusUpdateServiceImpl failed with error code: %s and message %s", result.getErrorId(), result.getResultText()));
+            } else {
+                throw new NonRecoverableCertificateStatusUpdateServiceException(String.format(
+                        "CertificateStatusUpdateServiceImpl failed with non-recoverable error code: %s and message %s", result.getErrorId(), result.getResultText()));
             }
         case INFO:
             LOG.info("CertificateStatusUpdateServiceImpl got message:" + result.getResultText());
