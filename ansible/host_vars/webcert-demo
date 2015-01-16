@@ -4,5 +4,4 @@ profile: test,wc-all-stubs,wc-security-test
 tomcat_conf: /var/lib/tomcat7/conf
 tomcat_bin: /usr/share/tomcat7/bin
 tomcat_lib: /usr/share/tomcat7/lib
-activemq_broker_url: "tcp://localhost:61616"
 config_etc_folder: "{{ config_folder }}/demo"
