@@ -80,7 +80,10 @@ public class ProcessNotificationRequestRouteBuilderTest {
                 .getBody(CertificateStatusUpdateForCareType.class);
         assertNotNull(statusUpdateType);
         assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
-        assertEquals(HandelsekodCodeRestrictionType.HAN_1, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
+        assertEquals(HandelsekodCodeRestrictionType.HAN_1.toString(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
+        assertNotNull(statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCodeSystem());
+        assertNotNull(statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCodeSystemName());
+        assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.toString(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getDisplayName());
         assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());
     }
 
@@ -106,7 +109,8 @@ public class ProcessNotificationRequestRouteBuilderTest {
                 .getBody(CertificateStatusUpdateForCareType.class);
         assertNotNull(statusUpdateType);
         assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
-        assertEquals(HandelsekodCodeRestrictionType.HAN_2, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
+        assertEquals(HandelsekodCodeRestrictionType.HAN_2.toString(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
+        assertEquals(HandelseType.INTYGSUTKAST_SIGNERAT.toString(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getDisplayName());
         assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());
         assertEquals(1, statusUpdateType.getUtlatande().getArbetsformaga().size());
     }
@@ -133,7 +137,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
         assertNotNull(statusUpdateType);
         assertNotNull(statusUpdateType.getUtlatande().getSkapadAv());
         assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
-        assertEquals(HandelsekodCodeRestrictionType.HAN_4, statusUpdateType.getUtlatande().getHandelse().getHandelsekod());
+        assertEquals(HandelsekodCodeRestrictionType.HAN_4.toString(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
         assertTrue(statusUpdateType.getUtlatande().getArbetsformaga().isEmpty());
         assertNull(statusUpdateType.getUtlatande().getDiagnos());
         assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());

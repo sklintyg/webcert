@@ -13,8 +13,9 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HosPersonalType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeTyp;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.inera.webcert.notifications.message.v1.HoSPersonType;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
@@ -35,6 +36,10 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
     private static final String TYPAVUTLATANDE_CODESYSTEM = "f6fb361a-e31d-48b8-8657-99b63912dd9b";
 
     private static final String TYPAVUTLATANDE_CODESYSTEM_NAME = "kv_utlåtandetyp_intyg";
+    
+    private static final String HANDELSE_CODESYSTEM = "na";
+    
+    private static final String HANDELSE_CODESYSTEM_NAME = "kv_händelse";
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -52,11 +57,11 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         utlatandeType.setUtlatandeId(utlatandeId);
 
         // FK7263 is hard-coded as typAvUtlatande
-        TypAvUtlatandeTyp typAvUtlatande = createTypAvUtlatande();
+        TypAvUtlatandeType typAvUtlatande = createTypAvUtlatande();
         utlatandeType.setTypAvUtlatande(typAvUtlatande);
 
         HandelseType handelseType = new HandelseType();
-        handelseType.setHandelsekod(convertToHandelsekod(request.getHandelse()));
+        handelseType.setHandelsekod(createHandelsekodType(request.getHandelse()));
         handelseType.setHandelsetidpunkt(request.getHandelseTidpunkt());
 
         utlatandeType.setHandelse(handelseType);
@@ -108,8 +113,8 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         return utlatandeId;
     }
 
-    private TypAvUtlatandeTyp createTypAvUtlatande() {
-        TypAvUtlatandeTyp typAvUtlatande = new TypAvUtlatandeTyp();
+    private TypAvUtlatandeType createTypAvUtlatande() {
+        TypAvUtlatandeType typAvUtlatande = new TypAvUtlatandeType();
         typAvUtlatande.setCode(TYPAVUTLATANDE_FK7263_CODE);
         typAvUtlatande.setCodeSystem(TYPAVUTLATANDE_CODESYSTEM);
         typAvUtlatande.setCodeSystemName(TYPAVUTLATANDE_CODESYSTEM_NAME);
@@ -126,6 +131,19 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         return fosType;
     }
 
+    private HandelsekodType createHandelsekodType(se.inera.webcert.notifications.message.v1.HandelseType handelse) {
+        
+        HandelsekodType type = new HandelsekodType();
+        type.setCodeSystem(HANDELSE_CODESYSTEM);
+        type.setCodeSystemName(HANDELSE_CODESYSTEM_NAME);
+        type.setDisplayName(handelse.toString());
+        
+        HandelsekodCodeRestrictionType handelsekod = convertToHandelsekod(handelse);
+        type.setCode(handelsekod.toString());
+        
+        return type;
+    }
+    
     private HandelsekodCodeRestrictionType convertToHandelsekod(se.inera.webcert.notifications.message.v1.HandelseType handelse) {
         switch (handelse) {
         case FRAGA_FRAN_FK:

@@ -17,13 +17,13 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
 
-    private ConcurrentHashMap<String, HandelsekodCodeRestrictionType> store = new ConcurrentHashMap<String, HandelsekodCodeRestrictionType>();
+    private ConcurrentHashMap<String, String> store = new ConcurrentHashMap<String, String>();
     private AtomicInteger counter = new AtomicInteger(0);
 
     @Override
     public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(String logicalAddress,
             CertificateStatusUpdateForCareType request) {
-        HandelsekodCodeRestrictionType handelseKod = request.getUtlatande().getHandelse().getHandelsekod();
+        String handelseKod = request.getUtlatande().getHandelse().getHandelsekod().getCode();
         String utlatandeId = request.getUtlatande().getUtlatandeId().getExtension();
         LOG.info("\n*********************************************************************************\n"
                 + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"
@@ -46,8 +46,8 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         return store.keySet().size();
     }
 
-    public Map<String, HandelsekodCodeRestrictionType> getExchange() {
-        return (Map<String, HandelsekodCodeRestrictionType>) store;
+    public Map<String, String> getExchange() {
+        return (Map<String, String>) store;
     }
 
     public void reset() {
