@@ -1,0 +1,8 @@
+---
+# This playbook provisions the environment for WebCert 
+
+- hosts: mysql
+  sudo: yes 
+
+  roles:
+    - webcert-mysql

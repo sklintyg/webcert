@@ -1,4 +1,5 @@
 ---
 # This playbook provisions the environment for WebCert 
 
+- include: provision_mysql.yml
 - include: provision_tomcat.yml
