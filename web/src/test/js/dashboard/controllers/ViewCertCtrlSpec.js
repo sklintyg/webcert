@@ -98,6 +98,20 @@ describe('ViewCertCtrl', function() {
 
 
     describe('#checkSpecialQALink', function() {
+        beforeEach(function(){
+            $routeParams.qaOnly = true;
+
+            $controller('webcert.ViewCertCtrl',
+                { $rootScope: $rootScope, $scope: $scope });
+
+            // ----- arrange
+            expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
+
+            // kick off the window change event
+            $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
+
+        });
+
         it('Check if the user used the special qa-link to get here', function(){
 
 
@@ -182,7 +196,6 @@ describe('ViewCertCtrl', function() {
     describe('#checkHasUnhandledMessages', function() {
 
         beforeEach(function(){
-            console.debug("---- before each");
             // the below is run before each sub test as a means to fire a location change event and so opening the dialog.
             // ----- arrange
             // setup 3 deferreds, for some weird reason we have to do this
@@ -197,20 +210,16 @@ describe('ViewCertCtrl', function() {
             UserPreferencesService.isSkipShowUnhandledDialogSet.andReturn(false);
 
             // ------ act
-            console.debug("+++ before apply");
 
             mockDeferreds.getLast().resolve(true);
 
             // promises are resolved/dispatched only on next $digest cycle
             $rootScope.$apply();
 
-            console.debug("-- after apply");
-            console.debug("before location change");
 
             $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
 
 
-            console.debug("after location change");
             // ------ assert
             expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
             expect(UserPreferencesService.isSkipShowUnhandledDialogSet).toHaveBeenCalled();
@@ -228,7 +237,6 @@ describe('ViewCertCtrl', function() {
 
         describe('#buttonHandle', function() {
             it('handle button click', function(){
-                console.debug("+++ buttonHandle");
                 // inside the handled button click, test that :
                 var args = dialogService.showDialog.mostRecentCall.args;
                 var dialogOptions = args[1];
@@ -247,7 +255,6 @@ describe('ViewCertCtrl', function() {
                 expect(modalMock.close).toHaveBeenCalled();
                 // the url wont be changed until a button is pressed!!
                 expect($window.location.href).toEqual(newUrl);
-                console.debug("--- buttonHandle");
             });
         });
 
