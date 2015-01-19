@@ -17,7 +17,6 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 | script | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
-| visa alla fragor |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
@@ -34,3 +33,8 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 | klicka pa hantera tillbaka knappen |
 | intyg med fraga svar sidan visas |
 
+!3 Ta bort fråga
+
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |

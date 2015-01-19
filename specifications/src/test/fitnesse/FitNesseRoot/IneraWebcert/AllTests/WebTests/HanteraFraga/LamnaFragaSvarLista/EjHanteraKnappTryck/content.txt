@@ -17,7 +17,6 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 | script | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
-| visa alla fragor |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
@@ -28,10 +27,17 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 | lamna fraga svar|
 | lamna fraga svar ej hanterad dialog visas |
 
-!3 Verifiera att fraga svar blir hanterad när man klicka på hantera knappen
+!3 Verifiera att fraga svar blir ej hanterad när man klicka på ej hantera knappen
 
 | script | !-SvaraOchFraga-! |
 | klicka pa ejhanterad knappen |
 | lista med ohanterade fragor visas |
 | svar ar med | $internReferens1 |
+
+!3 Ta bort fråga
+
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |
+
 

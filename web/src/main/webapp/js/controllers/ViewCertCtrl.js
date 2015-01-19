@@ -41,6 +41,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                 if(newUrl !== currentUrl && !UserPreferencesService.isSkipShowUnhandledDialogSet()){  // if we're changing url
                     $scope.widgetState.skipShowUnhandledDialog = UserPreferencesService.isSkipShowUnhandledDialogSet();
                     $event.preventDefault();
+                    console.debug("def 1");
                     var deferred = $q.defer();
                     $scope.$broadcast('hasUnhandledQasEvent', deferred);
                     deferred.promise.then(function(hasUnhandledQas) {
@@ -51,11 +52,18 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                 bodyTextId: 'label.qacheckhanterad.body',
                                 templateUrl: '/views/partials/qa-check-hanterad-dialog.html',
                                 button1click: function() {
-                                    $scope.$broadcast('markAllAsHandledEvent');
-                                    modal.close('hantera');
-                                    // unbind the location change listener
-                                    unbindCheckHandledEvent();
-                                    $window.location.href = newUrl;
+                                    $window.doneLoading = false; // should be resolved in the ajax callback in QACtrl
+                                    console.debug("def 2");
+                                    var deferred = $q.defer();
+                                    $scope.$broadcast('markAllAsHandledEvent', deferred);
+                                    deferred.promise.then(function(){
+
+                                        console.debug("def 2 then");
+                                        modal.close('hantera');
+                                        // unbind the location change listener
+                                        unbindCheckHandledEvent();
+                                        $window.location.href = newUrl;
+                                    });
                                 },
                                 button2click: function() {
                                     modal.close('ejhantera');

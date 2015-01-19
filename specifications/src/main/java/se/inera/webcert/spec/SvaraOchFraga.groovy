@@ -720,9 +720,16 @@ class SvaraOchFraga {
     boolean svarArBorta(String id) {
         def result = false;
         Browser.drive {
+
+            waitFor {
+                // setting the questions requires an ajax call, we need to wait for a return before moving on.
+                doneLoading()
+            }
+
             waitFor {
                 at UnhandledQAPage
             }
+
             result = page.isQAVisible(id)
         }
         return !result;
