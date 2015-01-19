@@ -2,6 +2,7 @@ describe('ViewCertCtrl', function() {
     'use strict';
 
     var manageCertificateSpy;
+    var $routeParams;
     var $httpBackend;
     var dialogService;
     var $scope;
@@ -14,6 +15,7 @@ describe('ViewCertCtrl', function() {
     var newUrl = 'http://server/#/app/new';
     var currentUrl = '/app/new';
     var UserPreferencesService;
+    var $controller;
 
     function MockDeferreds($q){
         this.$q = $q;
@@ -60,11 +62,16 @@ describe('ViewCertCtrl', function() {
 
         UserPreferencesService = jasmine.createSpyObj('UserPreferencesService', [ 'isSkipShowUnhandledDialogSet' ]);
         $provide.value('common.UserPreferencesService', UserPreferencesService);
+
+        $routeParams = {qaOnly:false};
+        $provide.value('$routeParams', $routeParams);
+
+
     }));
 
     // Get references to the object we want to test from the context.
     beforeEach(angular.mock.inject([ '$controller', '$rootScope', '$q', '$httpBackend', '$location', '$window',
-        function( $controller, _$rootScope_, _$q_,_$httpBackend_, _$location_, _$window_) {
+        function( _$controller_, _$rootScope_,_$q_,_$httpBackend_, _$location_, _$window_) {
 
             $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
@@ -73,22 +80,49 @@ describe('ViewCertCtrl', function() {
             $httpBackend = _$httpBackend_;
             $location = _$location_;
             $window = _$window_;
-            $controller('webcert.ViewCertCtrl',
-                { $rootScope: $rootScope, $scope: $scope });
-
             mockDeferreds = new MockDeferreds($q);
 
             spyOn($scope, '$broadcast');
 
             // setup the current location
             $location.url(currentUrl);
-            //newUrl = $location.url();
-            //$window.location.href = currentUrl;
+
+            $routeParams.qaOnly = false;
+
+            $controller = _$controller_;
+            $controller('webcert.ViewCertCtrl',
+                { $rootScope: $rootScope, $scope: $scope });
+
         }])
     );
 
 
+    describe('#checkSpecialQALink', function() {
+        it('Check if the user used the special qa-link to get here', function(){
 
+
+            $routeParams.qaOnly = true;
+
+            $controller('webcert.ViewCertCtrl',
+                { $rootScope: $rootScope, $scope: $scope });
+
+            // ----- arrange
+            expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
+
+            // kick off the window change event
+            $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
+
+            // ------ act
+            // promises are resolved/dispatched only on next $digest cycle
+            $rootScope.$apply();
+
+            // ------ assert
+            // dialog should be opened
+            expect(dialogService.showDialog).toHaveBeenCalled();
+
+        });
+
+    });
 
     describe('#checkHasNoUnhandledMessages', function() {
         it('should check that a dialog is not opened, if there are no unhandled messages, and go to then newUrl', function(){
@@ -151,8 +185,6 @@ describe('ViewCertCtrl', function() {
             console.debug("---- before each");
             // the below is run before each sub test as a means to fire a location change event and so opening the dialog.
             // ----- arrange
-            // spy on the defferd
-
             // setup 3 deferreds, for some weird reason we have to do this
             mockDeferreds.getDeferred();
             mockDeferreds.getDeferred();
