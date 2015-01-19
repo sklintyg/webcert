@@ -2,7 +2,7 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:rq="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1">
 
-  <xsl:include href="transform/general-transform.xslt"/>
+  <xsl:include href="transform/general-insuranceprocess-healthreporting-transform.xslt"/>
 
   <xsl:template name="response">
      <rq:ReceiveMedicalCertificateQuestionResponse>
