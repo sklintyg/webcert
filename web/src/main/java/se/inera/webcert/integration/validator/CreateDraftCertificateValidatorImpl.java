@@ -8,7 +8,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftce
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonalType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.PatientType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeTyp;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeType;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 
 @Component
@@ -36,9 +36,9 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         return errors;
     }
 
-    public void validateTypAvUtlatande(UtlatandeTyp typAvUtlatande, ValidationResult errors) {
+    public void validateTypAvUtlatande(TypAvUtlatandeType typAvUtlatandeType, ValidationResult errors) {
 
-        String intygsTyp = typAvUtlatande.getCode();
+        String intygsTyp = typAvUtlatandeType.getCode();
 
         if (!moduleRegistry.moduleExists(intygsTyp)) {
             errors.addError("Intyg {0} is not supported", intygsTyp);

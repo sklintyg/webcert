@@ -2,8 +2,8 @@ package se.inera.webcert.integration.builder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
@@ -12,14 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.EnhetType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonalType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.PatientType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeTyp;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
@@ -95,7 +94,7 @@ public class CreateNewDraftRequestBuilderTest {
 		UtlatandeType utlatande = new UtlatandeType();
 
 		// Type
-		UtlatandeTyp utlTyp = new UtlatandeTyp();
+		TypAvUtlatandeType utlTyp = new TypAvUtlatandeType();
 		utlTyp.setCode(CERT_TYPE);
 		utlatande.setTypAvUtlatande(utlTyp);
 

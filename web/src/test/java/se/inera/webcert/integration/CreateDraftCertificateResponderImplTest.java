@@ -24,7 +24,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftce
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeTyp;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaPersonService;
@@ -112,7 +112,7 @@ public class CreateDraftCertificateResponderImplTest {
         UtlatandeType utlatande = new UtlatandeType();
 
         // Type
-        UtlatandeTyp utlTyp = new UtlatandeTyp();
+        TypAvUtlatandeType utlTyp = new TypAvUtlatandeType();
         utlTyp.setCode("fk7263");
         utlatande.setTypAvUtlatande(utlTyp);
 
