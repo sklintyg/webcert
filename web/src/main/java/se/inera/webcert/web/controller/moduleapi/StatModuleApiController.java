@@ -5,12 +5,13 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.service.draft.IntygDraftService;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.VardenhetStats;
@@ -21,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +41,7 @@ public class StatModuleApiController extends AbstractApiController {
     private FragaSvarService fragaSvarService;
 
     @Autowired
-    private IntygDraftService intygDraftService;
+    private UtkastService intygDraftService;
 
     @GET
     @Path("/")

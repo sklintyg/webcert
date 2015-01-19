@@ -31,7 +31,7 @@ import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
@@ -61,7 +61,7 @@ public class IntygServiceTest {
     private IntygModuleFacade moduleFacade;
 
     @Mock
-    private IntygRepository intygRepository;
+    private UtkastRepository intygRepository;
 
     @Spy
     private IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();

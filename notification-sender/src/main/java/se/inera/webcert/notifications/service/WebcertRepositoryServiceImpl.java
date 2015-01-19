@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 
 /**
  * Simple facade for the Intyg respository so header values from Camel
@@ -23,7 +23,7 @@ public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
     private static final Logger LOG = LoggerFactory.getLogger(WebcertRepositoryService.class);
 
     @Autowired
-    private IntygRepository intygRepository;
+    private UtkastRepository utkastRepository;
 
     @Autowired
     private FragaSvarRepository fragaSvarRepository;
@@ -53,30 +53,26 @@ public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
      * @see se.inera.webcert.notifications.service.IntygRepositoryService#getIntygsUtkast(java.lang.String)
      */
     @Override
-    public Intyg getIntygsUtkast(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+    public Utkast getUtkast(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
 
-        LOG.debug("Retrieveing Intygsutkast using param '{}'", intygsId);
+        LOG.debug("Retrieveing Utkast '{}'", intygsId);
 
-        return intygRepository.findOne(intygsId);
+        return utkastRepository.findOne(intygsId);
     }
 
     @Override
-    public String getIntygsUtkastModel(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+    public String getModelFromUtkast(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
 
-        LOG.debug("Retrieveing Intygsutkast model using param '{}'", intygsId);
+        LOG.debug("Retrieveing model from Utkast '{}'", intygsId);
 
-        Intyg intygsUtkast = intygRepository.findOne(intygsId);
+        Utkast intygsUtkast = utkastRepository.findOne(intygsId);
 
-        if (intygsUtkast != null) {
-            return intygsUtkast.getModel();
-        }
-
-        return null;
+        return (intygsUtkast != null) ? intygsUtkast.getModel() : null;
     }
 
-    public boolean isIntygsUtkastPresent(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+    public boolean isUtkastPresent(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
 
-        if (intygRepository.exists(intygsId)) {
+        if (utkastRepository.exists(intygsId)) {
             return true;
         }
 

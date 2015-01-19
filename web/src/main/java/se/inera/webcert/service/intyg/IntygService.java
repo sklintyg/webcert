@@ -1,6 +1,6 @@
 package se.inera.webcert.service.intyg;
 
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
@@ -48,7 +48,7 @@ public interface IntygService {
      * @param intyg
      * @return
      */
-    IntygServiceResult storeIntyg(Intyg intyg);
+    IntygServiceResult storeIntyg(Utkast intyg);
 
     /**
      * Instructs Intygstjanst to deliver the given certifiate to an external recipient.

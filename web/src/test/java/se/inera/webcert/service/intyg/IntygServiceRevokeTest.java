@@ -16,6 +16,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
@@ -33,17 +34,18 @@ import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
-import se.inera.webcert.service.draft.TicketTracker;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
+import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.util.ReflectionUtils;
 
 import javax.xml.ws.WebServiceException;
+
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -66,7 +68,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     @Mock
     private FragaSvarService fragaSvarService;
 
-    private Intyg intygSigned;
+    private Utkast signedUtkast;
+    
     private HoSPerson hoSPerson;
 
     @Before
@@ -75,11 +78,11 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         VardpersonReferens vardperson = buildVardpersonReferens(person);
         WebCertUser user = buildWebCertUser(person);
 
-        intygSigned = buildIntyg(INTYG_ID, INTYG_TYPE, IntygsStatus.SIGNED, INTYG_JSON, vardperson);
+        signedUtkast = buildIntyg(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
 
         when(webCertUserService.getWebCertUser()).thenReturn(user);
 
-        ReflectionUtils.setTypedField(intygSignatureService, new TicketTracker());
+        ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
     }
 
@@ -97,7 +100,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         RevokeMedicalCertificateResponseType response = new RevokeMedicalCertificateResponseType();
         response.setResult(result);
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygSigned);
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
         // when(getCertificateService.getCertificateForCare(anyString(),
         // any(GetCertificateForCareRequestType.class))).thenReturn(getCertResponse);
         when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenReturn(
@@ -134,7 +137,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         FragaSvar fragaSvar = buildQuestion(12345L, "<text>", LocalDateTime.now());
 
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(intygSigned);
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
         when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenReturn(
                 response);
         when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
@@ -202,9 +205,9 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         return person;
     }
 
-    private Intyg buildIntyg(String intygId, String type, IntygsStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast buildIntyg(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
 
-        Intyg intyg = new Intyg();
+        Utkast intyg = new Utkast();
         intyg.setIntygsId(intygId);
         intyg.setIntygsTyp(type);
         intyg.setStatus(status);

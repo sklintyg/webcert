@@ -7,14 +7,14 @@ import org.junit.Test;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.inera.webcert.notifications.TestIntygProducer;
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.notifications.TestUtkastProducer;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 
 public class EnrichWithIntygDataStrategyTest {
 
     private EnrichWithIntygDataStrategy strategy;
 
-    private TestIntygProducer dataProducer = new TestIntygProducer();
+    private TestUtkastProducer dataProducer = new TestUtkastProducer();
 
     @Before
     public void setup() {
@@ -29,7 +29,7 @@ public class EnrichWithIntygDataStrategyTest {
         CertificateStatusUpdateForCareType statusUpdateType = new CertificateStatusUpdateForCareType();
         statusUpdateType.setUtlatande(orgUtlatande);
 
-        Intyg intygsUtkast = dataProducer.buildIntyg("intyg/intyg-1.json");
+        Utkast intygsUtkast = dataProducer.buildUtkast("intyg/intyg-1.json");
 
         CertificateStatusUpdateForCareType res = strategy.enrichWithIntygProperties(statusUpdateType, intygsUtkast);
         assertNotNull(res.getUtlatande());

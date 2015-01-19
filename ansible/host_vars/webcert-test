@@ -1,7 +1,6 @@
 ---
 # file: host_vars/intygstjanst-test
 profile: test,wc-all-stubs,wc-security-test
-tomcat_conf: /usr/local/tomcat7/conf
-tomcat_bin: /usr/local/tomcat7/bin
-tomcat_lib: /usr/local/tomcat7/lib
-activemq_broker_url: "tcp://localhost:61616"
+tomcat_conf: /opt/inera/tomcat7/conf
+tomcat_bin: /opt/inera/tomcat7/bin
+tomcat_lib: /opt/inera/tomcat7/lib

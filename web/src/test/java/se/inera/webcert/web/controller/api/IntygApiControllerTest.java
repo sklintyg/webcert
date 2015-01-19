@@ -9,9 +9,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.test.TestIntygFactory;
@@ -38,13 +38,13 @@ public class IntygApiControllerTest {
     private static final String ENHET_ID = "ABC123";
 
     private static List<String> ENHET_IDS = Arrays.asList("ABC123", "DEF456");
-    private static List<IntygsStatus> DRAFT_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
-            IntygsStatus.DRAFT_INCOMPLETE);
-    private static List<IntygsStatus> DRAFT_COMPLETE_STATUSES = Arrays.asList(IntygsStatus.DRAFT_COMPLETE);
+    private static List<UtkastStatus> DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
+            UtkastStatus.DRAFT_INCOMPLETE);
+    private static List<UtkastStatus> DRAFT_COMPLETE_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE);
 
-    private static List<Intyg> intygDrafts = TestIntygFactory.createListWithIntygDrafts();
+    private static List<Utkast> utkast = TestIntygFactory.createListWithUtkast();
 
-    private static List<IntygItem> intygSigned = TestIntygFactory.createListWithIntygItems();
+    private static List<IntygItem> intygItems = TestIntygFactory.createListWithIntygItems();
 
     @Mock
     private WebCertUserService webCertUserService = mock(WebCertUserService.class);
@@ -53,7 +53,7 @@ public class IntygApiControllerTest {
     private IntygService intygService = mock(IntygService.class);
 
     @Mock
-    private IntygRepository intygRepository = mock(IntygRepository.class);
+    private UtkastRepository mockUtkastRepository = mock(UtkastRepository.class);
 
     @InjectMocks
     private IntygApiController intygCtrl = new IntygApiController();
@@ -72,10 +72,10 @@ public class IntygApiControllerTest {
     public void testListIntyg() {
 
         // Mock call to Intygstjanst
-        when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(intygSigned);
+        when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(intygItems);
 
         // Mock call to database
-        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES)).thenReturn(intygDrafts);
+        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES)).thenReturn(utkast);
 
         Response response = intygCtrl.listDraftsAndIntygForPerson(PNR);
 

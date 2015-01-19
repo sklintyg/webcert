@@ -24,7 +24,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftce
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeTyp;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaPersonService;
@@ -33,10 +33,10 @@ import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
-import se.inera.webcert.service.draft.IntygDraftService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
+import se.inera.webcert.service.utkast.UtkastService;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateResponderImplTest {
@@ -48,7 +48,7 @@ public class CreateDraftCertificateResponderImplTest {
     private static final String UTKAST_ID = "abc123";
 
     @Mock
-    IntygDraftService mockIntygsUtkastService;
+    UtkastService mockUtkastService;
 
     @Mock
     HsaPersonService mockHsaPersonService;
@@ -93,13 +93,13 @@ public class CreateDraftCertificateResponderImplTest {
         draftRequest.setVardenhet(vardenhet);
 
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(UtlatandeType.class), any(MiuInformationType.class))).thenReturn(draftRequest);
-        when(mockIntygsUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(UTKAST_ID);
+        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(UTKAST_ID);
         when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
 
         CreateDraftCertificateType parameters = createParams();
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, parameters);
 
-        verify(mockIntygsUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
+        verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
 
         // Assert response content
         assertNotNull(response);
@@ -112,7 +112,7 @@ public class CreateDraftCertificateResponderImplTest {
         UtlatandeType utlatande = new UtlatandeType();
 
         // Type
-        UtlatandeTyp utlTyp = new UtlatandeTyp();
+        TypAvUtlatandeType utlTyp = new TypAvUtlatandeType();
         utlTyp.setCode("fk7263");
         utlatande.setTypAvUtlatande(utlTyp);
 

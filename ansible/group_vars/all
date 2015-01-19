@@ -6,17 +6,24 @@ releases_folder: "{{ inera_root }}/releases"
 config_repository: https://github.com/sklintyg/webcert-konfiguration.git
 config_folder: "{{ inera_root }}/webcert-konfiguration"
 config_etc_folder: "{{ config_folder }}/test"
+tomcat_conf: {{ inera_root }}/tomcat7/conf
+tomcat_bin: {{ inera_root }}/tomcat7/bin
+tomcat_lib: {{ inera_root }}/tomcat7/lib
 tomcat_service: inera-tomcat
 inera_tomcat_folder: "/var/lib/{{ tomcat_service }}"
 etc_folder: "{{ inera_tomcat_folder }}/etc"
 webapps_folder: "{{ inera_tomcat_folder }}/webapps"
+database_server: localhost
+database_port: 3306
+database_name: webcert
 database_username: webcert
 database_password: webcert
 database_driver: com.mysql.jdbc.Driver
-database_url: "jdbc:mysql://localhost:3306/webcert?useCompression=true"
+database_url: "jdbc:mysql://{{ database_server }}:{{ database_port }}/{{ database_name }}?useCompression=true"
 database_pool_maxActive: 20
 database_pool_maxIdle: 20
 database_pool_minIdle: 10
 database_pool_initialSize: 10
+activemq_broker_url: "tcp://localhost:61616"
 activemq_username: ""
 activemq_password: ""

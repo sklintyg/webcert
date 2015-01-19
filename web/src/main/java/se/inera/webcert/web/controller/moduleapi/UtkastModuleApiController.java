@@ -1,32 +1,42 @@
 package se.inera.webcert.web.controller.moduleapi;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.service.draft.IntygDraftService;
-import se.inera.webcert.service.draft.IntygSignatureService;
-import se.inera.webcert.service.draft.dto.DraftValidation;
-import se.inera.webcert.service.draft.dto.DraftValidationMessage;
-import se.inera.webcert.service.draft.dto.SaveAndValidateDraftRequest;
-import se.inera.webcert.service.draft.dto.SignatureTicket;
+
+import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.signatur.SignaturService;
+import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.webcert.service.utkast.UtkastService;
+import se.inera.webcert.service.utkast.dto.DraftValidation;
+import se.inera.webcert.service.utkast.dto.DraftValidationMessage;
+import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.moduleapi.dto.BiljettResponse;
+import se.inera.webcert.web.controller.moduleapi.dto.SignaturTicketResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
-import se.inera.webcert.web.controller.moduleapi.dto.IntygDraftHolder;
+import se.inera.webcert.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 /**
  * Controller for module interaction with drafts.
@@ -40,10 +50,10 @@ public class UtkastModuleApiController extends AbstractApiController {
     private static final Logger LOG = LoggerFactory.getLogger(UtkastModuleApiController.class);
 
     @Autowired
-    private IntygDraftService draftService;
+    private UtkastService utkastService;
 
     @Autowired
-    private IntygSignatureService signatureService;
+    private SignaturService signaturService;
 
     @Autowired
     private LogService logService;
@@ -64,16 +74,16 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
-        Intyg intyg = draftService.getDraft(intygsId);
+        Utkast utkast = utkastService.getDraft(intygsId);
         
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(intyg);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logReadOfIntyg(logRequest);
 
-        IntygDraftHolder draftHolder = new IntygDraftHolder();
+        DraftHolder draftHolder = new DraftHolder();
 
-        draftHolder.setVidarebefordrad(intyg.getVidarebefordrad());
-        draftHolder.setStatus(intyg.getStatus());
-        draftHolder.setContent(intyg.getModel());
+        draftHolder.setVidarebefordrad(utkast.getVidarebefordrad());
+        draftHolder.setStatus(utkast.getStatus());
+        draftHolder.setContent(utkast.getModel());
 
         return Response.ok(draftHolder).build();
     }
@@ -83,24 +93,23 @@ public class UtkastModuleApiController extends AbstractApiController {
      *
      * @param intygsId
      *            The id of the certificate.
-     * @param draftCertificate
+     * @param payload
      *            Object holding the certificate and its current status.
      */
     @PUT
     @Path("/{intygsTyp}/{intygsId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @DefaultValue("false") @QueryParam("autoSave") boolean autoSave,  byte[] draftCertificate) {
+    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
-        LOG.debug("Saving Intyg with id {}", intygsId);
-        LOG.debug("Autosave is {}", autoSave);
+        LOG.debug("Saving utkast with id '{}', autosave is {}", intygsId, autoSave);
 
-        String draftAsJson = fromBytesToString(draftCertificate);
+        String draftAsJson = fromBytesToString(payload);
 
         SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, draftAsJson, autoSave);
-        DraftValidation draftValidation = draftService.saveAndValidateDraft(serviceRequest);
+        DraftValidation draftValidation = utkastService.saveAndValidateDraft(serviceRequest);
 
         SaveDraftResponse responseEntity = buildSaveDraftResponse(draftValidation);
 
@@ -160,7 +169,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         LOG.debug("Deleting draft with id {}", intygsId);
 
-        draftService.deleteUnsignedDraft(intygsId);
+        utkastService.deleteUnsignedDraft(intygsId);
 
         return Response.ok().build();
     }
@@ -181,9 +190,9 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         LOG.debug("Logging printout of draft intyg '{}'", intygsId);
 
-        Intyg draft = draftService.getDraft(intygsId);
+        Utkast utkast = utkastService.getDraft(intygsId);
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromDraft(draft);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
 
         logService.logPrintOfIntygAsDraft(logRequest);
 
@@ -195,15 +204,15 @@ public class UtkastModuleApiController extends AbstractApiController {
      *
      * @param intygsId
      *            intyg id
-     * @return BiljettResponse
+     * @return SignaturTicketResponse
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/signeraserver")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
+    public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignatureTicket biljett = draftService.serverSignature(intygsId);
-        return new BiljettResponse(biljett);
+        SignaturTicket ticket = utkastService.serverSignature(intygsId);
+        return new SignaturTicketResponse(ticket);
     }
 
     /**
@@ -217,12 +226,12 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{biljettId}/signeraklient")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId, byte[] rawSignatur) {
+    public SignaturTicketResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId, byte[] rawSignatur) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
         String draftAsJson = fromBytesToString(rawSignatur);
-        SignatureTicket biljett = signatureService.clientSignature(biljettId, draftAsJson);
-        return new BiljettResponse(biljett);
+        SignaturTicket ticket = signaturService.clientSignature(biljettId, draftAsJson);
+        return new SignaturTicketResponse(ticket);
     }
 
     /**
@@ -230,15 +239,15 @@ public class UtkastModuleApiController extends AbstractApiController {
      *
      * @param intygsId
      *            intyg id
-     * @return BiljettResponse
+     * @return SignaturTicketResponse
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/signeringshash")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
+    public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignatureTicket biljett = draftService.createDraftHash(intygsId);
-        return new BiljettResponse(biljett);
+        SignaturTicket ticket = utkastService.createDraftHash(intygsId);
+        return new SignaturTicketResponse(ticket);
     }
 
     /**
@@ -246,14 +255,14 @@ public class UtkastModuleApiController extends AbstractApiController {
      *
      * @param biljettId
      *            biljett id
-     * @return BiljettResponse
+     * @return SignaturTicketResponse
      */
     @GET
     @Path("/{intygsTyp}/{biljettId}/signeringsstatus")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public BiljettResponse biljettStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId) {
+    public SignaturTicketResponse biljettStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignatureTicket biljett = signatureService.ticketStatus(biljettId);
-        return new BiljettResponse(biljett);
+        SignaturTicket ticket = signaturService.ticketStatus(biljettId);
+        return new SignaturTicketResponse(ticket);
     }
 }

@@ -20,15 +20,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.converter.IntygDraftsConverter;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.service.draft.IntygDraftService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.draft.dto.CreateNewDraftCopyResponse;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.utkast.UtkastService;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.CopyIntygRequest;
 import se.inera.webcert.web.controller.api.dto.CopyIntygResponse;
@@ -45,17 +45,17 @@ public class IntygApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
 
-    private static final List<IntygsStatus> ALL_DRAFTS = Arrays.asList(IntygsStatus.DRAFT_COMPLETE,
-            IntygsStatus.DRAFT_INCOMPLETE);
+    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
+            UtkastStatus.DRAFT_INCOMPLETE);
 
     @Autowired
     private IntygService intygService;
 
     @Autowired
-    private IntygRepository intygRepository;
+    private UtkastRepository utkastRepository;
 
     @Autowired
-    private IntygDraftService intygDraftService;
+    private UtkastService intygDraftService;
 
     public IntygApiController() {
 
@@ -129,20 +129,20 @@ public class IntygApiController extends AbstractApiController {
             return Response.status(Status.BAD_REQUEST).build();
         }
 
-        List<IntygItem> signedIntygList = intygService.listIntyg(enhetsIds, personNummer);
-        LOG.debug("Got {} signed intyg", signedIntygList.size());
+        List<IntygItem> intygList = intygService.listIntyg(enhetsIds, personNummer);
+        LOG.debug("Got {} intyg", intygList.size());
 
-        List<Intyg> draftIntygList;
+        List<Utkast> utkastList;
 
         if (checkIfWebcertFeatureIsAvailable(WebcertFeature.HANTERA_INTYGSUTKAST)) {
-            draftIntygList = intygRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds,
+            utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(personNummer, enhetsIds,
                     ALL_DRAFTS);
-            LOG.debug("Got {} draft intyg", draftIntygList.size());
+            LOG.debug("Got {} utkast", utkastList.size());
         } else {
-            draftIntygList = Collections.emptyList();
+            utkastList = Collections.emptyList();
         }
 
-        List<ListIntygEntry> allIntyg = IntygDraftsConverter.merge(signedIntygList, draftIntygList);
+        List<ListIntygEntry> allIntyg = IntygDraftsConverter.merge(intygList, utkastList);
 
         return Response.ok(allIntyg).build();
     }
@@ -165,12 +165,12 @@ public class IntygApiController extends AbstractApiController {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
-        Intyg updatedIntyg = intygDraftService.setForwardOnDraft(intygsId, forwarded);
+        Utkast updatedIntyg = intygDraftService.setForwardOnDraft(intygsId, forwarded);
 
         LOG.debug("Set forward to {} on intyg {} with id '{}'",
                 new Object[] { updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId() });
 
-        ListIntygEntry intygEntry = IntygDraftsConverter.convertIntygToListIntygEntry(updatedIntyg);
+        ListIntygEntry intygEntry = IntygDraftsConverter.convertUtkastToListIntygEntry(updatedIntyg);
 
         return Response.ok(intygEntry).build();
     }

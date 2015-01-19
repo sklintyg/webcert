@@ -8,10 +8,10 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HosPersonalType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
-import se.inera.webcert.persistence.intyg.model.Signatur;
-import se.inera.webcert.persistence.intyg.model.VardpersonReferens;
+import se.inera.webcert.persistence.utkast.model.Signatur;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 
 public class EnrichWithIntygDataStrategy {
 
@@ -19,7 +19,7 @@ public class EnrichWithIntygDataStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygDataStrategy.class);
 
-    public CertificateStatusUpdateForCareType enrichWithIntygProperties(CertificateStatusUpdateForCareType statusUpdateType, Intyg intygsUtkast) {
+    public CertificateStatusUpdateForCareType enrichWithIntygProperties(CertificateStatusUpdateForCareType statusUpdateType, Utkast intygsUtkast) {
 
         LOG.debug("Enriching CertificateStatusUpdateForCareType with data from intygsutkast {}", intygsUtkast.getIntygsId());
 
@@ -31,15 +31,15 @@ public class EnrichWithIntygDataStrategy {
         return statusUpdateType;
     }
 
-    private void decorateWithSignDate(UtlatandeType utlatandeType, Intyg intygsUtkast) {
-        if (IntygsStatus.SIGNED.equals(intygsUtkast.getStatus())) {
+    private void decorateWithSignDate(UtlatandeType utlatandeType, Utkast intygsUtkast) {
+        if (UtkastStatus.SIGNED.equals(intygsUtkast.getStatus())) {
             LOG.debug("Status is SIGNED, getting signed date from signature");
             Signatur signatur = intygsUtkast.getSignatur();
             utlatandeType.setSigneringsdatum(signatur.getSigneringsDatum());
         }
     }
 
-    private void decorateWithHoSPerson(UtlatandeType utlatandeType, Intyg intygsUtkast) {
+    private void decorateWithHoSPerson(UtlatandeType utlatandeType, Utkast intygsUtkast) {
 
         VardpersonReferens vardpersonReferens = intygsUtkast.getSkapadAv();
 

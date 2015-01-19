@@ -37,11 +37,11 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.intyg.model.Intyg;
-import se.inera.webcert.persistence.intyg.model.Omsandning;
-import se.inera.webcert.persistence.intyg.model.OmsandningOperation;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
+import se.inera.webcert.persistence.utkast.model.Omsandning;
+import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
@@ -103,7 +103,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     private OmsandningRepository omsandningRepository;
 
     @Autowired
-    private IntygRepository intygRepository;
+    private UtkastRepository utkastRepository;
 
     @Autowired
     private IntygModuleFacade modelFacade;
@@ -187,11 +187,11 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     @Override
-    public IntygPdf fetchIntygAsPdf(String intygTyp, String intygId) {
+    public IntygPdf fetchIntygAsPdf(String intygId, String intygTyp) {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygId);
 
-            IntygContentHolder intyg = fetchIntygData(intygTyp, intygId);
+            IntygContentHolder intyg = fetchIntygData(intygId, intygTyp);
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents());
 
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
@@ -205,10 +205,10 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     @Override
-    public IntygServiceResult storeIntyg(Intyg intyg) {
-        Omsandning omsandning = createOmsandning(OmsandningOperation.STORE_INTYG, intyg.getIntygsId(), intyg.getIntygsTyp(), null);
+    public IntygServiceResult storeIntyg(Utkast utkast) {
+        Omsandning omsandning = createOmsandning(OmsandningOperation.STORE_INTYG, utkast.getIntygsId(), utkast.getIntygsTyp(), null);
         // Redan schedulerat för att skickas, men vi gör ett försök redan nu.
-        return storeIntyg(intyg, omsandning);
+        return storeIntyg(utkast, omsandning);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -228,20 +228,20 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     public IntygServiceResult storeIntyg(Omsandning omsandning) {
-        return storeIntyg(intygRepository.findOne(omsandning.getIntygId()), omsandning);
+        return storeIntyg(utkastRepository.findOne(omsandning.getIntygId()), omsandning);
     }
 
-    public IntygServiceResult storeIntyg(Intyg intyg, Omsandning omsandning) {
+    public IntygServiceResult storeIntyg(Utkast utkast, Omsandning omsandning) {
         try {
-            registerIntyg(intyg);
+            registerIntyg(utkast);
             omsandningRepository.delete(omsandning);
             return IntygServiceResult.OK;
         } catch (ExternalServiceCallException esce) {
-            LOG.error("An WebServiceException occured when trying to fetch and send intyg: " + intyg.getIntygsId(), esce);
+            LOG.error("An WebServiceException occured when trying to fetch and send intyg: " + utkast.getIntygsId(), esce);
             scheduleResend(omsandning);
             return IntygServiceResult.RESCHEDULED;
         } catch (ModuleException | IntygModuleFacadeException e) {
-            LOG.error("Module problems occured when trying to send intyg " + intyg.getIntygsId(), e);
+            LOG.error("Module problems occured when trying to send intyg " + utkast.getIntygsId(), e);
             omsandningRepository.delete(omsandning);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
@@ -398,10 +398,10 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
     /* --------------------- Private scope --------------------- */
 
-    private void registerIntyg(Intyg intyg) throws IntygModuleFacadeException, ModuleException {
-        LOG.debug("Attempting to register intyg {}", intyg.getIntygsId());
-        modelFacade.registerCertificate(intyg.getIntygsTyp(), intyg.getModel());
-        LOG.debug("Successfully registered intyg {}", intyg.getIntygsId());
+    private void registerIntyg(Utkast utkast) throws IntygModuleFacadeException, ModuleException {
+        LOG.debug("Attempting to register signed utkast {}", utkast.getIntygsId());
+        modelFacade.registerCertificate(utkast.getIntygsTyp(), utkast.getModel());
+        LOG.debug("Successfully registered signed utkast {}", utkast.getIntygsId());
     }
 
     private void scheduleResend(Omsandning omsandning) {
@@ -412,16 +412,16 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     /**
-     * @see se.inera.webcert.service.intyg.IntygServiceImpl#sendNotification(se.inera.webcert.persistence.intyg.model.Intyg,
+     * @see se.inera.webcert.service.intyg.IntygServiceImpl#sendNotification(se.inera.webcert.persistence.utkast.model.Utkast,
      *      se.inera.webcert.service.intyg.IntygServiceImpl.Event)
      */
     private void sendNotification(String intygId, Event event) {
-        Intyg intyg = intygRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findOne(intygId);
 
-        if (intyg != null) {
-            sendNotification(intyg, event);
+        if (utkast != null) {
+            sendNotification(utkast, event);
         } else {
-            LOG.debug("Intyg '{}' was not found - no notification sent.", intygId);
+            LOG.debug("Utkast '{}' was not found - no notification sent.", intygId);
         }
     }
 
@@ -429,21 +429,21 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
      * Send a notification message to stakeholders informing that
      * an event of some type for this certificate has occurred.
      *
-     * @param intyg
+     * @param utkast
      *            the certificate that has been revoked
      * @param event
      *            the event for this notification
      */
-    private void sendNotification(Intyg intyg, Event event) {
+    private void sendNotification(Utkast utkast, Event event) {
 
         switch (event) {
         case REVOKE:
-            sendRevokedNotification(intyg);
+            sendRevokedNotification(utkast);
             break;
         case SEND:
-            NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromSentCertificate(intyg);
+            NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromSentCertificate(utkast);
             notificationService.notify(notificationRequestType);
-            LOG.debug("Notification sent: certificate with id '{}' has been sent to FK", intyg.getIntygsId());
+            LOG.debug("Notification sent: certificate with id '{}' has been sent to FK", utkast.getIntygsId());
         }
 
     }
@@ -452,23 +452,23 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
      * Send a notification message to stakeholders informing that
      * a question related to a revoked certificate has been closed.
      *
-     * @param intyg
+     * @param utkast
      *            the certificate that has been revoked
      */
-    private void sendRevokedNotification(Intyg intyg) {
+    private void sendRevokedNotification(Utkast utkast) {
         // First: send a notification informing stakeholders that this certificate has been revoked
-        NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromRevokedCertificate(intyg);
+        NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromRevokedCertificate(utkast);
         notificationService.notify(notificationRequestType);
-        LOG.debug("Notification sent: certificate with id '{}' was revoked", intyg.getIntygsId());
+        LOG.debug("Notification sent: certificate with id '{}' was revoked", utkast.getIntygsId());
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.
-        FragaSvar[] array = fragaSvarService.closeAllNonClosedQuestions(intyg.getIntygsId());
+        FragaSvar[] array = fragaSvarService.closeAllNonClosedQuestions(utkast.getIntygsId());
         for (int i = 0; i < array.length; i++) {
             notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(array[i]);
             notificationService.notify(notificationRequestType);
             LOG.debug("Notification sent: question with id '{}' (related with certificate with id '{}') was closed", array[i].getInternReferens(),
-                    intyg.getIntygsId());
+                    utkast.getIntygsId());
         }
     }
 

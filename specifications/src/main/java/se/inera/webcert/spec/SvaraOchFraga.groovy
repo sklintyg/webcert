@@ -682,4 +682,111 @@ class SvaraOchFraga {
             }
         }
     }
+
+    def lamnaFragaSvar() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                page.tillbakaButtonClick()
+            }
+        }
+    }
+
+    boolean lamnaFragaSvarEjHanteradDialogVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                expected == page.qaCheckEjHanteradDialog.isDisplayed()
+            }
+        }
+        true
+    }
+
+    def klickaPaHanteraKnappen() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                page.hanteraButtonClick()
+            }
+        }
+    }
+
+    boolean svarArBorta(String id) {
+        def result = false;
+        Browser.drive {
+
+            waitFor {
+                // setting the questions requires an ajax call, we need to wait for a return before moving on.
+                doneLoading()
+            }
+
+            waitFor {
+                at UnhandledQAPage
+            }
+
+            result = page.isQAVisible(id)
+        }
+        return !result;
+    }
+
+    def klickaPaEjhanteradKnappen() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                page.ejHanteraButtonClick()
+            }
+        }
+    }
+
+    boolean svarArMed(String id) {
+        def result = false;
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = page.isQAVisible(id)
+        }
+        return result;
+    }
+
+    def klickaPaTillbakaKnappen() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                page.tillbakaButtonClick()
+            }
+        }
+    }
+
+    def kryssaIVisaInteIgen(){
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                page.preferenceSkipShowUnhandledCheck()
+            }
+        }
+    }
+
+    def klickaPaHanteraTillbakaKnappen() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                page.hanteraTillbakaButtonClick()
+            }
+        }
+    }
 }

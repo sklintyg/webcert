@@ -30,7 +30,7 @@ import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
-import se.inera.webcert.persistence.intyg.model.IntygsStatus;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/spring/test-properties-context.xml", "/spring/beans-context.xml", "/spring/test-service-context.xml",
@@ -122,7 +122,7 @@ public class TestExceptionHandlers {
         Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
         exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
         exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
-        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, IntygsStatus.SIGNED);
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, UtkastStatus.SIGNED);
         exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_SIGNERAT.toString());
         exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
         return exchange;

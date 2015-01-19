@@ -26,10 +26,9 @@ import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.v1.rivtabp20.RevokeMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
-import se.inera.webcert.persistence.intyg.model.Omsandning;
-import se.inera.webcert.persistence.intyg.repository.IntygRepository;
-import se.inera.webcert.persistence.intyg.repository.OmsandningRepository;
-import se.inera.webcert.service.draft.IntygSignatureServiceImpl;
+import se.inera.webcert.persistence.utkast.model.Omsandning;
+import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
+import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManagerImpl;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
@@ -37,6 +36,7 @@ import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.SignaturServiceImpl;
 import se.inera.webcert.web.service.WebCertUserService;
 
 public abstract class AbstractIntygServiceTest {
@@ -66,7 +66,7 @@ public abstract class AbstractIntygServiceTest {
     protected IntygModuleFacade moduleFacade;
 
     @Mock
-    protected IntygRepository intygRepository;
+    protected UtkastRepository intygRepository;
 
     @Mock
     protected OmsandningRepository omsandningRepository;
@@ -89,7 +89,7 @@ public abstract class AbstractIntygServiceTest {
     protected IntygServiceConfigurationManager configurationManager = new IntygServiceConfigurationManagerImpl(new CustomObjectMapper());
 
     @InjectMocks
-    protected IntygSignatureServiceImpl intygSignatureService = new IntygSignatureServiceImpl();
+    protected SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();

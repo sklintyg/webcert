@@ -1,7 +1,7 @@
 package se.inera.webcert.service.log;
 
 import se.inera.certificate.model.common.internal.Utlatande;
-import se.inera.webcert.persistence.intyg.model.Intyg;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.log.dto.LogRequest;
 
 public final class LogRequestFactory {
@@ -9,19 +9,19 @@ public final class LogRequestFactory {
     private LogRequestFactory() {
     }
 
-    public static LogRequest createLogRequestFromDraft(Intyg draft) {
+    public static LogRequest createLogRequestFromUtkast(Utkast utkast) {
 
         LogRequest logRequest = new LogRequest();
 
-        logRequest.setIntygId(draft.getIntygsId());
-        logRequest.setPatientId(draft.getPatientPersonnummer());
-        logRequest.setPatientName(draft.getPatientFornamn(), draft.getPatientMellannamn(), draft.getPatientEfternamn());
+        logRequest.setIntygId(utkast.getIntygsId());
+        logRequest.setPatientId(utkast.getPatientPersonnummer());
+        logRequest.setPatientName(utkast.getPatientFornamn(), utkast.getPatientMellannamn(), utkast.getPatientEfternamn());
 
-        logRequest.setIntygCareUnitId(draft.getEnhetsId());
-        logRequest.setIntygCareUnitName(draft.getEnhetsNamn());
+        logRequest.setIntygCareUnitId(utkast.getEnhetsId());
+        logRequest.setIntygCareUnitName(utkast.getEnhetsNamn());
 
-        logRequest.setIntygCareGiverId(draft.getVardgivarId());
-        logRequest.setIntygCareGiverName(draft.getVardgivarNamn());
+        logRequest.setIntygCareGiverId(utkast.getVardgivarId());
+        logRequest.setIntygCareGiverName(utkast.getVardgivarNamn());
 
         return logRequest;
     }

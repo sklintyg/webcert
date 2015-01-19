@@ -13,11 +13,11 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftce
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
-import se.inera.webcert.service.draft.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 
 @Component
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {

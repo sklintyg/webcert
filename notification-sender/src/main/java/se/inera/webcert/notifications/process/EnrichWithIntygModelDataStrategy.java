@@ -1,5 +1,7 @@
 package se.inera.webcert.notifications.process;
 
+import iso.v21090.dt.v1.PQ;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +19,6 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.DiagnosType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.DateInterval;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PQ;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
