@@ -5,6 +5,8 @@ inera_root: /opt/inera
 releases_folder: "{{ inera_root }}/releases"
 config_repository: https://github.com/sklintyg/webcert-konfiguration.git
 config_folder: "{{ inera_root }}/webcert-konfiguration"
+gitcrypt_key_name: "git-crypt4.key"
+gitcrypt_key_file: "./{{ gitcrypt_key_name }}"
 config_etc_folder: "{{ config_folder }}/test"
 tomcat_conf: "{{ inera_root }}/tomcat7/conf"
 tomcat_bin: "{{ inera_root }}/tomcat7/bin"

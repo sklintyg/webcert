@@ -1,0 +1,8 @@
+---
+
+- name: copy git-crypt key
+  copy: src="{{ gitcrypt_key_file }}"
+       dest="{{ inera_root }}/{{ gitcrypt_key_name }}"
+
+- name: unlock config repo
+  command: /usr/local/bin/git-crypt unlock {{ inera_root }}/{{ gitcrypt_key_name }} chdir={{ config_folder }} 
