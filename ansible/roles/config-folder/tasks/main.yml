@@ -4,5 +4,8 @@
   git: repo="{{ config_repository }}"
        dest="{{ config_folder }}"
 
+- name: create etc dir
+  file: state=directory path="{{ etc_folder }}"
+
 - name: create etc folder link
-  file: src="{{ config_etc_folder }}" dest="{{ etc_folder }}" state=link
+  file: src="{{ config_etc_folder }}" dest="{{ etc_folder }}/webcert" state=link
