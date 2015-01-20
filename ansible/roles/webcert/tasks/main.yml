@@ -16,7 +16,7 @@
 
 - name: Download webcert-web-{{ version }}.war
   get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-web/{{ version }}/webcert-web-{{ version }}.war
-      dest={{ releases_folder }}
+      dest={{ releases_folder }}/webcert-web-{{ version }}.war
 
 - name: remove old version of unpacked ROOT war
   file: state=absent
@@ -31,7 +31,7 @@
 
 - name: Download log-sender-{{ version }}.war
   get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
-      dest={{ releases_folder }}
+      dest={{ releases_folder }}/log-sender-{{ version }}.war
 
 - name: remove old version of unpacked log-sender war
   file: state=absent
@@ -46,7 +46,7 @@
 
 - name: Download notification-sender-{{ version }}.war
   get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/notification-sender/{{ version }}/notification-sender-{{ version }}.war
-      dest={{ releases_folder }}
+      dest={{ releases_folder }}/notification-sender-{{ version }}.war
 
 - name: remove old version of unpacked notification-sender war
   file: state=absent

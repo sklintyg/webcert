@@ -3,37 +3,37 @@
 
 - name: Download activemq-client-5.8.0.jar
   get_url: url=http://repo1.maven.org/maven2/org/apache/activemq/activemq-client/5.8.0/activemq-client-5.8.0.jar
-           dest={{ tomcat_lib }}
+           dest={{ tomcat_lib }}/activemq-client-5.8.0.jar
     
 - name: Download slf4j-api-1.6.4.jar
-  get_url: url=http://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar 
-           dest={{ tomcat_lib }}
+  get_url: url=http://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar
+           dest={{ tomcat_lib }}/slf4j-api-1.6.4.jar
     
 - name: Download hawtbuf-1.9.jar
   get_url: url=http://repo1.maven.org/maven2/org/fusesource/hawtbuf/hawtbuf/1.9/hawtbuf-1.9.jar
-           dest={{ tomcat_lib }}
+           dest={{ tomcat_lib }}/hawtbuf-1.9.jar
     
 - name: Download geronimo-jms_1.1_spec-1.1.1.jar
   get_url: url=http://repo1.maven.org/maven2/org/apache/geronimo/specs/geronimo-jms_1.1_spec/1.1.1/geronimo-jms_1.1_spec-1.1.1.jar
-           dest={{ tomcat_lib }}
+           dest={{ tomcat_lib }}/geronimo-jms_1.1_spec-1.1.1.jar
     
 - name: Download geronimo-j2ee-management_1.1_spec-1.0.1.jar
   get_url: url=http://repo1.maven.org/maven2/org/apache/geronimo/specs/geronimo-j2ee-management_1.1_spec/1.0.1/geronimo-j2ee-management_1.1_spec-1.0.1.jar
-           dest={{ tomcat_lib }}
+           dest={{ tomcat_lib }}/geronimo-j2ee-management_1.1_spec-1.0.1.jar
     
 - name: Download activemq-openwire-legacy-5.8.0.jar
   get_url: url=http://central.maven.org/maven2/org/apache/activemq/activemq-openwire-legacy/5.8.0/activemq-openwire-legacy-5.8.0.jar
-           dest={{ tomcat_lib }}
+           dest={{ tomcat_lib }}/activemq-openwire-legacy-5.8.0.jar
     
 - name: Download mysql-connector-java-5.1.26.jar
   get_url: url=http://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.26/mysql-connector-java-5.1.26.jar
-           dest={{ tomcat_lib }}
+           dest={{ tomcat_lib }}/mysql-connector-java-5.1.26.jar
 
 - name: Download javax.servlet.jsp.jstl-api-1.2.1.jar
   get_url: url=http://repo1.maven.org/maven2/javax/servlet/jsp/jstl/javax.servlet.jsp.jstl-api/1.2.1/javax.servlet.jsp.jstl-api-1.2.1.jar
-           dest={{ tomcat_lib }}
+           dest={{ tomcat_lib }}/javax.servlet.jsp.jstl-api-1.2.1.jar
     
 - name: Download javax.servlet.jsp.jstl-1.2.1.jar
-  get_url: url=http://repo1.maven.org/maven2/org/glassfish/web/javax.servlet.jsp.jstl/1.2.1/javax.servlet.jsp.jstl-1.2.1.jar 
-           dest={{ tomcat_lib }}
+  get_url: url=http://repo1.maven.org/maven2/org/glassfish/web/javax.servlet.jsp.jstl/1.2.1/javax.servlet.jsp.jstl-1.2.1.jar
+           dest={{ tomcat_lib }}/javax.servlet.jsp.jstl-1.2.1.jar
     
