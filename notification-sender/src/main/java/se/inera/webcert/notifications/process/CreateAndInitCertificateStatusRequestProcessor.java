@@ -139,7 +139,7 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         type.setDisplayName(handelse.toString());
         
         HandelsekodCodeRestrictionType handelsekod = convertToHandelsekod(handelse);
-        type.setCode(handelsekod.toString());
+        type.setCode(handelsekod.value());
         
         return type;
     }

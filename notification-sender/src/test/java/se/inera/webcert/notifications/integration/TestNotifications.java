@@ -105,10 +105,10 @@ public class TestNotifications {
         });
         Map<String, String> exchange = certificateStatusUpdateForCareResponderStub.getExchange();
 
-        assertEquals("Expected INTYGSUTKAST_RADERAT (HAN_4) for intyg-4", exchange.get("intyg-4"), HandelsekodCodeRestrictionType.HAN_4.toString());
+        assertEquals("Expected INTYGSUTKAST_RADERAT (HAN4) for intyg-4", exchange.get("intyg-4"), HandelsekodCodeRestrictionType.HAN_4.value());
 
-        assertEquals("Expected INTYG_SIGNERAT (HAN_2) for intyg-2", exchange.get("intyg-2"), HandelsekodCodeRestrictionType.HAN_2.toString());
+        assertEquals("Expected INTYG_SIGNERAT (HAN2) for intyg-2", exchange.get("intyg-2"), HandelsekodCodeRestrictionType.HAN_2.value());
 
-        assertEquals("Expected INTYGSUTKAST_SKAPAT (HAN_1) for intyg-1", exchange.get("intyg-1"), HandelsekodCodeRestrictionType.HAN_1.toString());
+        assertEquals("Expected INTYGSUTKAST_SKAPAT (HAN1) for intyg-1", exchange.get("intyg-1"), HandelsekodCodeRestrictionType.HAN_1.value());
     }
 }
