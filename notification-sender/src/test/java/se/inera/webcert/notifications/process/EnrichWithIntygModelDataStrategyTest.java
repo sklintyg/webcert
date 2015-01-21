@@ -56,13 +56,26 @@ public class EnrichWithIntygModelDataStrategyTest {
         assertNotNull(res.getPeriod());
         assertNotNull(res.getPeriod().getFrom());
         assertNotNull(res.getPeriod().getTom());
-        assertNotNull(res.getVarde());
+        assertEquals(new Double(75.0), res.getVarde().getValue());
+    }
+    
+    @Test
+    public void testExtractArbetsformagaWith75() {
+
+        ArbetsformagaType res = enricher.extractToArbArbetsformagaType("75", EnrichWithIntygModelDataStrategy.NEDSATT_75_JSONP, intyg2JsonCtx);
+        assertNotNull(res);
+        assertNotNull(res.getPeriod());
+        assertNotNull(res.getPeriod().getFrom());
+        assertNotNull(res.getPeriod().getTom());
+        assertEquals(new Double(25.0), res.getVarde().getValue());
     }
 
     @Test
     public void testExtractNedsattning() {
         NedsattningsPeriod res = enricher.extractToNedsattningsPeriod(EnrichWithIntygModelDataStrategy.NEDSATT_25_JSONP, intyg1JsonCtx);
         assertNotNull(res);
+        assertNotNull(res.getFrom());
+        assertNotNull(res.getTom());
     }
 
     @Test

@@ -124,20 +124,20 @@ public class EnrichWithIntygModelDataStrategy {
         return arbetsFormagor;
     }
 
-    public ArbetsformagaType extractToArbArbetsformagaType(String enhet, JsonPath jsonPath, ReadContext jsonCtx) {
+    public ArbetsformagaType extractToArbArbetsformagaType(String nedsattningArbetsformaga, JsonPath jsonPath, ReadContext jsonCtx) {
 
         NedsattningsPeriod nedsattningsPeriod = extractToNedsattningsPeriod(jsonPath, jsonCtx);
 
         if (nedsattningsPeriod == null) {
-            LOG.debug("Could not found ArbetsformagaType for {}%", enhet);
+            LOG.debug("Could not found NedsattningsPeriod for {}%", nedsattningArbetsformaga);
             return null;
         }
 
-        LOG.debug("Found ArbetsformagaType for {}%", enhet);
+        LOG.debug("Found NedsattningsPeriod for nedsattning by {}%", nedsattningArbetsformaga);
 
         ArbetsformagaType arbTyp = new ArbetsformagaType();
         arbTyp.setPeriod(convertNedsattningsPeriodToDateInterval(nedsattningsPeriod));
-        arbTyp.setVarde(buildPQForArbetsformaga(enhet));
+        arbTyp.setVarde(buildPQForArbetsformaga(nedsattningArbetsformaga));
         return arbTyp;
     }
 
@@ -148,10 +148,16 @@ public class EnrichWithIntygModelDataStrategy {
         return di;
     }
 
-    private PQ buildPQForArbetsformaga(String varde) {
+    /**
+     * Calculates the REMAINING arbetsformaga based on the nedsattning of arbetsformaga.
+     * 
+     * @param nedsattningArbetsformaga
+     * @return
+     */
+    private PQ buildPQForArbetsformaga(String nedsattningArbetsformaga) {
         PQ pq = new PQ();
         pq.setUnit(ARBETSFORMAGA_UNIT);
-        pq.setValue(Double.parseDouble(varde));
+        pq.setValue(100 - Double.parseDouble(nedsattningArbetsformaga));
         return pq;
     }
 
@@ -184,12 +190,15 @@ public class EnrichWithIntygModelDataStrategy {
         public String getFrom() {
             return from;
         }
+
         public void setFrom(String from) {
             this.from = from;
         }
+
         public String getTom() {
             return tom;
         }
+
         public void setTom(String tom) {
             this.tom = tom;
         }
