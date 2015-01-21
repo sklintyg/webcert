@@ -1,27 +1,27 @@
 <?xml version="1.0"?>
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-                xmlns:hc="urn:riv:clinicalprocess:healthcond:certificate:1">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:hc="urn:riv:clinicalprocess:healthcond:certificate:1">
 
   <!-- Copy all XML nodes, if no more specific template matches. -->
   <xsl:template match="@*|node()">
     <xsl:copy>
-      <xsl:apply-templates select="@*|node()"/>
+      <xsl:apply-templates select="@*|node()" />
     </xsl:copy>
   </xsl:template>
 
   <!-- Transform <soap:Fault> element into a proper WS response. -->
   <xsl:template match="soap:Fault">
-    <!--
-      Here we call the 'abstract' template named response. Has to be provided by
-      all XSLTs which include this one.
-      -->
-    <xsl:call-template name="response"/>
+    <!-- Here we call the 'abstract' template named response. Has to be provided by all XSLTs which include this one. -->
+    <xsl:call-template name="response" />
   </xsl:template>
 
-  <!-- Transform <faultcode> and <faultstring> elements to <resultCode>, <errorId> and <errorText> -->
+  <!-- Transform <faultcode> and <faultstring> elements to <resultCode>, <errorId> and <resultText> -->
   <xsl:template name="result">
     <hc:resultCode>ERROR</hc:resultCode>
+
+    <hc:resultText>
+      <xsl:value-of select="faultstring/text()" />
+    </hc:resultText>
 
     <xsl:choose>
       <xsl:when test="contains(faultstring/text(), 'Unmarshalling Error')">
@@ -38,9 +38,6 @@
       </xsl:otherwise>
     </xsl:choose>
 
-    <hc:errorText>
-      <xsl:value-of select="faultstring/text()"/>
-    </hc:errorText>
   </xsl:template>
 
 
