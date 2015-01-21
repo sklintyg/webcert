@@ -1,5 +1,6 @@
 package se.inera.webcert.notifications.process;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
@@ -41,6 +42,23 @@ public class EnrichWithIntygDataStrategyTest {
         assertNotNull(res.getUtlatande().getSkapadAv().getEnhet().getEnhetsId().getExtension());
         assertNotNull(res.getUtlatande().getSkapadAv().getEnhet().getEnhetsId().getRoot());
         assertNotNull(res.getUtlatande().getSkapadAv().getEnhet().getEnhetsnamn());
+    }
+
+    @Test
+    public void testVardenhetAndHosPersonWithCorrectId() {
+        UtlatandeType orgUtlatande = new UtlatandeType();
+
+        CertificateStatusUpdateForCareType statusUpdateType = new CertificateStatusUpdateForCareType();
+        statusUpdateType.setUtlatande(orgUtlatande);
+
+        Utkast intygsUtkast = dataProducer.buildUtkast("intyg/intyg-1.json");
+        String hosPersonId = intygsUtkast.getSkapadAv().getHsaId();
+        String enhetsId = intygsUtkast.getEnhetsId();
+        
+        CertificateStatusUpdateForCareType res = strategy.enrichWithIntygProperties(statusUpdateType, intygsUtkast);
+
+        assertEquals(res.getUtlatande().getSkapadAv().getEnhet().getEnhetsId().getExtension(), enhetsId);
+        assertEquals(res.getUtlatande().getSkapadAv().getPersonalId().getExtension(), hosPersonId);
     }
 
 }

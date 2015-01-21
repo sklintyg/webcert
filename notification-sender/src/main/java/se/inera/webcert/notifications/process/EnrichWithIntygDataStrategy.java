@@ -42,7 +42,7 @@ public class EnrichWithIntygDataStrategy {
     private void decorateWithHoSPerson(UtlatandeType utlatandeType, Utkast intygsUtkast) {
 
         VardpersonReferens vardpersonReferens = intygsUtkast.getSkapadAv();
-
+        
         HosPersonalType hoSPerson = new HosPersonalType();
         hoSPerson.setFullstandigtNamn(vardpersonReferens.getNamn());
 
@@ -52,7 +52,7 @@ public class EnrichWithIntygDataStrategy {
         EnhetType vardEnhet = new EnhetType();
         vardEnhet.setEnhetsnamn(intygsUtkast.getEnhetsNamn());
 
-        HsaId vardEnhetHsaId = createHsaId(vardpersonReferens.getHsaId());
+        HsaId vardEnhetHsaId = createHsaId(intygsUtkast.getEnhetsId());
         vardEnhet.setEnhetsId(vardEnhetHsaId);
 
         hoSPerson.setEnhet(vardEnhet);
