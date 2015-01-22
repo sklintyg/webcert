@@ -5,12 +5,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import se.inera.webcert.service.diagnos.model.Diagnos;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")
 public class DiagnosRepositoryFactoryTest {
 
     private static final String LINE_1 = "A010   Tyfoidfeber";
@@ -22,19 +29,21 @@ public class DiagnosRepositoryFactoryTest {
 
     private static final String REALLY_MESSY_LINE = "  A050   Matförgiftning orsakad av stafylokocker  ";
 
-    private static final String FILE_1 = "/DiagnosService/KSH97_TESTKODER_1.ANS";
-    private static final String FILE_2 = "/DiagnosService/KSH97_TESTKODER_2.ANS";
+    private static final String FILE_1 = "classpath:/DiagnosService/KSH97_TESTKODER_1.ANS";
+    private static final String FILE_2 = "classpath:/DiagnosService/KSH97_TESTKODER_2.ANS";
     
+    @Autowired
     private DiagnosRepositoryFactory factory;
 
     @Before
     public void setup() {
-        factory = new DiagnosRepositoryFactory(Arrays.asList(FILE_1, FILE_2));
+        
     }
 
     @Test
     public void testCreateRepository() {
-        DiagnosRepositoryImpl repository = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository();
+        List<String> fileList = Arrays.asList(FILE_1, FILE_2);
+        DiagnosRepositoryImpl repository = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList);
         assertNotNull(repository);
         assertEquals(150, repository.nbrOfDiagosis());
     }

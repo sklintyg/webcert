@@ -16,8 +16,10 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Component;
 
 import se.inera.webcert.service.diagnos.model.Diagnos;
 
@@ -27,6 +29,7 @@ import se.inera.webcert.service.diagnos.model.Diagnos;
  * @author npet
  *
  */
+@Component
 public class DiagnosRepositoryFactory {
 
     private static final String SPACE = " ";
@@ -35,24 +38,25 @@ public class DiagnosRepositoryFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
 
-    private List<String> diagnosCodeFiles;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
-    public DiagnosRepositoryFactory(List<String> diagnosCodeFiles) {
-        this.diagnosCodeFiles = diagnosCodeFiles;
-    }
-
-    public DiagnosRepository createAndInitDiagnosRepository() {
+    public DiagnosRepository createAndInitDiagnosRepository(List<String> diagnosCodeFiles) {
         try {
-
-            DiagnosRepositoryImpl diagnosRepoImpl = new DiagnosRepositoryImpl();
+            
+            LOG.debug("Creating DiagnosRepository");
+            
+            DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
 
             for (String kodfile : diagnosCodeFiles) {
-                populateRepoFromDiagnosisCodeFile(kodfile, diagnosRepoImpl);
+                populateRepoFromDiagnosisCodeFile(kodfile, diagnosRepository);
             }
+            
+            diagnosRepository.openLuceneIndexReader();
+            
+            LOG.info("Created DiagnosRepository containing {} diagnoses", diagnosRepository.nbrOfDiagosis());
 
-            LOG.info("Created DiagnosRepository containing {} diagnoses", diagnosRepoImpl.nbrOfDiagosis());
-
-            return diagnosRepoImpl;
+            return diagnosRepository;
 
         } catch (IOException e) {
             LOG.error("Exception occured when initiating DiagnosRepository");
@@ -62,18 +66,23 @@ public class DiagnosRepositoryFactory {
 
     public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) throws IOException {
 
-        IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
-        IndexWriter writer = new IndexWriter(diagnosRepository.getLuceneIndex(), iwc);
-
         if (StringUtils.isBlank(fileUrl)) {
             return;
         }
 
         LOG.debug("Loading diagnosis file {}", fileUrl);
+        
+        Resource resource = resourceLoader.getResource(fileUrl);
+        
+        if (!resource.exists()) {
+            LOG.error("Could not load diagnosis file since the resource '{}' does not exists", fileUrl);
+            return;
+        }
 
-        Resource fileRes = new ClassPathResource(fileUrl);
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(fileRes.getInputStream(), UTF_8));
+        IndexWriterConfig idxWriterConfig = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
+        IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
+        
+        BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), UTF_8));
 
         while (reader.ready()) {
             String line = reader.readLine();
@@ -81,15 +90,13 @@ public class DiagnosRepositoryFactory {
             diagnosRepository.addDiagnos(diagnos);
 
             Document doc = new Document();
-            doc.add(new StringField("code", diagnos.getKod(), Field.Store.YES));
-            doc.add(new TextField("description", diagnos.getBeskrivning(), Field.Store.YES));
-            writer.addDocument(doc);
+            doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
+            doc.add(new TextField(DiagnosRepository.DESC, diagnos.getBeskrivning(), Field.Store.YES));
+            idxWriter.addDocument(doc);
         }
-
-        writer.close();
-        diagnosRepository.openLuceneIndexReader();
-
         reader.close();
+        
+        idxWriter.close();
     }
 
     public Diagnos createDiagnosFromString(String diagnosStr) {
