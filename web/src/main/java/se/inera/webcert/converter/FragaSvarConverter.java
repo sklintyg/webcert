@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import se.inera.certificate.model.common.internal.HoSPersonal;
@@ -33,6 +34,8 @@ public class FragaSvarConverter {
 
     private static final String FK_FRAGASTALLARE = "FK";
 
+    private static final int FK_MEDDELANDE_RUBRIK_LANGD = 255;
+
     public FragaSvar convert(QuestionFromFkType source) {
 
         FragaSvar fragaSvar = new FragaSvar();
@@ -48,7 +51,7 @@ public class FragaSvarConverter {
 
         fragaSvar.setFrageSkickadDatum(source.getAvsantTidpunkt());
         fragaSvar.setExternaKontakter(convertFkKontaktInfo(source.getFkKontaktInfo()));
-        fragaSvar.setMeddelandeRubrik(source.getFkMeddelanderubrik());
+        fragaSvar.setMeddelandeRubrik(StringUtils.left(source.getFkMeddelanderubrik(), FK_MEDDELANDE_RUBRIK_LANGD));
         fragaSvar.setSistaDatumForSvar(source.getFkSistaDatumForSvar());
 
         fragaSvar.setIntygsReferens(convert(source.getLakarutlatande()));
