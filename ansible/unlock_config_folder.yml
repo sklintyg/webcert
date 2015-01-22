@@ -1,5 +1,5 @@
 ---
-# This playbook provisions the resources needed by tomcat hosts of intygstjansten 
+# This playbook unlocks the config repo folder
 
 - hosts: tomcat
   sudo: yes 
