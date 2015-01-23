@@ -129,7 +129,7 @@ public class SignaturServiceImpl implements SignaturService {
         try {
             String signature = objectMapper.readTree(rawSignatur).get("signatur").textValue();
             if (!signatureService.validateSiths(user.getHsaId(), ticket.getHash(), signature)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Kunde inte validera SITHS signatur");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Kunde inte validera SITHS signatur");
             }
         } catch (IOException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Kunde inte validera SITHS signatur", e);

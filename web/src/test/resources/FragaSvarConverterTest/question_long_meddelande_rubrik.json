@@ -1,0 +1,43 @@
+{"externReferens" : "123",
+    "frageStallare" : "FK",
+    "amne" : "KOMPLETTERING_AV_LAKARINTYG",
+    "frageText" : "Tomten kan inte vara sjukskriven den 24e december!",
+    "frageSigneringsDatum" : "2012-12-22T21:00:00.000",
+    "frageSkickadDatum" : "2012-12-22T21:05:00.000",
+    "externaKontakter" : ["Dan Eliasson"],
+    "meddelandeRubrik" : "\n12345678901234567890123456789012345678901234567890\n12345678901234567890123456789012345678901234567890\n12345678901234567890123456789012345678901234567890\n12345678901234567890123456789012345678901234567890\n12345678901234567890123456789012345678901234567890",
+    "sistaDatumForSvar" : "2013-12-23",
+    "intygsReferens" : {
+        "intygsId" : "b2f6d5bc-2f50-4623-9ce9-bf1ee5404347",
+        "intygsTyp" : "fk7263",
+        "patientNamn" : "Tomten",
+        "signeringsDatum":"2013-11-30T12:12:12.000",
+        "patientId" :{
+            "patientIdRoot" : "1.2.752.129.2.1.3.1",
+            "patientIdExtension" : "19121212-1212"
+        }
+    },
+    "kompletteringar" : [
+        {
+            "falt" : "Fält 8b",
+            "text" : "Vänligen ändra 'längst till och med (år, månad, dag)' till den 23e december."
+        }
+    ],
+    "vardperson" : {
+        "hsaId" : "Personal HSA-ID",
+        "namn" : "En Läkare",
+        "forskrivarKod" : "1234567",
+        "enhetsId" : "VardenhetY",
+        "arbetsplatsKod" : "123456789011",
+        "enhetsnamn" : "Kir mott",
+        "postadress" : "Lasarettsvägen 13",
+        "postnummer" : "85150",
+        "postort" : "Sundsvall",
+        "telefonnummer" : "060-1818000",
+        "vardgivarId" : "VardgivarId",
+        "vardgivarnamn" : "Landstinget Norrland"
+    },
+    "status" : "PENDING_INTERNAL_ACTION",
+    "vidarebefordrad" : false,
+    "senasteHandelseDatum" : "2012-12-22T21:05:00.000"
+}

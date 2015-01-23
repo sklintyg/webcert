@@ -243,10 +243,14 @@ $.get('/api/modules/map').then(function(modules) {
                 angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
             });
         }).fail(function(error) {
-            console.log(error);
+            if (window.console) {
+                console.log(error);
+            }
         });
     }).fail(function(error) {
-        console.log(error);
+        if (window.console) {
+            console.log(error);
+        }
     });
 });
 

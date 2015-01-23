@@ -20,11 +20,11 @@ import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFrom
  */
 public class FragaSvarConverterTest {
 
-    private QuestionFromFkType question() throws Exception {
+    private QuestionFromFkType question(String fileName) throws Exception {
         JAXBContext jaxbContext = JAXBContext.newInstance(QuestionFromFkType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         return unmarshaller.unmarshal(
-                new StreamSource(new ClassPathResource("FragaSvarConverterTest/question.xml").getInputStream()),
+                new StreamSource(new ClassPathResource(fileName).getInputStream()),
                 QuestionFromFkType.class).getValue();
     }
 
@@ -39,9 +39,18 @@ public class FragaSvarConverterTest {
     @Test
     public void testConvertQuestion() throws Exception {
 
-        FragaSvar fragaSvar = new FragaSvarConverter().convert(question());
+        FragaSvar fragaSvar = new FragaSvarConverter().convert(question("FragaSvarConverterTest/question.xml"));
 
         compareObjectWithReferenceFile(fragaSvar, "FragaSvarConverterTest/question.json");
+
+    }
+
+    @Test
+    public void testConvertQuestionLongMeddelandeRubrik() throws Exception {
+
+        FragaSvar fragaSvar = new FragaSvarConverter().convert(question("FragaSvarConverterTest/question_long_meddelande_rubrik.xml"));
+
+        compareObjectWithReferenceFile(fragaSvar, "FragaSvarConverterTest/question_long_meddelande_rubrik.json");
 
     }
 

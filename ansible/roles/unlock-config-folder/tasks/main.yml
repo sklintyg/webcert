@@ -1,4 +1,5 @@
 ---
+# file: roles/unlock-config-folder/tasks/main.yml
 
 - name: copy git-crypt key
   copy: src="{{ gitcrypt_key_file }}"

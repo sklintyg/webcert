@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
@@ -75,7 +77,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         Utkast utkast = utkastService.getDraft(intygsId);
-        
+
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logReadOfIntyg(logRequest);
 
@@ -224,13 +226,19 @@ public class UtkastModuleApiController extends AbstractApiController {
      */
     @POST
     @Path("/{intygsTyp}/{biljettId}/signeraklient")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId, byte[] rawSignatur) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
-        String draftAsJson = fromBytesToString(rawSignatur);
-        SignaturTicket ticket = signaturService.clientSignature(biljettId, draftAsJson);
+
+        if (rawSignatur.length == 0) {
+            LOG.error("Inkommande signatur parameter saknas");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Signatur saknas");
+        }
+
+        String rawSignaturString = fromBytesToString(rawSignatur);
+        SignaturTicket ticket = signaturService.clientSignature(biljettId, rawSignaturString);
         return new SignaturTicketResponse(ticket);
     }
 

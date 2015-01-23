@@ -60,7 +60,7 @@ describe('ManageCertificate', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
 
-            featureService.isFeatureActive.andReturn(true);
+            featureService.isFeatureActive.and.returnValue(true);
 
             $httpBackend.expectGET('/api/modules/map').respond([
                 {
@@ -128,7 +128,7 @@ describe('ManageCertificate', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
 
-            featureService.isFeatureActive.andReturn(true);
+            featureService.isFeatureActive.and.returnValue(true);
 
             $httpBackend.expectGET('/api/intyg/person/' + personId).respond([
                 { 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false }
@@ -178,7 +178,7 @@ describe('ManageCertificate', function() {
                 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false
             };
 
-            spyOn(dialogService, 'showDialog').andCallFake(function($scope, options) {
+            spyOn(dialogService, 'showDialog').and.callFake(function($scope, options) {
                 options.button1click();
 
                 return {
@@ -187,7 +187,7 @@ describe('ManageCertificate', function() {
                 };
             });
 
-            spyOn($location, 'url').andCallThrough();
+            spyOn($location, 'url').and.callThrough();
         });
 
         it('should immediately request a utkast copy of cert if the copy cookie is set', function() {

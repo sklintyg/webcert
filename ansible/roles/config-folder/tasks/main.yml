@@ -1,4 +1,5 @@
 ---
+# file: roles/config-folder/tasks/main.yml
 
 - name: checkout config repo
   git: repo="{{ config_repository }}"

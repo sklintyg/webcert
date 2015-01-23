@@ -52,7 +52,7 @@ describe('ViewCertCtrl', function() {
     beforeEach(angular.mock.module('webcert', function($provide) {
         dialogService = jasmine.createSpyObj('common.dialogService', [ 'showDialog' ]);
         modalMock = jasmine.createSpyObj('modal', [ 'close' ]);
-        dialogService.showDialog.andCallFake(function(){
+        dialogService.showDialog.and.callFake(function(){
             return modalMock;
         });
         $provide.value('common.dialogService', dialogService);
@@ -146,7 +146,7 @@ describe('ViewCertCtrl', function() {
 
             // spy on the defferd
             var def = mockDeferreds.getDeferred();
-            spyOn($q, 'defer').andReturn(def);
+            spyOn($q, 'defer').and.returnValue(def);
 
             // kick off the window change event
             //$rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
@@ -170,8 +170,8 @@ describe('ViewCertCtrl', function() {
             // ----- arrange
             // spy on the defferd
             var def = mockDeferreds.getDeferred($q);
-            spyOn($q, 'defer').andReturn(def);
-            UserPreferencesService.isSkipShowUnhandledDialogSet.andReturn(true);
+            spyOn($q, 'defer').and.returnValue(def);
+            UserPreferencesService.isSkipShowUnhandledDialogSet.and.returnValue(true);
 
             // ------ act
             // kick off the window change event
@@ -203,11 +203,11 @@ describe('ViewCertCtrl', function() {
             mockDeferreds.getDeferred();
             mockDeferreds.getDeferred();
 
-            spyOn($q, 'defer').andCallFake(function() {
+            spyOn($q, 'defer').and.callFake(function() {
                 return mockDeferreds.popDeferred();
             });
 
-            UserPreferencesService.isSkipShowUnhandledDialogSet.andReturn(false);
+            UserPreferencesService.isSkipShowUnhandledDialogSet.and.returnValue(false);
 
             // ------ act
 
@@ -238,7 +238,7 @@ describe('ViewCertCtrl', function() {
         describe('#buttonHandle', function() {
             it('handle button click', function(){
                 // inside the handled button click, test that :
-                var args = dialogService.showDialog.mostRecentCall.args;
+                var args = dialogService.showDialog.calls.mostRecent().args;
                 var dialogOptions = args[1];
                 // press the handled button
                 dialogOptions.button1click();
@@ -261,7 +261,7 @@ describe('ViewCertCtrl', function() {
         describe('#buttonUnHandle', function() {
             it('un handled button click', function(){
                 // inside the handled button click, test that :
-                var args = dialogService.showDialog.mostRecentCall.args;
+                var args = dialogService.showDialog.calls.mostRecent().args;
                 var dialogOptions = args[1];
                 // press the not handled button
                 dialogOptions.button2click();
@@ -276,7 +276,7 @@ describe('ViewCertCtrl', function() {
         describe('#buttonBack', function() {
             it('back button click', function(){
                 // inside the handled button click, test that :
-                var args = dialogService.showDialog.mostRecentCall.args;
+                var args = dialogService.showDialog.calls.mostRecent().args;
                 var dialogOptions = args[1];
                 // press the back button
                 dialogOptions.button3click();

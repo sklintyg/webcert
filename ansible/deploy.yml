@@ -1,9 +1,9 @@
 # This playbook deploys WebCert 
 
-- hosts: all
+- hosts: tomcat
   sudo: yes 
   vars: 
-    version: 3.0.0-b25
+    version: 3.0.0-b28
     config_version: master
 
   roles:

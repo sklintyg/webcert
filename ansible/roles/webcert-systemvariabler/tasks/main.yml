@@ -1,4 +1,5 @@
 ---
+# file: roles/webcert-systemvariabler/tasks/main.yml
 
 - name: Create webcert-env.sh file
   template: src=webcert-env.sh.j2 dest="{{ inera_tomcat_folder }}/webcert-env.sh" mode=755
