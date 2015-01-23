@@ -37,7 +37,7 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
 
     private static final String TYPAVUTLATANDE_CODESYSTEM_NAME = "kv_utlåtandetyp_intyg";
     
-    private static final String HANDELSE_CODESYSTEM = "na";
+    private static final String HANDELSE_CODESYSTEM = "dfd7bbad-dbe5-4a2f-ba25-f7b9b2cc6b14";
     
     private static final String HANDELSE_CODESYSTEM_NAME = "kv_händelse";
 
