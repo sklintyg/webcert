@@ -7,4 +7,5 @@
     config_version: master
 
   roles:
+    - app-resources
     - webcert
