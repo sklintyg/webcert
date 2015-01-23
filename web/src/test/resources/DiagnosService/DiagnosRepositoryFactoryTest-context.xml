@@ -6,6 +6,16 @@
   <!-- Simple Spring context for testing purposes -->
 
   <context:annotation-config />
+  
+  <context:property-placeholder properties-ref="testProps" />
+
+  <bean id="testProps" class="java.util.Properties">
+    <constructor-arg>
+      <props>
+        <prop key="diagnos.code.encoding">UTF-8</prop>
+      </props>
+    </constructor-arg>
+  </bean>
 
   <bean id="diagnosRepositoryFactory" class="se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory" />
 

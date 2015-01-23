@@ -11,7 +11,8 @@
   <bean id="testProps" class="java.util.Properties">
     <constructor-arg>
       <props>
-        <prop key="diagnos.code.files">classpath:/DiagnosService/KSH97_TESTKODER_1.ANS</prop>
+        <prop key="diagnos.code.files">classpath:/DiagnosService/KSH97_TESTKODER_1.ANS,classpath:/DiagnosService/KSH97_TESTKODER_KAT.ANS,classpath:/DiagnosService/KSH97_TESTKODER_KXX.ANS</prop>
+        <prop key="diagnos.code.encoding">UTF-8</prop>
       </props>
     </constructor-arg>
   </bean>

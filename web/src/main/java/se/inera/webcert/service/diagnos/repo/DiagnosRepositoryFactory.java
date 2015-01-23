@@ -16,10 +16,13 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import se.inera.webcert.service.diagnos.model.Diagnos;
 
@@ -30,30 +33,34 @@ import se.inera.webcert.service.diagnos.model.Diagnos;
  *
  */
 @Component
-public class DiagnosRepositoryFactory {
+public class DiagnosRepositoryFactory implements InitializingBean {
 
     private static final String SPACE = " ";
 
-    private static final String UTF_8 = "UTF-8";
-
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
+
+    /**
+     * Diagnosis files are usually encoded as ISO-8859-1
+     */
+    @Value("${diagnos.code.encoding:ISO-8859-1}")
+    private String diagnosCodeFileEncoding;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
     public DiagnosRepository createAndInitDiagnosRepository(List<String> diagnosCodeFiles) {
         try {
-            
-            LOG.debug("Creating DiagnosRepository");
-            
+
+            LOG.info("Creating DiagnosRepository from {} files using encoding '{}'", diagnosCodeFiles.size(), diagnosCodeFileEncoding);
+
             DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
 
             for (String kodfile : diagnosCodeFiles) {
                 populateRepoFromDiagnosisCodeFile(kodfile, diagnosRepository);
             }
-            
+
             diagnosRepository.openLuceneIndexReader();
-            
+
             LOG.info("Created DiagnosRepository containing {} diagnoses", diagnosRepository.nbrOfDiagosis());
 
             return diagnosRepository;
@@ -70,10 +77,10 @@ public class DiagnosRepositoryFactory {
             return;
         }
 
-        LOG.debug("Loading diagnosis file {}", fileUrl);
-        
+        LOG.debug("Loading diagnosis file '{}'", fileUrl);
+
         Resource resource = resourceLoader.getResource(fileUrl);
-        
+
         if (!resource.exists()) {
             LOG.error("Could not load diagnosis file since the resource '{}' does not exists", fileUrl);
             return;
@@ -81,8 +88,8 @@ public class DiagnosRepositoryFactory {
 
         IndexWriterConfig idxWriterConfig = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
         IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
-        
-        BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), UTF_8));
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), diagnosCodeFileEncoding));
 
         while (reader.ready()) {
             String line = reader.readLine();
@@ -95,7 +102,7 @@ public class DiagnosRepositoryFactory {
             idxWriter.addDocument(doc);
         }
         reader.close();
-        
+
         idxWriter.close();
     }
 
@@ -122,5 +129,10 @@ public class DiagnosRepositoryFactory {
         d.setBeskrivning(beskStr);
 
         return d;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.hasText(diagnosCodeFileEncoding, "File-encoding for diagnos code files not set!");
     }
 }

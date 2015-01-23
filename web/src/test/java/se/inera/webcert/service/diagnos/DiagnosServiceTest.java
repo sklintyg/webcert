@@ -28,12 +28,15 @@ public class DiagnosServiceTest {
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(" ").getResultat());
         assertEquals("A is too short and should  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A").getResultat());
         assertEquals("A0 is too short and should return  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A0").getResultat());
-        assertEquals("A00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("A00").getResultat());
         assertEquals("X01.1X is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("X01.1X").getResultat());
+        assertEquals("X00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("X00").getResultat());
+        assertEquals("A00 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00").getResultat());
         assertEquals("A000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A000").getResultat());
         assertEquals("A00.0 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0").getResultat());
         assertEquals("A083B should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0").getResultat());
         assertEquals("A08.3B should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0").getResultat());
+        assertEquals("W0000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("W0000").getResultat());
+        
     }
 
     @Test
@@ -57,7 +60,7 @@ public class DiagnosServiceTest {
         DiagnosResponse res = service.searchDiagnosisByCode("A04", 15);
         assertNotNull(res);
         assertEquals(DiagnosResponseType.OK, res.getResultat());
-        assertEquals(10, res.getDiagnoser().size());
+        assertEquals(11, res.getDiagnoser().size());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -83,6 +86,8 @@ public class DiagnosServiceTest {
         assertTrue("A18.4 is a valid code", service.validateDiagnosisCode("A18.4"));
         assertTrue("A184D is a valid code", service.validateDiagnosisCode("A184D"));
         assertTrue("A18.4D is a valid code", service.validateDiagnosisCode("A18.4D"));
+        assertTrue("A1234 is a valid code", service.validateDiagnosisCode("A1234"));
+        assertTrue("A12.34 is a valid code", service.validateDiagnosisCode("A1234"));
     }
 
     @Test

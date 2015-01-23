@@ -39,9 +39,9 @@ public class DiagnosServiceImpl implements DiagnosService {
      * followed by an optional digit,
      * finishing with an optional upper-case letter.
      *
-     * Tested with: A11, A11.1, A11.1X, A111, A111X
+     * Tested with: A11, A11.1, A11.1X, A111, A111X, A1111
      */
-    private static final String ICD10_CODE_REGEXP = "^[A-Z]\\d{2}\\.{0,1}\\d{0,1}[A-Z]{0,1}$";
+    private static final String ICD10_CODE_REGEXP = "^[A-Z]\\d{2}\\.{0,1}\\d{0,1}[0-9A-Z]{0,1}$";
 
     private static final String COMMA = ",";
 
