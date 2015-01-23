@@ -48,7 +48,7 @@ public class DiagnosServiceImpl implements DiagnosService {
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosServiceImpl.class);
 
     @Value("${diagnos.code.files}")
-    private String diagnosKodFiler;
+    private String codeFilesStr;
     
     @Autowired
     private DiagnosRepositoryFactory diagnosRepositoryFactory;
@@ -60,14 +60,14 @@ public class DiagnosServiceImpl implements DiagnosService {
     }
 
     public DiagnosServiceImpl(String diagnosKodFiler) {
-        this.diagnosKodFiler = diagnosKodFiler;
+        this.codeFilesStr = diagnosKodFiler;
     }
 
     @PostConstruct
     public void initDiagnosRepository() {
-        Assert.hasText(diagnosKodFiler, "Diagnoskodfiler missing");
-        String[] splitedDiagnosKodFiler = StringUtils.split(diagnosKodFiler, COMMA);
-        List<String> fileList = Arrays.asList(splitedDiagnosKodFiler);
+        Assert.hasText(this.codeFilesStr,"Can not populate DiagnosRepository since no diagnosis code files is supplied");
+        String[] splittedCodeFilesStr = StringUtils.split(codeFilesStr, COMMA);
+        List<String> fileList = Arrays.asList(splittedCodeFilesStr);
         this.diagnosRepo = diagnosRepositoryFactory.createAndInitDiagnosRepository(fileList);
     }
 

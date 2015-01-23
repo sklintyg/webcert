@@ -43,20 +43,20 @@ public class DiagnosRepositoryFactory implements InitializingBean {
      * Diagnosis files are usually encoded as ISO-8859-1
      */
     @Value("${diagnos.code.encoding:ISO-8859-1}")
-    private String diagnosCodeFileEncoding;
+    private String fileEncoding;
 
     @Autowired
     private ResourceLoader resourceLoader;
 
-    public DiagnosRepository createAndInitDiagnosRepository(List<String> diagnosCodeFiles) {
+    public DiagnosRepository createAndInitDiagnosRepository(List<String> filesList) {
         try {
-
-            LOG.info("Creating DiagnosRepository from {} files using encoding '{}'", diagnosCodeFiles.size(), diagnosCodeFileEncoding);
 
             DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
 
-            for (String kodfile : diagnosCodeFiles) {
-                populateRepoFromDiagnosisCodeFile(kodfile, diagnosRepository);
+            LOG.info("Creating DiagnosRepository from {} files using encoding '{}'", filesList.size(), fileEncoding);
+
+            for (String file : filesList) {
+                populateRepoFromDiagnosisCodeFile(file, diagnosRepository);
             }
 
             diagnosRepository.openLuceneIndexReader();
@@ -71,7 +71,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
         }
     }
 
-    public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) throws IOException {
+    public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository) {
 
         if (StringUtils.isBlank(fileUrl)) {
             return;
@@ -79,31 +79,37 @@ public class DiagnosRepositoryFactory implements InitializingBean {
 
         LOG.debug("Loading diagnosis file '{}'", fileUrl);
 
-        Resource resource = resourceLoader.getResource(fileUrl);
+        try {
+            Resource resource = resourceLoader.getResource(fileUrl);
 
-        if (!resource.exists()) {
-            LOG.error("Could not load diagnosis file since the resource '{}' does not exists", fileUrl);
-            return;
+            if (!resource.exists()) {
+                LOG.error("Could not load diagnosis file since the resource '{}' does not exists", fileUrl);
+                return;
+            }
+
+            IndexWriterConfig idxWriterConfig = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
+            IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), fileEncoding));
+
+            while (reader.ready()) {
+                String line = reader.readLine();
+                Diagnos diagnos = createDiagnosFromString(line);
+                diagnosRepository.addDiagnos(diagnos);
+
+                Document doc = new Document();
+                doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
+                doc.add(new TextField(DiagnosRepository.DESC, diagnos.getBeskrivning(), Field.Store.YES));
+                idxWriter.addDocument(doc);
+            }
+
+            reader.close();
+            idxWriter.close();
+
+        } catch (IOException ioe) {
+            LOG.error("IOException occured when loading diagnosis file '{}'", fileUrl);
+            throw new RuntimeException("Error occured when loading diagnosis file", ioe);
         }
-
-        IndexWriterConfig idxWriterConfig = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
-        IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), diagnosCodeFileEncoding));
-
-        while (reader.ready()) {
-            String line = reader.readLine();
-            Diagnos diagnos = createDiagnosFromString(line);
-            diagnosRepository.addDiagnos(diagnos);
-
-            Document doc = new Document();
-            doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
-            doc.add(new TextField(DiagnosRepository.DESC, diagnos.getBeskrivning(), Field.Store.YES));
-            idxWriter.addDocument(doc);
-        }
-        reader.close();
-
-        idxWriter.close();
     }
 
     public Diagnos createDiagnosFromString(String diagnosStr) {
@@ -133,6 +139,6 @@ public class DiagnosRepositoryFactory implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.hasText(diagnosCodeFileEncoding, "File-encoding for diagnos code files not set!");
+        Assert.hasText(fileEncoding, "File-encoding for diagnos code files not set!");
     }
 }
