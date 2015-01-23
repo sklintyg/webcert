@@ -15,13 +15,17 @@ gitcrypt_key_name: "git-crypt4.key"
 gitcrypt_key_file: "./{{ gitcrypt_key_name }}"
 config_etc_folder: "{{ config_folder }}/test"
 
+# Application resources
+# Note: end with slash, in order to copy only files inside the source folder, not the folder itself
+app_resources_src: "{{ playbook_dir }}/../src/main/resources/"
+app_resources_folder: "{{ inera_root }}/webcert-resources"
+
 # Tomcat installation
 tomcat_conf: "{{ inera_root }}/tomcat7/conf"
 tomcat_bin: "{{ inera_root }}/tomcat7/bin"
 tomcat_lib: "{{ inera_root }}/tomcat7/lib"
 tomcat_service: inera-tomcat
 inera_tomcat_folder: "/var/lib/{{ tomcat_service }}"
-etc_folder: "{{ inera_tomcat_folder }}/etc"
 webapps_folder: "{{ inera_tomcat_folder }}/webapps"
 
 # Database configuration
