@@ -40,7 +40,7 @@ public class EnrichWithIntygModelDataStrategy {
     private static final String ARBETSFORMAGA_UNIT = "%";
 
     private static final String DIAGNOS_CODESYSTEM = "1.2.752.116.1.1.1.1.1";
-    private static final String DIAGNOS_CODESYSTEM_NAME = "ICD-10";
+    private static final String DIAGNOS_CODESYSTEM_NAME = "ICD-10-SE";
 
     private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygModelDataStrategy.class);
 
