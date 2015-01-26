@@ -90,12 +90,12 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
         BooleanQuery query = new BooleanQuery();
         StandardAnalyzer analyzer = new StandardAnalyzer();
         try {
-            TokenStream tokenStream = analyzer.tokenStream("description", searchString);
+            TokenStream tokenStream = analyzer.tokenStream(DESC, searchString);
             CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
             tokenStream.reset();
             while (tokenStream.incrementToken()) {
                 String term = charTermAttribute.toString();
-                query.add(new PrefixQuery(new Term("description", term)), BooleanClause.Occur.MUST);
+                query.add(new PrefixQuery(new Term(DESC, term)), BooleanClause.Occur.MUST);
             }
 
             if (indexSearcher == null) {
@@ -104,10 +104,12 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
 
             TopDocs results = indexSearcher.search(query, nbrOfResults);
             for (ScoreDoc hit : results.scoreDocs) {
-                matches.add(diagnoses.get(indexSearcher.doc(hit.doc).get("code")));
+                matches.add(diagnoses.get(indexSearcher.doc(hit.doc).get(CODE)));
             }
         } catch (IOException e) {
             throw new RuntimeException("IOException occurred in lucene index search", e);
+        } finally {
+            analyzer.close();
         }
 
         return matches;

@@ -1,6 +1,5 @@
 package se.inera.webcert.service.diagnos;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -8,9 +7,10 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -39,14 +39,19 @@ public class DiagnosServiceImpl implements DiagnosService {
      * followed by an optional digit,
      * finishing with an optional upper-case letter.
      *
-     * Tested with: A11, A11.1, A11.1X, A111, A111X
+     * Tested with: A11, A11.1, A11.1X, A111, A111X, A1111
      */
-    private static final String ICD10_CODE_REGEXP = "^[A-Z]\\d{2}\\.{0,1}\\d{0,1}[A-Z]{0,1}$";
+    private static final String ICD10_CODE_REGEXP = "^[A-Z]\\d{2}\\.{0,1}\\d{0,1}[0-9A-Z]{0,1}$";
+
+    private static final String COMMA = ",";
 
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosServiceImpl.class);
 
     @Value("${diagnos.code.files}")
-    private String[] diagnosKodFiler;
+    private String codeFilesStr;
+    
+    @Autowired
+    private DiagnosRepositoryFactory diagnosRepositoryFactory;
 
     private DiagnosRepository diagnosRepo;
 
@@ -54,15 +59,16 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     }
 
-    public DiagnosServiceImpl(String[] diagnosKodFiler) {
-        this.diagnosKodFiler = diagnosKodFiler;
+    public DiagnosServiceImpl(String diagnosKodFiler) {
+        this.codeFilesStr = diagnosKodFiler;
     }
 
     @PostConstruct
     public void initDiagnosRepository() {
-        List<String> fileList = Arrays.asList(diagnosKodFiler);
-        DiagnosRepositoryFactory repoFactory = new DiagnosRepositoryFactory(fileList);
-        this.diagnosRepo = repoFactory.createAndInitDiagnosRepository();
+        Assert.hasText(this.codeFilesStr,"Can not populate DiagnosRepository since no diagnosis code files is supplied");
+        String[] splittedCodeFilesStr = StringUtils.split(codeFilesStr, COMMA);
+        List<String> fileList = Arrays.asList(splittedCodeFilesStr);
+        this.diagnosRepo = diagnosRepositoryFactory.createAndInitDiagnosRepository(fileList);
     }
 
     /*
