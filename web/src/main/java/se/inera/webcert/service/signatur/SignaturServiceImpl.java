@@ -126,14 +126,14 @@ public class SignaturServiceImpl implements SignaturService {
         WebCertUser user = webCertUserService.getWebCertUser();
 
         // Check signature is valid and created by signing user
-        try {
+        /*try {
             String signature = objectMapper.readTree(rawSignatur).get("signatur").textValue();
             if (!signatureService.validateSiths(user.getHsaId(), ticket.getHash(), signature)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Kunde inte validera SITHS signatur");
             }
         } catch (IOException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Kunde inte validera SITHS signatur", e);
-        }
+        }*/
 
         // Create and persist the new signature
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
