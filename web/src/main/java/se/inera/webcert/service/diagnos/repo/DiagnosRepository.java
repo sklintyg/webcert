@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.util.List;
 
 public interface DiagnosRepository {
+    
+    static String CODE = "code";
+    
+    static String DESC = "description";
 
     Diagnos getDiagnosByCode(String code);
 

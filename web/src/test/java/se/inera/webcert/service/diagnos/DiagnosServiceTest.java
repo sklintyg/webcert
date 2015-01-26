@@ -3,32 +3,23 @@ package se.inera.webcert.service.diagnos;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import se.inera.webcert.service.diagnos.DiagnosService;
-import se.inera.webcert.service.diagnos.DiagnosServiceImpl;
 import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
 import se.inera.webcert.service.diagnos.dto.DiagnosResponseType;
-import se.inera.webcert.service.diagnos.model.Diagnos;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:/DiagnosService/DiagnosServiceTest-context.xml")
 public class DiagnosServiceTest {
 
-    private static DiagnosService service;
-
-    private static final String FILE_1 = "/DiagnosService/KSH97_TESTKODER_1.ANS";
-
-    @BeforeClass
-    public static void setup() {
-        DiagnosServiceImpl serviceImpl = new DiagnosServiceImpl(new String[] { FILE_1 });
-        serviceImpl.initDiagnosRepository();
-        service = serviceImpl;
-    }
+    @Autowired
+    private DiagnosService service;
 
     @Test
     public void testGetDiagnosisByCode() {
@@ -37,12 +28,15 @@ public class DiagnosServiceTest {
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(" ").getResultat());
         assertEquals("A is too short and should  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A").getResultat());
         assertEquals("A0 is too short and should return  invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("A0").getResultat());
-        assertEquals("A00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("A00").getResultat());
         assertEquals("X01.1X is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("X01.1X").getResultat());
+        assertEquals("X00 is syntactically correct but doesn't match anything in repo", DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("X00").getResultat());
+        assertEquals("A00 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00").getResultat());
         assertEquals("A000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A000").getResultat());
         assertEquals("A00.0 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0").getResultat());
         assertEquals("A083B should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0").getResultat());
         assertEquals("A08.3B should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("A00.0").getResultat());
+        assertEquals("W0000 should return a match", DiagnosResponseType.OK, service.getDiagnosisByCode("W0000").getResultat());
+        
     }
 
     @Test
@@ -66,7 +60,7 @@ public class DiagnosServiceTest {
         DiagnosResponse res = service.searchDiagnosisByCode("A04", 15);
         assertNotNull(res);
         assertEquals(DiagnosResponseType.OK, res.getResultat());
-        assertEquals(10, res.getDiagnoser().size());
+        assertEquals(11, res.getDiagnoser().size());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -92,6 +86,8 @@ public class DiagnosServiceTest {
         assertTrue("A18.4 is a valid code", service.validateDiagnosisCode("A18.4"));
         assertTrue("A184D is a valid code", service.validateDiagnosisCode("A184D"));
         assertTrue("A18.4D is a valid code", service.validateDiagnosisCode("A18.4D"));
+        assertTrue("A1234 is a valid code", service.validateDiagnosisCode("A1234"));
+        assertTrue("A12.34 is a valid code", service.validateDiagnosisCode("A1234"));
     }
 
     @Test
@@ -107,10 +103,10 @@ public class DiagnosServiceTest {
         assertEquals("A072", res.getDiagnoser().get(4).getKod());
 
         assertEquals("Null should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
-            service.searchDiagnosisByDescription(null, 5).getResultat());
+                service.searchDiagnosisByDescription(null, 5).getResultat());
         assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
-            service.searchDiagnosisByDescription("", 5).getResultat());
+                service.searchDiagnosisByDescription("", 5).getResultat());
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
-            service.searchDiagnosisByDescription(" ", 5).getResultat());
+                service.searchDiagnosisByDescription(" ", 5).getResultat());
     }
 }

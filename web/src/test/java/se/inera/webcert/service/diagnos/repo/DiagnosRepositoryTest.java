@@ -1,32 +1,40 @@
 package se.inera.webcert.service.diagnos.repo;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import se.inera.webcert.service.diagnos.model.Diagnos;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")
 public class DiagnosRepositoryTest {
-    
-    private static DiagnosRepository repo;
     
     private static final String FILE_1 = "/DiagnosService/KSH97_TESTKODER_1.ANS";
     
-    @BeforeClass
-    public static void setup() {
-        DiagnosRepositoryFactory factory = new DiagnosRepositoryFactory(Arrays.asList(FILE_1));
-        DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository();
+    @Autowired
+    private DiagnosRepositoryFactory factory;
+    
+    private DiagnosRepository repo;
+    
+    @Before
+    public void setup() {
+        DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(Arrays.asList(FILE_1));
         assertEquals(100, repoImpl.nbrOfDiagosis());
-        repo = repoImpl;
+        this.repo = repoImpl;
     }
     
     @Test
