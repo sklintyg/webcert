@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.repository.OmsandningRepositoryCustom;
@@ -28,6 +29,7 @@ public class OmsandningJob {
     private IntygOmsandningService intygService;
 
     @Scheduled(cron = "${scheduler.omsandningJob.cron}")
+    @Transactional(propagation = Propagation.REQUIRES_NEW, noRollbackFor = javax.xml.ws.WebServiceException.class)
     public void sandOm() {
         LOG.info("<<<Scheduled resend starting.");
         int failures = 0;
@@ -48,7 +50,6 @@ public class OmsandningJob {
         LOG.error("Cancelling resend cycle due to too many faults!");
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private boolean performOperation(Omsandning omsandning) {
 
         IntygServiceResult res = null;

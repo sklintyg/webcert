@@ -66,6 +66,8 @@ import se.inera.webcert.web.service.WebCertUserService;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.ws.WebServiceException;
+
 /**
  * @author andreaskaltenbach
  */
@@ -236,7 +238,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             registerIntyg(utkast);
             omsandningRepository.delete(omsandning);
             return IntygServiceResult.OK;
-        } catch (ExternalServiceCallException esce) {
+        } catch (ExternalServiceCallException | WebServiceException esce) {
             LOG.error("An WebServiceException occured when trying to fetch and send intyg: " + utkast.getIntygsId(), esce);
             scheduleResend(omsandning);
             return IntygServiceResult.RESCHEDULED;

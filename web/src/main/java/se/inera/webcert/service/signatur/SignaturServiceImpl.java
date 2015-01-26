@@ -107,7 +107,7 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor=javax.xml.ws.WebServiceException.class)
     public SignaturTicket clientSignature(String ticketId, String rawSignatur) {
 
         // Lookup signature ticket
@@ -171,7 +171,7 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor=javax.xml.ws.WebServiceException.class)
     public SignaturTicket serverSignature(String intygsId) {
         LOG.debug("Signera utkast '{}'", intygsId);
 
