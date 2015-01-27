@@ -51,6 +51,12 @@ public class StatModuleApiController extends AbstractApiController {
         StatsResponse statsResponse = new StatsResponse();
 
         WebCertUser user = getWebCertUserService().getWebCertUser();
+
+        if (user == null) {
+            LOG.warn("getStatistics was called, but webcertUser was null!");
+            return Response.ok(statsResponse).build();
+        }
+
         List<String> allUnitIds = user.getIdsOfAllVardenheter();
 
         if (allUnitIds == null || allUnitIds.isEmpty()) {

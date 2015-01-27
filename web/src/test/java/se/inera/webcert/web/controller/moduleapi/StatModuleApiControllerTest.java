@@ -207,6 +207,20 @@ public class StatModuleApiControllerTest {
         assertEquals(refStatsResponse.toString(), statsResponse.toString());
     }
 
+    @Test
+    public void testWebcertUserIsNull() {
+        Mockito.when(webCertUserService.getWebCertUser()).thenReturn(null);
+
+        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+
+        Response response = statController.getStatistics();
+        assertNotNull(response);
+
+        Mockito.verify(webCertUserService).getWebCertUser();
+        assertEquals(OK, response.getStatus());
+    }
+
     private StatsResponse getReference(String referenceFilePath) {
         try {
             return new CustomObjectMapper().readValue(new ClassPathResource(
