@@ -7,12 +7,17 @@ import static org.mockito.Mockito.when;
 
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -59,6 +64,18 @@ public class MailNotificationServiceMockedTest {
         getHsaUnitResponseType.setHsaIdentity("enhetsid");
         when(hsaClient.callGetHsaunit(anyString())).thenReturn(getHsaUnitResponseType);
         when(mailSender.createMimeMessage()).thenReturn(new MimeMessage((Session)null));
+        mailNotificationService.sendMailForIncomingAnswer(fragaSvar("enhetsid"));
+    }
+
+    @Test
+    public void testNoHSAResponse() {
+        try {
+            SOAPFault soapFault = SOAPFactory.newInstance().createFault();
+            soapFault.setFaultString("Connection reset");
+            when(hsaClient.callGetHsaunit(anyString())).thenThrow( new SOAPFaultException(soapFault));
+        } catch (SOAPException e) {
+            e.printStackTrace();
+        }
         mailNotificationService.sendMailForIncomingAnswer(fragaSvar("enhetsid"));
     }
 

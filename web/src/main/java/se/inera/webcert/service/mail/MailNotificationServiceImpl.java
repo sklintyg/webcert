@@ -4,6 +4,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.xml.ws.WebServiceException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,21 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Autowired
     private HSAWebServiceCalls hsaClient;
 
+    private void logError(String type, FragaSvar fragaSvar, Exception e) {
+        Long id = fragaSvar.getInternReferens();
+        String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
+        String enhetsId = fragaSvar.getVardperson().getEnhetsId();
+        String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
+        String message = "";
+        if (e != null) {
+            message = ": " + e.getMessage();
+        }
+        LOG.error("Notification mail for " + type + " '" + id
+                + "' concerning certificate '" + intygsId
+                + "' couldn't be sent to " + enhetsId
+                + " (" + enhetsNamn + ")" + message);
+    }
+
     @Override
     @Async("threadPoolTaskExecutor")
     public void sendMailForIncomingQuestion(FragaSvar fragaSvar) {
@@ -58,18 +74,15 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
 
-        try {
-            String reason = "incoming question '" + fragaSvar.getInternReferens() + "'";
-            sendNotificationMailToEnhet(fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar), recipient, reason);
-        } catch (MailSendException | MessagingException e) {
-            Long frageId = fragaSvar.getInternReferens();
-            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
-            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
-            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
-            LOG.error("Notification mail for question '" + frageId
-                    + "' concerning certificate '" + intygsId
-                    + "' couldn't be sent to " + enhetsId
-                    + " (" + enhetsNamn + "): " + e.getMessage());
+        if (recipient == null) {
+            logError("question", fragaSvar, null);
+        } else {
+            try {
+                String reason = "incoming question '" + fragaSvar.getInternReferens() + "'";
+                sendNotificationMailToEnhet(fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar), recipient, reason);
+            } catch (MailSendException | MessagingException e) {
+                logError("question", fragaSvar, e);
+            }
         }
     }
 
@@ -81,18 +94,15 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
 
-        try {
-            String reason = "incoming answer on question '" + fragaSvar.getInternReferens() + "'";
-            sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar), recipient, reason);
-        } catch (MailSendException | MessagingException e) {
-            Long svarsId = fragaSvar.getInternReferens();
-            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
-            String enhetsId = fragaSvar.getVardperson().getEnhetsId();
-            String enhetsNamn = fragaSvar.getVardperson().getEnhetsnamn();
-            LOG.error("Notification mail for answer '" + svarsId
-                    + "' concerning certificate '" + intygsId
-                    + "' couldn't be sent to " + enhetsId
-                    + " (" + enhetsNamn + "): " + e.getMessage());
+        if (recipient == null) {
+            logError("answer", fragaSvar, null);
+        } else {
+            try {
+                String reason = "incoming answer on question '" + fragaSvar.getInternReferens() + "'";
+                sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar), recipient, reason);
+            } catch (MailSendException | MessagingException e) {
+                logError("answer", fragaSvar, e);
+            }
         }
     }
 
@@ -180,11 +190,16 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private GetHsaUnitResponseType getHsaUnit(String hsaId) {
-        GetHsaUnitResponseType response = hsaClient.callGetHsaunit(hsaId);
-        if (response == null) {
-            throw new IllegalArgumentException("HSA Id " + hsaId + " does not exist in HSA catalogue.");
+        try {
+            GetHsaUnitResponseType response = hsaClient.callGetHsaunit(hsaId);
+            if (response == null) {
+                throw new IllegalArgumentException("HSA Id " + hsaId + " does not exist in HSA catalogue.");
+            }
+            return response;
+        } catch (WebServiceException e) {
+            LOG.error("Failed to contact HSA to get HSA Id '" + hsaId + "' : " + e.getMessage());
+            return null;
         }
-        return response;
     }
 
     public String intygsUrl(FragaSvar fragaSvar) {
