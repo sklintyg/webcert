@@ -129,17 +129,9 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
     @Override
     public IntygContentHolder fetchIntygData(String intygId, String typ) {
-        try {
-            CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
-            verifyEnhetsAuth(certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), true);
-            List<IntygStatus> status = serviceConverter.convertListOfStatusToListOfIntygStatus(certificate.getMetaData().getStatus());
-            String internalIntygJsonModel = certificate.getInternalModel();
-
-            return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), status, certificate.isRevoked());
-
-        } catch (IntygModuleFacadeException me) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        }
+        IntygContentHolder intygData = getIntygData(intygId, typ);
+        verifyEnhetsAuth(intygData.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), true);
+        return intygData;
     }
 
     @Override
@@ -252,7 +244,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygServiceResult sendIntyg(Omsandning omsandning) {
         SendIntygConfiguration sendConfig = configurationManager.unmarshallConfig(omsandning.getConfiguration(), SendIntygConfiguration.class);
-        IntygContentHolder intyg = fetchIntygData(omsandning.getIntygId(), omsandning.getIntygTyp());
+        IntygContentHolder intyg = getIntygData(omsandning.getIntygId(), omsandning.getIntygTyp());
         return sendIntyg(omsandning, sendConfig, intyg);
     }
 
@@ -331,10 +323,10 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
 
             AttributedURIType address = new AttributedURIType();
-            
+
             String targetAddress = findLogicalAddressForRecipient(intygsTyp, recipient);
             if (targetAddress == null) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, 
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                         "No recipient matching the logical address " + recipient + " found");
             }
             address.setValue(targetAddress);
@@ -356,7 +348,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
                 LOG.error("Module problems occured when trying to send intyg " + intygsId + " : " + message);
                 scheduleResend(omsandning);
                 return IntygServiceResult.RESCHEDULED;
-            }  else {
+            } else {
                 if (response.getResult().getResultCode() == ResultCodeEnum.INFO) {
                     String message = response.getResult().getInfoText();
                     LOG.warn("Warning occured when trying to send intyg " + intygsId + " : " + message);
@@ -399,6 +391,17 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     /* --------------------- Private scope --------------------- */
+
+    private IntygContentHolder getIntygData(String intygId, String typ) {
+        try {
+            CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
+            List<IntygStatus> status = serviceConverter.convertListOfStatusToListOfIntygStatus(certificate.getMetaData().getStatus());
+            String internalIntygJsonModel = certificate.getInternalModel();
+            return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), status, certificate.isRevoked());
+        } catch (IntygModuleFacadeException me) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
+    }
 
     private void registerIntyg(Utkast utkast) throws IntygModuleFacadeException, ModuleException {
         LOG.debug("Attempting to register signed utkast {}", utkast.getIntygsId());
