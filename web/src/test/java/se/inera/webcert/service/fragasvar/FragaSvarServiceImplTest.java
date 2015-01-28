@@ -63,6 +63,10 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -349,6 +353,28 @@ public class FragaSvarServiceImplTest {
 
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void testSaveFragaWsHTMLError() throws JsonParseException, JsonMappingException, IOException {
+        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
+
+        when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp())).thenReturn(
+                getIntygContentHolder());
+
+        // mock error with content type html
+        SOAPFault soapFault = null;
+        try {
+            soapFault = SOAPFactory.newInstance().createFault();
+            soapFault.setFaultString("Response was of unexpected text/html ContentType.");
+        } catch (SOAPException e) {
+            e.printStackTrace();
+        }
+        when(sendQuestionToFKClientMock.sendMedicalCertificateQuestion(
+                any(AttributedURIType.class),
+                any(SendMedicalCertificateQuestionType.class))).thenThrow(new SOAPFaultException(soapFault));
+
+        service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), fraga.getAmne(), fraga.getFrageText());
+    }
+
     @Test
     public void testSetVidareBefordradOK() {
         FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
@@ -433,6 +459,33 @@ public class FragaSvarServiceImplTest {
         when(
                 sendAnswerToFKClientMock.sendMedicalCertificateAnswer(any(AttributedURIType.class),
                         any(SendMedicalCertificateAnswerType.class))).thenReturn(wsResponse);
+
+        service.saveSvar(1L, "svarsText");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testSaveSvarWsHTMLError() throws JsonParseException, JsonMappingException, IOException {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+
+        when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp())).thenReturn(
+                getIntygContentHolder());
+
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
+        when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
+
+        // mock error with content type html
+        SOAPFault soapFault = null;
+        try {
+            soapFault = SOAPFactory.newInstance().createFault();
+            soapFault.setFaultString("Response was of unexpected text/html ContentType.");
+        } catch (SOAPException e) {
+            e.printStackTrace();
+        }
+        when(sendAnswerToFKClientMock.sendMedicalCertificateAnswer(any(AttributedURIType.class),
+                any(SendMedicalCertificateAnswerType.class))).thenThrow(new SOAPFaultException(soapFault));
 
         service.saveSvar(1L, "svarsText");
     }

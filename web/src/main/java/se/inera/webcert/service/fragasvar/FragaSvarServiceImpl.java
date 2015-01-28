@@ -48,6 +48,7 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
 
+import javax.xml.ws.soap.SOAPFaultException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -246,8 +247,13 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         AttributedURIType logicalAddress = new AttributedURIType();
         logicalAddress.setValue(sendAnswerToFkLogicalAddress);
 
-        SendMedicalCertificateAnswerResponseType response =
-                sendAnswerToFKClient.sendMedicalCertificateAnswer(logicalAddress, sendType);
+        SendMedicalCertificateAnswerResponseType response;
+        try {
+            response = sendAnswerToFKClient.sendMedicalCertificateAnswer(logicalAddress, sendType);
+        } catch (SOAPFaultException e) {
+            LOGGER.error("Failed to send answer to FK, error was: " + e.getMessage());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, e.getMessage());
+        }
 
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOGGER.error("Failed to send answer to FK, result was " + response.getResult().toString());
@@ -328,8 +334,13 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         AttributedURIType logicalAddress = new AttributedURIType();
         logicalAddress.setValue(sendQuestionToFkLogicalAddress);
 
-        SendMedicalCertificateQuestionResponseType response =
-                sendQuestionToFKClient.sendMedicalCertificateQuestion(logicalAddress, sendType);
+        SendMedicalCertificateQuestionResponseType response;
+        try {
+            response = sendQuestionToFKClient.sendMedicalCertificateQuestion(logicalAddress, sendType);
+        } catch (SOAPFaultException e) {
+            LOGGER.error("Failed to send question to FK, error was: " + e.getMessage());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, e.getMessage());
+        }
 
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
             LOGGER.error("Failed to send question to FK, result was " + response.getResult().toString());
