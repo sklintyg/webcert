@@ -38,9 +38,9 @@ class FeatureModuler extends RestClientFixture{
 
         try {
             if (verb.equals("PUT"))
-                client.put(path: path, requestContentType: JSON, headers: headers)
+                client.put(path: path, requestContentType: JSON, headers: headers, body: "{}")
             else if (verb.equals("POST"))
-                client.post(path: path, requestContentType: JSON, headers: headers)
+                client.post(path: path, requestContentType: JSON, headers: headers, body: "{}")
             else if (verb.equals("DELETE"))
                 client.delete(path: path, headers: headers)
             else
