@@ -158,11 +158,12 @@ public class FragaSvarRepositoryTest {
     @Test
     public void testCountByIntyg() {
         
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.ANSWERED, true));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED, true));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, "FK"));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, "FK"));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.ANSWERED, "FK", true));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED,  "FK"));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED, "WC", true));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED, "FK", true));
                 
         Long res = fragasvarRepository.countByIntyg(INTYGS_ID);
         assertEquals(5L, res.longValue());
@@ -228,6 +229,44 @@ public class FragaSvarRepositoryTest {
         f.setIntygsReferens(INTYGS_REFERENS);
         f.setStatus(status);
         
+        return f;
+    }
+    
+    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String frageStallare)  {
+        FragaSvar f = new FragaSvar();
+        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+        f.setAmne(Amne.AVSTAMNINGSMOTE);
+        f.setExternReferens("externReferens");
+        f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
+        f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+        f.setFrageStallare(frageStallare);
+        f.setFrageText("Detta var ju otydligt formulerat!");
+        f.setIntygsReferens(INTYGS_REFERENS);
+        f.setStatus(status);
+        
+        return f;
+    }
+
+    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String frageStallare, boolean answered) {
+        FragaSvar f = new FragaSvar();
+        f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
+        f.setAmne(Amne.AVSTAMNINGSMOTE);
+        f.setExternReferens("externReferens");
+        f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
+        f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+        f.setFrageStallare(frageStallare);
+        Vardperson vardperson = new Vardperson();
+        vardperson.setEnhetsId(enhetsId);
+        vardperson.setEnhetsnamn(enhetsId + "-namnet");
+        f.setVardperson(vardperson);
+        f.setFrageText("Detta var ju otydligt formulerat!");
+        f.setIntygsReferens(INTYGS_REFERENS);
+        f.setStatus(status);
+        
+        if (answered) {
+            f.setSvarsText("Ett svar på frågan");
+        }
+
         return f;
     }
 

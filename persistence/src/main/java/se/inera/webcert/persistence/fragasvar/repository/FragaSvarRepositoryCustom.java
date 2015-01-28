@@ -48,16 +48,16 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
     @Query("SELECT DISTINCT fs.vardperson.hsaId, fs.vardperson.namn FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) ORDER BY fs.vardperson.namn ASC")
     List<Object[]> findDistinctFragaSvarHsaIdByEnhet(@Param("idList") List<String> enhetsIds);
 
-    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
+    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.frageStallare = 'FK'")
     Long countByIntyg(@Param("intygsId") String intygsId);
     
-    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = 'CLOSED'")
+    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = 'CLOSED' AND fs.frageStallare = 'FK'")
     Long countHandledByIntyg(@Param("intygsId") String intygsId);
     
-    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = 'ANSWERED' AND fs.svarsText IS NOT NULL")
+    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = 'ANSWERED' AND fs.frageStallare = 'FK' AND fs.svarsText IS NOT NULL")
     Long countAnsweredByIntyg(@Param("intygsId") String intygsId);
     
-    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = 'CLOSED' AND fs.svarsText IS NOT NULL")
+    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = 'CLOSED' AND fs.frageStallare = 'FK' AND fs.svarsText IS NOT NULL")
     Long countHandledAndAnsweredByIntyg(@Param("intygsId") String intygsId);
 
     /**
