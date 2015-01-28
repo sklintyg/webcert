@@ -185,7 +185,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                     $log.debug('Query Error' + errorData);
                     $scope.widgetState.runningQuery = false;
                     $scope.widgetState.activeErrorMessageKey = 'info.query.error';
-
                 });
             }
 
