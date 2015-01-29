@@ -146,7 +146,7 @@
     </bean>
   </beans>
 
-  <beans profile="wc-security-test,wc-security-prod">
+  <beans profile="prod,wc-security-test,wc-security-prod">
     <bean id="samlFilter" class="org.springframework.security.web.FilterChainProxy">
       <security:filter-chain-map request-matcher="ant">
         <security:filter-chain pattern="/saml/login/**" filters="samlEntryPoint"/>
