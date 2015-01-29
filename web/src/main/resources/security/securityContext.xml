@@ -114,7 +114,7 @@
   <!-- =============================================================== -->
   <!-- The wc-security-prod profile only supports Säkerhetstjänst login -->
   <!-- =============================================================== -->
-  <beans profile="wc-security-prod">
+  <beans profile="prod,wc-security-prod">
     <security:http entry-point-ref="samlEntryPoint" pattern="/saml/**">
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
