@@ -27,7 +27,6 @@ import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.eid.services.SignatureService;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -60,9 +59,6 @@ public class SignaturServiceImplTest {
 
     @Mock
     private UtkastRepository mockUtkastRepository;
-
-    @Mock
-    private SignatureService signatureService;
 
     @Mock
     IntygService intygService;
@@ -181,7 +177,6 @@ public class SignaturServiceImplTest {
         completedUtkast.setModel("{}");
 
         String signature = "{\"signatur\":\"SIGNATURE\"}";
-        when(signatureService.validateSiths(hoSPerson.getHsaId(), ticket.getHash(), "SIGNATURE")).thenReturn(true);
 
         intygSignatureService.clientSignature(ticket.getId(), signature);
         fail();
@@ -197,7 +192,6 @@ public class SignaturServiceImplTest {
         assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
 
         String signature = "{\"signatur\":\"SIGNATURE\"}";
-        when(signatureService.validateSiths(hoSPerson.getHsaId(), ticket.getHash(), "SIGNATURE")).thenReturn(true);
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
         ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);

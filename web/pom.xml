@@ -33,10 +33,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>eid-integration</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>pu-integration</artifactId>
     </dependency>
     <dependency>
