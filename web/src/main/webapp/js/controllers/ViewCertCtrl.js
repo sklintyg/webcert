@@ -9,22 +9,29 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
 
             // Check if the user used the special qa-link to get here.
             if ($routeParams.qaOnly) {
-                var locationEvent = $rootScope.$on('$locationChangeStart', function(event, newUrl) {
+                var dialog;
+                var locationEvent = $rootScope.$on('$locationChangeStart', function(event, newUrl, currentUrl) {
                     event.preventDefault();
-                    dialogService.showDialog($scope, {
-                        dialogId: 'qa-only-warning-dialog',
-                        titleId: 'label.qaonlywarning',
-                        bodyTextId: 'label.qaonlywarning.body',
-                        templateUrl: '/views/partials/qa-only-warning-dialog.html',
-                        button1click: function() {
-                            locationEvent();
-                            $window.location = newUrl;
-                        },
-                        button1text: 'common.continue',
-                        button1id: 'button1continue-dialog',
-                        button2text: 'common.cancel',
-                        autoClose: true
-                    });
+                    if (!dialog) {
+                        dialog = dialogService.showDialog($scope, {
+                            dialogId: 'qa-only-warning-dialog',
+                            titleId: 'label.qaonlywarning',
+                            bodyTextId: 'label.qaonlywarning.body',
+                            templateUrl: '/views/partials/qa-only-warning-dialog.html',
+                            button1click: function() {
+                                locationEvent();
+                                $window.location = newUrl;
+                            },
+                            button1text: 'common.continue',
+                            button1id: 'button1continue-dialog',
+                            button2text: 'common.cancel',
+                            autoClose: true
+                        }).result.then(function() {
+                            dialog = null; // Dialog closed
+                        }, function() {
+                            dialog = null; // Dialog dismissed
+                        });
+                    }
                 });
             }
 

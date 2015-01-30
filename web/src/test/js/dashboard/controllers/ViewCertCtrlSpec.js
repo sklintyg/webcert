@@ -52,6 +52,7 @@ describe('ViewCertCtrl', function() {
     beforeEach(angular.mock.module('webcert', function($provide) {
         dialogService = jasmine.createSpyObj('common.dialogService', [ 'showDialog' ]);
         modalMock = jasmine.createSpyObj('modal', [ 'close' ]);
+        modalMock.result = {then:function(){}}
         dialogService.showDialog.and.callFake(function(){
             return modalMock;
         });
