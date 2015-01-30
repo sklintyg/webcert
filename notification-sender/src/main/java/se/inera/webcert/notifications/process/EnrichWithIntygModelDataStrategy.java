@@ -19,6 +19,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.DiagnosType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.DateInterval;
+import se.inera.certificate.codes.Diagnoskodverk;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -31,6 +32,7 @@ public class EnrichWithIntygModelDataStrategy {
 
     public static final JsonPath DIAGNOS_KOD_JSONP = JsonPath.compile("$.diagnosKod");
     public static final JsonPath DIAGNOS_BESKR_JSONP = JsonPath.compile("$.diagnosBeskrivning1");
+    public static final JsonPath DIAGNOS_CODESYSTEM_JSONP = JsonPath.compile("$.diagnosKodsystem1");
 
     public static final JsonPath NEDSATT_25_JSONP = JsonPath.compile("$.nedsattMed25");
     public static final JsonPath NEDSATT_50_JSONP = JsonPath.compile("$.nedsattMed50");
@@ -38,9 +40,6 @@ public class EnrichWithIntygModelDataStrategy {
     public static final JsonPath NEDSATT_100_JSONP = JsonPath.compile("$.nedsattMed100");
 
     private static final String ARBETSFORMAGA_UNIT = "%";
-
-    private static final String DIAGNOS_CODESYSTEM = "1.2.752.116.1.1.1.1.1";
-    private static final String DIAGNOS_CODESYSTEM_NAME = "ICD-10-SE";
 
     private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygModelDataStrategy.class);
 
@@ -91,7 +90,6 @@ public class EnrichWithIntygModelDataStrategy {
         LOG.debug("Extracting diagnos info from JSON model");
 
         String diagnosKod = extractString(DIAGNOS_KOD_JSONP, jsonCtx);
-
         if (diagnosKod == null) {
             LOG.debug("Diagnos code was not found in model");
             return null;
@@ -99,10 +97,19 @@ public class EnrichWithIntygModelDataStrategy {
 
         String diagnosBeskr = extractString(DIAGNOS_BESKR_JSONP, jsonCtx);
 
+        String kodverk = extractString(DIAGNOS_CODESYSTEM_JSONP, jsonCtx);
+        Diagnoskodverk diagnoskodverk;
+        if (kodverk == null) {
+            // Default is ICD-10-SE
+            diagnoskodverk = Diagnoskodverk.ICD_10_SE;
+        } else {
+            diagnoskodverk = Diagnoskodverk.valueOf(kodverk);
+        }
+
         DiagnosType dt = new DiagnosType();
         dt.setCode(diagnosKod);
-        dt.setCodeSystem(DIAGNOS_CODESYSTEM);
-        dt.setCodeSystemName(DIAGNOS_CODESYSTEM_NAME);
+        dt.setCodeSystem(diagnoskodverk.getCodeSystem());
+        dt.setCodeSystemName(diagnoskodverk.getCodeSystemName());
         dt.setDisplayName(diagnosBeskr);
 
         return dt;
