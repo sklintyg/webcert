@@ -28,9 +28,10 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
      *
      * @see se.inera.certificate.modules.service.WebcertModuleService#validateDiagnosisCode(java.lang.String, int)
      */
-    public boolean validateDiagnosisCode(String codeFragment) {
+    @Override
+    public boolean validateDiagnosisCode(String codeFragment, String codeSystem) {
 
-        DiagnosResponse response = diagnosService.searchDiagnosisByCode(codeFragment);
+        DiagnosResponse response = diagnosService.searchDiagnosisByCode(codeFragment, codeSystem);
 
         LOG.debug("Validation result for diagnosis code '{}' is {}", codeFragment, response.getResultat());
 

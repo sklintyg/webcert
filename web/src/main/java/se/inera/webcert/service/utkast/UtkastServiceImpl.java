@@ -288,28 +288,7 @@ public class UtkastServiceImpl implements UtkastService {
                 LOG.error("External error while looking up person data '{}'", patientPersonnummer);
 
                 // If there is a problem with the external system use old patient information.
-                String fornamn = Strings.join(" ", template.getUtlatande().getGrundData().getPatient().getFornamn());
-                String efternamn = template.getUtlatande().getGrundData().getPatient().getEfternamn();
-                if (fornamn == null || fornamn.length() == 0) {
-                    // In this case use the last name from the template efternamn as efternamn and the rest as fornamn.
-                    String[] namn = efternamn.split(" ");
-                    if (namn.length > 0) {
-                        fornamn = Strings.join(" ", java.util.Arrays.copyOfRange(namn, 0, namn.length - 1));
-                        if (namn.length > 1) {
-                            efternamn = namn[namn.length - 1];
-                        } else {
-                            efternamn = "";
-                        }
-                    }
-                }
-                person = new Person(
-                    patientPersonnummer,
-                    fornamn,
-                    Strings.join(" ", template.getUtlatande().getGrundData().getPatient().getMellannamn()),
-                    efternamn,
-                    template.getUtlatande().getGrundData().getPatient().getPostadress(),
-                    template.getUtlatande().getGrundData().getPatient().getPostnummer(),
-                    template.getUtlatande().getGrundData().getPatient().getPostort());
+                person = getPersonFromTemplate(template, patientPersonnummer);
             }
             else if (personSvar.getStatus() != PersonSvar.Status.FOUND) {
                 LOG.error("Unknown status while looking up person data '{}'", patientPersonnummer);
@@ -358,6 +337,33 @@ public class UtkastServiceImpl implements UtkastService {
             LOG.error("Module exception occured when trying to make a copy of " + orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
+    }
+
+    private Person getPersonFromTemplate(IntygContentHolder template, String patientPersonnummer) {
+        Person person;
+        String fornamn = Strings.join(" ", template.getUtlatande().getGrundData().getPatient().getFornamn());
+        String efternamn = template.getUtlatande().getGrundData().getPatient().getEfternamn();
+        if (fornamn == null || fornamn.length() == 0) {
+            // In this case use the last name from the template efternamn as efternamn and the rest as fornamn.
+            String[] namn = efternamn.split(" ");
+            if (namn.length > 0) {
+                fornamn = Strings.join(" ", java.util.Arrays.copyOfRange(namn, 0, namn.length - 1));
+                if (namn.length > 1) {
+                    efternamn = namn[namn.length - 1];
+                } else {
+                    efternamn = "";
+                }
+            }
+        }
+        person = new Person(
+            patientPersonnummer,
+            fornamn,
+            Strings.join(" ", template.getUtlatande().getGrundData().getPatient().getMellannamn()),
+            efternamn,
+            template.getUtlatande().getGrundData().getPatient().getPostadress(),
+            template.getUtlatande().getGrundData().getPatient().getPostnummer(),
+            template.getUtlatande().getGrundData().getPatient().getPostort());
+        return person;
     }
 
     private CreateNewDraftHolder createModuleRequestForCopying(String newDraftIntygId, CreateNewDraftCopyRequest copyRequest, Person person) {

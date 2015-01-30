@@ -3,6 +3,7 @@ package se.inera.webcert.web.controller.moduleapi;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,14 +38,14 @@ public class DiagnosModuleApiController extends AbstractApiController {
      * @return
      */
     @POST
-    @Path("/kod")
+    @Path("/kod/{codeSystem}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getDiagnosisByCode(String code) {
+    public Response getDiagnosisByCode(String code, @PathParam("codeSystem") String codeSystem) {
 
         LOG.debug("Getting diagnosis using code: {}", code);
 
-        DiagnosResponse diagnosResponse = diagnosService.getDiagnosisByCode(code);
+        DiagnosResponse diagnosResponse = diagnosService.getDiagnosisByCode(code, codeSystem);
         return Response.ok(diagnosResponse).build();
     }
 
@@ -66,7 +67,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
 
         LOG.debug("Searching for diagnosises using code fragment: {}", parameter.getCodeFragment());
 
-        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByCode(parameter.getCodeFragment(), parameter.getNbrOfResults());
+        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByCode(parameter.getCodeFragment(), parameter.getCodeSystem(), parameter.getNbrOfResults());
         return Response.ok(diagnosResponse).build();
     }
 
@@ -83,7 +84,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
 
         LOG.debug("Searching for diagnosises using description fragment: {}", parameter.getDescriptionSearchString());
 
-        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByDescription(parameter.getDescriptionSearchString(), parameter.getNbrOfResults());
+        DiagnosResponse diagnosResponse = diagnosService.searchDiagnosisByDescription(parameter.getDescriptionSearchString(), parameter.getCodeSystem(), parameter.getNbrOfResults());
         return Response.ok(diagnosResponse).build();
     }
 }

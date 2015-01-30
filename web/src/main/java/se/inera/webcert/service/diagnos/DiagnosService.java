@@ -15,47 +15,61 @@ public interface DiagnosService {
      *
      * @param code
      *            The code must at least correspond to the pattern 'A012' or 'A01.2'.
+     * @param codeSystem
+     *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
      * @return
      */
-    DiagnosResponse getDiagnosisByCode(String code);
+    DiagnosResponse getDiagnosisByCode(String code, String codeSystem);
 
     /**
      * Searches the repository for codes beginning with the codeFragment.
      *
      * @param codeFragment
      *            The string to search codes by. The string must at least correspond to the pattern 'A01'.
+     * @param codeSystem
+     *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
+     *            
      * @return
      */
-    DiagnosResponse searchDiagnosisByCode(String codeFragment);
+    DiagnosResponse searchDiagnosisByCode(String codeFragment, String codeSystem);
 
     /**
      * Searches the repository for codes beginning with the codeFragment. Limits the number of matches returned.
      *
      * @param codeFragment
      *            The string to search codes by. The string must at least correspond to the pattern 'A01'.
+     * @param codeSystem
+     *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
+     *            
      * @param nbrOfResults
      *            The number of results to return, must be larger than 0.
      * @return
      */
-    DiagnosResponse searchDiagnosisByCode(String codeFragment, int nbrOfResults);
+    DiagnosResponse searchDiagnosisByCode(String codeFragment, String codeSystem, int nbrOfResults);
 
     /**
      * Searches the repository for descriptions matching searchString. Limits the number of matches returned.
      *
      * @param descriptionFragment
      *            The string to search for in descriptions.
+     * @param codeSystem
+     *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
+     *            
      * @param nbrOfResults
      *            The number of results to return, must be larger than 0.
      * @return
      */
-    DiagnosResponse searchDiagnosisByDescription(String searchString, int nbrOfResults);
+    DiagnosResponse searchDiagnosisByDescription(String searchString, String codeSystem, int nbrOfResults);
 
     /**
      * Validates that the supplied code fragment is syntactically correct.
      *
      * @param codeFragment
      *            The code to be validated.
+     * @param codeSystem
+     *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
+     *            
      * @return true if the code fragment is syntactically correct.
      */
-    boolean validateDiagnosisCode(String codeFragment);
+    boolean validateDiagnosisCode(String codeFragment, String codeSystem);
 }
