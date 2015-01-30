@@ -6,8 +6,12 @@ import org.slf4j.LoggerFactory;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.EnhetType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HosPersonalType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.PatientType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -16,19 +20,33 @@ import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 public class EnrichWithIntygDataStrategy {
 
     private static final String HSAID_ROOT = "1.2.752.129.2.1.4.1";
+    
+    public static final String PERSONNUMMER_ROOT = "1.2.752.129.2.1.3.1";
 
     private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygDataStrategy.class);
 
-    public CertificateStatusUpdateForCareType enrichWithIntygProperties(CertificateStatusUpdateForCareType statusUpdateType, Utkast intygsUtkast) {
+    public CertificateStatusUpdateForCareType enrichWithIntygProperties(CertificateStatusUpdateForCareType statusUpdateType, Utkast utkast) {
 
-        LOG.debug("Enriching CertificateStatusUpdateForCareType with data from intygsutkast {}", intygsUtkast.getIntygsId());
+        LOG.debug("Enriching CertificateStatusUpdateForCareType with data from intygsutkast {}", utkast.getIntygsId());
 
         UtlatandeType utlatandeType = statusUpdateType.getUtlatande();
-
-        decorateWithHoSPerson(utlatandeType, intygsUtkast);
-        decorateWithSignDate(utlatandeType, intygsUtkast);
+        decorateWithPatient(utlatandeType, utkast);
+        decorateWithHoSPerson(utlatandeType, utkast);
+        decorateWithSignDate(utlatandeType, utkast);
 
         return statusUpdateType;
+    }
+
+    private void decorateWithPatient(UtlatandeType utlatandeType, Utkast utkast) {
+
+        PersonId personId = new PersonId();
+        personId.setExtension(utkast.getPatientPersonnummer());
+        personId.setRoot(PERSONNUMMER_ROOT);
+
+        PatientType patientType = new PatientType();
+        patientType.setPersonId(personId);
+
+        utlatandeType.setPatient(patientType);
     }
 
     private void decorateWithSignDate(UtlatandeType utlatandeType, Utkast intygsUtkast) {
@@ -42,7 +60,7 @@ public class EnrichWithIntygDataStrategy {
     private void decorateWithHoSPerson(UtlatandeType utlatandeType, Utkast intygsUtkast) {
 
         VardpersonReferens vardpersonReferens = intygsUtkast.getSkapadAv();
-        
+
         HosPersonalType hoSPerson = new HosPersonalType();
         hoSPerson.setFullstandigtNamn(vardpersonReferens.getNamn());
 

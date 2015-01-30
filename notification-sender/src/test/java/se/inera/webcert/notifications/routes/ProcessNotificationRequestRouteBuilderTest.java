@@ -80,6 +80,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
                 .getBody(CertificateStatusUpdateForCareType.class);
         assertNotNull(statusUpdateType);
         assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
+        assertNotNull(statusUpdateType.getUtlatande().getPatient().getPersonId().getExtension());
         assertEquals(HandelsekodCodeRestrictionType.HAN_1.value(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
         assertNotNull(statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCodeSystem());
         assertNotNull(statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCodeSystemName());
@@ -111,6 +112,8 @@ public class ProcessNotificationRequestRouteBuilderTest {
         assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
         assertEquals(HandelsekodCodeRestrictionType.HAN_2.value(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
         assertEquals(HandelseType.INTYGSUTKAST_SIGNERAT.toString(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getDisplayName());
+        assertNotNull(statusUpdateType.getUtlatande().getPatient().getPersonId().getExtension());
+        assertNotNull(statusUpdateType.getUtlatande().getSigneringsdatum());
         assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());
         assertEquals(1, statusUpdateType.getUtlatande().getArbetsformaga().size());
     }
