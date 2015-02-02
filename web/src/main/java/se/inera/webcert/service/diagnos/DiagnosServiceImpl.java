@@ -31,9 +31,9 @@ import se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory;
 @Service
 public class DiagnosServiceImpl implements DiagnosService {
 
-    private static final String KSH97P = "KSH97P";
+    private static final String KSH97P = "KSH_97_P";
 
-    private static final String ICD_10_SE = "ICD-10-SE";
+    private static final String ICD_10_SE = "ICD_10_SE";
 
     /**
      * A regular expression for validating a 'swedish' ICD-10 code.

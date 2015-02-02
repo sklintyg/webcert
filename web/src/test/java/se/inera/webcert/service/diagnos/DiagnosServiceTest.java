@@ -21,9 +21,9 @@ public class DiagnosServiceTest {
     @Autowired
     private DiagnosService service;
 
-    private final static String ICD_10 = "ICD-10-SE";
+    private final static String ICD_10 = "ICD_10_SE";
 
-    private final static String KSH97P = "KSH97P";
+    private final static String KSH97P = "KSH_97_P";
 
     @Test
     public void testGetICD10DiagnosisByCode() {
