@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>se.inera.webcert</groupId>
+    <artifactId>webcert-parent</artifactId>
+    <version>0.5.9-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>webcert-performance-tests</artifactId>
+
+	<properties>
+		<gatling.version>2.1.2</gatling.version>
+		<gatling-plugin.version>2.1.2</gatling-plugin.version>
+		<baseUrl>http://localhost:9088</baseUrl>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>io.gatling.highcharts</groupId>
+			<artifactId>gatling-charts-highcharts</artifactId>
+			<version>${gatling.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.gatling</groupId>
+				<artifactId>gatling-maven-plugin</artifactId>
+				<version>${gatling-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>test</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<simulationClass>se.inera.webcert.FragaSvarUserSimulation</simulationClass>
+							<jvmArgs>
+							  <jvmArg>-DbaseUrl=${baseUrl}</jvmArg>
+							</jvmArgs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
