@@ -7,21 +7,21 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.6</version>
   </parent>
 
   <groupId>se.inera.webcert.tools</groupId>
   <artifactId>anonymisera-webcert-databas</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <packaging>jar</packaging>
   <name>Anonymisering av intyg och frågor/svar i webcert</name>
 
   <dependencies>
 
     <dependency>
-      <groupId>se.inera.certificate.tools</groupId>
+      <groupId>se.inera.intyg.tools</groupId>
       <artifactId>anonymisering</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
     </dependency>
 
     <dependency>
@@ -135,5 +135,18 @@
       </plugin>
     </plugins>
   </build>
+
+  <repositories>
+    <repository>
+      <id>callista-release</id>
+      <url>https://repository-callistasoftware.forge.cloudbees.com/release/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
 </project>
