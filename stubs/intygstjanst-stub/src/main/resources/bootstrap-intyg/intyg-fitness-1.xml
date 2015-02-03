@@ -113,7 +113,7 @@
 
     <observation>
       <observationskategori code="439401001" codeSystem="1.2.752.116.2.1.1.1" codeSystemName="SNOMED-CT" />
-      <observationskod code="S47" codeSystemName="ICD-10-SE" />
+      <observationskod code="S47" codeSystemName="ICD-10" />
       <beskrivning>Medicinskttillstånd: Klämskada på överarm</beskrivning>
     </observation>
 
