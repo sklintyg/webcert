@@ -11,11 +11,15 @@ public class CreateNewDraftCopyRequest {
     
     private String typ;
 
+    private String patientPersonnummer;
+    
     private String nyttPatientPersonnummer;
 
     private HoSPerson hosPerson;
 
     private Vardenhet vardenhet;
+    
+    private boolean djupintegrerad = false;
 
     public CreateNewDraftCopyRequest() {
 
@@ -41,6 +45,14 @@ public class CreateNewDraftCopyRequest {
         this.typ = typ;
     }
 
+    public String getPatientPersonnummer() {
+        return patientPersonnummer;
+    }
+
+    public void setPatientPersonnummer(String patientPersonnummer) {
+        this.patientPersonnummer = patientPersonnummer;
+    }
+
     public String getNyttPatientPersonnummer() {
         return nyttPatientPersonnummer;
     }
@@ -63,5 +75,13 @@ public class CreateNewDraftCopyRequest {
 
     public void setVardenhet(Vardenhet vardenhet) {
         this.vardenhet = vardenhet;
+    }
+
+    public boolean isDjupintegrerad() {
+        return djupintegrerad;
+    }
+
+    public void setDjupintegrerad(boolean djupintegrerad) {
+        this.djupintegrerad = djupintegrerad;
     }
 }
