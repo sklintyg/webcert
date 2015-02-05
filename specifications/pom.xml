@@ -188,45 +188,33 @@
     <profile>
       <id>demo</id>
       <properties>
-        <webcert.baseUrl>http://demo.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        <logsender.baseUrl>http://demo.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
-        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
-      </properties>
-    </profile>
-    <profile>
-      <id>utveckling</id>
-      <properties>
-        <webcert.web.baseUrl>http://utveckling.webcert.intygstjanster.se/</webcert.web.baseUrl>
-        <webcert.baseUrl>http://utveckling.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        <logsender.baseUrl>http://utveckling.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
-        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
-      </properties>
-    </profile>
-    <profile>
-      <id>test</id>
-      <properties>
         <webcert.web.baseUrl>https://test.webcert.intygstjanster.se/</webcert.web.baseUrl>
         <webcert.baseUrl>https://test.webcert.intygstjanster.se/services/</webcert.baseUrl>
         <logsender.baseUrl>https://test.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
-        <certificate.baseUrl>https://test.minaintyg.se/inera-certificate/</certificate.baseUrl>
+        <certificate.baseUrl>http://10.250.34.20:8080/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
       <id>nmt</id>
       <properties>
-        <webcert.web.baseUrl>https://webcert.inera.nordicmedtest.se:21443/</webcert.web.baseUrl>
+        <webcert.web.baseUrl>https://webcert.inera.nordicmedtest.se/</webcert.web.baseUrl>
         <webcert.baseUrl>https://webcert.inera.nordicmedtest.se:21443/services/</webcert.baseUrl>
         <logsender.baseUrl>https://webcert.inera.nordicmedtest.se:21443/log-sender/</logsender.baseUrl>
         <certificate.baseUrl>https://intygstjanst.inera.nordicmedtest.se:23443/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
-      <id>ssh-tunnel-server</id>
+      <id>ssh-tunnel</id>
       <properties>
-        <webcert.web.baseUrl>http://localhost:28080/</webcert.web.baseUrl>
         <webcert.baseUrl>http://localhost:28080/services/</webcert.baseUrl>
         <logsender.baseUrl>http://localhost:28080/log-sender/</logsender.baseUrl>
         <certificate.baseUrl>http://localhost:18080/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
+      <id>qa</id>
+      <properties>
+        <webcert.web.baseUrl>https://verifiering.webcert.intygstjanster.se/</webcert.web.baseUrl>
       </properties>
     </profile>
     <profile>
