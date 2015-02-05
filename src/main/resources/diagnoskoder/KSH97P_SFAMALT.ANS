@@ -1,0 +1,2544 @@
+A00-   Kolera
+A02-P  Salmonellainfektion
+A02-P  Salmonellaenterit
+A02-P  Salmonellos
+A03-   Shigellainfektion
+A03-   Bakteriell dysenteri
+A03-   Rödsot
+A045   Campylobacterenterit
+A046   Yersiniaenterit
+A047   Clostridium difficile-enterokolit
+A051   Botulism
+A06-   Amöbainfektion
+A06-   Amoebiasis
+A071   Giardiainfektion
+A071   Giardiasis
+A09-P  Infektiös diarré
+A09-P  Enterokolit
+A09-P  Infektiös gastroenterit
+A09-P  Matförgiftning
+A09-P  Tarminfektion
+A16-P  Tuberkulos
+A16-P  TB
+A16-P  TBC
+A21-   Tularemi
+A21-   Harpest
+A28-P  Djurburen bakteriesjukdom
+A28-P  Erysipeloid
+A30-   Lepra
+A30-   Spetälska
+A31-   Atypisk mykobakteriell infektion
+A31-   Infektion med atypiska mykobakterier
+A32-   Listeriainfektion
+A32-   Listerios
+A35-P  Tetanus
+A35-P  Stelkramp
+A36-   Difteri
+A37-   Pertussis
+A37-   Kikhosta
+A38-   Scarlatina
+A38-   Scharlakansfeber
+A39-   Meningokockinfektion
+A41-P  Sepsis
+A41-P  Blodförgiftning
+A41-P  Septikemi
+A41-P  Septisk chock
+A46-   Erysipelas
+A46-   Rosfeber
+A481P  Legionellainfektion
+A481P  Legionärsjuka
+A483   Toxiskt chocksyndrom
+A483   TSS
+A483   Toxic shock syndrome
+A49-P  Bakteriesjukdom ospecificerad
+A49-P  Bakteremi
+A49-P  Bakterieinfektion olokaliserad
+A53-P  Syfilis
+A53-P  Lues
+A54-   Gonokockinfektion
+A54-   Gonorré
+A56-P  Klamydiainfektion
+A59-   Trikomonasinfektion
+A59-   Trikomonaskolpit
+A60-   Genital herpes
+A630   Kondylom
+A630   Condyloma acuminatum
+A64-P  Sexuellt överförd sjukdom
+A64-P  STD
+A691   Vincents angina
+A692   Borreliainfektion
+A692   Borrelios
+A692   Erythema chronicum migrans
+A699P  Spiroketinfektion
+A70-   Papegojsjuka
+A70-   Ornitos
+A70-   Psittakos
+A79-P  Rickettsiainfektion
+A80-   Polio
+A80-   Barnförlamning
+A80-   Poliomyelit
+A89-P  Virusmeningit
+A89-P  Fästingburen virusencefalit
+A89-P  Rabies
+A89-P  TBE (Tick-borne encephalitis)
+A89-P  Virusencefalit
+A89-P  Virusinfektion i CNS
+A89-P  Virusmeningoencefalit
+A92-   Ockelbosjuka
+A985   Nephropathia epidemica
+A985   Sorkfeber
+A99-P  Artropodburen febersjukdom
+A99-P  Hemorragisk feber
+B002   Herpesstomatit
+B002   Herpes simplex-faryngit
+B002   Munsår
+B009P  Herpes simplex-infektion
+B009P  Herpesinfektion
+B01-   Varicellae
+B01-   Vattenkoppor
+B01-   Vattkoppor
+B02-   Herpes zoster
+B02-   Bältros
+B02-   Zoster
+B05-   Morbilli
+B05-   Mässling
+B06-   Rubella
+B06-   Röda hund
+B07-   Verruca vulgaris
+B07-   Vårta
+B081   Molluscum contagiosum
+B081   Mollusker
+B082   Exanthema subitum
+B082   Tredagarsfeber
+B083   Erythema infectiosum
+B083   Femte sjukan
+B084   Höstblåsor
+B084   Hand, foot and mouth disease
+B09-P  Virusexantem
+B09-P  Virusenantem
+B19-P  Virushepatit
+B19-P  Hepatit A
+B19-P  Hepatit B
+B19-P  Hepatit C
+B19-P  Hepatit D
+B24-P  HIV-infektion
+B24-P  AIDS
+B24-P  ARC
+B24-P  Sjukdom orsakad av HIV
+B25-   CMV-infektion
+B25-   Cytomegalvirusinfektion
+B26-   Parotit
+B26-   Påssjuka
+B27-   Mononukleos
+B27-   Infektiös mononukleos
+B27-   Körtelfeber
+B330   Bornholmssjuka
+B330   Epidemisk myalgi
+B330   Pleurodyni
+B34-P  Virusinfektion
+B34-P  Viros
+B351   Nagelsvamp
+B351   Nagelmykos
+B351   Onykomykos
+B353   Fotsvamp
+B353   Fotmykos
+B353   Tinea pedis
+B359P  Dermatofytos
+B359P  Hudsvamp
+B359P  Ringorm
+B359P  Tinea
+B360   Pityriasis versicolor
+B373P  Urogenital candidainfektion
+B373P  Candidavaginit
+B379P  Candidainfektion
+B379P  Torsk
+B49-P  Mykos, ospecificerad
+B49-P  Svampinfektion, ospecificerad
+B54-P  Malaria
+B58-   Toxoplasmos
+B58-   Toxoplasmainfektion
+B64-P  Protozosjukdom
+B653   Simmarklåda
+B653   Cercariadermatit
+B71-P  Bandmask
+B71-P  Binnikemask
+B77-   Spolmask
+B77-   Ascaridiasis
+B77-   Askaridos
+B80-   Springmask
+B80-   Enterobiasis
+B80-   Oxyuriasis
+B80-   Trådmaskinfektion
+B83-P  Masksjukdom
+B83-P  Mask
+B85-   Pedikulos
+B85-   Löss
+B86-   Scabies
+B86-   Skabb
+B88-P  Infestation
+B91-   Sen effekt av polio
+B94-P  Sen effekt av infektionssjukdom
+B94-P  Sen effekt av tuberkulos
+B99-   Infektionssjukdom
+C00-   Läppcancer
+C00-   Malign läpptumör
+C08-P  Spottkörtelcancer
+C14-P  Munhålecancer
+C14-P  Malign tumör i munnen
+C14-P  Muncancer
+C15-   Matstrupscancer
+C15-   Esofaguscancer
+C16-   Magsäckscancer
+C16-   Ventrikelcancer
+C17-   Tunntarmscancer
+C18-P  Tjocktarmscancer
+C18-P  Grovtarmscancer
+C18-P  Koloncancer
+C20-P  Ändtarmscancer
+C20-P  Rektalcancer
+C20-P  Stolgångscancer
+C22-   Levercancer
+C22-   Hepatom
+C22-   Levercellscancer
+C22-   Primär levercancer
+C23-P  Gallblåsecancer
+C25-   Pankreascancer
+C25-   Cancer i bukspottkörteln
+C25-   Malign tumör i bukspottkörteln
+C26-   Cancer i matsmältningsorganen
+C26-   Malign tumör i matsmältningsorganen
+C32-   Larynxcancer
+C32-   Malign tumör i struphuvudet
+C32-   Strupcancer
+C32-   Stämbandscancer
+C34-P  Lungcancer
+C34-P  Bronkialcancer
+C34-P  Cancer i nedre luftvägarna
+C34-P  Malign tumör i lunga
+C39-P  Cancer i brösthåleorgan
+C39-P  Cancer i andningsvägarna
+C39-P  Malign tumör i andningsvägarna
+C39-P  Malign tumör i brösthålans organ
+C41-P  Skelettcancer
+C41-P  Bencancer
+C41-P  Malign skelettumör
+C43-   Malignt melanom
+C44-   Hudcancer
+C44-   Basalcellscancer
+C44-   Basaliom
+C44-   Malign hudtumör
+C49-P  Bindvävscancer
+C49-P  Kaposis sarkom
+C49-P  Malign mjukdelstumör
+C49-P  Mesoteliom
+C50-   Bröstcancer
+C50-   Mammarcancer
+C51-   Vulvacancer
+C53-   Livmoderhalscancer
+C53-   Cervixcancer
+C55-P  Livmodercancer
+C55-P  Endometriecancer
+C55-P  Korpuscancer
+C55-P  Uteruscancer
+C56-   Äggstockscancer
+C56-   Ovarialcancer
+C56-   Ovariecancer
+C57-P  Cancer i kvinnliga könsorgan
+C60-   Peniscancer
+C61-   Prostatacancer
+C61-   Cancer i blåshalskörteln
+C62-   Testikelcancer
+C62-   Testiscancer
+C63-   Cancer i manliga könsorgan
+C64-P  Njurcancer
+C64-P  Hypernefrom
+C67-P  Urinblåsecancer
+C67-P  Malign tumör i urinorgan
+C67-P  Uroepitelial cancer
+C69-   Cancer i ögat
+C69-   Malign tumör i ögat
+C69-   Retinoblastom
+C71-P  Cancer i centrala nervsystemet
+C71-P  Hjärntumör
+C71-P  Malign tumör i centrala nervsystemet
+C73-   Tyreoideacancer
+C73-   Sköldkörtelcancer
+C75-P  Cancer i endokrina körtlar
+C75-P  Endokrin cancer
+C79-P  Metastas
+C79-P  Metastas från okänd primärtumör
+C79-P  Sekundär malign tumör
+C80-P  Cancer, ospecificerad
+C80-P  Malign kakexi
+C80-P  Malign tumör
+C85-P  Malignt lymfom
+C85-P  Hodgkins sjukdom
+C85-P  Mycosis fungoides
+C85-P  Non-Hodgkin-lymfom
+C88-   Immunoproliferativ sjukdom
+C88-   Waldenströms makroglobulinemi
+C90-   Myelom
+C90-   Malign plasmacellstumör
+C90-   Myelomatos
+C90-   Plasmacellsleukemi
+C91-   Lymfatisk leukemi
+C91-   Akut lymfatisk leukemi
+C91-   Kronisk lymfatisk leukemi
+C92-   Myeloisk leukemi
+C92-   Akut myeloisk leukemi
+C92-   Kronisk myeloisk leukemi
+C96-P  Malign blodsjukdom
+C96-P  Andra leukemier med icke specificerad celltyp
+C96-P  Leukemi, ospecificerad
+C96-P  Monocytleukemi
+D06-   Cervixcancer in situ
+D06-   Cancer in situ i livmoderhalsen
+D09-P  Cancer in situ
+D10-   Benign tumör i munnen
+D11-   Benign spottkörteltumör
+D12-   Benign tumör i tjocktarm
+D12-   Benign tumör i anus
+D12-   Benign tumör i ändtarm
+D12-   Hereditär polypos i kolon
+D13-   Benign tumör i matsmältningsorganen
+D14-   Benign tumör i andningsorgan
+D15-   Benign tumör i brösthåleorgan
+D16-   Benign tumör i skelettet
+D17-   Lipom
+D17-   Fettsvulst
+D180   Hemangiom
+D180   Blodkärlssvulst
+D181   Lymfangiom
+D181   Lymfkärlssvulst
+D21-P  Benign bindvävstumör
+D21-P  Benign mjukvävnadstumör
+D21-P  Benign tumör i bindvävnad
+D22-   Nevus
+D22-   Blått nevus
+D22-   Hårigt nevus
+D22-   Melanocytnevus
+D22-   Pigmentnevus
+D23-   Benign hudtumör
+D23-   Benign svettkörteltumör
+D23-   Benign talgkörteltumör
+D24-   Benign bröstkörteltumör
+D25-   Uterusmyom
+D25-   Fibromyom i uterus
+D25-   Muskelsvulst i livmodern
+D25-   Myom
+D27-   Benign äggstockstumör
+D27-   Benign ovarialtumör
+D28-P  Benign tumör i kvinnliga könsorgan
+D29-   Benign tumör i manliga könsorgan
+D30-   Benign tumör i urinorgan
+D31-   Benign tumör i ögat
+D33-P  Benign tumör i centrala nervsystemet
+D33-P  Meningeom
+D34-   Benign sköldkörteltumör
+D34-   Benign tyreoideatumör
+D35-   Benign tumör i endokrin körtel
+D36-   Benign tumör, ospecificerad
+D36-   Tumör
+D37-   Oklar tumör i matsmältningskanalen
+D38-   Oklar tumör i andningsorganen
+D39-   Oklar tumör i kvinnliga könsorgan
+D40-   Oklar tumör i manliga könsorgan
+D41-   Oklar tumör i urinorganen
+D43-P  Oklar tumör i centrala nervsystemet
+D44-   Oklar tumör i endokrina körtlar
+D45-   Polycythaemia vera
+D47-P  Myelodysplasi
+D47-P  Benign monoklonal gammopati
+D47-P  Essentiell trombocytopeni
+D47-P  Lymfoproliferativ sjukdom
+D47-P  Myelodysplastiskt syndrom
+D47-P  Myeloproliferativ sjukdom
+D48-   Oklar tumör
+D48-   Svulst
+D50-   Järnbristanemi
+D50-   Blödningsanemi
+D51-   Perniciös anemi
+D52-   Folatbristanemi
+D52-   Nutritionell megaloblastanemi
+D58-P  Hereditär hemolytisk anemi
+D58-P  Hemoglobinopati
+D58-P  Sicklecellssjukdom
+D58-P  Talassemi
+D58-P  Ärftlig hemolytisk anemi
+D59-   Förvärvad hemolytisk anemi
+D59-   Idiopatisk hemolytisk anemi
+D59-   Läkemedelsutlöst hemolytisk anemi
+D64-P  Annan anemi
+D64-P  Anemi efter akut större blödning
+D64-P  Anemi vid kronisk sjukdom
+D64-P  Anemi vid tumörsjukdom
+D64-P  Aplastisk anemi
+D64-P  Blodbrist
+D64-P  Nutritionsanemi
+D68-P  Koagulationsrubbning
+D68-P  Blödarsjuka
+D68-P  Förvärvad K-vitaminbrist
+D68-P  Hemofili
+D69-   Purpura
+D69-   Blödningsbenägenhet
+D69-   Henoch-Schönleins purpura
+D69-   Kapillärskörhet
+D69-   Senil purpura
+D750   Benign polycytemi
+D750   Familjär erytrocytos
+D750   Familjär polycytemi
+D751   Sekundär polycytemi
+D759P  Annan sjukdom i blod och blodbildande organ
+D759P  Agranulocytos
+D759P  Basofili
+D759P  Eosinofili
+D759P  Leukocytos
+D759P  Sjukdomar i mjälten
+D84-P  Immunbristsjukdom
+D84-P  Rubbningar i immunförsvaret
+D86-   Sarkoidos
+D86-   Morbus Schaumann
+E01-P  Jodbristsjukdom i sköldkörteln
+E01-P  Endemisk kretinism
+E01-P  Endemisk struma
+E01-P  Medfött jodbristsyndrom
+E01-P  Subklinisk jodbristhypotyreos
+E03-   Hypotyreos
+E03-   Hypotyreos orsakad av läkemedel
+E03-   Myxödem
+E03-   Postinfektiös hypotyreos
+E04-   Struma
+E04-   Atoxisk diffus struma
+E04-   Sköldkörtelförstoring
+E05-   Hypertyreos
+E05-   Graves sjukdom
+E05-   Toxisk nodulär struma
+E05-   Tyreotoxikos
+E06-   Tyreoidit
+E06-   Autoimmun tyreoidit
+E06-   Kronisk tyreoidit
+E06-   Läkemedelsutlöst tyreoidit
+E06-   Sköldkörtelinflammation
+E06-   de Quervains tyreoidit
+E07-   Tyreoideasjukdom
+E108P  Diabetes mellitus typ 1, med komplikationer
+E108P  Diabetes typ 1, med komplikationer
+E108P  Insulin-dependent diabetes mellitus (IDDM), med komplikationer
+E109   Diabetes mellitus typ 1, utan komplikationer
+E109   Diabetes typ 1, utan komplikationer
+E109   Insulin-dependent diabetes mellitus (IDDM), utan komplikationer
+E118P  Diabetes mellitus typ 2,  med komplikationer
+E118P  Diabetes typ 2, med komplikationer
+E118P  Non-insulin-dependent diabetes mellitus (NIDDM), med komplikati
+E119   Diabetes mellitus typ 2,  utan komplikationer
+E119   Diabetes typ 2, utan komplikationer
+E119   Non-insulin-dependent diabetes mellitus (NIDDM), utan komplikat
+E14-P  Diabetes mellitus, ospecificerad
+E16-P  Endokrin pankreasrubbning
+E16-P  Hyperinsulinism
+E16-P  Hypoglykemi
+E21-P  Bisköldkörtelsjukdom
+E21-P  Hyperparatyreoidism
+E21-P  Hypoparatyreoidism
+E23-P  Hypofyssjukdom
+E23-P  Diabetes insipidus
+E23-P  Hypofysrubbning
+E23-P  Underfunktion av hypofysen
+E23-P  Överfunktion av hypofysen
+E271   Binjurebarksinsufficiens
+E271   Addisons sjukdom
+E279P  Binjuresjukdom
+E279P  Adenogenitala rubbningar
+E279P  Cushings syndrom
+E279P  Hyperaldosteronism
+E28-   Ovariell dysfunktion
+E28-   Polycystiska ovarier
+E29-   Testikulär dysfunktion
+E30-   Störd pubertetsutveckling
+E30-   För tidig pubertet
+E30-   Försenad pubertet
+E34-P  Endokrin rubbning
+E63-P  Näringsbrist
+E63-P  Malnutrition
+E63-P  Vitaminbrist
+E66-P  Obesitas
+E66-P  Adipositas
+E66-P  Fetma
+E66-P  Övernäring
+E66-P  Övervikt
+E73-   Laktosintolerans
+E73-   Laktasbrist
+E73-   Mjölksockerintolerans
+E78-   Lipidrubbning
+E78-   Blodfettrubbning
+E78-   Hyperkolesterolemi
+E78-   Hypertriglyceridemi
+E790   Hyperurikemi
+E790   Asymtomatisk hyperurikemi
+E802P  Porfyri
+E84-   Cystisk fibros
+E85-   Amyloidos
+E88-P  Ämnesomsättningssjukdom
+E890   Postoperativ hypotyreos
+E890   Hypotyreoidism efter strålning
+F01-   Vaskulär demens
+F01-   Arteriosklerotisk demens
+F01-   Multiinfarktdemens
+F03-P  Demens
+F03-P  Demens, ospecificerad
+F03-P  Presenil demens
+F03-P  Presenil psykos
+F03-P  Senil demens
+F03-P  Senil psykos
+F09-P  Organisk psykisk störning
+F09-P  Organisk psykos
+F09-P  Symtomatisk psykos
+F100   Alkoholintoxikation
+F101   Skadligt bruk av alkohol
+F102   Alkoholberoende
+F102   Kronisk alkoholism
+F105P  Alkoholabstinens
+F105P  Alkoholpsykos
+F105P  Delirium tremens
+F109P  Alkoholproblem
+F17-   Skadligt bruk av tobak
+F17-   Nikotinism
+F17-   Tobaksberoende
+F19-P  Drogberoende
+F19-P  Drogmissbruk
+F19-P  Läkemedelsberoende
+F19-P  Narkomani
+F20-   Schizofreni
+F21-   Schizotyp störning
+F21-   Borderline schizofreni
+F22-   Paranoid psykos
+F29-P  Psykos
+F29-P  Cykloid psykos
+F29-P  Reaktiv psykos
+F30-   Manisk episod
+F30-   Hypomani
+F30-   Mani
+F31-   Bipolär sjukdom
+F31-   Manodepressiv sjukdom
+F32-   Depressiv episod
+F32-   Depression
+F32-   Psykogen depression
+F32-   Reaktiv depression
+F33-   Recidiverande depression
+F39-P  Förstämningssyndrom
+F39-P  Depressiv neuros
+F39-P  Neurotisk depression
+F40-   Fobi
+F40-   Fobiskt syndrom
+F410   Paniksyndrom
+F410   Panikattack
+F410   Paniktillstånd
+F411   Generaliserat ångestsyndrom
+F411   Ångestneuros
+F419P  Ångesttillstånd
+F419P  Ångest
+F42-   Tvångssyndrom
+F42-   Tvångshandlingar
+F42-   Tvångstankar
+F431   Posttraumatiskt stressyndrom
+F438A  Utmattningssyndrom
+F439P  Stressreaktion
+F439P  Krisreaktion
+F439P  Sorgereaktion
+F44-   Dissociativt syndrom
+F44-   Hysteri
+F44-   Konversionshysteri
+F454   Somatoformt smärttillstånd
+F454   Psykalgia
+F454   Psykogen huvudvärk
+F454   Psykogen ryggvärk
+F459P  Somatoformt syndrom
+F459P  Hypokondri
+F459P  Psykosomatisk sjukdom
+F459P  Somatiseringssyndrom
+F48-   Neuros
+F48-   Neurasteni
+F48-   Psykasteni
+F500   Anorexia nervosa
+F500   Självsvält
+F502   Bulimi
+F502   Hetsätning
+F509P  Ätstörning
+F51-   Sömnstörning
+F51-   Mardrömmar
+F51-   Nattskräck
+F51-   Sömngång
+F52-   Sexuell dysfunktion
+F52-   Frigiditet
+F52-   Psykogen anorgasmi
+F52-   Psykogen dyspareuni
+F52-   Psykogen vaginism
+F53-   Post partum-depression
+F53-   Puerperal psykos
+F55-   Läkemedelsmissbruk
+F55-   Missbruk av ej beroendeframkallande substanser
+F59-P  Psykogen fysiologisk dysfunktion
+F69-P  Personlighetsstörning hos vuxen
+F79-P  Psykisk utvecklingsstörning
+F89-P  Psykologisk utvecklingsstörning
+F89-P  Autism
+F90-   Hyperaktivitetsstörning
+F95-   Tics
+F980   Icke organisk enures
+F980   Funktionell enures
+F980   Psykogen enures
+F982   Matvägran under uppväxten
+F982   Matvägran hos barn
+F989P  Psykisk störning under uppväxten
+F99-   Psykisk sjukdom
+G03-P  Meningit
+G03-P  Hjärnhinneinflammation
+G04-P  Encefalomyelit
+G04-P  Hjärninflammation
+G04-P  Meningoencefalit
+G04-P  Myelit
+G122   Amyotrofisk lateralskleros
+G122   ALS
+G20-   Parkinsons sjukdom
+G20-   Morbus Parkinson
+G20-   Paralysis agitans
+G250   Essentiell tremor
+G250   Familjär tremor
+G258   Restless legs
+G258   Myrkrypningar i benen
+G258   Rastlösa ben
+G259P  Rörelserubbning
+G259P  Dystoni
+G259P  Intentionstremor
+G259P  Läkemedelsutlöst parkinsonism
+G259P  Läkemedelsutlöst tremor
+G259P  Malignt neuroleptikasyndrom
+G259P  Myoklonus
+G259P  Sekundär parkinsonism
+G30-   Alzheimers sjukdom
+G35-   Multipel skleros
+G35-   MS
+G35-   Sclerosis disseminata
+G40-P  Epilepsi
+G40-P  Status epilepticus
+G43-   Migrän
+G43-   Hemicrania
+G43-   Migrän med aura (klassisk)
+G43-   Migrän utan aura (vanlig)
+G43-   Migränekvivalent
+G440   Hortons syndrom
+G440   Cluster headache
+G440   Hortons huvudvärk
+G440   Klusterhuvudvärk
+G442   Spänningshuvudvärk
+G448P  Huvudvärkssyndrom
+G448P  Kronisk posttraumatisk huvudvärk
+G448P  Läkemedelsutlöst huvudvärk
+G448P  Vaskulär huvudvärk
+G45-P  Transitorisk ischemisk attack
+G45-P  Amaurosis fugax
+G45-P  TIA
+G45-P  Transitorisk global amnesi
+G45-P  Övergående cerebral ischemi
+G47-   Organisk sömnstörning
+G47-   Kataplexi
+G47-   Narkolepsi
+G47-   Sömnapné
+G500   Trigeminusneuralgi
+G510   Bells pares
+G510   Perifer ansiktsförlamning
+G510   Perifer facialispares
+G540   Toraxapertursyndrom
+G540   Sjukdom i brakialplexus
+G540   TOS
+G546   Fantomsmärta
+G546   Fantom-extremitetssyndrom
+G549P  Sjukdom i nerv, nervrot
+G549P  Melkersson-Rosenthals syndrom
+G549P  Melkerssons syndrom
+G560   Karpaltunnelsyndrom
+G573   Peroneuspares
+G573   Betplockarsjuka
+G58-P  Mononeuropati
+G58-P  Meralgia parestetica
+G58-P  Mortons metatarsalgi
+G610   Guillain-Barrés syndrom
+G610   Akut inflammatorisk poly(radikulo)neuropati
+G621   Alkoholpolyneuropati
+G629P  Polyneuropati
+G629P  Idiopatisk neuropati
+G629P  Läkemedelsutlöst polyneuropati
+G629P  Ärftlig neuropati
+G700   Myasthenia gravis
+G72-P  Muskelsjukdom
+G72-P  Muskeldystrofi
+G72-P  Myopati
+G80-   Cerebral pares
+G80-   CP
+G81-   Hemipares
+G81-   Ensidig förlamning
+G81-   Hemiplegi
+G83-P  Pares
+G83-P  Cauda equina-syndrom
+G83-P  Förlamning
+G83-P  Monopares
+G83-P  Parapares
+G83-P  Tetraplegi
+G91-   Hydrocefalus
+G91-   Normaltryckshydrocefalus
+G91-   Vattenskalle
+G933   Trötthetssyndrom efter virusinfektion
+G933   Benign myalgisk encefalomyelit
+G933   Kroniskt trötthetssyndrom
+G98-P  Neurologisk sjukdom
+G98-P  Alkoholutlöst encefalopati
+G98-P  Blefarospasm
+G98-P  Hereditär ataxi
+G98-P  Horners syndrom
+G98-P  Intrakraniell abscess
+G98-P  Korea Huntington
+G98-P  Neurogen ortostatisk hypotension
+G98-P  Spinal muskelatrofi
+H00-   Vagel
+H00-   Chalazion
+H00-   Hordeolum
+H010   Blefarit
+H010   Ögonlocksinflammation
+H020   Entropion
+H020   Trikiasis
+H021   Ektropion
+H024   Ptos
+H026   Xantelasm på ögonlock
+H041   "Torra ögon"-syndromet
+H041   Tårkörtelsjukdom
+H043   Dakryocystit
+H043   Tårsäcksinflammation
+H100   Varig konjunktivit
+H100   Varig bindehinnekatarr
+H101   Allergisk konjunktivit
+H104   Kronisk konjunktivit
+H104   Kronisk bindehinnekatarr
+H109P  Konjunktivit
+H109P  Bindehinnekatarr
+H110   Pterygium
+H113   Subkonjunktival blödning
+H113   Hyposfagma
+H15-   Sklerit
+H15-   Episklerit
+H15-   Sjukdom i sklera
+H16-   Hornhinneinflammation
+H16-   Fotokeratit
+H16-   Keratit
+H16-   Kornealsår
+H16-   Snöblindhet
+H16-   Svetsblindhet
+H20-   Irit
+H20-   Regnbågshinneinflammation
+H25-P  Katarakt
+H25-P  Grå starr
+H33-   Näthinneavlossning
+H33-   Ablatio retinae
+H33-   Amotio retinae
+H34-   Retinalkärlsocklusion
+H34-   Centralartärocklusion i ögat
+H34-   Retinalvensocklusion
+H350   Hypertensiv retinopati
+H350   Fundus hypertonicus
+H353   Makuladegeneration
+H40-P  Glaukom
+H40-P  Glaukom med sluten kammarvinkel
+H40-P  Glaukom med öppen kammarvinkel
+H40-P  Grön starr
+H40-P  Okulär hypertension
+H433   Glaskroppsgrumling
+H46-   Optikusneurit
+H46-   Synnervsinflammation
+H49-   Ögonmuskelförlamning
+H49-   Abducenspares
+H49-   Okulomotoriuspares
+H50-   Skelning
+H50-   Heterofori
+H50-   Inåtskelning
+H50-   Latent skelning
+H50-   Strabism
+H50-   Utåtskelning
+H524   Presbyopi
+H524   Ålderssynthet
+H527P  Brytningsfel
+H527P  Ackomodationspares
+H527P  Astigmatism
+H527P  Närsynthet
+H527P  Översynthet
+H532   Dubbelseende
+H532   Diplopi
+H535   Färgsinnesdefekt
+H535   Färgblindhet
+H539P  Synrubbning
+H539P  Astenopi
+H539P  Fotofobi
+H539P  Halofenomen öga
+H539P  Nattblindhet
+H539P  Skotom
+H54-   Synnedsättning
+H54-   Amauros
+H54-   Amblyopi
+H54-   Bilateral blindhet
+H54-   Blindhet
+H54-   Unilateral blindhet
+H55-   Nystagmus
+H571   Ögonsmärta
+H579P  Ögonsjukdom
+H60-   Extern otit
+H60-   Hörselgångsinflammation
+H60-   Infektion i ytterörat
+H60-   Otitis externa
+H612   Vaxpropp
+H612   Cerumen obturans
+H65-   Sekretorisk otit
+H65-   Glue ear
+H65-   Icke varig mellanöreinflammation
+H65-   Kronisk mukös otit
+H65-   Kronisk serös otit
+H65-   Mukös otit
+H65-   Otitis serosa
+H65-   Otosalpingit
+H65-   Serös otitis media
+H660   Akut mediaotit
+H660   Akut suppurativ mediaotit
+H660   Akut varig mediaotit
+H660   Akut varig mellanöreinflammation
+H663P  Kronisk mediaotit
+H663P  Kronisk otit med perforation
+H663P  Kronisk otitis media
+H663P  Kronisk varig mellanöreinflammation
+H669P  Mellanöreinflammation, ej specificerad
+H669P  Otitis media UNS
+H70-   Mastoidit
+H72-   Trumhinneperforation
+H72-   Posttraumatisk trumhinneperforation
+H72-   Trumhinneperforation efter inflammation
+H730   Akut myringit
+H730   Bullös myringit
+H80-   Otoskleros
+H810   Ménières sjukdom
+H810   Endolymfatisk hydrops
+H810   Ménières syndrom
+H811   Benign paroxysmal yrsel
+H811   Benign lägesyrsel
+H812   Vestibularisneurit
+H812   Inflammation i hörselnerven
+H812   Vestibularisneuronit
+H814   Central yrsel
+H833   Bullerskada
+H833   Akustiskt trauma
+H833   Hörselskada av buller
+H911   Åldersbetingad hörselnedsättning
+H911   Presbyakusi
+H919P  Hörselnedsättning
+H919P  Dålig hörsel
+H919P  Dövhet
+H919P  Dövstumhet
+H919P  Nedsatt hörsel
+H919P  Ototoxisk hörselnedsättning
+H919P  Sensineural hörselnedsättning
+H919P  Sudden Deafness
+H919P  Surditas
+H920   Öronvärk
+H920   Otalgi
+H921   Öronflytning
+H921   Sekretion ur öra
+H931   Tinnitus
+H931   Öronsusning
+H939P  Öronsjukdom
+H939P  Öronsjukdom efter ingrepp
+I10-   Hypertoni
+I10-   Essentiell hypertoni
+I10-   Högt blodtryck
+I10-   Primär hypertoni
+I13-P  Hypertoni med organsjukdom
+I13-P  Hypertoni med hjärt- och njursjukdom
+I13-P  Hypertoni med hjärtsjukdom
+I13-P  Hypertoni med njursjukdom
+I15-   Sekundär hypertoni
+I15-   Hypertoni sekundär till endokrin sjukdom
+I15-   Renovaskulär hypertoni
+I200   Instabil angina pectoris
+I200   Preinfarktsyndrom
+I209P  Angina pectoris
+I209P  Ischemiska bröstsmärtor
+I209P  Kärlkramp
+I21-P  Hjärtinfarkt
+I21-P  Akuta komplikationer till hjärtinfarkt
+I21-P  Hjärtinfarkt inom 4 veckor (28 dagar) från symtomdebuten
+I21-P  Infarctus myocardii acutus
+I21-P  Reinfarkt
+I25-P  Ischemisk hjärtsjukdom
+I25-P  Gammal hjärtinfarkt
+I25-P  Hjärtaneurysm
+I25-P  Ischemisk kardiomyopati
+I25-P  Koronarartäraneurysm
+I25-P  PMI syndrom
+I25-P  Postinfarktsyndrom
+I25-P  Tyst myokardischemi
+I26-   Lungemboli
+I26-   Embolia pulmonalis
+I26-   Pulmonell infarkt
+I26-   Pulmonell tromboembolism
+I27-P  Sjukdom i lungcirkulationen
+I27-P  Aneurysm i lungartär
+I27-P  Cor pulmonale
+I27-P  Kyfoskoliotisk hjärtsjukdom
+I27-P  Primär pulmonell hypertoni
+I27-P  Pulmonell hjärtsjukdom
+I30-   Akut perikardit
+I30-   Akut perikardutgjutning
+I30-   Hjärtsäcksinflammation
+I30-   Infektiös perikardit
+I31-P  Sjukdom i perikardiet
+I31-P  Hjärttamponad
+I31-P  Kronisk perikardit
+I38-P  Hjärtklaffsjukdom
+I38-P  Akut endokardit
+I38-P  Akut reumatisk feber
+I38-P  Aortaklaffel
+I38-P  Kronisk reumatisk hjärtsjukdom
+I38-P  Mitralisklaffel
+I38-P  Subakut endokardit
+I40-P  Akut myokardit
+I40-P  Infektiös myokardit
+I42-P  Kardiomyopati
+I42-P  Alkoholkardiomyopati
+I42-P  Endokardiell fibroelastos
+I45-P  Retledningsrubbning
+I45-P  AV-block
+I45-P  Adams-Stokes syndrom
+I45-P  Grenblock
+I45-P  Hjärtblock
+I45-P  Pre-excitationssyndrom
+I45-P  WPW-syndrom
+I46-   Hjärtstillestånd
+I46-   Hjärtstillestånd med framgångsrik hjärt-lungräddning
+I46-   Plötslig hjärtdöd
+I47-   Paroxysmal takykardi
+I47-   Paroxysmal supraventrikulär takykardi
+I47-   Paroxysmal ventrikulär takykardi
+I48-   Förmaksflimmer
+I48-   Förmaksfladder
+I49-   Hjärtarytmi
+I49-   Extrasystolier
+I49-   Sick sinus syndrome
+I49-   Supraventrikulära extraslag [SVES]
+I49-   Ventrikelfladder
+I49-   Ventrikelflimmer
+I49-   Ventrikulära extraslag [VES]
+I50-   Hjärtsvikt
+I50-   Hjärtastma
+I50-   Hjärtinkompensation
+I50-   Hjärtinsufficiens
+I50-   Kronisk hjärtinsufficiens
+I51-P  Hjärtsjukdom
+I51-P  Akut kardit
+I51-P  Degenerativ hjärtmuskelsjukdom
+I51-P  Förvärvad septumdefekt i hjärtat
+I51-P  Hjärtförstoring
+I51-P  Kronisk kardit
+I51-P  Kronisk myokardit
+I60-   Subaraknoidalblödning
+I60-   Rupturerat cerebralt aneurysm
+I61-P  Hjärnblödning
+I61-P  Haemorrhagia cerebri
+I61-P  Icke traumatisk extradural blödning
+I61-P  Icke traumatisk subdural blödning (akut)
+I61-P  Intracerebral blödning
+I63-   Hjärninfarkt
+I63-   Cerebral infarkt
+I64-   Akut cerebral insult
+I64-   Apoplexi
+I64-   Stroke
+I67-P  Cerebrovaskulär sjukdom
+I67-P  Cerebral ateroskleros
+I67-P  Cerebral ischemi
+I67-P  Cerebralt aneurysm, icke brustet
+I67-P  Hypertensiv encefalopati
+I67-P  Ocklusion och stenos av cerebral artär
+I67-P  Sjukdom i cerebrala kärl
+I69-   Funktionsnedsättning efter cerebrovaskulär sjukdom
+I69-   Sen effekt av cerebrovaskulär sjukdom
+I709P  Ateroskleros
+I709P  Ateroskleros i aorta
+I709P  Ateroskleros i njurartär
+I71-   Aortaaneurysm
+I72-   Artäraneurysm
+I72-   Artärbråck
+I730   Raynauds syndrom
+I730   Raynauds fenomen
+I730   Raynauds sjukdom
+I739P  Perifer vaskulär sjukdom
+I739P  Artärspasm
+I739P  Ateroskleros i extremitetsartärer
+I739P  Aterosklerotiskt gangrän
+I739P  Claudicatio intermittens
+I739P  Thromboangiitis obliterans [Bürger]
+I74-   Artäremboli
+I74-   Emboli i artär
+I74-   Trombos i artär
+I77-P  Kärlsjukdom
+I77-P  Artärsjukdom
+I77-P  Kapillärsjukdom
+I77-P  Sjukdom i arterioler
+I800   Tromboflebit i ben
+I800   Inflammation i ytlig ven i ben
+I803P  Djup ventrombos i ben
+I803P  Flebit och tromboflebit i vena femoralis
+I809P  Ventrombos
+I809P  Djup ventrombos (utom i ben)
+I809P  Tromboflebit
+I82-P  Tromboembolisk sjukdom
+I82-P  Emboli och trombos i andra vener
+I82-P  Tromboflebitis migrans
+I82-P  Trombos i portavenen
+I832P  Venöst bensår
+I832P  Varicer med bensår
+I832P  Variköst sår
+I839P  Ytliga varicer på ben
+I839P  Åderbråck på ben
+I85-   Esofagusvaricer
+I85-   Åderbråck i matstrupen
+I861   Varikocele
+I861   Varicer i scrotum
+I872P  Venös insufficiens
+I872P  Hypostatiskt eksem
+I872P  Posttrombotiskt syndrom
+I872P  Stasdermatit
+I879P  Vensjukdom
+I89-P  Lymfkärlssjukdom
+I89-P  Lymfangiektasier
+I89-P  Lymfödem
+I95-   Hypotoni
+I95-   Hypotoni orsakad av läkemedel
+I95-   Ortostatisk hypotoni
+I972   Lymfödem efter mastektomi
+I972   Elefantiasis och förträngning av lymfkärl orsakad av mastektomi
+I979P  Cirkulationssjukdom efter medicinsk åtgärd
+I99-P  Sjukdom i cirkulationsorganen
+J01-   Akut sinuit
+J01-   Bihåleinflammation
+J01-   Purulent rinit
+J02-   Faryngit
+J02-   Halsont
+J02-   Streptokockfaryngit
+J03-   Tonsillit
+J03-   Halsfluss
+J03-   Streptokocktonsillit
+J04-   Akut laryngit
+J04-   Stämbandsinflammation
+J04-   Stämbandskatarr
+J050   Pseudokrupp
+J050   Falsk krupp
+J051   Epiglottit
+J051   Struplocksinflammation
+J06-P  Övre luftvägsinfektion
+J06-P  Förkylning
+J06-P  ÖLI
+J099   Influensa A (H1N1)
+J099   Nya influensan A (H1N1)
+J099   Svininfluensa A (H1N1)
+J11-P  Influensa
+J18-P  Pneumoni
+J18-P  Bronkopneumoni
+J18-P  Lunginflammation
+J18-P  Primär atypisk pneumoni
+J22-P  Akut bronkit
+J22-P  Akut infektion i nedre luftvägarna
+J22-P  Akut luftrörskatarr
+J300   Vasomotorisk rinit
+J300   Kärlsnuva
+J300   Nästäppa
+J304P  Allergisk rinit
+J304P  Hösnuva
+J310   Kronisk rinit
+J312P  Kronisk faryngit
+J32-   Kronisk sinuit
+J33-   Näspolyp
+J340   Näsfurunkel
+J342   Septumdeviation
+J342   Sned nässkiljevägg
+J351P  Tonsillhypertrofi
+J351P  Förstorade tonsiller
+J359P  Adenoid
+J359P  "Veg ad"
+J359P  Adenoid vegetation
+J359P  Förstoring av adenoider
+J36-   Peritonsillit
+J36-   Halsböld
+J36-   Peritonsillär abscess
+J37-   Kronisk laryngit
+J37-   Kronisk laryngotrakeit
+J380   Stämbandspares
+J380   Stämbandsförlamning
+J382P  Stämbandspolyp
+J382P  Stämbandsknutor
+J42-P  Kronisk bronkit
+J42-P  Kronisk luftrörskatarr
+J43-   Emfysem
+J43-   Lungemfysem
+J441   Kroniskt obstruktiv lungsjukdom med akut exacerbation
+J449P  Kroniskt obstruktiv lungsjukdom, ospecificerad
+J441   KOL med akut exacerbation
+J449P  KOL
+J449P  KOL med akut nedre luftvägsinfektion
+J449P  Kronisk astmatisk bronkit
+J449P  Kroniskt obstruktiv bronkit
+J45-P  Astma
+J45-P  Akut astmaanfall
+J45-P  Asthma bronchiale
+J45-P  Astmatisk bronkit
+J45-P  Status asthmaticus
+J47-   Bronkiektasier
+J47-   Lokala utvidgningar av luftrören
+J61-   Asbestos
+J61-   Asbestlunga
+J64-P  Pneumokonios
+J64-P  Dammlunga
+J64-P  Silikos
+J64-P  Stendammslunga
+J67-P  Allergisk alveolit
+J67-P  Hypersensitivitetspneumonit
+J67-P  Luftvägssjukdom orsakad av organiskt damm
+J84-P  Interstitiell lungsjukdom
+J84-P  ARDS
+J84-P  Chocklunga
+J84-P  Lungfibros
+J84-P  Lungsjukdomstillstånd av yttre orsak
+J90-P  Pleurit
+J90-P  Lungsäcksinflammation
+J92-   Pleuraplack
+J93-   Pneumotorax
+J93-   Spontanpneumotorax
+J96-P  Respiratorisk insufficiens
+J96-P  Andningssvikt
+J96-P  Respiratorisk insufficiens efter kirurgi
+J98-P  Sjukdom i andningsorgan
+K02-   Karies
+K02-   Caries dentium
+K05-   Parodontit
+K05-   Gingivit
+K08-P  Tandsjukdom
+K10-P  Käksjukdom
+K10-P  Cysta i käke
+K10-P  Cysta i mun- och käkregionen
+K10-P  Osteit i mun- och käkregionen
+K11-   Spottkörtelsjukdom
+K11-   Sialolithiasis
+K11-   Spottsten
+K120   Recidiverande afte
+K120   Aftös stomatit
+K120   Stomatitis herpetiformis
+K122P  Stomatit
+K122P  Abscess i munregionen
+K122P  Inflammation i munslemhinnan
+K13-   Läpp- och munslemhinnesjukdom
+K13-   Gombesvär hos rökare
+K13-   Irritationshyperplasi i munslemhinna
+K13-   Kind- och läppbitning
+K13-   Leukoplaki
+K13-   Munvinkelragader
+K14-   Tungsjukdom
+K14-   Atrofisk glossit
+K14-   Glossit
+K14-   Hårtunga
+K14-   Lingua geographica
+K14-   Tungsveda
+K21-   Gastroesofagal reflux
+K22-P  Matstrupssjukdom
+K22-P  Esofagit
+K22-P  Esofagusdivertikel
+K22-P  Esofagussjukdom
+K22-P  Esofagusstriktur
+K22-P  Kardiospasm
+K25-   Sår i magsäcken
+K25-   Ulcus ventriculi
+K26-   Sår i tolvfingertarmen
+K26-   Ulcus duodeni
+K30-P  Dyspepsi
+K30-P  Alkoholgastrit
+K30-P  Gastrit
+K30-P  Non ulcus-dyspepsi
+K31-P  Gastroduodenal sjukdom
+K31-P  Divertikel i magsäck
+K31-P  Gastroduodenalt sår
+K31-P  Peptiskt sår
+K31-P  Pylorussjukdom
+K31-P  Ulcus pepticum
+K35-   Akut blindtarmsinflammation
+K35-   Appendicit
+K35-   Appendicitis acuta
+K40-P  Ljumskbråck
+K40-P  Femoralbråck
+K40-P  Hernia inguinalis
+K40-P  Pungbråck
+K42-   Navelbråck
+K42-   Hernia umbilicalis
+K44-   Diafragmabråck
+K44-   Hernia diaphragmatica
+K44-   Hiatusbråck
+K46-P  Bukbråck
+K46-P  Främre bukväggsbråck
+K46-P  Ärrbråck
+K50-   Crohns sjukdom
+K50-   Morbus Crohn
+K50-   Regional enterit
+K51-   Ulcerös kolit
+K51-   Colitis ulcerosa
+K51-   Ulcerös proktit
+K52-P  Icke infektiös mag-tarmsjukdom
+K52-P  Allergisk och kostbetingad diarré
+K52-P  Gastroenterit
+K52-P  Icke infektiös diarré
+K52-P  Icke infektiös inflammation i mag-tarmkanal
+K52-P  Kolit
+K52-P  Kronisk appendicit
+K52-P  Peritoneumsjukdom
+K55-   Kärlsjukdom i tarm
+K55-   Ischemisk enterit
+K564   Fekalom
+K567P  Ileus
+K567P  Invagination
+K567P  Paralytisk ileus
+K567P  Tarmvred
+K578   Divertikulit
+K578   Divertiklar med peritonitretning
+K579P  Divertikulos
+K579P  Divertikelsjukdom
+K579P  Divertiklar i tarmen
+K579P  Fickbildning i tarm
+K58-P  Colon irritabile
+K58-P  Funktionell tarmsjukdom
+K58-P  Irritabel tarm
+K58-P  Irritable bowel syndrom [IBS]
+K58-P  Tarmkatarr
+K590   Obstipation
+K590   Förstoppning
+K591   Funktionell diarré
+K594   Analspasm
+K594   Proctalgia fugax
+K61-P  Analfissur
+K61-P  Analabscess
+K61-P  Anorektal abscess
+K61-P  Perianal abscess
+K61-P  Perianal fistel
+K61-P  Ändtarmsabscess
+K61-P  Ändtarmsfistel
+K62-   Rektalsjukdom
+K62-   Blödning i anus
+K62-   Polyp i ändtarm
+K62-   Proktit
+K62-   Prolaps i ändtarm
+K62-   Rektalblödning
+K62-   Rektalpolyp
+K62-   Rektalprolaps
+K62-   Strålningsproktit
+K62-   Ändtarmssjukdom
+K64-   Hemorrojder och perianal venös trombos
+K64-   Inre hemorrojder
+K64-   Kvarvarande hemorrojdhudflikar
+K64-   Yttre hemorrojder
+K65-   Bukhinneinflammation
+K65-   Akut peritonit
+K65-   Peritonit
+K70-   Alkoholleversjukdom
+K70-   Alkoholcirros
+K70-   Alkoholfettlever
+K70-   Alkoholhepatit
+K70-   Alkoholleversvikt
+K70-   Levercirros utlöst av alkohol
+K71-P  Toxisk leversjukdom
+K71-P  Kronisk leversvikt
+K71-P  Leversvikt
+K76-P  Kronisk leversjukdom
+K76-P  Hepatit
+K76-P  Kronisk leverinflammation
+K76-P  Kronisk staslever
+K76-P  Levercirros
+K76-P  Skrumplever
+K80-   Gallsten
+K80-   Cholelithiasis
+K80-   Gallstenssjukdom
+K81-   Gallblåseinflammation
+K81-   Kolecystit
+K83-P  Gallvägssjukdom
+K83-P  Gallblåsesjukdom
+K83-P  Icke fungerande gallblåsa
+K83-P  Kolangit
+K83-P  Sjukdom i gallblåsa och gallvägar, ospecificerad
+K85-   Akut pankreatit
+K85-   Akut bukspottkörtelinflammation
+K86-   Kronisk bukspottkörtelinflammation
+K86-   Alkoholpankreatit
+K86-   Kronisk pankreatit
+K86-   Kronisk pankreatit orsakad av alkohol
+K900   Celiaki
+K900   Glutenenteropati
+K909P  Intestinal malabsorption
+K909P  Bristfälligt näringsupptag från tarm
+K909P  Malabsorption
+K909P  Tropisk sprue
+K911   Dumpingsyndrom
+K911   Postgastrektomisyndrom
+K911   Sjukdom efter kirurgiskt ingrepp på magsäck
+K920   Hematemes
+K920   Blodkräkning
+K921   Melena
+K921   Svart avföring
+K929P  Gastrointestinal sjukdom
+K929P  Intestinal blödning
+K929P  Magsäcksblödning
+K929P  Postoperativ malabsorption
+K929P  Sjukdom i gastrointestinalkanalen
+K929P  Sjukdom i matsmältningsorgan
+L00-   Pemphigus neonatorum
+L01-   Impetigo
+L01-   Svinkoppor
+L02-   Abscess
+L02-   Böld
+L02-   Furunkel
+L02-   Karbunkel
+L030   Paronyki
+L030   Nagelbandsinfektion
+L030   Panaritium
+L04-   Lymfadenit
+L04-   Akut lymfkörtelinflammation
+L05-   Pilonidalcysta
+L05-   Sakraldermoid
+L08-P  Hudinfektion
+L08-P  Bakteriell hudinfektion
+L08-P  Cellulit
+L08-P  Ektyma
+L08-P  Erytrasma
+L08-P  Lymfangit, akut
+L08-P  Pyodermi
+L130   Dermatitis herpetiformis
+L139P  Bullös dermatit
+L139P  Blåsdermatit
+L139P  Blåsdermatos
+L20-   Atopisk dermatit
+L20-   Atopiskt eksem
+L20-   Böjveckseksem
+L21-   Seborroisk dermatit
+L21-   Mjälleksem
+L21-   Seborroiskt eksem
+L22-   Blöjdermatit
+L22-   Blöjeksem
+L230   Nickeleksem
+L230   Allergisk kontaktdermatit av metaller
+L24-   Traumiterativt eksem
+L24-   Husmorseksem
+L24-   Icke allergiskt kontakteksem
+L24-   Irritativ kontaktdermatit
+L24-   Nötningseksem
+L25-P  Kontaktdermatit
+L25-P  Kontakteksem
+L270P  Läkemedelsexantem
+L270P  Läkemedelsutslag
+L279P  Födoämnesexantem
+L279P  Matutslag
+L280   Neurodermit
+L280   Lichen simplex
+L29-P  Pruritus
+L29-P  Anal klåda
+L29-P  Anogenital klåda
+L29-P  Klåda
+L29-P  Prurigo nodularis
+L29-P  Strofulus
+L300   Nummulär dermatit
+L300   Nummulärt eksem
+L302   Id-reaktion
+L302   Kutan autosensibilisering
+L303   Infekterat eksem
+L303   Infektiös dermatit
+L304   Intertrigo
+L304   Intertriginöst eksem
+L309P  Dermatit
+L309P  Eksem
+L403   Pustulosis palmoplantaris
+L403   PPP
+L409P  Psoriasis
+L41-   Parapsoriasis
+L42-   Pityriasis rosea
+L42-   Fjällros
+L43-   Lichen planus
+L43-   Lichen
+L43-   Lichen ruber
+L50-   Urtikaria
+L50-   Nässelfeber
+L50-   Nässelutslag
+L51-   Erythema multiforme
+L51-   Stevens-Johnsons syndrom
+L52-   Erythema nodosum
+L52-   Knölros
+L53-P  Erytem
+L53-P  Hudrodnad
+L53-P  Toxiskt erytem
+L56-P  Ljusdermatit
+L56-P  Solbränna
+L56-P  Soleksem
+L56-P  Solsveda
+L570   Aktinisk keratos
+L58-P  Strålningsdermatit
+L600   Nageltrång
+L609P  Nagelsjukdom
+L63-   Alopecia areata
+L63-   Fläckformigt håravfall
+L65-P  Alopeci
+L65-P  Androgent håravfall
+L65-P  Håravfall
+L65-P  Ärrbildande håravfall
+L68-   Hypertrikos
+L68-   Hirsutism
+L70-   Akne
+L70-   Finnar
+L710   Perioral dermatit
+L719P  Rosacea
+L719P  Rhinophyma
+L72-   Aterom
+L72-   Follikulär cysta i hud och underhud
+L72-   Talgcysta
+L73-   Hidradenit
+L73-   Follikulit
+L73-   Follikulär sjukdom
+L73-   Hidroadenit
+L73-   Skäggsvamp
+L73-   Sycosis barbae
+L74-P  Svettkörtelsjukdom
+L74-P  Milaria
+L74-P  Värmeplitor
+L80-   Vitiligo
+L818   Tatuering
+L819P  Pigmentrubbning
+L819P  Café au lait-fläck
+L819P  Fräknar
+L819P  Lentigo
+L82-   Seborroisk keratos
+L82-   Seborroisk vårta
+L82-   Verruca seborrhoica
+L84-   Hudförhårdnad
+L84-   Kallositet
+L84-   Klavus
+L84-   Liktorn
+L85-P  Hudhorn
+L85-P  Epidermal förtjockning
+L89-   Trycksår
+L89-   Dekubitalsår
+L89-   Liggsår
+L89-   Ulcus decubitale
+L90-   Atrofisk hudsjukdom
+L90-   Atrofiskt ärr
+L90-   Lichen sclerosus et atrophicus
+L91-   Keloidärr
+L91-   Hypertrofisk hudsjukdom
+L91-   Hypertrofiskt ärr
+L91-   Keloid
+L92-   Främmandekroppsgranulom
+L92-   Granuloma annulare
+L92-   Granulomatös sjukdom i hud och underhud
+L93-P  Kutan lupus erythematosus
+L93-P  Lokaliserad bindvävssjukdom
+L95-   Vaskulit i huden
+L97-   Bensår
+L980   Pyogent granulom
+L980   Granuloma telangiectaticum
+L981   Dermatitis factitia
+L981   Artefakter
+L981   Factitiadermatit
+L981   Neurotiska exkoriationer
+L984   Kroniskt hudsår
+L989P  Hudsjukdom, ospecificerad
+M06-P  Reumatoid artrit
+M06-P  Juvenil reumatoid artrit
+M06-P  Seronegativ reumatoid artrit
+M06-P  Seropositiv reumatoid artrit
+M10-   Gikt
+M10-   Arthritis urica
+M10-   Idiopatisk gikt
+M10-   Podagra
+M10-   Sekundär gikt
+M11-   Kristallsynovit
+M11-   Familjär kondrokalcinos
+M11-   Kristallartropati
+M11-   Pyrofosfatartrit
+M13-P  Artrit
+M13-P  Inflammatorisk artropati
+M13-P  Ledinflammation
+M13-P  Monoartrit
+M13-P  Palindrom reumatism
+M13-P  Polyartrit
+M13-P  Purulent artrit
+M13-P  Reaktiv artrit
+M13-P  Reiters sjukdom
+M151P  Heberdens knutor
+M151P  Bouchards knutor
+M159P  Generaliserad artros
+M159P  Erosiv osteoartros
+M159P  Polyartros
+M159P  Posttraumatisk polyartros
+M16-   Höftledsartros
+M16-   Koxartros
+M16-   Posttraumatisk koxartros
+M17-   Knäartros
+M17-   Gonartros
+M17-   Posttraumatisk gonartros
+M18-   Artros i första karpometakarpalleden
+M18-   Artros i tummen
+M18-   Posttraumatisk artros
+M18-   Tumledsartros
+M19-   Artros
+M201   Hallux valgus
+M220P  Recidiverande patellarluxation
+M220P  Habituell patellarluxation
+M224   Chondromalacia patellae
+M224   Femuropatellärt syndrom
+M224   Patellalgi
+M232P  Menisksjukdom
+M232P  Meniskdegeneration
+M232P  Meniskskada
+M239P  Knäledssjukdom
+M239P  Fri kropp i knäled
+M239P  Instabil knäled
+M239P  Korsbandsskada
+M239P  Slapphet i knäligament
+M242   Ligamentslapphet
+M242   Gammal ligamentskada
+M245   Ledkontraktur
+M254P  Ledutgjutning
+M254P  Hemartros
+M254P  Hydrops
+M255   Ledvärk
+M255   Artralgi
+M256   Ledstelhet
+M259P  Ledsjukdom
+M259P  Recidiverande axelluxation
+M259P  Recidiverande ledluxation
+M315P  Jättecellsarterit
+M315P  Temporalisarterit
+M350   Sjögrens syndrom
+M350   Keratokonjunctivitis sicca
+M353   Polymyalgia reumatica
+M353   PMR
+M359P  Kollagenos
+M359P  Dermatopolymyosit
+M359P  Kollagen sjukdom
+M359P  Nekrotiserande vaskulopati
+M359P  Polyarteritis nodosa
+M359P  SLE
+M359P  Sklerodermi
+M359P  Systemisk autoimmun sjukdom
+M359P  Systemisk lupus erythematosus
+M411   Juvenil skolios
+M411   Juvenil kyfoskolios
+M411   Ungdomsskolios
+M420   Morbus Scheuermann
+M431   Spondylolistes
+M436   Tortikollis
+M436   Nackspärr
+M45-   Pelvospondylit
+M45-   Bechterews sjukdom
+M45-   Sakroileit
+M47-   Spondylos
+M47-   Artros i ryggraden
+M50-   Cervikalt diskbråck
+M50-   Diskbråck i halsrygg
+M51-   Diskbråck
+M51-   Lumbalt diskbråck
+M51-   Torakalt diskbråck
+M530   Cervikokranialt syndrom
+M530   Nackhuvudvärk
+M531   Cervikobrakialt syndrom
+M533   Koccygodyni
+M533   Svanskotsmärta
+M539P  Ryggsjukdom
+M539P  Kotkompression
+M539P  Kyfos
+M539P  Kyfoskolios
+M539P  Lordos
+M539P  Neuromuskulär skolios
+M539P  Osteokondros
+M539P  Osteomyelit i kota
+M539P  Ryggradskrökning
+M539P  Spinal stenos
+M539P  Spondylolys
+M542   Cervikalgi
+M542   Halsryggsmärta
+M543   Ischias
+M544   Lumbago-ischias
+M545   Lumbago
+M545   Ryggskott
+M546   Torakal ryggsmärta
+M549P  Ryggvärk
+M549P  Dorsalgi
+M549P  Ont i ryggen
+M549P  Radikulit
+M549P  Radikulopati
+M653   Trigger finger
+M653   Nodulär sensjukdom i finger
+M654   de Quervains sjukdom
+M654   Quervains sjukdom
+M654   Radial handledstenosynovit
+M659P  Tenosynovit
+M659P  Infektiös synovit
+M659P  Infektiös tenosynovit
+M659P  Senskideabscess
+M659P  Synovit
+M66-   Spontan senruptur
+M66-   Ruptur av synovia
+M674   Ganglion
+M674   Senknuta
+M700   Krepiterande handledssynovit
+M700   Peritendinitis crepitans
+M702   Olekranonbursit
+M702   Armbågsbursit
+M704   Prepatellarbursit
+M704   Skurgumsknä
+M706   Trokanterit
+M706   Trokanterbursit
+M706   Trokantertendinit
+M710   Varig bursit
+M710   Abscess i bursa
+M712   Bakercysta
+M720   Dupuytrens kontraktur
+M720   Palmar fascial fibromatos
+M722   Plantar fasciit
+M750   Frusen skuldra
+M750   Frozen shoulder
+M750   Periarthritis humeroscapularis
+M750   Periartrit i skulderleden
+M751   Supraspinatussyndrom
+M751   Supraspinatustendinit
+M752   Bicepstendinit
+M753   Kalkaxel
+M753   Peritendinitis calcarea
+M754   Impingementsyndrom i skulderled
+M755   Skulderbursit
+M755   Axelledsbursit
+M755   Subakromialbursit
+M755   Subdeltoideusbursit
+M759P  Skulderledssjukdom
+M766   Akillestendinit
+M766   Akillesbursit
+M766   Hälseneinflammation
+M771P  Epikondylit
+M771P  Golfarmbåge
+M771P  Lateral epikondylit
+M771P  Medial epikondylit
+M771P  Tennisarm
+M771P  Tennisarmbåge
+M779P  Entesopati
+M779P  Hälsporre
+M779P  Kalkaneussporre
+M779P  Kapsulit
+M779P  Ligamentsjukdom
+M779P  Metatarsalgi
+M779P  Periartrit
+M779P  Psoastendinit
+M779P  Tendinit
+M779P  Tibialis anterior-syndrom
+M790   Mjukdelsreumatism
+M790   Fibromyalgi
+M790   Fibrosit
+M790   Kroniskt idiopatiskt smärtsyndrom
+M790   Myofasciellt smärtsyndrom
+M791   Myalgi
+M791   Muskelvärk
+M799P  Mjukvävnadssjukdom
+M799P  Bursit UNS
+M799P  Muskelinflammation
+M799P  Myosit
+M799P  Pannikulit
+M80-   Osteoporos med fraktur
+M80-   Benskörhet med fraktur
+M80-   Kilkota p g a osteoporos
+M80-   Kotkompression p g a osteoporos
+M81-   Osteoporos
+M81-   Benskörhet
+M840P  Pseudartros
+M840P  Fördröjd frakturläkning
+M840P  Utebliven frakturläkning
+M843   Stressfraktur
+M844   Patologisk fraktur
+M844   Patologisk fraktur UNS
+M86-   Osteomyelit
+M86-   Benröta
+M89-P  Ben-brosksjukdom
+M89-P  Apofysit
+M89-P  Aseptisk osteonekros
+M89-P  Bencysta
+M89-P  Epifysit
+M89-P  Hyperostos
+M89-P  Osteomalaci hos vuxen
+M89-P  Pagets sjukdom
+M89-P  Reflexdystrofi i arm
+M89-P  Skulder-handsyndrom
+M912P  Coxa plana
+M912P  Juvenil osteokondros i femurhuvudet
+M912P  Legg-Calvé-Perthes sjukdom
+M912P  Perthes sjukdom
+M925   Schlatters sjukdom
+M925   Osgood-Schlatters sjukdom
+M929P  Juvenil osteokondros
+M929P  Ben-broskdegeneration hos unga
+M929P  Blounts sjukdom
+M929P  Kienböcks sjukdom
+M929P  Köhlers sjukdom
+M932   Osteochondritis dissecans
+M940   Tietzes syndrom
+M95-P  Förvärvad deformitet
+M95-P  Benlängdsskillnad
+M95-P  Blomkålsöra
+M95-P  Boutonnière-deformitet
+M95-P  Förvärvad extremitetsdeformitet
+M95-P  Hallux rigidus
+M95-P  Hallux varus
+M95-P  Knapphålsdeformitet
+M95-P  Pes planus
+M95-P  Plattfot
+M95-P  Svanhalsdeformitet
+M96-P  Muskuloskeletal sjukdom efter ingrepp
+M96-P  Biomekanisk skada
+M96-P  Muskuloskeletal sjukdom efter skada
+N04-   Nefrotiskt syndrom
+N05-P  Glomerulonefrit
+N12-P  Pyelonefrit
+N12-P  Njurbäckeninflammation
+N133P  Hydronefros
+N139P  Urinvägsreflux
+N19-P  Njursvikt
+N19-P  Akut njursvikt
+N19-P  Kronisk njursvikt
+N19-P  Njurinsufficiens
+N19-P  Uremi
+N20-   Njursten
+N20-   Nefrolithiasis
+N20-   Ureterolithiasis
+N20-   Uretärsten
+N21-   Blåssten
+N21-   Cystolithiasis
+N23-   Njurkolik
+N28-P  Nefropati
+N28-P  Förvärvad njurcysta
+N28-P  Njursjukdom
+N30-P  Cystit
+N30-P  Akut cystit
+N30-P  Blåskatarr
+N30-P  UVI
+N30-P  Urinvägsinfektion
+N32-P  Sjukdom i urinblåsan
+N32-P  Neuromuskulär blåsfunktionsrubbning
+N34-   Uretrit
+N34-   Uretrasyndrom
+N34-   Urinrörskatarr
+N35-   Uretrastriktur
+N35-   Urinrörsförträngning
+N36-P  Uretrasjukdom
+N36-P  Uretrakarunkel
+N394P  Urininkontinens
+N394P  Ansträngningsinkontinens
+N394P  Blandinkontinens
+N394P  Reflexinkontinens
+N394P  Stressinkontinens
+N394P  Trängningsinkontinens
+N394P  Urge inkontinens
+N394P  Överfyllnadsinkontinens
+N399P  Urinvägssjukdom
+N40-   Prostatahyperplasi
+N40-   Prostataförstoring
+N40-   Prostatahypertrofi
+N41-   Prostatit
+N41-   Akut prostatit
+N41-   Kronisk prostatit
+N42-   Prostatasjukdom
+N42-   Prostatism
+N433P  Hydrocele
+N433P  Vattenbråck
+N434   Spermatocele
+N44-   Testistorsion
+N45-   Epididymit
+N45-   Bitestikelinflammation
+N45-   Orkit
+N45-   Testikelinflammation
+N46-   Infertilitet hos man
+N47-   Fimosis
+N47-   Parafimosis
+N47-   Trång förhud
+N481P  Balanit
+N481P  Förhudsinflammation
+N483   Priapism
+N484   Impotens
+N50-P  Sjukdom i manliga genitalia
+N600   Mammarcysta
+N600   Cysta i bröstkörtel
+N602P  Fibroadenomatos
+N602P  Fibroadenos
+N602P  Mastopathia cystica
+N602P  Mastopati
+N61-   Mastit
+N61-   Bröstkörtelinflammation
+N62-   Mammarhypertrofi
+N62-   Gynekomasti
+N63-   Knuta i bröstkörtel
+N63-   Resistens i bröstkörtel
+N64-   Sjukdom i bröstkörtel
+N70-   Salpingit
+N70-   Ooforit
+N70-   Äggledarinflammation
+N70-   Äggstocksinflammation
+N71-   Endometrit
+N71-   Inflammation i livmodern
+N71-   Livmoderinflammation
+N72-   Cervicit
+N72-   Inflammation i livmoderhalsen
+N72-   Livmoderhalsinflammation
+N73-P  Pelvic inflammatory disease [PID]
+N73-P  Inflammatorisk sjukdom i det kvinnliga bäckenet
+N75-   Bartholinit
+N76-P  Vulvovaginit
+N76-P  Slidkatarr
+N80-   Endometrios
+N811   Cystocele
+N811   Prolaps av främre vaginalvägg
+N816   Rektocele
+N816   Prolaps av bakre vaginalvägg
+N819P  Uterovaginal prolaps
+N819P  Framfall
+N819P  Livmoderframfall
+N82-   Fistel i kvinnliga genitalia
+N832P  Ovarialcysta
+N841   Cervixpolyp
+N86-   Erytroplaki
+N86-   Portioektropi
+N86-   Portioerosion
+N87-   Cervixdysplasi
+N90-P  Sjukdom i kvinnliga genitalia
+N90-P  Kraurosis vulvae
+N910   Primär amenorré
+N911P  Sekundär amenorré
+N915P  Oligomenorré
+N915P  Hypomenorré
+N92-   Menometrorragi
+N92-   Menorragi
+N92-   Metrorragi
+N92-   Polymenorré
+N93-   Postkoital blödning
+N93-   Genombrottsblödning
+N93-   Kontaktblödning
+N940   Ovulationssmärta
+N940   Mittelschmertz
+N940   Ägglossningssmärta
+N941P  Dyspareuni
+N941P  Smärta vid samlag
+N941P  Vaginism
+N943   Premenstruellt spänningssyndrom
+N943   PMS
+N946P  Dysmenorré
+N946P  Smärtsam menstruation
+N950   Postmenopausal blödning
+N952   Atrofisk vaginit
+N959P  Klimakteriebesvär
+N97-P  Infertilitet hos kvinna
+N99-P  Komplikation efter ingrepp i urin- och könsorgan
+O00-   Extrauteringraviditet
+O00-   Utomkvedshavandeskap
+O01-P  Mola
+O01-P  Druvbörd
+O03-P  Spontanabort
+O03-P  Missfall
+O04-P  Inducerad abort
+O04-P  Legal abort
+O120P  Graviditetsödem
+O121   Proteinuri under graviditet
+O14-P  Preeklampsi
+O14-P  Graviditetstoxikos
+O15-   Eklampsi
+O15-   Graviditetskramper
+O16-P  Graviditetshypertoni
+O16-P  Tidigare konstaterad hypertoni
+O20-   Tidig graviditetsblödning
+O20-   Hotande missfall
+O21-   Hyperemesis gravidarum
+O21-   Ihållande graviditetskräkning
+O24-   Graviditetsdiabetes
+O267   Symfyseolys
+O267   Foglossning
+O269P  Graviditetskomplikation
+O30-P  Flerbördsgraviditet
+O32-P  Komplicerande fosterläge
+O33-P  Bäckenträngsel
+O34-P  Förlossningshinder
+O36-P  Problem hos fostret
+O44-   Placenta praevia
+O44-   Föreliggande moderkaka
+O45-   Ablatio placentae
+O45-   För tidig avlossning av moderkakan
+O45-   Placentaavlossning
+O47-P  Hotande förtidsbörd
+O47-P  Förvärkar
+O48-   Överburenhet
+O75-P  Förlossningskomplikation
+O80-   Okomplicerad förlossning
+O80-   Normal förlossning
+O86-P  Puerperal infektion
+O86-P  Infektion under barnsängstiden
+O90-P  Puerperal komplikation
+O91-   Mjölkstockning
+O91-   Bröstböld
+O91-   Puerperal mastit
+O92-   Amningsproblem
+O92-   Laktationsrubbning
+O99-P  Obstetrisk komplikation
+P01-P  Perinatalt problem sekundärt till maternell faktor
+P05-   Intrauterin tillväxthämning
+P07-   Prematuritet
+P08-   Postmaturitet
+P143P  Plexus brachialis-skada
+P15-P  Förlossningsskada
+P28-P  Perinatal andningsrubbning
+P29-   Perinatal cirkulationsrubbning
+P38-   Neonatal navelinfektion
+P391   Neonatal konjunktivit
+P399P  Perinatal infektion
+P54-P  Perinatal blödning
+P55-P  Perinatal hemolytisk sjukdom
+P55-P  Rh-immunisering
+P59-P  Gulsot hos nyfödd, fysiologisk
+P59-P  Kärnikterus
+P59-P  Perinatal ikterus
+P92-   Uppfödningsproblem hos nyfödd
+P96-P  Perinatal sjukdom
+Q03-   Medfödd hydrocefalus
+Q03-   Medfödd vattenskalle
+Q05-   Spina bifida
+Q05-   Meningocele
+Q05-   Myelomeningocele
+Q05-   Ryggmärgsbråck
+Q07-P  Missbildning i nervsystemet
+Q15-P  Missbildning av öga
+Q17-P  Missbildning av öra
+Q18-   Missbildning av ansikte och hals
+Q18-   Halscysta
+Q24-P  Hjärtmissbildning
+Q24-P  Medfödd hjärtsjukdom
+Q28-P  Kärlmissbildning
+Q28-P  Missbildning av cirkulationsorgan
+Q314   Laryngomalaci
+Q314   Larynxstridor
+Q34-P  Missbildning av andningsorgan
+Q35-   Gomspalt
+Q36-   Läppspalt
+Q37-   Läpp-gomspalt
+Q381   Tungband
+Q400   Medfödd pylorusstenos
+Q400   Medfödd pylorostenos
+Q400   Pylorospasm
+Q400   Pylorusspasm
+Q430   Meckels divertikel
+Q431   Medfödd megakolon
+Q431   Hirschsprungs sjukdom
+Q45-P  Missbildning av matsmältningsorgan
+Q53-   Retentio testis
+Q53-   Icke nedstigen testikel
+Q53-   Kryptorkidism
+Q53-   Kryptorkism
+Q54-   Hypospadi
+Q57-P  Missbildning av könsorgan
+Q57-P  Genital missbildning
+Q61-   Cystnjuresjukdom
+Q61-   Njurcysta
+Q64-P  Missbildning av urinorgan
+Q65-   Höftmissbildning
+Q65-   Preluxation av höftleden
+Q66-   Fotmissbildning
+Q74-P  Extremitetsmissbildning
+Q79-P  Missbildning av muskler och skelett
+Q79-P  Muskuloskeletal missbildning
+Q80-   Medfödd iktyos
+Q80-   Fiskfjällssjuka
+Q80-   Ichtyosis congenita
+Q80-   Kongenital iktyos
+Q822   Urticaria pigmentosa
+Q822   Mastocytos
+Q825   Medfött hemangiom
+Q825   Födelsemärke
+Q825   Nevus flammeus
+Q825   Smultronmärke
+Q825   Storkbett
+Q829P  Hudmissbildning
+Q829P  Medfödd hudmissbildning
+Q83-   Missbildning av bröstkörtel
+Q83-   Medfödd missbildning av bröstkörtel
+Q850   Neurofibromatos
+Q850   von Recklinghausens sjukdom
+Q860   Fetalt alkoholsyndrom
+Q860   Alkoholfetopati
+Q893   Situs inversus
+Q899P  Missbildning
+Q899P  Medfödd deformitet
+Q90-   Downs syndrom
+Q96-   Turners syndrom
+Q984P  Klinefelters syndrom
+Q99-P  Kromosomrubbning
+R000   Takykardi
+R000   Snabb hjärtrytm
+R001   Bradykardi
+R001   Långsam hjärtrytm
+R002   Hjärtklappning
+R002   Palpitationer
+R002   Störande upplevelse av hjärtslag
+R008   Onormal hjärtrytm
+R008   Onormala hjärtslag
+R01-   Benignt hjärtbiljud
+R01-   Avvikande hjärtauskultationsfynd
+R01-   Dova hjärttoner
+R01-   Funktionellt hjärtblåsljud
+R01-   Prekordiellt gnidningsljud
+R02-   Gangrän
+R030   Uppmätt förhöjt blodtryck
+R030   Förhöjt blodtryck tillfälligt
+R030   Högt blodtryck som tillfälligt undersökningsfynd
+R031   Uppmätt lågt blodtryck
+R031   Lågt blodtryck tillfälligt
+R040   Näsblödning
+R040   Epistaxis
+R042   Hemoptys
+R042   Blodblandad upphostning
+R042   Blodhosta
+R049P  Blödning från luftvägar
+R05-   Hosta
+R05-   Tussis
+R060   Dyspné
+R060   Andfåddhet
+R060   Andnöd
+R060   Ytlig andning
+R065   Snarkning
+R065   Munandning
+R066   Hicka
+R066   Singultus
+R068P  Andningsrubbning
+R068P  Affektapné hos barn
+R068P  Apné
+R068P  Kvävningskänsla
+R07-P  Bröstsmärta
+R07-P  Bröstsmärta vid andning
+R07-P  Pleurasmärta
+R07-P  Prekordial smärta
+R07-P  Strupsmärta
+R098P  Specifika symtom från respirationsorgan
+R098P  Andningsstillestånd
+R098P  Asfyxi
+R098P  Onormal upphostning
+R100   Akut buk
+R100   Akut buksmärta
+R100   Svår buksmärta
+R101   Smärta i övre delen av buken
+R101   Epigastralgi
+R101   Smärta i epigastriet
+R103P  Smärta i nedre delen av buken
+R104P  Buksmärta
+R104P  Magknip
+R104P  Ömhet i buken
+R108P  Spädbarnskolik
+R108P  Tremånaderskolik
+R110P  Illamående
+R110P  Nausea
+R111P  Kräkningar
+R111P  Vomitus
+R12-   Halsbränna
+R12-   Pyrosis
+R13-   Sväljningssvårigheter
+R13-   Dysfagi
+R14-   Flatulens
+R14-   Gasspänning i buk
+R14-   Väderspänning
+R15-   Fecesinkontinens
+R15-   Avföringsinkontinens
+R15-   Enkopres UNS
+R16-   Lever- och mjältförstoring
+R16-   Hepatomegali
+R16-   Hepatosplenomegali
+R16-   Leverförstoring
+R16-   Mjältförstoring
+R16-   Splenomegali
+R17-   Gulsot
+R17-   Ikterus
+R18-   Ascites
+R18-   Vätska i bukhålan
+R190   Resistens i buk
+R190   Abdominell resistens
+R190   Knöl i buk
+R190   Svullnad i buk
+R194   Ändrade avföringsvanor
+R196   Dålig andedräkt
+R196   Foetor ex ore
+R196   Halitos
+R198P  Specifika matsmältningsorganssymtom
+R198P  Défense
+R198P  Onormala tarmljud
+R20-   Känselstörning i hud
+R20-   Bränningar
+R20-   Domningar
+R20-   Dysestesi
+R20-   Myrkrypningar
+R20-   Parestesi
+R20-   Sensibilitetsrubbning
+R21-   Hudutslag
+R21-   Exantem
+R22-   Resistens i huden
+R22-   Knöl i huden
+R22-   Resistens i hud och underhudsvävnad
+R22-   Svullnad i huden
+R230   Cyanos
+R233   Petekier
+R233   Ekkymoser
+R233   Spontana punktformiga blödningar
+R234   Fjällande hud
+R234   Deskvamation av hud
+R234   Indurerad hud
+R238P  Hudförändring
+R251   Tremor
+R251   Muskeldarrningar
+R252   Kramp
+R252   Muskelkramp
+R252   Vadkramp
+R258P  Ofrivilliga rörelser
+R258P  Fascikulationer
+R258P  Ryckningar
+R26-P  Gångrubbning
+R26-P  Ataktisk gång
+R26-P  Paralytisk gång
+R26-P  Spastisk gång
+R292   Reflexrubbning
+R298P  Neuromuskuloskeletalt symtom
+R298P  Knäppande höft
+R298P  Muskuloskeletalt symtom
+R298P  Neurologiskt symtom
+R298P  Onormal kroppshållning
+R30-   Smärta vid vattenkastning
+R30-   Smärtsam miktion
+R30-   Tenesmer i urinblåsa
+R31-   Hematuri
+R31-   Blod i urin
+R32-   Urininkontinens, ospecificerad
+R32-   Enures UNS
+R33-   Urinretention
+R33-   Urinstämma
+R35-   Polyuri
+R35-   Nykturi
+R35-   Pollakisuri
+R35-   Täta urinträngningar
+R35-   Täta urintömningar
+R36-   Flytning från uretra
+R36-   Fluor urethrae
+R36-   Flytning från penis
+R391   Miktionssvårigheter
+R391   Svag urinstråle
+R391   Vattenkastningsbesvär
+R398P  Anuri
+R398P  Ingen eller liten urinmängd
+R398P  Oliguri
+R398P  Prerenal uremi
+R40-   Medvetandesänkning
+R40-   Koma ospecificerat
+R40-   Medvetslöshet
+R40-   Somnolens
+R40-   Stupor
+R40-   Sänkt vakenhetsgrad
+R410   Desorientering
+R410   Konfusion
+R418P  Amnesi
+R418P  Minnessvårigheter
+R42-   Yrsel
+R42-   Vertigo
+R44-P  Perceptionsrubbning
+R44-P  Anosmi
+R44-P  Hallucinationer ospecificerade
+R44-P  Lukt- och smakrubbning
+R45-P  Symtom avseende känsloläge
+R45-P  Dysfori
+R45-P  Hyperaktivitet
+R45-P  Nervositet
+R45-P  Symtom avseende uppträdande
+R47-   Talsvårighet
+R47-   Afasi
+R47-   Dysartri
+R47-   Dysfasi
+R48-   Läs- och skrivsvårigheter
+R48-   Apraxi
+R48-   Dyslexi
+R48-   Symboldysfunktion
+R490   Heshet
+R490   Dysfoni
+R498P  Röststörning
+R498P  Afoni
+R498P  Förändring av rösten
+R50-   Oklar feber
+R50-   Febris causae ignotae
+R50-   Pyrexi
+R51-   Huvudvärk
+R51-   Ansiktssmärta
+R52-   Smärta
+R52-   Generaliserad smärta
+R52-   Kronisk behandlingsresistent smärta
+R53-   Trötthet
+R53-   Allmän fysisk konditionsnedsättning
+R53-   Asteni
+R54-   Ålderssvaghet
+R54-   Senilitet
+R55-   Svimning
+R55-   Blackout
+R55-   Synkope
+R56-   Feberkramp
+R56-   Krampanfall
+R57-   Chock, ospecificerad
+R57-   Cirkulatorisk chock
+R57-   Endotoxinchock
+R57-   Hypovolemisk chock
+R57-   Kardiogen chock
+R57-   Sviktande perifer cirkulation
+R58-   Blödning
+R59-   Lymfkörtelförstoring
+R59-   Svullna körtlar
+R60-   Ödem
+R60-   Vätskeretention
+R61-   Överdriven svettning
+R61-   Handsvett
+R61-   Hyperhidros
+R61-   Nattsvett
+R62-   Tillväxtrubbning
+R62-   Failure to thrive
+R62-   Sen att gå
+R62-   Sen att tala
+R62-   Utebliven förväntad kroppslig utveckling
+R62-   Utebliven viktökning
+R630   Anorexi
+R630   Aptitlöshet
+R638P  Symtom relaterade till födo- och vätskeintag
+R638P  Bristfälliga matvanor
+R638P  Intorkning
+R638P  Polydipsi och polyfagi
+R638P  Sjukligt stegrad hunger eller törst
+R638P  Ätproblem
+R64-   Kakexi
+R64-   Utmärgling
+R682   Muntorrhet
+R688P  Okänd orsak till sjuklighet
+R688P  Irritabelt spädbarn
+R688P  Klubbfingrar
+R688P  Sjukdom utan diagnos icke specificerad till lokalisation eller organsystem
+R688P  Skrikigt spädbarn
+R688P  Urglasnaglar
+R700   SR-utredning
+R700   Förhöjd sänka
+R73-   Hyperglykemi
+R73-   Latent diabetes
+R73-   Nedsatt glukostolerans
+R73-   Onormal glukostoleranstest
+R79-P  Onormal blodkemi
+R79-P  Onormalt kemiskt fynd i blod
+R79-P  Onormalt levervärde
+R82-P  Onormalt urinfynd
+R89-P  Onormalt provfynd
+R89-P  Onormala fynd i prov från de kvinnliga könsorganen
+R89-P  Onormalt cervixutstryk
+R93-P  Onormalt radiologiskt fynd
+R93-P  Avvikande röntgenfynd
+R94-   Onormalt funktionsundersökningsresultat
+R94-   Onormalt EKG
+R94-   Onormalt njurfunktionstest
+R99-P  Dödsfall med okänd orsak
+R99-P  Funnen död
+R99-P  Mors subita
+R99-P  Plötslig spädbarnsdöd
+S02-   Kraniefraktur
+S02-   Näsbensfraktur
+S02-   Skallbasfraktur
+S02-   Skallfraktur
+S02-   Tandfraktur
+S02-   Underkäksfraktur
+S02-   Överkäksfraktur
+S05-   Ögonskada
+S05-   Avskrapning på kornea
+S05-   Penetrerande sår i ögongloben
+S05-   Skada på konjunktiva
+S05-   Traumatisk enukleation
+S060   Hjärnskakning
+S060   Commotio cerebri
+S092   Traumatisk trumhinneruptur
+S092   Traumatisk trumhinneperforation
+S12-   Halskotfraktur
+S12-   Fraktur på halskotpelaren
+S134   Distorsion i halskotpelaren
+S134   Whiplash-skada
+S220P  Bröstkotsfraktur
+S220P  Fraktur på bröstkotpelaren
+S220P  Multipla frakturer på bröstkotpelaren
+S222   Sternumfraktur
+S222   Bröstbensfraktur
+S223P  Revbensfraktur
+S320   Ländkotsfraktur
+S320   Fraktur på ländkotpelaren
+S328P  Bäckenfraktur
+S328P  Acetabulumfraktur
+S328P  Koccyxfraktur
+S328P  Multipla frakturer på ländkotpelaren och bäckenet
+S328P  Sakrumfraktur
+S420   Nyckelbensfraktur
+S420   Klavikelfraktur
+S422   Proximal humerusfraktur
+S422   Fraktur på collum anatomicum
+S422   Fraktur på collum chirurgicum
+S422   Fraktur på tuberositas major
+S429P  Fraktur på skuldergördel
+S429P  Fraktur på humerusskaftet
+S429P  Fraktur på skuldra
+S430   Luxation i skulderled
+S430   Axelledsluxation
+S430   Axelluxation
+S430   Glenohumeralledsluxation
+S46-   Muskulär skada kring skuldra
+S525   Distal radiusfraktur
+S525   Colles fraktur
+S525   Smiths fraktur
+S530   Luxation av radiushuvudet
+S530   Pigluxation
+S620   Skafoideumfraktur i hand
+S624P  Metakarpalbensfraktur
+S624P  Mellanhandsfraktur
+S627P  Fraktur på finger
+S631P  Fingerledsluxation
+S635   Handledsdistorsion
+S635   Distorsion i interkarpalled
+S635   Distorsion i radiokarpalled
+S636   Distorsion i finger
+S636   Distorsion i metakarpofalangealled
+S636   Distorsion i tumme
+S720P  Lårbenshalsfraktur
+S720P  Kollumfraktur
+S720P  Höftfraktur
+S729P  Lårbensfraktur
+S729P  Femurfraktur
+S820   Patellarfraktur
+S820   Knäskålsfraktur
+S822P  Underbensfraktur
+S822P  Tibiafraktur
+S828P  Malleolarfraktur
+S828P  Fotledsfraktur
+S832   Meniskruptur
+S832   Lateral meniskruptur
+S832   Medial meniskruptur
+S836P  Knädistorsion
+S836P  Distorsion av knäligament
+S836P  Luxation av patella
+S836P  Luxation i knäled
+S836P  Ruptur av knäligament
+S860   Hälseneskada
+S860   Skada på akillessena
+S923   Metatarsalbensfraktur
+S923   Mellansfotsfraktur
+S925P  Tåfraktur
+S929P  Fotfraktur
+S934P  Fotledsdistorsion
+S934P  Fotledsluxation
+S934P  Stukning av fotled
+T00-P  Skrubbsår
+T00-P  Blåmärke
+T00-P  Insektsbett
+T00-P  Kontusion
+T00-P  Ytlig skada
+T01-P  Sårskada
+T01-P  Djurbett
+T01-P  Klämskada
+T02-P  Fraktur
+T03-P  Distorsion
+T03-P  Luxation
+T05-P  Traumatisk amputation
+T07-P  Skada
+T07-P  Trauma
+T15-   Främmande kropp i öga
+T16-   Främmande kropp i öra
+T16-   Främmande kropp i hörselgång
+T17-   Främmande kropp i andningsvägar
+T17-   Asfyxi orsakad av främmande kropp
+T17-   Inhalation av uppkräkt maginnehåll
+T17-   Inhalation av vätska
+T18-   Främmande kropp i matsmältningsorgan
+T19-   Främmande kropp i urinorgan/könsorgan
+T30-P  Brännskada
+T30-P  Frätskada
+T30-P  Kemisk frätskada
+T35-P  Köldskada
+T35-P  Multipla köldskador
+T50-P  Läkemedelsförgiftning
+T50-P  Felaktig substans given eller intagen av misstag
+T50-P  Felmedicinering
+T50-P  Överdosering av läkemedel
+T65-P  Förgiftning
+T71-   Kvävning
+T71-   Kvävning (genom strypning)
+T71-   Systemisk syrebrist
+T74-   Misshandelssyndrom
+T74-   Barnmisshandel
+T74-   Effekt av försummelse och vanvård
+T74-   Fysisk misshandel
+T74-   Kvinnomisshandel
+T74-   Psykisk misshandel
+T74-   Sexuellt övergrepp
+T751   Drunkningstillbud
+T751   Drunkning
+T751   Simmarkramp
+T752   Vibrationsskada
+T752   Effekter av vibration
+T752   Pneumatic hammer syndrome
+T752   Traumatiskt vasospastiskt syndrom
+T752   Yrsel orsakad av infraljud
+T753   Rörelsesjuka
+T753   Luftsjuka
+T753   Sjösjuka
+T753   Åksjuka
+T782P  Anafylaxi
+T782P  Allergisk chock
+T782P  Anafylaktisk chock
+T782P  Angioneurotiskt ödem
+T782P  Quinckeödem
+T784   Allergi
+T784   Allergisk reaktion
+T784   Idiosynkrasi
+T784   Överkänslighet
+T789P  Ogynnsam effekt
+T789P  Andra ogynnsamma reaktioner på födoämne som ej klassificeras annorstädes
+T789P  Effekt av yttre orsak
+T789P  Strålningssjuka
+T789P  Värmesynkope
+T79-   Tidig komplikation till trauma
+T79-   Fettemboli
+T79-   Kompartmentsyndrom
+T79-   Luftemboli
+T79-   Traumatisk chock
+T79-   Traumatisk ischemi i muskel
+T79-   Traumatiskt subkutant emfysem
+T79-   Volkmanns ischemiska kontraktur
+T80-   Komplikation efter injektion
+T80-   Komplikation efter infusion
+T80-   Komplikation efter perfusion
+T80-   Komplikation efter tranfusion
+T85-P  Komplikation av inre proteser
+T85-P  Komplikation av implantat
+T85-P  Komplikation av transplantat
+T88-P  Komplikation till kirurgisk åtgärd och medicinsk vård
+T88-P  Komplikation till kirurgisk åtgärd
+T88-P  Komplikation till medicinsk vård
+T88-P  Komplikationer specifika för replantation (återfastsättning) och amputation
+T98-P  Sena besvär av skada
+T98-P  Sena besvär till skador klassificerade S02.- -- T88.-P
+Y579   Läkemedel eller drog i terapeutiskt bruk som orsak till ogynnsam effekt
+Z000   Allmän medicinsk undersökning
+Z000   Hälsokontroll
+Z000   Hälsoundersökning
+Z001   Hälsoövervakning av barn
+Z001   Undersökning av barns utveckling
+Z014   Gynekologisk hälsokontroll
+Z014   Cellprov
+Z014   Cervixutstryk
+Z019P  Speciell rutinundersökning
+Z019P  Mammografi
+Z02-   Undersökning för intyg
+Z02-   Anställningsundersökning
+Z02-   Undersökning för försäkring
+Z02-   Undersökning för körkort
+Z02-   Utfärdande av dödsbevis
+Z02-   Utfärdande av friskintyg
+Z02-   Utfärdande av invaliditetsintyg
+Z03-   Medicinsk bedömning för misstänkt sjukdom
+Z03-   Observation för misstänkt sjukdom
+Z04-   Undersökning av medikolegala skäl
+Z04-   Observation
+Z04-   Rättsintyg
+Z09-P  Medicinsk övervakning efter behandling
+Z10-   Hälsokontroll av definierad befolkningsgrupp
+Z10-   Hälsokontroll av institutionsboende
+Z10-   Hälsokontroll av skolbarn
+Z13-P  Hälsokontroll avseende specificerad sjukdom
+Z13-P  Screening
+Z22-P  Exponering för smittsam sjukdom
+Z22-P  Smittbärarskap
+Z27-P  Vaccination
+Z28-   Ej genomförd vaccination
+Z28-   Vaccination ej genomförd p g a kontraindikation
+Z28-   Vaccination ej genomförd p g a patientens önskemål
+Z29-   Profylaktisk åtgärd mot smittsam sjukdom
+Z29-   Förebyggande immunterapi
+Z29-   Immunglobulinbehandling
+Z29-   Isolering
+Z29-   Kemoprofylax
+Z300P  Preventivmedelsrådgivning
+Z300P  P-pillerförskrivning
+Z300P  Råd om familjeplanering
+Z300P  Övervakning av preventivläkemedel
+Z301P  Intrauterint preventivmedel
+Z301P  Borttagande av spiral
+Z301P  Insättning av spiral
+Z301P  Kontroll av spiral
+Z303   "Dagen-efter-piller"
+Z309P  Födelsekontroll
+Z31-   Fertilitetsfrämjande åtgärd
+Z31-   Fertilitetsundersökning
+Z31-   Genetisk rådgivning
+Z32-P  Graviditetsundersökning
+Z32-P  Graviditetstest
+Z34-P  Mödrahälsovård
+Z34-P  Graviditetsövervakning
+Z34-P  Prenatal undersökning
+Z34-P  Övervakning av riskgraviditet
+Z515   Palliativ vård
+Z54-P  Vårdåtgärd
+Z54-P  Kirurgisk vårdåtgärd
+Z54-P  Medicinsk vårdåtgärd
+Z54-P  Rehabilitering
+Z65-P  Socialmedicinska problem
+Z65-P  Arbetsmiljöproblem
+Z65-P  Psykosociala problem
+Z65-P  Relationsproblem
+Z70-   Sex- och samlevnadsrådgivning
+Z710   Konsultation för annan
+Z710   Konsultation som berör annan än patienten
+Z710   Råd eller behandling för tredje part
+Z711   Oro för sjukdom
+Z711   "Worried well"
+Z712   Förklaring av undersökningsfynd
+Z712   Konsultation för "second opinion"
+Z719P  Rådgivning, ospecificerad
+Z719P  Medicinsk rådgivning
+Z719P  Samtal
+Z719P  Terapeutisk rådgivning
+Z72-   Livsstilsproblem
+Z73-   Livssituationsproblem
+Z73-   Bristande coping
+Z73-   Typ A-beteende
+Z73-   Utbrändhet
+Z74-   Beroende av vårdgivare
+Z74-   Behov av kontinuerlig övervakning
+Z74-   Hjälpbehov i hemmet
+Z74-   Sängbunden
+Z75-   Vård på fel vårdnivå
+Z75-   Väntetid för vård
+Z75-   Vård ej tillgänglig
+Z760   Receptförnyelse
+Z760   Förnyad förskrivning av glasögon
+Z760   Förnyad förskrivning av hjälpmedel
+Z760   Förnyad förskrivning av läkemedel
+Z769P  Vårdkontakt, ospecificerad
+Z769P  Beroende av njurdialys
+Z769P  Beroende av respirator
+Z769P  Beroende av tekniska hjälpmedel
+Z769P  Kontakt med vården under icke specificerade förhållanden
+Z769P  Tillstånd med pacemaker
+Z769P  Tillstånd med stomi
+Z769P  Tillstånd med transplantat
+Z91-P  Potentiell hälsorisk i familjeanamnes
+Z91-P  Väsentlig medicinsk behandling i sjukhistoria
