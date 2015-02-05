@@ -300,4 +300,13 @@ class HanteraUtkast {
         Thread.sleep(5000)
         true
     }
+
+    def gaTillEditIntygMedIntygsid(String id) {
+        Browser.drive {
+            go "/web/dashboard#/fk7263/edit/${id}"
+            waitFor {
+                at VisaFk7263Page
+            }
+        }
+    }
 }
