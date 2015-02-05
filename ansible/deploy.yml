@@ -3,7 +3,7 @@
 - hosts: tomcat
   sudo: yes 
   vars: 
-    version: 3.0.0-b31
+    version: 3.0.0-b33
     config_version: master
 
   roles:
