@@ -94,10 +94,6 @@ describe('UnhandledQACtrlSpec', function() {
 
     describe('UnhandledQACtrl listing and filtering of QAs ', function() {
 
-        beforeEach(function() {
-            spyOn($location, 'url').and.callThrough();
-        });
-
         it('should get and fill currentList with 3 entries when savedFilterQuery is not set', function() {
             $cookieStore.remove('savedFilterQuery');
             $httpBackend.expectGET('/api/fragasvar/sok?pageSize=10&questionFromFK=false&questionFromWC=false&startFrom=0&vantarPa=ALLA_OHANTERADE').respond(200,
@@ -120,6 +116,7 @@ describe('UnhandledQACtrlSpec', function() {
         });
 
         it('should try to view an intyg when user clicks Visa on a intyg in the list', function() {
+            spyOn($location, 'url').and.callThrough();
             $scope.openIntyg(testIntygsReferens);
             expect($location.url).toHaveBeenCalledWith('/fragasvar/' + testIntygsReferens.intygsTyp.toLowerCase() +
                 '/' +
@@ -133,7 +130,6 @@ describe('UnhandledQACtrlSpec', function() {
         });
 
         it('should reset filter parameters and delete saved cookie if user clicks reset', function() {
-
             $scope.filterQuery = {};
             $scope.resetFilterForm();
             expect($scope.filterQuery).toEqual(testDefaultQuery);

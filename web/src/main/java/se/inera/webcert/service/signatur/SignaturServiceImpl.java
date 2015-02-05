@@ -20,7 +20,6 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.eid.services.SignatureService;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.utkast.model.Signatur;
@@ -56,9 +55,6 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private IntygService intygService;
-
-    @Autowired
-    private SignatureService signatureService;
 
     @Autowired
     private LogService logService;

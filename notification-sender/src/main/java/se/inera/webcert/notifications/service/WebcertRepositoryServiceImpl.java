@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.notifications.routes.RouteHeaders;
+import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.webcert.persistence.utkast.model.Utkast;
@@ -20,6 +21,9 @@ import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
  */
 public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
 
+    private static final String FK = "FK";
+    private static final String WC = "WC";
+
     private static final Logger LOG = LoggerFactory.getLogger(WebcertRepositoryService.class);
 
     @Autowired
@@ -32,24 +36,32 @@ public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
     private IntegreradEnhetRepository integreradEnhetRepository;
 
     public Long countNbrOfQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
-        return fragaSvarRepository.countByIntyg(intygsId);
+        Long res = fragaSvarRepository.countByIntygAndFragestallare(intygsId, FK);
+        LOG.debug("antalFragor = {}", res);
+        return res;
     }
 
     public Long countNbrOfAnsweredQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
-        return fragaSvarRepository.countAnsweredByIntyg(intygsId);
+        Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.ANSWERED, WC);
+        LOG.debug("antalSvar = {}", res);
+        return res;
     }
 
     public Long countNbrOfHandledQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
-        return fragaSvarRepository.countHandledByIntyg(intygsId);
+        Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.CLOSED, FK);
+        LOG.debug("antalHanteradeFragor = {}", res);
+        return res;
     }
 
     public Long countNbrOfHandledAndAnsweredQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
-        return fragaSvarRepository.countHandledAndAnsweredByIntyg(intygsId);
+        Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.CLOSED, WC);
+        LOG.debug("antalHanteradeSvar = {}", res);
+        return res;
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see se.inera.webcert.notifications.service.IntygRepositoryService#getIntygsUtkast(java.lang.String)
      */
     @Override

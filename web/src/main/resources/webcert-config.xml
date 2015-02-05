@@ -16,7 +16,6 @@
   <import resource="classpath:/repository-context.xml" />
   <import resource="security/securityContext.xml" />
   <import resource="classpath:/hsa-services-config.xml" />
-  <import resource="classpath:/signature-services-config.xml" />
   <import resource="classpath:/pu-services-config.xml" />
   <import resource="jms-config.xml" />
   <import resource="ws-config.xml" />

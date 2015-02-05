@@ -114,7 +114,7 @@
   <!-- =============================================================== -->
   <!-- The wc-security-prod profile only supports Säkerhetstjänst login -->
   <!-- =============================================================== -->
-  <beans profile="wc-security-prod">
+  <beans profile="prod,wc-security-prod">
     <security:http entry-point-ref="samlEntryPoint" pattern="/saml/**">
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
@@ -146,7 +146,7 @@
     </bean>
   </beans>
 
-  <beans profile="wc-security-test,wc-security-prod">
+  <beans profile="prod,wc-security-test,wc-security-prod">
     <bean id="samlFilter" class="org.springframework.security.web.FilterChainProxy">
       <security:filter-chain-map request-matcher="ant">
         <security:filter-chain pattern="/saml/login/**" filters="samlEntryPoint"/>

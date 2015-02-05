@@ -19,7 +19,7 @@ class AnonymiseraWebCertDatabas {
     static void main(String[] args) {
         println "Starting anonymization"
         
-        int numberOfThreads = args.length > 0 ? args[0] : 4
+        int numberOfThreads = args.length > 0 ? Integer.parseInt(args[0]) : 5
         long start = System.currentTimeMillis()
         AnonymiseraPersonId anonymiseraPersonId = new AnonymiseraPersonId()
         AnonymiseraHsaId anonymiseraHsaId = new AnonymiseraHsaId()

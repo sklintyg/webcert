@@ -29,7 +29,7 @@ import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({"dev","unit-testing"})
+@ActiveProfiles({ "dev", "unit-testing" })
 @Transactional
 public class FragaSvarRepositoryTest {
 
@@ -40,7 +40,7 @@ public class FragaSvarRepositoryTest {
     private EntityManager em;
 
     private static final String INTYGS_ID = "abc123";
-    
+
     private LocalDateTime FRAGE_SIGN_DATE = new LocalDateTime("2013-03-01T11:11:11");
     private LocalDateTime FRAGE_SENT_DATE = new LocalDateTime("2013-03-01T12:00:00");
     private LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2013-04-01T11:11:11");
@@ -61,7 +61,6 @@ public class FragaSvarRepositoryTest {
     private static String HSA_2_NAMN = "B HSA NAMN 2";
     private static String HSA_3_NAMN = "C HSA NAMN 3";
     private static String HSA_4_NAMN = "D HSA NAMN 4";
-
 
     @Test
     public void testFindOne() {
@@ -91,21 +90,21 @@ public class FragaSvarRepositoryTest {
         assertEquals(3, result.size());
 
     }
-    
+
     @Test
     public void testFindByEnhetsIdDontMatchClosed() {
 
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID,Status.CLOSED));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.CLOSED));
-        
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.CLOSED));
 
-        List<FragaSvar> result = fragasvarRepository.findByEnhetsId(Arrays.asList(ENHET_1_ID,ENHET_2_ID, ENHET_3_ID));
+        List<FragaSvar> result = fragasvarRepository.findByEnhetsId(Arrays.asList(ENHET_1_ID, ENHET_2_ID, ENHET_3_ID));
         assertEquals(3, result.size());
 
     }
+
     @Test
     public void testcountUnhandledForEnhetsIds() {
 
@@ -113,16 +112,15 @@ public class FragaSvarRepositoryTest {
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.CLOSED));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.CLOSED));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.CLOSED));
-        
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.CLOSED));
 
-        long result = fragasvarRepository.countUnhandledForEnhetsIds(Arrays.asList(ENHET_1_ID,ENHET_2_ID));
+        long result = fragasvarRepository.countUnhandledForEnhetsIds(Arrays.asList(ENHET_1_ID, ENHET_2_ID));
         assertEquals(3, result);
 
     }
-    
+
     @Test
     public void testcountUnhandledByEnhet() {
 
@@ -130,17 +128,16 @@ public class FragaSvarRepositoryTest {
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.CLOSED));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID,Status.CLOSED));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.CLOSED));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.CLOSED));
-        
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.CLOSED));
 
-        List<Object[]> res = fragasvarRepository.countUnhandledGroupedByEnhetIds(Arrays.asList(ENHET_1_ID,ENHET_2_ID));
+        List<Object[]> res = fragasvarRepository.countUnhandledGroupedByEnhetIds(Arrays.asList(ENHET_1_ID, ENHET_2_ID));
         assertNotNull(res);
         assertEquals(2, res.size());
     }
-    
+
     @Test
     public void testFindByIntygsReferens() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
@@ -154,40 +151,15 @@ public class FragaSvarRepositoryTest {
         assertEquals(2, result.size());
 
     }
-    
-    @Test
-    public void testCountByIntyg() {
-        
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, "FK"));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, "FK"));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.ANSWERED, "FK", true));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED,  "FK"));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED, "WC", true));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED, "FK", true));
-                
-        Long res = fragasvarRepository.countByIntyg(INTYGS_ID);
-        assertEquals(5L, res.longValue());
-        
-        res = fragasvarRepository.countAnsweredByIntyg(INTYGS_ID);
-        assertEquals(1L, res.longValue());
-        
-        res = fragasvarRepository.countHandledByIntyg(INTYGS_ID);
-        assertEquals(2L, res.longValue());
-        
-        res = fragasvarRepository.countHandledAndAnsweredByIntyg(INTYGS_ID);
-        assertEquals(1L, res.longValue());
-        
-    }
-    
-    
+
     private FragaSvar buildFragaSvarFraga(String enhetsId) {
         return buildFragaSvarFraga(enhetsId, Status.PENDING_EXTERNAL_ACTION);
     }
-    
+
     private FragaSvar buildFragaSvarFraga(String enhetsId, Status status) {
         return buildFragaSvarFraga(enhetsId, status, false);
     }
-    
+
     private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, boolean answered) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
@@ -203,7 +175,7 @@ public class FragaSvarRepositoryTest {
         f.setFrageText("Detta var ju otydligt formulerat!");
         f.setIntygsReferens(INTYGS_REFERENS);
         f.setStatus(status);
-        
+
         if (answered) {
             f.setSvarsText("Ett svar på frågan");
         }
@@ -211,7 +183,7 @@ public class FragaSvarRepositoryTest {
         return f;
     }
 
-    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String hsaid, String hsaNamn)  {
+    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String hsaid, String hsaNamn) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
@@ -228,11 +200,11 @@ public class FragaSvarRepositoryTest {
         f.setFrageText("Detta var ju otydligt formulerat!");
         f.setIntygsReferens(INTYGS_REFERENS);
         f.setStatus(status);
-        
+
         return f;
     }
-    
-    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String frageStallare)  {
+
+    private FragaSvar buildFragaSvarFraga(String enhetsId, Status status, String frageStallare) {
         FragaSvar f = new FragaSvar();
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
@@ -243,7 +215,7 @@ public class FragaSvarRepositoryTest {
         f.setFrageText("Detta var ju otydligt formulerat!");
         f.setIntygsReferens(INTYGS_REFERENS);
         f.setStatus(status);
-        
+
         return f;
     }
 
@@ -262,7 +234,7 @@ public class FragaSvarRepositoryTest {
         f.setFrageText("Detta var ju otydligt formulerat!");
         f.setIntygsReferens(INTYGS_REFERENS);
         f.setStatus(status);
-        
+
         if (answered) {
             f.setSvarsText("Ett svar på frågan");
         }
@@ -280,7 +252,7 @@ public class FragaSvarRepositoryTest {
         assertEquals(read.getInternReferens(), saved.getInternReferens());
 
     }
-    
+
     @Test
     public void testFragaSenasteHandelse() {
         FragaSvar saved = buildFragaSvarFraga("Enhet-1-id", Status.PENDING_EXTERNAL_ACTION);
@@ -304,30 +276,30 @@ public class FragaSvarRepositoryTest {
     }
 
     @Test
-    public void testFindAllHSAIDByEnhet(){
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_1_ID,HSA_1_NAMN));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_3_ID,HSA_3_NAMN));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID,Status.PENDING_INTERNAL_ACTION,HSA_4_ID,HSA_4_NAMN));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
-        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID,Status.PENDING_INTERNAL_ACTION,HSA_2_ID,HSA_2_NAMN));
-        
+    public void testFindAllHSAIDByEnhet() {
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_1_ID, HSA_1_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_2_ID, HSA_2_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_3_ID, HSA_3_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID, Status.PENDING_INTERNAL_ACTION, HSA_3_ID, HSA_3_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_3_ID, HSA_3_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_2_ID, HSA_2_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.PENDING_INTERNAL_ACTION, HSA_4_ID, HSA_4_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, HSA_2_ID, HSA_2_NAMN));
+        fragasvarRepository.save(buildFragaSvarFraga(ENHET_2_ID, Status.PENDING_INTERNAL_ACTION, HSA_2_ID, HSA_2_NAMN));
+
         List<String> params = Arrays.asList(ENHET_1_ID, ENHET_2_ID);
-        
+
         List<Object[]> lakare = fragasvarRepository.findDistinctFragaSvarHsaIdByEnhet(params);
-        
-        //Assert that we only get 3 items back.
+
+        // Assert that we only get 3 items back.
         assertEquals(3, lakare.size());
-        
-        //Assert that no value is HSA_4_ID. Wrong Enhet
+
+        // Assert that no value is HSA_4_ID. Wrong Enhet
         for (int i = 0; i < lakare.size(); i++) {
             assertFalse(lakare.get(i)[0].equals(HSA_4_ID));
         }
 
-        //Results should be sorted by name, so we should always get them in the same order.
+        // Results should be sorted by name, so we should always get them in the same order.
         assertTrue(lakare.get(0)[0].equals(HSA_1_ID));
         assertTrue(lakare.get(1)[0].equals(HSA_2_ID));
         assertTrue(lakare.get(2)[0].equals(HSA_3_ID));
