@@ -1,39 +1,55 @@
 /******************************************************************************
- Net iD Javascript API
+Net iD Javascript API
+ 
+@version: 1.0.5 - 2014-09-19
+@copyright: SecMaker AB (http://www.secmaker.com/)
 
- @version: 1.0 - 2014-06-23
- @copyright: SecMaker AB (http://www.secmaker.com/)
+This script should work with all versions of Net iD plugin. The intention is
+to hide all problems with different web-browser versions and/or OS platforms. 
+The only supported functions are:
 
- This script should work with all versions of Net iD plugin. The intention is
- to hide all problems with different web-browser versions and/or OS platforms.
- The only supported functions are:
+- iid_IsAvailable
+- iid_GetProperty
+- iid_SetProperty
+- iid_EnumProperty
+- iid_Invoke
 
- - iid_GetProperty
- - iid_SetProperty
- - iid_EnumProperty
- - iid_Invoke
+Everything else may/will change with future updates. An update will replace the 
+existing file with a new version and only the functions listed above will 
+be guaranteed to exist. 
 
- Everything else may/will change with future updates. An update will replace the
- existing file with a new version and only the functions listed above will
- be guaranteed to exist.
+The function iid_IsAvailable is used for detection of the plugin, the other 
+functions are documented in Net iD Enterprise Developers Guide.
 
- USAGE: Add this script and start using the functions above:
+USAGE: Add this script and start using the functions above:
 
- <script type="text/javascript" src="_netid.js"></script>
+<script type="text/javascript" src="_netid.js"></script>
+ 
+ERROR: If the functions above isn't loading correct, i.e. new version of IE, 
+contact support@secmaker.com for an updated version of this script.
 
- ERROR: If the functions above isn't loading correct, i.e. new version of IE,
- contact support@secmaker.com for an updated version of this script.
+NOTE: The plugin object must not be 'hidden', i.e. display:none, since some
+web-browsers will not allow it to execute while hidden. The default plugin 
+object will be created with 0px width/height at bottom of page within a 'div'
+using the object id from constant IID_NAME_PLACE. If you get presentation
+problem with this approach, you may declare a 'div' with that id somewhere else 
+and it will be used, since this place holder 'div' is only created when it is 
+missing. 
 
- DISCLAIMER: The script is provided "as is" and SecMaker expressly disclaims any
- warranties, including as regards fitness for purpose, freedom from errors and
- bugs or that defects in the script will be corrected.
- ******************************************************************************/
+DISCLAIMER: The script is provided "as is" and SecMaker expressly disclaims any 
+warranties, including as regards fitness for purpose, freedom from errors and 
+bugs or that defects in the script will be corrected. 
+******************************************************************************/
 
+//-----------------------------------------------------------------------------
+// Constants
+//-----------------------------------------------------------------------------
+var IID_NAME_APP = "Net iD";
+var IID_NAME_OBJECT = "iid_object";
+var IID_NAME_PLACE = "iid_place_holder";
 //-----------------------------------------------------------------------------
 // Globals
 //-----------------------------------------------------------------------------
-var IID_NAME_OBJECT = "iid_object";
-var IID_NAME_PLACE = "iid_place_holder";
 var IID_DEVICE_INFO = null;
 var IID_AVAILABLE_CHECK = false;
 var IID_JS_BRIDGE = null;
@@ -99,19 +115,33 @@ function iid_Invoke(name) {
 //-----------------------------------------------------------------------------
 // iid_Application
 //-----------------------------------------------------------------------------
-function iid_Application(command) {
-    var rv = 0;
-    var iid = iid_GetObject();
-    if (iid != null) {
-        try {
+function iid_Application(command, status, response) {
+    var iid = null;
+    try {
+        if ((iid = iid_GetObject()) != null) {
             if (typeof iid.Application == "function") {
-                result = parseInt(iid.Application(command));
+                iid.Application(command, status, response);
+            }
+            else {
+                iid = null;
             }
         }
-        catch (ex) {
+        if (iid == null) {
+            if (typeof document.form1 == "object") {
+                if ((status != null) && (typeof document.form1.status == "object")) {
+                    document.form1.status.value = status;
+                }
+                if ((response != null) && (typeof document.form1.response == "object")) {
+                    document.form1.response.value = response;
+                }
+                document.form1.action = "iid://" + command;
+                document.form1.submit();
+            }
         }
     }
-    return rv;
+    catch (ex) {
+    }
+    return;
 }
 //-----------------------------------------------------------------------
 // iid_GetDeviceInfo
@@ -160,7 +190,6 @@ function iid_IsAvailable() {
     var explorer = false;
     var name = null;
     var elem = null;
-    var elem2 = null;
     // At first call mark that available check is completed
     IID_AVAILABLE_CHECK = true;
     // Always start check for Javascript interface
@@ -177,9 +206,9 @@ function iid_IsAvailable() {
         if (document.getElementById(name) == null) {
             // Not declared, so add our special tag last in body
             if (!iid_SkipDeclare()) {
-                elem2 = document.createElement("div");
-                elem2.setAttribute("id", name);
-                document.body.appendChild(elem2);
+                elem = document.createElement("div");
+                elem.setAttribute("id", name);
+                document.body.appendChild(elem);
             }
         }
         // Start checking already created
@@ -208,6 +237,11 @@ function iid_HasApplication() {
     var obj = null;
     if ((obj = iid_GetObject()) != null) {
         if (typeof obj.Application == "function") {
+            available = true;
+        }
+    }
+    if (!available) {
+        if (navigator.userAgent.indexOf(IID_NAME_APP) != -1) {
             available = true;
         }
     }
@@ -326,13 +360,6 @@ function iid_Declare(name, explorer, live) {
         if ((version != null) && (version.length > 0)) {
             success = true;
         }
-        // Problem with dynamic loading for Firefox, so check for special object
-        if (!success && !explorer) {
-            if (IID_NAME_OBJECT.indexOf("ns_") == -1) {
-                IID_NAME_OBJECT = "ns_" + IID_NAME_OBJECT;
-                success = (iid_GetObject() != null);
-            }
-        }
     }
     return success;
 }
@@ -352,7 +379,7 @@ function iid_SkipDeclare() {
     return skip;
 }
 //-----------------------------------------------------------------------------
-// Javascript bridge
+// Javascript bridge 
 //-----------------------------------------------------------------------------
 function iid_GetJavascriptBridgeResponseValue() {
     var value = null;
@@ -511,7 +538,7 @@ function iid_ParseBrowserInfo(value) {
     }
     // Chrome/Chromium include WebKit, so take first (<name>/<version>)
     else if (((i = value.lastIndexOf("Chromium")) > 0) ||
-        ((i = value.lastIndexOf("Chrome")) > 0)) {
+             ((i = value.lastIndexOf("Chrome")) > 0)) {
         j = 0;
         while ((value.charAt(i + j) != 0) && (value.charAt(i + j) != '/')) {
             j++;
@@ -565,57 +592,69 @@ function iid_ParseDeviceInfo(value) {
     var j = 0;
     var k = 0;
     var part = null;
-    // Get os name and version. Information is stored a little different
-    // depending on browser, but available between '(' and ')'.
-    if ((i = value.indexOf('(')) > 0) {
-        value = value.substr(i + 1);
-        if ((i = value.indexOf(')')) > 0) {
-            value = value.substr(0, i);
+    // For internal Net iD WebApp may name and version be stored after Net iD
+    // name/version info.
+    if (((i = value.indexOf(IID_NAME_APP)) > 0) &&
+        ((i = value.indexOf(" ", i + IID_NAME_APP.length + 2)) > 0)) {
+        part = value.substr(i + 1);
+        if ((i = part.indexOf("/")) > 0) {
+            name = part.substr(0, i);
+            version = part.substr(i + 1);
         }
     }
-    // Enumerate all arguments and try to extract information
-    i = 0;
-    while ((part = iid_GetPartBy(value, i, ';')) != "") {
-        // Format "<name>" or "...<name>...<version>"
-        if (((j = part.indexOf("Windows")) >= 0) ||
-            ((j = part.indexOf("Android")) >= 0) ||
-            ((j = part.indexOf("iPhone")) >= 0) ||
-            ((j = part.indexOf("iPad")) >= 0) ||
-            ((j = part.indexOf("CPU OS")) >= 0) || // iPad
-            ((j = part.indexOf("Macintosh")) >= 0) ||
-            ((j = part.indexOf("Mac OS X")) >= 0)) {
-            // Get eventual following version number
-            k = 0;
-            while ((part.length > (j + k)) &&
-                ((part.charAt(j + k) < '0') || (part.charAt(j + k) > '9'))) {
-                k++;
+    if ((name == null) || (version == null)) {
+        // Get os name and version. Information is stored a little different
+        // depending on browser, but available between '(' and ')'.
+        if ((i = value.indexOf('(')) > 0) {
+            value = value.substr(i + 1);
+            if ((i = value.indexOf(')')) > 0) {
+                value = value.substr(0, i);
             }
-            // Set all except version number as name (Android may be specified with Linux too)
-            if ((name == null) || (name == "Linux")) {
-                name = part.substr(j, k).replace(/^\s+|\s+$/g, "");
-            }
-            // Found version?
-            part = part.substr(j + k).replace(/^\s+|\s+$/g, "");
-            k = 0;
-            if ((part.charAt(0) >= '0') && (part.charAt(0) <= '9')) {
-                part = part.replace(new RegExp("_", 'g'), ".");
+        }
+        // Enumerate all arguments and try to extract information
+        i = 0;
+        while ((part = iid_GetPartBy(value, i, ';')) != "") {
+            // Format "<name>" or "...<name>...<version>"
+            if (((j = part.indexOf("Windows")) >= 0) ||
+                ((j = part.indexOf("Android")) >= 0) ||
+                ((j = part.indexOf("iPhone")) >= 0) ||
+                ((j = part.indexOf("iPad")) >= 0) ||
+                ((j = part.indexOf("CPU OS")) >= 0) || // iPad
+                ((j = part.indexOf("Macintosh")) >= 0) ||
+                ((j = part.indexOf("Mac OS X")) >= 0)) {
+                // Get eventual following version number
                 k = 0;
-                while ((part.charAt(k) == '.') ||
-                    ((part.charAt(k) >= '0') && (part.charAt(k) <= '9'))) {
+                while ((part.length > (j + k)) &&
+                       ((part.charAt(j + k) < '0') || (part.charAt(j + k) > '9'))) {
                     k++;
                 }
-                version = part.substr(0, k);
+                // Set all except version number as name (Android may be specified with Linux too)
+                if ((name == null) || (name == "Linux")) {
+                    name = part.substr(j, k).replace(/^\s+|\s+$/g, "");
+                }
+                // Found version?
+                part = part.substr(j + k).replace(/^\s+|\s+$/g, "");
+                k = 0;
+                if ((part.charAt(0) >= '0') && (part.charAt(0) <= '9')) {
+                    part = part.replace(new RegExp("_", 'g'), ".");
+                    k = 0;
+                    while ((part.charAt(k) == '.') ||
+                           ((part.charAt(k) >= '0') && (part.charAt(k) <= '9'))) {
+                        k++;
+                    }
+                    version = part.substr(0, k);
+                }
+                // Break when we have both name and version
+                if ((name != null) && (version != null)) {
+                    break;
+                }
             }
-            // Break when we have both name and version
-            if ((name != null) && (version != null)) {
-                break;
+            // Linux only name no version
+            else if ((j = part.indexOf("Linux")) >= 0) {
+                name = "Linux";
             }
+            i++;
         }
-        // Linux only name no version
-        else if ((j = part.indexOf("Linux")) >= 0) {
-            name = "Linux";
-        }
-        i++;
     }
     // Need default value
     if (name == null) {
