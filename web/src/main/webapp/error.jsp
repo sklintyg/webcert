@@ -53,6 +53,13 @@
               </div>
             </c:when>
 
+            <c:when test="${param.reason eq \"hsaerror\"}">
+              <h1><spring:message code="error.hsaerror.title" /></h1>
+              <div id="noAuth" class="alert alert-danger">
+                <spring:message code="error.hsaerror.text" />
+              </div>
+            </c:when>
+
             <c:when test="${param.reason eq \"notfound\"}">
               <h1><spring:message code="error.notfound.title" /></h1>
               <div id="notFound" class="alert alert-danger">

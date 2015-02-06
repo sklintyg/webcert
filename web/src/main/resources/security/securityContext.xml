@@ -54,6 +54,9 @@
         <prop key="org.springframework.security.authentication.BadCredentialsException">
           /error.jsp?reason=badcredentials
         </prop>
+        <prop key="se.inera.auth.exceptions.HsaServiceException">
+          /error.jsp?reason=hsaerror
+        </prop>
       </props>
     </property>
     <property name="defaultFailureUrl" value="/error.jsp"/>
