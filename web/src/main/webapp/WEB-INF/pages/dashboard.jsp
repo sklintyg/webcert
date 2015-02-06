@@ -73,7 +73,7 @@
       <script type="text/javascript" src="/js/app.js"></script>
     </c:otherwise>
   </c:choose>
-  <script type="text/javascript" src="/vendor/netid-1.0.js"></script>
+  <script type="text/javascript" src="/vendor/netid-1.0.5.js"></script>
   <script type="text/javascript" src="/siths.jsp"></script>
 
   <!--[if lte IE 8]>
