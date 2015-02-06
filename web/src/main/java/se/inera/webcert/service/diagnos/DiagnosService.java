@@ -11,27 +11,15 @@ import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
 public interface DiagnosService {
 
     /**
-     * Returns a Diagnos by its code.
+     * Returns all diagnoses in the repository exactly matching the code.
      *
      * @param code
-     *            The code must at least correspond to the pattern 'A012' or 'A01.2'.
+     *            The code to search for.
      * @param codeSystem
      *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
      * @return
      */
     DiagnosResponse getDiagnosisByCode(String code, String codeSystem);
-
-    /**
-     * Searches the repository for codes beginning with the codeFragment.
-     *
-     * @param codeFragment
-     *            The string to search codes by. The string must at least correspond to the pattern 'A01'.
-     * @param codeSystem
-     *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
-     *            
-     * @return
-     */
-    DiagnosResponse searchDiagnosisByCode(String codeFragment, String codeSystem);
 
     /**
      * Searches the repository for codes beginning with the codeFragment. Limits the number of matches returned.
@@ -40,7 +28,6 @@ public interface DiagnosService {
      *            The string to search codes by. The string must at least correspond to the pattern 'A01'.
      * @param codeSystem
      *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
-     *            
      * @param nbrOfResults
      *            The number of results to return, must be larger than 0.
      * @return
@@ -50,11 +37,10 @@ public interface DiagnosService {
     /**
      * Searches the repository for descriptions matching searchString. Limits the number of matches returned.
      *
-     * @param descriptionFragment
+     * @param searchString
      *            The string to search for in descriptions.
      * @param codeSystem
      *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
-     *            
      * @param nbrOfResults
      *            The number of results to return, must be larger than 0.
      * @return
@@ -68,7 +54,6 @@ public interface DiagnosService {
      *            The code to be validated.
      * @param codeSystem
      *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
-     *            
      * @return true if the code fragment is syntactically correct.
      */
     boolean validateDiagnosisCode(String codeFragment, String codeSystem);

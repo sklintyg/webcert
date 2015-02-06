@@ -32,24 +32,6 @@ public class DiagnosModuleApiController extends AbstractApiController {
     private DiagnosService diagnosService;
 
     /**
-     * Returns a diagnosis by its code.
-     *
-     * @param code
-     * @return
-     */
-    @POST
-    @Path("/kod/{codeSystem}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getDiagnosisByCode(String code, @PathParam("codeSystem") String codeSystem) {
-
-        LOG.debug("Getting diagnosis using code: {}", code);
-
-        DiagnosResponse diagnosResponse = diagnosService.getDiagnosisByCode(code, codeSystem);
-        return Response.ok(diagnosResponse).build();
-    }
-
-    /**
      * Search for diagnosises using a code fragment. The fragment "A04" will return all
      * diagnosises whose code starts with this fragment. The number of results returned
      * by the service can be limited by setting the 'NbrOfResults' parameter to a positive

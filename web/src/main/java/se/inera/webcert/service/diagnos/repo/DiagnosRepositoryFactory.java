@@ -40,7 +40,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
 
     /**
-     * Diagnosis files are usually encoded as ISO-8859-1
+     * Diagnosis files are usually encoded as ISO-8859-1.
      */
     @Value("${diagnos.code.encoding:ISO-8859-1}")
     private String fileEncoding;
@@ -95,7 +95,6 @@ public class DiagnosRepositoryFactory implements InitializingBean {
             while (reader.ready()) {
                 String line = reader.readLine();
                 Diagnos diagnos = createDiagnosFromString(line);
-                diagnosRepository.addDiagnos(diagnos);
 
                 Document doc = new Document();
                 doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));

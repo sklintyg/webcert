@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.List;
 
 public interface DiagnosRepository {
-    
-    static String CODE = "code";
-    
-    static String DESC = "description";
 
-    Diagnos getDiagnosByCode(String code);
+    String CODE = "code";
 
-    List<Diagnos> searchDiagnosisByCode(String codeFragment);
+    String DESC = "description";
+
+    List<Diagnos> getDiagnosesByCode(String code);
+
+    List<Diagnos> searchDiagnosisByCode(String codeFragment, int nbrOfResults);
 
     void openLuceneIndexReader() throws IOException;
 

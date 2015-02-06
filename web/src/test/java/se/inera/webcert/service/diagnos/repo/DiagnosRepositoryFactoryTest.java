@@ -53,8 +53,9 @@ public class DiagnosRepositoryFactoryTest {
     public void testReadDiagnosFile() throws Exception {
         DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
         factory.populateRepoFromDiagnosisCodeFile(FILE_3, diagnosRepository);
+        diagnosRepository.openLuceneIndexReader();
         assertEquals(980, diagnosRepository.nbrOfDiagosis());
-        assertNotNull(diagnosRepository.getDiagnosByCode("A00-"));
+        assertNotNull(diagnosRepository.getDiagnosesByCode("A00-"));
     }
 
     @Test

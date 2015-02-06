@@ -8,18 +8,10 @@ public class DiagnosResponse {
 
     private DiagnosResponseType resultat = DiagnosResponseType.OK;
 
-    private Diagnos diagnos;
-
     private List<Diagnos> diagnoser;
 
     public DiagnosResponse() {
 
-    }
-
-    public static DiagnosResponse ok(Diagnos diagnos) {
-        DiagnosResponse diagnosResponse = new DiagnosResponse();
-        diagnosResponse.setDiagnos(diagnos);
-        return diagnosResponse;
     }
 
     public static DiagnosResponse ok(List<Diagnos> diagnoser) {
@@ -31,6 +23,12 @@ public class DiagnosResponse {
     public static DiagnosResponse invalidCode() {
         DiagnosResponse diagnosResponse = new DiagnosResponse();
         diagnosResponse.setInvalidCode();
+        return diagnosResponse;
+    }
+
+    public static DiagnosResponse invalidCodesystem() {
+        DiagnosResponse diagnosResponse = new DiagnosResponse();
+        diagnosResponse.setInvalidCodesystem();
         return diagnosResponse;
     }
 
@@ -54,18 +52,16 @@ public class DiagnosResponse {
         this.resultat = DiagnosResponseType.INVALID_CODE;
     }
 
-    private void setInvalidSearchString() { this.resultat = DiagnosResponseType.INVALID_SEARCH_STRING; }
+    private void setInvalidCodesystem() {
+        this.resultat = DiagnosResponseType.INVALID_CODE_SYSTEM;
+    }
+
+    private void setInvalidSearchString() {
+        this.resultat = DiagnosResponseType.INVALID_SEARCH_STRING;
+    }
 
     private void setNotFound() {
         this.resultat = DiagnosResponseType.NOT_FOUND;
-    }
-
-    public Diagnos getDiagnos() {
-        return diagnos;
-    }
-
-    public void setDiagnos(Diagnos diagnos) {
-        this.diagnos = diagnos;
     }
 
     public List<Diagnos> getDiagnoser() {

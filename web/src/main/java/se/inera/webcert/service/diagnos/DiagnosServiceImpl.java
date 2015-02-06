@@ -24,9 +24,9 @@ import se.inera.webcert.service.diagnos.repo.DiagnosRepositoryFactory;
 /**
  * Implementation of DiagnosService. Supplies services for getting a diagnosis by code
  * or searching for diagnosies.
- * 
+ *
  * @author npet
- * 
+ *
  */
 @Service
 public class DiagnosServiceImpl implements DiagnosService {
@@ -37,20 +37,20 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     /**
      * A regular expression for validating a 'swedish' ICD-10 code.
-     * 
+     *
      * The code should start with an upper-case letter
      * and should be followed by two digits,
      * then an optional '.',
      * followed by an optional digit,
      * finishing with an optional upper-case letter.
-     * 
+     *
      * Tested with: A11, A11.1, A11.1X, A111, A111X, A1111
      */
     private static final String ICD10_CODE_REGEXP = "^[A-Z]\\d{2}\\.{0,1}\\d{0,1}[0-9A-Z]{0,1}$";
 
     /**
      * A regular expression for validating a specialization of ICD-10 code called KSH97P.
-     * 
+     *
      * Tested with: A11, A11-P, A11-, A111, A111P
      */
     private static final String KSH97P_CODE_REGEXP = "^[A-Z]\\d{2}\\-{0,1}\\d{0,1}[P]{0,1}$";
@@ -95,39 +95,36 @@ public class DiagnosServiceImpl implements DiagnosService {
         this.ksh97pDiagnosRepo = diagnosRepositoryFactory.createAndInitDiagnosRepository(fileListKsh97p);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see se.inera.webcert.service.diagnos.DiagnosService#getDiagnosisByCode(java.lang.String)
-     */
     @Override
     public DiagnosResponse getDiagnosisByCode(String code, String codeSystem) {
-
         if (!validateDiagnosisCode(code, codeSystem)) {
             return DiagnosResponse.invalidCode();
         }
 
-        Diagnos diagnos = null;
+        List<Diagnos> matches = new ArrayList<Diagnos>();
 
         switch (codeSystem) {
-        case ICD_10_SE:
-            diagnos = icd10seDiagnosRepo.getDiagnosByCode(code);
-            break;
-        case KSH97P:
-            diagnos = ksh97pDiagnosRepo.getDiagnosByCode(code);
-            break;
+            case ICD_10_SE:
+                matches = icd10seDiagnosRepo.getDiagnosesByCode(code);
+                break;
+            case KSH97P:
+                matches = ksh97pDiagnosRepo.getDiagnosesByCode(code);
+                break;
+            default:
+                LOG.warn("Unknown code system '{}'", codeSystem);
+                return DiagnosResponse.invalidCodesystem();
         }
 
-        if (diagnos != null) {
-            return DiagnosResponse.ok(diagnos);
+        if (matches.isEmpty()) {
+            return DiagnosResponse.notFound();
         }
 
-        return DiagnosResponse.notFound();
+        return DiagnosResponse.ok(matches);
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
     @Override
@@ -143,11 +140,14 @@ public class DiagnosServiceImpl implements DiagnosService {
 
         switch (codeSystem) {
             case ICD_10_SE:
-                matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment);
+                matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults);
                 break;
             case KSH97P:
-                matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment);
+                matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults);
                 break;
+            default:
+                LOG.warn("Unknown code system '{}'", codeSystem);
+                return DiagnosResponse.invalidCodesystem();
         }
 
         if (matches.isEmpty()) {
@@ -165,7 +165,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String, int)
      */
     @Override
@@ -190,37 +190,11 @@ public class DiagnosServiceImpl implements DiagnosService {
         case KSH97P:
             matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString, nbrOfResults);
             break;
+        default:
+            LOG.warn("Unknown code system '{}'", codeSystem);
+            return DiagnosResponse.invalidCodesystem();
         }
 
-        if (matches.isEmpty()) {
-            return DiagnosResponse.notFound();
-        }
-
-        return DiagnosResponse.ok(matches);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see se.inera.webcert.service.diagnos.DiagnosService#searchDiagnosisByCode(java.lang.String)
-     */
-    @Override
-    public DiagnosResponse searchDiagnosisByCode(String codeFragment, String codeSystem) {
-
-        if (!validateDiagnosisCode(codeFragment, codeSystem)) {
-            return DiagnosResponse.invalidCode();
-        }
-
-        List<Diagnos> matches = new ArrayList<Diagnos>();
-
-        switch (codeSystem) {
-        case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment);
-            break;
-        case KSH97P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment);
-            break;
-    }
         if (matches.isEmpty()) {
             return DiagnosResponse.notFound();
         }
@@ -231,7 +205,7 @@ public class DiagnosServiceImpl implements DiagnosService {
     /**
      * Perform a regex validation on the diagnosis code, the code
      * is trimmed before checked.
-     * 
+     *
      * @param diagnosisCode
      * @return true if the diagnosisCode matches the regexp
      */
