@@ -20,8 +20,8 @@ import se.inera.webcert.service.diagnos.model.Diagnos;
 @ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")
 public class DiagnosRepositoryFactoryTest {
 
-    private static final String LINE_1 = "A010   Tyfoidfeber";
-    private static final String LINE_1_KOD = "A010";
+    private static final String LINE_1 = "A00-   Tyfoidfeber";
+    private static final String LINE_1_KOD = "A00-";
     private static final String LINE_1_BESK = "Tyfoidfeber";
     private static final String LINE_2 = "A083W  Enterit orsakad av annat specificerat virus";
     private static final String LINE_2_KOD = "A083W";
@@ -31,6 +31,7 @@ public class DiagnosRepositoryFactoryTest {
 
     private static final String FILE_1 = "classpath:/DiagnosService/KSH97_TESTKODER_1.ANS";
     private static final String FILE_2 = "classpath:/DiagnosService/KSH97_TESTKODER_2.ANS";
+    private static final String FILE_3 = "classpath:/DiagnosService/KSH97P_SFAM_TESTKODER.ANS";
     
     @Autowired
     private DiagnosRepositoryFactory factory;
@@ -51,8 +52,10 @@ public class DiagnosRepositoryFactoryTest {
     @Test
     public void testReadDiagnosFile() throws Exception {
         DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
-        factory.populateRepoFromDiagnosisCodeFile(FILE_1, diagnosRepository);
-        assertEquals(100, diagnosRepository.nbrOfDiagosis());
+        factory.populateRepoFromDiagnosisCodeFile(FILE_3, diagnosRepository);
+        diagnosRepository.openLuceneIndexReader();
+        assertEquals(980, diagnosRepository.nbrOfDiagosis());
+        assertNotNull(diagnosRepository.getDiagnosesByCode("A00-"));
     }
 
     @Test

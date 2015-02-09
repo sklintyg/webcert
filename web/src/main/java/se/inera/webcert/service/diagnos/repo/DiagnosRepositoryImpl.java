@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -14,10 +15,6 @@ import se.inera.webcert.service.diagnos.model.Diagnos;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * Map-based repository holding diagnosises.
@@ -27,23 +24,23 @@ import java.util.TreeSet;
  */
 public class DiagnosRepositoryImpl implements DiagnosRepository {
 
-    private Map<String, Diagnos> diagnoses = new TreeMap<String, Diagnos>();
-
-    private SortedSet<String> diagnoisCodesSet = new TreeSet<String>();
-
     private RAMDirectory index = new RAMDirectory();
     private IndexReader indexReader;
     private IndexSearcher indexSearcher;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.webcert.service.diagnos.model.DiagnosRepository#getDiagnosByCode(java.lang.String)
-     */
     @Override
-    public Diagnos getDiagnosByCode(String code) {
+    public List<Diagnos> getDiagnosesByCode(String code) {
         code = sanitizeCodeValue(code);
-        return code != null ? diagnoses.get(code) : null;
+        if (code == null) {
+            return new ArrayList<>();
+        }
+        try {
+            int freq = indexReader.docFreq(new Term(CODE, code));
+            TermQuery query = new TermQuery(new Term(CODE, code));
+            return searchDiagnosisByQuery(query, Math.max(1, freq));
+        } catch (IOException e) {
+            throw new RuntimeException("IOException occurred in lucene index search", e);
+        }
     }
 
     /*
@@ -52,25 +49,13 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
      * @see se.inera.webcert.service.diagnos.model.DiagnosRepository#searchDiagnosisByCode(java.lang.String)
      */
     @Override
-    public List<Diagnos> searchDiagnosisByCode(String codeFragment) {
-
-        List<Diagnos> matches = new ArrayList<Diagnos>();
-
-        String lowVal = sanitizeCodeValue(codeFragment);
-
-        if (lowVal == null) {
-            return matches;
+    public List<Diagnos> searchDiagnosisByCode(String codeFragment, int nbrOfResults) {
+        codeFragment = sanitizeCodeValue(codeFragment);
+        if (codeFragment == null) {
+            return new ArrayList<>();
         }
-
-        String highVal = createHighValue(lowVal);
-
-        SortedSet<String> keys = diagnoisCodesSet.subSet(lowVal, highVal);
-
-        for (String key : keys) {
-            matches.add(diagnoses.get(key));
-        }
-
-        return matches;
+        PrefixQuery query = new PrefixQuery(new Term(CODE, codeFragment));
+        return searchDiagnosisByQuery(query, nbrOfResults);
     }
 
     public RAMDirectory getLuceneIndex() {
@@ -85,8 +70,6 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
 
     @Override
     public List<Diagnos> searchDiagnosisByDescription(String searchString, int nbrOfResults) {
-        List<Diagnos> matches = new ArrayList<Diagnos>();
-
         BooleanQuery query = new BooleanQuery();
         StandardAnalyzer analyzer = new StandardAnalyzer();
         try {
@@ -97,19 +80,31 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
                 String term = charTermAttribute.toString();
                 query.add(new PrefixQuery(new Term(DESC, term)), BooleanClause.Occur.MUST);
             }
+        } catch (IOException e) {
+            throw new RuntimeException("IOException occurred in lucene index search", e);
+        } finally {
+            analyzer.close();
+        }
+        return searchDiagnosisByQuery(query, nbrOfResults);
+    }
 
+    private List<Diagnos> searchDiagnosisByQuery(Query query, int nbrOfResults) {
+        List<Diagnos> matches = new ArrayList<Diagnos>();
+
+        try {
             if (indexSearcher == null) {
                 throw new RuntimeException("Lucene index searcher is not opened");
             }
 
             TopDocs results = indexSearcher.search(query, nbrOfResults);
             for (ScoreDoc hit : results.scoreDocs) {
-                matches.add(diagnoses.get(indexSearcher.doc(hit.doc).get(CODE)));
+                Diagnos d = new Diagnos();
+                d.setKod(indexSearcher.doc(hit.doc).get(CODE).toUpperCase());
+                d.setBeskrivning(indexSearcher.doc(hit.doc).get(DESC));
+                matches.add(d);
             }
         } catch (IOException e) {
             throw new RuntimeException("IOException occurred in lucene index search", e);
-        } finally {
-            analyzer.close();
         }
 
         return matches;
@@ -127,21 +122,8 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
         return (StringUtils.isBlank(codeValue)) ? null : codeValue.toUpperCase();
     }
 
-    public String createHighValue(String lowStr) {
-        char[] highCharArray = lowStr.toCharArray();
-        highCharArray[highCharArray.length - 1] = ++highCharArray[highCharArray.length - 1];
-        return String.valueOf(highCharArray);
-    }
-
-    public void addDiagnos(Diagnos diagnos) {
-        if (diagnos != null) {
-            diagnoisCodesSet.add(diagnos.getKod());
-            diagnoses.put(diagnos.getKod(), diagnos);
-        }
-    }
-
     public int nbrOfDiagosis() {
-        return diagnoses.size();
+        return indexReader.numDocs();
     }
 
 }

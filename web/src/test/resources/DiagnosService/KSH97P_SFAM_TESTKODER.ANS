@@ -1,0 +1,980 @@
+A00-   Kolera
+A00    Kolera
+A000P    Kolera
+A000   Kolera
+A00-P  Salmonellainfektion
+A03-   Shigellainfektion
+A045   Campylobacterenterit
+A046   Yersiniaenterit
+A047   Clostridium difficile-enterokolit
+A051   Botulism
+A06-   Am�bainfektion
+A071   Giardiainfektion
+A09-P  Infekti�s diarr�
+A16-P  Tuberkulos
+A21-   Tularemi
+A28-P  Djurburen bakteriesjukdom
+A30-   Lepra
+A31-   Atypisk mykobakteriell infektion
+A32-   Listeriainfektion
+A35-P  Tetanus
+A36-   Difteri
+A37-   Pertussis
+A38-   Scarlatina
+A39-   Meningokockinfektion
+A41-P  Sepsis
+A46-   Erysipelas
+A481P  Legionellainfektion
+A483   Toxiskt chocksyndrom
+A49-P  Bakteriesjukdom ospecificerad 
+A53-P  Syfilis
+A54-   Gonokockinfektion
+A56-P  Klamydiainfektion
+A59-   Trikomonasinfektion
+A60-   Genital herpes
+A630   Kondylom
+A64-P  Sexuellt �verf�rd sjukdom
+A691   Vincents angina
+A692   Borreliainfektion
+A699P  Spiroketinfektion
+A70-   Papegojsjuka
+A79-P  Rickettsiainfektion
+A80-   Polio
+A89-P  Virusmeningit
+A92-   Ockelbosjuka
+A985   Nephropathia epidemica
+A99-P  Artropodburen febersjukdom 
+B002   Herpesstomatit
+B009P  Herpes simplex-infektion 
+B01-   Varicellae
+B02-   Herpes zoster
+B05-   Morbilli
+B06-   Rubella
+B07-   Verruca vulgaris
+B081   Molluscum contagiosum
+B082   Exanthema subitum
+B083   Erythema infectiosum
+B084   H�stbl�sor
+B09-P  Virusexantem
+B19-P  Virushepatit
+B24-P  HIV-infektion
+B25-   CMV-infektion
+B26-   Parotit
+B27-   Mononukleos
+B330   Bornholmssjuka
+B34-P  Virusinfektion
+B351   Nagelsvamp
+B353   Fotsvamp
+B359P  Dermatofytos
+B360   Pityriasis versicolor
+B373P  Urogenital candidainfektion 
+B379P  Candidainfektion
+B49-P  Mykos, ospecificerad
+B54-P  Malaria
+B58-   Toxoplasmos
+B64-P  Protozosjukdom
+B653   Simmarkl�da
+B71-P  Bandmask
+B77-   Spolmask
+B80-   Springmask
+B83-P  Masksjukdom
+B85-   Pedikulos
+B86-   Scabies
+B88-P  Infestation
+B91-   Sen effekt av polio
+B94-P  Sen effekt av infektionssjukdom 
+B99-   Infektionssjukdom
+C00-   L�ppcancer
+C08-P  Spottk�rtelcancer
+C14-P  Munh�lecancer
+C15-   Matstrupscancer
+C16-   Mags�ckscancer
+C17-   Tunntarmscancer
+C18-P  Tjocktarmscancer
+C20-P  �ndtarmscancer
+C22-   Levercancer
+C23-P  Gallbl�secancer
+C25-   Pankreascancer
+C26-   Cancer i matsm�ltningsorganen
+C32-   Larynxcancer
+C34-P  Lungcancer
+C39-P  Cancer i br�sth�leorgan
+C41-P  Skelettcancer
+C43-   Malignt melanom
+C44-   Hudcancer
+C49-P  Bindv�vscancer
+C50-   Br�stcancer
+C51-   Vulvacancer
+C53-   Livmoderhalscancer
+C55-P  Livmodercancer
+C56-   �ggstockscancer
+C57-P  Cancer i kvinnliga k�nsorgan 
+C60-   Peniscancer
+C61-   Prostatacancer
+C62-   Testikelcancer
+C63-   Cancer i manliga k�nsorgan
+C64-P  Njurcancer
+C67-P  Urinbl�secancer
+C69-   Cancer i �gat
+C71-P  Cancer i centrala nervsystemet 
+C73-   Tyreoideacancer
+C75-P  Cancer i endokrina k�rtlar 
+C79-P  Metastas
+C80-P  Cancer, ospecificerad
+C85-P  Malignt lymfom
+C88-   Immunoproliferativ sjukdom
+C90-   Myelom
+C91-   Lymfatisk leukemi
+C92-   Myeloisk leukemi 
+C96-P  Malign blodsjukdom 
+D06-   Cervixcancer in situ
+D09-P  Cancer in situ
+D10-   Benign tum�r i munnen
+D11-   Benign spottk�rteltum�r
+D12-   Benign tum�r i tjocktarm
+D13-   Benign tum�r i matsm�ltningsorganen
+D14-   Benign tum�r i andningsorgan
+D15-   Benign tum�r i br�sth�leorgan
+D16-   Benign tum�r i skelettet
+D17-   Lipom
+D180   Hemangiom
+D181   Lymfangiom
+D21-P  Benign bindv�vstum�r
+D22-   Nevus
+D23-   Benign hudtum�r
+D24-   Benign br�stk�rteltum�r
+D25-   Uterusmyom
+D27-   Benign �ggstockstum�r
+D28-P  Benign tum�r i kvinnliga k�nsorgan 
+D29-   Benign tum�r i manliga k�nsorgan
+D30-   Benign tum�r i urinorgan
+D31-   Benign tum�r i �gat
+D33-P  Benign tum�r i centrala nervsystemet 
+D34-   Benign sk�ldk�rteltum�r
+D35-   Benign tum�r i endokrin k�rtel
+D36-   Benign tum�r, ospecificerad
+D37-   Oklar tum�r i matsm�ltningskanalen
+D38-   Oklar tum�r i andningsorganen
+D39-   Oklar tum�r i kvinnliga k�nsorgan
+D40-   Oklar tum�r i manliga k�nsorgan
+D41-   Oklar tum�r i urinorganen
+D43-P  Oklar tum�r i centrala nervsystemet 
+D44-   Oklar tum�r i endokrina k�rtlar
+D45-   Polycythaemia vera
+D47-P  Myelodysplasi
+D48-   Oklar tum�r
+D50-   J�rnbristanemi
+D51-   Pernici�s anemi
+D52-   Folatbristanemi
+D58-P  Heredit�r hemolytisk anemi 
+D59-   F�rv�rvad hemolytisk anemi
+D64-P  Annan anemi
+D68-P  Koagulationsrubbning 
+D69-   Purpura
+D750   Benign polycytemi
+D751   Sekund�r polycytemi
+D759P  Annan sjukdom i blod och blodbildande organ
+D84-P  Immunbristsjukdom
+D86-   Sarkoidos
+E01-P  Jodbristsjukdom i sk�ldk�rteln
+E03-   Hypotyreos
+E04-   Struma
+E05-   Hypertyreos
+E06-   Tyreoidit
+E07-   Tyreoideasjukdom
+E108P  Diabetes mellitus typ 1, med komplikationer
+E109   Diabetes mellitus typ 1, utan komplikationer
+E118P  Diabetes mellitus typ 2, med komplikationer
+E119   Diabetes mellitus typ 2, utan komplikationer 
+E14-P  Diabetes mellitus, ospecificerad 
+E16-P  Endokrin pankreasrubbning
+E21-P  Bisk�ldk�rtelsjukdom 
+E23-P  Hypofyssjukdom
+E271   Binjurebarksinsufficiens
+E279P  Binjuresjukdom
+E28-   Ovariell dysfunktion
+E29-   Testikul�r dysfunktion
+E30-   St�rd pubertetsutveckling
+E34-P  Endokrin rubbning
+E63-P  N�ringsbrist 
+E66-P  Obesitas
+E73-   Laktosintolerans
+E78-   Lipidrubbning
+E790   Hyperurikemi
+E802P  Porfyri
+E84-   Cystisk fibros
+E85-   Amyloidos
+E88-P  �mnesoms�ttningssjukdom 
+E890   Postoperativ hypotyreos
+F01-   Vaskul�r demens
+F03-P  Demens
+F09-P  Organisk psykisk st�rning 
+F100   Alkoholintoxikation
+F101   Skadligt bruk av alkohol
+F102   Alkoholberoende
+F105P  Alkoholabstinens
+F109P  Alkoholproblem
+F17-   Skadligt bruk av tobak
+F19-P  Drogberoende
+F20-   Schizofreni
+F21-   Schizotyp st�rning
+F22-   Paranoid psykos
+F29-P  Psykos
+F30-   Manisk episod
+F31-   Bipol�r sjukdom
+F32-   Depressiv episod
+F33-   Recidiverande depression
+F39-P  F�rst�mningssyndrom
+F40-   Fobi
+F410   Paniksyndrom
+F411   Generaliserat �ngestsyndrom
+F419P  �ngesttillst�nd
+F42-   Tv�ngssyndrom
+F431   Posttraumatiskt stressyndrom
+F438A  Utmattningssyndrom
+F439P  Stressreaktion
+F44-   Dissociativt syndrom
+F454   Somatoformt sm�rttillst�nd
+F459P  Somatoformt syndrom
+F48-   Neuros
+F500   Anorexia nervosa
+F502   Bulimi
+F509P  �tst�rning
+F51-   S�mnst�rning
+F52-   Sexuell dysfunktion
+F53-   Post partum-depression
+F55-   L�kemedelsmissbruk 
+F59-P  Psykogen fysiologisk dysfunktion 
+F69-P  Personlighetsst�rning hos vuxen 
+F79-P  Psykisk utvecklingsst�rning 
+F89-P  Psykologisk utvecklingsst�rning 
+F90-   Hyperaktivitetsst�rning
+F95-   Tics
+F980   Icke organisk enures
+F982   Matv�gran under uppv�xten
+F989P  Psykisk st�rning under uppv�xten 
+F99-   Psykisk sjukdom
+G03-P  Meningit
+G04-P  Encefalomyelit
+G122   Amyotrofisk lateralskleros
+G20-   Parkinsons sjukdom
+G250   Essentiell tremor
+G258   Restless legs
+G259P  R�relserubbning 
+G30-   Alzheimers sjukdom
+G35-   Multipel skleros
+G40-P  Epilepsi
+G43-   Migr�n
+G440   Hortons syndrom
+G442   Sp�nningshuvudv�rk
+G448P  Huvudv�rkssyndrom
+G45-P  Transitorisk ischemisk attack 
+G47-   Organisk s�mnst�rning
+G500   Trigeminusneuralgi
+G510   Bells pares
+G540   Toraxapertursyndrom
+G546   Fantomsm�rta
+G549P  Sjukdom i nerv, nervrot
+G560   Karpaltunnelsyndrom
+G573   Peroneuspares
+G58-P  Mononeuropati
+G610   Guillain-Barr�s syndrom
+G621   Alkoholpolyneuropati
+G629P  Polyneuropati
+G700   Myasthenia gravis
+G72-P  Muskelsjukdom
+G80-   Cerebral pares
+G81-   Hemipares
+G83-P  Pares
+G91-   Hydrocefalus
+G933   Tr�tthetssyndrom efter virusinfektion
+G98-P  Neurologisk sjukdom
+H00-   Vagel
+H010   Blefarit
+H020   Entropion
+H021   Ektropion
+H024   Ptos
+H026   Xantelasm p� �gonlock
+H041   "Torra �gon"-syndromet
+H043   Dakryocystit
+H100   Varig konjunktivit
+H101   Allergisk konjunktivit
+H104   Kronisk konjunktivit
+H109P  Konjunktivit
+H110   Pterygium
+H113   Subkonjunktival bl�dning
+H15-   Sklerit
+H16-   Hornhinneinflammation
+H20-   Irit
+H25-P  Katarakt
+H33-   N�thinneavlossning
+H34-   Retinalk�rlsocklusion
+H350   Hypertensiv retinopati
+H353   Makuladegeneration
+H40-P  Glaukom
+H433   Glaskroppsgrumling
+H46-   Optikusneurit
+H49-   �gonmuskelf�rlamning
+H50-   Skelning
+H524   Presbyopi
+H527P  Brytningsfel
+H532   Dubbelseende
+H535   F�rgsinnesdefekt
+H539P  Synrubbning
+H54-   Synneds�ttning
+H55-   Nystagmus
+H571   �gonsm�rta
+H579P  �gonsjukdom
+H60-   Extern otit
+H612   Vaxpropp
+H65-   Sekretorisk otit
+H660   Akut mediaotit
+H663P  Kronisk mediaotit 
+H669P  Mellan�reinflammation, ej specificerad 
+H70-   Mastoidit
+H72-   Trumhinneperforation
+H730   Akut myringit
+H80-   Otoskleros
+H810   M�ni�res sjukdom
+H811   Benign paroxysmal yrsel
+H812   Vestibularisneurit
+H814   Central yrsel
+H833   Bullerskada
+H911   �ldersbetingad h�rselneds�ttning
+H919P  H�rselneds�ttning
+H920   �ronv�rk
+H921   �ronflytning
+H931   Tinnitus
+H939P  �ronsjukdom
+I10-   Hypertoni
+I13-P  Hypertoni med organsjukdom
+I15-   Sekund�r hypertoni
+I200   Instabil angina pectoris
+I209P  Angina pectoris
+I21-P  Hj�rtinfarkt
+I25-P  Ischemisk hj�rtsjukdom
+I26-   Lungemboli
+I27-P  Sjukdom i lungcirkulationen 
+I30-   Akut perikardit
+I31-P  Sjukdom i perikardiet
+I38-P  Hj�rtklaffsjukdom 
+I40-P  Akut myokardit 
+I42-P  Kardiomyopati
+I45-P  Retledningsrubbning 
+I46-   Hj�rtstillest�nd
+I47-   Paroxysmal takykardi
+I48-   F�rmaksflimmer
+I49-   Hj�rtarytmi
+I50-   Hj�rtsvikt
+I51-P  Hj�rtsjukdom
+I60-   Subaraknoidalbl�dning
+I61-P  Hj�rnbl�dning
+I63-   Hj�rninfarkt
+I64-   Akut cerebral insult
+I67-P  Cerebrovaskul�r sjukdom 
+I69-   Funktionsneds�ttning efter cerebrovaskul�r sjukdom
+I709P  Ateroskleros
+I71-   Aortaaneurysm
+I72-   Art�raneurysm
+I730   Raynauds syndrom
+I739P  Perifer vaskul�r sjukdom
+I74-   Art�remboli
+I77-P  K�rlsjukdom
+I800   Tromboflebit i ben
+I803P  Djup ventrombos i ben
+I809P  Ventrombos
+I82-P  Tromboembolisk sjukdom
+I832P  Ven�st bens�r
+I839P  Ytliga varicer p� ben
+I85-   Esofagusvaricer
+I861   Varikocele
+I872P  Ven�s insufficiens
+I879P  Vensjukdom
+I89-P  Lymfk�rlssjukdom
+I95-   Hypotoni
+I972   Lymf�dem efter mastektomi
+I979P  Cirkulationssjukdom efter medicinsk �tg�rd 
+I99-P  Sjukdom i cirkulationsorganen
+J01-   Akut sinuit
+J02-   Faryngit
+J03-   Tonsillit
+J04-   Akut laryngit
+J050   Pseudokrupp
+J051   Epiglottit
+J06-P  �vre luftv�gsinfektion 
+J099   Influensa A (H1N1)
+J11-P  Influensa
+J18-P  Pneumoni
+J22-P  Akut bronkit
+J300   Vasomotorisk rinit
+J304P  Allergisk rinit
+J310   Kronisk rinit
+J312P  Kronisk faryngit 
+J32-   Kronisk sinuit 
+J33-   N�spolyp
+J340   N�sfurunkel
+J342   Septumdeviation
+J351P  Tonsillhypertrofi
+J359P  Adenoid
+J36-   Peritonsillit
+J37-   Kronisk laryngit
+J380   St�mbandspares
+J382P  St�mbandspolyp
+J42-P  Kronisk bronkit
+J43-   Emfysem
+J441   Kroniskt obstruktiv lungsjukdom med akut exacerbation
+J449P  Kroniskt obstruktiv lungsjukdom, ospecificerad
+J45-P  Astma
+J47-   Bronkiektasier
+J61-   Asbestos
+J64-P  Pneumokonios
+J67-P  Allergisk alveolit
+J84-P  Interstitiell lungsjukdom
+J90-P  Pleurit
+J92-   Pleuraplack
+J93-   Pneumotorax
+J96-P  Respiratorisk insufficiens 
+J98-P  Sjukdom i andningsorgan
+K02-   Karies
+K05-   Parodontit
+K08-P  Tandsjukdom
+K10-P  K�ksjukdom
+K11-   Spottk�rtelsjukdom
+K120   Recidiverande afte
+K122P  Stomatit
+K13-   L�pp- och munslemhinnesjukdom
+K14-   Tungsjukdom
+K21-   Gastroesofagal reflux
+K22-P  Matstrupssjukdom
+K25-   S�r i mags�cken
+K26-   S�r i tolvfingertarmen
+K30-P  Dyspepsi
+K31-P  Gastroduodenal sjukdom
+K35-   Akut blindtarmsinflammation
+K40-P  Ljumskbr�ck
+K42-   Navelbr�ck
+K44-   Diafragmabr�ck
+K46-P  Bukbr�ck
+K50-   Crohns sjukdom
+K51-   Ulcer�s kolit
+K52-P  Icke infekti�s mag-tarmsjukdom 
+K55-   K�rlsjukdom i tarm
+K564   Fekalom
+K567P  Ileus
+K578   Divertikulit
+K579P  Divertikulos
+K58-P  Colon irritabile
+K590   Obstipation
+K591   Funktionell diarr�
+K594   Analspasm
+K61-P  Analfissur
+K62-   Rektalsjukdom
+K64-   Hemorrojder och perianal ven�s trombos
+K65-   Bukhinneinflammation
+K70-   Alkoholleversjukdom
+K71-P  Toxisk leversjukdom 
+K76-P  Kronisk leversjukdom 
+K80-   Gallsten
+K81-   Gallbl�seinflammation
+K83-P  Gallv�gssjukdom
+K85-   Akut pankreatit
+K86-   Kronisk bukspottk�rtelinflammation
+K900   Celiaki
+K909P  Intestinal malabsorption
+K911   Dumpingsyndrom
+K920   Hematemes
+K921   Melena
+K929P  Gastrointestinal sjukdom
+L00-   Pemphigus neonatorum
+L01-   Impetigo
+L02-   Abscess
+L030   Paronyki
+L04-   Lymfadenit
+L05-   Pilonidalcysta
+L08-P  Hudinfektion
+L130   Dermatitis herpetiformis
+L139P  Bull�s dermatit
+L20-   Atopisk dermatit
+L21-   Seborroisk dermatit
+L22-   Bl�jdermatit
+L230   Nickeleksem
+L24-   Traumiterativt eksem
+L25-P  Kontaktdermatit 
+L270P  L�kemedelsexantem 
+L279P  F�do�mnesexantem 
+L280   Neurodermit 
+L29-P  Pruritus
+L300   Nummul�r dermatit
+L302   Id-reaktion
+L303   Infekterat eksem
+L304   Intertrigo
+L309P  Dermatit
+L403   Pustulosis palmoplantaris
+L409P  Psoriasis
+L41-   Parapsoriasis
+L42-   Pityriasis rosea
+L43-   Lichen planus
+L50-   Urtikaria
+L51-   Erythema multiforme
+L52-   Erythema nodosum
+L53-P  Erytem
+L56-P  Ljusdermatit
+L570   Aktinisk keratos
+L58-P  Str�lningsdermatit 
+L600   Nageltr�ng
+L609P  Nagelsjukdom
+L63-   Alopecia areata
+L65-P  Alopeci
+L68-   Hypertrikos
+L70-   Akne
+L710   Perioral dermatit
+L719P  Rosacea
+L72-   Aterom
+L73-   Hidradenit
+L74-P  Svettk�rtelsjukdom
+L80-   Vitiligo
+L818   Tatuering
+L819P  Pigmentrubbning 
+L82-   Seborroisk keratos
+L84-   Hudf�rh�rdnad
+L85-P  Hudhorn
+L89-   Trycks�r
+L90-   Atrofisk hudsjukdom
+L91-   Keloid�rr
+L92-   Fr�mmandekroppsgranulom
+L93-P  Kutan lupus erythematosus 
+L95-   Vaskulit i huden
+L97-   Bens�r
+L980   Pyogent granulom
+L981   Dermatitis factitia
+L984   Kroniskt huds�r
+L989P  Hudsjukdom, ospecificerad 
+M06-P  Reumatoid artrit
+M10-   Gikt
+M11-   Kristallsynovit
+M13-P  Artrit
+M151P  Heberdens knutor
+M159P  Generaliserad artros 
+M16-   H�ftledsartros 
+M17-   Kn�artros
+M18-   Artros i f�rsta karpometakarpalleden
+M19-   Artros
+M201   Hallux valgus
+M220P  Recidiverande patellarluxation
+M224   Chondromalacia patellae
+M232P  Menisksjukdom
+M239P  Kn�ledssjukdom
+M242   Ligamentslapphet
+M245   Ledkontraktur
+M254P  Ledutgjutning
+M255   Ledv�rk
+M256   Ledstelhet
+M259P  Ledsjukdom
+M315P  J�ttecellsarterit
+M350   Sj�grens syndrom
+M353   Polymyalgia reumatica
+M359P  Kollagenos
+M411   Juvenil skolios
+M420   Morbus Scheuermann
+M431   Spondylolistes
+M436   Tortikollis
+M45-   Pelvospondylit
+M47-   Spondylos
+M50-   Cervikalt diskbr�ck
+M51-   Diskbr�ck
+M530   Cervikokranialt syndrom
+M531   Cervikobrakialt syndrom
+M533   Koccygodyni
+M539P  Ryggsjukdom
+M542   Cervikalgi
+M543   Ischias
+M544   Lumbago-ischias
+M545   Lumbago
+M546   Torakal ryggsm�rta
+M549P  Ryggv�rk
+M653   Trigger finger
+M654   de Quervains sjukdom
+M659P  Tenosynovit
+M66-   Spontan senruptur
+M674   Ganglion
+M700   Krepiterande handledssynovit
+M702   Olekranonbursit
+M704   Prepatellarbursit
+M706   Trokanterit
+M710   Varig bursit
+M712   Bakercysta
+M720   Dupuytrens kontraktur
+M722   Plantar fasciit
+M750   Frusen skuldra
+M751   Supraspinatussyndrom
+M752   Bicepstendinit
+M753   Kalkaxel
+M754   Impingementsyndrom i skulderled
+M755   Skulderbursit
+M759P  Skulderledssjukdom
+M766   Akillestendinit
+M771P  Epikondylit
+M779P  Entesopati
+M790   Mjukdelsreumatism
+M791   Myalgi
+M799P  Mjukv�vnadssjukdom
+M80-   Osteoporos med fraktur
+M81-   Osteoporos
+M840P  Pseudartros
+M843   Stressfraktur
+M844   Patologisk fraktur
+M86-   Osteomyelit
+M89-P  Ben-brosksjukdom
+M912P  Coxa plana
+M925   Schlatters sjukdom
+M929P  Juvenil osteokondros
+M932   Osteochondritis dissecans
+M940   Tietzes syndrom
+M95-P  F�rv�rvad deformitet
+M96-P  Muskuloskeletal sjukdom efter ingrepp 
+N04-   Nefrotiskt syndrom
+N05-P  Glomerulonefrit
+N12-P  Pyelonefrit
+N133P  Hydronefros
+N139P  Urinv�gsreflux
+N19-P  Njursvikt
+N20-   Njursten
+N21-   Bl�ssten
+N23-   Njurkolik
+N28-P  Nefropati
+N30-P  Cystit
+N32-P  Sjukdom i urinbl�san
+N34-   Uretrit
+N35-   Uretrastriktur
+N36-P  Uretrasjukdom
+N394P  Urininkontinens
+N399P  Urinv�gssjukdom
+N40-   Prostatahyperplasi
+N41-   Prostatit
+N42-   Prostatasjukdom
+N433P  Hydrocele
+N434   Spermatocele
+N44-   Testistorsion
+N45-   Epididymit
+N46-   Infertilitet hos man
+N47-   Fimosis
+N481P  Balanit
+N483   Priapism
+N484   Impotens
+N50-P  Sjukdom i manliga genitalia 
+N600   Mammarcysta
+N602P  Fibroadenomatos
+N61-   Mastit
+N62-   Mammarhypertrofi
+N63-   Knuta i br�stk�rtel
+N64-   Sjukdom i br�stk�rtel
+N70-   Salpingit
+N71-   Endometrit
+N72-   Cervicit
+N73-P  Pelvic inflammatory disease [PID] 
+N75-   Bartholinit
+N76-P  Vulvovaginit
+N80-   Endometrios
+N811   Cystocele
+N816   Rektocele
+N819P  Uterovaginal prolaps
+N82-   Fistel i kvinnliga genitalia
+N832P  Ovarialcysta
+N841   Cervixpolyp
+N86-   Erytroplaki
+N87-   Cervixdysplasi
+N90-P  Sjukdom i kvinnliga genitalia 
+N910   Prim�r amenorr�
+N911P  Sekund�r amenorr� 
+N915P  Oligomenorr�
+N92-   Menometrorragi
+N93-   Postkoital bl�dning
+N940   Ovulationssm�rta
+N941P  Dyspareuni
+N943   Premenstruellt sp�nningssyndrom
+N946P  Dysmenorr�
+N950   Postmenopausal bl�dning
+N952   Atrofisk vaginit
+N959P  Klimakteriebesv�r
+N97-P  Infertilitet hos kvinna
+N99-P  Komplikation efter ingrepp i urin- och k�nsorgan 
+O00-   Extrauteringraviditet
+O01-P  Mola
+O03-P  Spontanabort
+O04-P  Inducerad abort
+O120P  Graviditets�dem
+O121   Proteinuri under graviditet
+O14-P  Preeklampsi
+O15-   Eklampsi
+O16-P  Graviditetshypertoni
+O20-   Tidig graviditetsbl�dning
+O21-   Hyperemesis gravidarum
+O24-   Graviditetsdiabetes
+O267   Symfyseolys
+O269P  Graviditetskomplikation 
+O30-P  Flerb�rdsgraviditet 
+O32-P  Komplicerande fosterl�ge 
+O33-P  B�ckentr�ngsel
+O34-P  F�rlossningshinder
+O36-P  Problem hos fostret
+O44-   Placenta praevia
+O45-   Ablatio placentae
+O47-P  Hotande f�rtidsb�rd 
+O48-   �verburenhet
+O75-P  F�rlossningskomplikation 
+O80-   Okomplicerad f�rlossning
+O86-P  Puerperal infektion 
+O90-P  Puerperal komplikation 
+O91-   Mj�lkstockning
+O92-   Amningsproblem
+O99-P  Obstetrisk komplikation 
+P01-P  Perinatalt problem sekund�rt till maternell faktor 
+P05-   Intrauterin tillv�xth�mning 
+P07-   Prematuritet
+P08-   Postmaturitet
+P143P  Plexus brachialis-skada 
+P15-P  F�rlossningsskada
+P28-P  Perinatal andningsrubbning 
+P29-   Perinatal cirkulationsrubbning
+P38-   Neonatal navelinfektion
+P391   Neonatal konjunktivit
+P399P  Perinatal infektion 
+P54-P  Perinatal bl�dning 
+P55-P  Perinatal hemolytisk sjukdom 
+P59-P  Gulsot hos nyf�dd, fysiologisk 
+P92-   Uppf�dningsproblem hos nyf�dd
+P96-P  Perinatal sjukdom
+Q03-   Medf�dd hydrocefalus
+Q05-   Spina bifida
+Q07-P  Missbildning i nervsystemet 
+Q15-P  Missbildning av �ga
+Q17-P  Missbildning av �ra
+Q18-   Missbildning av ansikte och hals
+Q24-P  Hj�rtmissbildning
+Q28-P  K�rlmissbildning
+Q314   Laryngomalaci
+Q34-P  Missbildning av andningsorgan 
+Q35-   Gomspalt
+Q36-   L�ppspalt
+Q37-   L�pp-gomspalt
+Q381   Tungband
+Q400   Medf�dd pylorusstenos
+Q430   Meckels divertikel
+Q431   Medf�dd megakolon
+Q45-P  Missbildning av matsm�ltningsorgan 
+Q53-   Retentio testis
+Q54-   Hypospadi
+Q57-P  Missbildning av k�nsorgan
+Q61-   Cystnjuresjukdom
+Q64-P  Missbildning av urinorgan
+Q65-   H�ftmissbildning
+Q66-   Fotmissbildning
+Q74-P  Extremitetsmissbildning
+Q79-P  Missbildning av muskler och skelett 
+Q80-   Medf�dd iktyos
+Q822   Urticaria pigmentosa
+Q825   Medf�tt hemangiom
+Q829P  Hudmissbildning
+Q83-   Missbildning av br�stk�rtel
+Q850   Neurofibromatos
+Q860   Fetalt alkoholsyndrom
+Q893   Situs inversus
+Q899P  Missbildning 
+Q90-   Downs syndrom
+Q96-   Turners syndrom
+Q984P  Klinefelters syndrom
+Q99-P  Kromosomrubbning 
+R000   Takykardi
+R001   Bradykardi
+R002   Hj�rtklappning
+R008   Onormal hj�rtrytm
+R01-   Benignt hj�rtbiljud
+R02-   Gangr�n
+R030   Uppm�tt f�rh�jt blodtryck
+R031   Uppm�tt l�gt blodtryck
+R040   N�sbl�dning
+R042   Hemoptys
+R049P  Bl�dning fr�n luftv�gar 
+R05-   Hosta
+R060   Dyspn�
+R065   Snarkning
+R066   Hicka
+R068P  Andningsrubbning
+R07-P  Br�stsm�rta
+R098P  Specifika symtom fr�n respirationsorgan 
+R100   Akut buk
+R101   Sm�rta i �vre delen av buken
+R103P  Sm�rta i nedre delen av buken
+R104P  Buksm�rta
+R108P  Sp�dbarnskolik
+R110P  Illam�ende
+R111P  Kr�kningar
+R12-   Halsbr�nna
+R13-   Sv�ljningssv�righeter
+R14-   Flatulens
+R15-   Fecesinkontinens
+R16-   Lever- och mj�ltf�rstoring
+R17-   Gulsot
+R18-   Ascites
+R190   Resistens i buk
+R194   �ndrade avf�ringsvanor
+R196   D�lig andedr�kt
+R198P  Specifika matsm�ltningsorganssymtom 
+R20-   K�nselst�rning i hud
+R21-   Hudutslag
+R22-   Resistens i huden
+R230   Cyanos
+R233   Petekier
+R234   Fj�llande hud
+R238P  Hudf�r�ndring
+R251   Tremor
+R252   Kramp
+R258P  Ofrivilliga r�relser
+R26-P  G�ngrubbning
+R292   Reflexrubbning
+R298P  Neuromuskuloskeletalt symtom 
+R30-   Sm�rta vid vattenkastning
+R31-   Hematuri
+R32-   Urininkontinens, ospecificerad
+R33-   Urinretention
+R35-   Polyuri
+R36-   Flytning fr�n uretra
+R391   Miktionssv�righeter
+R398P  Anuri
+R40-   Medvetandes�nkning
+R410   Desorientering
+R418P  Amnesi
+R42-   Yrsel
+R44-P  Perceptionsrubbning
+R45-P  Symtom avseende k�nslol�ge 
+R47-   Talsv�righet
+R48-   L�s- och skrivsv�righeter
+R490   Heshet
+R498P  R�stst�rning
+R50-   Oklar feber
+R51-   Huvudv�rk
+R52-   Sm�rta
+R53-   Tr�tthet
+R54-   �lderssvaghet
+R55-   Svimning
+R56-   Feberkramp
+R57-   Chock, ospecificerad
+R58-   Bl�dning
+R59-   Lymfk�rtelf�rstoring
+R60-   �dem
+R61-   �verdriven svettning
+R62-   Tillv�xtrubbning
+R630   Anorexi
+R638P  Symtom relaterade till f�do- och v�tskeintag 
+R64-   Kakexi
+R682   Muntorrhet
+R688P  Ok�nd orsak till sjuklighet
+R700   SR-utredning
+R73-   Hyperglykemi
+R79-P  Onormal blodkemi
+R82-P  Onormalt urinfynd 
+R89-P  Onormalt provfynd 
+R93-P  Onormalt radiologiskt fynd
+R94-   Onormalt funktionsunders�kningsresultat
+R99-P  D�dsfall med ok�nd orsak
+S02-   Kraniefraktur
+S05-   �gonskada
+S060   Hj�rnskakning
+S092   Traumatisk trumhinneruptur
+S12-   Halskotfraktur
+S134   Distorsion i halskotpelaren
+S220P  Br�stkotsfraktur
+S222   Sternumfraktur
+S223P  Revbensfraktur
+S320   L�ndkotsfraktur
+S328P  B�ckenfraktur
+S420   Nyckelbensfraktur
+S422   Proximal humerusfraktur
+S429P  Fraktur p� skulderg�rdel 
+S430   Luxation i skulderled
+S46-   Muskul�r skada kring skuldra
+S525   Distal radiusfraktur
+S530   Luxation av radiushuvudet
+S620   Skafoideumfraktur i hand
+S624P  Metakarpalbensfraktur
+S627P  Fraktur p� finger
+S631P  Fingerledsluxation 
+S635   Handledsdistorsion
+S636   Distorsion i finger
+S720P  L�rbenshalsfraktur 
+S729P  L�rbensfraktur
+S820   Patellarfraktur
+S822P  Underbensfraktur 
+S828P  Malleolarfraktur
+S832   Meniskruptur
+S836P  Kn�distorsion
+S860   H�lseneskada
+S923   Metatarsalbensfraktur
+S925P  T�fraktur
+S929P  Fotfraktur
+S934P  Fotledsdistorsion 
+T00-P  Skrubbs�r
+T01-P  S�rskada
+T02-P  Fraktur
+T03-P  Distorsion
+T05-P  Traumatisk amputation 
+T07-P  Skada
+T15-   Fr�mmande kropp i �ga
+T16-   Fr�mmande kropp i �ra
+T17-   Fr�mmande kropp i andningsv�gar
+T18-   Fr�mmande kropp i matsm�ltningsorgan
+T19-   Fr�mmande kropp i urinorgan/k�nsorgan
+T30-P  Br�nnskada
+T35-P  K�ldskada
+T50-P  L�kemedelsf�rgiftning
+T65-P  F�rgiftning
+T71-   Kv�vning
+T74-   Misshandelssyndrom
+T751   Drunkningstillbud
+T752   Vibrationsskada
+T753   R�relsesjuka
+T782P  Anafylaxi
+T784   Allergi
+T789P  Ogynnsam effekt
+T79-   Tidig komplikation till trauma
+T80-   Komplikation efter injektion
+T85-P  Komplikation av inre proteser 
+T88-P  Komplikation till kirurgisk �tg�rd och medicinsk v�rd 
+T98-P  Sena besv�r av skada
+Y579   L�kemedel eller drog i terapeutiskt bruk som orsak till ogynnsam effekt
+Z000   Allm�n medicinsk unders�kning
+Z001   H�lso�vervakning av barn
+Z014   Gynekologisk h�lsokontroll
+Z019P  Speciell rutinunders�kning 
+Z02-   Unders�kning f�r intyg
+Z03-   Medicinsk bed�mning f�r misst�nkt sjukdom
+Z04-   Unders�kning av medikolegala sk�l
+Z09-P  Medicinsk �vervakning efter behandling
+Z10-   H�lsokontroll av definierad befolkningsgrupp
+Z13-P  H�lsokontroll avseende specificerad sjukdom 
+Z22-P  Exponering f�r smittsam sjukdom
+Z27-P  Vaccination
+Z28-   Ej genomf�rd vaccination
+Z29-   Profylaktisk �tg�rd mot smittsam sjukdom
+Z300P  Preventivmedelsr�dgivning
+Z301P  Intrauterint preventivmedel
+Z303   "Dagen-efter-piller"
+Z309P  F�delsekontroll
+Z31-   Fertilitetsfr�mjande �tg�rd
+Z32-P  Graviditetsunders�kning
+Z34-P  M�drah�lsov�rd
+Z515   Palliativ v�rd
+Z54-P  V�rd�tg�rd
+Z65-P  Socialmedicinska problem
+Z70-   Sex- och samlevnadsr�dgivning
+Z710   Konsultation f�r annan
+Z711   Oro f�r sjukdom
+Z712   F�rklaring av unders�kningsfynd
+Z719P  R�dgivning, ospecificerad
+Z72-   Livsstilsproblem
+Z73-   Livssituationsproblem
+Z74-   Beroende av v�rdgivare
+Z75-   V�rd p� fel v�rdniv�
+Z760   Receptf�rnyelse
+Z769P  V�rdkontakt, ospecificerad
+Z91-P  Potentiell h�lsorisk i familjeanamnes
