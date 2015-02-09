@@ -61,7 +61,7 @@ public class WebcertRepositoryServiceImpl implements WebcertRepositoryService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see se.inera.webcert.notifications.service.IntygRepositoryService#getIntygsUtkast(java.lang.String)
      */
     @Override

@@ -28,7 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodKodRestriktion;
 import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
@@ -81,7 +81,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
         assertNotNull(statusUpdateType);
         assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
         assertNotNull(statusUpdateType.getUtlatande().getPatient().getPersonId().getExtension());
-        assertEquals(HandelsekodCodeRestrictionType.HAN_1.value(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
+        assertEquals(HandelsekodKodRestriktion.HAN_1.value(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
         assertNotNull(statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCodeSystem());
         assertNotNull(statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCodeSystemName());
         assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.toString(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getDisplayName());
@@ -110,7 +110,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
                 .getBody(CertificateStatusUpdateForCareType.class);
         assertNotNull(statusUpdateType);
         assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
-        assertEquals(HandelsekodCodeRestrictionType.HAN_2.value(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
+        assertEquals(HandelsekodKodRestriktion.HAN_2.value(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
         assertEquals(HandelseType.INTYGSUTKAST_SIGNERAT.toString(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getDisplayName());
         assertNotNull(statusUpdateType.getUtlatande().getPatient().getPersonId().getExtension());
         assertNotNull(statusUpdateType.getUtlatande().getSigneringsdatum());
@@ -140,7 +140,7 @@ public class ProcessNotificationRequestRouteBuilderTest {
         assertNotNull(statusUpdateType);
         assertNotNull(statusUpdateType.getUtlatande().getSkapadAv());
         assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
-        assertEquals(HandelsekodCodeRestrictionType.HAN_4.value(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
+        assertEquals(HandelsekodKodRestriktion.HAN_4.value(), statusUpdateType.getUtlatande().getHandelse().getHandelsekod().getCode());
         assertTrue(statusUpdateType.getUtlatande().getArbetsformaga().isEmpty());
         assertNull(statusUpdateType.getUtlatande().getDiagnos());
         assertNotNull(statusUpdateType.getUtlatande().getFragorOchSvar());

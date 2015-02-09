@@ -9,7 +9,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.stereotype.Component;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateStatusType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeStatus;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
@@ -77,15 +77,15 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return item;
     }
 
-    public List<IntygStatus> convertToListOfIntygStatus(List<CertificateStatusType> source) {
+    public List<IntygStatus> convertToListOfIntygStatus(List<UtlatandeStatus> source) {
         List<IntygStatus> status = new ArrayList<>();
-        for (CertificateStatusType certificateStatusType : source) {
+        for (UtlatandeStatus certificateStatusType : source) {
             status.add(convertToIntygStatus(certificateStatusType));
         }
         return status;
     }
 
-    private IntygStatus convertToIntygStatus(CertificateStatusType source) {
+    private IntygStatus convertToIntygStatus(UtlatandeStatus source) {
         StatusType statusType = convertStatusType(source.getType());
         return new IntygStatus(statusType, source.getTarget(), source.getTimestamp());
     }

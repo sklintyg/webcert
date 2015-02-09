@@ -18,13 +18,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.EnhetType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonalType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.PatientType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaPersonService;
@@ -74,7 +74,7 @@ public class CreateDraftCertificateResponderImplTest {
     public void whenNewCertificateDraftSuccessResponse() {
 
         ValidationResult validationResults = new ValidationResult();
-        when(mockValidator.validate(any(UtlatandeType.class))).thenReturn(validationResults);
+        when(mockValidator.validate(any(Utlatande.class))).thenReturn(validationResults);
 
         List<MiuInformationType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
         when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
@@ -92,7 +92,7 @@ public class CreateDraftCertificateResponderImplTest {
         draftRequest.setIntygId(UTKAST_ID);
         draftRequest.setVardenhet(vardenhet);
 
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(UtlatandeType.class), any(MiuInformationType.class))).thenReturn(draftRequest);
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(MiuInformationType.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(UTKAST_ID);
         when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
 
@@ -109,15 +109,15 @@ public class CreateDraftCertificateResponderImplTest {
 
     private CreateDraftCertificateType createParams() {
 
-        UtlatandeType utlatande = new UtlatandeType();
+        Utlatande utlatande = new Utlatande();
 
         // Type
-        TypAvUtlatandeType utlTyp = new TypAvUtlatandeType();
+        TypAvUtlatande utlTyp = new TypAvUtlatande();
         utlTyp.setCode("fk7263");
         utlatande.setTypAvUtlatande(utlTyp);
 
         // HoSPerson
-        HosPersonalType hosPerson = new HosPersonalType();
+        HosPersonal hosPerson = new HosPersonal();
         hosPerson.setFullstandigtNamn("Abel Baker");
 
         HsaId userHsaId = new HsaId();
@@ -125,7 +125,7 @@ public class CreateDraftCertificateResponderImplTest {
         userHsaId.setRoot("USERHSAID");
         hosPerson.setPersonalId(userHsaId);
 
-        EnhetType hosEnhet = new EnhetType();
+        Enhet hosEnhet = new Enhet();
         HsaId unitHsaId = new HsaId();
         unitHsaId.setExtension(UNIT_HSAID);
         unitHsaId.setRoot("UNITHSAID");
@@ -139,7 +139,7 @@ public class CreateDraftCertificateResponderImplTest {
         personId.setRoot("PERSNR");
         personId.setExtension("19121212-1212");
 
-        PatientType patType = new PatientType();
+        Patient patType = new Patient();
         patType.setPersonId(personId);
         patType.getFornamn().add("Adam");
         patType.getFornamn().add("Bertil");

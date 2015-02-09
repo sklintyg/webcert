@@ -26,7 +26,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodKodRestriktion;
 import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub;
 
@@ -105,10 +105,10 @@ public class TestNotifications {
         });
         Map<String, String> exchange = certificateStatusUpdateForCareResponderStub.getExchange();
 
-        assertEquals("Expected INTYGSUTKAST_RADERAT (HAN4) for intyg-4", exchange.get("intyg-4"), HandelsekodCodeRestrictionType.HAN_4.value());
+        assertEquals("Expected INTYGSUTKAST_RADERAT (HAN4) for intyg-4", exchange.get("intyg-4"), HandelsekodKodRestriktion.HAN_4.value());
 
-        assertEquals("Expected INTYG_SIGNERAT (HAN2) for intyg-2", exchange.get("intyg-2"), HandelsekodCodeRestrictionType.HAN_2.value());
+        assertEquals("Expected INTYG_SIGNERAT (HAN2) for intyg-2", exchange.get("intyg-2"), HandelsekodKodRestriktion.HAN_2.value());
 
-        assertEquals("Expected INTYGSUTKAST_SKAPAT (HAN1) for intyg-1", exchange.get("intyg-1"), HandelsekodCodeRestrictionType.HAN_1.value());
+        assertEquals("Expected INTYGSUTKAST_SKAPAT (HAN1) for intyg-1", exchange.get("intyg-1"), HandelsekodKodRestriktion.HAN_1.value());
     }
 }

@@ -7,15 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.EnhetType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.FragorOchSvarType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HandelseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HosPersonalType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Enhet;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.FragorOchSvar;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Handelse;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HosPersonal;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.Handelsekod;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodKodRestriktion;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.inera.webcert.notifications.message.v1.HoSPersonType;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
@@ -36,9 +36,9 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
     private static final String TYPAVUTLATANDE_CODESYSTEM = "f6fb361a-e31d-48b8-8657-99b63912dd9b";
 
     private static final String TYPAVUTLATANDE_CODESYSTEM_NAME = "kv_utlåtandetyp_intyg";
-    
+
     private static final String HANDELSE_CODESYSTEM = "dfd7bbad-dbe5-4a2f-ba25-f7b9b2cc6b14";
-    
+
     private static final String HANDELSE_CODESYSTEM_NAME = "kv_händelse";
 
     @Override
@@ -57,16 +57,16 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         utlatandeType.setUtlatandeId(utlatandeId);
 
         // FK7263 is hard-coded as typAvUtlatande
-        TypAvUtlatandeType typAvUtlatande = createTypAvUtlatande();
+        TypAvUtlatande typAvUtlatande = createTypAvUtlatande();
         utlatandeType.setTypAvUtlatande(typAvUtlatande);
 
-        HandelseType handelseType = new HandelseType();
+        Handelse handelseType = new Handelse();
         handelseType.setHandelsekod(createHandelsekodType(request.getHandelse()));
         handelseType.setHandelsetidpunkt(request.getHandelseTidpunkt());
 
         utlatandeType.setHandelse(handelseType);
 
-        FragorOchSvarType fosType = createDefaultFragorOchSvarType();
+        FragorOchSvar fosType = createDefaultFragorOchSvarType();
         utlatandeType.setFragorOchSvar(fosType);
 
         if (se.inera.webcert.notifications.message.v1.HandelseType.INTYGSUTKAST_RADERAT.equals(request.getHandelse())) {
@@ -82,13 +82,13 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
 
     private void decorateWithHoSPersonFromRequest(UtlatandeType utlatandeType, HoSPersonType hoSPerson) {
 
-        HosPersonalType hoSPersonalType = new HosPersonalType();
+        HosPersonal hoSPersonalType = new HosPersonal();
         hoSPersonalType.setFullstandigtNamn(hoSPerson.getFullstandigtNamn());
 
         HsaId personHsaId = createHsaId(hoSPerson.getHsaId());
         hoSPersonalType.setPersonalId(personHsaId);
 
-        EnhetType vardEnhet = new EnhetType();
+        Enhet vardEnhet = new Enhet();
         vardEnhet.setEnhetsnamn(hoSPerson.getVardenhet().getEnhetsNamn());
 
         HsaId vardEnhetHsaId = createHsaId(hoSPerson.getVardenhet().getHsaId());
@@ -113,8 +113,8 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         return utlatandeId;
     }
 
-    private TypAvUtlatandeType createTypAvUtlatande() {
-        TypAvUtlatandeType typAvUtlatande = new TypAvUtlatandeType();
+    private TypAvUtlatande createTypAvUtlatande() {
+        TypAvUtlatande typAvUtlatande = new TypAvUtlatande();
         typAvUtlatande.setCode(TYPAVUTLATANDE_FK7263_CODE);
         typAvUtlatande.setCodeSystem(TYPAVUTLATANDE_CODESYSTEM);
         typAvUtlatande.setCodeSystemName(TYPAVUTLATANDE_CODESYSTEM_NAME);
@@ -122,8 +122,8 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         return typAvUtlatande;
     }
 
-    private FragorOchSvarType createDefaultFragorOchSvarType() {
-        FragorOchSvarType fosType = new FragorOchSvarType();
+    private FragorOchSvar createDefaultFragorOchSvarType() {
+        FragorOchSvar fosType = new FragorOchSvar();
         fosType.setAntalFragor(0);
         fosType.setAntalHanteradeFragor(0);
         fosType.setAntalHanteradeSvar(0);
@@ -131,43 +131,43 @@ public class CreateAndInitCertificateStatusRequestProcessor implements Processor
         return fosType;
     }
 
-    private HandelsekodType createHandelsekodType(se.inera.webcert.notifications.message.v1.HandelseType handelse) {
-        
-        HandelsekodType type = new HandelsekodType();
+    private Handelsekod createHandelsekodType(se.inera.webcert.notifications.message.v1.HandelseType handelse) {
+
+        Handelsekod type = new Handelsekod();
         type.setCodeSystem(HANDELSE_CODESYSTEM);
         type.setCodeSystemName(HANDELSE_CODESYSTEM_NAME);
         type.setDisplayName(handelse.toString());
-        
-        HandelsekodCodeRestrictionType handelsekod = convertToHandelsekod(handelse);
+
+        HandelsekodKodRestriktion handelsekod = convertToHandelsekod(handelse);
         type.setCode(handelsekod.value());
-        
+
         return type;
     }
-    
-    private HandelsekodCodeRestrictionType convertToHandelsekod(se.inera.webcert.notifications.message.v1.HandelseType handelse) {
+
+    private HandelsekodKodRestriktion convertToHandelsekod(se.inera.webcert.notifications.message.v1.HandelseType handelse) {
         switch (handelse) {
         case FRAGA_FRAN_FK:
-            return HandelsekodCodeRestrictionType.HAN_6;
+            return HandelsekodKodRestriktion.HAN_6;
         case FRAGA_TILL_FK:
-            return HandelsekodCodeRestrictionType.HAN_8;
+            return HandelsekodKodRestriktion.HAN_8;
         case FRAGA_FRAN_FK_HANTERAD:
-            return HandelsekodCodeRestrictionType.HAN_9;
+            return HandelsekodKodRestriktion.HAN_9;
         case INTYG_MAKULERAT:
-            return HandelsekodCodeRestrictionType.HAN_5;
+            return HandelsekodKodRestriktion.HAN_5;
         case INTYG_SKICKAT_FK:
-            return HandelsekodCodeRestrictionType.HAN_3;
+            return HandelsekodKodRestriktion.HAN_3;
         case INTYGSUTKAST_ANDRAT:
-            return HandelsekodCodeRestrictionType.HAN_11;
+            return HandelsekodKodRestriktion.HAN_11;
         case INTYGSUTKAST_RADERAT:
-            return HandelsekodCodeRestrictionType.HAN_4;
+            return HandelsekodKodRestriktion.HAN_4;
         case INTYGSUTKAST_SIGNERAT:
-            return HandelsekodCodeRestrictionType.HAN_2;
+            return HandelsekodKodRestriktion.HAN_2;
         case INTYGSUTKAST_SKAPAT:
-            return HandelsekodCodeRestrictionType.HAN_1;
+            return HandelsekodKodRestriktion.HAN_1;
         case SVAR_FRAN_FK:
-            return HandelsekodCodeRestrictionType.HAN_7;
+            return HandelsekodKodRestriktion.HAN_7;
         case SVAR_FRAN_FK_HANTERAD:
-            return HandelsekodCodeRestrictionType.HAN_10;
+            return HandelsekodKodRestriktion.HAN_10;
         default:
             return null;
         }

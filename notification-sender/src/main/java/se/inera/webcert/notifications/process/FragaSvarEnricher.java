@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.FragorOchSvarType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.FragorOchSvar;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 
 public class FragaSvarEnricher {
@@ -14,7 +14,7 @@ public class FragaSvarEnricher {
     public CertificateStatusUpdateForCareType enrichWithNbrOfQuestionsForIntyg(CertificateStatusUpdateForCareType statusUpdateType,
             Long nbrOfQuestionsForIntyg) {
         LOG.debug("Adding nbr of questions to CertificateStatusUpdateForCareType: {}", nbrOfQuestionsForIntyg);
-        FragorOchSvarType fragaSvarType = getFragorOchSvarTypeFromUtlatandeType(statusUpdateType);
+        FragorOchSvar fragaSvarType = getFragorOchSvarFromUtlatande(statusUpdateType);
         fragaSvarType.setAntalFragor(longToInt(nbrOfQuestionsForIntyg));
 
         return statusUpdateType;
@@ -23,7 +23,7 @@ public class FragaSvarEnricher {
     public CertificateStatusUpdateForCareType enrichWithNbrOfAnsweredQuestionsForIntyg(CertificateStatusUpdateForCareType statusUpdateType,
             Long nbrOfAnsweredQuestionsForIntyg) {
         LOG.debug("Adding nbr of answered questions to CertificateStatusUpdateForCareType: {}", nbrOfAnsweredQuestionsForIntyg);
-        FragorOchSvarType fragaSvarType = getFragorOchSvarTypeFromUtlatandeType(statusUpdateType);
+        FragorOchSvar fragaSvarType = getFragorOchSvarFromUtlatande(statusUpdateType);
         fragaSvarType.setAntalSvar(longToInt(nbrOfAnsweredQuestionsForIntyg));
 
         return statusUpdateType;
@@ -32,7 +32,7 @@ public class FragaSvarEnricher {
     public CertificateStatusUpdateForCareType enrichWithNbrOfHandledQuestionsForIntyg(CertificateStatusUpdateForCareType statusUpdateType,
             Long nbrOfHandledQuestionsForIntyg) {
         LOG.debug("Adding nbr of handled questions to CertificateStatusUpdateForCareType: {}", nbrOfHandledQuestionsForIntyg);
-        FragorOchSvarType fragaSvarType = getFragorOchSvarTypeFromUtlatandeType(statusUpdateType);
+        FragorOchSvar fragaSvarType = getFragorOchSvarFromUtlatande(statusUpdateType);
         fragaSvarType.setAntalHanteradeFragor(longToInt(nbrOfHandledQuestionsForIntyg));
 
         return statusUpdateType;
@@ -41,7 +41,7 @@ public class FragaSvarEnricher {
     public CertificateStatusUpdateForCareType enrichWithNbrOfHandledAndAnsweredQuestionsForIntyg(CertificateStatusUpdateForCareType statusUpdateType,
             Long nbrOfHandledAndAnsweredQuestionsForIntyg) {
         LOG.debug("Adding nbr of handled and answered questions to CertificateStatusUpdateForCareType: {}", nbrOfHandledAndAnsweredQuestionsForIntyg);
-        FragorOchSvarType fragaSvarType = getFragorOchSvarTypeFromUtlatandeType(statusUpdateType);
+        FragorOchSvar fragaSvarType = getFragorOchSvarFromUtlatande(statusUpdateType);
         fragaSvarType.setAntalHanteradeSvar(longToInt(nbrOfHandledAndAnsweredQuestionsForIntyg));
 
         return statusUpdateType;
@@ -51,13 +51,13 @@ public class FragaSvarEnricher {
         return (value != null) ? value.intValue() : -1;
     }
 
-    private FragorOchSvarType getFragorOchSvarTypeFromUtlatandeType(CertificateStatusUpdateForCareType statusUpdateType) {
+    private FragorOchSvar getFragorOchSvarFromUtlatande(CertificateStatusUpdateForCareType statusUpdateType) {
 
         UtlatandeType utlatandeType = statusUpdateType.getUtlatande();
 
         if (utlatandeType.getFragorOchSvar() == null) {
             LOG.debug("Creating FragorOchSvarType since none was found in UtlatandeType");
-            FragorOchSvarType fragaSvarType = new FragorOchSvarType();
+            FragorOchSvar fragaSvarType = new FragorOchSvar();
             utlatandeType.setFragorOchSvar(fragaSvarType);
         }
 

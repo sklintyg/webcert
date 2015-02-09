@@ -12,13 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.EnhetType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonalType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.PatientType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
@@ -44,7 +44,7 @@ public class CreateNewDraftRequestBuilderTest {
 		Vardenhet hsaVardenhet = createHsaVardenhet();
 		when(orgServiceMock.getVardenhet(anyString())).thenReturn(hsaVardenhet);
 		
-		UtlatandeType utlatande = createUtlatande();
+		Utlatande utlatande = createUtlatande();
 
 		MiuInformationType miu = createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2));
 
@@ -89,17 +89,17 @@ public class CreateNewDraftRequestBuilderTest {
 		return hsaVardenhet;
 	}
 
-	private UtlatandeType createUtlatande() {
+	private Utlatande createUtlatande() {
 
-		UtlatandeType utlatande = new UtlatandeType();
+		Utlatande utlatande = new Utlatande();
 
 		// Type
-		TypAvUtlatandeType utlTyp = new TypAvUtlatandeType();
+		TypAvUtlatande utlTyp = new TypAvUtlatande();
 		utlTyp.setCode(CERT_TYPE);
 		utlatande.setTypAvUtlatande(utlTyp);
 
 		// HoSPerson
-		HosPersonalType hosPerson = new HosPersonalType();
+		HosPersonal hosPerson = new HosPersonal();
 		hosPerson.setFullstandigtNamn("Abel Baker");
 
 		HsaId userHsaId = new HsaId();
@@ -107,7 +107,7 @@ public class CreateNewDraftRequestBuilderTest {
 		userHsaId.setRoot("USERHSAID");
 		hosPerson.setPersonalId(userHsaId);
 
-		EnhetType hosEnhet = new EnhetType();
+		Enhet hosEnhet = new Enhet();
 		HsaId unitHsaId = new HsaId();
 		unitHsaId.setExtension(UNIT_HSAID);
 		unitHsaId.setRoot("UNITHSAID");
@@ -121,7 +121,7 @@ public class CreateNewDraftRequestBuilderTest {
 		personId.setRoot("PERSNR");
 		personId.setExtension("19121212-1212");
 
-		PatientType patType = new PatientType();
+		Patient patType = new Patient();
 		patType.setPersonId(personId);
 		patType.getFornamn().add("Adam");
 		patType.getFornamn().add("Bertil");

@@ -18,7 +18,6 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipients
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
@@ -137,8 +136,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public List<IntygItem> listIntyg(List<String> enhetId, String personnummer) {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
-        request.setNationalIdentityNumber(personnummer);
-        request.getCareUnit().addAll(enhetId);
+        request.setPersonId(personnummer);
+        request.getEnhet().addAll(enhetId);
 
         ListCertificatesForCareResponseType response = listCertificateService.listCertificatesForCare(logicalAddress,
                 request);

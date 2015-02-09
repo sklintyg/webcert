@@ -162,8 +162,8 @@ public class IntygServiceTest {
     public void testListIntyg() {
         // setup intygstjansten WS mock to return intyg information
         ListCertificatesForCareType request = new ListCertificatesForCareType();
-        request.setNationalIdentityNumber("19121212-1212");
-        request.getCareUnit().add("enhet-1");
+        request.setPersonId("19121212-1212");
+        request.getEnhet().add("enhet-1");
         when(listCertificatesForCareResponder.listCertificatesForCare(LOGICAL_ADDRESS, request)).thenReturn(
                 listResponse);
 
@@ -190,8 +190,8 @@ public class IntygServiceTest {
 
         // setup intygstjansten WS mock to return intyg information
         ListCertificatesForCareType request = new ListCertificatesForCareType();
-        request.setNationalIdentityNumber("19121212-1212");
-        request.getCareUnit().add("enhet-1");
+        request.setPersonId("19121212-1212");
+        request.getEnhet().add("enhet-1");
         when(listCertificatesForCareResponder.listCertificatesForCare(LOGICAL_ADDRESS, request)).thenReturn(
                 listErrorResponse);
 

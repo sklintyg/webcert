@@ -1,7 +1,5 @@
 package se.inera.webcert.notifications.process;
 
-import iso.v21090.dt.v1.PQ;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +12,12 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.ArbetsformagaType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Arbetsformaga;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.DiagnosType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.Diagnos;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PQ;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.DateInterval;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.DatumPeriod;
 import se.inera.certificate.codes.Diagnoskodverk;
 
 import com.jayway.jsonpath.Configuration;
@@ -73,10 +72,10 @@ public class EnrichWithIntygModelDataStrategy {
         UtlatandeType utlatandeType = statusUpdateType.getUtlatande();
         ReadContext jsonCtx = setupJsonContext(jsonModel);
 
-        List<ArbetsformagaType> arbetsFormagor = extractArbetsformagor(jsonCtx);
+        List<Arbetsformaga> arbetsFormagor = extractArbetsformagor(jsonCtx);
         utlatandeType.getArbetsformaga().addAll(arbetsFormagor);
 
-        DiagnosType diagnosType = extractDiagnos(jsonCtx);
+        Diagnos diagnosType = extractDiagnos(jsonCtx);
 
         if (diagnosType != null) {
             utlatandeType.setDiagnos(diagnosType);
@@ -85,7 +84,7 @@ public class EnrichWithIntygModelDataStrategy {
         return statusUpdateType;
     }
 
-    public DiagnosType extractDiagnos(ReadContext jsonCtx) {
+    public Diagnos extractDiagnos(ReadContext jsonCtx) {
 
         LOG.debug("Extracting diagnos info from JSON model");
 
@@ -106,7 +105,7 @@ public class EnrichWithIntygModelDataStrategy {
             diagnoskodverk = Diagnoskodverk.valueOf(kodverk);
         }
 
-        DiagnosType dt = new DiagnosType();
+        Diagnos dt = new Diagnos();
         dt.setCode(diagnosKod);
         dt.setCodeSystem(diagnoskodverk.getCodeSystem());
         dt.setCodeSystemName(diagnoskodverk.getCodeSystemName());
@@ -115,12 +114,12 @@ public class EnrichWithIntygModelDataStrategy {
         return dt;
     }
 
-    public List<ArbetsformagaType> extractArbetsformagor(ReadContext jsonCtx) {
+    public List<Arbetsformaga> extractArbetsformagor(ReadContext jsonCtx) {
 
-        List<ArbetsformagaType> arbetsFormagor = new ArrayList<ArbetsformagaType>();
+        List<Arbetsformaga> arbetsFormagor = new ArrayList<Arbetsformaga>();
 
         for (Entry<String, JsonPath> afEntry : jsonPaths.entrySet()) {
-            ArbetsformagaType arbetsformagaType = extractToArbArbetsformagaType(afEntry.getKey(), afEntry.getValue(), jsonCtx);
+            Arbetsformaga arbetsformagaType = extractToArbArbetsformaga(afEntry.getKey(), afEntry.getValue(), jsonCtx);
             if (arbetsformagaType != null) {
                 arbetsFormagor.add(arbetsformagaType);
             }
@@ -131,7 +130,7 @@ public class EnrichWithIntygModelDataStrategy {
         return arbetsFormagor;
     }
 
-    public ArbetsformagaType extractToArbArbetsformagaType(String nedsattningArbetsformaga, JsonPath jsonPath, ReadContext jsonCtx) {
+    public Arbetsformaga extractToArbArbetsformaga(String nedsattningArbetsformaga, JsonPath jsonPath, ReadContext jsonCtx) {
 
         NedsattningsPeriod nedsattningsPeriod = extractToNedsattningsPeriod(jsonPath, jsonCtx);
 
@@ -142,14 +141,14 @@ public class EnrichWithIntygModelDataStrategy {
 
         LOG.debug("Found NedsattningsPeriod for nedsattning by {}%", nedsattningArbetsformaga);
 
-        ArbetsformagaType arbTyp = new ArbetsformagaType();
-        arbTyp.setPeriod(convertNedsattningsPeriodToDateInterval(nedsattningsPeriod));
+        Arbetsformaga arbTyp = new Arbetsformaga();
+        arbTyp.setPeriod(convertNedsattningsPeriodToDatumPeriod(nedsattningsPeriod));
         arbTyp.setVarde(buildPQForArbetsformaga(nedsattningArbetsformaga));
         return arbTyp;
     }
 
-    private DateInterval convertNedsattningsPeriodToDateInterval(NedsattningsPeriod period) {
-        DateInterval di = new DateInterval();
+    private DatumPeriod convertNedsattningsPeriodToDatumPeriod(NedsattningsPeriod period) {
+        DatumPeriod di = new DatumPeriod();
         di.setFrom(parseToLocalDate(period.from));
         di.setTom(parseToLocalDate(period.tom));
         return di;
@@ -157,7 +156,7 @@ public class EnrichWithIntygModelDataStrategy {
 
     /**
      * Calculates the REMAINING arbetsformaga based on the nedsattning of arbetsformaga.
-     * 
+     *
      * @param nedsattningArbetsformaga
      * @return
      */

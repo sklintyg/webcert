@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
@@ -49,7 +49,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
 
-        UtlatandeType utkastsParams = parameters.getUtlatande();
+        Utlatande utkastsParams = parameters.getUtlatande();
 
         // Validate draft parameters
         ValidationResult validationResults = validator.validate(utkastsParams);
@@ -75,7 +75,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     }
 
     @Transactional
-    private String createNewDraft(UtlatandeType utlatandeRequest, MiuInformationType unitMIU) {
+    private String createNewDraft(Utlatande utlatandeRequest, MiuInformationType unitMIU) {
 
         String invokingUserHsaId = utlatandeRequest.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utlatandeRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension();
@@ -98,7 +98,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
      * @param utlatandeType
      * @return
      */
-    private MiuInformationType checkMIU(UtlatandeType utlatandeType) {
+    private MiuInformationType checkMIU(Utlatande utlatandeType) {
 
         String invokingUserHsaId = utlatandeType.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
@@ -136,7 +136,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
      * @param utlatandeType
      * @return
      */
-    private CreateDraftCertificateResponseType createMIUErrorResponse(UtlatandeType utlatandeType) {
+    private CreateDraftCertificateResponseType createMIUErrorResponse(Utlatande utlatandeType) {
 
         String invokingUserHsaId = utlatandeType.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
@@ -153,7 +153,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
      */
     private CreateDraftCertificateResponseType createValidationErrorResponse(ValidationResult validationResults) {
         String errMsgs = validationResults.getErrorMessagesAsString();
-        LOG.warn("UtlatandeType did not validate correctly: {}", errMsgs);
+        LOG.warn("Utlatande did not validate correctly: {}", errMsgs);
         return createErrorResponse(errMsgs, ErrorIdType.VALIDATION_ERROR);
     }
 

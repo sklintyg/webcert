@@ -10,8 +10,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.ArbetsformagaType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.DiagnosType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Arbetsformaga;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.Diagnos;
 import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy.NedsattningsPeriod;
 
@@ -37,21 +37,21 @@ public class EnrichWithIntygModelDataStrategyTest {
     @Test
     public void testExtractArbetsformagor() {
 
-        List<ArbetsformagaType> arbetsformagor = enricher.extractArbetsformagor(intyg1JsonCtx);
+        List<Arbetsformaga> arbetsformagor = enricher.extractArbetsformagor(intyg1JsonCtx);
         assertEquals(2, arbetsformagor.size());
     }
 
     @Test
     public void testExtractArbetsformagaNotFound() {
 
-        ArbetsformagaType res = enricher.extractToArbArbetsformagaType("100", EnrichWithIntygModelDataStrategy.NEDSATT_100_JSONP, intyg1JsonCtx);
+        Arbetsformaga res = enricher.extractToArbArbetsformaga("100", EnrichWithIntygModelDataStrategy.NEDSATT_100_JSONP, intyg1JsonCtx);
         assertNull(res);
     }
 
     @Test
     public void testExtractArbetsformagaWith25() {
 
-        ArbetsformagaType res = enricher.extractToArbArbetsformagaType("25", EnrichWithIntygModelDataStrategy.NEDSATT_25_JSONP, intyg1JsonCtx);
+        Arbetsformaga res = enricher.extractToArbArbetsformaga("25", EnrichWithIntygModelDataStrategy.NEDSATT_25_JSONP, intyg1JsonCtx);
         assertNotNull(res);
         assertNotNull(res.getPeriod());
         assertNotNull(res.getPeriod().getFrom());
@@ -62,7 +62,7 @@ public class EnrichWithIntygModelDataStrategyTest {
     @Test
     public void testExtractArbetsformagaWith75() {
 
-        ArbetsformagaType res = enricher.extractToArbArbetsformagaType("75", EnrichWithIntygModelDataStrategy.NEDSATT_75_JSONP, intyg2JsonCtx);
+        Arbetsformaga res = enricher.extractToArbArbetsformaga("75", EnrichWithIntygModelDataStrategy.NEDSATT_75_JSONP, intyg2JsonCtx);
         assertNotNull(res);
         assertNotNull(res.getPeriod());
         assertNotNull(res.getPeriod().getFrom());
@@ -80,7 +80,7 @@ public class EnrichWithIntygModelDataStrategyTest {
 
     @Test
     public void testExtractDiagnosKod() {
-        DiagnosType res = enricher.extractDiagnos(intyg1JsonCtx);
+        Diagnos res = enricher.extractDiagnos(intyg1JsonCtx);
         assertNotNull(res);
         assertEquals("S47", res.getCode());
         assertNotNull(res.getDisplayName());
@@ -89,7 +89,7 @@ public class EnrichWithIntygModelDataStrategyTest {
 
     @Test
     public void testExtractDiagnosKodNotFound() {
-        DiagnosType res = enricher.extractDiagnos(intyg2JsonCtx);
+        Diagnos res = enricher.extractDiagnos(intyg2JsonCtx);
         assertNull(res);
     }
 

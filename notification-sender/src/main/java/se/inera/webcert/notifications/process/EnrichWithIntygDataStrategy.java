@@ -4,12 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.EnhetType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HosPersonalType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.PatientType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Enhet;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.HosPersonal;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Patient;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
 import se.inera.webcert.persistence.utkast.model.Signatur;
@@ -20,7 +18,7 @@ import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 public class EnrichWithIntygDataStrategy {
 
     private static final String HSAID_ROOT = "1.2.752.129.2.1.4.1";
-    
+
     public static final String PERSONNUMMER_ROOT = "1.2.752.129.2.1.3.1";
 
     private static final Logger LOG = LoggerFactory.getLogger(EnrichWithIntygDataStrategy.class);
@@ -43,7 +41,7 @@ public class EnrichWithIntygDataStrategy {
         personId.setExtension(utkast.getPatientPersonnummer());
         personId.setRoot(PERSONNUMMER_ROOT);
 
-        PatientType patientType = new PatientType();
+        Patient patientType = new Patient();
         patientType.setPersonId(personId);
 
         utlatandeType.setPatient(patientType);
@@ -61,13 +59,13 @@ public class EnrichWithIntygDataStrategy {
 
         VardpersonReferens vardpersonReferens = intygsUtkast.getSkapadAv();
 
-        HosPersonalType hoSPerson = new HosPersonalType();
+        HosPersonal hoSPerson = new HosPersonal();
         hoSPerson.setFullstandigtNamn(vardpersonReferens.getNamn());
 
         HsaId personHsaId = createHsaId(vardpersonReferens.getHsaId());
         hoSPerson.setPersonalId(personHsaId);
 
-        EnhetType vardEnhet = new EnhetType();
+        Enhet vardEnhet = new Enhet();
         vardEnhet.setEnhetsnamn(intygsUtkast.getEnhetsNamn());
 
         HsaId vardEnhetHsaId = createHsaId(intygsUtkast.getEnhetsId());

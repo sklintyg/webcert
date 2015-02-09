@@ -16,7 +16,7 @@ import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodCodeRestrictionType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HandelsekodKodRestriktion;
 import se.inera.webcert.notifications.message.v1.HandelseType;
 import se.inera.webcert.notifications.message.v1.HoSPersonType;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
@@ -60,7 +60,7 @@ public class CreateAndInitCertificateStatusRequestProcessorTest extends CamelTes
         
         assertNotNull(statusType.getUtlatande().getHandelse().getHandelsekod().getCodeSystem());
         assertNotNull(statusType.getUtlatande().getHandelse().getHandelsekod().getCodeSystemName());
-        assertEquals(HandelsekodCodeRestrictionType.HAN_1.value(), statusType.getUtlatande().getHandelse().getHandelsekod().getCode());
+        assertEquals(HandelsekodKodRestriktion.HAN_1.value(), statusType.getUtlatande().getHandelse().getHandelsekod().getCode());
         assertEquals(HandelseType.INTYGSUTKAST_SKAPAT.toString(), statusType.getUtlatande().getHandelse().getHandelsekod().getDisplayName());
         
     }
@@ -90,7 +90,7 @@ public class CreateAndInitCertificateStatusRequestProcessorTest extends CamelTes
         assertNotNull(statusType.getUtlatande().getSkapadAv().getEnhet());
         assertEquals("vardenhet-1", statusType.getUtlatande().getSkapadAv().getEnhet().getEnhetsId().getExtension());
         
-        assertEquals(HandelsekodCodeRestrictionType.HAN_4.value(), statusType.getUtlatande().getHandelse().getHandelsekod().getCode());
+        assertEquals(HandelsekodKodRestriktion.HAN_4.value(), statusType.getUtlatande().getHandelse().getHandelsekod().getCode());
         assertEquals(HandelseType.INTYGSUTKAST_RADERAT.toString(), statusType.getUtlatande().getHandelse().getHandelsekod().getDisplayName());
         
     }

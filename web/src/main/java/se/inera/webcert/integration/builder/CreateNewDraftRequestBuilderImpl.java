@@ -3,18 +3,15 @@ package se.inera.webcert.integration.builder;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonalType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.PatientType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.service.dto.HoSPerson;
-import se.inera.webcert.service.dto.Patient;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
@@ -22,20 +19,18 @@ import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 @Component
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewDraftRequestBuilderImpl.class);
-
     private static final String SPACE = " ";
 
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
 
     @Override
-    public CreateNewDraftRequest buildCreateNewDraftRequest(UtlatandeType utlatande, MiuInformationType miuOnUnit) {
+    public CreateNewDraftRequest buildCreateNewDraftRequest(Utlatande utlatande, MiuInformationType miuOnUnit) {
         CreateNewDraftRequest utkastsRequest = new CreateNewDraftRequest();
 
         utkastsRequest.setIntygType(utlatande.getTypAvUtlatande().getCode());
 
-        Patient patient = createPatient(utlatande.getPatient());
+        se.inera.webcert.service.dto.Patient patient = createPatient(utlatande.getPatient());
         utkastsRequest.setPatient(patient);
 
         Vardenhet vardenhet = createVardenhetFromMIU(miuOnUnit);
@@ -67,7 +62,7 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         return vardenhet;
     }
 
-    private HoSPerson createHoSPerson(HosPersonalType hoSPersonType) {
+    private HoSPerson createHoSPerson(HosPersonal hoSPersonType) {
         HoSPerson hoSPerson = new HoSPerson();
         hoSPerson.setNamn(hoSPersonType.getFullstandigtNamn());
         hoSPerson.setHsaId(hoSPersonType.getPersonalId().getExtension());
@@ -75,8 +70,8 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         return hoSPerson;
     }
 
-    private Patient createPatient(PatientType patientType) {
-        Patient patient = new Patient();
+    private se.inera.webcert.service.dto.Patient createPatient(Patient patientType) {
+        se.inera.webcert.service.dto.Patient patient = new se.inera.webcert.service.dto.Patient();
         patient.setPersonnummer(patientType.getPersonId().getExtension());
         patient.setFornamn(joinNames(patientType.getFornamn()));
         patient.setMellannamn(joinNames(patientType.getMellannamn()));

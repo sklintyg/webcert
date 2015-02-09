@@ -4,11 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.EnhetType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonalType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.PatientType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatandeType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 
 @Component
@@ -25,7 +25,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
      * .healthcond.certificate.createdraftcertificateresponder.v1.UtlatandeType)
      */
     @Override
-    public ValidationResult validate(UtlatandeType utlatande) {
+    public ValidationResult validate(Utlatande utlatande) {
 
         ValidationResult errors = ValidationResult.newInstance();
 
@@ -36,7 +36,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         return errors;
     }
 
-    public void validateTypAvUtlatande(TypAvUtlatandeType typAvUtlatandeType, ValidationResult errors) {
+    public void validateTypAvUtlatande(TypAvUtlatande typAvUtlatandeType, ValidationResult errors) {
 
         String intygsTyp = typAvUtlatandeType.getCode();
 
@@ -45,7 +45,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         }
     }
 
-    private void validatePatient(PatientType patient, ValidationResult errors) {
+    private void validatePatient(Patient patient, ValidationResult errors) {
 
         if (StringUtils.isBlank(patient.getEfternamn())) {
             errors.addError("efternamn is required");
@@ -56,7 +56,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         }
     }
 
-    private void validateSkapadAv(HosPersonalType skapadAv, ValidationResult errors) {
+    private void validateSkapadAv(HosPersonal skapadAv, ValidationResult errors) {
 
         if (StringUtils.isBlank(skapadAv.getFullstandigtNamn())) {
             errors.addError("Physicians full name is required");
@@ -65,7 +65,7 @@ public class CreateDraftCertificateValidatorImpl implements CreateDraftCertifica
         validateEnhet(skapadAv.getEnhet(), errors);
     }
 
-    private void validateEnhet(EnhetType enhet, ValidationResult errors) {
+    private void validateEnhet(Enhet enhet, ValidationResult errors) {
 
         if (enhet == null) {
             errors.addError("Enhet is missing");
