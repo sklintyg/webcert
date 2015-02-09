@@ -25,6 +25,8 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
@@ -87,7 +89,7 @@ public class IntygApiController extends AbstractApiController {
 
         if (!request.isValid()) {
             LOG.error("Request to create copy of '{}' is not valid", orgIntygsId);
-            return Response.serverError().entity("Missing vital arguments in payload").build();
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
 
         CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
@@ -111,10 +113,14 @@ public class IntygApiController extends AbstractApiController {
         CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);
 
         if (copyRequest.containsNewPersonnummer()) {
+            LOG.debug("Adding new personnummer to request");
             req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
         }
 
-        // TODO add djupintegrerad!
+        if (checkIfWebcertFeatureIsAvailable(WebcertFeature.FRAN_JOURNALSYSTEM)) {
+            LOG.debug("Setting djupintegrerad flag on request to true");
+            req.setDjupintegrerad(true);
+        }
 
         return req;
     }
