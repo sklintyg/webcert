@@ -1,6 +1,6 @@
 package se.inera.webcert.integration.registry.dto;
 
-public class IntegreradEnhetEntry {
+public class IntegreradEnhetEntry implements Comparable<IntegreradEnhetEntry> {
 
     private String enhetsId;
 
@@ -54,5 +54,11 @@ public class IntegreradEnhetEntry {
 
     public void setVardgivareNamn(String vardgivareNamn) {
         this.vardgivareNamn = vardgivareNamn;
+    }
+
+    @Override
+    public int compareTo(IntegreradEnhetEntry other) {
+        int vgComp = getVardgivareId().compareTo(other.getVardgivareId());
+        return (vgComp == 0) ? getEnhetsId().compareTo(other.getEnhetsId()) : vgComp;
     }
 }

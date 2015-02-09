@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import se.inera.certificate.model.common.internal.GrundData;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -27,6 +28,7 @@ import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 
@@ -53,7 +55,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
      * @see se.inera.webcert.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromSignedIntyg(se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
      */
     @Override
-    public Utkast populateCopyUtkastFromSignedIntyg(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
+    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
             ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
@@ -62,7 +64,16 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         IntygContentHolder signedIntygHolder = intygService.fetchIntygData(orignalIntygsId, intygsTyp);
 
         LOG.debug("Populating copy with details from signed Intyg '{}'", orignalIntygsId);
-
+        
+        GrundData grundData = signedIntygHolder.getUtlatande().getGrundData();
+        
+        CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
+        se.inera.certificate.model.common.internal.Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
+        builderResponse.setOrginalEnhetsId(vardenhet.getEnhetsid());
+        builderResponse.setOrginalEnhetsNamn(vardenhet.getEnhetsnamn());
+        builderResponse.setOrginalVardgivarId(vardenhet.getVardgivare().getVardgivarid());
+        builderResponse.setOrginalVardgivarNamn(vardenhet.getVardgivare().getVardgivarnamn());
+        
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
 
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails);
@@ -90,15 +101,17 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
+        
+        builderResponse.setUtkastCopy(utkast);
 
-        return utkast;
+        return builderResponse;
     }
 
     /* (non-Javadoc)
      * @see se.inera.webcert.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
      */
     @Override
-    public Utkast populateCopyUtkastFromOrignalUtkast(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
+    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
             ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
@@ -106,7 +119,13 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
 
         // TODO throw exception if not found
-
+        
+        CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
+        builderResponse.setOrginalEnhetsId(orgUtkast.getEnhetsId());
+        builderResponse.setOrginalEnhetsNamn(orgUtkast.getEnhetsNamn());
+        builderResponse.setOrginalVardgivarId(orgUtkast.getVardgivarId());
+        builderResponse.setOrginalVardgivarNamn(orgUtkast.getVardgivarNamn());
+        
         LOG.debug("Populating copy with details from Utkast '{}'", orignalIntygsId);
 
         ModuleApi moduleApi = moduleRegistry.getModuleApi(orgUtkast.getIntygsTyp());
@@ -135,8 +154,10 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
         populateUtkastWithVardenhetAndHoSPerson(utkast, copyRequest);
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
+        
+        builderResponse.setUtkastCopy(utkast);
 
-        return utkast;
+        return builderResponse;
     }
 
     private CreateDraftCopyHolder createModuleRequestForCopying(CreateNewDraftCopyRequest copyRequest, Person person) {

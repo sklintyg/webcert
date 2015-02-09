@@ -77,6 +77,8 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     $log.debug('_copyIntygToDraft ' + cert.intygType + ', ' + id);
 
                     var payload = {};
+                    payload.patientPersonnummer = this.personnummer;
+                    
                     if (this.nyttPatientPersonnummer) {
                         payload.nyttPatientPersonnummer = this.nyttPatientPersonnummer;
                     }

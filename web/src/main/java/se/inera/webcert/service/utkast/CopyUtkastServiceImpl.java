@@ -4,9 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
@@ -17,6 +20,7 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
 
@@ -33,7 +37,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private CopyUtkastBuilder utkastBuilder;
-    
+
+    @Autowired
+    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+
     @Autowired
     private NotificationService notificationService;
 
@@ -44,6 +51,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
      * CreateNewDraftCopyRequest)
      */
     @Override
+    @Transactional
     public CreateNewDraftCopyResponse createCopy(CreateNewDraftCopyRequest copyRequest) {
 
         String originalIntygId = copyRequest.getOriginalIntygId();
@@ -58,15 +66,19 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 patientDetails = refreshPatientDetails(copyRequest);
             }
 
-            Utkast copyUtkast = null;
+            CopyUtkastBuilderResponse builderResponse = null;
 
             if (utkastRepository.exists(originalIntygId)) {
-                copyUtkast = utkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
+                builderResponse = utkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
             } else {
-                copyUtkast = utkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
+                builderResponse = utkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
             }
 
-            Utkast savedUtkast = utkastRepository.save(copyUtkast);
+            if (copyRequest.isDjupintegrerad()) {
+                checkIntegreradEnhet(builderResponse);
+            }
+            
+            Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
             sendNotification(savedUtkast);
 
@@ -109,11 +121,23 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private void sendNotification(Utkast utkast) {
 
         NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(utkast);
-        String logMsg = "Notification sent: utkast with id '{}' was created.";
+        String logMsg = "Notification sent: utkast with id '{}' was created as a copy.";
 
         notificationService.notify(notificationRequestType);
 
         LOG.debug(logMsg, utkast.getIntygsId());
+    }
+
+    private void checkIntegreradEnhet(CopyUtkastBuilderResponse builderResponse) {
+
+        String orginalEnhetsId = builderResponse.getOrginalEnhetsId();
+        Utkast utkastCopy = builderResponse.getUtkastCopy();
+
+        IntegreradEnhetEntry newEntry = new IntegreradEnhetEntry(utkastCopy.getEnhetsId(), utkastCopy.getEnhetsNamn(), utkastCopy.getVardgivarId(),
+                utkastCopy.getVardgivarNamn());
+
+        integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry);
+
     }
 
 }

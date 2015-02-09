@@ -21,8 +21,12 @@ public class CreateNewDraftCopyRequest {
     
     private boolean djupintegrerad = false;
 
-    public CreateNewDraftCopyRequest() {
-
+    public CreateNewDraftCopyRequest(String orginalIntygsId, String intygsTyp, String patientPersonnummer, HoSPerson hosPerson, Vardenhet vardenhet) {
+        this.originalIntygId = orginalIntygsId;
+        this.typ = intygsTyp;
+        this.patientPersonnummer = patientPersonnummer;
+        this.hosPerson = hosPerson;
+        this.vardenhet = vardenhet;
     }
 
     public boolean containsNyttPatientPersonnummer() {

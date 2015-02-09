@@ -39,6 +39,7 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;
+import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 
@@ -58,6 +59,15 @@ public class CopyUtkastBuilderImplTest {
     private static final String PATIENT_LNAME = "Caesarsson";
 
     private static final String PATIENT_NEW_SSN = "19121212-1414";
+    
+    private static final String VARDENHET_ID = "SE00001234-5678";
+    private static final String VARDENHET_NAME = "Vårdenheten 1";
+
+    private static final String VARDGIVARE_ID = "SE00001234-1234";
+    private static final String VARDGIVARE_NAME = "Vårdgivaren 1";
+
+    private static final String HOSPERSON_ID = "SE12345678-0001";
+    private static final String HOSPERSON_NAME = "Dr Börje Dengroth";
 
     @Mock
     private IntygService mockIntygService;
@@ -88,29 +98,17 @@ public class CopyUtkastBuilderImplTest {
     @Before
     public void setup() {
         hoSPerson = new HoSPerson();
-        hoSPerson.setHsaId("AAA");
-        hoSPerson.setNamn("Dr Dengroth");
-        hoSPerson.setBefattning("Befattning");
-        hoSPerson.getSpecialiseringar().add("Ortoped");
+        hoSPerson.setHsaId(HOSPERSON_ID);
+        hoSPerson.setNamn(HOSPERSON_NAME);
 
         se.inera.webcert.service.dto.Vardgivare vardgivare = new se.inera.webcert.service.dto.Vardgivare();
-        vardgivare.setHsaId("SE234234");
-        vardgivare.setNamn("Vårdgivaren");
+        vardgivare.setHsaId(VARDGIVARE_ID);
+        vardgivare.setNamn(VARDGIVARE_NAME);
 
         vardenhet = new se.inera.webcert.service.dto.Vardenhet();
-        vardenhet.setArbetsplatskod("00000");
-        vardenhet.setNamn("Vårdenheten");
-        vardenhet.setHsaId("SE234897348");
-        vardenhet.setPostadress("Sjukvägen 1");
-        vardenhet.setPostnummer("12345");
-        vardenhet.setNamn("Testberga");
-        vardenhet.setTelefonnummer("0123-456789");
-        vardenhet.setEpost("ingen@ingen.se");
+        vardenhet.setHsaId(VARDENHET_ID);
+        vardenhet.setNamn(VARDENHET_NAME);
         vardenhet.setVardgivare(vardgivare);
-
-        VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId(hoSPerson.getHsaId());
-        vardperson.setNamn(hoSPerson.getNamn());
     }
 
     @Before
@@ -134,18 +132,73 @@ public class CopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        Utkast utkast = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
+        CopyUtkastBuilderResponse builderResponse = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
 
-        assertNotNull(utkast);
-        assertNotNull(utkast.getModel());
-        assertEquals(INTYG_TYPE, utkast.getIntygsTyp());
-        assertEquals(PATIENT_SSN, utkast.getPatientPersonnummer());
-        assertEquals(PATIENT_FNAME, utkast.getPatientFornamn());
-        assertEquals(PATIENT_MNAME, utkast.getPatientMellannamn());
-        assertEquals(PATIENT_LNAME, utkast.getPatientEfternamn());
+        assertNotNull(builderResponse.getUtkastCopy());
+        assertNotNull(builderResponse.getUtkastCopy().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
+        assertEquals(PATIENT_MNAME, builderResponse.getUtkastCopy().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
 
     }
 
+    @Test
+    public void testPopulateCopyUtkastFromOriginal() throws Exception {
+
+        Utkast orgUtkast = createOriginalUtkast();
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
+
+        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        Person patientDetails = new Person(PATIENT_SSN, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
+
+        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+
+        CopyUtkastBuilderResponse builderResponse =  copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
+
+        assertNotNull(builderResponse.getUtkastCopy());
+        assertNotNull(builderResponse.getUtkastCopy().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
+        assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+    }
+    
+    @Test
+    public void testPopulateCopyUtkastFromOriginalWhenIntegratedAndWithUpdatedSSN() throws Exception {
+
+        Utkast orgUtkast = createOriginalUtkast();
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
+
+        CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
+        copyRequest.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
+        copyRequest.setDjupintegrerad(true);
+        
+        Person patientDetails = null;
+
+        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
+        when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
+
+        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
+
+        CopyUtkastBuilderResponse builderResponse =  copyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails);
+
+        assertNotNull(builderResponse.getUtkastCopy());
+        assertNotNull(builderResponse.getUtkastCopy().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
+        assertEquals(PATIENT_NEW_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
+        assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+    }
+    
     @Test
     public void testPopulateCopyUtkastFromSignedIntygWithNoPatientDetails() throws Exception {
 
@@ -161,15 +214,15 @@ public class CopyUtkastBuilderImplTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
 
-        Utkast utkast = copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
+        CopyUtkastBuilderResponse builderResponse =  copyBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails);
 
-        assertNotNull(utkast);
-        assertNotNull(utkast.getModel());
-        assertEquals(INTYG_TYPE, utkast.getIntygsTyp());
-        assertEquals(PATIENT_SSN, utkast.getPatientPersonnummer());
-        assertEquals("Test", utkast.getPatientFornamn());
-        assertNull(utkast.getPatientMellannamn());
-        assertEquals("Testorsson", utkast.getPatientEfternamn());
+        assertNotNull(builderResponse.getUtkastCopy());
+        assertNotNull(builderResponse.getUtkastCopy().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
+        assertEquals("Test", builderResponse.getUtkastCopy().getPatientFornamn());
+        assertNull(builderResponse.getUtkastCopy().getPatientMellannamn());
+        assertEquals("Testorsson", builderResponse.getUtkastCopy().getPatientEfternamn());
     }
 
     @Test
@@ -203,13 +256,7 @@ public class CopyUtkastBuilderImplTest {
     }
 
     private CreateNewDraftCopyRequest buildCopyRequest() {
-        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest();
-        req.setOriginalIntygId(INTYG_ID);
-        req.setTyp(INTYG_TYPE);
-        req.setHosPerson(hoSPerson);
-        req.setVardenhet(vardenhet);
-        req.setPatientPersonnummer(PATIENT_SSN);
-        return req;
+        return new CreateNewDraftCopyRequest(INTYG_ID, INTYG_TYPE, PATIENT_SSN, hoSPerson, vardenhet);
     }
 
     private IntygContentHolder createIntygContentHolder() throws Exception {
@@ -220,6 +267,31 @@ public class CopyUtkastBuilderImplTest {
                 "IntygDraftServiceImplTest/utlatande.json").getFile(), Utlatande.class);
         IntygContentHolder ich = new IntygContentHolder("<external-json/>", utlatande, status, false);
         return ich;
+    }
+    
+    private Utkast createOriginalUtkast() {
+        
+        Utkast orgUtkast = new Utkast();
+        orgUtkast.setIntygsId(INTYG_COPY_ID);
+        orgUtkast.setIntygsTyp(INTYG_TYPE);
+        orgUtkast.setPatientPersonnummer(PATIENT_SSN);
+        orgUtkast.setPatientFornamn(PATIENT_FNAME);
+        orgUtkast.setPatientMellannamn(PATIENT_MNAME);
+        orgUtkast.setPatientEfternamn(PATIENT_LNAME);
+        orgUtkast.setEnhetsId(VARDENHET_ID);
+        orgUtkast.setEnhetsNamn(VARDENHET_NAME);
+        orgUtkast.setVardgivarId(VARDGIVARE_ID);
+        orgUtkast.setVardgivarNamn(VARDGIVARE_NAME);
+        orgUtkast.setModel(INTYG_JSON);
+
+        VardpersonReferens vpRef = new VardpersonReferens();
+        vpRef.setHsaId(HOSPERSON_ID);
+        vpRef.setNamn(HOSPERSON_NAME);
+
+        orgUtkast.setSenastSparadAv(vpRef);
+        orgUtkast.setSkapadAv(vpRef);
+        
+        return orgUtkast;
     }
 
 }

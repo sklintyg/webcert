@@ -133,7 +133,8 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
                 CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
                 CreateCertificateDraft.intygType = cert.intygType;
-
+                
+                CreateCertificateDraft.personnummer = cert.grundData.patient.personId;
                 CreateCertificateDraft.nyttPatientPersonnummer = $routeParams.patientId;
 
                 CreateCertificateDraft.copyIntygToDraft(cert, function(data) {
