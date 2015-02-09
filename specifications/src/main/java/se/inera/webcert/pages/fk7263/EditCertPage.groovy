@@ -58,6 +58,8 @@ class BaserasPaModule extends Module {
 class DiagnosModule extends Module {
     static base = { $("#diagnoseForm") }
     static content = {
+        diagnoseKodverk_ICD_10_SE { $("#diagnoseKodverk_ICD_10_SE") }
+        diagnoseKodverk_KSH_97_P { $("#diagnoseKodverk_KSH_97_P") }
         diagnos1 { $("#diagnoseCode") }
         diagnos1Text { $("#diagnoseDescription") }
         diagnos2 { $("#diagnoseCodeOpt1") }

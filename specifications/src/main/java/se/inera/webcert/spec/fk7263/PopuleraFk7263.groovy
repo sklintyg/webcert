@@ -21,6 +21,7 @@ class PopuleraFk7263 {
     Boolean other
     String otherDatum
     String otherText
+    String diagnosKodverk
     String diagnos1
     String diagnos1Text
     String diagnos2
@@ -90,6 +91,12 @@ class PopuleraFk7263 {
             if (otherDatum != null) page.baserasPa.otherDatum = otherDatum
             if (otherText != null) page.baserasPa.otherText = otherText
 
+            if (diagnosKodverk == 'ICD_10_SE') {
+                page.diagnos.diagnoseKodverk_ICD_10_SE = true
+            }
+            else if (diagnosKodverk == 'KSH_97_P') {
+                page.diagnos.diagnoseKodverk_KSH_97_P = true
+            }
             if (diagnos1 != null) {
                 page.diagnos.diagnos1 = diagnos1
                 waitFor {
