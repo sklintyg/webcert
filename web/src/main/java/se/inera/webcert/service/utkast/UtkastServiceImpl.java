@@ -79,9 +79,6 @@ public class UtkastServiceImpl implements UtkastService {
     private IntygModuleRegistry moduleRegistry;
 
     @Autowired
-    private IntygService intygService;
-
-    @Autowired
     private SignaturService signatureService;
 
     @Autowired
@@ -89,9 +86,6 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private NotificationService notificationService;
-
-    @Autowired
-    private PUService personUppgiftsService;
 
     @Autowired
     private WebCertUserService webCertUserService;
