@@ -1,7 +1,8 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
     [ '$filter', '$location', '$log', '$scope', '$cookieStore', 'webcert.CreateCertificateDraft', 'webcert.ManageCertificate',
+        'common.IntygCopyRequestModel',
         function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft,
-            ManageCertificate) {
+            ManageCertificate, IntygCopyRequestModel) {
             'use strict';
 
             /**
@@ -110,7 +111,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.copyIntyg = function(cert) {
-                ManageCertificate.copy($scope, cert);
+                ManageCertificate.copy($scope,
+                    IntygCopyRequestModel.build({intygId: cert.intygId, intygType: cert.intygType, patientPersonnummer: $scope.personnummer}),
+                    false);
             };
 
             onPageLoad();

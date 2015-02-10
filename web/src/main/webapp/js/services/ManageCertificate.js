@@ -126,18 +126,18 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 }
             }
 
-            function _createCopyDraft(cert, onSuccess, onError) {
+            function _createCopyDraft(intygCopyRequest, onSuccess, onError) {
                 var valdVardenhet = User.getValdVardenhet();
                 CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
                 CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
                 CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
                 CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
-                CreateCertificateDraft.intygType = cert.intygType;
+                CreateCertificateDraft.intygType = intygCopyRequest.intygType;
                 
-                CreateCertificateDraft.personnummer = cert.grundData.patient.personId;
+                CreateCertificateDraft.personnummer = intygCopyRequest.patientPersonnummer;
                 CreateCertificateDraft.nyttPatientPersonnummer = $routeParams.patientId;
 
-                CreateCertificateDraft.copyIntygToDraft(cert, function(data) {
+                CreateCertificateDraft.copyIntygToDraft(intygCopyRequest, function(data) {
                     $log.debug('Successfully requested copy draft');
                     if(onSuccess) {
                         onSuccess(data);
@@ -150,7 +150,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _copy($scope, cert) {
+            function _copy($scope, intygCopyRequest, isOtherCareUnit) {
 
                 function goToDraft(type, intygId) {
                     $location.url('/' + type + '/edit/' + intygId, true);
@@ -165,10 +165,10 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 }
 
                 if ($cookieStore.get(_COPY_DIALOG_COOKIE)) {
-                    $log.debug('copy cert without dialog' + cert);
+                    $log.debug('copy cert without dialog' + intygCopyRequest);
                     $scope.widgetState.activeErrorMessageKey = null;
                     $scope.widgetState.inlineErrorMessageKey = null;
-                    _createCopyDraft(cert, function(draftResponse) {
+                    _createCopyDraft(intygCopyRequest, function(draftResponse) {
                         goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                     }, function(errorCode) {
                         if (errorCode === 'DATA_NOT_FOUND') {
@@ -180,12 +180,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     });
                 } else {
 
-                    var otherCareUnit = false;
-                    if (cert.grundData !== undefined && User.getValdVardenhet() !== cert.grundData.skapadAv.vardenhet.enhetsid) {
-                        otherCareUnit = true;
-                    }
-
-                    dialogModel.otherCareUnit = otherCareUnit;
+                    dialogModel.otherCareUnit = isOtherCareUnit;
                     dialogModel.patientId = $routeParams.patientId;
 
                     copyDialog = dialogService.showDialog($scope, {
@@ -194,14 +189,14 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                         templateUrl: '/views/partials/copy-dialog.html',
                         model: dialogModel,
                         button1click: function() {
-                            $log.debug('copy cert from dialog' + cert);
+                            $log.debug('copy cert from dialog' + intygCopyRequest);
                             if (dialogModel.dontShowCopyInfo) {
                                 $cookieStore.put(_COPY_DIALOG_COOKIE, dialogModel.dontShowCopyInfo);
                             }
 
                             $scope.dialog.showerror = false;
                             $scope.dialog.acceptprogressdone = false;
-                            _createCopyDraft(cert, function(draftResponse) {
+                            _createCopyDraft(intygCopyRequest, function(draftResponse) {
                                 $scope.dialog.acceptprogressdone = true;
                                 $scope.widgetState.createErrorMessageKey = undefined;
                                 copyDialog.close();

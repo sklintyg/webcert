@@ -72,18 +72,18 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     });
                 },
 
-                copyIntygToDraft: function(cert, onSuccess, onError) {
-                    var id = (typeof cert.intygId === 'undefined') ? cert.id : cert.intygId;
-                    $log.debug('_copyIntygToDraft ' + cert.intygType + ', ' + id);
+                copyIntygToDraft: function(intygCopyRequest, onSuccess, onError) {
+                    $log.debug('_copyIntygToDraft ' + intygCopyRequest.intygType + ', ' + intygCopyRequest.intygId);
 
                     var payload = {};
-                    payload.patientPersonnummer = this.personnummer;
-                    
+                    payload.patientPersonnummer = intygCopyRequest.personnummer;
+
                     if (this.nyttPatientPersonnummer) {
+
                         payload.nyttPatientPersonnummer = this.nyttPatientPersonnummer;
                     }
 
-                    var restPath = '/api/intyg/' + cert.intygType + '/' + id +'/kopiera/';
+                    var restPath = '/api/intyg/' + intygCopyRequest.intygType + '/' + intygCopyRequest.intygId +'/kopiera/';
                     $http.post(restPath, payload).success(function(data) {
                         $log.debug('got callback data: ' + data);
                         onSuccess(data);
