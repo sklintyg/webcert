@@ -6,6 +6,7 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
             return {
                 reset: function() {
                     this.personnummer = null;
+                    this.intygId = null;
                     this.intygType = 'default';
                     this.fornamn = null;
                     this.mellannamn = null;
@@ -47,25 +48,13 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     });
                 },
 
-                createDraft: function(onSuccess, onError) {
+                createDraft: function(createDraftRequestPayload, onSuccess, onError) {
                     $log.debug('_createDraft');
-
-                    var payload = {};
-                    payload.intygType = this.intygType;
-                    payload.patientPersonnummer = this.personnummer;
-                    payload.patientFornamn = this.fornamn;
-                    payload.patientMellannamn = this.mellannamn;
-                    payload.patientEfternamn = this.efternamn;
-                    payload.patientPostadress = this.postadress;
-                    payload.patientPostnummer = this.postnummer;
-                    payload.patientPostort = this.postort;
-
-                    var restPath = '/api/utkast/' + this.intygType;
-                    $http.post(restPath, payload).success(function(data) {
+                    var restPath = '/api/utkast/' + createDraftRequestPayload.intygType;
+                    $http.post(restPath, createDraftRequestPayload).success(function(data) {
                         $log.debug('got callback data: ' + data);
                         onSuccess(data);
                         statService.refreshStat();
-
                     }).error(function(data, status) {
                         $log.error('error ' + status);
                         onError(data);
@@ -76,14 +65,12 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
                     $log.debug('_copyIntygToDraft ' + intygCopyRequest.intygType + ', ' + intygCopyRequest.intygId);
 
                     var payload = {};
-                    payload.patientPersonnummer = intygCopyRequest.personnummer;
-
+                    payload.patientPersonnummer = intygCopyRequest.patientPersonnummer;
                     if (this.nyttPatientPersonnummer) {
-
-                        payload.nyttPatientPersonnummer = this.nyttPatientPersonnummer;
+                        payload.nyttPatientPersonnummer = intygCopyRequest.nyttPatientPersonnummer;
                     }
 
-                    var restPath = '/api/intyg/' + intygCopyRequest.intygType + '/' + intygCopyRequest.intygId +'/kopiera/';
+                    var restPath = '/api/intyg/' + intygCopyRequest.intygType + '/' + intygCopyRequest.intygId + '/kopiera/';
                     $http.post(restPath, payload).success(function(data) {
                         $log.debug('got callback data: ' + data);
                         onSuccess(data);

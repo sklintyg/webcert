@@ -127,16 +127,11 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             }
 
             function _createCopyDraft(intygCopyRequest, onSuccess, onError) {
-                var valdVardenhet = User.getValdVardenhet();
+/*                var valdVardenhet = User.getValdVardenhet();
                 CreateCertificateDraft.vardGivareHsaId = valdVardenhet.id;
                 CreateCertificateDraft.vardGivareNamn = valdVardenhet.namn;
                 CreateCertificateDraft.vardEnhetHsaId = valdVardenhet.id;
-                CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;
-                CreateCertificateDraft.intygType = intygCopyRequest.intygType;
-                
-                CreateCertificateDraft.personnummer = intygCopyRequest.patientPersonnummer;
-                CreateCertificateDraft.nyttPatientPersonnummer = $routeParams.patientId;
-
+                CreateCertificateDraft.vardEnhetNamn = valdVardenhet.namn;*/
                 CreateCertificateDraft.copyIntygToDraft(intygCopyRequest, function(data) {
                     $log.debug('Successfully requested copy draft');
                     if(onSuccess) {
