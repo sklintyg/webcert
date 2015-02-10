@@ -66,7 +66,7 @@ angular.module('webcert').factory('webcert.CreateCertificateDraft',
 
                     var payload = {};
                     payload.patientPersonnummer = intygCopyRequest.patientPersonnummer;
-                    if (this.nyttPatientPersonnummer) {
+                    if (intygCopyRequest.nyttPatientPersonnummer) {
                         payload.nyttPatientPersonnummer = intygCopyRequest.nyttPatientPersonnummer;
                     }
 
