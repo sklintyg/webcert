@@ -1,7 +1,7 @@
 angular.module('webcert').factory('webcert.ManageCertificate',
-    [ '$http', '$routeParams', '$log', '$location', '$window', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
+    [ '$http', '$routeParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
         'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.CertificateService',
-        function($http, $routeParams, $log, $location, $window, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
+        function($http, $routeParams, $log, $location, $window, $timeout, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
             featureService, messageService, CertificateService) {
             'use strict';
 
@@ -152,7 +152,15 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             function _copy($scope, cert) {
 
                 function goToDraft(type, intygId) {
-                    $location.url('/' + type + '/edit/' + intygId, true);
+
+                    /**
+                     * IMPORTANT TIMEOUT. Since location doesn't change anything in the view, apply or digest is not called with just the call to location.path.
+                     * Therefore we need a call to angular timeout to force a digest and let angular change the path correctly.
+                     */
+                    $timeout(function() {
+                        // anything you want can go here and will safely be run on the next digest.
+                        $location.path('/' + type + '/edit/' + intygId, true);
+                    });
                 }
 
                 // Create cookie and model representative
