@@ -71,7 +71,11 @@
   
   <logger name="se.inera.certificate.modules.ts_diabetes" level="info" />
 
-  <root>
+  <logger name="org.apache.camel" level="info" />
+
+  <logger name="se.inera.webcert.notifications" level="info" />
+
+ <root>
     <level value="error" />
     <appender-ref ref="STDOUT" />
     <appender-ref ref="FILE" />

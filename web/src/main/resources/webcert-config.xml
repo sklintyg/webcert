@@ -23,6 +23,7 @@
   <import resource="classpath:/mail-stub-context.xml" />
   <import resource="classpath*:module-config.xml" />
   <import resource="classpath*:wc-module-cxf-servlet.xml" />
+  <import resource="classpath:/notification-sender-config.xml" />
 
   <context:annotation-config />
   

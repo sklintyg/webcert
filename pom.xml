@@ -129,6 +129,11 @@
         <artifactId>notification-messages</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>notification-sender</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- Common -->
       <dependency>
