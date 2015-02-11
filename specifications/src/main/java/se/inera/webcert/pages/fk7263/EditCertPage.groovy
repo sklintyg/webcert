@@ -37,6 +37,9 @@ class EditCertPage extends AbstractPage {
         kontaktFk { $("#kontaktFk") }
         ovrigt { $("#otherInformation") }
         vardenhet { module VardenhetModule }
+
+        // date picker
+        datepicker { $("div[ng-switch='datepickerMode']") }
     }
 }
 
@@ -45,6 +48,7 @@ class BaserasPaModule extends Module {
     static content = {
         undersokning { $("#basedOnExamination") }
         undersokningDatum { $("#undersokningAvPatientenDate") }
+        undersokningDatumToggle { $("#undersokningAvPatientenDate-toggle") }
         telefonkontakt { $("#basedOnPhoneContact") }
         telefonkontaktDatum { $("#telefonkontaktMedPatientenDate") }
         journal { $("#basedOnJournal") }

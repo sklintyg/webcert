@@ -1,0 +1,25 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Välja input fielt och trycka på enter knappen, datum skulle inte visas
+| script | !-SkrivIntyg-! |
+| enter pa diagnos kod |
+| date picker inte visas |
+| oppna date picker |
+| date picker visas |
+
+
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |

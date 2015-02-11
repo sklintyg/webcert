@@ -150,5 +150,34 @@ class SkrivIntyg {
         result
     }
 
+    def enterPaDiagnosKod(){
+        Browser.drive {
+            page.diagnos.diagnos1 << Keys.ENTER
+        }
+    }
+
+    def oppnaDatePicker(){
+        Browser.drive {
+            baserasPa.undersokningDatumToggle.click();
+        }
+    }
+
+    boolean datePickerVisas() {
+        def result = false
+        Browser.drive {
+            waitFor(1) {
+                result = page.datepicker.isDisplayed()
+            }
+        }
+        result
+    }
+
+    boolean datePickerInteVisas() {
+        def result
+        Browser.drive {
+            result = !page.datepicker.isDisplayed()
+        }
+        result
+    }
 
 }
