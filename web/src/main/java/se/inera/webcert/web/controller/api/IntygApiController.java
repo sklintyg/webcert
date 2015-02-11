@@ -19,13 +19,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.certificate.model.common.internal.Vardenhet;
 import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.webcert.service.dto.HoSPerson;
+import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.utkast.CopyUtkastService;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
@@ -55,7 +60,10 @@ public class IntygApiController extends AbstractApiController {
     private UtkastRepository utkastRepository;
 
     @Autowired
-    private UtkastService intygDraftService;
+    private UtkastService utkastService;
+
+    @Autowired
+    private CopyUtkastService copyUtkastService;
 
     public IntygApiController() {
 
@@ -79,9 +87,14 @@ public class IntygApiController extends AbstractApiController {
 
         LOG.debug("Attempting to create a draft copy of {} with id '{}'", intygsTyp, orgIntygsId);
 
+        if (!request.isValid()) {
+            LOG.error("Request to create copy of '{}' is not valid", orgIntygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+        }
+
         CreateNewDraftCopyRequest serviceRequest = createNewDraftCopyRequest(orgIntygsId, intygsTyp, request);
 
-        CreateNewDraftCopyResponse serviceResponse = intygDraftService.createNewDraftCopy(serviceRequest);
+        CreateNewDraftCopyResponse serviceResponse = copyUtkastService.createCopy(serviceRequest);
 
         LOG.debug("Created a new draft copy from '{}' with id '{}' and type {}", new Object[] { orgIntygsId, serviceResponse.getNewDraftIntygId(),
                 serviceResponse.getNewDraftIntygType() });
@@ -93,14 +106,20 @@ public class IntygApiController extends AbstractApiController {
 
     private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest) {
 
-        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest();
-        req.setOriginalIntygId(originalIntygId);
-        req.setTyp(intygsTyp);
-        req.setHosPerson(createHoSPersonFromUser());
-        req.setVardenhet(createVardenhetFromUser());
+        HoSPerson hosPerson = createHoSPersonFromUser();
+        se.inera.webcert.service.dto.Vardenhet vardenhet = createVardenhetFromUser();
+        String patientPersonnummer = copyRequest.getPatientPersonnummer();
 
-        if (copyRequest != null && copyRequest.containsNewPersonnummer()) {
+        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);
+
+        if (copyRequest.containsNewPersonnummer()) {
+            LOG.debug("Adding new personnummer to request");
             req.setNyttPatientPersonnummer(copyRequest.getNyttPatientPersonnummer());
+        }
+
+        if (checkIfWebcertFeatureIsAvailable(WebcertFeature.FRAN_JOURNALSYSTEM)) {
+            LOG.debug("Setting djupintegrerad flag on request to true");
+            req.setDjupintegrerad(true);
         }
 
         return req;
@@ -165,7 +184,7 @@ public class IntygApiController extends AbstractApiController {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
-        Utkast updatedIntyg = intygDraftService.setForwardOnDraft(intygsId, forwarded);
+        Utkast updatedIntyg = utkastService.setForwardOnDraft(intygsId, forwarded);
 
         LOG.debug("Set forward to {} on intyg {} with id '{}'",
                 new Object[] { updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId() });

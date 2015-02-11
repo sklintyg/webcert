@@ -11,14 +11,22 @@ public class CreateNewDraftCopyRequest {
     
     private String typ;
 
+    private String patientPersonnummer;
+    
     private String nyttPatientPersonnummer;
 
     private HoSPerson hosPerson;
 
     private Vardenhet vardenhet;
+    
+    private boolean djupintegrerad = false;
 
-    public CreateNewDraftCopyRequest() {
-
+    public CreateNewDraftCopyRequest(String orginalIntygsId, String intygsTyp, String patientPersonnummer, HoSPerson hosPerson, Vardenhet vardenhet) {
+        this.originalIntygId = orginalIntygsId;
+        this.typ = intygsTyp;
+        this.patientPersonnummer = patientPersonnummer;
+        this.hosPerson = hosPerson;
+        this.vardenhet = vardenhet;
     }
 
     public boolean containsNyttPatientPersonnummer() {
@@ -39,6 +47,14 @@ public class CreateNewDraftCopyRequest {
 
     public void setTyp(String typ) {
         this.typ = typ;
+    }
+
+    public String getPatientPersonnummer() {
+        return patientPersonnummer;
+    }
+
+    public void setPatientPersonnummer(String patientPersonnummer) {
+        this.patientPersonnummer = patientPersonnummer;
     }
 
     public String getNyttPatientPersonnummer() {
@@ -63,5 +79,13 @@ public class CreateNewDraftCopyRequest {
 
     public void setVardenhet(Vardenhet vardenhet) {
         this.vardenhet = vardenhet;
+    }
+
+    public boolean isDjupintegrerad() {
+        return djupintegrerad;
+    }
+
+    public void setDjupintegrerad(boolean djupintegrerad) {
+        this.djupintegrerad = djupintegrerad;
     }
 }

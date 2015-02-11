@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,16 +19,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
-import org.springframework.core.io.ClassPathResource;
 
-import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.dto.CreateNewDraftHolder;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
@@ -46,21 +39,12 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.pu.model.Person;
-import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.utkast.UtkastService;
-import se.inera.webcert.service.utkast.UtkastServiceImpl;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
@@ -76,10 +60,6 @@ public class UtkastServiceImplTest {
 
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final String PATIENT_SSN = "19121212-1212";
-
-    private static final String PATIENT_NEW_SSN = "19121212-1414";
-
     @Mock
     private UtkastRepository mockUtkastRepository;
 
@@ -94,9 +74,6 @@ public class UtkastServiceImplTest {
 
     @Mock
     private IntygService intygService;
-
-    @Mock
-    private PUService puService;
 
     @Mock
     private NotificationService notificationService;
@@ -290,116 +267,6 @@ public class UtkastServiceImplTest {
         request.setSavedBy(hoSPerson);
         request.setAutoSave(false);
         return request;
-    }
-
-    @Test
-    public void testCreateNewDraftCopy() throws Exception {
-
-        IntygContentHolder ich = createIntygContentHolder();
-
-        when(intygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
-
-        PersonSvar personSvar = new PersonSvar(new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"), PersonSvar.Status.FOUND);
-        when(puService.getPerson(PATIENT_SSN)).thenReturn(personSvar);
-
-        ModuleApi mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-
-        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
-
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
-        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
-
-        when(mockUtkastRepository.save(any(Utkast.class))).thenAnswer(new Answer<Utkast>() {
-            @Override
-            public Utkast answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (Utkast) args[0];
-            }
-        });
-
-        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
-        CreateNewDraftCopyResponse copyResp = draftService.createNewDraftCopy(copyReq);
-        assertNotNull(copyResp);
-        assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
-        assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
-
-        verify(mockIdStrategy).createId();
-        verify(mockUtkastRepository).save(any(Utkast.class));
-    }
-
-    private IntygContentHolder createIntygContentHolder() throws Exception {
-        List<IntygStatus> status = new ArrayList<IntygStatus>();
-        status.add(new IntygStatus(StatusType.RECEIVED, "MI", LocalDateTime.now()));
-        status.add(new IntygStatus(StatusType.SENT, "FK", LocalDateTime.now()));
-        Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
-                "IntygDraftServiceImplTest/utlatande.json").getFile(), Utlatande.class);
-        IntygContentHolder ich = new IntygContentHolder("<external-json/>", utlatande, status, false);
-        return ich;
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testCreateNewDraftCopyPUtjanstFailed() throws Exception {
-
-        IntygContentHolder ich = createIntygContentHolder();
-
-
-        when(intygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
-
-        when(puService.getPerson(PATIENT_SSN)).thenReturn(new PersonSvar(null, PersonSvar.Status.NOT_FOUND));
-
-        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
-        draftService.createNewDraftCopy(copyReq);
-
-    }
-
-    @Test
-    public void testCreateNewDraftCopyWithNewPersonnummer() throws Exception {
-
-        IntygContentHolder ich = createIntygContentHolder();
-
-        when(intygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
-
-        PersonSvar personSvar = new PersonSvar(new Person(PATIENT_SSN, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"), PersonSvar.Status.FOUND);
-        when(puService.getPerson(PATIENT_NEW_SSN)).thenReturn(personSvar);
-
-        ModuleApi mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-
-        InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
-        when(mockModuleApi.createNewInternalFromTemplate(any(CreateNewDraftHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
-
-        ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<ValidationMessage>());
-        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(vdr);
-
-        when(mockUtkastRepository.save(any(Utkast.class))).thenAnswer(new Answer<Utkast>() {
-            @Override
-            public Utkast answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                return (Utkast) args[0];
-            }
-        });
-
-        CreateNewDraftCopyRequest copyReq = buildCopyRequest();
-        copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
-
-        CreateNewDraftCopyResponse copyResp = draftService.createNewDraftCopy(copyReq);
-        assertNotNull(copyResp);
-        assertEquals(INTYG_COPY_ID, copyResp.getNewDraftIntygId());
-        assertEquals(INTYG_TYPE, copyResp.getNewDraftIntygType());
-
-        verify(mockIdStrategy).createId();
-        verify(mockUtkastRepository).save(any(Utkast.class));
-    }
-
-    private CreateNewDraftCopyRequest buildCopyRequest() {
-        CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest();
-        req.setOriginalIntygId(INTYG_ID);
-        req.setTyp(INTYG_TYPE);
-        req.setHosPerson(hoSPerson);
-        req.setVardenhet(vardenhet);
-        return req;
     }
 
 }

@@ -5,6 +5,12 @@ describe('CreateCertificateDraft', function() {
     var $httpBackend;
     var statService;
 
+    var createDraftRequestPayload = {
+        'intygType':'fk7263','patientPersonnummer':'19121212-1212','patientFornamn':'Test',
+        'patientMellannamn':'Svensson','patientEfternamn':'Testsson','patientPostadress':'Storgatan 23',
+        'patientPostnummer':'12345','patientPostort':'Staden'
+    };
+
     beforeEach(angular.mock.module('webcert', function($provide) {
         statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
         $provide.value('common.statService', statService);
@@ -112,14 +118,6 @@ describe('CreateCertificateDraft', function() {
     describe('#createDraft', function() {
 
         it('should create a draft if the payload is correct', function() {
-            CreateCertificateDraft.personnummer = '19121212-1212';
-            CreateCertificateDraft.fornamn = 'Test';
-            CreateCertificateDraft.mellannamn = 'Svensson';
-            CreateCertificateDraft.efternamn = 'Testsson';
-            CreateCertificateDraft.intygType = 'fk7263';
-            CreateCertificateDraft.postadress = 'Storgatan 23';
-            CreateCertificateDraft.postnummer = '12345';
-            CreateCertificateDraft.postort = 'Staden';
 
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
@@ -136,7 +134,7 @@ describe('CreateCertificateDraft', function() {
                 }).
                 respond(200, '12345');
 
-            CreateCertificateDraft.createDraft(onSuccess, onError);
+            CreateCertificateDraft.createDraft(createDraftRequestPayload, onSuccess, onError);
             $httpBackend.flush();
 
             expect(onSuccess).toHaveBeenCalledWith('12345');
@@ -146,13 +144,11 @@ describe('CreateCertificateDraft', function() {
 
         it('should call onError if the server cannot create a draft', function() {
             
-            CreateCertificateDraft.intygType = 'fk7263';
-            
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
             $httpBackend.expectPOST('/api/utkast/fk7263').respond(500);
 
-            CreateCertificateDraft.createDraft(onSuccess, onError);
+            CreateCertificateDraft.createDraft(createDraftRequestPayload, onSuccess, onError);
             $httpBackend.flush();
 
             expect(onSuccess).not.toHaveBeenCalled();
