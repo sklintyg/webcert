@@ -185,6 +185,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
                     dialogModel.otherCareUnit = isOtherCareUnit;
                     dialogModel.patientId = $routeParams.patientId;
+                    dialogModel.deepIntegration = featureService.isFeatureActive('franJournalsystem');
 
                     copyDialog = dialogService.showDialog($scope, {
                         dialogId: 'copy-dialog',

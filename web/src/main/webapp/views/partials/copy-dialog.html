@@ -7,8 +7,15 @@
 <div class="modal-body">
   <p>
     Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma information.
-    <span ng-show="model.otherCareUnit != undefined" id="annanVardenhet"> Då intyget är utfärdat på en annan vårdenhet kommer adressuppgifterna ersättas med de för den vårdenhet du är inloggad på.</span>
-    <span ng-show="model.patientId != undefined"> För denna patient finns nytt person-id och informationen kommer därför uppdateras i det nya intyget.</span> I de fall patienten har ändrat namn eller adress så uppdateras den informationen.
+    <span ng-show="model.otherCareUnit != undefined" id="annanVardenhet">
+      Om intyget är utfärdat på en annan vårdenhet kommer adressuppgifterna att ersättas med de för den vårdenhet du är inloggad på.
+    </span>
+    <span ng-show="model.patientId != undefined && model.patientId.length > 0" id="msgNyttPersonId">
+      <br>För denna patient finns nytt person-id och informationen kommer därför uppdateras i det nya intyget.
+    </span>
+    <span ng-show="!model.deepIntegration" id="msgInteFranJournalSystem">
+      I de fall patienten har ändrat namn eller adress så uppdateras den informationen.
+    </span>
   </p>
   <p>Uppgifterna i intygsutkastet går att ändra innan det signeras.</p>
   Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.

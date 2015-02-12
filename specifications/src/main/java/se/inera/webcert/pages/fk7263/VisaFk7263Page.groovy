@@ -37,6 +37,10 @@ class VisaFk7263Page extends VisaPage {
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
 
+        // kopiera dialog text webcert-1449
+        kopieraDialogMsgInteFranJournalSystem{ $("#msgInteFranJournalSystem") }
+        kopieraDialogMsgNyttPersonId{ $("#msgNyttPersonId") }
+
         // fraga svar
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
 
