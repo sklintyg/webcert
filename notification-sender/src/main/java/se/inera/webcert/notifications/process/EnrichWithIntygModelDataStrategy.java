@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -33,6 +34,11 @@ public class EnrichWithIntygModelDataStrategy {
 
     @Autowired(required = false)
     private WebcertModuleService moduleService;
+
+    @VisibleForTesting
+    void setModuleService(WebcertModuleService moduleService) {
+        this.moduleService = moduleService;
+    }
 
     public static final JsonPath DIAGNOS_KOD_JSONP = JsonPath.compile("$.diagnosKod");
     public static final JsonPath DIAGNOS_BESKR_JSONP = JsonPath.compile("$.diagnosBeskrivning1");

@@ -16,6 +16,7 @@ import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy.NedsattningsPeriod;
 
 import com.jayway.jsonpath.ReadContext;
+import se.inera.webcert.notifications.service.MockWebcertModuleServiceImpl;
 
 public class EnrichWithIntygModelDataStrategyTest {
 
@@ -28,6 +29,7 @@ public class EnrichWithIntygModelDataStrategyTest {
     @Before
     public void setup() {
         enricher = new EnrichWithIntygModelDataStrategy();
+        enricher.setModuleService(new MockWebcertModuleServiceImpl());
         String intyg1json = TestDataUtil.readRequestFromFile("utlatande/utlatande-intyg-1.json");
         intyg1JsonCtx = enricher.setupJsonContext(intyg1json);
         String intyg2json = TestDataUtil.readRequestFromFile("utlatande/utlatande-intyg-2.json");
