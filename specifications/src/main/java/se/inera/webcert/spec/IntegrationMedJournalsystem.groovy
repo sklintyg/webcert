@@ -291,7 +291,7 @@ class IntegrationMedJournalsystem {
         def result = false
         Browser.drive {
             waitFor() {
-                result = page.kopieraDialogMsgInteFranJournalSystem.isDisplayed()
+                result = page.$("#msgInteFranJournalSystem").isDisplayed()
             }
         }
         return result
@@ -300,7 +300,7 @@ class IntegrationMedJournalsystem {
     boolean inteFranJournalSystemTextInteVisas(){
         def result
         Browser.drive {
-            result = !page.kopieraDialogMsgInteFranJournalSystem.isDisplayed()
+            result = !page.$("#msgInteFranJournalSystem").isDisplayed()
         }
         result
     }
@@ -309,7 +309,7 @@ class IntegrationMedJournalsystem {
         def result = false
         Browser.drive {
             waitFor() {
-                result =  page.kopieraDialogMsgNyttPersonId.isDisplayed()
+                result =  page.$("#msgNyttPersonId").isDisplayed()
             }
         }
         return result
@@ -318,7 +318,9 @@ class IntegrationMedJournalsystem {
     boolean nyttPersonNummerTextInteVisas(){
         def result
         Browser.drive {
-            result = !page.kopieraDialogMsgNyttPersonId.isDisplayed()
+            waitFor() {
+                result = !page.$("#msgNyttPersonId").isDisplayed();
+            }
         }
         result
     }
