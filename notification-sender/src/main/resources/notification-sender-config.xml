@@ -5,7 +5,6 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd  ">
   
   <import resource="spring/properties-context.xml"/>
-  <import resource="spring/jdbc-context.xml" />
   <import resource="spring/jms-context.xml"/>
   <import resource="spring/ws-context.xml"/>
   <import resource="spring/beans-context.xml"/>

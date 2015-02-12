@@ -5,7 +5,7 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <context:property-placeholder
-    location="classpath:default.properties, classpath:webcert-notification-route-params.properties, file:${notification-sender.config.file}, file:${credentials.file}"
+    location="classpath:default.properties, classpath:webcert-notification-route-params.properties, file:${webcert.config.file}, file:${credentials.file}"
     order="1" ignore-resource-not-found="false" ignore-unresolvable="false" />
 
 </beans>
