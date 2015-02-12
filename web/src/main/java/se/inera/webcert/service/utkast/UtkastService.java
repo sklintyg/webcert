@@ -33,6 +33,5 @@ public interface UtkastService {
     SignaturTicket createDraftHash(String intygsId);
 
     SignaturTicket serverSignature(String intygsId);
-
-    CreateNewDraftCopyResponse createNewDraftCopy(CreateNewDraftCopyRequest request);
+    
 }

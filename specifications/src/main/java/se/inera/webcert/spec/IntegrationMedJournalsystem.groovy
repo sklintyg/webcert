@@ -286,4 +286,41 @@ class IntegrationMedJournalsystem {
         }
         true
     }
+
+    boolean inteFranJournalSystemTextVisas() {
+        def result = false
+        Browser.drive {
+            waitFor() {
+                result = page.kopieraDialogMsgInteFranJournalSystem.isDisplayed()
+            }
+        }
+        return result
+    }
+
+    boolean inteFranJournalSystemTextInteVisas(){
+        def result
+        Browser.drive {
+            result = !page.kopieraDialogMsgInteFranJournalSystem.isDisplayed()
+        }
+        result
+    }
+
+    boolean nyttPersonNummerTextVisas() {
+        def result = false
+        Browser.drive {
+            waitFor() {
+                result =  page.kopieraDialogMsgNyttPersonId.isDisplayed()
+            }
+        }
+        return result
+    }
+
+    boolean nyttPersonNummerTextInteVisas(){
+        def result
+        Browser.drive {
+            result = !page.kopieraDialogMsgNyttPersonId.isDisplayed()
+        }
+        result
+    }
+
 }

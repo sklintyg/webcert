@@ -21,7 +21,7 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 
 !4 Detta test har ett felaktigt personnummer. Om man valt att inte visa kopieringsdialogen så ska felet visas tillsammans med intyget. 
 | script | !-IntegrationMedJournalsystem-! |
-| visa intyg via integration med | intyg-fit-1 | personnummer | 19520617-233 |
+| visa intyg via integration | intyg-fit-1 |
 | nytt personnummer meddelande visas |
 | stang av kopiera dialogen |
 | kopiera intyg utan dialog |

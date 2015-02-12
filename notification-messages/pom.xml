@@ -49,15 +49,6 @@
             <schemaInclude>notification-message.xsd</schemaInclude>
           </schemaIncludes>
           <bindingDirectory>${bindings.dir}</bindingDirectory>
-          <bindings>
-            <binding>
-              <dependencyResource>
-                <groupId>se.inera.intyg.schemas</groupId>
-                <artifactId>schemas-common</artifactId>
-                <resource>bindings/general-binding.xjb</resource>
-              </dependencyResource>
-            </binding>
-          </bindings>
           <generateDirectory>${project.build.directory}/generated</generateDirectory>
           <verbose>true</verbose>
           <args>

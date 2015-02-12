@@ -10,10 +10,12 @@ describe('ChooseCertTypeCtrl', function() {
 
         module('webcert', function($provide) {
             var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
-            ManageCertificate = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getCertTypes', 'getCertificatesForPerson', 'initCopyDialog' ]);
-
             $provide.value('common.statService', statService);
+
+            ManageCertificate = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getCertTypes', 'getCertificatesForPerson', 'initCopyDialog' ]);
             $provide.value('webcert.ManageCertificate', ManageCertificate);
+
+            $provide.value('common.IntygCopyRequestModel', {});
         });
 
         inject(function($rootScope, _$location_, _$controller_) {

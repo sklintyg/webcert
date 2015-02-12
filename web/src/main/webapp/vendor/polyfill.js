@@ -1065,6 +1065,9 @@ if (!Date.prototype.toISOString) {
 
   // FormData interface
   // Needed for: IE9-
+/*
+  This breaks angular XHR requests on IE9- and creates rootscope-digest in progress recursion problems.
+
   (function() {
     if ('FormData' in global)
       return;
@@ -1080,7 +1083,7 @@ if (!Date.prototype.toISOString) {
     }
 
     FormData.prototype = {
-      append: function(name, value /*, filename */) {
+      append: function(name, value) {
         if ('Blob' in global && value instanceof global.Blob)
           throw TypeError("Blob not supported");
         name = String(name);
@@ -1104,7 +1107,7 @@ if (!Date.prototype.toISOString) {
       return send.apply(this, arguments);
     };
   }());
-
+*/
   //----------------------------------------------------------------------
   //
   // Other

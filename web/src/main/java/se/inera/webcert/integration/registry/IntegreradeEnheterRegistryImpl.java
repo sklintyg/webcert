@@ -27,7 +27,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      * .service.integration.dto.IntegreradEnhetEntry)
      */
     @Override
-    @Transactional()
+    @Transactional
     public boolean addIfNotExistsIntegreradEnhet(IntegreradEnhetEntry entry) {
 
         String enhetsId = entry.getEnhetsId();
@@ -56,20 +56,35 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      * @see se.inera.webcert.service.integration.IntegreradeEnheterService#isEnhetIntegrerad(java.lang.String)
      */
     @Override
-    @Transactional()
-    public boolean isEnhetIntegrerad(String enhetHsaId) {
-
-        IntegreradEnhet ie = integreradEnhetRepository.findOne(enhetHsaId);
-
-        if (ie == null) {
-            LOG.debug("Unit {} is not in the registry of integrated units", enhetHsaId);
-            return false;
+    @Transactional
+    public boolean isEnhetIntegrerad(String enhetsHsaId) {
+        IntegreradEnhetEntry ie = getIntegreradEnhetEntry(enhetsHsaId);
+        return (ie != null);
+    }
+    
+    @Transactional
+    public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry) {
+        
+        IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(orgEnhetsHsaId);
+                
+        if (orgEntry != null && orgEntry.compareTo(newEntry) != 0) {
+            addIfNotExistsIntegreradEnhet(newEntry);
         }
-
+    }
+    
+    private IntegreradEnhetEntry getIntegreradEnhetEntry(String enhetsHsaId) {
+        
+        IntegreradEnhet enhet = integreradEnhetRepository.findOne(enhetsHsaId);
+        
+        if (enhet == null) {
+            LOG.debug("Unit {} is not in the registry of integrated units", enhetsHsaId);
+            return null;
+        }
+        
         // update entity with control date;
-        ie.setSenasteKontrollDatum(LocalDateTime.now());
-        integreradEnhetRepository.save(ie);
-
-        return true;
+        enhet.setSenasteKontrollDatum(LocalDateTime.now());
+        integreradEnhetRepository.save(enhet);
+        
+        return new IntegreradEnhetEntry(enhet.getEnhetsId(), enhet.getEnhetsNamn(), enhet.getVardgivarId(), enhet.getVardgivarNamn());
     }
 }

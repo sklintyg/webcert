@@ -1,7 +1,8 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    [ '$filter', '$location', '$log', '$scope', '$cookieStore', 'webcert.CreateCertificateDraft', 'webcert.ManageCertificate',
-        function($filter, $location, $log, $scope, $cookieStore, CreateCertificateDraft,
-            ManageCertificate) {
+    [ '$filter', '$location', '$log', '$scope', '$cookieStore', '$routeParams', 'webcert.CreateCertificateDraft',
+        'webcert.ManageCertificate', 'common.IntygCopyRequestModel',
+        function($filter, $location, $log, $scope, $cookieStore, $routeParams, CreateCertificateDraft,
+            ManageCertificate, IntygCopyRequestModel) {
             'use strict';
 
             /**
@@ -91,10 +92,20 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.createDraft = function() {
-                CreateCertificateDraft.intygType = $scope.intygType;
-                CreateCertificateDraft.createDraft(function(data) {
+
+                var createDraftRequestPayload = {
+                    intygType: $scope.intygType,
+                    patientPersonnummer: CreateCertificateDraft.personnummer,
+                    patientFornamn: CreateCertificateDraft.fornamn,
+                    patientMellannamn: CreateCertificateDraft.mellannamn,
+                    patientEfternamn: CreateCertificateDraft.efternamn,
+                    patientPostadress: CreateCertificateDraft.postadress,
+                    patientPostnummer: CreateCertificateDraft.postnummer,
+                    patientPostort: CreateCertificateDraft.postort
+                };
+                CreateCertificateDraft.createDraft(createDraftRequestPayload, function(data) {
                     $scope.widgetState.createErrorMessageKey = undefined;
-                    $location.url('/' + CreateCertificateDraft.intygType + '/edit/' + data, true);
+                    $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data, true);
                 }, function(error) {
                     $log.debug('Create draft failed: ' + error.message);
                     $scope.widgetState.createErrorMessageKey = 'error.failedtocreateintyg';
@@ -110,7 +121,15 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.copyIntyg = function(cert) {
-                ManageCertificate.copy($scope, cert);
+                ManageCertificate.copy($scope,
+                    IntygCopyRequestModel.build({
+                        intygId: cert.intygId,
+                        intygType: cert.intygType,
+                        patientPersonnummer: $scope.personnummer,
+                        nyttPatientPersonnummer: $routeParams.patientId
+                    }),
+                    false
+                );
             };
 
             onPageLoad();

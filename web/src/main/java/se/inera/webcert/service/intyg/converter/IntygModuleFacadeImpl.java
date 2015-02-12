@@ -28,8 +28,12 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             PdfResponse pdfResponse = moduleApi.pdf(new InternalModelHolder(internalIntygJsonModel), ApplicationOrigin.WEBCERT);
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
-        } catch (ModuleException | ModuleNotFoundException e) {
-            throw new IntygModuleFacadeException("Exception occured when generating PDF document from internal", e);
+        } catch (ModuleException me) {
+            LOG.error("ModuleException occured when when generating PDF document from internal");
+            throw new IntygModuleFacadeException("ModuleException occured when generating PDF document from internal", me);
+        } catch (ModuleNotFoundException e) {
+            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when generating PDF document from internal", intygType);
+            throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
         }
     }
 
@@ -38,8 +42,12 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             return moduleApi.getCertificate(certificateId);
-        } catch (ModuleException | ModuleNotFoundException e) {
-            throw new IntygModuleFacadeException("Exception occured when retrieving certificate", e);
+        } catch (ModuleException me) {
+            LOG.error("ModuleException occured when retrieving certificate");
+            throw new IntygModuleFacadeException("Exception occured when retrieving certificate", me);
+        } catch (ModuleNotFoundException e) {
+            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
+            throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
         }
     }
 
@@ -49,7 +57,8 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             moduleApi.registerCertificate(new InternalModelHolder(internalIntygJsonModel));
         } catch (ModuleNotFoundException e) {
-            throw new IntygModuleFacadeException("Exception occured when retrieving certificate", e);
+            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
+            throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
         }
     }
 }

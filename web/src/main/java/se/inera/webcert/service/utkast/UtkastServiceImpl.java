@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.model.util.Strings;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -30,9 +29,6 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.pu.model.Person;
-import se.inera.webcert.pu.model.PersonSvar;
-import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.draft.util.UpdateUserUtil;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Lakare;
@@ -41,15 +37,11 @@ import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
@@ -79,9 +71,6 @@ public class UtkastServiceImpl implements UtkastService {
     private IntygModuleRegistry moduleRegistry;
 
     @Autowired
-    private IntygService intygService;
-
-    @Autowired
     private SignaturService signatureService;
 
     @Autowired
@@ -89,9 +78,6 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private NotificationService notificationService;
-
-    @Autowired
-    private PUService personUppgiftsService;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -256,156 +242,6 @@ public class UtkastServiceImpl implements UtkastService {
         return signatureService.serverSignature(intygsId);
     }
 
-    @Override
-    public CreateNewDraftCopyResponse createNewDraftCopy(CreateNewDraftCopyRequest copyRequest) {
-
-        String orgIntygsId = copyRequest.getOriginalIntygId();
-        String typ = copyRequest.getTyp();
-
-        LOG.debug("Creating a new draft of type {} based on intyg '{}'", typ, orgIntygsId);
-
-        try {
-
-            IntygContentHolder template = intygService.fetchIntygData(orgIntygsId, typ);
-
-            String intygType = template.getUtlatande().getTyp();
-            String patientPersonnummer = template.getUtlatande().getGrundData().getPatient().getPersonId();
-
-            if (copyRequest.containsNyttPatientPersonnummer()) {
-                patientPersonnummer = copyRequest.getNyttPatientPersonnummer();
-                LOG.debug("Request contained a new personnummer ({}) to use for the copy of '{}'", patientPersonnummer, orgIntygsId);
-            }
-
-            LOG.debug("Refreshing person data to use for the copy of '{}'", orgIntygsId);
-            PersonSvar personSvar = personUppgiftsService.getPerson(patientPersonnummer);
-            Person person = personSvar.getPerson();
-
-            if (personSvar.getStatus() == PersonSvar.Status.NOT_FOUND) {
-                LOG.error("No person data was found using '{}'", patientPersonnummer);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No person data found using '"
-                        + patientPersonnummer + "'");
-            } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
-                LOG.error("External error while looking up person data '{}'", patientPersonnummer);
-
-                // If there is a problem with the external system use old patient information.
-                person = getPersonFromTemplate(template, patientPersonnummer);
-            }
-            else if (personSvar.getStatus() != PersonSvar.Status.FOUND) {
-                LOG.error("Unknown status while looking up person data '{}'", patientPersonnummer);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-                        "Unknown status while looking up person data '"
-                                + patientPersonnummer + "'");
-            }
-
-            String newDraftIntygId = intygsIdStrategy.createId();
-            LOG.debug("Assigning the new draft copy id '{}'", newDraftIntygId);
-
-            CreateNewDraftHolder moduleRequest = createModuleRequestForCopying(newDraftIntygId, copyRequest, person);
-
-            String internalModelString = null;
-            Utkast webcertIntyg = utkastRepository.findOne(orgIntygsId);
-            //Check for data in the webcert database first:
-            if (webcertIntyg != null) {
-                internalModelString = webcertIntyg.getModel();
-            }
-            // Get data from Intygstjänsten since it is not present in webcert
-            else if (webcertIntyg == null) {
-                internalModelString = template.getContents();
-            }
-
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            InternalModelResponse draftResponse = moduleApi.createNewInternalFromTemplate(moduleRequest,
-                    new InternalModelHolder(internalModelString));
-            String newDraftModelAsJson = draftResponse.getInternalModel();
-
-            LOG.debug("Got populated model of {} chars from module '{}'", getSafeLength(newDraftModelAsJson), intygType);
-
-            DraftValidation draftValidation = validateDraft(newDraftIntygId, intygType, newDraftModelAsJson);
-            UtkastStatus status = (draftValidation.isDraftValid()) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
-
-            CreateNewDraftRequest newDraftRequest = createNewDraftRequestForCopying(newDraftIntygId, intygType, status, copyRequest, person);
-            Utkast savedDraft = persistNewDraft(newDraftRequest, newDraftModelAsJson);
-
-            sendNotification(savedDraft, Event.CREATED);
-
-            return new CreateNewDraftCopyResponse(intygType, savedDraft.getIntygsId());
-
-        } catch (ModuleException me) {
-            LOG.error("Module exception occured when trying to make a copy of " + orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
-        } catch (ModuleNotFoundException e) {
-            LOG.error("Module exception occured when trying to make a copy of " + orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-        }
-    }
-
-    private Person getPersonFromTemplate(IntygContentHolder template, String patientPersonnummer) {
-        Person person;
-        String fornamn = Strings.join(" ", template.getUtlatande().getGrundData().getPatient().getFornamn());
-        String efternamn = template.getUtlatande().getGrundData().getPatient().getEfternamn();
-        if (fornamn == null || fornamn.length() == 0) {
-            // In this case use the last name from the template efternamn as efternamn and the rest as fornamn.
-            String[] namn = efternamn.split(" ");
-            if (namn.length > 0) {
-                fornamn = Strings.join(" ", java.util.Arrays.copyOfRange(namn, 0, namn.length - 1));
-                if (namn.length > 1) {
-                    efternamn = namn[namn.length - 1];
-                } else {
-                    efternamn = "";
-                }
-            }
-        }
-        person = new Person(
-            patientPersonnummer,
-            fornamn,
-            Strings.join(" ", template.getUtlatande().getGrundData().getPatient().getMellannamn()),
-            efternamn,
-            template.getUtlatande().getGrundData().getPatient().getPostadress(),
-            template.getUtlatande().getGrundData().getPatient().getPostnummer(),
-            template.getUtlatande().getGrundData().getPatient().getPostort());
-        return person;
-    }
-
-    private CreateNewDraftHolder createModuleRequestForCopying(String newDraftIntygId, CreateNewDraftCopyRequest copyRequest, Person person) {
-
-        Vardgivare reqVardgivare = copyRequest.getVardenhet().getVardgivare();
-        se.inera.certificate.modules.support.api.dto.Vardgivare vardgivare = new se.inera.certificate.modules.support.api.dto.Vardgivare(
-                reqVardgivare.getHsaId(), reqVardgivare.getNamn());
-
-        Vardenhet reqVardenhet = copyRequest.getVardenhet();
-        se.inera.certificate.modules.support.api.dto.Vardenhet vardenhet = new se.inera.certificate.modules.support.api.dto.Vardenhet(
-                reqVardenhet.getHsaId(), reqVardenhet.getNamn(), reqVardenhet.getPostadress(),
-                reqVardenhet.getPostnummer(), reqVardenhet.getPostort(), reqVardenhet.getTelefonnummer(), reqVardenhet.getEpost(),
-                reqVardenhet.getArbetsplatskod(), vardgivare);
-
-        HoSPerson reqHosPerson = copyRequest.getHosPerson();
-        se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = new se.inera.certificate.modules.support.api.dto.HoSPersonal(
-                reqHosPerson.getHsaId(),
-                reqHosPerson.getNamn(), reqHosPerson.getForskrivarkod(), reqHosPerson.getBefattning(), reqHosPerson.getSpecialiseringar(), vardenhet);
-
-        se.inera.certificate.modules.support.api.dto.Patient patient = new se.inera.certificate.modules.support.api.dto.Patient(person.getFornamn(),
-                person.getMellannamn(), person.getEfternamn(), person.getPersonnummer(), person.getPostadress(), person.getPostnummer(),
-                person.getPostort());
-
-        return new CreateNewDraftHolder(newDraftIntygId, hosPerson, patient);
-    }
-
-    private CreateNewDraftRequest createNewDraftRequestForCopying(String newDraftIntygId, String intygType, UtkastStatus status,
-            CreateNewDraftCopyRequest request, Person person) {
-
-        Patient patient = new Patient();
-        patient.setPersonnummer(person.getPersonnummer());
-        patient.setFornamn(person.getFornamn());
-        patient.setMellannamn(person.getMellannamn());
-        patient.setEfternamn(person.getEfternamn());
-        patient.setPostadress(person.getPostadress());
-        patient.setPostnummer(person.getPostnummer());
-        patient.setPostort(person.getPostort());
-
-        return new CreateNewDraftRequest(newDraftIntygId, intygType, status, request.getHosPerson(), request.getVardenhet(), patient);
-    }
-
-    @Override
     public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request) {
 
         String intygId = request.getIntygId();

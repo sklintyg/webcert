@@ -127,7 +127,7 @@ public class NotificationMessageFactory {
         VardenhetType vt = getVardenhetType(utkast.getEnhetsId(), utkast.getEnhetsNamn());
         HoSPersonType hspt = getHoSPersonType(utkast.getSenastSparadAv().getNamn(), utkast.getSenastSparadAv().getHsaId(), vt);
 
-        return getNotificationRequestType(utkast.getSenastSparadDatum(), hspt,
+        return getNotificationRequestType(LocalDateTime.now(), hspt,
                 utkast.getIntygsId(), utkast.getIntygsTyp());
     }
 
@@ -136,7 +136,7 @@ public class NotificationMessageFactory {
         VardenhetType vt = getVardenhetType(fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn());
         HoSPersonType hspt = getHoSPersonType(fragaSvar.getVardperson().getNamn(), fragaSvar.getVardperson().getHsaId(), vt);
 
-        return getNotificationRequestType(fragaSvar.getSenasteHandelse(), hspt,
+        return getNotificationRequestType(LocalDateTime.now(), hspt,
                 fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp());
     }
 
