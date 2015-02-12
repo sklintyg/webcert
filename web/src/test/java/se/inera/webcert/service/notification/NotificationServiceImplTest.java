@@ -1,7 +1,14 @@
 package se.inera.webcert.service.notification;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import javax.jms.Session;
+
 import org.joda.time.LocalDateTime;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -10,14 +17,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-import se.inera.log.messages.IntygReadMessage;
-import se.inera.webcert.notifications.message.v1.*;
 
-import javax.jms.Session;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
+import se.inera.webcert.notifications.message.v1.HandelseType;
+import se.inera.webcert.notifications.message.v1.HoSPersonType;
+import se.inera.webcert.notifications.message.v1.NotificationRequestType;
+import se.inera.webcert.notifications.message.v1.ObjectFactory;
+import se.inera.webcert.notifications.message.v1.VardenhetType;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.
@@ -25,7 +30,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationServiceImplTest {
 
-    String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><NotificationRequest xmlns=\"urn:inera:webcert:notifications:1\"><handelse>INTYGSUTKAST_ANDRAT</handelse><handelseTidpunkt>2001-12-31T12:00:00</handelseTidpunkt><intygsId>22334455</intygsId><intygsTyp>FK7263</intygsTyp><hoSPerson><hsaId>SE1234567-0987654321</hsaId><fullstandigtNamn>Karl Karlsson</fullstandigtNamn><vardenhet><hsaId>SE1234567-E000890</hsaId><enhetsNamn>SuperEnheten</enhetsNamn></vardenhet></hoSPerson></NotificationRequest>";
+    String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><NotificationRequest xmlns=\"urn:inera:webcert:notifications:1\"><handelse>INTYGSUTKAST_ANDRAT</handelse><handelseTidpunkt>2001-12-31T12:00:00.123</handelseTidpunkt><intygsId>22334455</intygsId><intygsTyp>FK7263</intygsTyp><hoSPerson><hsaId>SE1234567-0987654321</hsaId><fullstandigtNamn>Karl Karlsson</fullstandigtNamn><vardenhet><hsaId>SE1234567-E000890</hsaId><enhetsNamn>SuperEnheten</enhetsNamn></vardenhet></hoSPerson></NotificationRequest>";
 
     @Mock
     private JmsTemplate template = mock(JmsTemplate.class);
@@ -78,7 +83,7 @@ public class NotificationServiceImplTest {
 
         NotificationRequestType notificationRequestType = of.createNotificationRequestType();
         notificationRequestType.setHandelse(handelseType);
-        notificationRequestType.setHandelseTidpunkt(new LocalDateTime(2001, 12, 31, 12, 0));
+        notificationRequestType.setHandelseTidpunkt(new LocalDateTime(2001, 12, 31, 12, 0, 0, 123));
         notificationRequestType.setHoSPerson(hoSPersonType);
         notificationRequestType.setIntygsId("22334455");
         notificationRequestType.setIntygsTyp("FK7263");
