@@ -3,8 +3,9 @@
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
     [ '$rootScope', '$routeParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
-        'webcert.ManageCertificate', 'common.UserPreferencesService',
-        function($rootScope, $routeParams, $scope, $window, $location, $q, dialogService, ManageCertificate, UserPreferencesService) {
+        'webcert.ManageCertificate', 'common.UserPreferencesService', 'common.LocationUtilsService',
+        function($rootScope, $routeParams, $scope, $window, $location, $q, dialogService, ManageCertificate,
+                 UserPreferencesService, LocationUtilsService) {
             'use strict';
 
             // Check if the user used the special qa-link to get here.
@@ -20,7 +21,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                             templateUrl: '/views/partials/qa-only-warning-dialog.html',
                             button1click: function() {
                                 locationEvent();
-                                $window.location = newUrl;
+                                LocationUtilsService.changeUrl(currentUrl, newUrl);
                             },
                             button1text: 'common.continue',
                             button1id: 'button1continue-dialog',
@@ -66,14 +67,14 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                         modal.close('hantera');
                                         // unbind the location change listener
                                         unbindCheckHandledEvent();
-                                        $window.location.href = newUrl;
+                                        LocationUtilsService.changeUrl(currentUrl, newUrl);
                                     });
                                 },
                                 button2click: function() {
                                     modal.close('ejhantera');
                                     // unbind the location change listener
                                     unbindCheckHandledEvent();
-                                    $window.location.href = newUrl;
+                                    LocationUtilsService.changeUrl(currentUrl, newUrl);
                                 },
                                 button3click: function() {
                                     // bara stänga modal fönstret
@@ -90,7 +91,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                         } else {
                             // unbind the location change listener
                             unbindCheckHandledEvent();
-                            $window.location.href = newUrl;
+                            LocationUtilsService.changeUrl(currentUrl, newUrl);
                         }
                     });
                 } else {
