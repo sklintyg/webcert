@@ -59,7 +59,7 @@ describe('UnhandledQACtrlSpec', function() {
             var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
             $provide.value('common.statService', statService);
             $provide.value('common.fragaSvarCommonService', jasmine.createSpyObj('common.fragaSvarCommonService',
-                [ 'handleVidareBefodradToggle', 'decorateSingleItemMeasure', 'setVidareBefordradState', 'buildMailToLink' ]));
+                [ 'handleVidareBefodradToggle', 'decorateSingleItemMeasure', 'setVidareBefordradState', 'buildMailToLink', 'checkQAonlyDialog' ]));
             $provide.value('common.User', {});
 
             var modalMock;
