@@ -13,6 +13,7 @@ class VisaPage extends AbstractPage {
         skrivUtKnapp {$("#downloadprint") }
         kopieraKnapp { $("#copyBtn") }
         makuleraKnapp { $("#makuleraBtn") }
+
     }
 
     boolean intygLaddat(boolean expected) {
