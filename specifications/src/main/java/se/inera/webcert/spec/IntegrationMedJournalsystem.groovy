@@ -291,7 +291,7 @@ class IntegrationMedJournalsystem {
         def result = false
         Browser.drive {
             waitFor() {
-                result = page.$("#msgInteFranJournalSystem").isDisplayed()
+                result = page.kopieraDialogMsgInteFranJournalSystem.isDisplayed()
             }
         }
         return result
@@ -300,7 +300,10 @@ class IntegrationMedJournalsystem {
     boolean inteFranJournalSystemTextInteVisas(){
         def result
         Browser.drive {
-            result = !page.$("#msgInteFranJournalSystem").isDisplayed()
+            waitFor() {
+                result = !page.kopieraDialogMsgInteFranJournalSystem.isDisplayed()
+
+            }
         }
         result
     }
@@ -309,7 +312,7 @@ class IntegrationMedJournalsystem {
         def result = false
         Browser.drive {
             waitFor() {
-                result =  page.$("#msgNyttPersonId").isDisplayed()
+                result =  page.kopieraDialogMsgNyttPersonId.isDisplayed()
             }
         }
         return result
@@ -319,10 +322,49 @@ class IntegrationMedJournalsystem {
         def result
         Browser.drive {
             waitFor() {
-                result = !page.$("#msgNyttPersonId").isDisplayed();
+                result = !page.kopieraDialogMsgNyttPersonId.isDisplayed();
             }
         }
         result
+    }
+
+
+    def toggleKopieraDialogen(boolean val){
+        if(val){
+            Browser.drive {
+                waitFor {
+                    page.openCopyDialog();
+                    page.copyDialog.isDisplayed();
+                }
+            }
+        } else {
+            Browser.drive {
+                waitFor {
+                    page.closeCopyDialog();
+                    !page.copyDialog.isDisplayed();
+                }
+            }
+        }
+    }
+
+    boolean kopieraDialogenVisas(){
+        def result
+        Browser.drive {
+            waitFor() {
+                result = page.copyDialog.isDisplayed();
+            }
+        }
+        result
+    }
+
+    def sleepForNSeconds(String time) {
+        def n = time as int;
+        def originalMilliseconds = System.currentTimeMillis()
+        Browser.drive {
+            waitFor(n + 1, 0.5) {
+                (System.currentTimeMillis() - originalMilliseconds) > (n * 1000)
+            }
+        }
     }
 
 }
