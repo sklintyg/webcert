@@ -46,8 +46,12 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             return moduleApi.getCertificate(certificateId, logicalAddress);
-        } catch (ModuleException | ModuleNotFoundException e) {
-            throw new IntygModuleFacadeException("Exception occured when retrieving certificate", e);
+        } catch (ModuleException me) {
+            LOG.error("ModuleException occured when retrieving certificate");
+            throw new IntygModuleFacadeException("Exception occured when retrieving certificate", me);
+        } catch (ModuleNotFoundException e) {
+            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
+            throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
         }
     }
 
