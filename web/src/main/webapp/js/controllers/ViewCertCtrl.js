@@ -3,38 +3,10 @@
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
     [ '$rootScope', '$routeParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
-        'webcert.ManageCertificate', 'common.UserPreferencesService', 'common.LocationUtilsService',
+        'webcert.ManageCertificate', 'common.UserPreferencesService', 'common.fragaSvarCommonService',
         function($rootScope, $routeParams, $scope, $window, $location, $q, dialogService, ManageCertificate,
-                 UserPreferencesService, LocationUtilsService) {
+                 UserPreferencesService, fragaSvarCommonService) {
             'use strict';
-
-            // Check if the user used the special qa-link to get here.
-            if ($routeParams.qaOnly) {
-                var dialog;
-                var locationEvent = $rootScope.$on('$locationChangeStart', function(event, newUrl, currentUrl) {
-                    event.preventDefault();
-                    if (!dialog) {
-                        dialog = dialogService.showDialog($scope, {
-                            dialogId: 'qa-only-warning-dialog',
-                            titleId: 'label.qaonlywarning',
-                            bodyTextId: 'label.qaonlywarning.body',
-                            templateUrl: '/views/partials/qa-only-warning-dialog.html',
-                            button1click: function() {
-                                locationEvent();
-                                LocationUtilsService.changeUrl(currentUrl, newUrl);
-                            },
-                            button1text: 'common.continue',
-                            button1id: 'button1continue-dialog',
-                            button2text: 'common.cancel',
-                            autoClose: true
-                        }).result.then(function() {
-                            dialog = null; // Dialog closed
-                        }, function() {
-                            dialog = null; // Dialog dismissed
-                        });
-                    }
-                });
-            }
 
             $scope.widgetState = {
                 certificateType: $routeParams.certificateType,
@@ -65,16 +37,12 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                     deferred.promise.then(function(){
 
                                         modal.close('hantera');
-                                        // unbind the location change listener
-                                        unbindCheckHandledEvent();
-                                        LocationUtilsService.changeUrl(currentUrl, newUrl);
+                                        fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindCheckHandledEvent);
                                     });
                                 },
                                 button2click: function() {
                                     modal.close('ejhantera');
-                                    // unbind the location change listener
-                                    unbindCheckHandledEvent();
-                                    LocationUtilsService.changeUrl(currentUrl, newUrl);
+                                    fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindCheckHandledEvent);
                                 },
                                 button3click: function() {
                                     // bara stänga modal fönstret
@@ -89,15 +57,11 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                 autoClose: true
                             });
                         } else {
-                            // unbind the location change listener
-                            unbindCheckHandledEvent();
-                            LocationUtilsService.changeUrl(currentUrl, newUrl);
+                            fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindCheckHandledEvent);
                         }
                     });
                 } else {
-                    //$event.preventDefault();
-                    unbindCheckHandledEvent();
-                    //$window.location.href = newUrl;
+                    fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindCheckHandledEvent);
                 }
             });
             $scope.$on('$destroy', unbindCheckHandledEvent);

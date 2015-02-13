@@ -25,6 +25,18 @@ class SvaraOchFraga {
         }
     }
 
+    def gaTillSokSkrivaIntyg() {
+        Browser.drive {
+            go "/web/dashboard#/create/index"
+        }
+    }
+
+    boolean sokSkrivaIntygSidanVisas() {
+        Browser.drive {
+            at SokSkrivaIntygPage
+        }
+    }
+
     def visaAllaFragor() {
         Browser.drive {
             waitFor() {

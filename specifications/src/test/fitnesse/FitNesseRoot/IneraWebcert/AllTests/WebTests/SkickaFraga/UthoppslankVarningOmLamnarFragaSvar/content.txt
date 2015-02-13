@@ -21,22 +21,22 @@ Testet beskriver fallet när en användare kommer till fråga/svar från journal
 !4 Verifiera att man får en varningsdialog om man försöker lämna sidan
 
 | script | !-SvaraOchFraga-! |
-| ga till svara och fraga | false |
+| ga till sok skriva intyg |
 | intyg med fraga svar sidan visas |
 | lamna fraga svar varning visas | true |
 | lamna fraga svar avbryt |
 | intyg med fraga svar sidan visas |
-| ga till svara och fraga | false |
+| ga till sok skriva intyg |
 | lamna fraga svar varning visas | true |
 | lamna fraga svar fortsatt |
-| svara och fraga sidan visas |
+| sok skriva intyg sidan visas |
 
 !4 Verifiera att man inte får en varningsdialog om man går tillbaka och lämnar sidan igen
 
 | script | !-SvaraOchFraga-! |
-| ga till intygsvy med intygsid | intyg-fit-6 |
-| ga till svara och fraga | false |
-| svara och fraga sidan visas |
+| ga till svara och fraga | true |
+| ga till sok skriva intyg |
+| sok skriva intyg sidan visas |
 
 !3 Givet att man går in på samma intyg utan att gå via uthoppslänken
 
@@ -55,6 +55,5 @@ Testet beskriver fallet när en användare kommer till fråga/svar från journal
 !4 Verifiera att man inte får en varningsdialog om man försöker lämna sidan
 
 | script | !-SvaraOchFraga-! |
-| ga till svara och fraga | false |
-| svara och fraga sidan visas |
-
+| ga till sok skriva intyg |
+| sok skriva intyg sidan visas |

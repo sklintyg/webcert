@@ -2,9 +2,9 @@
  * Controller for logic related to listing questions and answers
  */
 angular.module('webcert').controller('webcert.UnhandledQACtrl',
-    ['$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
+    ['$rootScope', '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
         'common.fragaSvarCommonService', 'webcert.ManageCertificate', 'webcert.QuestionAnswer',
-        function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService,
+        function($rootScope, $cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService,
             fragaSvarCommonService, ManageCertificate, QuestionAnswer) {
             'use strict';
 
@@ -380,6 +380,11 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 $scope.widgetState.runningQuery = true;
                 getQA();
             });
+
+            var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
+                fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
+            });
+            $scope.$on('$destroy', unbindLocationChange);
 
             // Load filter form from cookie if available (for first page load)
             loadSearchForm();
