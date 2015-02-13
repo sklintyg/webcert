@@ -2,7 +2,7 @@
 <properties>
 	<Edit>true</Edit>
 	<Files>true</Files>
-	<Help>Säkerställa att kommentar texten inkludera friviligt test när intyget signeras</Help>
+	<Help>Säkerställa att kommentar texten inkludera friviligt test när intyget signeras, jira webcert - 1463</Help>
 	<Properties>true</Properties>
 	<RecentChanges>true</RecentChanges>
 	<Refactor>true</Refactor>
