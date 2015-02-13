@@ -45,38 +45,38 @@ public interface IntygService {
     /**
      * Registers a given certificate in the Intygstjanst.
      *
-     * @param intyg
+     * @param utkast
      * @return
      */
-    IntygServiceResult storeIntyg(Utkast intyg);
+    IntygServiceResult storeIntyg(Utkast utkast);
 
     /**
      * Instructs Intygstjanst to deliver the given certifiate to an external recipient.
      *
      * @param intygId
      * @param typ
-     * @param recipient
+     * @param mottagare
      * @param hasPatientConsent
      * @return
      */
-    IntygServiceResult sendIntyg(String intygId, String typ, String recipient, boolean hasPatientConsent);
+    IntygServiceResult sendIntyg(String intygId, String typ, String mottagare, boolean hasPatientConsent);
 
     /**
      * Retrieves a list over available recipients for a particular type of certificate.
      *
-     * @param intygType
+     * @param intygTyp
      * @return
      */
-    List<IntygRecipient> fetchListOfRecipientsForIntyg(String intygType);
+    List<IntygRecipient> fetchListOfRecipientsForIntyg(String intygTyp);
 
     /**
      * Instructs Intygstjanst to revoke the given certificate.
      *
      * @param intygId
-     * @param intygType
+     * @param intygTyp
      * @param revokeMessage
      * @return
      */
-    IntygServiceResult revokeIntyg(String intygId, String intygType, String revokeMessage);
+    IntygServiceResult revokeIntyg(String intygId, String intygTyp, String revokeMessage);
 
 }

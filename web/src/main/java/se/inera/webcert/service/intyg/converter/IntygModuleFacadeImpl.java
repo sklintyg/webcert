@@ -3,6 +3,7 @@ package se.inera.webcert.service.intyg.converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
@@ -22,7 +23,10 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-    
+
+    @Value("${intygstjanst.logicaladdress}")
+    private String logicalAddress;
+
     public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel) throws IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
@@ -41,13 +45,9 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     public CertificateResponse getCertificate(String certificateId, String intygType) throws IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            return moduleApi.getCertificate(certificateId);
-        } catch (ModuleException me) {
-            LOG.error("ModuleException occured when retrieving certificate");
-            throw new IntygModuleFacadeException("Exception occured when retrieving certificate", me);
-        } catch (ModuleNotFoundException e) {
-            LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
-            throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
+            return moduleApi.getCertificate(certificateId, logicalAddress);
+        } catch (ModuleException | ModuleNotFoundException e) {
+            throw new IntygModuleFacadeException("Exception occured when retrieving certificate", e);
         }
     }
 
@@ -55,7 +55,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     public void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            moduleApi.registerCertificate(new InternalModelHolder(internalIntygJsonModel));
+            moduleApi.registerCertificate(new InternalModelHolder(internalIntygJsonModel), logicalAddress);
         } catch (ModuleNotFoundException e) {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
             throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
