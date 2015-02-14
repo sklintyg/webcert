@@ -23,6 +23,7 @@
   <import resource="classpath:/mail-stub-context.xml" />
   <import resource="classpath*:module-config.xml" />
   <import resource="classpath*:wc-module-cxf-servlet.xml" />
+  <import resource="classpath:/notification-sender-config.xml" />
 
   <context:annotation-config />
   
@@ -42,7 +43,7 @@
 
   <beans>
     <context:property-placeholder
-      location="classpath:default.properties, classpath:version.properties"
+      location="classpath:webcert-notification-route-params.properties, classpath:default.properties, classpath:version.properties"
       order="2" ignore-resource-not-found="false" />
 
     <util:properties id="webcertFeatures" location="classpath:/features.properties" />

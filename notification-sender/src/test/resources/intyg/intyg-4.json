@@ -1,0 +1,24 @@
+{
+    "enhetsId": "vardenhet-1",
+    "enhetsNamn": "Vårdenhet 1",
+    "intygsId": "intyg-4",
+    "intygsTyp": "fk7263",
+    "model": "This is the JSON model of this Intyg with some interesting scandinavian characters like Å, Ä and ö added",
+    "patientEfternamn": "Tolvansson",
+    "patientFornamn": "Tolvan",
+    "patientMellannamn": "Svensson",
+    "patientPersonnummer": "19121212-1212",
+    "senastSparadAv": {
+        "hsaId": "person-2",
+        "namn": "Dr. Börje Dengroth"
+    },
+    "senastSparadDatum": "2014-01-01T12:00:00.000",
+    "skapadAv": {
+        "hsaId": "person-1",
+        "namn": "Dr. Börje Dengroth"
+    },
+    "status": "DRAFT_INCOMPLETE",
+    "vardgivarId": "vardgivare-1",
+    "vardgivarNamn": "Vårdgivare 1",
+    "vidarebefordrad": false
+}

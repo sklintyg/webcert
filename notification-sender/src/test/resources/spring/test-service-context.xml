@@ -4,5 +4,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
   
   <bean id="mockWebcertRepositoryService" class="se.inera.webcert.notifications.service.MockWebcertRepositoryServiceImpl" />
-  
+
+  <bean id="mockWebcertModuleService" class="se.inera.webcert.notifications.service.MockWebcertModuleServiceImpl" />
+
 </beans>

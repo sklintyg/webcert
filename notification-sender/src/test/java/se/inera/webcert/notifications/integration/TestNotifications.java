@@ -31,7 +31,7 @@ import se.inera.webcert.notifications.TestDataUtil;
 import se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration("/test-notification-sender-config.xml")
+@ContextConfiguration({ "/test-notification-sender-config.xml", "/spring/test-service-context.xml" })
 @ActiveProfiles(profiles = { "integration", "dev" })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestNotifications {

@@ -89,6 +89,80 @@ public class ProcessNotificationRequestRouteBuilderTest {
     }
 
     @Test
+    public void testWithAndratAndValidDiagnoseCode() throws Exception {
+
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
+
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-andrat-notification.xml");
+
+        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-1");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, UtkastStatus.DRAFT_INCOMPLETE);
+        exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_ANDRAT.toString());
+        exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
+
+        processNotificationRequestEndpoint.send(exchange);
+
+        assertIsSatisfied(camelContext);
+
+        CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn()
+                .getBody(CertificateStatusUpdateForCareType.class);
+        assertEquals("S47", statusUpdateType.getUtlatande().getDiagnos().getCode());
+        assertEquals("Klämskada på överarm", statusUpdateType.getUtlatande().getDiagnos().getDisplayName());
+    }
+
+    @Test
+    public void testWithAndratAndInvalidDiagnoseCode() throws Exception {
+
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
+
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-andrat-notification.xml");
+
+        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-3");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, UtkastStatus.DRAFT_INCOMPLETE);
+        exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_ANDRAT.toString());
+        exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
+
+        processNotificationRequestEndpoint.send(exchange);
+
+        assertIsSatisfied(camelContext);
+
+        CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn()
+                .getBody(CertificateStatusUpdateForCareType.class);
+        // An invalid diagnoskod gets set to null
+        assertNull(statusUpdateType.getUtlatande().getDiagnos());
+    }
+
+    @Test
+    public void testWithAndratAndValidDiagnosKodAndNullDiagnoseDescription() throws Exception {
+
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
+
+        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-andrat-notification.xml");
+
+        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-4");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
+        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, UtkastStatus.DRAFT_INCOMPLETE);
+        exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_ANDRAT.toString());
+        exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
+
+        processNotificationRequestEndpoint.send(exchange);
+
+        assertIsSatisfied(camelContext);
+
+        CertificateStatusUpdateForCareType statusUpdateType = mockCertificateStatusUpdateEndpoint.getExchanges().get(0).getIn()
+                .getBody(CertificateStatusUpdateForCareType.class);
+        assertEquals(FK7263, statusUpdateType.getUtlatande().getTypAvUtlatande().getCode());
+        assertEquals("S47", statusUpdateType.getUtlatande().getDiagnos().getCode());
+        // An empty diagnosBeskrivning is added instead of null
+        assertEquals("", statusUpdateType.getUtlatande().getDiagnos().getDisplayName());
+    }
+
+    @Test
     public void testWithSigned() throws Exception {
 
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);

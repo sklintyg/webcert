@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -10,7 +11,7 @@
   </parent>
 
   <artifactId>notification-sender</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
 
   <name>Webcert (Notification Sender)</name>
 
@@ -144,94 +145,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
   </dependencies>
-
-  <build>
-    <finalName>notification-sender</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.activemq.tooling</groupId>
-        <artifactId>activemq-maven-plugin</artifactId>
-        <configuration>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <configuration>
-          <webAppConfig>
-            <contextPath>/notification-sender</contextPath>
-          </webAppConfig>
-          <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
-          <systemProperties>
-            <systemProperty>
-              <name>spring.profiles.active</name>
-              <value>${system.mode}</value>
-            </systemProperty>
-            <systemProperty>
-              <name>credentials.file</name>
-              <value>${basedir}/notification-sender-dummy-credentials.properties</value>
-            </systemProperty>
-            <systemProperty>
-              <name>notification-sender.logback.file</name>
-              <value>${basedir}/notification-logback.xml</value>
-            </systemProperty>
-            <systemProperty>
-              <name>notification-sender.config.file</name>
-              <value>${basedir}/notification-sender-dev.properties</value>
-            </systemProperty>
-            <systemProperty>
-              <name>catalina.base</name>
-              <value>${project.build.directory}/catalina.base</value>
-            </systemProperty>
-            <systemProperty>
-              <name>jetty.port</name>
-              <value>9070</value>
-            </systemProperty>
-            <systemProperty>
-              <name>java.awt.headless</name>
-              <value>true</value>
-            </systemProperty>
-          </systemProperties>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2db.connector.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${commons-dbcp2.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-broker</artifactId>
-            <version>${activemq.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-            <version>${activemq.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <version>${geronimo-jms-specs.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connector.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

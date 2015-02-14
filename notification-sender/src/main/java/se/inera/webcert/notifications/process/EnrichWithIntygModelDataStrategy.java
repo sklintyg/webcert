@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Arbetsformaga;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.Diagnos;
@@ -26,8 +28,17 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.ReadContext;
 import com.jayway.jsonpath.internal.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.internal.spi.mapper.JacksonMappingProvider;
+import se.inera.certificate.modules.service.WebcertModuleService;
 
 public class EnrichWithIntygModelDataStrategy {
+
+    @Autowired(required = false)
+    private WebcertModuleService moduleService;
+
+    @VisibleForTesting
+    void setModuleService(WebcertModuleService moduleService) {
+        this.moduleService = moduleService;
+    }
 
     public static final JsonPath DIAGNOS_KOD_JSONP = JsonPath.compile("$.diagnosKod");
     public static final JsonPath DIAGNOS_BESKR_JSONP = JsonPath.compile("$.diagnosBeskrivning1");
@@ -105,11 +116,16 @@ public class EnrichWithIntygModelDataStrategy {
             diagnoskodverk = Diagnoskodverk.valueOf(kodverk);
         }
 
+        if (!moduleService.validateDiagnosisCode(diagnosKod, diagnoskodverk.getCodeSystemName())) {
+            LOG.debug("Diagnos code is not valid.");
+            return null;
+        }
+
         Diagnos dt = new Diagnos();
         dt.setCode(diagnosKod);
         dt.setCodeSystem(diagnoskodverk.getCodeSystem());
         dt.setCodeSystemName(diagnoskodverk.getCodeSystemName());
-        dt.setDisplayName(diagnosBeskr);
+        dt.setDisplayName(diagnosBeskr != null ? diagnosBeskr : "");
 
         return dt;
     }
