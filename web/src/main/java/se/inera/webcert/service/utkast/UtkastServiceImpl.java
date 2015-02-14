@@ -1,18 +1,11 @@
 package se.inera.webcert.service.utkast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -48,6 +41,12 @@ import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -242,6 +241,7 @@ public class UtkastServiceImpl implements UtkastService {
         return signatureService.serverSignature(intygsId);
     }
 
+    @Override
     public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request) {
 
         String intygId = request.getIntygId();
@@ -265,7 +265,7 @@ public class UtkastServiceImpl implements UtkastService {
         String intygType = utkast.getIntygsTyp();
         String draftAsJson = request.getDraftAsJson();
 
-        // Keep persisted json for comparsion  
+        // Keep persisted json for comparsion
         String persistedJson = utkast.getModel();
 
         // Update draft with user information

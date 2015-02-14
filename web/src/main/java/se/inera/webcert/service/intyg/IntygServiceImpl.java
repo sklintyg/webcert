@@ -151,29 +151,29 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
-    public List<IntygRecipient> fetchListOfRecipientsForIntyg(String intygType) {
+    public List<IntygRecipient> fetchListOfRecipientsForIntyg(String intygTyp) {
 
-        intygType = intygType.toLowerCase();
+        intygTyp = intygTyp.toLowerCase();
 
-        LOG.debug("Fetching recipients for intyg type '{}'", intygType);
+        LOG.debug("Fetching recipients for certificate of type '{}'", intygTyp);
 
         List<IntygRecipient> recipientsList = new ArrayList<IntygRecipient>();
 
         GetRecipientsForCertificateType request = new GetRecipientsForCertificateType();
-        request.setCertificateType(intygType);
+        request.setCertificateType(intygTyp);
 
         GetRecipientsForCertificateResponseType response = getRecipientsForCertificateService.getRecipientsForCertificate(logicalAddress, request);
 
         ResultType resultType = response.getResult();
 
         if (resultType.getResultCode() != ResultCodeType.OK) {
-            LOG.error("Retrieving list of recipients for type '{}' failed with error id; {}, msg; {}", new Object[] {
-                    intygType, resultType.getErrorId(), resultType.getResultText() });
+            LOG.error("Retrieving list of recipients for certificate type '{}' failed with error id; {}, msg; {}",
+                    new Object[] { intygTyp, resultType.getErrorId(), resultType.getResultText() });
             return recipientsList;
         }
 
         for (RecipientType recipientType : response.getRecipient()) {
-            recipientsList.add(new IntygRecipient(recipientType.getId(), recipientType.getName(), recipientType.getLogicalAdress()));
+            recipientsList.add(new IntygRecipient(recipientType.getId(), recipientType.getName(), intygTyp));
         }
 
         return recipientsList;
@@ -322,13 +322,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
 
             AttributedURIType address = new AttributedURIType();
-
-            String targetAddress = findLogicalAddressForRecipient(intygsTyp, recipient);
-            if (targetAddress == null) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                        "No recipient matching the logical address " + recipient + " found");
-            }
-            address.setValue(targetAddress);
+            address.setValue(logicalAddress);
 
             SendType send = new SendType();
             send.setAdressVard(ModelConverter.toVardAdresseringsType(intyg.getUtlatande().getGrundData()));
@@ -370,15 +364,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             omsandningRepository.delete(omsandning);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
-    }
-
-    private String findLogicalAddressForRecipient(String intygType, String recipient) {
-        for (IntygRecipient r : fetchListOfRecipientsForIntyg(intygType)) {
-            if (r.getId().equalsIgnoreCase(recipient)) {
-                return r.getLogicalAddress();
-            }
-        }
-        return null;
     }
 
     protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {

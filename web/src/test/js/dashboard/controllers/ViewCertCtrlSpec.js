@@ -5,6 +5,7 @@ describe('ViewCertCtrl', function() {
     var $routeParams;
     var $httpBackend;
     var dialogService;
+    var fragaSvarCommonService;
     var $scope;
     var $qaCtrlScope;
     var $q;
@@ -57,6 +58,10 @@ describe('ViewCertCtrl', function() {
             return modalMock;
         });
         $provide.value('common.dialogService', dialogService);
+
+        fragaSvarCommonService  = jasmine.createSpyObj('common.fragaSvarCommonService', [ 'checkQAonlyDialog' ]);
+        $provide.value('common.fragaSvarCommonService', fragaSvarCommonService);
+
         $provide.value('$window', {location:{href:currentUrl}});
         manageCertificateSpy = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getCertType' ]);
         $provide.value('webcert.ManageCertificate', manageCertificateSpy);
@@ -124,8 +129,14 @@ describe('ViewCertCtrl', function() {
             // ----- arrange
             expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
 
+            // spy on the defferd
+            var def = mockDeferreds.getDeferred();
+            spyOn($q, 'defer').and.returnValue(def);
+
             // kick off the window change event
             $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
+
+            mockDeferreds.getLast().resolve(false);
 
             // ------ act
             // promises are resolved/dispatched only on next $digest cycle
@@ -133,7 +144,7 @@ describe('ViewCertCtrl', function() {
 
             // ------ assert
             // dialog should be opened
-            expect(dialogService.showDialog).toHaveBeenCalled();
+            expect(fragaSvarCommonService.checkQAonlyDialog).toHaveBeenCalled();
 
         });
 
@@ -238,6 +249,12 @@ describe('ViewCertCtrl', function() {
 
         describe('#buttonHandle', function() {
             it('handle button click', function(){
+
+                // This test is not QA only.
+                fragaSvarCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
+                    $window.location.href = newUrl;
+                });
+
                 // inside the handled button click, test that :
                 var args = dialogService.showDialog.calls.mostRecent().args;
                 var dialogOptions = args[1];
@@ -261,6 +278,12 @@ describe('ViewCertCtrl', function() {
 
         describe('#buttonUnHandle', function() {
             it('un handled button click', function(){
+
+                // This test is not QA only.
+                fragaSvarCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
+                    $window.location.href = newUrl;
+                });
+
                 // inside the handled button click, test that :
                 var args = dialogService.showDialog.calls.mostRecent().args;
                 var dialogOptions = args[1];

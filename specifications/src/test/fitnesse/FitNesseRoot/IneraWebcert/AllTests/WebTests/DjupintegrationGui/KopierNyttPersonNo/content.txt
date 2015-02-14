@@ -11,13 +11,13 @@ Också att texten "I de fall patienten har ändrat namn eller adress så uppdate
 !4 Testa att nytt personnumer text visas i kopieradialogen.
 | script | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration med | intyg-fit-1 | personnummer | 19520617-2339 |
-| kopiera intyg | intyg-fit-1 |
+| toggle kopiera dialogen | true |
 | nytt person nummer text visas |
 | inte fran journal system text inte visas |
 
 !4 Testa att nytt personnumer text inte visas.
 | script | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration med | intyg-fit-1 | personnummer |  |
-| kopiera intyg | intyg-fit-1 |
+| toggle kopiera dialogen | true |
 | nytt person nummer text inte visas |
 | inte fran journal system text inte visas |

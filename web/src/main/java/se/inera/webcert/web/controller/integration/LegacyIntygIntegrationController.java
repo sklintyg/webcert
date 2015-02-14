@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.certificate.modules.fk7263.model.Constants;
+import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -66,6 +67,7 @@ public class LegacyIntygIntegrationController {
         //webCertUserService.clearEnabledFeaturesOnUser();
         //webCertUserService.enableFeaturesOnUser(WebcertFeature.HANTERA_FRAGOR);
         //webCertUserService.enableModuleFeatureOnUser(intygType, ModuleFeature.HANTERA_FRAGOR);
+        webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM_QAONLY);
 
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }

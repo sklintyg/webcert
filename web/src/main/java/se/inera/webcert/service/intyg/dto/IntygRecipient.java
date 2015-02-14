@@ -2,17 +2,19 @@ package se.inera.webcert.service.intyg.dto;
 
 public class IntygRecipient {
 
+    /* The recipient's id */
     private String id;
 
+    /* The recipient's name */
     private String name;
 
-    private String logicalAddress;
+    /* The certificate type */
+    private String intygsTyp;
 
-    public IntygRecipient(String id, String name, String logicalAddress) {
-        super();
+    public IntygRecipient(String id, String name, String intygsTyp) {
         this.id = id;
         this.name = name;
-        this.logicalAddress = logicalAddress;
+        this.intygsTyp = intygsTyp;
     }
 
     public String getId() {
@@ -31,12 +33,11 @@ public class IntygRecipient {
         this.name = name;
     }
 
-    public String getLogicalAddress() {
-        return logicalAddress;
+    public String getIntygsTyp() {
+        return intygsTyp;
     }
 
-    public void setLogicalAddress(String logicalAddress) {
-        this.logicalAddress = logicalAddress;
+    public void setIntygsTyp(String intygsTyp) {
+        this.intygsTyp = intygsTyp;
     }
-
 }

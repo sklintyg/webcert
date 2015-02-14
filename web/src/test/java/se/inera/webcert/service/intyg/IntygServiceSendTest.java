@@ -12,26 +12,20 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.RecipientType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
@@ -56,7 +50,6 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         RecipientType recipient = new RecipientType();
         recipient.setId("Fk");
         recipient.setName("Försäkringskassan");
-        recipient.setLogicalAdress("FKORG");
         response.getRecipient().add(recipient);
 
         when(getRecipientsForCertificateService.getRecipientsForCertificate(any(String.class), any(GetRecipientsForCertificateType.class)))

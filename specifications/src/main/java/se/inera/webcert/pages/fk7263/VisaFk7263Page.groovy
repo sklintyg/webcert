@@ -38,8 +38,9 @@ class VisaFk7263Page extends VisaPage {
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
 
         // kopiera dialog text webcert-1449
-        kopieraDialogMsgInteFranJournalSystem{ $("#msgInteFranJournalSystem") }
-        kopieraDialogMsgNyttPersonId{ $("#msgNyttPersonId") }
+        copyDialog(required:false, toWait: true){ $("#copy-dialog") }
+        kopieraDialogMsgInteFranJournalSystem(required:false,toWait: true){ $("#msgInteFranJournalSystem") }
+        kopieraDialogMsgNyttPersonId(required:false, toWait: true){ $("#msgNyttPersonId") }
 
         // fraga svar
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
@@ -142,6 +143,20 @@ class VisaFk7263Page extends VisaPage {
             doneLoading()
         }
         kopieraDialogKopieraKnapp.click()
+    }
+
+    def openCopyDialog() {
+        $("#copyBtn").click()
+        waitFor {
+            doneLoading()
+        }
+    }
+
+    def closeCopyDialog() {
+        $("#button2copy-dialog").click()
+        waitFor {
+            doneLoading()
+        }
     }
 
     def makulera() {

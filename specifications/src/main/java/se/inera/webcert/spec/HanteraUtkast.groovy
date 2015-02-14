@@ -309,4 +309,12 @@ class HanteraUtkast {
             }
         }
     }
+
+    boolean kommentarInnehallarText( String text){
+        def result = false;
+        Browser.drive {
+            result = page.kommentar.text().contains(text);
+        }
+        return result;
+    }
 }
