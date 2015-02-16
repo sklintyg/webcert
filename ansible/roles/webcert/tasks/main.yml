@@ -44,21 +44,6 @@
 - name: Deploy log-sender-{{ version }}.war as log-sender.war
   command: cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war
 
-- name: Download notification-sender-{{ version }}.war
-  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/notification-sender/{{ version }}/notification-sender-{{ version }}.war
-      dest={{ releases_folder }}/notification-sender-{{ version }}.war
-
-- name: remove old version of unpacked notification-sender war
-  file: state=absent
-      path={{ webapps_folder }}/notification-sender
-
-- name: remove old version of notification-sender war
-  file: state=absent
-      path={{ webapps_folder }}/notification-sender.war
-
-- name: Deploy notification-sender-{{ version }}.war as notification-sender.war
-  command: cp {{ releases_folder }}/notification-sender-{{ version }}.war {{ webapps_folder }}/notification-sender.war
-
 - name: Create version file
   template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
