@@ -120,7 +120,7 @@ public class EnrichWithIntygModelDataStrategy {
             diagnoskodverk = Diagnoskodverk.valueOf(kodverk);
         }
         
-        if (!moduleService.validateDiagnosisCode(diagnosKod, diagnoskodverk.name())) {
+        if (!moduleService.validateDiagnosisCode(diagnosKod, diagnoskodverk)) {
             LOG.debug("Diagnos code '{}' ({}) is not valid.", diagnosKod, diagnoskodverk.getCodeSystemName());
             return null;
         }
