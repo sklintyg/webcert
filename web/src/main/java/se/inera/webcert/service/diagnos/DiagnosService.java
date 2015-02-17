@@ -1,5 +1,6 @@
 package se.inera.webcert.service.diagnos;
 
+import se.inera.certificate.codes.Diagnoskodverk;
 import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
 
 /**
@@ -16,10 +17,21 @@ public interface DiagnosService {
      * @param code
      *            The code to search for.
      * @param codeSystem
-     *            The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
+     *            A String representing the code system to which the code belongs.
      * @return
      */
     DiagnosResponse getDiagnosisByCode(String code, String codeSystem);
+    
+    /**
+     * Returns all diagnoses in the repository exactly matching the code.
+     * 
+     * @param code
+     *           The code to search for.
+     * @param codeSystem
+     *           The code system to which the code belongs (i.e ICD-10-SE or KSH97P)
+     * @return
+     */
+    DiagnosResponse getDiagnosisByCode(String code, Diagnoskodverk codeSystem);
 
     /**
      * Searches the repository for codes beginning with the codeFragment. Limits the number of matches returned.

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import se.inera.certificate.codes.Diagnoskodverk;
 import se.inera.certificate.modules.service.WebcertModuleService;
 import se.inera.webcert.service.diagnos.DiagnosService;
 import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
@@ -29,11 +30,21 @@ public class WebcertModuleServiceImpl implements WebcertModuleService {
      * @see se.inera.certificate.modules.service.WebcertModuleService#validateDiagnosisCode(java.lang.String, int)
      */
     @Override
-    public boolean validateDiagnosisCode(String code, String codeSystem) {
+    public boolean validateDiagnosisCode(String codeFragment, String codeSystemStr) {
 
-        DiagnosResponse response = diagnosService.getDiagnosisByCode(code, codeSystem);
+        DiagnosResponse response = diagnosService.getDiagnosisByCode(codeFragment, codeSystemStr);
 
-        LOG.debug("Validation result for diagnosis code '{}' is {}", code, response);
+        LOG.debug("Validation result for diagnosis code '{}' is {}", codeFragment, response);
+
+        return (DiagnosResponseType.OK.equals(response.getResultat()));
+    }
+
+    @Override
+    public boolean validateDiagnosisCode(String codeFragment, Diagnoskodverk codeSystem) {
+        
+        DiagnosResponse response = diagnosService.getDiagnosisByCode(codeFragment, codeSystem);
+
+        LOG.debug("Validation result for diagnosis code '{}' is {}", codeFragment, response);
 
         return (DiagnosResponseType.OK.equals(response.getResultat()));
     }

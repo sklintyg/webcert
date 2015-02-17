@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import se.inera.certificate.codes.Diagnoskodverk;
 import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
 import se.inera.webcert.service.diagnos.dto.DiagnosResponseType;
 
@@ -21,9 +22,9 @@ public class DiagnosServiceTest {
     @Autowired
     private DiagnosService service;
 
-    private final static String ICD_10 = "ICD_10_SE";
+    private final static String ICD_10 = Diagnoskodverk.ICD_10_SE.name();
 
-    private final static String KSH97P = "KSH_97_P";
+    private final static String KSH97P = Diagnoskodverk.KSH_97_P.name();
 
     @Test
     public void testGetICD10DiagnosisByCode() {

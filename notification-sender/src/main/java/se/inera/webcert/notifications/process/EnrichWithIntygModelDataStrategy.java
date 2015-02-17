@@ -7,13 +7,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Arbetsformaga;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.Diagnos;
@@ -28,6 +29,7 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.ReadContext;
 import com.jayway.jsonpath.internal.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.internal.spi.mapper.JacksonMappingProvider;
+
 import se.inera.certificate.modules.service.WebcertModuleService;
 
 public class EnrichWithIntygModelDataStrategy {
@@ -108,16 +110,18 @@ public class EnrichWithIntygModelDataStrategy {
         String diagnosBeskr = extractString(DIAGNOS_BESKR_JSONP, jsonCtx);
 
         String kodverk = extractString(DIAGNOS_CODESYSTEM_JSONP, jsonCtx);
+        
         Diagnoskodverk diagnoskodverk;
+        
         if (kodverk == null) {
             // Default is ICD-10-SE
             diagnoskodverk = Diagnoskodverk.ICD_10_SE;
         } else {
             diagnoskodverk = Diagnoskodverk.valueOf(kodverk);
         }
-
-        if (!moduleService.validateDiagnosisCode(diagnosKod, diagnoskodverk.getCodeSystemName())) {
-            LOG.debug("Diagnos code is not valid.");
+        
+        if (!moduleService.validateDiagnosisCode(diagnosKod, diagnoskodverk.name())) {
+            LOG.debug("Diagnos code '{}' ({}) is not valid.", diagnosKod, diagnoskodverk.getCodeSystemName());
             return null;
         }
 
@@ -126,6 +130,8 @@ public class EnrichWithIntygModelDataStrategy {
         dt.setCodeSystem(diagnoskodverk.getCodeSystem());
         dt.setCodeSystemName(diagnoskodverk.getCodeSystemName());
         dt.setDisplayName(diagnosBeskr != null ? diagnosBeskr : "");
+        
+        LOG.debug("Returning diagnos '{}, {}'", dt.getCode(), dt.getDisplayName());
 
         return dt;
     }
