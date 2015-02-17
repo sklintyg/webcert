@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.certificate.model.Status;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.ApplicationOrigin;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -21,6 +22,9 @@ import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygModuleFacadeTest {
@@ -46,17 +50,17 @@ public class IntygModuleFacadeTest {
 
     @Test
     public void testConvertFromInternalToPdfDocument() throws IntygModuleFacadeException, ModuleException {
-        
+
         byte[] pdfData = "PDFDATA".getBytes();
         PdfResponse pdfResp = new PdfResponse(pdfData , "file.pdf");
-        when(moduleApi.pdf(any(InternalModelHolder.class), any(ApplicationOrigin.class))).thenReturn(pdfResp);
-        
-        IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON);
+        when(moduleApi.pdf(any(InternalModelHolder.class), any(List.class), any(ApplicationOrigin.class))).thenReturn(pdfResp);
+
+        IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON, new ArrayList<Status>());
         assertNotNull(intygPdf.getPdfData());
         assertEquals("file.pdf", intygPdf.getFilename());
-        
-        verify(moduleApi).pdf(any(InternalModelHolder.class), eq(ApplicationOrigin.WEBCERT));
-        
+
+        verify(moduleApi).pdf(any(InternalModelHolder.class), any(List.class), eq(ApplicationOrigin.WEBCERT));
+
     }
-        
+
 }

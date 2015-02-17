@@ -185,7 +185,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             LOG.debug("Fetching intyg '{}' as PDF", intygId);
 
             IntygContentHolder intyg = fetchIntygData(intygId, intygTyp);
-            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents());
+            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents(),
+                    serviceConverter.convertListOfIntygStatusToListOfStatus(intyg.getStatuses()));
 
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
             logService.logPrintOfIntygAsPDF(logRequest);

@@ -104,6 +104,24 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         return new IntygStatus(statusType, source.getTarget(), source.getTimestamp());
     }
 
+    @Override
+    public List<Status> convertListOfIntygStatusToListOfStatus(List<IntygStatus> source) {
+        List<Status> status = new ArrayList<>();
+        for (IntygStatus intygStatus : source) {
+            status.add(convertToStatus(intygStatus));
+        }
+        return status;
+    }
+
+    private Status convertToStatus(IntygStatus source) {
+        CertificateState statusType = convertStatusType(source.getType());
+        Status status = new Status();
+        status.setType(statusType);
+        status.setTimestamp(source.getTimestamp());
+        status.setTarget(source.getTarget());
+        return status;
+    }
+
     private StatusType convertStatusType(se.inera.certificate.clinicalprocess.healthcond.certificate.v1.StatusType statusType) {
         switch (statusType) {
         case RECEIVED:
@@ -135,6 +153,23 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
             return StatusType.RESTORED;
         default:
             return StatusType.UNKNOWN;
+        }
+    };
+
+    private CertificateState convertStatusType(StatusType statusType) {
+        switch (statusType) {
+            case RECEIVED:
+                return CertificateState.RECEIVED;
+            case SENT:
+                return CertificateState.SENT;
+            case CANCELLED:
+                return CertificateState.CANCELLED;
+            case DELETED:
+                return CertificateState.DELETED;
+            case RESTORED:
+                return CertificateState.RESTORED;
+            default:
+                return CertificateState.UNHANDLED;
         }
     };
 

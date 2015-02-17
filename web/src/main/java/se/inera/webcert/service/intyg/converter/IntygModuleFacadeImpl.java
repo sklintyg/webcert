@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import se.inera.certificate.model.Status;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.ApplicationOrigin;
@@ -15,6 +16,8 @@ import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.PdfResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
+
+import java.util.List;
 
 @Component
 public class IntygModuleFacadeImpl implements IntygModuleFacade {
@@ -27,10 +30,10 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
-    public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel) throws IntygModuleFacadeException {
+    public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses) throws IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            PdfResponse pdfResponse = moduleApi.pdf(new InternalModelHolder(internalIntygJsonModel), ApplicationOrigin.WEBCERT);
+            PdfResponse pdfResponse = moduleApi.pdf(new InternalModelHolder(internalIntygJsonModel), statuses, ApplicationOrigin.WEBCERT);
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
         } catch (ModuleException me) {
             LOG.error("ModuleException occured when when generating PDF document from internal");
