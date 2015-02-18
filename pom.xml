@@ -63,6 +63,7 @@
     <module>stubs/loggtjanst-stub</module>
     <module>stubs/intygstjanst-stub</module>
     <module>stubs/mail-stub</module>
+    <module>stubs/notification-stub</module>
     <module>web</module>
     <module>tools/liquibase-runner</module>
   </modules>
@@ -92,6 +93,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>loggtjanst-stub</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>notification-stub</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

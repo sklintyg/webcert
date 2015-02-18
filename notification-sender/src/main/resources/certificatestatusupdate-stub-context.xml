@@ -6,6 +6,6 @@
   profile="dev,wc-all-stubs,wc-notificationsender-stub">
 
   <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare -->
-  <jaxws:endpoint address="/certificate-status-update-for-care-stub" implementor="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub" />
+  <jaxws:endpoint address="/certificate-status-update-for-care-stub" implementor="se.inera.webcert.notificationstub.CertificateStatusUpdateForCareResponderStub" />
 
 </beans>
