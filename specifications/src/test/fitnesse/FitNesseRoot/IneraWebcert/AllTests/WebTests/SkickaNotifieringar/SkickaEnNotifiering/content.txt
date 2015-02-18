@@ -1,0 +1,19 @@
+!contents -R2 -g -p -f -h
+
+!3 Lägg till komplett utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk |
+| webcert-fitnesse-signera-1 | fk7263 | 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ja | ICD_10_SE |
+
+| skickade notifieringar |
+| intygsId | 
+| webcert-fitnesse-signera-1 |
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-signera-1 |
+
+
+
+
