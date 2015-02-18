@@ -382,7 +382,7 @@
             </systemProperty>
             <systemProperty>
               <name>credentials.file</name>
-              <value>${project.basedir}/webcert-dummy-credentials.properties</value>
+              <value>${project.basedir}/webcert-credentials.properties</value>
             </systemProperty>
             <systemProperty>
               <name>webcert.config.file</name>
