@@ -318,8 +318,8 @@
                         <option value="12" id="TST5565594230-106J_IFV1239877878-103D">Markus Gran (Läkare VårdEnhetA)</option>
                         <option value="13" id="eva_centrum-vast">Eva Holgersson (Läkare Centrum Väst)</option>
                         <option value="14">Staffan Stafett (Läkare Centrum Väst, Linköping, Norrköping)</option>
-                        <option value="15">Journa La System (Läkare WebCert-Integration Enhet 2)</option>
-                        <option value="16">Ivar Integration (Läkare WebCert-Integration Enhet 1)</option>
+                        <option value="15" id ="SE4815162344-1B02_SE4815162344-1A03">Journa La System (Läkare WebCert-Integration Enhet 2)</option>
+                        <option value="16" id="SE4815162344-1B01_SE4815162344-1A02">Ivar Integration (Läkare WebCert-Integration Enhet 1)</option>
                         <option value="17">Adam Admin (Administratör Centrum Väst)</option>
                         <option value="18">Adamo Admin (Administratör Centrum Väst)</option>
                         <option value="19">Adamo Admin (Administratör Centrum Väst)</option>

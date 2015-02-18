@@ -1,18 +1,27 @@
 !contents -R2 -g -p -f -h
 
-!3 Lägg till komplett utkast
+!3 Logga in
 
-| skapa utkast |
-| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk |
-| webcert-fitnesse-signera-1 | fk7263 | 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ja | ICD_10_SE |
+| script | !-LoggaIn-! |
+| logga in som | SE4815162344-1B01_SE4815162344-1A02 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med information i samtliga fält så det blir komplett
 
 | skickade notifieringar |
 | intygsId? | 
-| webcert-fitnesse-signera-1 |
+| $intygsid |
 
 | ta bort utkast |
 | utkastId |
-| webcert-fitnesse-signera-1 |
+| $intygsid |
 
 
 

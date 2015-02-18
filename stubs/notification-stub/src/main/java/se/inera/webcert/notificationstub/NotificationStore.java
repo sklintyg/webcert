@@ -23,4 +23,8 @@ public class NotificationStore  {
     public Collection<CertificateStatusUpdateForCareType> getNotifications() {
         return store.values();
     }
+
+    public void clear() {
+        store.clear();
+    }
 }

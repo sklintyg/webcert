@@ -7,11 +7,11 @@ class SkickadeNotifieringar extends RestClientFixture {
     public void execute() {
         def restClient = createRestClient(baseUrl)
         notifieringar = restClient.get(path: "notification-stub/notifieringar").data
+        restClient.post(path: "notification-stub/clear")
     }
 
     public String intygsId() {
-        notifieringar.toString();
+        notifieringar[0].utlatande.utlatandeId.extension;
     }
-
 
 }
