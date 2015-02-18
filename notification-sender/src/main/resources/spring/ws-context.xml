@@ -53,11 +53,5 @@
       </http:tlsClientParameters>
     </http:conduit>
   </beans>
-  
-  <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare -->
-  <beans profile="dev,wc-notificationsender-stub">
-    <jaxws:endpoint address="/certificate-status-update-for-care-stub"
-      implementor="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub" />
-  </beans>
 
 </beans>
