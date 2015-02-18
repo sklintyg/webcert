@@ -8,14 +8,14 @@
   file: path={{ releases_folder }} state=directory
   
 - name: download webcert-liquibase-runner-{{ version }}.jar
-  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.jar
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/{{ repo }}/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.jar
       dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar
 
 - name: run liquibase update
   command: java -jar {{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar --changeLogFile="changelog/changelog.xml" --username="{{ database_username }}" --password="{{ database_password }}" --url="{{ database_url }}" --driver="{{ database_driver }}" --contexts=none update
 
 - name: Download webcert-web-{{ version }}.war
-  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/webcert-web/{{ version }}/webcert-web-{{ version }}.war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/{{ repo }}/se/inera/intyg/webcert/webcert-web/{{ version }}/webcert-web-{{ version }}.war
       dest={{ releases_folder }}/webcert-web-{{ version }}.war
 
 - name: remove old version of unpacked ROOT war
@@ -30,7 +30,7 @@
   command: cp {{ releases_folder }}/webcert-web-{{ version }}.war {{ webapps_folder }}/ROOT.war
 
 - name: Download log-sender-{{ version }}.war
-  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/release/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
+  get_url: url=http://repository-callistasoftware.forge.cloudbees.com/{{ repo }}/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
       dest={{ releases_folder }}/log-sender-{{ version }}.war
 
 - name: remove old version of unpacked log-sender war

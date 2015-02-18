@@ -2,7 +2,8 @@
 
 - hosts: tomcat
   sudo: yes 
-  vars: 
+  vars:
+    repo: snapshot
     version: 3.0.0-b35
     config_version: master
 
