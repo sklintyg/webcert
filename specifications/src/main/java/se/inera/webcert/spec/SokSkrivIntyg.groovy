@@ -1,12 +1,15 @@
 package se.inera.webcert.spec
 
 import se.inera.webcert.pages.*
+import se.inera.webcert.pages.fk7263.EditCertPage
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 import org.openqa.selenium.Keys
 
 class SokSkrivIntyg {
+
+    def kopiaintygsid
 
     def loggaInSom(String id) {
         Browser.drive {
@@ -150,9 +153,17 @@ class SokSkrivIntyg {
         true
     }
 
+    def kopiaintygsid() {
+        kopiaintygsid
+    }
+
     def kopieraVisatIntyg() {
         Browser.drive {
             page.copy()
+            waitFor {
+                at EditCertPage
+            }
+            kopiaintygsid = currentUrl.substring(currentUrl.lastIndexOf("/") + 1)
         }
     }
 

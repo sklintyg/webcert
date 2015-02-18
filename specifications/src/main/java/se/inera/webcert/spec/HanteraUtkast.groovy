@@ -103,6 +103,16 @@ class HanteraUtkast {
         true
     }
 
+    boolean signeraKnappEjAktiverad(boolean expected = true) {
+        Browser.drive {
+            at EditeraIntygPage
+            waitFor {
+                expected != page.signeraBtn.isEnabled()
+            }
+        }
+        true
+    }
+
     boolean signeraKnappVisas(boolean expected = true) {
         Browser.drive {
             at EditeraIntygPage
@@ -139,6 +149,16 @@ class HanteraUtkast {
             asType EditeraIntygPage
             waitFor {
                 expected == page.certificateIsSentToITMessage.isDisplayed()
+            }
+        }
+        true
+    }
+
+    boolean intygetEjKomplettMeddelandeVisas(boolean expected = true) {
+        Browser.drive {
+            asType EditeraIntygPage
+            waitFor {
+                expected == page.intygetEjKomplettMeddelande.isDisplayed()
             }
         }
         true
