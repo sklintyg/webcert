@@ -15,6 +15,7 @@ class EditCertPage extends AbstractPage {
 
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
+        intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
         errorPanel { $("#error-panel") }
         nyttPersonnummer { $("#nyttPersonnummer") }
         signerandeLakare { $("#signingDoctor") }

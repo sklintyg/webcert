@@ -1,15 +1,18 @@
 package se.inera.webcert.service.intyg.converter;
 
+import se.inera.certificate.model.Status;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 
+import java.util.List;
+
 public interface IntygModuleFacade {
 
-    public abstract IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel) throws IntygModuleFacadeException;
-    
-    public abstract CertificateResponse getCertificate(String certificateId, String intygType) throws IntygModuleFacadeException;
- 
-    public abstract void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException;
-    
+    IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses) throws IntygModuleFacadeException;
+
+    CertificateResponse getCertificate(String certificateId, String intygType) throws IntygModuleFacadeException;
+
+    void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException;
+
 }

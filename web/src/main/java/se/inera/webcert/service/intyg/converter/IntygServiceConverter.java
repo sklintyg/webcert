@@ -19,7 +19,9 @@ public interface IntygServiceConverter {
     public abstract IntygMetadata convertToIntygMetadata(Utlatande utlatande, CertificateMetaData meta);
     
     public abstract List<IntygStatus> convertListOfStatusToListOfIntygStatus(List<Status> source);
-    
+
+    public abstract List<Status> convertListOfIntygStatusToListOfStatus(List<IntygStatus> source);
+
     public abstract IntygMetadata convertToIntygMetadata(String patientId, CertificateMetaType source);
 
     public abstract SendType buildSendTypeFromUtlatande(Utlatande utlatande);
