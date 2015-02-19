@@ -16,6 +16,7 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Signera intyget
 | script | !-HanteraUtkast-! |
+| spara utkast |
 | intyget komplett meddelande visas |
 | signera knapp aktiverad |
 | signera utkast |
@@ -34,6 +35,7 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Intyget ska nu EJ gå att signera
 | script | !-HanteraUtkast-! |
+| spara utkast |
 | intyget ej komplett meddelande visas |
 | signera knapp ej aktiverad |
 
@@ -44,6 +46,7 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Intyget ska nu gå att signera
 | script | !-HanteraUtkast-! |
+| spara utkast |
 | intyget komplett meddelande visas |
 | signera knapp aktiverad |
 | signera utkast |

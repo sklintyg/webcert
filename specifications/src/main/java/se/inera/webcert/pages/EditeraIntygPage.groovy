@@ -20,5 +20,6 @@ class EditeraIntygPage extends AbstractPage {
         enhetsEpost(required: false) { $("#clinicInfoEmail") }
         sparaBtn(required: false) { $("#spara-utkast") }
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
+        intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
     }
 }
