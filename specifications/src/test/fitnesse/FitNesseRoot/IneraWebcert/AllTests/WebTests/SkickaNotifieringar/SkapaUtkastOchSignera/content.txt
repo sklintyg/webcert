@@ -58,7 +58,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | $utkastId  | HAN11| true              |
 | $utkastId  | HAN2 | true              |
 
-!3 Börja med att rensa eventuella gamla notifieringar
+!3 Rensa notifieringar
 | webcert rest utils | 
 | reset? |
 | true |

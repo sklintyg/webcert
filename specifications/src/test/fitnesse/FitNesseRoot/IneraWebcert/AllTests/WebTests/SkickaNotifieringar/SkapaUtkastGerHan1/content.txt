@@ -1,6 +1,6 @@
 !contents -R2 -g -p -f -h
 
-!Börja med att rensa eventuella gamla notifieringar
+!3 Börja med att rensa eventuella gamla notifieringar
 | webcert rest utils | 
 | reset? |
 | true |
