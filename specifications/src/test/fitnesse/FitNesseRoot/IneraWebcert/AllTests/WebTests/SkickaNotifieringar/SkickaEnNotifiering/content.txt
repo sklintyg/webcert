@@ -1,27 +1,22 @@
 !contents -R2 -g -p -f -h
 
-!3 Logga in
+!3 Skapa utkast
+| skapa utkast via djupintegration |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk | utkastCreated? | utkastId? |
+| webcert-fitnesse-signera-1 | fk7263 | 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ja | ICD_10_SE | true | $utkastId= |
 
-| script | !-LoggaIn-! |
-| logga in som | SE4815162344-1B01_SE4815162344-1A02 |
 
-!3 Skapa ett nytt intygsutkast
 
-| script | !-SkrivIntyg-! |
-| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
-| $intygsid= | intygsid |
+!3 Undersök vilka notifieringar som skickades och säkerställ att dessa matchar det förväntade utfallet
+| skickade notifieringar | 
+| id         | kod  | checkHandelseKod? |
+| $utkastId= | HAN1 | true              |
 
-!3 Populera intyget
+| webcert rest utils | 
+| reset? |
+| true |
 
-Populera intyget med information i samtliga fält så det blir komplett
 
-| skickade notifieringar |
-| intygsId? | 
-| $intygsid |
-
-| ta bort utkast |
-| utkastId |
-| $intygsid |
 
 
 

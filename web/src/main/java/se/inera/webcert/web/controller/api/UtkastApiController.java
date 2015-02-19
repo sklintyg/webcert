@@ -150,7 +150,7 @@ public class UtkastApiController extends AbstractApiController {
     @POST
     @Path("/{intygsTyp}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Produces(MediaType.TEXT_PLAIN + UTF_8_CHARSET)
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
@@ -164,7 +164,7 @@ public class UtkastApiController extends AbstractApiController {
 
         CreateNewDraftRequest serviceRequest = createServiceRequest(request);
 
-        String utkastId = intygDraftService.createNewDraft(serviceRequest);
+        String utkastId = intygDraftService.createNewDraft(serviceRequest); 
 
         LOG.debug("Created a new draft of type '{}' with id '{}'", intygsTyp, utkastId);
 
