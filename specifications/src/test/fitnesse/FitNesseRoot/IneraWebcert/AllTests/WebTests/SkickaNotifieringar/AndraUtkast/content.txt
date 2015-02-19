@@ -1,0 +1,39 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | SE4815162344-1B02_SE4815162344-1A03 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med information i samtliga fält så det blir komplett
+
+| Populera Fk7263 |
+| smittskydd | undersokning | undersokningDatum | telefonkontakt | telefonkontaktDatum | journal | journalDatum | other | otherDatum | otherText | diagnos1 | diagnos1Text | diagnos2 | diagnos2Text | diagnos3 | diagnos3Text | diagnosFortydligande | diagnosSamsjuklighet | sjukdomsforlopp | funktionsnedsattning | aktivitetsbegransning | nuvarandearbete | arbetsuppgifter | arbetslos | foraldraledig | tjanstgoringstid | nedsattMed25 | nedsattMed25start | nedsattMed25slut | nedsattMed25beskrivning | nedsattMed50 | nedsattMed50start | nedsattMed50slut | nedsattMed50beskrivning | nedsattMed75 | nedsattMed75start | nedsattMed75slut | nedsattMed75beskrivning | nedsattMed100 | nedsattMed100start | nedsattMed100slut | nedsattBeskrivning | prognos | prognosBeskrivning | atgardSjukvard | atgardAnnan | rekommendationRessatt | rekommendationKontaktAf | rekommendationKontaktForetagshalsovard | rekommendationOvrigt | rekommendationOvrigtBeskrivning | arbetslivsinriktadRehabilitering | kontaktFk | ovrigt | vardenhetPostadress | vardenhetPostnummer | vardenhetPostort | vardenhetTelefonnummer |
+| false | true | 2014-09-17 | true | 2014-09-16 | true | 2014-09-18 | true | 2014-09-18 | Kontakt med arbetsgivaren | !-B079X-! | Virusvårtor, ospecificerade | !-B080B-! | Falska kokoppor | !-B080W-! | Annan och icke specificerad infektion orsakad av ortopoxvirus | Kan vara något annat också | true | Först feber, därefter massa konstiga prickar överallt | Kliar konstant | Kan inte fokusera på arbetet | true | Polis | true | true | 40 | true | +61 | +100 | 08:00-15:00 | true | +51 | +60 | 08:00-12:00 | true | +31 | +50 | 08:00-10:00 | true | +0 | +30 | Det kliar för mycket | ? | Beror på om medicinen fungerar | Strålbehandling, en dag i veckan | Kalla bad | true | true | true | true | Bör ta det lugnt | nej | true | Inget speciellt | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+
+!3 Spara och signera
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| intyg sparat visas |
+
+!3 Undersök vilka notifieringar som skickades och säkerställ att dessa matchar det förväntade utfallet
+| skickade notifieringar | 
+| id         | kod  | checkHandelseKod? |
+| $utkastId= | HAN11 | true              |
+
+| webcert rest utils | 
+| reset? |
+| true |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
