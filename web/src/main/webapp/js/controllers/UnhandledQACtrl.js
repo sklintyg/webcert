@@ -155,6 +155,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
                 QuestionAnswer.getQA(preparedQuery, function(successData) {
 
+                    $log.log("QuestionAnswer.getQA success +++++++++++++++");
+
+                    $log.log("--- preparedQuery : " + JSON.stringify(preparedQuery));
                     $scope.widgetState.totalCount = successData.totalCount;
 
                     var qaListQuery = [];
@@ -162,7 +165,6 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                         // Get initial list
                         qaListQuery = successData.results;
                         $scope.widgetState.currentList = qaListQuery;
-                        $scope.widgetState.runningQuery = false;
                     } else {
                         $scope.widgetState.fetchingMoreInProgress = false;
                         // Fetch more
@@ -171,6 +173,8 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                             qaListQuery.push(successData.results[i]);
                         }
                     }
+
+                    $scope.widgetState.runningQuery = false;
 
                     // If we temporarily pulled a bigger batch to set an initial state, reset page size to normal
                     if ($scope.filterQuery.pageSize > PAGE_SIZE) {
@@ -181,8 +185,12 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
                     decorateList($scope.widgetState.currentList);
 
+                    $log.log("Running query : " + $scope.widgetState.runningQuery);
+                    $log.log("QuestionAnswer.getQA success -------------------");
+
                 }, function(errorData) {
                     $log.debug('Query Error' + errorData);
+                    $log.log("QuestionAnswer.getQA error ***************");
                     $scope.widgetState.runningQuery = false;
                     $scope.widgetState.activeErrorMessageKey = 'info.query.error';
                 });
@@ -362,6 +370,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
             // Broadcast by wcCareUnitClinicSelector directive on load and selection
             $scope.$on('qa-filter-select-care-unit', function(event, unit) {
+
+                $log.debug('on qa-filter-select-care-unit ++++++++++++++++');
+
                 $log.debug('ActiveUnit is now:' + unit.id);
                 $scope.activeUnit = unit;
 
@@ -379,6 +390,8 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 initLakareList(unit.id); // Update lakare list for filter form
                 $scope.widgetState.runningQuery = true;
                 getQA();
+
+                $log.debug('on qa-filter-select-care-unit ---------------');
             });
 
             var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {

@@ -21,6 +21,8 @@ class UnhandledQAPage extends AbstractPage {
         advancedFilterStatus { $("#qp-showStatus") }
         advancedFilterSearchBtn { $("#filter-qa-btn") }
         advancedFilterResetBtn { $("#reset-search-form") }
+        visaAllaFragaBtn(required: false){$("#select-active-unit-wc-all")}
+        vcCentrumVastBtn(required: false){$("select-active-unit-centrum-vast")}
         fetchMoreBtn { $("#hamtaFler") }
 
         logoutLink { $("#logoutLink") }
@@ -28,7 +30,7 @@ class UnhandledQAPage extends AbstractPage {
     }
 
     def visaAllaFragor() {
-        $("#select-active-unit-wc-all").click();
+        visaAllaFragaBtn.click();
     }
 
     def selectCareUnit(String careUnit) {

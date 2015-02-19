@@ -39,9 +39,20 @@ class SvaraOchFraga {
 
     def visaAllaFragor() {
         Browser.drive {
-            waitFor() {
-                page.visaAllaFragor()
+            waitFor {
+                at UnhandledQAPage
             }
+
+            waitFor {
+                page.visaAllaFragaBtn().click()
+            }
+
+            sleep(10L)
+
+            waitFor{
+                page.unhandledQATable.isDisplayed()
+            }
+
         }
     }
 
@@ -186,9 +197,6 @@ class SvaraOchFraga {
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
-            }
-            waitFor {
-                page.hamtaFler()
             }
             waitFor {
                 page.hamtaFler()

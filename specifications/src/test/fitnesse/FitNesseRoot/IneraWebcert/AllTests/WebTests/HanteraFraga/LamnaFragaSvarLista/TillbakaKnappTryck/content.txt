@@ -10,13 +10,14 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
-| OVRIGT | FIT-QA-1000 | FK | En fråga | intyg-fit-1 | eva | Jan Nilsson | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
+| PAMINNELSE | FIT-QA-1000 | FK | En fråga | intyg-fit-1 | eva | Jan Nilsson | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
 
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
 | script | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
+| visa alla fragor |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |

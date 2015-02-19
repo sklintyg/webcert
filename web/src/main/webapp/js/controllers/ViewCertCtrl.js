@@ -23,8 +23,8 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                     $event.preventDefault();
                     var deferred = $q.defer();
                     $scope.$broadcast('hasUnhandledQasEvent', deferred);
-                    deferred.promise.then(function(hasUnhandledQas) {
-                        if (hasUnhandledQas) {
+                    deferred.promise.then(function(unhandledQas) {
+                        if (unhandledQas && unhandledQas.length > 0) {
                             var modal = dialogService.showDialog($scope, {
                                 dialogId: 'qa-check-hanterad-dialog',
                                 titleId: 'label.qacheckhanterad.title',
@@ -33,7 +33,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                 button1click: function() {
                                     $window.doneLoading = false; // should be resolved in the ajax callback in QACtrl
                                     var deferred = $q.defer();
-                                    $scope.$broadcast('markAllAsHandledEvent', deferred);
+                                    $scope.$broadcast('markAnsweredAsHandledEvent', deferred, unhandledQas);
                                     deferred.promise.then(function(){
 
                                         modal.close('hantera');

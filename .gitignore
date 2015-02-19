@@ -15,6 +15,7 @@ rebel.xml
 bin
 node
 node_modules
+bower_components
 target
 activemq-data
 web/node_modules/

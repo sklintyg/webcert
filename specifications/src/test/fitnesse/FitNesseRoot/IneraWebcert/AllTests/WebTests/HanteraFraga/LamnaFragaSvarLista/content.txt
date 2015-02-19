@@ -7,5 +7,12 @@ Ej Hnaterad : inget åtgärd, men browser gå till den nya länk.
 Tillbaka : inget åtgärd, bara gå tillbaks till fråga svar lista.
 https://inera-certificate.atlassian.net/browse/INTYG-928
 
+EjHanterad :
+qa.status === 'PENDING_INTERNAL_ACTION' && qa.amne === 'PAMINNELSE')
+OR
+qa.status === 'ANSWERED'
+AND
+qa.frageStallare === 'FK' (Försäkringskassa)
+
 
 

@@ -9,6 +9,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.webcert.service.dto.Lakare;
@@ -21,6 +23,8 @@ import se.inera.webcert.web.controller.AbstractApiController;
 @Path("/fragasvar")
 public class FragaSvarApiController extends AbstractApiController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(FragaSvarApiController.class);
+
     @Autowired
     private FragaSvarService fragaSvarService;
 
@@ -30,6 +34,7 @@ public class FragaSvarApiController extends AbstractApiController {
     public Response query(@QueryParam("") QueryFragaSvarParameter queryParam) {
         abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_FRAGOR);
         QueryFragaSvarResponse result = fragaSvarService.filterFragaSvar(queryParam);
+        LOG.debug("/api/fragasvar/sok about to return : " + result.getTotalCount());
         return Response.ok(result).build();
     }
 

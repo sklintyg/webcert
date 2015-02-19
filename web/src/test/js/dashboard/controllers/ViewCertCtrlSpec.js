@@ -17,6 +17,7 @@ describe('ViewCertCtrl', function() {
     var currentUrl = '/app/new';
     var UserPreferencesService;
     var $controller;
+    var qas = [{}];
 
     function MockDeferreds($q){
         this.$q = $q;
@@ -223,7 +224,8 @@ describe('ViewCertCtrl', function() {
 
             // ------ act
 
-            mockDeferreds.getLast().resolve(true);
+
+            mockDeferreds.getLast().resolve(qas);
 
             // promises are resolved/dispatched only on next $digest cycle
             $rootScope.$apply();
@@ -262,12 +264,12 @@ describe('ViewCertCtrl', function() {
                 dialogOptions.button1click();
 
 
-                mockDeferreds.getLastPopped().resolve(true);
+                mockDeferreds.getLastPopped().resolve(qas);
                 //resolve the deffereds, because the secound  is within deferred 1 we need to call apply on root, again to resolve further deferreds ..
                 $rootScope.$apply();
 
-                // markAllAsHandledEvent is broadcast
-                expect($scope.$broadcast).toHaveBeenCalledWith('markAllAsHandledEvent', mockDeferreds.getLastPopped());
+                // markAnsweredAsHandledEvent is broadcast
+                expect($scope.$broadcast).toHaveBeenCalledWith('markAnsweredAsHandledEvent', mockDeferreds.getLastPopped(), qas);
 
                 // modal is closed
                 expect(modalMock.close).toHaveBeenCalled();

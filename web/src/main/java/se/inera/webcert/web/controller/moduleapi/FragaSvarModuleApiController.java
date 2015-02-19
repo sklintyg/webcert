@@ -1,5 +1,6 @@
 package se.inera.webcert.web.controller.moduleapi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -20,6 +21,7 @@ import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.api.dto.QARequest;
 import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
 
 @Path("/fragasvar")
@@ -78,6 +80,18 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     public FragaSvar closeAsHandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") Long fragasvarId) {
         abortIfFragaSvarNotActive(intygsTyp);
         return fragaSvarService.closeQuestionAsHandled(fragasvarId);
+    }
+
+    @PUT
+    @Path("/stang")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public List<FragaSvar> closeQAsAsHandled(List<QARequest> qas) {
+        List<FragaSvar> fragaSvars = new ArrayList<FragaSvar>();
+        for (QARequest qa : qas) {
+            abortIfFragaSvarNotActive(qa.getIntygsTyp());
+            fragaSvars.add(fragaSvarService.closeQuestionAsHandled(qa.getFragaSvarId()));
+        }
+        return fragaSvars;
     }
 
     @GET
