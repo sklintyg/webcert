@@ -31,7 +31,17 @@ public class WebcertRestUtils {
         def notifieringar = webcert.get(path: "services/notification-stub/notifieringar").data
         notifieringar
     }
-    
+
+    public static HttpResponseDecorator updateUtkast(String utkastId, String json) {
+        def response = webcert.put(path : "services/intyg/$utkastId", body : json, requestContentType : JSON)
+        response
+    }
+
+    public static HttpResponseDecorator setUtkastKomplett(String utkastId) {
+        def response = webcert.put(path: "services/intyg/$utkastId/komplett")
+        response
+    }
+
     public static boolean reset() {
         def resp = webcert.post(path: "services/notification-stub/clear")
         return resp.success

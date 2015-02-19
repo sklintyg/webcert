@@ -17,11 +17,11 @@ class SkickadeNotifieringar extends RestClientFixture {
         def matching = []
         notifieringar.each { 
             if (it?.utlatande?.utlatandeId?.extension.equalsIgnoreCase(id) &&
-                it?.handelse?.handelsekod.equalsIgnoreCase(kod)) {
+                it?.utlatande?.handelse?.handelsekod?.code.equalsIgnoreCase(kod)) {
                 matching += it
             }   
         }
-        return matching.isEmpty()
+        return matching.isEmpty() == true ? false : true
     }  
 
 }
