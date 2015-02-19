@@ -1,0 +1,48 @@
+<urn:Question xmlns:urn="urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1"
+          xmlns:urn1="urn:riv:insuranceprocess:healthreporting:medcertqa:1"
+          xmlns:urn2="urn:riv:insuranceprocess:healthreporting:2">
+  <urn:fkReferens-id>1234</urn:fkReferens-id>
+  <urn:amne>Avstamningsmote</urn:amne>
+  <urn:fraga>
+    <urn1:meddelandeText>Kan vi träffas för avstämning</urn1:meddelandeText>
+    <urn1:signeringsTidpunkt>2015-02-13T12:52:52</urn1:signeringsTidpunkt>
+    <!--You may enter ANY elements at this point -->
+  </urn:fraga>
+  <urn:avsantTidpunkt>2015-02-13T12:52:52</urn:avsantTidpunkt>
+  <urn:adressVard>
+    <urn1:hosPersonal>
+      <urn2:personal-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1B02" />
+      <!--Optional: -->
+      <urn2:fullstandigtNamn>Journa La System</urn2:fullstandigtNamn>
+      <!--Optional: -->
+      <urn2:forskrivarkod>12345678</urn2:forskrivarkod>
+      <urn2:enhet>
+        <urn2:enhets-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A02" />
+        <urn2:enhetsnamn>WebCert-Integration Enhet 1</urn2:enhetsnamn>
+        <!--Optional: -->
+        <urn2:vardgivare>
+          <urn2:vardgivare-id root="1.2.752.129.2.1.4.1" extension="SE4815162344-1A01" />
+          <urn2:vardgivarnamn>WebCert-Integration Vårdgivare 1</urn2:vardgivarnamn>
+          <!--You may enter ANY elements at this point -->
+        </urn2:vardgivare>
+        <!--You may enter ANY elements at this point -->
+      </urn2:enhet>
+      <!--You may enter ANY elements at this point -->
+    </urn1:hosPersonal>
+    <!--You may enter ANY elements at this point -->
+  </urn:adressVard>
+  <!--Optional: -->
+  <urn:fkMeddelanderubrik>Ett meddelande</urn:fkMeddelanderubrik>
+  <urn:lakarutlatande>
+    <urn1:lakarutlatande-id>7611eb68-fa90-41c7-99ec-262c0e52c31a</urn1:lakarutlatande-id>
+    <urn1:signeringsTidpunkt>2015-02-13T10:01:43</urn1:signeringsTidpunkt>
+    <urn1:patient>
+      <urn2:person-id root="1.2.752.129.2.1.3.1" extension="19121212-1212" />
+      <!--Optional: -->
+      <urn2:fullstandigtNamn>Tolvan Tolvansson</urn2:fullstandigtNamn>
+      <!--You may enter ANY elements at this point -->
+    </urn1:patient>
+    <!--You may enter ANY elements at this point -->
+  </urn:lakarutlatande>
+  <!--You may enter ANY elements at this point -->
+</urn:Question>

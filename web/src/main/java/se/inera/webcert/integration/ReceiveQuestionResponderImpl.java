@@ -36,7 +36,7 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
     @Autowired
     private MailNotificationService mailNotificationService;
 
-   @Autowired
+    @Autowired
     private FragaSvarConverter converter;
 
     @Autowired
