@@ -21,6 +21,12 @@ public class NotificationMessageFactory {
 
     /* -- Create notification messages based on certificate -- */
 
+    /**
+     * HAN5
+     * 
+     * @param utkast
+     * @return
+     */
     public static NotificationRequestType createNotificationFromRevokedCertificate(Utkast utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
@@ -29,6 +35,12 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
+    /**
+     * HAN3
+     * 
+     * @param utkast
+     * @return
+     */
     public static NotificationRequestType createNotificationFromSentCertificate(Utkast utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
@@ -39,6 +51,12 @@ public class NotificationMessageFactory {
 
     /* -- Create notification messages from certificate draft -- */
 
+    /**
+     * Utkast changed, INTYGSUTKAST_ANDRAT (HAN11)
+     * 
+     * @param utkast
+     * @return
+     */
     public static NotificationRequestType createNotificationFromChangedCertificateDraft(Utkast utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
@@ -48,7 +66,7 @@ public class NotificationMessageFactory {
     }
 
     /**
-     * The INTYGSUTKAST_RADERAT is a bit special since we must set utfardandeEnhetsId.
+     * The INTYGSUTKAST_RADERAT (HAN4) is a bit special since we must set utfardandeEnhetsId.
      * 
      * @param utkast
      * @return
@@ -62,6 +80,12 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
+    /**
+     * Utkast signed, INTYGSUTKAST_SIGNERAT (HAN2)
+     * 
+     * @param utkast
+     * @return
+     */
     public static NotificationRequestType createNotificationFromSignedDraft(Utkast utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
@@ -70,6 +94,12 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
+    /**
+     * Utkast created, INTYGSUTKAST_SKAPAT (HAN1)
+     * 
+     * @param utkast
+     * @return
+     */
     public static NotificationRequestType createNotificationFromCreatedDraft(Utkast utkast) {
 
         NotificationRequestType nrt = createNotification(utkast, true);
@@ -80,6 +110,12 @@ public class NotificationMessageFactory {
 
     /* -- Create notification messages from question and answers -- */
 
+    /**
+     * New question from FK received, FRAGA_FRAN_FK (HAN6)
+     * 
+     * @param fragaSvar
+     * @return
+     */
     public static NotificationRequestType createNotificationFromQuestionFromFK(FragaSvar fragaSvar) {
 
         NotificationRequestType nrt = createNotification(fragaSvar);
@@ -88,6 +124,12 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
+    /**
+     * Question from FK answered or marked as handled, FRAGA_FRAN_FK_HANTERAD (HAN9)
+     * 
+     * @param fragaSvar
+     * @return
+     */
     public static NotificationRequestType createNotificationFromClosedQuestionFromFK(FragaSvar fragaSvar) {
 
         NotificationRequestType nrt = createNotification(fragaSvar);
@@ -96,6 +138,12 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
+    /**
+     * New question sent to FK, FRAGA_TILL_FK (HAN8)
+     * 
+     * @param fragaSvar
+     * @return
+     */
     public static NotificationRequestType createNotificationFromQuestionToFK(FragaSvar fragaSvar) {
 
         NotificationRequestType nrt = createNotification(fragaSvar);
@@ -104,6 +152,12 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
+    /**
+     * Answer on question to FK received, SVAR_FRAN_FK (HAN7)
+     * 
+     * @param fragaSvar
+     * @return
+     */
     public static NotificationRequestType createNotificationFromAnswerFromFK(FragaSvar fragaSvar) {
 
         NotificationRequestType nrt = createNotification(fragaSvar);
@@ -112,6 +166,12 @@ public class NotificationMessageFactory {
         return nrt;
     }
 
+    /**
+     * Answer on question to FK received, SVAR_FRAN_FK_HANTERAD (HAN10)
+     * 
+     * @param fragaSvar
+     * @return
+     */
     public static NotificationRequestType createNotificationFromClosedAnswerFromFK(FragaSvar fragaSvar) {
 
         NotificationRequestType nrt = createNotification(fragaSvar);

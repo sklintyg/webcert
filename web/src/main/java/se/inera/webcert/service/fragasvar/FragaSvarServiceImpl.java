@@ -611,7 +611,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             logMsg = "Notification sent: a closed answer with id '{}' (related to certificate '{}') was received from FK";
             break;
         case ANSWER_SENT_TO_FK:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromAnswerFromFK(fragaSvar);
+            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(fragaSvar);
             logMsg = "Notification sent: an answer with id '{}' (related to certificate '{}') was sent to FK";
             break;
         case QUESTION_FROM_FK_HANDLED:

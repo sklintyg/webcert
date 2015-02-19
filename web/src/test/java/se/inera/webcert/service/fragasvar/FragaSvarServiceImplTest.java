@@ -401,6 +401,8 @@ public class FragaSvarServiceImplTest {
 
         when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp())).thenReturn(
                 getIntygContentHolder());
+        
+        ArgumentCaptor<NotificationRequestType> notCapture = ArgumentCaptor.forClass(NotificationRequestType.class);
 
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
@@ -422,10 +424,12 @@ public class FragaSvarServiceImplTest {
         verify(fragasvarRepositoryMock).save(fragaSvar);
         verify(sendAnswerToFKClientMock).sendMedicalCertificateAnswer(any(AttributedURIType.class),
                 any(SendMedicalCertificateAnswerType.class));
+        verify(notificationServiceMock).notify(notCapture.capture());
 
         assertEquals("svarsText", result.getSvarsText());
         assertEquals(Status.CLOSED, result.getStatus());
         assertNotNull(result.getSvarSkickadDatum());
+        assertEquals(HandelseType.FRAGA_FRAN_FK_HANTERAD, notCapture.getValue().getHandelse());
     }
 
     private IntygContentHolder getIntygContentHolder() {
