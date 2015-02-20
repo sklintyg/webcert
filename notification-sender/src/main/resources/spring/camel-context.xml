@@ -7,8 +7,6 @@
   
   <bean id="processNotificationRequestRouteBuilder" class="se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteBuilder" />
   
-  <bean id="notificationRequestRouter" class="se.inera.webcert.notifications.routes.NotificationRequestRouter" />
-
   <camel:camelContext id="webcertNotification">
     
     <camel:routeBuilder ref="processNotificationRequestRouteBuilder"/>
@@ -20,18 +18,6 @@
     
     <!-- Outgoing endpoint to CertificateStatusUpdateForCare service -->
     <camel:endpoint id="sendCertificateStatusUpdateEndpoint" uri="${sendCertificateStatusUpdateEndpointUri}"/>
-    
-    <!-- Endpoint for retrieving an Intyg entity from repository -->
-    <camel:endpoint id="getIntygFromWebcertRepositoryServiceEndpoint" uri="${getIntygFromWebcertRepositoryServiceEndpointUri}"/>
-    <camel:endpoint id="getIntygModelFromWebcertRepositoryServiceEndpoint" uri="${getIntygModelFromWebcertRepositoryServiceEndpointUri}"/>
-    
-    <camel:endpoint id="getNbrOfQuestionsEndpoint" uri="${getNbrOfQuestionsEndpointUri}"/>
-    <camel:endpoint id="getNbrOfAnsweredQuestionsEndpoint" uri="${getNbrOfAnsweredQuestionsEndpointUri}" />
-    <camel:endpoint id="getNbrOfHandledQuestionsEndpoint" uri="${getNbrOfAnsweredQuestionsEndpointUri}" />
-    <camel:endpoint id="getNbrOfHandledAndAnsweredQuestionsEndpoint" uri="${getNbrOfHandledAndAnsweredQuestionsEndpointUri}" />
-    
-    <!-- Endpoint pointing to the processNotificationRequest route -->
-    <camel:endpoint id="processNotificationRequestEndpoint" uri="${processNotificationRequestEndpointUri}"/>
     
     <!-- Error handling endpoint -->
     <camel:endpoint id="errorHandlerEndpoint" uri="${errorHandlerEndpointUri}"/>

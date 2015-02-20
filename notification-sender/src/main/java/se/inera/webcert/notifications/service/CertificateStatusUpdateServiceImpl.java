@@ -29,10 +29,10 @@ public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpda
      * CertificateStatusUpdateForCareType)
      */
     @Override
-    public void sendStatusUpdate(@Header(RouteHeaders.INTYGS_ID) String intygsId, CertificateStatusUpdateForCareType request,
+    public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
             @Header(RouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
 
-        LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, intygsId);
+        LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, request.getUtlatande().getUtlatandeId().toString());
 
         CertificateStatusUpdateForCareResponseType response = null;
 
