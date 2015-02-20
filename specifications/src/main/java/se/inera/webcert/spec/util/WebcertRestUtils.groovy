@@ -42,6 +42,12 @@ public class WebcertRestUtils {
         response
     }
 
+    public static HttpResponseDecorator sendIntyg(String intygsTyp, String intygsId, String recipientId) {
+        def restPath = "/moduleapi/intyg/${intygsTyp}/${intygsId}/skicka"
+        def response = webcert.post(path: restPath, body : """{"recipient": "${recipientId}", "patientConsent" : true }""", requestContentType : JSON)
+        response
+    }
+
     public static boolean reset() {
         def resp = webcert.post(path: "services/notification-stub/clear")
         return resp.success
