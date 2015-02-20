@@ -5,63 +5,31 @@
 | reset? |
 | true |
 
-!3 Logga in
+!3 Logga in och skapa ett nytt intygsutkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? |
+| 19121212-1212       | Test           | Testorsson       |           true | $utkastId=|
 
-| script | !-LoggaIn-! |
-| logga in som | SE4815162344-1B01_SE4815162344-1A02 |
+!3 Populera och spara utkastet
+| spara utkast |
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | intygId    | intygTyp |utkastSparat? |
+| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263    | true | 
 
-!3 Skapa ett nytt intygsutkast
-
-| script | !-SkrivIntyg-! |
-| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
-| $utkastId= | intygsid |
-
-
-
-!| script | HanteraUtkast |
-| logga in som | SE4815162344-1B01_SE4815162344-1A02 |
-| sok skriv intyg sidan visas |
-| ga till editera intyg med typ | fk7263 | och intygid | $utkastId |
-
-!3 Populera intyget
-
-Populera intyget med så lite information som möjligt för att det ska bli komplett.
-
-| Populera Fk7263 |
-| undersokning | undersokningDatum | diagnos1 | diagnos1Text | funktionsnedsattning | aktivitetsbegransning | nuvarandearbete | arbetsuppgifter | tjanstgoringstid | nedsattMed100 |
-| true | 2014-09-17 | !-B080B-! | Falska kokoppor | Kliar konstant | Kan inte fokusera på arbetet | true | Polis | 40 | true  |
-
-!3 Spara utkastet (vilket ska resultera i en HAN11, se verifiering nedan)
-
-| script | !-SkrivIntyg-! |
-| sparaUtkast |
-| intyg sparat visas |
 
 
 !3 Givet att det finns ett komplett utkast, verifiera att det går att signera det (vilket ska ge en HAN2, se nedan)
-
-| script | !-HanteraUtkast-! |
-| logga in som | SE4815162344-1B01_SE4815162344-1A02 |
-| sok skriv intyg sidan visas |
-| ga till editera intyg med typ | fk7263 | och intygid | $utkastId |
-| editera sidan visas |
-| signera knapp visas |
-| signera knapp aktiverad |
-| signera utkast |
-| visa intyg sidan visas |
-| intyget signerat meddelande visas |
-
+| signera utkast | 
+| intygId   | intygTyp | utkastSignerat? |
+| $utkastId | fk7263   | true            |
 
 !3 Verifiera att notifiering av typen HAN2 mottogs av notifierings-stubben
 | skickade notifieringar | 
 | id         | kod  | checkHandelseKod? |
+| $utkastId  | HAN1 | true              |
 | $utkastId  | HAN11| true              |
 | $utkastId  | HAN2 | true              |
 
 !3 Rensa notifieringar
-| webcert rest utils | 
-| reset? |
-| true |
 
 
 

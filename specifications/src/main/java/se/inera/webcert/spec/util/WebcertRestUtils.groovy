@@ -32,19 +32,18 @@ public class WebcertRestUtils {
         notifieringar
     }
 
-    public static HttpResponseDecorator updateUtkast(String utkastId, String json) {
-        def response = webcert.put(path : "services/intyg/$utkastId", body : json, requestContentType : JSON)
+    public static HttpResponseDecorator saveUtkast(String intygsTyp, String utkastId, String json) {
+        def response = webcert.put(path : "moduleapi/utkast/${intygsTyp}/${utkastId}", body : json, requestContentType : JSON)
         response
     }
 
-    public static HttpResponseDecorator setUtkastKomplett(String utkastId) {
-        def response = webcert.put(path: "services/intyg/$utkastId/komplett")
+    public static HttpResponseDecorator signUtkast(String intygsTyp, String intygsId) {
+        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/signeraserver", requestContentType : JSON)
         response
     }
 
     public static boolean reset() {
         def resp = webcert.post(path: "services/notification-stub/clear")
         return resp.success
-       
     }
 }

@@ -28,10 +28,6 @@ Populera intyget med information i samtliga fält så det blir komplett
 | id         | kod  | checkHandelseKod? |
 | $intygsid | HAN11 | true              |
 
-| webcert rest utils | 
-| reset? |
-| true |
-
 !3 Ta bort utkastet
 | ta bort utkast |
 | utkastId |
