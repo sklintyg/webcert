@@ -31,21 +31,35 @@
 				<groupId>io.gatling</groupId>
 				<artifactId>gatling-maven-plugin</artifactId>
 				<version>${gatling-plugin.version}</version>
+                <configuration>
+                  <simulationClass>${simulationClass}</simulationClass>
+                  <jvmArgs>
+                    <jvmArg>-DbaseUrl=${baseUrl}</jvmArg>
+                  </jvmArgs>
+                </configuration>
 				<executions>
 					<execution>
 						<phase>test</phase>
 						<goals>
 							<goal>execute</goal>
 						</goals>
-						<configuration>
-							<simulationClass>se.inera.webcert.FragaSvarUserSimulation</simulationClass>
-							<jvmArgs>
-							  <jvmArg>-DbaseUrl=${baseUrl}</jvmArg>
-							</jvmArgs>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
+  <profiles>
+    <profile>
+      <id>FragaSvar</id>
+      <properties>
+        <simulationClass>se.inera.webcert.FragaSvar</simulationClass>
+      </properties>
+    </profile>
+    <profile>
+      <id>SkrivSigneraSkickaIntyg</id>
+      <properties>
+        <simulationClass>se.inera.webcert.SkrivSigneraSkickaIntyg</simulationClass>
+      </properties>
+    </profile>
+  </profiles>
 </project>

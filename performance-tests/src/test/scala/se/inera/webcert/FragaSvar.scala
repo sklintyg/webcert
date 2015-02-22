@@ -4,7 +4,7 @@ import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 import scala.concurrent.duration._
 
-class FragaSvarUserSimulation extends Simulation {
+class FragaSvar extends Simulation {
 
 	val intyg = csv("intyg.csv").circular
 
