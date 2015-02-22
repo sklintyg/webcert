@@ -48,49 +48,51 @@ class AnonymiseraWebCertDatabas {
                 def id = it.internReferens
                 Sql sql = new Sql(dataSource)
                 try {
-                    // Anonymisera alla befintliga frågor och svar
-                    def fragasvar = sql.firstRow( '''select PATIENT_NAMN, PATIENT_ID_EXTENSION, FRAGE_STALLARE, FRAGE_TEXT,
-                                                        SVARS_TEXT, FORSKRIVAR_KOD, HSAID, NAMN, VARD_AKTOR_HSAID, VARD_AKTOR_NAMN
-                                                 from FRAGASVAR where internReferens = :id''' , [id : id])
-                    String patientNamn = AnonymizeString.anonymize(fragasvar.PATIENT_NAMN)
-                    String personNr = anonymiseraPersonId.anonymisera(fragasvar.PATIENT_ID_EXTENSION)
-                    String frageStallare = fragasvar.FRAGE_STALLARE ? AnonymizeString.anonymize(fragasvar.FRAGE_STALLARE) : null
-                    String frageText = fragasvar.FRAGE_TEXT ? AnonymizeString.anonymize(fragasvar.FRAGE_TEXT) : null
-                    String svarsText = fragasvar.SVARS_TEXT ? AnonymizeString.anonymize(fragasvar.SVARS_TEXT) : null
-                    String forskrivarKod = fragasvar.FORSKRIVAR_KOD ? AnonymizeString.anonymize(fragasvar.FORSKRIVAR_KOD) : null
-                    String hsaId = fragasvar.HSAID ? anonymiseraHsaId.anonymisera(fragasvar.HSAID) : null
-                    String namn = fragasvar.NAMN ? AnonymizeString.anonymize(fragasvar.NAMN) : null
-                    String vardAktorHsaId = fragasvar.VARD_AKTOR_HSAID ? anonymiseraHsaId.anonymisera(fragasvar.VARD_AKTOR_HSAID) : null
-                    String vardAktorNamn = fragasvar.VARD_AKTOR_NAMN ? AnonymizeString.anonymize(fragasvar.VARD_AKTOR_NAMN) : null
-                    sql.executeUpdate('''update FRAGASVAR set PATIENT_NAMN = :patientNamn, PATIENT_ID_EXTENSION = :personNr, 
-                                                              FRAGE_STALLARE = :frageStallare,
-                                                              FRAGE_TEXT = :frageText, SVARS_TEXT = :svarsText, FORSKRIVAR_KOD = :forskrivarKod,
-                                                              HSAID = :hsaId, NAMN = :namn, VARD_AKTOR_HSAID = :vardAktorHsaId,
-                                                              VARD_AKTOR_NAMN = :vardAktorNamn
-                                          where internReferens = :id''',
-                                          [patientNamn: patientNamn, personNr: personNr,
-                                           frageStallare: frageStallare, frageText: frageText, svarsText: svarsText,
-                                           forskrivarKod: forskrivarKod, hsaId: hsaId, namn: namn, vardAktorHsaId: vardAktorHsaId,
-                                           vardAktorNamn: vardAktorNamn, id: id])
-                    def kompletteringar = sql.rows( 'select TEXT from KOMPLETTERING where FRAGASVAR_ID = :id' , [id : id])
-                    if (kompletteringar) {
-                        kompletteringar.each {
-                            String originalText = it.TEXT
-                            if (originalText) {
-                                String text = AnonymizeString.anonymize(originalText)
-                                sql.executeUpdate('update KOMPLETTERING set TEXT = :text where FRAGASVAR_ID = :id and TEXT = :originalText',
-                                                  [text: text, id : id, originalText: originalText])
+                    sql.withTransaction {
+                        // Anonymisera alla befintliga frågor och svar
+                        def fragasvar = sql.firstRow( '''select PATIENT_NAMN, PATIENT_ID_EXTENSION, FRAGE_STALLARE, FRAGE_TEXT,
+                                                            SVARS_TEXT, FORSKRIVAR_KOD, HSAID, NAMN, VARD_AKTOR_HSAID, VARD_AKTOR_NAMN
+                                                     from FRAGASVAR where internReferens = :id''' , [id : id])
+                        String patientNamn = AnonymizeString.anonymize(fragasvar.PATIENT_NAMN)
+                        String personNr = anonymiseraPersonId.anonymisera(fragasvar.PATIENT_ID_EXTENSION)
+                        String frageStallare = fragasvar.FRAGE_STALLARE ? AnonymizeString.anonymize(fragasvar.FRAGE_STALLARE) : null
+                        String frageText = fragasvar.FRAGE_TEXT ? AnonymizeString.anonymize(fragasvar.FRAGE_TEXT) : null
+                        String svarsText = fragasvar.SVARS_TEXT ? AnonymizeString.anonymize(fragasvar.SVARS_TEXT) : null
+                        String forskrivarKod = fragasvar.FORSKRIVAR_KOD ? AnonymizeString.anonymize(fragasvar.FORSKRIVAR_KOD) : null
+                        String hsaId = fragasvar.HSAID ? anonymiseraHsaId.anonymisera(fragasvar.HSAID) : null
+                        String namn = fragasvar.NAMN ? AnonymizeString.anonymize(fragasvar.NAMN) : null
+                        String vardAktorHsaId = fragasvar.VARD_AKTOR_HSAID ? anonymiseraHsaId.anonymisera(fragasvar.VARD_AKTOR_HSAID) : null
+                        String vardAktorNamn = fragasvar.VARD_AKTOR_NAMN ? AnonymizeString.anonymize(fragasvar.VARD_AKTOR_NAMN) : null
+                        sql.executeUpdate('''update FRAGASVAR set PATIENT_NAMN = :patientNamn, PATIENT_ID_EXTENSION = :personNr, 
+                                                                  FRAGE_STALLARE = :frageStallare,
+                                                                  FRAGE_TEXT = :frageText, SVARS_TEXT = :svarsText, FORSKRIVAR_KOD = :forskrivarKod,
+                                                                  HSAID = :hsaId, NAMN = :namn, VARD_AKTOR_HSAID = :vardAktorHsaId,
+                                                                  VARD_AKTOR_NAMN = :vardAktorNamn
+                                              where internReferens = :id''',
+                                              [patientNamn: patientNamn, personNr: personNr,
+                                               frageStallare: frageStallare, frageText: frageText, svarsText: svarsText,
+                                               forskrivarKod: forskrivarKod, hsaId: hsaId, namn: namn, vardAktorHsaId: vardAktorHsaId,
+                                               vardAktorNamn: vardAktorNamn, id: id])
+                        def kompletteringar = sql.rows( 'select TEXT from KOMPLETTERING where FRAGASVAR_ID = :id' , [id : id])
+                        if (kompletteringar) {
+                            kompletteringar.each {
+                                String originalText = it.TEXT
+                                if (originalText) {
+                                    String text = AnonymizeString.anonymize(originalText)
+                                    sql.executeUpdate('update KOMPLETTERING set TEXT = :text where FRAGASVAR_ID = :id and TEXT = :originalText',
+                                                      [text: text, id : id, originalText: originalText])
+                                }
                             }
                         }
-                    }
-                    def externaKontakter = sql.rows( 'select KONTAKT from EXTERNA_KONTAKTER where FRAGASVAR_ID = :id' , [id : id])
-                    if (externaKontakter) {
-                        externaKontakter.each {
-                            String originalKontakt = AnonymizeString.anonymize(it.KONTAKT)
-                            if (originalKontakt) {
-                                String kontakt = AnonymizeString.anonymize(originalKontakt)
-                                sql.executeUpdate('update EXTERNA_KONTAKTER set KONTAKT = :kontakt where FRAGASVAR_ID = :id and KONTAKT = :originalKontakt',
-                                                  [kontakt: kontakt, id : id, originalKontakt: originalKontakt])
+                        def externaKontakter = sql.rows( 'select KONTAKT from EXTERNA_KONTAKTER where FRAGASVAR_ID = :id' , [id : id])
+                        if (externaKontakter) {
+                            externaKontakter.each {
+                                String originalKontakt = AnonymizeString.anonymize(it.KONTAKT)
+                                if (originalKontakt) {
+                                    String kontakt = AnonymizeString.anonymize(originalKontakt)
+                                    sql.executeUpdate('update EXTERNA_KONTAKTER set KONTAKT = :kontakt where FRAGASVAR_ID = :id and KONTAKT = :originalKontakt',
+                                                      [kontakt: kontakt, id : id, originalKontakt: originalKontakt])
+                                }
                             }
                         }
                     }
@@ -128,10 +130,10 @@ class AnonymiseraWebCertDatabas {
                 Sql sql = new Sql(dataSource)
                 try {
                     // Anonymisera alla migrerade intyg
-                    def fragasvar = sql.firstRow( '''select PATIENT_NAMN, PATIENT_SSN, INTYGS_DATA
+                    def migreratIntyg = sql.firstRow( '''select PATIENT_NAMN, PATIENT_SSN, INTYGS_DATA
                                                  from MIGRERADE_INTYG_FRAN_MEDCERT where INTYG_ID = :id''' , [id : id])
-                    String patientNamn = AnonymizeString.anonymize(fragasvar.PATIENT_NAMN)
-                    String personNr = anonymiseraPersonId.anonymisera(fragasvar.PATIENT_SSN)
+                    String patientNamn = AnonymizeString.anonymize(migreratIntyg.PATIENT_NAMN)
+                    String personNr = anonymiseraPersonId.anonymisera(migreratIntyg.PATIENT_SSN)
                     // Utkommenterat, eftersom json-formatet för MedCert skiljer sig åt
 //                    String jsonDoc = new String(intyg.INTYGS_DATA, 'UTF-8')
 //                    String anonymiseradJson = anonymiseraJson.anonymiseraIntygsJson(jsonDoc, personNr)

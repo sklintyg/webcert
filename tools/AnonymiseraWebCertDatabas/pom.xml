@@ -12,7 +12,7 @@
 
   <groupId>se.inera.webcert.tools</groupId>
   <artifactId>anonymisera-webcert-databas</artifactId>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <packaging>jar</packaging>
   <name>Anonymisering av intyg och frågor/svar i webcert</name>
 
@@ -21,7 +21,7 @@
     <dependency>
       <groupId>se.inera.intyg.tools</groupId>
       <artifactId>anonymisering</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
     </dependency>
 
     <dependency>
@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.codehaus.gpars</groupId>
       <artifactId>gpars</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.1</version>
     </dependency>
 
     <!-- Database dependencies -->
