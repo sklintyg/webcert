@@ -1,21 +1,24 @@
-package se.inera.webcert.spec
+package se.inera.webcert.spec.notification_sender
 
 import se.inera.webcert.spec.util.WebcertRestUtils;
 import se.inera.webcert.spec.util.RestClientFixture
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.ContentType.URLENC
+
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import org.springframework.core.io.ClassPathResource
+
 import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
 
-class SkickaIntyg extends RestClientFixture {
+class SkapaFragaTillFk extends RestClientFixture {
 
     String intygId
     String intygTyp
-    String mottagarId = "FK"
     String hsaUser = "user1"
-
 
     public setIntygId (String value) {
         intygId = value
@@ -26,18 +29,20 @@ class SkickaIntyg extends RestClientFixture {
     public setHsaUser(String value) {
         hsaUser = value 
     }
-    public setMottagarId(String value) {
-        mottagarId = value
-    }
 
     def response
 
     public void execute() {
         WebcertRestUtils.login(hsaUser)
-        response = WebcertRestUtils.sendIntyg(intygTyp, intygId, mottagarId)
+        response = WebcertRestUtils.createQuestionToFk(intygTyp,intygId,makeJson())
     }
 
-    public boolean intygSkickat() {
+    def makeJson() {
+        def fraga = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_svar_template.json").getInputStream()))
+        JsonOutput.toJson(fraga)
+    }
+
+    public boolean fragaSkapad() {
         response.success
     }
 }

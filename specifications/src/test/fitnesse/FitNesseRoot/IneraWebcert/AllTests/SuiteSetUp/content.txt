@@ -9,6 +9,7 @@
 | se.inera.certificate.spec |
 | se.inera.certificate.spec.util |
 | se.inera.certificate.spec.util.jms |
+| se.inera.webcert.spec.notification_sender |
 
 !| Config |
 | property | value |

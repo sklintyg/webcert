@@ -1,4 +1,4 @@
-package se.inera.webcert.spec
+package se.inera.webcert.spec.notification_sender
 
 import se.inera.webcert.spec.util.WebcertRestUtils;
 import se.inera.webcert.spec.util.RestClientFixture
