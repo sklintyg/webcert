@@ -1,0 +1,32 @@
+!contents -R2 -g -p -f -h
+
+!3 Börja med att rensa eventuella gamla notifieringar
+| webcert rest utils | 
+| reset? |
+| true |
+
+!3 Skapa utkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? | 
+| 19121212-1212 | Test | Testorsson | true | $utkastId= |
+
+
+!3 Undersök vilka notifieringar som skickades och säkerställ att dessa matchar det förväntade utfallet
+| skickade notifieringar | 
+| id         | kod  | antal | checkHandelseKod? |
+| $utkastId  | HAN1 | 1     | true              |
+
+!3 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
+
+| webcert rest utils | 
+| reset? |
+| true |
+
+
+
+
+
+

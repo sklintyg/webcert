@@ -1,0 +1,43 @@
+!contents -R2 -g -p -f -h
+
+!3 Börja med att rensa eventuella gamla notifieringar
+| webcert rest utils | 
+| reset? |
+| true |
+
+!3 Logga in och skapa ett nytt intygsutkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? |
+| 19121212-1212       | Test           | Testorsson       |           true | $utkastId=|
+
+!3 Populera och spara utkastet
+| spara utkast |
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | diagnosKod | diagnosBeskrivning1  | nedsattMed100 | intygId    | intygTyp | komplett | utkastSparat? |
+| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"}              | $utkastId  | fk7263    | true | true |
+
+
+
+!3 Givet att det finns ett komplett utkast, verifiera att det går att signera det (vilket ska ge en HAN2, se nedan)
+| signera utkast | 
+| intygId   | intygTyp | utkastSignerat? |
+| $utkastId | fk7263   | true            |
+
+!3 Verifiera att notifieringar mottogs av notifierings-stubben
+| skickade notifieringar | 
+| id         | kod  | antal | checkHandelseKod? |
+| $utkastId  | HAN1 | 3     | true              |
+| $utkastId  | HAN11| 3     | true              |
+| $utkastId  | HAN2 | 3     | true              |
+
+!3 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
+
+!3 Rensa notifieringar
+| webcert rest utils | 
+| reset? |
+| true |
+
+
+
