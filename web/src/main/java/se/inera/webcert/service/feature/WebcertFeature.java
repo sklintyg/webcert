@@ -8,7 +8,8 @@ public enum WebcertFeature {
     MAKULERA_INTYG("makuleraIntyg"),
     SKICKA_INTYG("skickaIntyg"),
     FRAN_JOURNALSYSTEM("franJournalsystem"),
-    FRAN_JOURNALSYSTEM_QAONLY("franJournalsystemQAOnly");
+    FRAN_JOURNALSYSTEM_QAONLY("franJournalsystemQAOnly"),
+    JS_LOGGNING("jsLoggning");
 
     private String name;
 

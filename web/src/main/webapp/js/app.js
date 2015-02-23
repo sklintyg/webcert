@@ -239,6 +239,13 @@ $.get('/api/modules/map').then(function(modules) {
         $.when.apply(this, dependencyPromises).then(function() {
             angular.element().ready(function() {
 
+                // Cant use common.featureService to check for this since it needs to be done before angular bootstrap.
+                if (MODULE_CONFIG.USERCONTEXT &&
+                    MODULE_CONFIG.USERCONTEXT.aktivaFunktioner &&
+                    MODULE_CONFIG.USERCONTEXT.aktivaFunktioner.indexOf('jsLoggning') >= 0) {
+                    addExceptionHandler();
+                }
+
                 // Everything is loaded, bootstrap the application with all dependencies.
                 angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
             });
@@ -286,4 +293,18 @@ function loadScriptFromUrl(url) {
     };
     document.getElementsByTagName('head')[0].appendChild(script);
     return result.promise();
+}
+
+function addExceptionHandler() {
+    'use strict';
+
+    // By default, AngularJS will catch errors and log them to
+    // the Console. We want to keep that behavior; however, we
+    // want to intercept it so that we can also log the errors
+    // to the server for later analysis.
+    app.provider('$exceptionHandler', function $exceptionHandlerProvider() {
+        this.$get = ['common.errorLogService', function(errorLogService) {
+            return errorLogService;
+        }];
+    });
 }
