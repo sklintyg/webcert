@@ -31,30 +31,30 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         int antalHanteradeFragor = countNbrOfHandledQuestionsForIntyg(intygsId);
         int antalHanteradeSvar = countNbrOfHandledAndAnsweredQuestionsForIntyg(intygsId);
         
-        return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
+        FragorOchSvar fs = new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
+        
+        LOG.debug("Created FragorOchSvar ({}) for intyg {}", fs.toString(), intygsId);
+        
+        return fs;
     }
 
     public int countNbrOfQuestionsForIntyg(String intygsId) {
         Long res = fragaSvarRepository.countByIntygAndFragestallare(intygsId, FK);
-        LOG.debug("antalFragor = {}", res);
         return res.intValue();
     }
 
     public int countNbrOfAnsweredQuestionsForIntyg(String intygsId) {
         Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.ANSWERED, WC);
-        LOG.debug("antalSvar = {}", res);
         return res.intValue();
     }
 
     public int countNbrOfHandledQuestionsForIntyg(String intygsId) {
         Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.CLOSED, FK);
-        LOG.debug("antalHanteradeFragor = {}", res);
         return res.intValue();
     }
 
     public int countNbrOfHandledAndAnsweredQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
         Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.CLOSED, WC);
-        LOG.debug("antalHanteradeSvar = {}", res);
         return res.intValue();
     }
 }
