@@ -33,7 +33,6 @@
   <import resource="classpath:/intygstjanst-stub-context.xml" />
   <import resource="classpath:/loggtjanst-stub-context.xml" />
   <import resource="classpath:/webcert-stub-context.xml" />
-  <import resource="classpath:/certificatestatusupdate-stub-context.xml"/>
   <import resource="classpath:/notification-stub-context.xml"/>
 
   <cxf:bus>
