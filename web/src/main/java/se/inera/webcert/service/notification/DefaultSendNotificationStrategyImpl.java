@@ -20,7 +20,6 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
     @Autowired
     private UtkastRepository utkastRepository;
 
-    @Autowired
     private List<String> allowedIntygsTyper = Arrays.asList("fk7263");
 
     /*

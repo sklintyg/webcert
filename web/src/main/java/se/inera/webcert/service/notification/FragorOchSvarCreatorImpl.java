@@ -4,11 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.stereotype.Component;
 import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 
+@Component
 public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
     
     private static final String FK = "FK";
