@@ -27,8 +27,15 @@ public class WebcertRestUtils {
         response
     }
 
-    public static Collection getNotifications() {
-        def notifieringar = webcert.get(path: "services/notification-stub/notifieringar").data
+    public static Collection getNotifications(int expected) {
+        def notifieringar = []
+        def startTime = System.currentTimeMillis()
+        def runningTime = startTime
+        def maxTime = 4000
+        while (notifieringar.size < expected && (runningTime - startTime < maxTime)) {
+            notifieringar = webcert.get(path: "services/notification-stub/notifieringar").data
+            runningTime = System.currentTimeMillis()
+        }
         notifieringar
     }
 

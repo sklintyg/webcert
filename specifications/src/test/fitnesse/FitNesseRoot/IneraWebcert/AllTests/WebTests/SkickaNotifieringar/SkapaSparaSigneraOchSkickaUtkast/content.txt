@@ -11,8 +11,8 @@
 | 19121212-1212       | Test           | Testorsson       |           true | $utkastId=|
 
 | spara utkast |
-| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | intygId    | intygTyp |utkastSparat? |
-| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263    | true | 
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | diagnosKod | diagnosBeskrivning1 | nedsattMed100 | intygId    | intygTyp |utkastSparat? |
+| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId   | fk7263    | true | 
 
 
 !3 Signera utkastet
@@ -27,11 +27,11 @@
 
 !3 Verifiera att förväntade notifieringar gick iväg
 | skickade notifieringar | 
-| id         | kod  | checkHandelseKod? |
-| $utkastId  | HAN1 | true              |
-| $utkastId  | HAN11| true              |
-| $utkastId  | HAN2 | true              |
-| $utkastId  | HAN3 | true              |
+| id         | kod  | antal | checkHandelseKod? |
+| $utkastId  | HAN1 |   4   | true              |
+| $utkastId  | HAN11|   4   | true              |
+| $utkastId  | HAN2 |   4   | true              |
+| $utkastId  | HAN3 |   4   | true              |
 
 
 !3 Ta bort intyg / utkast

@@ -6,12 +6,13 @@ class SkickadeNotifieringar extends RestClientFixture {
 
     def notifieringar
 
-    public void execute() {
-        notifieringar = WebcertRestUtils.getNotifications()
-    }
-
     String id 
     String kod
+    int antal
+
+    public void execute() {
+        notifieringar = WebcertRestUtils.getNotifications(antal)
+    }
 
     public boolean checkHandelseKod() {
         def matching = []

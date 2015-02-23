@@ -25,8 +25,8 @@ Populera intyget med information i samtliga fält så det blir komplett
 
 !3 Undersök vilka notifieringar som skickades och säkerställ att dessa matchar det förväntade utfallet
 | skickade notifieringar | 
-| id         | kod  | checkHandelseKod? |
-| $intygsid | HAN11 | true              |
+| id        | kod   | antal | checkHandelseKod? |
+| $intygsid | HAN11 |  1    | true              |
 
 !3 Ta bort utkastet
 | ta bort utkast |
