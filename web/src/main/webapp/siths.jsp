@@ -51,6 +51,25 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
             return false;
         }
 
+        // Synced with SithsSpec.js to be able to test it.
+        function getSerialFromSubject(subject) {
+
+          // Find where the serialnumber starts and remove everything before
+          var subjectSerial = subject.substring(subject.indexOf('2.5.4.5=') + 8);
+
+          // Find where the serialnumber ends and remove everything after
+          var subjectSerialEndIndex = subjectSerial.indexOf(',');
+          if (subjectSerialEndIndex == -1) {
+            // There are no more commas in the string, assume serial runs to the end of it
+            subjectSerial = subjectSerial.substring(0);
+          } else {
+            // There are more commas, cut the serial from the '=' to the next ','
+            subjectSerial = subjectSerial.substring(0, subjectSerialEndIndex);
+          }
+
+          return subjectSerial;
+        }
+
         function getHcc(index) {
             try {
                 var cert = iid_EnumProperty('Certificate', index);
@@ -61,15 +80,11 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
                     log('Issuer: ' + issuer);
                     log('Subject: ' + subject);
 
-                     // Find where the serialnumber starts and remove everything before
-                     var subjectSerial = subject.substring(subject.indexOf("2.5.4.5=") + 8);
+                    var subjectSerial = getSerialFromSubject(subject);
 
-                     // Find where the serialnumber ends and remove everything after
-                     subjectSerial = subjectSerial.substring(0, subjectSerial.indexOf(","));
+                    log('SubjectSerial: ' + subjectSerial);
 
-                     log('SubjectSerial: ' + subjectSerial);
-
-                     return subjectSerial;
+                    return subjectSerial;
                 }
             } catch (e) {
                 log('Error: ' + e.message);
