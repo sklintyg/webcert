@@ -16,6 +16,11 @@
 | id         | kod  | antal | checkHandelseKod? |
 | $utkastId  | HAN1 | 1     | true              |
 
+!3 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
+
 | webcert rest utils | 
 | reset? |
 | true |

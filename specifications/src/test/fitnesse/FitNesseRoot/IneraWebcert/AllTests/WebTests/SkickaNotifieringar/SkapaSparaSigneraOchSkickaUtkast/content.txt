@@ -34,8 +34,10 @@
 | $utkastId  | HAN3 |   4   | true              |
 
 
-!3 Ta bort intyg / utkast
-
+!3 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
 
 !3 Rensa notifieringar
 | webcert rest utils |

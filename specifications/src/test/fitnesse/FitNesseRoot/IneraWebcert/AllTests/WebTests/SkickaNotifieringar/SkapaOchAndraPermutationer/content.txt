@@ -1,12 +1,12 @@
 !contents -R2 -g -p -f -h
 
+!2 Testa flödet Skapa ukast -> notifiering HAN1, Ändra och spara -> notifiering HAN11
+
+
 !3 Börja med att rensa eventuella gamla notifieringar
 | webcert rest utils | 
 | reset? |
 | true |
-
-!2 Testa flödet Skapa ukast -> notifiering HAN1, Ändra och spara -> notifiering HAN11
-
 
 
 !3 Skapa utkast och ändra i diagnos-relaterade fält, vilket ska ge notifiering HAN11
@@ -26,6 +26,12 @@
 | id         | kod  | antal |checkHandelseKod? |
 | $utkastId  | HAN1 |   2   |true              |
 | $utkastId  | HAN11|   2   |true              |
+
+!4 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
+
 
 
 
@@ -47,6 +53,10 @@
 | $utkastId  | HAN1 | 2     | true              |
 | $utkastId  | HAN11| 2     | false             |
 
+!4 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
 
 
 
@@ -68,10 +78,10 @@
 | $utkastId  | HAN1 | 2     | true              |
 | $utkastId  | HAN11| 2     | true              |
 
-
-
-
-
+!4 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
 
 
 
