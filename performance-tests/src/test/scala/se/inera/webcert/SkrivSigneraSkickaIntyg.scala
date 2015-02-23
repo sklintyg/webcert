@@ -6,7 +6,7 @@ import scala.concurrent.duration._
 
 class SkrivSigneraSkickaIntyg extends Simulation {
 
-	val intyg = csv("intyg.csv").circular
+	val testpersonnummer = csv("testpersonnummer_skatteverket.cvs").circular
 
 	val scn = scenario("SkrivSigneraSkicka")
 	.exec(Login.loginAs("Åsa-Enhet1"))
@@ -16,7 +16,7 @@ class SkrivSigneraSkickaIntyg extends Simulation {
 		)
 	.pause(50 milliseconds)
 	.repeat(10, "i") {
-		feed(intyg)
+		feed(testpersonnummer)
 		.exec(http("Dashboard")
 					.get("/views/dashboard/unhandled-qa.html")
 					.headers(Headers.default)
@@ -113,5 +113,5 @@ class SkrivSigneraSkickaIntyg extends Simulation {
 		.headers(Headers.default)
 		)
 	
-	setUp(scn.inject(rampUsers(10) over (10 seconds)).protocols(Conf.httpConf))
+	setUp(scn.inject(rampUsers(100) over (120 seconds)).protocols(Conf.httpConf))
 }
