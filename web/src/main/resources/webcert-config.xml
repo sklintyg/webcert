@@ -39,6 +39,7 @@
   <beans profile="dev,wc-init-data">
     <!-- In dev mode we bootstrap data -->
     <bean id="FragaSvarBootstrapBean" class="se.inera.webcert.service.util.FragaSvarBootstrapBean" />
+    <bean id="IntegreradeEnheterBootstrapBean" class="se.inera.webcert.service.util.IntegreradeEnheterBootstrapBean" />
   </beans>
 
   <beans>

@@ -41,6 +41,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>notification-stub</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>intygstjanst-stub</artifactId>
     </dependency>
     <dependency>

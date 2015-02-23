@@ -1,0 +1,28 @@
+!contents -R2 -g -p -f -h
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | SE4815162344-1B01_SE4815162344-1A02 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med information i samtliga fält så det blir komplett
+
+| skickade notifieringar |
+| intygsId? | 
+| $intygsid |
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+
+
+
+
