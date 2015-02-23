@@ -1,7 +1,5 @@
 package se.inera.webcert.notifications.routes;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
@@ -14,35 +12,33 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilder.class);
 
     @Value("${errorhanding.maxRedeliveries}")
-    private int maxRedeliveries;
+    private int maxRedeliveries = 3;
 
     @Value("${errorhanding.redeliveryDelay}")
-    private long redeliveryDelay;
+    private long redeliveryDelay = 10;
 
     @Override
     public void configure() throws Exception {
-        //Setup error handling strategy, using redelivery of 3 secs and then exponentially increasing the time interval
-        errorHandler(deadLetterChannel("redeliveryExhaustedEndpoint")
-                .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay).useExponentialBackOff());
+        from("receiveNotificationRequestEndpoint").routeId("transformNotification")
+                .onException(Exception.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .to("bean:createAndInitCertificateStatusRequestProcessor")
+                .to("direct:sendMessageToWS");
 
-        onException(NonRecoverableCertificateStatusUpdateServiceException.class)
-        .handled(true)
-        .to("errorHandlerEndpoint");
-
-        onException(JAXBException.class)
-        .handled(true)
-        .to("errorHandlerEndpoint");
-
-        from("ref:receiveNotificationRequestEndpoint").routeId("processNotificationRequest")
-                .to("createAndInitCertificateStatusRequestProcessor")
+        from("direct:sendMessageToWS").routeId("sendNotificationToWS")
+                .errorHandler(deadLetterChannel("direct:redeliveryExhaustedEndpoint")
+                        .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay)
+                        .useExponentialBackOff())
+                .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
                 .to("sendCertificateStatusUpdateEndpoint");
 
-        from("errorHandlerEndpoint").routeId("errorLogging")
-            .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
-            .stop();
+        from("direct:errorHandlerEndpoint").routeId("errorLogging")
+                .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .stop();
 
-        from("redeliveryExhaustedEndpoint").routeId("redeliveryErrorLogging")
-            .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
-            .stop();
+        from("direct:redeliveryExhaustedEndpoint").routeId("redeliveryErrorLogging")
+                .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .to("deadLetterEndpoint")
+                .stop();
     }
+
 }

@@ -17,7 +17,7 @@ public final class TestDataUtil {
 
     public static String readRequestFromFile(String filePath) {
         try {
-            LOG.info("Reading test data from: {}", filePath);
+            LOG.debug("Reading test data from: {}", filePath);
             ClassPathResource resource = new ClassPathResource(filePath);
             return IOUtils.toString(resource.getInputStream(), "UTF-8");
         } catch (IOException e) {

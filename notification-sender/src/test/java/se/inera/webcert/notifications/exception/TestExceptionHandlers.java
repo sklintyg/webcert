@@ -4,17 +4,10 @@ import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 import java.io.IOException;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.EndpointInject;
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.Processor;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.impl.DefaultExchange;
-import org.apache.camel.impl.DefaultMessage;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -22,83 +15,155 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.webcert.notifications.TestDataUtil;
-import se.inera.webcert.notifications.message.v1.HandelseType;
-import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+
+import javax.xml.bind.JAXBException;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration({ "/spring/test-properties-context.xml", "/spring/beans-context.xml", "/spring/test-service-context.xml",
-        "/spring/camel-context.xml" })
+@ContextConfiguration({ "/spring/unit-test-properties-context.xml", "/spring/camel-context.xml"})
+@MockEndpointsAndSkip("(activemq:.*|bean:createAndInitCertificateStatusRequestProcessor|direct:errorHandlerEndpoint|direct:redeliveryExhaustedEndpoint)")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-@ActiveProfiles(profiles = "unittest")
 public class TestExceptionHandlers {
     
     private static final Logger LOG = LoggerFactory.getLogger(TestExceptionHandlers.class);
     
-    // Expect this number of messages
-    private static final int EXPECTED_MESSAGE_COUNT = 4;
-
     @Autowired
     private CamelContext camelContext;
 
-    @Produce(uri = "direct:processNotificationRequestEndpoint")
+    @Produce(uri = "direct:receiveNotificationRequestEndpoint")
     private ProducerTemplate processNotificationRequestEndpoint;
 
     @EndpointInject(uri = "mock:certificateStatusUpdateEndpoint")
     private MockEndpoint mockCertificateStatusUpdateEndpoint;
 
-    private static final String VARDENHET_1_ADDR = "vardenhet-1";
+    @EndpointInject(uri = "mock:bean:createAndInitCertificateStatusRequestProcessor")
+    private MockEndpoint mockRequestProcessorEndpoint;
+
+    @EndpointInject(uri = "mock:direct:errorHandlerEndpoint")
+    private MockEndpoint mockErrorHandlerEndpoint;
+
+    @EndpointInject(uri = "mock:direct:redeliveryExhaustedEndpoint")
+    private MockEndpoint mockRedeliveryEndpoint;
 
     @Test
-    public void testApplicationException() throws InterruptedException {
-        mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
-            
-            private int attempts = 1;
-            
+    public void testNormalRoute() throws InterruptedException {
+        // Given
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
+        mockErrorHandlerEndpoint.expectedMessageCount(0);
+        mockRedeliveryEndpoint.expectedMessageCount(0);
+
+        // When
+        processNotificationRequestEndpoint.sendBody("");
+
+        // Then
+        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+        assertIsSatisfied(mockErrorHandlerEndpoint);
+        assertIsSatisfied(mockRedeliveryEndpoint);
+    }
+
+    @Test
+    public void testTransformationException() throws InterruptedException {
+        // Given
+        mockRequestProcessorEndpoint.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                LOG.debug("Recieving {}", attempts++);
+                LOG.info("Receiving {}");
+                throw new JAXBException("Testing transformation exception");
+            }
+        });
+
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(0);
+        mockErrorHandlerEndpoint.expectedMessageCount(1);
+        mockRedeliveryEndpoint.expectedMessageCount(0);
+
+        // When
+        processNotificationRequestEndpoint.sendBody("");
+
+        // Then
+        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+        assertIsSatisfied(mockErrorHandlerEndpoint);
+        assertIsSatisfied(mockRedeliveryEndpoint);
+    }
+
+    @Test
+    public void testRuntimeException() throws InterruptedException {
+        // Given
+        mockRequestProcessorEndpoint.whenAnyExchangeReceived(new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                LOG.info("Receiving {}");
+                throw new RuntimeException("Testing runtime exception");
+            }
+        });
+
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(0);
+        mockErrorHandlerEndpoint.expectedMessageCount(1);
+        mockRedeliveryEndpoint.expectedMessageCount(0);
+
+        // When
+        processNotificationRequestEndpoint.sendBody("");
+
+        // Then
+        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+        assertIsSatisfied(mockErrorHandlerEndpoint);
+        assertIsSatisfied(mockRedeliveryEndpoint);
+    }
+
+    @Test
+    public void testWebserviceExceptionWithRedelivery() throws InterruptedException {
+        // Given
+        mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
+            private int attempts = 1;
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                LOG.info("Receiving {}", attempts++);
                 throw new CertificateStatusUpdateServiceException("Testing application error, with exhausted retries");
             }
         });
-        // Check for 4 messages, 1 original and 3 retries
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(EXPECTED_MESSAGE_COUNT);
-        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
 
-        Exchange exchange = buildExchange(requestPayload);
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(4);
+        mockErrorHandlerEndpoint.expectedMessageCount(0);
+        mockRedeliveryEndpoint.expectedMessageCount(1);
 
-        processNotificationRequestEndpoint.send(exchange);
+        // When
+        processNotificationRequestEndpoint.sendBody("");
+
+        // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+        assertIsSatisfied(mockErrorHandlerEndpoint);
+        assertIsSatisfied(mockRedeliveryEndpoint);
     }
 
     @Test
     public void testTechnicalException() throws InterruptedException {
+        // Given
         mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
-            private int attempts = 1;
             @Override
             public void process(Exchange exchange) throws Exception {
-                LOG.debug("Recieving {}", attempts++);
+                LOG.debug("Recieving.");
                 throw new NonRecoverableCertificateStatusUpdateServiceException("Testing technical error");
             }
         });
 
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
-        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
+        mockErrorHandlerEndpoint.expectedMessageCount(1);
+        mockRedeliveryEndpoint.expectedMessageCount(0);
 
-        Exchange exchange = buildExchange(requestPayload);
+        // When
+        processNotificationRequestEndpoint.sendBody("");
 
-        processNotificationRequestEndpoint.send(exchange);
+        // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+        assertIsSatisfied(mockErrorHandlerEndpoint);
+        assertIsSatisfied(mockRedeliveryEndpoint);
     }
     
     @Test
     public void testWithWrappedIOExceptionShouldCauseResend() throws InterruptedException {
+        // Given
         mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
             private int attempts = 1;
             @Override
@@ -109,30 +174,17 @@ public class TestExceptionHandlers {
             }
         });
 
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(EXPECTED_MESSAGE_COUNT);
-        String requestPayload = TestDataUtil.readRequestFromFile("data/intygsutkast-signerat-notification.xml");
+        mockCertificateStatusUpdateEndpoint.expectedMessageCount(4);
+        mockErrorHandlerEndpoint.expectedMessageCount(0);
+        mockRedeliveryEndpoint.expectedMessageCount(1);
 
-        Exchange exchange = buildExchange(requestPayload);
+        // When
+        processNotificationRequestEndpoint.sendBody("");
 
-        processNotificationRequestEndpoint.send(exchange);
+        // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
+        assertIsSatisfied(mockErrorHandlerEndpoint);
+        assertIsSatisfied(mockRedeliveryEndpoint);
     }
 
-    private Exchange buildExchange(String requestPayload) {
-        Exchange exchange = wrapRequestInExchange(requestPayload, camelContext);
-        exchange.getIn().setHeader(RouteHeaders.INTYGS_ID, "intyg-2");
-        exchange.getIn().setHeader(RouteHeaders.INTYGS_TYP, "fk7263");
-        exchange.getIn().setHeader(RouteHeaders.INTYGS_STATUS, UtkastStatus.SIGNED);
-        exchange.getIn().setHeader(RouteHeaders.HANDELSE, HandelseType.INTYGSUTKAST_SIGNERAT.toString());
-        exchange.getIn().setHeader(RouteHeaders.LOGISK_ADRESS, VARDENHET_1_ADDR);
-        return exchange;
-    }
-
-    private Exchange wrapRequestInExchange(Object request, CamelContext camelContext) {
-        Exchange exchange = new DefaultExchange(camelContext);
-        Message inMsg = new DefaultMessage();
-        inMsg.setBody(request);
-        exchange.setIn(inMsg);
-        return exchange;
-    }
 }

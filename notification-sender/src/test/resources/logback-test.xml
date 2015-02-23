@@ -7,14 +7,15 @@
     </encoder>
   </appender>
 
-  <logger name="org.springframework" level="info" />
-  
-  <logger name="org.apache.camel" level="info" />
+  <logger name="org.springframework" level="info"/>
 
-  <logger name="se.inera.webcert.notifications" level="debug" />
+  <logger name="org.apache.camel" level="info"/>
+
+  <logger name="se.inera.webcert.notifications" level="debug"/>
 
   <root>
-    <level value="error" />
-    <appender-ref ref="STDOUT" />
+    <level value="debug"/>
+    <appender-ref ref="STDOUT"/>
   </root>
+
 </configuration>

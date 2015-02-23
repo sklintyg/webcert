@@ -6,8 +6,7 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd  
     http://www.mockito.org/spring/mockito http://www.mockito.org/spring/mockito.xsd ">
 
-  <import resource="spring/test-properties-context.xml" />
-  <import resource="spring/test-jdbc-context.xml" />
+  <import resource="spring/integration-test-properties-context.xml" />
   <import resource="spring/test-broker-context.xml" />
   <import resource="spring/beans-context.xml" />
   <import resource="spring/service-context.xml"/>
@@ -15,8 +14,7 @@
 
   <context:annotation-config />
 
-  <context:component-scan
-    base-package="se.inera.webcert.notifications,se.inera.webcert.persistance" />
+  <context:component-scan base-package="se.inera.webcert.notifications,se.inera.webcert.persistance" />
   
   <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub"/>
   

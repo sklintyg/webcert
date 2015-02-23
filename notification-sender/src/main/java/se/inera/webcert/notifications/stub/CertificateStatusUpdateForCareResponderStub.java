@@ -16,20 +16,21 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
 
-    private ConcurrentHashMap<String, String> store = new ConcurrentHashMap<String, String>();
+    private ConcurrentHashMap<String, CertificateStatusUpdateForCareType> store = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
     @Override
     public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(String logicalAddress,
             CertificateStatusUpdateForCareType request) {
-        String handelseKod = request.getUtlatande().getHandelse().getHandelsekod().getCode();
+        // String handelseKod = request.getUtlatande().getHandelse().getHandelsekod().getCode();
         String utlatandeId = request.getUtlatande().getUtlatandeId().getExtension();
-        LOG.info("\n*********************************************************************************\n"
-                + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"
-                + "*********************************************************************************", logicalAddress, utlatandeId, handelseKod);
+        // LOG.info("\n*********************************************************************************\n"
+        // + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"
+        // + "*********************************************************************************", logicalAddress,
+        // utlatandeId, handelseKod);
 
         counter.incrementAndGet();
-        store.put(utlatandeId, handelseKod);
+        store.put(utlatandeId, request);
 
         CertificateStatusUpdateForCareResponseType response = new CertificateStatusUpdateForCareResponseType();
         response.setResult(ResultTypeUtil.okResult());
@@ -45,8 +46,8 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         return store.keySet().size();
     }
 
-    public Map<String, String> getExchange() {
-        return (Map<String, String>) store;
+    public Map<String, CertificateStatusUpdateForCareType> getExchange() {
+        return store;
     }
 
     public void reset() {
