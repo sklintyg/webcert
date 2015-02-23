@@ -1,5 +1,16 @@
 package se.inera.webcert.service.fragasvar;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -9,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
@@ -23,7 +35,6 @@ import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -43,20 +54,9 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.intyg.dto.StatusType;
-import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import javax.xml.ws.soap.SOAPFaultException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 
 /**
  * @author andreaskaltenbach
@@ -602,38 +602,29 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     private void sendNotification(FragaSvar fragaSvar, NotificationEvent event) {
 
-        NotificationRequestType notificationRequestType = null;
-        String logMsg = "";
+        Long fragaSvarId = fragaSvar.getInternReferens();
+        String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
 
         switch (event) {
         case ANSWER_FROM_FK_HANDLED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedAnswerFromFK(fragaSvar);
-            logMsg = "Notification sent: a closed answer with id '{}' (related to certificate '{}') was received from FK";
+            notificationService.sendNotificationForAnswerHandled(fragaSvar);
+            LOGGER.debug("Notification sent: a closed answer with id '{}' (related to certificate '{}') was received from FK", fragaSvarId, intygsId);
             break;
         case ANSWER_SENT_TO_FK:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(fragaSvar);
-            logMsg = "Notification sent: an answer with id '{}' (related to certificate '{}') was sent to FK";
+            notificationService.sendNotificationForQuestionHandled(fragaSvar);
+            LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate '{}') was sent to FK", fragaSvarId, intygsId);
             break;
         case QUESTION_FROM_FK_HANDLED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(fragaSvar);
-            logMsg = "Notification sent: a closed question with id '{}' (related to certificate '{}') was received from FK";
+            notificationService.sendNotificationForQuestionHandled(fragaSvar);
+            LOGGER.debug("Notification sent: a closed question with id '{}' (related to certificate '{}') was received from FK", fragaSvarId,
+                    intygsId);
             break;
         case QUESTION_SENT_TO_FK:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromQuestionToFK(fragaSvar);
-            logMsg = "Notification sent: a question with id '{}' (related to certificate '{}') was sent to FK";
+            notificationService.sendNotificationForQuestionSent(fragaSvar);
+            LOGGER.debug("Notification sent: a question with id '{}' (related to certificate '{}') was sent to FK", fragaSvarId, intygsId);
             break;
         default:
             LOGGER.warn("FragaSvarServiceImpl.sendNotification(FragaSvar, NotificationEvent) - cannot send notification. Incoming event not handled!");
-        }
-
-        if (notificationRequestType != null) {
-            // Notify stakeholders
-            notificationService.notify(notificationRequestType);
-
-            // Log what has happened
-            Long fragaSvarId = fragaSvar.getInternReferens();
-            String intygsId = fragaSvar.getIntygsReferens().getIntygsId();
-            LOGGER.debug(logMsg, fragaSvarId, intygsId);
         }
 
     }

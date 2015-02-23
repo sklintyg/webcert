@@ -1,5 +1,10 @@
 package se.inera.webcert.service.intyg;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.ws.WebServiceException;
+
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +39,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificaterespo
 import se.inera.ifv.insuranceprocess.healthreporting.util.ModelConverter;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
@@ -58,14 +62,8 @@ import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.ws.WebServiceException;
 
 /**
  * @author andreaskaltenbach
@@ -431,8 +429,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             sendRevokedNotification(utkast);
             break;
         case SEND:
-            NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromSentCertificate(utkast);
-            notificationService.notify(notificationRequestType);
+            notificationService.sendNotificationForIntygSent(utkast);
             LOG.debug("Notification sent: certificate with id '{}' has been sent to FK", utkast.getIntygsId());
         }
 
@@ -447,16 +444,17 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
      */
     private void sendRevokedNotification(Utkast utkast) {
         // First: send a notification informing stakeholders that this certificate has been revoked
-        NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromRevokedCertificate(utkast);
-        notificationService.notify(notificationRequestType);
+        notificationService.sendNotificationForIntygRevoked(utkast);
         LOG.debug("Notification sent: certificate with id '{}' was revoked", utkast.getIntygsId());
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.
         FragaSvar[] array = fragaSvarService.closeAllNonClosedQuestions(utkast.getIntygsId());
         for (int i = 0; i < array.length; i++) {
-            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(array[i]);
-            notificationService.notify(notificationRequestType);
+            // TODO: Add support for array of utkast ids in NotificatioService
+            
+            //notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(array[i]);
+            //notificationService.notify(notificationRequestType);
             LOG.debug("Notification sent: question with id '{}' (related with certificate with id '{}') was closed", array[i].getInternReferens(),
                     utkast.getIntygsId());
         }

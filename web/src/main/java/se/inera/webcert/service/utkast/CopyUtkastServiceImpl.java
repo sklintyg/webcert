@@ -10,7 +10,6 @@ import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.pu.model.Person;
@@ -18,7 +17,6 @@ import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
@@ -77,10 +75,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
-            
+
             Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
-            sendNotification(savedUtkast);
+            // notify
+            notificationService.sendNotificationForDraftCreated(savedUtkast);
+            LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
 
             return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
 
@@ -118,15 +118,18 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return personSvar.getPerson();
     }
 
-    private void sendNotification(Utkast utkast) {
-
-        NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(utkast);
-        String logMsg = "Notification sent: utkast with id '{}' was created as a copy.";
-
-        notificationService.notify(notificationRequestType);
-
-        LOG.debug(logMsg, utkast.getIntygsId());
-    }
+    /*
+     * private void sendNotification(Utkast utkast) {
+     * 
+     * NotificationRequestType notificationRequestType =
+     * NotificationMessageFactory.createNotificationFromCreatedDraft(utkast);
+     * String logMsg = "Notification sent: utkast with id '{}' was created as a copy.";
+     * 
+     * notificationService.notify(notificationRequestType);
+     * 
+     * LOG.debug(logMsg, utkast.getIntygsId());
+     * }
+     */
 
     private void checkIntegreradEnhet(CopyUtkastBuilderResponse builderResponse) {
 

@@ -1,5 +1,10 @@
 package se.inera.webcert.service.notification;
 
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,20 +12,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
-import se.inera.webcert.notifications.message.v1.ObjectFactory;
+import se.inera.certificate.modules.support.api.notification.HandelseType;
+import se.inera.certificate.modules.support.api.notification.NotificationMessage;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.webcert.service.exception.WebCertServiceException;
 
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-
-import java.io.StringWriter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -43,51 +44,198 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    @Autowired
+    private SendNotificationStrategy sendNotificationStrategy;
+
+    @Autowired
+    private NotificationMessageFactory notificationMessageFactory;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftCreated(se.inera.webcert
+     * .persistence.utkast.model.Utkast)
+     */
     @Override
-    public void notify(NotificationRequestType notificationRequestType) {
-        Assert.notNull(notificationRequestType, "notificationRequestType must not be null");
-        send(notificationRequestType);
+    public void sendNotificationForDraftCreated(Utkast utkast) {
+        createAndSendNotification(utkast, HandelseType.INTYGSUTKAST_SKAPAT);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftSigned(se.inera.webcert.
+     * persistence.utkast.model.Utkast)
+     */
+    @Override
+    public void sendNotificationForDraftSigned(Utkast utkast) {
+        createAndSendNotification(utkast, HandelseType.INTYGSUTKAST_SIGNERAT);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftChanged(se.inera.webcert
+     * .persistence.utkast.model.Utkast)
+     */
+    @Override
+    public void sendNotificationForDraftChanged(Utkast utkast) {
+        createAndSendNotification(utkast, HandelseType.INTYGSUTKAST_ANDRAT);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForDraftDeleted(se.inera.webcert
+     * .persistence.utkast.model.Utkast)
+     */
+    @Override
+    public void sendNotificationForDraftDeleted(Utkast utkast) {
+        createAndSendNotification(utkast, HandelseType.INTYGSUTKAST_RADERAT);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see se.inera.webcert.service.notification.NewNotificationService#sendNotificationForIntygSent(se.inera.webcert.
+     * persistence.utkast.model.Utkast)
+     */
+    @Override
+    public void sendNotificationForIntygSent(Utkast utkast) {
+        createAndSendNotification(utkast, HandelseType.INTYG_SKICKAT_FK);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForIntygRevoked(se.inera.webcert
+     * .persistence.utkast.model.Utkast)
+     */
+    @Override
+    public void sendNotificationForIntygRevoked(Utkast utkast) {
+        createAndSendNotification(utkast, HandelseType.INTYG_MAKULERAT);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForQuestionReceived(se.inera.webcert
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
+        createAndSendNotification(fragaSvar, HandelseType.FRAGA_FRAN_FK);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForQuestionHandled(se.inera.webcert
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForQuestionHandled(FragaSvar fragaSvar) {
+        createAndSendNotification(fragaSvar, HandelseType.FRAGA_FRAN_FK_HANTERAD);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForQuestionSent(se.inera.webcert
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForQuestionSent(FragaSvar fragaSvar) {
+        createAndSendNotification(fragaSvar, HandelseType.FRAGA_TILL_FK);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForAnswerRecieved(se.inera.webcert
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForAnswerRecieved(FragaSvar fragaSvar) {
+        createAndSendNotification(fragaSvar, HandelseType.SVAR_FRAN_FK);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * se.inera.webcert.service.notification.NewNotificationService#sendNotificationForAnswerHandled(se.inera.webcert
+     * .persistence.fragasvar.model.FragaSvar)
+     */
+    @Override
+    public void sendNotificationForAnswerHandled(FragaSvar fragaSvar) {
+        createAndSendNotification(fragaSvar, HandelseType.SVAR_FRAN_FK_HANTERAD);
+    }
+
+    public void createAndSendNotification(Utkast utkast, HandelseType handelse) {
+
+        if (sendNotificationStrategy.decideNotificationForIntyg(utkast)) {
+            NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
+            send(notificationMessage);
+        }
+
+    }
+
+    public void createAndSendNotification(FragaSvar fragaSvar, HandelseType handelse) {
+
+        if (sendNotificationStrategy.decideNotificationForFragaSvar(fragaSvar)) {
+            NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(fragaSvar, handelse);
+            send(notificationMessage);
+        }
+
     }
 
     /* -- Package visibility -- */
-
-    void send(NotificationRequestType notificationRequestType) {
+    void send(NotificationMessage notificationMessage) {
 
         if (jmsTemplate == null) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;
         }
+        
+        LOGGER.debug("Sending notification {}", notificationMessage);
 
-        jmsTemplate.send(new NotificationMessageCreator(notificationRequestType));
+        String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
+
+        jmsTemplate.send(new NotificationMessageCreator(notificationMessageAsJson));
+    }
+
+    String notificationMessageToJson(NotificationMessage notificationMessage) {
+        try {
+            return objectMapper.writeValueAsString(notificationMessage);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Problem occured when trying to create and marshall NotificationMessage.", e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+        }
     }
 
     static final class NotificationMessageCreator implements MessageCreator {
-        private NotificationRequestType value;
 
-        public NotificationMessageCreator(NotificationRequestType notificationRequestType) {
-            this.value = notificationRequestType;
+        private String value;
+
+        public NotificationMessageCreator(String notificationMessage) {
+            this.value = notificationMessage;
         }
 
         public Message createMessage(Session session) throws JMSException {
-            String message = null;
-            try {
-                message = objToString();
-            } catch (JAXBException e) {
-                throw new JMSException("Could not create notification message!", e.getMessage());
-            }
-
-            return session.createObjectMessage(message);
-        }
-
-        String objToString() throws JAXBException {
-            ObjectFactory objectFactory = new ObjectFactory();
-            StringWriter writer = new StringWriter();
-            JAXBContext context = JAXBContext.newInstance("se.inera.webcert.notifications.message.v1");
-
-            Marshaller m = context.createMarshaller();
-            m.marshal(objectFactory.createNotificationRequest(value), writer);
-
-            return writer.toString();
+            return session.createTextMessage(this.value);
         }
     }
 

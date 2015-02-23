@@ -6,8 +6,6 @@ import java.util.Map;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;

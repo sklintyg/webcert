@@ -1,5 +1,7 @@
 package se.inera.webcert.integration;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.joda.time.LocalDateTime;
@@ -8,12 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.logging.LogMarkers;
 import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.validator.QuestionAnswerValidator;
 import se.inera.webcert.medcertqa.v1.InnehallType;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.receivemedicalcertificateanswer.v1.rivtabp20.ReceiveMedicalCertificateAnswerResponderInterface;
@@ -22,10 +24,7 @@ import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedic
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.mail.MailNotificationService;
-import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
-
-import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -102,17 +101,13 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
     }
 
     private void sendNotificationToQueue(FragaSvar fragaSvar) {
-        NotificationRequestType notificationRequestType = null;
-
         if (fragaSvar.getStatus() == Status.CLOSED) {
-            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedAnswerFromFK(fragaSvar);
+            notificationService.sendNotificationForAnswerHandled(fragaSvar);
             LOGGER.debug("Notification sent: a closed answer with id '{}' (related to certificate with id '{}') was received from FK.", fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
         } else {
-            notificationRequestType = NotificationMessageFactory.createNotificationFromAnswerFromFK(fragaSvar);
+            notificationService.sendNotificationForAnswerRecieved(fragaSvar);
             LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate with id '{}') was received from FK.", fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
         }
-
-        notificationService.notify(notificationRequestType);
     }
 
     private void sendNotificationByMail(FragaSvar fragaSvar) {

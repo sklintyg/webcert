@@ -81,17 +81,14 @@ public class ReceiveQuestionResponderImplTest {
     @Test
     public void testReceiveWithIntegratedUnit() {
 
-        ArgumentCaptor<NotificationRequestType> notCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
-
         ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
         ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
         
         // should place notification on queue
-        verify(mockNotificationService).notify(notCaptor.capture());
+        verify(mockNotificationService).sendNotificationForQuestionReceived(any(FragaSvar.class));
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
-        assertEquals(HandelseType.FRAGA_FRAN_FK, notCaptor.getValue().getHandelse());
     }
     
     @Test

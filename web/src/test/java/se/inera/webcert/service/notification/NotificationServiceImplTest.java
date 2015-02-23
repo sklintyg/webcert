@@ -5,24 +5,31 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 
 import javax.jms.Session;
 
 import org.joda.time.LocalDateTime;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
-import se.inera.webcert.notifications.message.v1.HandelseType;
-import se.inera.webcert.notifications.message.v1.HoSPersonType;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
-import se.inera.webcert.notifications.message.v1.ObjectFactory;
-import se.inera.webcert.notifications.message.v1.VardenhetType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
+import se.inera.certificate.modules.support.api.notification.HandelseType;
+import se.inera.certificate.modules.support.api.notification.NotificationMessage;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.
@@ -30,21 +37,36 @@ import se.inera.webcert.notifications.message.v1.VardenhetType;
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationServiceImplTest {
 
-    String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><NotificationRequest xmlns=\"urn:inera:webcert:notifications:1\"><handelse>INTYGSUTKAST_ANDRAT</handelse><handelseTidpunkt>2001-12-31T12:00:00.123</handelseTidpunkt><intygsId>22334455</intygsId><intygsTyp>FK7263</intygsTyp><hoSPerson><hsaId>SE1234567-0987654321</hsaId><fullstandigtNamn>Karl Karlsson</fullstandigtNamn><vardenhet><hsaId>SE1234567-E000890</hsaId><enhetsNamn>SuperEnheten</enhetsNamn></vardenhet></hoSPerson></NotificationRequest>";
+    private static final String INTYG_TYP_FK = "fk7263";
+
+    private static final String INTYG_ID = "1234";
+
+    private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";
+
+    private static final String LOGISK_ADDR = "SE12345678-1234";
+
+    String expected = "{\"intygsId\":\"1234\",\"intygsTyp\":\"fk7263\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"INTYGSUTKAST_ANDRAT\",\"utkast\":"
+            + INTYG_JSON + ",\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}";
 
     @Mock
     private JmsTemplate template = mock(JmsTemplate.class);
 
+    @Mock
+    private SendNotificationStrategy mockSendNotificationStrategy;
+
+    @Mock
+    private NotificationMessageFactory mockNotificationMessageFactory;
+    
+    @Spy
+    private ObjectMapper objectMapper = new CustomObjectMapper();
+
     @InjectMocks
     NotificationServiceImpl notificationService = new NotificationServiceImpl();
 
+    @Ignore
     @Test
     public void marshalNotificationRequestType() throws Exception {
 
-        NotificationRequestType notificationRequestType = createNotificationRequestType(HandelseType.INTYGSUTKAST_ANDRAT);
-        NotificationServiceImpl.NotificationMessageCreator obj = new NotificationServiceImpl.NotificationMessageCreator(notificationRequestType);
-
-        assertEquals(expected, obj.objToString());
     }
 
     @Test
@@ -52,43 +74,41 @@ public class NotificationServiceImplTest {
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
-        NotificationRequestType notificationRequestType = createNotificationRequestType(HandelseType.INTYGSUTKAST_ANDRAT);
-        notificationService.notify(notificationRequestType);
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Boolean.TRUE);
+
+        NotificationMessage notMsg = createNotificationMessage(HandelseType.INTYGSUTKAST_ANDRAT, INTYG_JSON);
+        when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT))).thenReturn(notMsg);
+
+        Utkast utkast = createUtkast();
+        notificationService.createAndSendNotification(utkast, HandelseType.INTYGSUTKAST_ANDRAT);
 
         verify(template, only()).send(messageCreatorCaptor.capture());
 
         Session session = mock(Session.class);
 
         ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        when(session.createObjectMessage(stringArgumentCaptor.capture())).thenReturn(null);
+        when(session.createTextMessage(stringArgumentCaptor.capture())).thenReturn(null);
 
         MessageCreator messageCreator = messageCreatorCaptor.getValue();
         messageCreator.createMessage(session);
-
+        
         assertEquals(expected, stringArgumentCaptor.getValue());
     }
 
-    NotificationRequestType createNotificationRequestType(HandelseType handelseType) {
+    private NotificationMessage createNotificationMessage(HandelseType handelse, String utkastJson) {
+        FragorOchSvar fs = FragorOchSvar.getEmpty();
+        LocalDateTime time = new LocalDateTime(2001, 12, 31, 12, 34, 56, 789);
+        NotificationMessage notMsg = new NotificationMessage(INTYG_ID, INTYG_TYP_FK, time, handelse, LOGISK_ADDR, utkastJson, fs);
+        return notMsg;
+    }
 
-        ObjectFactory of = new ObjectFactory();
-
-        VardenhetType vardenhetType = of.createVardenhetType();
-        vardenhetType.setHsaId("SE1234567-E000890");
-        vardenhetType.setEnhetsNamn("SuperEnheten");
-
-        HoSPersonType hoSPersonType = of.createHoSPersonType();
-        hoSPersonType.setHsaId("SE1234567-0987654321");
-        hoSPersonType.setFullstandigtNamn("Karl Karlsson");
-        hoSPersonType.setVardenhet(vardenhetType);
-
-        NotificationRequestType notificationRequestType = of.createNotificationRequestType();
-        notificationRequestType.setHandelse(handelseType);
-        notificationRequestType.setHandelseTidpunkt(new LocalDateTime(2001, 12, 31, 12, 0, 0, 123));
-        notificationRequestType.setHoSPerson(hoSPersonType);
-        notificationRequestType.setIntygsId("22334455");
-        notificationRequestType.setIntygsTyp("FK7263");
-
-        return notificationRequestType;
+    private Utkast createUtkast() {
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(INTYG_ID);
+        utkast.setIntygsTyp(INTYG_TYP_FK);
+        utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        utkast.setModel(INTYG_JSON);
+        return utkast;
     }
 
 }
