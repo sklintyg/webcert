@@ -1,4 +1,6 @@
 package se.inera.webcert.spec
+
+import se.inera.webcert.pages.fk7263.EditCertPage
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
 
 import se.inera.webcert.pages.*
@@ -325,7 +327,7 @@ class HanteraUtkast {
         Browser.drive {
             go "/web/dashboard#/fk7263/edit/${id}"
             waitFor {
-                at VisaFk7263Page
+                at EditCertPage
             }
         }
     }
@@ -337,4 +339,18 @@ class HanteraUtkast {
         }
         return result;
     }
+
+    boolean feltMedNamnInnehallarText( String felt, String text ){
+        def result = false;
+        Browser.drive {
+            waitFor {
+                result = page."$felt".text().contains(text)
+
+                //result = page.vardenhet.postadress.text().contains(text);
+            }
+        }
+        return result;
+    }
+
+
 }
