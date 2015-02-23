@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils
 
 class SkapaUtkastMedFakeInloggning extends RestClientFixture {
 
-    String intygTyp
+    String intygTyp = "fk7263"
 
     String patientPersonnummer
     String patientFornamn = "Test"
@@ -23,7 +23,7 @@ class SkapaUtkastMedFakeInloggning extends RestClientFixture {
 
     public void execute() {
         WebcertRestUtils.login("$hsaUser")
-        response = WebcertRestUtils.createNewUtkast(json())
+        response = WebcertRestUtils.createNewUtkast(intygTyp, json())
     }
 
     boolean utkastCreated() {

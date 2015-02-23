@@ -12,8 +12,8 @@
 
 !3 Populera och spara utkastet
 | spara utkast |
-| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | diagnosKod | diagnosBeskrivning1  | nedsattMed100 | intygId    | intygTyp |utkastSparat? |
-| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"}              | $utkastId  | fk7263    | true |
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | diagnosKod | diagnosBeskrivning1  | nedsattMed100 | intygId    | intygTyp | komplett | utkastSparat? |
+| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"}              | $utkastId  | fk7263    | true | true |
 
 
 

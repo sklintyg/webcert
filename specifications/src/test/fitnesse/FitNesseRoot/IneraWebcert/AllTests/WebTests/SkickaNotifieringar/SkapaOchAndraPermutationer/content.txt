@@ -18,8 +18,8 @@
 
 !4 Populera och spara utkastet
 | spara utkast |
-| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | intygId    | intygTyp | diagnosKod| diagnosBeskrivning1 | utkastSparat? | 
-| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263  | S50       | Kontusion på armbåge | true        | 
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | intygId    | intygTyp | diagnosKod| diagnosBeskrivning1  | komplett | utkastSparat? | 
+| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263  | S50       | Kontusion på armbåge | true     | true         | 
 
 !4 Verifiera att notifieringar mottogs av notifierings-stubben
 | skickade notifieringar | 
@@ -32,7 +32,10 @@
 | utkastId |
 | $utkastId |
 
-
+!3 reset
+| webcert rest utils | 
+| reset? |
+| true |
 
 
 !3 Skapa utkast och spara utan att ändra diagnos-info, vilket inte ska ge notifiering HAN11
@@ -44,8 +47,8 @@
 
 !4 Populera och spara utkastet
 | spara utkast |
-| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | intygId    | intygTyp | utkastSparat? | 
-| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263  |   true        | 
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | intygId    | intygTyp | komplett |  utkastSparat? | 
+| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263  | false     | true        | 
 
 !4 Verifiera att notifieringar mottogs av notifierings-stubben
 | skickade notifieringar | 
@@ -58,6 +61,12 @@
 | utkastId |
 | $utkastId |
 
+!3 reset
+| webcert rest utils | 
+| reset? |
+| true |
+
+
 
 
 !3 Skapa utkast och ändra i sjukskrivningsperiod, vilket ska ge notifiering HAN11
@@ -69,8 +78,8 @@
 
 !4 Populera och spara utkastet
 | spara utkast |
-| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | intygId    | intygTyp | nedsattMed100 | utkastSparat?  | 
-| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} |true | 
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | intygId    | intygTyp | nedsattMed100                                            | komplett | utkastSparat?  | 
+| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | true     | true | 
 
 !4 Verifiera att notifieringar mottogs av notifierings-stubben
 | skickade notifieringar | 
@@ -82,7 +91,6 @@
 | ta bort utkast |
 | utkastId |
 | $utkastId |
-
 
 
 !3 Rensa notifieringar
