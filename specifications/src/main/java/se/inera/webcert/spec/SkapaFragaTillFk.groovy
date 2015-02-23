@@ -5,6 +5,11 @@ import se.inera.webcert.spec.util.RestClientFixture
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.ContentType.URLENC
+
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import org.springframework.core.io.ClassPathResource
+
 import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
@@ -14,8 +19,6 @@ class SkapaFragaTillFk extends RestClientFixture {
     String intygId
     String intygTyp
     String hsaUser = "user1"
-    String questionJson
-
 
     public setIntygId (String value) {
         intygId = value
@@ -31,10 +34,15 @@ class SkapaFragaTillFk extends RestClientFixture {
 
     public void execute() {
         WebcertRestUtils.login(hsaUser)
-        response = WebcertRestUtils.createQuestionToFk(intygTyp,intygId,questionJson)
+        response = WebcertRestUtils.createQuestionToFk(intygTyp,intygId,makeJson())
     }
 
-    public boolean utkastSignerat() {
+    def makeJson() {
+        def fraga = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_svar_template.json").getInputStream()))
+        JsonOutput.toJson(fraga)
+    }
+
+    public boolean fragaSkapad() {
         response.success
     }
 }
