@@ -11,6 +11,8 @@ import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.Session;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
 import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.joda.time.LocalDateTime;
@@ -25,7 +27,8 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.modules.support.api.notification.FragaSvar;
+import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub;
@@ -39,6 +42,8 @@ public class TestNotifications {
 
     private static final int SECONDS_TO_WAIT = 10;
 
+    private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";
+
     @Autowired
     private JmsTemplate jmsTemplate;
 
@@ -51,29 +56,35 @@ public class TestNotifications {
     @Autowired
     private CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderStub;
 
+    ObjectMapper objectMapper = new CustomObjectMapper();
+
     @Before
     public void resetStub() {
         this.certificateStatusUpdateForCareResponderStub.reset();
     }
 
-    private void sendMessage(final NotificationMessage message) {
+    private void sendMessage(final NotificationMessage message) throws Exception {
         jmsTemplate.send(queue, new MessageCreator() {
             public Message createMessage(Session session) throws JMSException {
-                return session.createObjectMessage(message);
+                try {
+                    return session.createTextMessage(notificationMessageToJson(message));
+                } catch (Exception e) {
+                    throw Throwables.propagate(e);
+                }
             }
         });
     }
 
     @Test
-    public void ensureStubReceivedAllMessages() throws InterruptedException {
+    public void ensureStubReceivedAllMessages() throws Exception {
         NotificationMessage notificationMessage1 = new NotificationMessage("intyg1", "FK7263", new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_RADERAT, "address2", "{ }", new FragaSvar(0, 0, 0, 0));
+                HandelseType.INTYGSUTKAST_RADERAT, "address2", INTYG_JSON, new FragorOchSvar(0, 0, 0, 0));
         sendMessage(notificationMessage1);
         NotificationMessage notificationMessage2 = new NotificationMessage("intyg2", "FK7263", new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_SIGNERAT, "address2", "{ }", new FragaSvar(0, 0, 0, 0));
+                HandelseType.INTYGSUTKAST_SIGNERAT, "address2", INTYG_JSON, new FragorOchSvar(0, 0, 0, 0));
         sendMessage(notificationMessage2);
         NotificationMessage notificationMessage3 = new NotificationMessage("intyg3", "FK7263", new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_SKAPAT, "address2", "{ }", new FragaSvar(0, 0, 0, 0));
+                HandelseType.INTYGSUTKAST_SKAPAT, "address2", INTYG_JSON, new FragorOchSvar(0, 0, 0, 0));
         sendMessage(notificationMessage3);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(new Callable<Boolean>() {
@@ -91,4 +102,9 @@ public class TestNotifications {
 
 //        assertEquals("Expected INTYGSUTKAST_SKAPAT (HAN1) for intyg3", HandelsekodKodRestriktion.HAN_1.value(), exchange.get("intyg3"));
     }
+
+    private String notificationMessageToJson(NotificationMessage notificationMessage) throws Exception {
+        return objectMapper.writeValueAsString(notificationMessage);
+    }
+
 }

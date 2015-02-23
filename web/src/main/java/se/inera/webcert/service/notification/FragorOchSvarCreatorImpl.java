@@ -1,6 +1,5 @@
 package se.inera.webcert.service.notification;
 
-import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         return res.intValue();
     }
 
-    public int countNbrOfHandledAndAnsweredQuestionsForIntyg(@Header(RouteHeaders.INTYGS_ID) String intygsId) {
+    public int countNbrOfHandledAndAnsweredQuestionsForIntyg(String intygsId) {
         Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.CLOSED, WC);
         return res.intValue();
     }

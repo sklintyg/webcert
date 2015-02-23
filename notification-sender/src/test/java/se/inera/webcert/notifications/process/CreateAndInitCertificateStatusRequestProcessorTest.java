@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.notification.FragaSvar;
+import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.notifications.routes.RouteHeaders;
@@ -27,7 +27,7 @@ public class CreateAndInitCertificateStatusRequestProcessorTest {
     public void testSend() throws Exception {
         // Given
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, "FK7263", new LocalDateTime(),
-                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", new FragaSvar(0, 0, 0, 0));
+                HandelseType.INTYGSUTKAST_SKAPAT, LOGISK_ADRESS, "{ }", new FragorOchSvar(0, 0, 0, 0));
         Message message = new DefaultMessage();
         message.setBody(notificationMessage);
 

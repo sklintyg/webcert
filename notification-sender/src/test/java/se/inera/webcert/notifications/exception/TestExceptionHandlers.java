@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.test.spring.MockEndpoints;
 import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,12 +25,18 @@ import javax.xml.bind.JAXBException;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/spring/unit-test-properties-context.xml", "/spring/camel-context.xml"})
-@MockEndpointsAndSkip("(activemq:.*|bean:createAndInitCertificateStatusRequestProcessor|direct:errorHandlerEndpoint|direct:redeliveryExhaustedEndpoint)")
+@MockEndpointsAndSkip("bean:createAndInitCertificateStatusRequestProcessor")
+@MockEndpoints("(direct:errorHandlerEndpoint|direct:redeliveryExhaustedEndpoint)")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestExceptionHandlers {
     
     private static final Logger LOG = LoggerFactory.getLogger(TestExceptionHandlers.class);
-    
+
+    private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";
+
+    private static final String NOTIFICATION_MESSAGE = "{\"intygsId\":\"1234\",\"intygsTyp\":\"fk7263\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"INTYGSUTKAST_ANDRAT\",\"utkast\":"
+            + INTYG_JSON + ",\"fragaSvar\":{\"antalFragor\":0,\"antalSvar\":0,\"antalHanteradeFragor\":0,\"antalHanteradeSvar\":0}}";
+
     @Autowired
     private CamelContext camelContext;
 
@@ -56,7 +63,7 @@ public class TestExceptionHandlers {
         mockRedeliveryEndpoint.expectedMessageCount(0);
 
         // When
-        processNotificationRequestEndpoint.sendBody("");
+        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
@@ -70,7 +77,7 @@ public class TestExceptionHandlers {
         mockRequestProcessorEndpoint.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                LOG.info("Receiving {}");
+                LOG.info("Receiving");
                 throw new JAXBException("Testing transformation exception");
             }
         });
@@ -80,7 +87,7 @@ public class TestExceptionHandlers {
         mockRedeliveryEndpoint.expectedMessageCount(0);
 
         // When
-        processNotificationRequestEndpoint.sendBody("");
+        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
@@ -104,7 +111,7 @@ public class TestExceptionHandlers {
         mockRedeliveryEndpoint.expectedMessageCount(0);
 
         // When
-        processNotificationRequestEndpoint.sendBody("");
+        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
@@ -129,7 +136,7 @@ public class TestExceptionHandlers {
         mockRedeliveryEndpoint.expectedMessageCount(1);
 
         // When
-        processNotificationRequestEndpoint.sendBody("");
+        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
@@ -153,7 +160,7 @@ public class TestExceptionHandlers {
         mockRedeliveryEndpoint.expectedMessageCount(0);
 
         // When
-        processNotificationRequestEndpoint.sendBody("");
+        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
@@ -179,7 +186,7 @@ public class TestExceptionHandlers {
         mockRedeliveryEndpoint.expectedMessageCount(1);
 
         // When
-        processNotificationRequestEndpoint.sendBody("");
+        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);

@@ -2,10 +2,12 @@ package se.inera.webcert.notifications.routes;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
 
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
@@ -21,10 +23,11 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     public void configure() throws Exception {
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
                 .onException(Exception.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .unmarshal("notificationMessageDataFormat")
                 .to("bean:createAndInitCertificateStatusRequestProcessor")
-                .to("direct:sendMessageToWS");
+                .to("direct:sendNotificationToWS");
 
-        from("direct:sendMessageToWS").routeId("sendNotificationToWS")
+        from("direct:sendNotificationToWS").routeId("sendNotificationToWS")
                 .errorHandler(deadLetterChannel("direct:redeliveryExhaustedEndpoint")
                         .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay)
                         .useExponentialBackOff())
