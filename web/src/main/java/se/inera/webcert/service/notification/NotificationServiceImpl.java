@@ -190,6 +190,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (utkast == null) {
             LOGGER.debug("Will not send notification message for certificate '{}' and event '{}'", intygsId, handelse);
+            return;
         }
         
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
@@ -202,6 +203,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (utkast == null) {
             LOGGER.debug("Will not send notification message for event {}", handelse);
+            return;
         }
         
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
@@ -214,6 +216,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (utkast == null) {
             LOGGER.debug("Will not send notification message for event {}", handelse);
+            return;
         }
         
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
