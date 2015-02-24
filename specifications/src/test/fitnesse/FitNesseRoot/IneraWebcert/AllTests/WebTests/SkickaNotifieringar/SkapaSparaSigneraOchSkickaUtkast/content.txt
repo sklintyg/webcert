@@ -26,12 +26,12 @@
 | $utkastId | fk7263   |  FK        | true          |
 
 !3 Verifiera att förväntade notifieringar gick iväg
-| skickade notifieringar | 
-| id         | kod  | antal | checkHandelseKod? |
-| $utkastId  | HAN1 |   4   | true              |
-| $utkastId  | HAN11|   4   | true              |
-| $utkastId  | HAN2 |   4   | true              |
-| $utkastId  | HAN3 |   4   | true              |
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad? |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| true              |
+| $utkastId  | HAN2 | true              |
+| $utkastId  | HAN3 | true              |
 
 
 !3 Ta bort utkastet

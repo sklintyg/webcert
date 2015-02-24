@@ -15,10 +15,10 @@
 
 
 !3 Verifiera att notifieringar mottogs av notifierings-stubben
-| skickade notifieringar | 
-| id         | kod  | antal | checkHandelseKod? |
-| $utkastId  | HAN1 | 2     | true              |
-| $utkastId  | HAN4 | 2     | true              |
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad? |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN4 | true              |
 
 
 !3 Rensa notifieringar

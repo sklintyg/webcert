@@ -23,11 +23,11 @@
 | $utkastId | fk7263   | true            |
 
 !3 Verifiera att notifieringar mottogs av notifierings-stubben
-| skickade notifieringar | 
-| id         | kod  | antal | checkHandelseKod? |
-| $utkastId  | HAN1 | 3     | true              |
-| $utkastId  | HAN11| 3     | true              |
-| $utkastId  | HAN2 | 3     | true              |
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad? |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| true              |
+| $utkastId  | HAN2 | true              |
 
 !3 Ta bort utkastet
 | ta bort utkast |

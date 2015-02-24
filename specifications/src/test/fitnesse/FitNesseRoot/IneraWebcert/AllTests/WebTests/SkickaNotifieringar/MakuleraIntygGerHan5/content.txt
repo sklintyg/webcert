@@ -24,12 +24,12 @@
 | $utkastId |  fk7263  | true | 
 
 !3 Verifiera att notifieringar mottogs av notifierings-stubben
-| skickade notifieringar | 
-| id         | kod  | antal | checkHandelseKod? |
-| $utkastId  | HAN1 | 4     | true              |
-| $utkastId  | HAN11| 4     | true              |
-| $utkastId  | HAN2 | 4     | true              |
-| $utkastId  | HAN5 | 4     | true              |
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad? |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| true              |
+| $utkastId  | HAN2 | true              |
+| $utkastId  | HAN5 | true              |
 
 !3 Rensa notifieringar
 | webcert rest utils | 

@@ -1,5 +1,3 @@
-!contents -R2 -g -p -f -h
-
 !3 Rensa tidigare notifieringar
 | webcert rest utils |
 | reset? | 
@@ -29,27 +27,28 @@
 | intygId   | intygTyp |  fragaSkapad? |
 | $utkastId | fk7263   |   true        |
 
+!3 Rensa notifieringar så att vi kan verifiera de relevanta
+| webcert rest utils |
+| reset? | 
+| true | 
+
+!3 Makulera intyget
+| makulera intyg |
+| intygId   | intygTyp | intygMakulerat? |
+| $utkastId |  fk7263  | true | 
+
 
 !3 Verifiera att förväntade notifieringar gick iväg
 | verifiera notifiering | 
-| id         | kod  |  handelseSkapad? |
-| $utkastId  | HAN1 |  true              |
-| $utkastId  | HAN11|  true              |
-| $utkastId  | HAN2 |  true              |
-| $utkastId  | HAN3 |  true              |
-| $utkastId  | HAN8 |  true              |
+| id         | kod  |  handelseSkapad?   |  
+| $utkastId  | HAN5 |  true              | 
+| $utkastId  | HAN9 |  true              | 
 
-
-!3 Kolla antalet frågor och svar
+!3 Kolla antalet hanterade svar
 | skickade notifieringar |
-| id        | kod |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
-| $utkastId | HAN8|   0                  | 0          |  0                    | 1            |
+| id        | kod | antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| $utkastId | HAN9|   1               | 0          |  0                    | 0            |
 
-
-!3 Ta bort utkastet
-| ta bort utkast |
-| utkastId |
-| $utkastId |
 
 !3 Rensa notifieringar
 | webcert rest utils |

@@ -12,9 +12,9 @@
 
 
 !3 Undersök vilka notifieringar som skickades och säkerställ att dessa matchar det förväntade utfallet
-| skickade notifieringar | 
-| id         | kod  | antal | checkHandelseKod? |
-| $utkastId  | HAN1 | 1     | true              |
+| verifiera notifiering | 
+| id         | kod  |handelseSkapad? |
+| $utkastId  | HAN1 |true              |
 
 !3 Ta bort utkastet
 | ta bort utkast |

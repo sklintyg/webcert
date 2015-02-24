@@ -22,10 +22,10 @@
 | 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263  | S50       | Kontusion på armbåge | true     | true         | 
 
 !4 Verifiera att notifieringar mottogs av notifierings-stubben
-| skickade notifieringar | 
-| id         | kod  | antal |checkHandelseKod? |
-| $utkastId  | HAN1 |   2   |true              |
-| $utkastId  | HAN11|   2   |true              |
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad?   |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| true              |
 
 !4 Ta bort utkastet
 | ta bort utkast |
@@ -38,7 +38,7 @@
 | true |
 
 
-!3 Skapa utkast och spara utan att ändra diagnos-info, vilket inte ska ge notifiering HAN11
+!3 Skapa utkast och spara utan att ändra diagnos-info, vilket INTE ska ge notifiering HAN11
 
 !4 Logga in och skapa ett nytt intygsutkast
 | skapa utkast med fake inloggning |
@@ -51,10 +51,10 @@
 | 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263  | false     | true        | 
 
 !4 Verifiera att notifieringar mottogs av notifierings-stubben
-| skickade notifieringar | 
-| id         | kod  | antal | checkHandelseKod? |
-| $utkastId  | HAN1 | 2     | true              |
-| $utkastId  | HAN11| 2     | false             |
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad?   | timeOut |
+| $utkastId  | HAN1 | true              | 1000    |
+| $utkastId  | HAN11| false             | 1000    |
 
 !4 Ta bort utkastet
 | ta bort utkast |
@@ -82,10 +82,10 @@
 | 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | true     | true | 
 
 !4 Verifiera att notifieringar mottogs av notifierings-stubben
-| skickade notifieringar | 
-| id         | kod  | antal | checkHandelseKod? |
-| $utkastId  | HAN1 | 2     | true              |
-| $utkastId  | HAN11| 2     | true              |
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad?   |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| true              |
 
 !4 Ta bort utkastet
 | ta bort utkast |
