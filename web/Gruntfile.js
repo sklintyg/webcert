@@ -105,6 +105,11 @@ module.exports = function(grunt) {
                         ) );
                         middlewares.push(
                             connect().use(
+                                '/views',
+                                connect.static(__dirname + '/src/main/webapp/views')
+                            ) );
+                        middlewares.push(
+                            connect().use(
                                 '/web/webjars/common',
                                 connect.static(__dirname + '/../../common/web/src/main/resources/META-INF/resources/webjars/common')
                             ) );
