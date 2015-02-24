@@ -1,12 +1,15 @@
 package se.inera.webcert.service.notification;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+
+import java.io.IOException;
 
 import javax.jms.Session;
 
@@ -24,6 +27,8 @@ import org.mockito.stubbing.Answer;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
@@ -94,9 +99,17 @@ public class NotificationServiceImplTest {
         MessageCreator messageCreator = messageCreatorCaptor.getValue();
         messageCreator.createMessage(session);
         
-        assertEquals(expected, stringArgumentCaptor.getValue());
+        // get the notfication message as json and transform it back to object
+        NotificationMessage captNotMsg = objectMapper.readValue(stringArgumentCaptor.getValue(), NotificationMessage.class);
+        
+        // assert that things are still there
+        assertNotNull(captNotMsg);
+        assertEquals(INTYG_ID, captNotMsg.getIntygsId());
+        assertEquals(HandelseType.INTYGSUTKAST_ANDRAT, captNotMsg.getHandelse());
+        assertEquals(INTYG_JSON, captNotMsg.getUtkast());
     }
 
+    
     private NotificationMessage createNotificationMessage(HandelseType handelse, String utkastJson) {
         FragorOchSvar fs = FragorOchSvar.getEmpty();
         LocalDateTime time = new LocalDateTime(2001, 12, 31, 12, 34, 56, 789);
