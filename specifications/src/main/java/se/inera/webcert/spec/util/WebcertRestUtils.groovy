@@ -115,6 +115,18 @@ public class WebcertRestUtils {
     }
 
     /**
+     * Delete and recall a signed Intyg.
+     * @param intygsTyp
+     * @param intygsId
+     * @return HttpResponseDecorator
+     */
+    public static HttpResponseDecorator deleteIntyg(String intygsTyp, String intygsId) {
+        def restPath = "/moduleapi/intyg/${intygsTyp}/${intygsId}/aterkalla"
+        def response = webcert.post(path : restPath, requestContentType : JSON, body : "")
+        response
+    }
+
+    /**
      * Clear all notifications in the stub
      * @return true if call was successful, false otherwise
      */
