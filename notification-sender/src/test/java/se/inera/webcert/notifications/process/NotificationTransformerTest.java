@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CreateAndInitCertificateStatusRequestProcessorTest {
+public class NotificationTransformerTest {
 
     public static final String EXPECTED_BODY = "Body";
     public static final String INTYGS_ID = "intyg1";
@@ -36,7 +36,7 @@ public class CreateAndInitCertificateStatusRequestProcessorTest {
         when(moduleRegistry.getModuleApi(Mockito.anyString())).thenReturn(moduleApi);
         when(moduleApi.createNotification(Mockito.any(NotificationMessage.class))).thenReturn(EXPECTED_BODY);
 
-        CreateAndInitCertificateStatusRequestProcessor processor = new CreateAndInitCertificateStatusRequestProcessor();
+        NotificationTransformer processor = new NotificationTransformer();
         processor.setModuleRegistry(moduleRegistry);
 
         // When

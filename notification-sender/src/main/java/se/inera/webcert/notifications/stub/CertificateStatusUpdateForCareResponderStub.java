@@ -22,12 +22,7 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
     @Override
     public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(String logicalAddress,
             CertificateStatusUpdateForCareType request) {
-        // String handelseKod = request.getUtlatande().getHandelse().getHandelsekod().getCode();
         String utlatandeId = request.getUtlatande().getUtlatandeId().getExtension();
-        // LOG.info("\n*********************************************************************************\n"
-        // + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"
-        // + "*********************************************************************************", logicalAddress,
-        // utlatandeId, handelseKod);
 
         counter.incrementAndGet();
         store.put(utlatandeId, request);

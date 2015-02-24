@@ -12,8 +12,8 @@ import se.inera.webcert.notifications.routes.RouteHeaders;
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class CreateAndInitCertificateStatusRequestProcessor {
-    private static final Logger LOG = LoggerFactory.getLogger(CreateAndInitCertificateStatusRequestProcessor.class);
+public class NotificationTransformer {
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationTransformer.class);
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;

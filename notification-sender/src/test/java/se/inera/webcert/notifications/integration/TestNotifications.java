@@ -63,18 +63,6 @@ public class TestNotifications {
         this.certificateStatusUpdateForCareResponderStub.reset();
     }
 
-    private void sendMessage(final NotificationMessage message) throws Exception {
-        jmsTemplate.send(queue, new MessageCreator() {
-            public Message createMessage(Session session) throws JMSException {
-                try {
-                    return session.createTextMessage(notificationMessageToJson(message));
-                } catch (Exception e) {
-                    throw Throwables.propagate(e);
-                }
-            }
-        });
-    }
-
     @Test
     public void ensureStubReceivedAllMessages() throws Exception {
         NotificationMessage notificationMessage1 = new NotificationMessage("intyg1", "FK7263", new LocalDateTime(),
@@ -105,6 +93,18 @@ public class TestNotifications {
 
     private String notificationMessageToJson(NotificationMessage notificationMessage) throws Exception {
         return objectMapper.writeValueAsString(notificationMessage);
+    }
+
+    private void sendMessage(final NotificationMessage message) throws Exception {
+        jmsTemplate.send(queue, new MessageCreator() {
+            public Message createMessage(Session session) throws JMSException {
+                try {
+                    return session.createTextMessage(notificationMessageToJson(message));
+                } catch (Exception e) {
+                    throw Throwables.propagate(e);
+                }
+            }
+        });
     }
 
 }
