@@ -83,12 +83,6 @@ public class TestNotifications {
             }
         });
         Map<String, CertificateStatusUpdateForCareType> exchange = certificateStatusUpdateForCareResponderStub.getExchange();
-
-//        assertEquals("Expected INTYGSUTKAST_RADERAT (HAN4) for intyg1", HandelsekodKodRestriktion.HAN_4.value(), exchange.get("intyg1"));
-
-//        assertEquals("Expected INTYG_SIGNERAT (HAN2) for intyg2", HandelsekodKodRestriktion.HAN_2.value(), exchange.get("intyg2"));
-
-//        assertEquals("Expected INTYGSUTKAST_SKAPAT (HAN1) for intyg3", HandelsekodKodRestriktion.HAN_1.value(), exchange.get("intyg3"));
     }
 
     private String notificationMessageToJson(NotificationMessage notificationMessage) throws Exception {

@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.exception;
+package se.inera.webcert.notifications.route;
 
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
@@ -28,9 +28,9 @@ import javax.xml.bind.JAXBException;
 @MockEndpointsAndSkip("bean:createAndInitCertificateStatusRequestProcessor")
 @MockEndpoints("(direct:errorHandlerEndpoint|direct:redeliveryExhaustedEndpoint)")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class TestExceptionHandlers {
+public class RouteTest {
     
-    private static final Logger LOG = LoggerFactory.getLogger(TestExceptionHandlers.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RouteTest.class);
 
     private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";
 
