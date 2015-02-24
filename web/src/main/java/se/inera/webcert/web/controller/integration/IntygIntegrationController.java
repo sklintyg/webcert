@@ -1,5 +1,7 @@
 package se.inera.webcert.web.controller.integration;
 
+import static se.inera.certificate.modules.Enumerations.CertificateTypes.FK7263;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.certificate.modules.fk7263.model.Constants;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
@@ -70,7 +71,7 @@ public class IntygIntegrationController {
     @GET
     @Path("/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
-        return redirectToIntyg(uriInfo, intygId, Constants.FK7263, alternatePatientSSn, responsibleHospName);
+        return redirectToIntyg(uriInfo, intygId, FK7263.toString(), alternatePatientSSn, responsibleHospName);
     }
 
     /**
