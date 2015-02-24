@@ -12,8 +12,8 @@ import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 @Component
 public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
     
-    private static final String FK = "FK";
-    private static final String WC = "WC";
+    private static final String FRAGESTALLARE_FK = "FK";
+    private static final String FRAGESTALLARE_WEBCERT = "WC";
     
     private static final Logger LOG = LoggerFactory.getLogger(FragorOchSvarCreatorImpl.class);
     
@@ -26,10 +26,10 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
     @Override
     public FragorOchSvar createFragorOchSvar(String intygsId) {
         
-        int antalFragor = countNbrOfQuestionsForIntyg(intygsId);
-        int antalSvar = countNbrOfAnsweredQuestionsForIntyg(intygsId);
-        int antalHanteradeFragor = countNbrOfHandledQuestionsForIntyg(intygsId);
-        int antalHanteradeSvar = countNbrOfHandledAndAnsweredQuestionsForIntyg(intygsId);
+        int antalFragor = antalFragor(intygsId);
+        int antalSvar = antalSvar(intygsId);
+        int antalHanteradeFragor = antalHanteradeFragor(intygsId);
+        int antalHanteradeSvar = antalHanteradeSvar(intygsId);
         
         FragorOchSvar fs = new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
         
@@ -38,23 +38,23 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         return fs;
     }
 
-    public int countNbrOfQuestionsForIntyg(String intygsId) {
-        Long res = fragaSvarRepository.countByIntygAndFragestallare(intygsId, FK);
+    private int antalFragor(String intygsId) {
+        Long res = fragaSvarRepository.countByIntygAndFragestallare(intygsId, FRAGESTALLARE_FK);
         return res.intValue();
     }
 
-    public int countNbrOfAnsweredQuestionsForIntyg(String intygsId) {
-        Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.ANSWERED, WC);
+    private int antalHanteradeFragor(String intygsId) {
+        Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.CLOSED, FRAGESTALLARE_FK);
         return res.intValue();
     }
 
-    public int countNbrOfHandledQuestionsForIntyg(String intygsId) {
-        Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.CLOSED, FK);
+    private int antalSvar(String intygsId) {
+        Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.ANSWERED, FRAGESTALLARE_WEBCERT);
         return res.intValue();
     }
 
-    public int countNbrOfHandledAndAnsweredQuestionsForIntyg(String intygsId) {
-        Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.CLOSED, WC);
+    private int antalHanteradeSvar(String intygsId) {
+        Long res = fragaSvarRepository.countByIntygAndStatusAndFragestallare(intygsId, Status.CLOSED, FRAGESTALLARE_WEBCERT);
         return res.intValue();
     }
 }
