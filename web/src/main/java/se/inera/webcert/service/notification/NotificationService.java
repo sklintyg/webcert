@@ -48,7 +48,7 @@ public interface NotificationService {
      * @param utkast
      * @return
      */
-    void sendNotificationForIntygSent(Utkast utkast);
+    void sendNotificationForIntygSent(String intygsId);
 
     /**
      * Signed intyg revoked (HAN5)
@@ -56,7 +56,7 @@ public interface NotificationService {
      * @param utkast
      * @return
      */
-    void sendNotificationForIntygRevoked(Utkast utkast);
+    void sendNotificationForIntygRevoked(String intygsId);
 
     /**
      * New question received from FK (HAN6)

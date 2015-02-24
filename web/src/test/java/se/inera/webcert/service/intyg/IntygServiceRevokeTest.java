@@ -8,11 +8,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import javax.xml.ws.WebServiceException;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.w3.wsaddressing10.AttributedURIType;
@@ -24,8 +29,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.notifications.message.v1.HandelseType;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Id;
@@ -43,13 +46,6 @@ import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.util.ReflectionUtils;
-
-import javax.xml.ws.WebServiceException;
-
-import java.net.ConnectException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
@@ -69,8 +65,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     private FragaSvarService fragaSvarService;
 
     private Utkast signedUtkast;
-    
-    private HoSPerson hoSPerson;
 
     @Before
     public void setup() {
@@ -114,7 +108,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         // verify that services were called
         verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
-        verify(notificationService, times(1)).sendNotificationForIntygRevoked(any(Utkast.class));
+        verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
 
         assertEquals(IntygServiceResult.OK, res);
     }
@@ -137,30 +131,19 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(fragaSvarRepository.findByIntygsReferensIntygsId(INTYG_ID)).thenReturn(new ArrayList<FragaSvar>());
         when(fragaSvarService.closeAllNonClosedQuestions(INTYG_ID)).thenReturn(new FragaSvar[] { fragaSvar, fragaSvar, fragaSvar });
 
-        // capture argument values for further assertions.
-        ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
-
         // Do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
 
-        // verify that services have called
+        // verify that notification is called
+        verify(notificationService).sendNotificationForIntygRevoked(INTYG_ID);
+
+        // verify that questions is closed
         verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
-        // TODO: Fix this when implemented
-        //verify(notificationService, times(4)).notify(notificationRequestTypeArgumentCaptor.capture());
+
+        // verify that one message is sent for each question
+        verify(notificationService, times(3)).sendNotificationForQuestionHandled(any(FragaSvar.class));
 
         assertEquals(IntygServiceResult.OK, res);
-
-        // Assert notification message
-//        List<NotificationRequestType> list = notificationRequestTypeArgumentCaptor.getAllValues();
-//        assertNotificationMessageCalls(INTYG_ID, HandelseType.INTYG_MAKULERAT, list.get(0));
-//        assertNotificationMessageCalls(INTYG_ID, HandelseType.FRAGA_FRAN_FK_HANTERAD, list.get(1));
-//        assertNotificationMessageCalls(INTYG_ID, HandelseType.FRAGA_FRAN_FK_HANTERAD, list.get(2));
-//        assertNotificationMessageCalls(INTYG_ID, HandelseType.FRAGA_FRAN_FK_HANTERAD, list.get(3));
-    }
-
-    private void assertNotificationMessageCalls(String intygsId, HandelseType ht, NotificationRequestType nrt) {
-        assertEquals(intygsId, nrt.getIntygsId());
-        assertEquals(ht, nrt.getHandelse());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -233,7 +216,6 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         f.getVardperson().setEnhetsId("<enhets-id>");
         return f;
     }
-
 
     private VardpersonReferens buildVardpersonReferens(HoSPerson person) {
         VardpersonReferens vardperson = new VardpersonReferens();

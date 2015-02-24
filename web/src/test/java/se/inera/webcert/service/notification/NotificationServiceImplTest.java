@@ -18,7 +18,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
@@ -61,20 +63,20 @@ public class NotificationServiceImplTest {
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
     @InjectMocks
-    NotificationServiceImpl notificationService = new NotificationServiceImpl();
-
-    @Ignore
-    @Test
-    public void marshalNotificationRequestType() throws Exception {
-
-    }
+    private NotificationServiceImpl notificationService = new NotificationServiceImpl();
 
     @Test
     public void serviceNotifiesThereIsAChangedCertificateDraft() throws Exception {
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
-        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenReturn(Boolean.TRUE);
+        when(mockSendNotificationStrategy.decideNotificationForIntyg(any(Utkast.class))).thenAnswer(new Answer<Utkast>() {
+            @Override
+            public Utkast answer(InvocationOnMock invocation) throws Throwable {
+                Object[] arguments = invocation.getArguments();
+                return (Utkast) arguments[0];
+            }
+        });
 
         NotificationMessage notMsg = createNotificationMessage(HandelseType.INTYGSUTKAST_ANDRAT, INTYG_JSON);
         when(mockNotificationMessageFactory.createNotificationMessage(any(Utkast.class), eq(HandelseType.INTYGSUTKAST_ANDRAT))).thenReturn(notMsg);

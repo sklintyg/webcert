@@ -108,8 +108,8 @@ public class NotificationServiceImpl implements NotificationService {
      * persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForIntygSent(Utkast utkast) {
-        createAndSendNotification(utkast, HandelseType.INTYG_SKICKAT_FK);
+    public void sendNotificationForIntygSent(String intygsId) {
+        createAndSendNotification(intygsId, HandelseType.INTYG_SKICKAT_FK);
     }
 
     /*
@@ -120,8 +120,8 @@ public class NotificationServiceImpl implements NotificationService {
      * .persistence.utkast.model.Utkast)
      */
     @Override
-    public void sendNotificationForIntygRevoked(Utkast utkast) {
-        createAndSendNotification(utkast, HandelseType.INTYG_MAKULERAT);
+    public void sendNotificationForIntygRevoked(String intygsId) {
+        createAndSendNotification(intygsId, HandelseType.INTYG_MAKULERAT);
     }
 
     /*
@@ -184,22 +184,40 @@ public class NotificationServiceImpl implements NotificationService {
         createAndSendNotification(fragaSvar, HandelseType.SVAR_FRAN_FK_HANTERAD);
     }
 
+    public void createAndSendNotification(String intygsId, HandelseType handelse) {
+
+        Utkast utkast = sendNotificationStrategy.decideNotificationForIntyg(intygsId);
+
+        if (utkast == null) {
+            LOGGER.debug("Will not send notification message for certificate '{}' and event '{}'", intygsId, handelse);
+        }
+        
+        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
+        send(notificationMessage);
+    }
+
     public void createAndSendNotification(Utkast utkast, HandelseType handelse) {
 
-        if (sendNotificationStrategy.decideNotificationForIntyg(utkast)) {
-            NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
-            send(notificationMessage);
-        }
+        utkast = sendNotificationStrategy.decideNotificationForIntyg(utkast);
 
+        if (utkast == null) {
+            LOGGER.debug("Will not send notification message for event {}", handelse);
+        }
+        
+        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
+        send(notificationMessage);
     }
 
     public void createAndSendNotification(FragaSvar fragaSvar, HandelseType handelse) {
 
-        if (sendNotificationStrategy.decideNotificationForFragaSvar(fragaSvar)) {
-            NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(fragaSvar, handelse);
-            send(notificationMessage);
-        }
+        Utkast utkast = sendNotificationStrategy.decideNotificationForFragaSvar(fragaSvar);
 
+        if (utkast == null) {
+            LOGGER.debug("Will not send notification message for event {}", handelse);
+        }
+        
+        NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
+        send(notificationMessage);
     }
 
     /* -- Package visibility -- */
@@ -209,7 +227,7 @@ public class NotificationServiceImpl implements NotificationService {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;
         }
-        
+
         LOGGER.debug("Sending notification {}", notificationMessage);
 
         String notificationMessageAsJson = notificationMessageToJson(notificationMessage);

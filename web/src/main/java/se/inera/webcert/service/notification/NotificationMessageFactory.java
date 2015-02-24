@@ -7,8 +7,10 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 
 public interface NotificationMessageFactory {
 
-    public abstract NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse);
+    NotificationMessage createNotificationMessage(String intygsId, HandelseType handelse);
+    
+    NotificationMessage createNotificationMessage(Utkast utkast, HandelseType handelse);
 
-    public abstract NotificationMessage createNotificationMessage(FragaSvar fragaSvar, HandelseType handelse);
+    NotificationMessage createNotificationMessage(FragaSvar fragaSvar, HandelseType handelse);
 
 }
