@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 
 public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCustom {
@@ -49,6 +50,8 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
     @Query("SELECT DISTINCT fs.vardperson.hsaId, fs.vardperson.namn FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) ORDER BY fs.vardperson.namn ASC")
     List<Object[]> findDistinctFragaSvarHsaIdByEnhet(@Param("idList") List<String> enhetsIds);
 
+    @Query("SELECT NEW se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus(fs.internReferens, fs.svarsText, fs.status) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
+    List<FragaSvarStatus> findFragaSvarStatusesForIntyg(@Param("intygsId") String intygsId);
     
     /**
      * Returns the number of FragaSvar belonging to a signed intyg for a frageStallare
