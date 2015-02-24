@@ -51,6 +51,20 @@ public class WebcertRestUtils {
         }
         notifieringar
     }
+	
+	public static boolean awaitNotification(final String id, final String code, final long timeOutMillis) {
+		final long timeOut = System.currentTimeMillis() + timeOutMillis;
+		
+		while (System.currentTimeMillis() < timeOut) {
+			def notifieringar = webcert.get(path: "services/notification-stub/notifieringar").data
+
+			if(notifieringar.find {  it.utlatande.utlatandeId.extension == id && it.utlatande.handelse.handelsekod.code == code }){
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
     /**
      * Save Utkast.
