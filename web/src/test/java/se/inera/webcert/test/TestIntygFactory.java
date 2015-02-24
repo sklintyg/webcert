@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
+import se.inera.certificate.model.CertificateState;
+import se.inera.certificate.model.Status;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
 
 /**
  * Util for building test data
@@ -44,8 +44,8 @@ public final class TestIntygFactory {
         it.setSignedDate(signedDate);
         it.setType("Type 1");
 
-        IntygStatus is1 = new IntygStatus(StatusType.RECEIVED, "FK", signedDate);
-        IntygStatus is2 = new IntygStatus(StatusType.SENT, "MI", signedDate.plusSeconds(15));
+        Status is1 = new Status(CertificateState.RECEIVED, "FK", signedDate);
+        Status is2 = new Status(CertificateState.SENT, "MI", signedDate.plusSeconds(15));
 
         it.setStatuses(Arrays.asList(is1, is2));
 

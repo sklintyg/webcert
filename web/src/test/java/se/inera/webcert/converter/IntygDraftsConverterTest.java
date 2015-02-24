@@ -12,11 +12,11 @@ import java.util.List;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 
+import se.inera.certificate.model.CertificateState;
+import se.inera.certificate.model.Status;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.test.TestIntygFactory;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 
@@ -84,45 +84,45 @@ public class IntygDraftsConverterTest {
     public void testFindLatestStatus() {
         
         LocalDateTime defaultTime = LocalDateTime.now();
-        StatusType res;
-        List<IntygStatus> statuses;
+        CertificateState res;
+        List<Status> statuses;
         
         // test with empty list
         statuses = new ArrayList<>();
         res = IntygDraftsConverter.findLatestStatus(statuses);
-        assertEquals(StatusType.UNKNOWN, res);
+        assertEquals(CertificateState.UNHANDLED, res);
         
         // test with just some statuses
         statuses = new ArrayList<>();
-        statuses.add(new IntygStatus(StatusType.RECEIVED, "MI", defaultTime.minusHours(2)));
-        statuses.add(new IntygStatus(StatusType.SENT, "FK", defaultTime.minusHours(1)));
+        statuses.add(new Status(CertificateState.RECEIVED, "MI", defaultTime.minusHours(2)));
+        statuses.add(new Status(CertificateState.SENT, "FK", defaultTime.minusHours(1)));
         res = IntygDraftsConverter.findLatestStatus(statuses);
-        assertEquals(StatusType.SENT, res);
+        assertEquals(CertificateState.SENT, res);
         
         // test with DELETED in the list, which should be removed
         statuses = new ArrayList<>();
-        statuses.add(new IntygStatus(StatusType.CANCELLED, "FK", defaultTime.minusHours(2)));
-        statuses.add(new IntygStatus(StatusType.SENT, "FK", defaultTime.minusHours(3)));
-        statuses.add(new IntygStatus(StatusType.DELETED, "MI", defaultTime.minusHours(1)));
-        statuses.add(new IntygStatus(StatusType.RECEIVED, "MI", defaultTime.minusHours(4)));
+        statuses.add(new Status(CertificateState.CANCELLED, "FK", defaultTime.minusHours(2)));
+        statuses.add(new Status(CertificateState.SENT, "FK", defaultTime.minusHours(3)));
+        statuses.add(new Status(CertificateState.DELETED, "MI", defaultTime.minusHours(1)));
+        statuses.add(new Status(CertificateState.RECEIVED, "MI", defaultTime.minusHours(4)));
         res = IntygDraftsConverter.findLatestStatus(statuses);
-        assertEquals(StatusType.CANCELLED, res);
+        assertEquals(CertificateState.CANCELLED, res);
         
         // test with DELETED and RESTORED in the list, which should be removed
         statuses = new ArrayList<>();
-        statuses.add(new IntygStatus(StatusType.CANCELLED, "FK", defaultTime.minusHours(2)));
-        statuses.add(new IntygStatus(StatusType.SENT, "FK", defaultTime.minusHours(3)));
-        statuses.add(new IntygStatus(StatusType.RESTORED, "MI", defaultTime.minusMinutes(30)));
-        statuses.add(new IntygStatus(StatusType.DELETED, "MI", defaultTime.minusHours(1)));
-        statuses.add(new IntygStatus(StatusType.RECEIVED, "MI", defaultTime.minusHours(4)));
+        statuses.add(new Status(CertificateState.CANCELLED, "FK", defaultTime.minusHours(2)));
+        statuses.add(new Status(CertificateState.SENT, "FK", defaultTime.minusHours(3)));
+        statuses.add(new Status(CertificateState.RESTORED, "MI", defaultTime.minusMinutes(30)));
+        statuses.add(new Status(CertificateState.DELETED, "MI", defaultTime.minusHours(1)));
+        statuses.add(new Status(CertificateState.RECEIVED, "MI", defaultTime.minusHours(4)));
         res = IntygDraftsConverter.findLatestStatus(statuses);
-        assertEquals(StatusType.CANCELLED, res);
+        assertEquals(CertificateState.CANCELLED, res);
         
         // test with just DELETED, which will be removed and result in an empty list
         statuses = new ArrayList<>();
-        statuses.add(new IntygStatus(StatusType.DELETED, "MI", defaultTime.minusHours(1)));
+        statuses.add(new Status(CertificateState.DELETED, "MI", defaultTime.minusHours(1)));
         res = IntygDraftsConverter.findLatestStatus(statuses);
-        assertEquals(StatusType.UNKNOWN, res);
+        assertEquals(CertificateState.UNHANDLED, res);
     }
     
     private void assertOrder(List<ListIntygEntry> res, String expectedOrder) {

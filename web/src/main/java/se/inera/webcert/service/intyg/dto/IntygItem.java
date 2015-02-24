@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import se.inera.certificate.model.Status;
 
 public class IntygItem {
 
@@ -15,7 +16,7 @@ public class IntygItem {
 
     private LocalDate tomDate;
 
-    private List<IntygStatus> statuses;
+    private List<Status> statuses;
 
     private LocalDateTime signedDate;
 
@@ -57,11 +58,11 @@ public class IntygItem {
         this.tomDate = tomDate;
     }
 
-    public List<IntygStatus> getStatuses() {
+    public List<Status> getStatuses() {
         return statuses;
     }
 
-    public void setStatuses(List<IntygStatus> status) {
+    public void setStatuses(List<Status> status) {
         this.statuses = status;
     }
 

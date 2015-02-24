@@ -2,6 +2,7 @@ package se.inera.webcert.service.intyg.dto;
 
 import java.util.List;
 
+import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
@@ -12,11 +13,11 @@ public class IntygContentHolder {
     private final String contents;
 
     private final Utlatande utlatande;
-    private final List<IntygStatus> statuses;
+    private final List<Status> statuses;
     private final boolean revoked;
 
 
-    public IntygContentHolder(String contents, Utlatande utlatande, List<IntygStatus> statuses, boolean revoked) {
+    public IntygContentHolder(String contents, Utlatande utlatande, List<Status> statuses, boolean revoked) {
         super();
         this.contents = contents;
         this.utlatande = utlatande;
@@ -32,7 +33,7 @@ public class IntygContentHolder {
         return utlatande;
     }
 
-    public List<IntygStatus> getStatuses() {
+    public List<Status> getStatuses() {
         return statuses;
     }
 

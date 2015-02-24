@@ -11,10 +11,10 @@ import org.apache.commons.collections.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.inera.certificate.model.CertificateState;
+import se.inera.certificate.model.Status;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.web.controller.api.dto.IntygSource;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 
@@ -31,10 +31,10 @@ public final class IntygDraftsConverter {
 
     };
 
-    private static Comparator<IntygStatus> intygStatusComparator = new Comparator<IntygStatus>() {
+    private static Comparator<Status> intygStatusComparator = new Comparator<Status>() {
 
         @Override
-        public int compare(IntygStatus c1, IntygStatus c2) {
+        public int compare(Status c1, Status c2) {
             return c1.getTimestamp().compareTo(c2.getTimestamp());
         }
 
@@ -42,12 +42,12 @@ public final class IntygDraftsConverter {
 
     private static Predicate removeArchivedIntygStatusesPredicate = new Predicate() {
 
-        private final List<StatusType> archivedStatuses = Arrays.asList(StatusType.DELETED, StatusType.RESTORED);
+        private final List<CertificateState> archivedStatuses = Arrays.asList(CertificateState.DELETED, CertificateState.RESTORED);
 
         @Override
         public boolean evaluate(Object obj) {
-            if (obj instanceof IntygStatus) {
-                IntygStatus intygStatus = (IntygStatus) obj;
+            if (obj instanceof Status) {
+                Status intygStatus = (Status) obj;
                 return !archivedStatuses.contains(intygStatus.getType());
             }
             return false;
@@ -132,19 +132,19 @@ public final class IntygDraftsConverter {
         return entry;
     }
 
-    public static StatusType findLatestStatus(List<IntygStatus> intygStatuses) {
+    public static CertificateState findLatestStatus(List<Status> intygStatuses) {
 
         if (intygStatuses == null || intygStatuses.isEmpty()) {
-            return StatusType.UNKNOWN;
+            return CertificateState.UNHANDLED;
         }
 
         CollectionUtils.filter(intygStatuses, removeArchivedIntygStatusesPredicate);
 
         if (intygStatuses.isEmpty()) {
-            return StatusType.UNKNOWN;
+            return CertificateState.UNHANDLED;
         }
 
-        IntygStatus latestStatus = Collections.max(intygStatuses, intygStatusComparator);
+        Status latestStatus = Collections.max(intygStatuses, intygStatusComparator);
         return latestStatus.getType();
     }
 }

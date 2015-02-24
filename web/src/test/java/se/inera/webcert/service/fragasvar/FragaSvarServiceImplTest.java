@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
@@ -56,9 +57,6 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.intyg.dto.IntygMetadata;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -90,9 +88,6 @@ public class FragaSvarServiceImplTest {
 
     @Mock
     private IntygService intygServiceMock;
-
-    @Mock
-    private IntygMetadata intygMetadataMock;
 
     @Mock
     private WebCertUserService webCertUserService;
@@ -433,16 +428,16 @@ public class FragaSvarServiceImplTest {
     }
 
     private IntygContentHolder getIntygContentHolder() {
-        List<IntygStatus> status = new ArrayList<IntygStatus>();
-        status.add(new IntygStatus(StatusType.RECEIVED, "MI", LocalDateTime.now()));
-        status.add(new IntygStatus(StatusType.SENT, "FK", LocalDateTime.now()));
+        List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
+        status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new se.inera.certificate.model.Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, false);
     }
 
     private IntygContentHolder getRevokedIntygContentHolder() {
-        List<IntygStatus> status = new ArrayList<IntygStatus>();
-        status.add(new IntygStatus(StatusType.RECEIVED, "MI", LocalDateTime.now()));
-        status.add(new IntygStatus(StatusType.CANCELLED, "MI", LocalDateTime.now()));
+        List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
+        status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new se.inera.certificate.model.Status(CertificateState.CANCELLED, "MI", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, true);
     }
 

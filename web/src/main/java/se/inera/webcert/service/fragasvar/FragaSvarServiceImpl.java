@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
+import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
@@ -41,8 +42,6 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
@@ -74,8 +73,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
 
-    private static final StatusType SENT_STATUS_TYPE = StatusType.SENT;
-    private static final StatusType REVOKED_STATUS_TYPE = StatusType.CANCELLED;
+    private static final CertificateState SENT_STATUS_TYPE = CertificateState.SENT;
+    private static final CertificateState REVOKED_STATUS_TYPE = CertificateState.CANCELLED;
 
     private static final List<Amne> VALID_VARD_AMNEN = Arrays.asList(
             Amne.ARBETSTIDSFORLAGGNING,
@@ -569,9 +568,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return (booleanObj != null) && booleanObj;
     }
 
-    private boolean isCertificateRevoked(List<IntygStatus> statuses) {
+    private boolean isCertificateRevoked(List<se.inera.certificate.model.Status> statuses) {
         if (statuses != null) {
-            for (IntygStatus status : statuses) {
+            for (se.inera.certificate.model.Status status : statuses) {
                 if (REVOKED_STATUS_TYPE.equals(status.getType())) {
                     return true;
                 }
@@ -580,9 +579,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return false;
     }
 
-    private boolean isCertificateSentToFK(List<IntygStatus> statuses) {
+    private boolean isCertificateSentToFK(List<se.inera.certificate.model.Status> statuses) {
         if (statuses != null) {
-            for (IntygStatus status : statuses) {
+            for (se.inera.certificate.model.Status status : statuses) {
                 if (FrageStallare.FORSAKRINGSKASSAN.equals(status.getTarget()) && SENT_STATUS_TYPE.equals(status.getType())) {
                     return true;
                 }

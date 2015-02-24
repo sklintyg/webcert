@@ -9,50 +9,17 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.stereotype.Component;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.UtlatandeStatus;
-import se.inera.certificate.model.CertificateState;
-import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
-import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
+import se.inera.certificate.schema.util.ClinicalProcessCertificateMetaTypeConverter;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.ifv.insuranceprocess.healthreporting.util.ModelConverter;
 import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
 import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.service.intyg.dto.IntygMetadata;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
 
 @Component
 public class IntygServiceConverterImpl implements IntygServiceConverter {
-
-    public IntygMetadata convertToIntygMetadata(String patientId, CertificateMetaType source) {
-
-        IntygMetadata metaData = new IntygMetadata();
-        metaData.setPatientId(patientId);
-        metaData.setId(source.getCertificateId());
-        metaData.setType(source.getCertificateType());
-        metaData.setFromDate(source.getValidFrom());
-        metaData.setTomDate(source.getValidTo());
-
-        metaData.setStatuses(convertToListOfIntygStatus(source.getStatus()));
-
-        return metaData;
-    }
-
-    public IntygMetadata convertToIntygMetadata(Utlatande utlatande, CertificateMetaData meta) {
-        IntygMetadata metaData = new IntygMetadata();
-        metaData.setPatientId(utlatande.getGrundData().getPatient().getPersonId());
-        metaData.setId(utlatande.getId());
-        metaData.setType(utlatande.getTyp());
-        metaData.setFromDate(meta.getValidFrom());
-        metaData.setTomDate(meta.getValidTo());
-
-        metaData.setStatuses(convertListOfStatusToListOfIntygStatus(meta.getStatus()));
-
-        return metaData;
-    }
 
     @Override
     public List<IntygItem> convertToListOfIntygItem(List<CertificateMetaType> source) {
@@ -70,108 +37,12 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         item.setType(source.getCertificateType());
         item.setFromDate(source.getValidFrom());
         item.setTomDate(source.getValidTo());
-        item.setStatuses(convertToListOfIntygStatus(source.getStatus()));
+        item.setStatuses(ClinicalProcessCertificateMetaTypeConverter.toStatusList(source.getStatus()));
         item.setSignedBy(source.getIssuerName());
         item.setSignedDate(source.getSignDate());
 
         return item;
     }
-
-    public List<IntygStatus> convertToListOfIntygStatus(List<UtlatandeStatus> source) {
-        List<IntygStatus> status = new ArrayList<>();
-        for (UtlatandeStatus certificateStatusType : source) {
-            status.add(convertToIntygStatus(certificateStatusType));
-        }
-        return status;
-    }
-
-    private IntygStatus convertToIntygStatus(UtlatandeStatus source) {
-        StatusType statusType = convertStatusType(source.getType());
-        return new IntygStatus(statusType, source.getTarget(), source.getTimestamp());
-    }
-
-    @Override
-    public List<IntygStatus> convertListOfStatusToListOfIntygStatus(List<Status> source) {
-        List<IntygStatus> intygStatus = new ArrayList<>();
-        for (Status status : source) {
-            intygStatus.add(convertToIntygStatus(status));
-        }
-        return intygStatus;
-    }
-
-    private IntygStatus convertToIntygStatus(Status source) {
-        StatusType statusType = convertStatusType(source.getType());
-        return new IntygStatus(statusType, source.getTarget(), source.getTimestamp());
-    }
-
-    @Override
-    public List<Status> convertListOfIntygStatusToListOfStatus(List<IntygStatus> source) {
-        List<Status> status = new ArrayList<>();
-        for (IntygStatus intygStatus : source) {
-            status.add(convertToStatus(intygStatus));
-        }
-        return status;
-    }
-
-    private Status convertToStatus(IntygStatus source) {
-        CertificateState statusType = convertStatusType(source.getType());
-        Status status = new Status();
-        status.setType(statusType);
-        status.setTimestamp(source.getTimestamp());
-        status.setTarget(source.getTarget());
-        return status;
-    }
-
-    private StatusType convertStatusType(se.inera.certificate.clinicalprocess.healthcond.certificate.v1.StatusType statusType) {
-        switch (statusType) {
-        case RECEIVED:
-            return StatusType.RECEIVED;
-        case SENT:
-            return StatusType.SENT;
-        case CANCELLED:
-            return StatusType.CANCELLED;
-        case DELETED:
-            return StatusType.DELETED;
-        case RESTORED:
-            return StatusType.RESTORED;
-        default:
-            return StatusType.UNKNOWN;
-        }
-    };
-
-    private StatusType convertStatusType(CertificateState statusType) {
-        switch (statusType) {
-        case RECEIVED:
-            return StatusType.RECEIVED;
-        case SENT:
-            return StatusType.SENT;
-        case CANCELLED:
-            return StatusType.CANCELLED;
-        case DELETED:
-            return StatusType.DELETED;
-        case RESTORED:
-            return StatusType.RESTORED;
-        default:
-            return StatusType.UNKNOWN;
-        }
-    };
-
-    private CertificateState convertStatusType(StatusType statusType) {
-        switch (statusType) {
-            case RECEIVED:
-                return CertificateState.RECEIVED;
-            case SENT:
-                return CertificateState.SENT;
-            case CANCELLED:
-                return CertificateState.CANCELLED;
-            case DELETED:
-                return CertificateState.DELETED;
-            case RESTORED:
-                return CertificateState.RESTORED;
-            default:
-                return CertificateState.UNHANDLED;
-        }
-    };
 
     /*
      * (non-Javadoc)

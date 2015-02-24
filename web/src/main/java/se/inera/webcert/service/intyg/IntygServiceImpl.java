@@ -20,6 +20,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertifica
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
+import se.inera.certificate.model.Status;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
@@ -54,7 +55,6 @@ import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.intyg.dto.IntygRecipient;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
@@ -185,8 +185,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             LOG.debug("Fetching intyg '{}' as PDF", intygId);
 
             IntygContentHolder intyg = fetchIntygData(intygId, intygTyp);
-            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents(),
-                    serviceConverter.convertListOfIntygStatusToListOfStatus(intyg.getStatuses()));
+            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents(), intyg.getStatuses());
 
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
             logService.logPrintOfIntygAsPDF(logRequest);
@@ -380,7 +379,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     private IntygContentHolder getIntygData(String intygId, String typ) {
         try {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
-            List<IntygStatus> status = serviceConverter.convertListOfStatusToListOfIntygStatus(certificate.getMetaData().getStatus());
+            List<Status> status = certificate.getMetaData().getStatus();
             String internalIntygJsonModel = certificate.getInternalModel();
             return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), status, certificate.isRevoked());
         } catch (IntygModuleFacadeException me) {

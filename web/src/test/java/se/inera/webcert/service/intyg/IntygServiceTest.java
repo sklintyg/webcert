@@ -27,6 +27,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertifica
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
@@ -39,7 +40,6 @@ import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -181,7 +181,7 @@ public class IntygServiceTest {
         assertEquals("2012-02-02", meta.getTomDate().toString());
         assertEquals(1, meta.getStatuses().size());
         assertEquals("FK", meta.getStatuses().get(0).getTarget());
-        assertEquals(StatusType.SENT, meta.getStatuses().get(0).getType());
+        assertEquals(CertificateState.SENT, meta.getStatuses().get(0).getType());
         assertEquals("2012-01-01T10:00:00.000", meta.getStatuses().get(0).getTimestamp().toString());
     }
 

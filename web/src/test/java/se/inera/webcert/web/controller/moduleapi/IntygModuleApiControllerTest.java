@@ -22,15 +22,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.certificate.model.CertificateState;
+import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.intyg.dto.IntygMetadata;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -76,9 +75,9 @@ public class IntygModuleApiControllerTest {
         utlatande.setId(CERTIFICATE_ID);
         utlatande.setTyp(CERTIFICATE_TYPE);
         
-            List<IntygStatus> status = new ArrayList<IntygStatus>();
-            status.add(new IntygStatus(StatusType.RECEIVED, "MI", LocalDateTime.now()));
-            status.add(new IntygStatus(StatusType.SENT, "FK", LocalDateTime.now()));
+            List<Status> status = new ArrayList<Status>();
+            status.add(new Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+            status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
             utlatandeHolder =  new IntygContentHolder("<external-json/>", utlatande, status, false);
     }
 

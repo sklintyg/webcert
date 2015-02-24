@@ -21,6 +21,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.model.CertificateState;
+import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -37,8 +39,6 @@ import se.inera.webcert.pu.model.Person;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.intyg.dto.IntygStatus;
-import se.inera.webcert.service.intyg.dto.StatusType;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
@@ -260,9 +260,9 @@ public class CopyUtkastBuilderImplTest {
     }
 
     private IntygContentHolder createIntygContentHolder() throws Exception {
-        List<IntygStatus> status = new ArrayList<IntygStatus>();
-        status.add(new IntygStatus(StatusType.RECEIVED, "MI", LocalDateTime.now()));
-        status.add(new IntygStatus(StatusType.SENT, "FK", LocalDateTime.now()));
+        List<Status> status = new ArrayList<Status>();
+        status.add(new Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
                 "IntygDraftServiceImplTest/utlatande.json").getFile(), Utlatande.class);
         IntygContentHolder ich = new IntygContentHolder("<external-json/>", utlatande, status, false);
