@@ -143,6 +143,26 @@ public class WebcertRestUtils {
     }
 
     /**
+     * 
+     * @param intygsTyp
+     * @param internReferens
+     * @param json
+     * @return
+     */
+    public static HttpResponseDecorator answerQuestion(String intygsTyp, String internReferns, String text) {
+        def restPath ="/moduleapi/fragasvar/${intygsTyp}/${internReferns}/besvara"
+        def response = webcert.put(path : restPath, body : text, requestContentType : JSON)
+        response
+    }
+
+    public static String translateExternalToInternalReferens(String externReferens) {
+        def restPath ="/services/questions/extern/${externReferens}/translate"
+        def response = webcert.get(path : restPath, requestContentType : JSON)
+        response.data.internReferens
+    }
+    
+
+    /**
      * Delete a draft
      * @param intygsTyp
      * @param utkastId
