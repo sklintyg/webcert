@@ -103,6 +103,18 @@ public class WebcertRestUtils {
     }
 
     /**
+     * Delete a draft
+     * @param intygsTyp
+     * @param utkastId
+     * @return HttpResponseDecorator
+     */
+    public static HttpResponseDecorator deleteUtkast(String intygsTyp, String utkastId) {
+        def restPath ="/moduleapi/utkast/${intygsTyp}/${utkastId}"
+        def response = webcert.delete(path : restPath)
+        response
+    }
+
+    /**
      * Clear all notifications in the stub
      * @return true if call was successful, false otherwise
      */
