@@ -366,14 +366,15 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     @Override
     public FragaSvar closeQuestionAsHandled(Long frageSvarId) {
         FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
-
         NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
 
+        FragaSvar closedFragaSvar = closeQuestionAsHandled(fragaSvar); 
+
         if (notificationEvent != null) {
-            sendNotification(fragaSvar, notificationEvent);
+            sendNotification(closedFragaSvar, notificationEvent);
         }
 
-        return closeQuestionAsHandled(fragaSvar);
+        return closedFragaSvar;
     }
 
     /**

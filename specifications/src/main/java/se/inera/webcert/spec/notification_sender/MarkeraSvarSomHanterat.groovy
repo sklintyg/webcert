@@ -14,16 +14,12 @@ import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
 
-class SkapaFragaTillFk extends RestClientFixture {
+class MarkeraSvarSomHanterat extends RestClientFixture {
 
-    String intygId
     String intygTyp
     String hsaUser = "user1"
     String internReferens
 
-    public setIntygId (String value) {
-        intygId = value
-    }
     public setIntygTyp(String value) {
         intygTyp = value
     }
@@ -35,20 +31,11 @@ class SkapaFragaTillFk extends RestClientFixture {
 
     public void execute() {
         WebcertRestUtils.login(hsaUser)
-        response = WebcertRestUtils.createQuestionToFk(intygTyp,intygId,makeJson())
-        internReferens = response.data.internReferens
+        response = WebcertRestUtils.setQuestionAsAnswered(intygTyp, internReferens)
     }
 
-    def makeJson() {
-        def fraga = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("fraga_svar_template.json").getInputStream()))
-        JsonOutput.toJson(fraga)
-    }
-
-    public boolean fragaSkapad() {
+    public boolean markeradSomHanterad() {
         response.success
     }
 
-    public String internReferens() {
-        internReferens
-    }
 }
