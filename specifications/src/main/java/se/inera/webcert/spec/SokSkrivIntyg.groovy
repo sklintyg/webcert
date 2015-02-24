@@ -164,6 +164,9 @@ class SokSkrivIntyg {
                 at EditCertPage
             }
             kopiaintygsid = currentUrl.substring(currentUrl.lastIndexOf("/") + 1)
+            if (kopiaintygsid.indexOf("?") >= 0) {
+                kopiaintygsid = kopiaintygsid.substring(0, kopiaintygsid.indexOf("?"))
+            }
         }
     }
 

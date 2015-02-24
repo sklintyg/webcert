@@ -23,6 +23,10 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 | visa intyg sidan visas |
 | intyget signerat meddelande visas |
 
+!3 Gå till intyget via djupintegration
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration med | $intygsid | personnummer | 19520617-2339 |
+
 !3 Kopiera intyget
 | script | !-SokSkrivIntyg-! |
 | kopiera visat intyg |
