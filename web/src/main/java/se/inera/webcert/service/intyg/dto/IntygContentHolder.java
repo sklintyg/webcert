@@ -5,6 +5,7 @@ import java.util.List;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
 public class IntygContentHolder {
@@ -12,6 +13,7 @@ public class IntygContentHolder {
     @JsonRawValue
     private final String contents;
 
+    @JsonIgnore
     private final Utlatande utlatande;
     private final List<Status> statuses;
     private final boolean revoked;
