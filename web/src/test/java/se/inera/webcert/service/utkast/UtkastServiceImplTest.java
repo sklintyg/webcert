@@ -15,7 +15,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -33,13 +32,10 @@ import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.notifications.message.v1.HandelseType;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
@@ -143,18 +139,14 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftThatIsUnsigned() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
 
         draftService.deleteUnsignedDraft(INTYG_ID);
 
         verify(mockUtkastRepository).findOne(INTYG_ID);
         verify(mockUtkastRepository).delete(utkast);
-        verify(notificationService).notify(notificationRequestTypeArgumentCaptor.capture());
-
+        
         // Assert notification message
-        NotificationRequestType notificationRequestType = notificationRequestTypeArgumentCaptor.getValue();
-        assertEquals(INTYG_ID, notificationRequestType.getIntygsId());
-        assertEquals(HandelseType.INTYGSUTKAST_RADERAT, notificationRequestType.getHandelse());
+        verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class));
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -195,22 +187,16 @@ public class UtkastServiceImplTest {
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
                 new InternalModelResponse("{}"));
 
-        ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
-
         DraftValidation res = draftService.saveAndValidateDraft(request);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(notificationService).notify(notificationRequestTypeArgumentCaptor.capture());
+        
+        // Assert notification message
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
         assertNotNull("An DraftValidation should be returned", res);
         assertFalse("Validation should fail", res.isDraftValid());
         assertEquals("Validation should have 1 message", 1, res.getMessages().size());
-
-        // Assert notification message
-        NotificationRequestType notificationRequestType = notificationRequestTypeArgumentCaptor.getValue();
-        assertEquals(INTYG_ID, notificationRequestType.getIntygsId());
-        assertEquals(HandelseType.INTYGSUTKAST_ANDRAT, notificationRequestType.getHandelse());
-
     }
 
     private WebCertUser createUser() {
@@ -242,6 +228,7 @@ public class UtkastServiceImplTest {
         verify(mockUtkastRepository).findOne(INTYG_ID);
     }
 
+    @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftWithExceptionInModule() throws Exception {
 
@@ -254,8 +241,6 @@ public class UtkastServiceImplTest {
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelResponse("{}"));
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenThrow(ModuleException.class);
-
-        ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
 
         draftService.saveAndValidateDraft(request);
     }

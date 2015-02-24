@@ -1,84 +1,47 @@
 package se.inera.webcert.notifications.routes;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.util.toolbox.AggregationStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import se.inera.webcert.notifications.message.v1.HandelseType;
-import se.inera.webcert.notifications.process.EnrichWithIntygDataStrategy;
-import se.inera.webcert.notifications.process.EnrichWithIntygModelDataStrategy;
-import se.inera.webcert.notifications.process.FragaSvarEnricher;
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilder.class);
 
-    @Autowired
-    private EnrichWithIntygModelDataStrategy intygModelEnricher;
-
-    @Autowired
-    private EnrichWithIntygDataStrategy intygPropertiesEnricher;
-
-    @Autowired
-    private FragaSvarEnricher fragaSvarEnricher;
-
     @Value("${errorhanding.maxRedeliveries}")
-    private int maxRedeliveries;
+    private int maxRedeliveries = 3;
 
     @Value("${errorhanding.redeliveryDelay}")
-    private long redeliveryDelay;
+    private long redeliveryDelay = 10;
 
     @Override
     public void configure() throws Exception {
-        //Setup error handling strategy, using redelivery of 3 secs and then exponentially increasing the time interval
-        errorHandler(deadLetterChannel("redeliveryExhaustedEndpoint")
-                .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay).useExponentialBackOff());
+        from("receiveNotificationRequestEndpoint").routeId("transformNotification")
+                .onException(Exception.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .log(LoggingLevel.DEBUG, LOG, simple("Receiving notificaton: ${in.body}").getText())
+                .unmarshal("notificationMessageDataFormat")
+                .to("bean:createAndInitCertificateStatusRequestProcessor")
+                .log(LoggingLevel.INFO, LOG, simple("Notification is transformed for intygs-id: ${in.headers.intygsId}, with notification type: ${in.headers.handelse}").getText())
+                .to("direct:sendNotificationToWS");
 
-        onException(NonRecoverableCertificateStatusUpdateServiceException.class)
-        .handled(true)
-        .to("errorHandlerEndpoint");
+        from("direct:sendNotificationToWS").routeId("sendNotificationToWS")
+                .errorHandler(deadLetterChannel("direct:redeliveryExhaustedEndpoint")
+                        .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay)
+                        .useExponentialBackOff())
+                .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .to("sendCertificateStatusUpdateEndpoint");
 
-        onException(JAXBException.class)
-        .handled(true)
-        .to("errorHandlerEndpoint");
+        from("direct:errorHandlerEndpoint").routeId("errorLogging")
+                .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .stop();
 
-        from("ref:processNotificationRequestEndpoint").routeId("processNotificationRequest")
-        .unmarshal("notificationRequestJaxb")
-        .processRef("createAndInitCertificateStatusRequestProcessor")
-        //Do not enrich for deleted drafts
-        .choice()
-            .when(header(RouteHeaders.HANDELSE).isEqualTo(HandelseType.INTYGSUTKAST_RADERAT.toString()))
-                .log(LoggingLevel.DEBUG, LOG, "Sending INTYGSUTKAST_RADERAT status update")
-                .to("sendCertificateStatusUpdateEndpoint")
-            .otherwise()
-                .log(LoggingLevel.DEBUG, LOG, "Enriching with data from intyg model")
-                .enrich("getIntygFromWebcertRepositoryServiceEndpoint", AggregationStrategies.bean(intygPropertiesEnricher, "enrichWithIntygProperties"))
-                .enrich("getIntygModelFromWebcertRepositoryServiceEndpoint", AggregationStrategies.bean(intygModelEnricher, "enrichWithArbetsformagorAndDiagnos"))
-                //Check if intyg is signed, in that case enrich with fråga & svar
-                .choice()
-                    .when(header(RouteHeaders.INTYGS_STATUS).isEqualTo(UtkastStatus.SIGNED))
-                        .log(LoggingLevel.DEBUG, LOG, "Enriching with data from fragasvar")
-                        .enrich("getNbrOfQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfQuestionsForIntyg"))
-                        .enrich("getNbrOfAnsweredQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfAnsweredQuestionsForIntyg"))
-                        .enrich("getNbrOfHandledQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfHandledQuestionsForIntyg"))
-                        .enrich("getNbrOfHandledAndAnsweredQuestionsEndpoint", AggregationStrategies.bean(fragaSvarEnricher, "enrichWithNbrOfHandledAndAnsweredQuestionsForIntyg"))
-                        .to("sendCertificateStatusUpdateEndpoint")
-                    .otherwise()
-                        .to("sendCertificateStatusUpdateEndpoint");
-
-        from("errorHandlerEndpoint").routeId("errorLogging")
-            .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
-            .stop();
-
-        from("redeliveryExhaustedEndpoint").routeId("redeliveryErrorLogging")
-            .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
-            .stop();
+        from("direct:redeliveryExhaustedEndpoint").routeId("redeliveryErrorLogging")
+                .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .to("deadLetterEndpoint")
+                .stop();
     }
+
 }

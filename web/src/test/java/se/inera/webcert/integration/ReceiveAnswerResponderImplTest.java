@@ -77,20 +77,17 @@ public class ReceiveAnswerResponderImplTest {
     @Test
     public void testReceiveAnswer() {
 
-        ArgumentCaptor<NotificationRequestType> notCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
-
-        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "mahana", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now());
+        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now());
         when(mockFragaSvarService.processIncomingAnswer(anyLong(), anyString(), any(LocalDateTime.class))).thenReturn(fragaSvar);
 
         ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk.xml");
         ReceiveMedicalCertificateAnswerResponseType response = receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
 
         // should place notification on queue
-        verify(mockNotificationService).notify(notCaptor.capture());
+        verify(mockNotificationService).sendNotificationForAnswerRecieved(any(FragaSvar.class));
 
         assertNotNull(response);
         assertEquals(ResultCodeEnum.OK, response.getResult().getResultCode());
-        assertEquals(HandelseType.SVAR_FRAN_FK, notCaptor.getValue().getHandelse());
     }
 
     private ReceiveMedicalCertificateAnswerType createRequest(String answerFile) {

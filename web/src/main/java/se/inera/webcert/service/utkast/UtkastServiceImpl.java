@@ -1,11 +1,18 @@
 package se.inera.webcert.service.utkast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -17,7 +24,6 @@ import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -31,7 +37,6 @@ import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
@@ -41,12 +46,6 @@ import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -281,7 +280,6 @@ public class UtkastServiceImpl implements UtkastService {
         utkast = saveDraft(utkast);
         LOG.debug("Utkast '{}' updated", utkast.getIntygsId());
 
-
         // Notify stakeholders when a draft has been changed/updated
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
@@ -295,7 +293,6 @@ public class UtkastServiceImpl implements UtkastService {
 
         return draftValidation;
     }
-
 
     @Transactional
     private Utkast saveDraft(Utkast utkast) {
@@ -458,31 +455,23 @@ public class UtkastServiceImpl implements UtkastService {
 
     private void sendNotification(Utkast utkast, Event event) {
 
-        NotificationRequestType notificationRequestType = null;
-        String logMsg = "";
-
         switch (event) {
         case CHANGED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromChangedCertificateDraft(utkast);
-            logMsg = "Notification sent: certificate draft with id '{}' was changed/updated.";
+            notificationService.sendNotificationForDraftChanged(utkast);
+            LOG.debug("Notification sent: certificate draft with id '{}' was changed/updated.", utkast.getIntygsId());
             break;
         case CREATED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromCreatedDraft(utkast);
-            logMsg = "Notification sent: certificate draft with id '{}' was created.";
+            notificationService.sendNotificationForDraftCreated(utkast);
+            LOG.debug("Notification sent: certificate draft with id '{}' was created.", utkast.getIntygsId());
             break;
         case DELETED:
-            notificationRequestType = NotificationMessageFactory.createNotificationFromDeletedDraft(utkast);
-            logMsg = "Notification sent: certificate draft with id '{}' was deleted.";
+            notificationService.sendNotificationForDraftDeleted(utkast);
+            LOG.debug("Notification sent: certificate draft with id '{}' was deleted.", utkast.getIntygsId());
             break;
         default:
-            logMsg = "IntygDraftServiceImpl.sendNotification(Intyg, Event) was called but with an unhandled event. No notification was sent.";
+            LOG.debug("IntygDraftServiceImpl.sendNotification(Intyg, Event) was called but with an unhandled event. No notification was sent.",
+                    utkast.getIntygsId());
         }
-
-        if (notificationRequestType != null) {
-            notificationService.notify(notificationRequestType);
-        }
-
-        LOG.debug(logMsg, utkast.getIntygsId());
     }
 
 }

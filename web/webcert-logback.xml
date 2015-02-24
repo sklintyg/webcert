@@ -65,7 +65,7 @@
   
   <logger name="se.inera.webcert" level="debug" />
   
-  <logger name="se.inera.certificate.modules.fk7263" level="info" />
+  <logger name="se.inera.certificate.modules.fk7263" level="debug" />
   
   <logger name="se.inera.certificate.modules.ts_bas" level="info" />
   
@@ -73,7 +73,7 @@
 
   <logger name="org.apache.camel" level="info" />
 
-  <logger name="se.inera.webcert.notifications" level="info" />
+  <logger name="se.inera.webcert.notifications" level="debug" />
 
  <root>
     <level value="error" />

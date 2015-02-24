@@ -141,6 +141,8 @@ public class CopyUtkastServiceImplTest {
         verify(mockPUService).getPerson(PATIENT_SSN);
         verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
+        
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
     }
 
     @Test
@@ -164,6 +166,8 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateNewDraftCopyRequest.class), any(Person.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class));
+        
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
     }
 
     private CopyUtkastBuilderResponse createCopyUtkastBuilderResponse() {

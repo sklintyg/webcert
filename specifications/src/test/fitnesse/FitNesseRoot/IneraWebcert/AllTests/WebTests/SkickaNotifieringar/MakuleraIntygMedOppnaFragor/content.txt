@@ -1,0 +1,56 @@
+!3 Rensa tidigare notifieringar
+| webcert rest utils |
+| reset? | 
+| true | 
+
+!3 Skapa ett utkast, fyll på med data och spara och signera
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? |
+| 19121212-1212       | Test           | Testorsson       |           true | $utkastId=|
+
+| spara utkast |
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | diagnosKod | diagnosBeskrivning1 | nedsattMed100 | intygId    | intygTyp | komplett | utkastSparat? |
+| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId   | fk7263    | true |true | 
+
+| signera utkast | 
+| intygId   | intygTyp | utkastSignerat? |
+| $utkastId | fk7263   | true            |
+
+!3 Skicka intyget till Försäkringskassan så att vi kan ställa frågor på det
+| skicka intyg |
+| intygId   | intygTyp | mottagarId | intygSkickat? |
+| $utkastId | fk7263   |  FK        | true          |
+
+
+!3 Ställ en fråga på det nyss skickade intyget, detta skall ge en notifiering av typen HAN8
+| skapa fraga till fk |
+| intygId   | intygTyp |  fragaSkapad? |
+| $utkastId | fk7263   |   true        |
+
+!3 Rensa notifieringar så att vi kan verifiera de relevanta
+| webcert rest utils |
+| reset? | 
+| true | 
+
+!3 Makulera intyget
+| makulera intyg |
+| intygId   | intygTyp | intygMakulerat? |
+| $utkastId |  fk7263  | true | 
+
+
+!3 Verifiera att förväntade notifieringar gick iväg
+| verifiera notifiering | 
+| id         | kod  |  handelseSkapad?   |  
+| $utkastId  | HAN5 |  true              | 
+| $utkastId  | HAN9 |  true              | 
+
+!3 Kolla antalet hanterade svar
+| skickade notifieringar |
+| id        | kod | antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| $utkastId | HAN9|   0                 | 0          |  1                    | 1            |
+
+
+!3 Rensa notifieringar
+| webcert rest utils |
+| reset? | 
+| true | 

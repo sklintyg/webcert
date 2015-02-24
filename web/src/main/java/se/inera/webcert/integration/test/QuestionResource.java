@@ -112,6 +112,14 @@ public class QuestionResource {
         }
     }
 
+    
+    @GET
+    @Path("/extern/{externReferens}/translate")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFragaSvarByExternReferens(@PathParam("externReferens") String externReferens) {
+        return Response.ok(fragasvarRepository.findByExternReferens(externReferens)).build();
+    }
+
     @DELETE
     @Path("/extern/{externReferens}")
     @Produces(MediaType.APPLICATION_JSON)

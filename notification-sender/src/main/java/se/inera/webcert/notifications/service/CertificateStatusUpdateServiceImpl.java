@@ -14,25 +14,17 @@ import se.inera.webcert.notifications.routes.RouteHeaders;
 import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
 
-public class CertificateStatusUpdateServiceImpl implements CertificateStatusUpdateService {
+public class CertificateStatusUpdateServiceImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateServiceImpl.class);
 
     @Autowired
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see se.inera.webcert.notifications.service.CertificateStatusUpdateService#sendStatusUpdate(java.lang.String,
-     * se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.
-     * CertificateStatusUpdateForCareType)
-     */
-    @Override
-    public void sendStatusUpdate(@Header(RouteHeaders.INTYGS_ID) String intygsId, CertificateStatusUpdateForCareType request,
+    public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
             @Header(RouteHeaders.LOGISK_ADRESS) String logicalAddress) throws Exception {
 
-        LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, intygsId);
+        LOG.debug("Sending status update to '{}' for intyg '{}'", logicalAddress, request.getUtlatande().getUtlatandeId().toString());
 
         CertificateStatusUpdateForCareResponseType response = null;
 

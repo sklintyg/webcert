@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 
 public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCustom {
@@ -49,28 +50,15 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
     @Query("SELECT DISTINCT fs.vardperson.hsaId, fs.vardperson.namn FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) ORDER BY fs.vardperson.namn ASC")
     List<Object[]> findDistinctFragaSvarHsaIdByEnhet(@Param("idList") List<String> enhetsIds);
 
-    
     /**
-     * Returns the number of FragaSvar belonging to a signed intyg for a frageStallare
+     * Returns a list of FragaSvarStatus object for all FragaSvar belonging to an intyg.
      * 
      * @param intygsId
-     * @param frageStallare
      * @return
      */
-    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.frageStallare = :frageStallare")
-    Long countByIntygAndFragestallare(@Param("intygsId") String intygsId, @Param("frageStallare") String frageStallare);
+    @Query("SELECT NEW se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus(fs.internReferens, fs.svarsText, fs.status) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
+    List<FragaSvarStatus> findFragaSvarStatusesForIntyg(@Param("intygsId") String intygsId);
     
-    /**
-     * Returns the number of FragaSvar belonging to a signed intyg with a specific status for a frageStallare
-     * 
-     * @param intygsId
-     * @param status
-     * @param frageStallare
-     * @return
-     */
-    @Query("SELECT count(fs) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId AND fs.status = :status AND fs.frageStallare = :frageStallare")
-    Long countByIntygAndStatusAndFragestallare(@Param("intygsId") String intygsId, @Param("status") Status status, @Param("frageStallare") String frageStallare);
-
     /**
      * Should return a list of {@link FragaSvar} entities in the repository related to the specified intygsId.
      *

@@ -1,5 +1,9 @@
 package se.inera.webcert.service.intyg;
 
+import java.util.List;
+
+import javax.xml.ws.WebServiceException;
+
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +32,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificaterespo
 import se.inera.ifv.insuranceprocess.healthreporting.util.ModelConverter;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
@@ -50,13 +53,8 @@ import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
-
-import java.util.List;
-
-import javax.xml.ws.WebServiceException;
 
 /**
  * @author andreaskaltenbach
@@ -223,10 +221,10 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
      * @see se.inera.webcert.service.intyg.IntygService#revokeIntyg(java.lang.String, java.lang.String)
      */
     @Override
-    public IntygServiceResult revokeIntyg(String intygsId, String typ, String revokeMessage) {
+    public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage) {
         LOG.info("Attempting to revoke intyg {}", intygsId);
 
-        IntygContentHolder intyg = fetchIntygData(intygsId, typ);
+        IntygContentHolder intyg = fetchIntygData(intygsId, intygsTyp);
 
         if (intyg.isRevoked()) {
             LOG.info("Certificate with id '{}' is already revoked", intygsId);
@@ -311,7 +309,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
                 logService.logSendIntygToRecipient(logRequest);
 
                 // Notify stakeholders when a certificate is sent
-                sendNotification(intygsId, Event.SEND);
+                notificationService.sendNotificationForIntygSent(intygsId);
+                LOG.debug("Notification sent: certificate with id '{}' has been sent to FK", intygsId);
 
                 return IntygServiceResult.OK;
             }
@@ -358,69 +357,28 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     /**
-     * @see se.inera.webcert.service.intyg.IntygServiceImpl#sendNotification(se.inera.webcert.persistence.utkast.model.Utkast,
-     *      se.inera.webcert.service.intyg.IntygServiceImpl.Event)
-     */
-    private void sendNotification(String intygId, Event event) {
-        Utkast utkast = utkastRepository.findOne(intygId);
-
-        if (utkast != null) {
-            sendNotification(utkast, event);
-        } else {
-            LOG.debug("Utkast '{}' was not found - no notification sent.", intygId);
-        }
-    }
-
-    /**
-     * Send a notification message to stakeholders informing that
-     * an event of some type for this certificate has occurred.
-     *
-     * @param utkast
-     *            the certificate that has been revoked
-     * @param event
-     *            the event for this notification
-     */
-    private void sendNotification(Utkast utkast, Event event) {
-
-        switch (event) {
-        case REVOKE:
-            sendRevokedNotification(utkast);
-            break;
-        case SEND:
-            NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromSentCertificate(utkast);
-            notificationService.notify(notificationRequestType);
-            LOG.debug("Notification sent: certificate with id '{}' has been sent to FK", utkast.getIntygsId());
-        }
-
-    }
-
-    /**
      * Send a notification message to stakeholders informing that
      * a question related to a revoked certificate has been closed.
-     *
-     * @param utkast
-     *            the certificate that has been revoked
+     * 
+     * @param intygsId
+     * @return
      */
-    private void sendRevokedNotification(Utkast utkast) {
+    private IntygServiceResult whenSuccessfulRevoke(String intygsId) {
+        
         // First: send a notification informing stakeholders that this certificate has been revoked
-        NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromRevokedCertificate(utkast);
-        notificationService.notify(notificationRequestType);
-        LOG.debug("Notification sent: certificate with id '{}' was revoked", utkast.getIntygsId());
+        notificationService.sendNotificationForIntygRevoked(intygsId);
+        LOG.debug("Notification sent: certificate with id '{}' was revoked", intygsId);
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.
-        FragaSvar[] array = fragaSvarService.closeAllNonClosedQuestions(utkast.getIntygsId());
-        for (int i = 0; i < array.length; i++) {
-            notificationRequestType = NotificationMessageFactory.createNotificationFromClosedQuestionFromFK(array[i]);
-            notificationService.notify(notificationRequestType);
-            LOG.debug("Notification sent: question with id '{}' (related with certificate with id '{}') was closed", array[i].getInternReferens(),
-                    utkast.getIntygsId());
+        FragaSvar[] closedFragaSvarArr = fragaSvarService.closeAllNonClosedQuestions(intygsId);
+        
+        for (FragaSvar closedFragaSvar : closedFragaSvarArr) {
+            notificationService.sendNotificationForQuestionHandled(closedFragaSvar);
+            LOG.debug("Notification sent: question with id '{}' (related with certificate with id '{}') was closed", closedFragaSvar.getInternReferens(),
+                    intygsId);
         }
-    }
-
-    private IntygServiceResult whenSuccessfulRevoke(String intygsId) {
-        // Notify stakeholders when a certificate is revoked
-        sendNotification(intygsId, Event.REVOKE);
+        
         // Return OK
         return IntygServiceResult.OK;
     }

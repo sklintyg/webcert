@@ -1,6 +1,5 @@
 package se.inera.webcert.service.signatur;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -21,7 +20,6 @@ import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -32,7 +30,6 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -135,7 +132,8 @@ public class SignaturServiceImpl implements SignaturService {
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
 
         // Notify stakeholders when certificate has been signed
-        sendNotification(utkast);
+        notificationService.sendNotificationForDraftSigned(utkast);
+        LOG.debug("Notification sent: a certificate draft with id '{}' was signed using CLIENT method", utkast.getIntygsId());
 
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
@@ -184,7 +182,8 @@ public class SignaturServiceImpl implements SignaturService {
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
         // Notify stakeholders when a draft has been signed
-        sendNotification(utkast);
+        notificationService.sendNotificationForDraftSigned(utkast);
+        LOG.debug("Notification sent: a certificate draft with id '{}' was signed using SERVER method", utkast.getIntygsId());
 
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
@@ -254,12 +253,6 @@ public class SignaturServiceImpl implements SignaturService {
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    private void sendNotification(Utkast intyg) {
-        NotificationRequestType notificationRequestType = NotificationMessageFactory.createNotificationFromSignedDraft(intyg);
-        notificationService.notify(notificationRequestType);
-        LOG.debug("Notification sent: a certificate draft with id '{}' was signed", intyg.getIntygsId());
     }
 
 }

@@ -194,13 +194,11 @@ public class SignaturServiceImplTest {
         String signature = "{\"signatur\":\"SIGNATURE\"}";
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
-        ArgumentCaptor<NotificationRequestType> notificationRequestTypeArgumentCaptor = ArgumentCaptor.forClass(NotificationRequestType.class);
-
         // Do the call
         SignaturTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
 
         verify(intygService).storeIntyg(completedUtkast);
-        verify(notificationService).notify(notificationRequestTypeArgumentCaptor.capture());
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
 
         assertNotNull(signatureTicket);
         
@@ -210,10 +208,5 @@ public class SignaturServiceImplTest {
         // Assert ticket status has changed from BEARBETAR to SIGNERAD
         status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.SIGNERAD, status.getStatus());
-
-        // Assert notification message
-        NotificationRequestType notificationRequestType = notificationRequestTypeArgumentCaptor.getValue();
-        assertEquals(INTYG_ID, notificationRequestType.getIntygsId());
-        assertEquals(HandelseType.INTYGSUTKAST_SIGNERAT, notificationRequestType.getHandelse());
     }
 }

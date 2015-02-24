@@ -34,7 +34,7 @@
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
           <Arg>vm://localhost?broker.persistent=false</Arg>
-          <!--<Arg>tcp://localhost:61616</Arg>-->
+          <!--Arg>tcp://localhost:61616</Arg -->
       </New>
     </Arg>
   </New>
@@ -57,6 +57,17 @@
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
         <Arg>NOTIFICATIONSENDER.QUEUE</Arg>
+      </New>
+    </Arg>
+  </New>
+  <New id="NotificationDLQ" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref refid="webAppContext" />
+    </Arg>
+    <Arg>jms/NotificationDLQ</Arg>
+    <Arg>
+      <New class="org.apache.activemq.command.ActiveMQQueue">
+        <Arg>NOTIFICATIONSENDER.DLQ.QUEUE</Arg>
       </New>
     </Arg>
   </New>

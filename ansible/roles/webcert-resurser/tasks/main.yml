@@ -28,4 +28,10 @@
     regexp="    <Resource name='jms/NotificationQueue'"
     insertbefore="</Context>"
     line="    <Resource name='jms/NotificationQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Notification Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='webcert.notification.queue' />"
-        
+
+- name: configure notification dead letter queue
+  lineinfile:
+    dest="{{ tomcat_conf }}/context.xml"
+    regexp="    <Resource name='jms/NotificationDLQ'"
+    insertbefore="</Context>"
+    line="    <Resource name='jms/NotificationDLQ' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Notification Dead Letter Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='webcert.notification.dlq.queue' />"
