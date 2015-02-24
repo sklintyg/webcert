@@ -7,7 +7,6 @@ import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
-import se.inera.webcert.service.intyg.dto.IntygRecipient;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
@@ -116,20 +115,5 @@ public class IntygModuleApiController extends AbstractApiController {
         String revokeMessage = (param != null) ? param.getRevokeMessage(): null;
         IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
         return Response.ok(revokeResult).build();
-    }
-
-    /**
-     * Retrieves a list of recipients from Intygtjanst for the specified intygs type.
-     *
-     * @param intygsTyp
-     * @return
-     */
-    @GET
-    @Path("/{intygsTyp}/mottagare")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getListOfRecipientsForIntyg(@PathParam("intygsTyp") String intygsTyp) {
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.SKICKA_INTYG, intygsTyp);
-        List<IntygRecipient> recipients = intygService.fetchListOfRecipientsForIntyg(intygsTyp);
-        return Response.ok(recipients).build();
     }
 }

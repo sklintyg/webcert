@@ -1,13 +1,12 @@
 package se.inera.webcert.service.intyg;
 
+import java.util.List;
+
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
-import se.inera.webcert.service.intyg.dto.IntygRecipient;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
-
-import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -60,14 +59,6 @@ public interface IntygService {
      * @return
      */
     IntygServiceResult sendIntyg(String intygId, String typ, String mottagare, boolean hasPatientConsent);
-
-    /**
-     * Retrieves a list over available recipients for a particular type of certificate.
-     *
-     * @param intygTyp
-     * @return
-     */
-    List<IntygRecipient> fetchListOfRecipientsForIntyg(String intygTyp);
 
     /**
      * Instructs Intygstjanst to revoke the given certificate.

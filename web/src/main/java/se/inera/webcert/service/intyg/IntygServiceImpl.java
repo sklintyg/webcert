@@ -10,16 +10,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getmedicalcertificateforcare.v1.GetMedicalCertificateForCareResponderInterface;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.RecipientType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
@@ -53,7 +46,6 @@ import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygPdf;
-import se.inera.webcert.service.intyg.dto.IntygRecipient;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
@@ -62,7 +54,6 @@ import se.inera.webcert.service.notification.NotificationMessageFactory;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.ws.WebServiceException;
@@ -83,16 +74,10 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     private String logicalAddress;
 
     @Autowired
-    private GetMedicalCertificateForCareResponderInterface getCertificateService;
-
-    @Autowired
     private ListCertificatesForCareResponderInterface listCertificateService;
 
     @Autowired
     private WebCertUserService webCertUserService;
-
-    @Autowired
-    private GetRecipientsForCertificateResponderInterface getRecipientsForCertificateService;
 
     @Autowired
     private RevokeMedicalCertificateResponderInterface revokeService;
@@ -149,34 +134,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                     "listCertificatesForCare WS call: ERROR :" + response.getResult().getResultText());
         }
-    }
-
-    public List<IntygRecipient> fetchListOfRecipientsForIntyg(String intygTyp) {
-
-        intygTyp = intygTyp.toLowerCase();
-
-        LOG.debug("Fetching recipients for certificate of type '{}'", intygTyp);
-
-        List<IntygRecipient> recipientsList = new ArrayList<IntygRecipient>();
-
-        GetRecipientsForCertificateType request = new GetRecipientsForCertificateType();
-        request.setCertificateType(intygTyp);
-
-        GetRecipientsForCertificateResponseType response = getRecipientsForCertificateService.getRecipientsForCertificate(logicalAddress, request);
-
-        ResultType resultType = response.getResult();
-
-        if (resultType.getResultCode() != ResultCodeType.OK) {
-            LOG.error("Retrieving list of recipients for certificate type '{}' failed with error id; {}, msg; {}",
-                    new Object[] { intygTyp, resultType.getErrorId(), resultType.getResultText() });
-            return recipientsList;
-        }
-
-        for (RecipientType recipientType : response.getRecipient()) {
-            recipientsList.add(new IntygRecipient(recipientType.getId(), recipientType.getName(), intygTyp));
-        }
-
-        return recipientsList;
     }
 
     @Override
