@@ -24,7 +24,7 @@
 !3 Nar man forsoka att ga direkt till edit intyg man skulle vara omdirigerat till visa intyg sidan om intyget ar signerat
 
 | script | !-HanteraUtkast-! |
-| ga till edit intyg med intygsid | webcert-fitnesse-signera-1 |
+| prova ga till edit intyg med intygsid | webcert-fitnesse-signera-1 |
 | visa intyg sidan visas |
 
 !3 Ta bort utkast

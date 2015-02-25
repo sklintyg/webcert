@@ -332,6 +332,12 @@ class HanteraUtkast {
         }
     }
 
+    def provaGaTillEditIntygMedIntygsid(String id) {
+        Browser.drive {
+            go "/web/dashboard#/fk7263/edit/${id}"
+        }
+    }
+
     boolean kommentarInnehallarText( String text){
         def result = false;
         Browser.drive {

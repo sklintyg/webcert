@@ -1,5 +1,6 @@
 !contents -R2 -g -p -f -h
 
+!see <IneraWebcert.AllTests.WebTests.SkapaIntyg.BesokSigneratIntyg
 !see <IneraWebcert.AllTests.WebTests.SkapaIntyg.EditeraAdress
 !see <IneraWebcert.AllTests.WebTests.SkapaIntyg.HamtaPatientSomEjFinns
 !see <IneraWebcert.AllTests.WebTests.SkapaIntyg.HamtaPatientSomFinns
