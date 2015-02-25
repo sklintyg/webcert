@@ -17,7 +17,7 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
 
     @Autowired
-    NotificationStore notificationStore;
+    private NotificationStore notificationStore;
 
     @Override
     public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(String logicalAddress,

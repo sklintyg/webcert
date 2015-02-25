@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
-public class StubRestApi {
+public class NotificationStubRestApi {
 
     @Autowired
     private NotificationStore notificationStore;

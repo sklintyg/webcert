@@ -21,7 +21,10 @@
     </jaxrs:extensionMappings>
   </jaxrs:server>
 
-  <bean id="notificationStore" class="se.inera.webcert.notificationstub.NotificationStore"/>
-  <bean id="notificationStubRestApi" class="se.inera.webcert.notificationstub.StubRestApi"/>
+  <bean id="notificationStore" class="se.inera.webcert.notificationstub.NotificationStoreImpl">
+    <constructor-arg type="int" value="100" />
+  </bean>
+  
+  <bean id="notificationStubRestApi" class="se.inera.webcert.notificationstub.NotificationStubRestApi"/>
 
 </beans>

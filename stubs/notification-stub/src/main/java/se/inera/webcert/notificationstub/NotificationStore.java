@@ -4,22 +4,12 @@ import java.util.Collection;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+public interface NotificationStore {
 
-public class NotificationStore  {
+    public abstract void put(String utlatandeId, CertificateStatusUpdateForCareType request);
 
-    private Multimap<String, CertificateStatusUpdateForCareType> store = ArrayListMultimap.create();
+    public abstract Collection<CertificateStatusUpdateForCareType> getNotifications();
 
-    public void put(String utlatandeId, CertificateStatusUpdateForCareType request) {
-        store.put(utlatandeId, request);
-    }
+    public abstract void clear();
 
-    public Collection<CertificateStatusUpdateForCareType> getNotifications() {
-        return store.values();
-    }
-
-    public void clear() {
-        store.clear();
-    }
 }
