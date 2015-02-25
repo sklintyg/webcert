@@ -2,6 +2,7 @@ package se.inera.webcert.integration.validator;
 
 import iso.v21090.dt.v1.II;
 import org.apache.commons.lang.StringUtils;
+import se.inera.certificate.schema.Constants;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
@@ -28,6 +29,7 @@ public final class QuestionAnswerValidator {
         HosPersonalType hosPersonal = request.getAnswer().getAdressVard().getHosPersonal();
         validateHosPersonal(messages, hosPersonal);
         validateEnhet(messages, hosPersonal);
+        validateVardgivare(messages, hosPersonal);
 
         PatientType patient = lakarutlatande.getPatient();
         validatePatient(messages, patient);
@@ -46,6 +48,7 @@ public final class QuestionAnswerValidator {
         HosPersonalType hosPersonal = request.getQuestion().getAdressVard().getHosPersonal();
         validateHosPersonal(messages, hosPersonal);
         validateEnhet(messages, hosPersonal);
+        validateVardgivare(messages, hosPersonal);
 
         PatientType patient = lakarutlatande.getPatient();
         validatePatient(messages, patient);
@@ -60,7 +63,7 @@ public final class QuestionAnswerValidator {
 
     private static void validateHosPersonal(List<String> messages, HosPersonalType hosPersonal) {
         II personalId = hosPersonal.getPersonalId();
-        if (!"1.2.752.129.2.1.4.1".equals(personalId.getRoot())) {
+        if (!Constants.HSA_ID_OID.equals(personalId.getRoot())) {
             messages.add("Felaktig root pa personalid");
         }
         if (StringUtils.isEmpty(personalId.getExtension())) {
@@ -72,7 +75,7 @@ public final class QuestionAnswerValidator {
     }
 
     private static void validatePatient(List<String> messages, PatientType patient) {
-        if (!"1.2.752.129.2.1.3.1".equals(patient.getPersonId().getRoot())) {
+        if (!Constants.PERSON_ID_OID.equals(patient.getPersonId().getRoot())) {
             messages.add("Felaktig root på personid");
         }
         if (StringUtils.isEmpty(patient.getPersonId().getExtension())) {
@@ -84,7 +87,7 @@ public final class QuestionAnswerValidator {
     }
 
     private static void validateEnhet(List<String> messages, HosPersonalType hosPersonal) {
-        if (!"1.2.752.129.2.1.4.1".equals(hosPersonal.getEnhet().getEnhetsId().getRoot())) {
+        if (!Constants.HSA_ID_OID.equals(hosPersonal.getEnhet().getEnhetsId().getRoot())) {
             messages.add("Felaktig enhetsid root");
         }
         if (StringUtils.isEmpty(hosPersonal.getEnhet().getEnhetsId().getExtension())) {
@@ -92,6 +95,18 @@ public final class QuestionAnswerValidator {
         }
         if (StringUtils.isEmpty(hosPersonal.getEnhet().getEnhetsnamn())) {
             messages.add("Enhetsnamn ar tom eller saknas");
+        }
+    }
+
+    private static void validateVardgivare(List<String> messages, HosPersonalType hosPersonal) {
+        if (!Constants.HSA_ID_OID.equals(hosPersonal.getEnhet().getVardgivare().getVardgivareId().getRoot())) {
+            messages.add("Felaktig vardgivareid root");
+        }
+        if (StringUtils.isEmpty(hosPersonal.getEnhet().getVardgivare().getVardgivareId().getExtension())) {
+            messages.add("VardgivareId extension ar tom eller saknas");
+        }
+        if (StringUtils.isEmpty(hosPersonal.getEnhet().getVardgivare().getVardgivarnamn())) {
+            messages.add("Vardgivarenamn ar tom eller saknas");
         }
     }
 }
