@@ -9,8 +9,18 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +34,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.common.internal.Utlatande;
@@ -38,8 +49,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.notifications.message.v1.HandelseType;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Id;
@@ -61,16 +70,8 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {

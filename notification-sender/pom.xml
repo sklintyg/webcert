@@ -17,14 +17,6 @@
 
   <dependencies>
 
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>webcert-persistence</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>notification-messages</artifactId>
-    </dependency>
 
     <!-- Interactions -->
     <dependency>

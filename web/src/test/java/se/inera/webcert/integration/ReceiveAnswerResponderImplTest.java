@@ -3,8 +3,8 @@ package se.inera.webcert.integration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,18 +18,13 @@ import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.webcert.notifications.message.v1.HandelseType;
-import se.inera.webcert.notifications.message.v1.NotificationRequestType;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Id;
