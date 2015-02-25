@@ -8,7 +8,7 @@
           <div class="form-group">
             <label for="pnr" class="control-label">Patientens personnummer</label>
             <input id="pnr" class="form-control" name="pnr" type="text" placeholder="Exempel: ååååmmdd-nnnn" ng-model="personnummer" required wc-person-number wc-visited maxlength="13" wc-focus-me="focusPnr" />
-                <div ng-show="pnrForm.pnr.$invalid && (pnrForm.pnr.$visited || pnrForm.submitted)">
+            <div ng-show="pnrForm.pnr.$invalid && pnrForm.pnr.$viewValue && (pnrForm.pnr.$visited || pnrForm.submitted)">
               <span class="error">Du måste ange ett giltigt personnummer</span>
             </div>
           </div>
