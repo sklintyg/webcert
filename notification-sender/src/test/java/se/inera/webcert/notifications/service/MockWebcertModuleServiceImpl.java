@@ -1,6 +1,6 @@
 package se.inera.webcert.notifications.service;
 
-import se.inera.certificate.codes.Diagnoskodverk;
+import se.inera.certificate.common.enumerations.Diagnoskodverk;
 import se.inera.certificate.modules.service.WebcertModuleService;
 
 public class MockWebcertModuleServiceImpl implements WebcertModuleService {

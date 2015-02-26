@@ -1,6 +1,6 @@
 package se.inera.webcert.service.diagnos;
 
-import se.inera.certificate.codes.Diagnoskodverk;
+import se.inera.certificate.common.enumerations.Diagnoskodverk;
 import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
 
 /**

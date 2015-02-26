@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.certificate.codes.Diagnoskodverk;
+import se.inera.certificate.common.enumerations.Diagnoskodverk;
 import se.inera.certificate.modules.service.WebcertModuleService;
 import se.inera.webcert.service.diagnos.DiagnosService;
 import se.inera.webcert.service.diagnos.dto.DiagnosResponse;

@@ -1,6 +1,6 @@
 package se.inera.webcert.web.controller.integration;
 
-import static se.inera.certificate.modules.Enumerations.CertificateTypes.FK7263;
+import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

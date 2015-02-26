@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import se.inera.certificate.codes.Diagnoskodverk;
+import se.inera.certificate.common.enumerations.Diagnoskodverk;
 import se.inera.webcert.service.diagnos.dto.DiagnosResponse;
 import se.inera.webcert.service.diagnos.model.Diagnos;
 import se.inera.webcert.service.diagnos.repo.DiagnosRepository;
