@@ -74,7 +74,7 @@ describe('CreateCertificateDraft', function() {
             expect(CreateCertificateDraft.postort).toEqual('Staden');
         });
 
-        it('should call onSuccess without data if the patient is unknown', function() {
+        it('should call onNotFound if the patient is unknown', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onNotFound = jasmine.createSpy('onNotFound');
 

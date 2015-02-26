@@ -45,8 +45,8 @@ describe('ViewCertCtrl', function() {
         };
         this.getLastPopped = function(){
             return this.lastPopped;
-        }
-    };
+        };
+    }
 
     var mockDeferreds;
 
