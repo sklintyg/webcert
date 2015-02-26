@@ -4,7 +4,8 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
             'use strict';
 
             $scope.widgetState = {
-                waiting: false
+                waiting: false,
+                errorid: undefined
             };
 
             $scope.focusPnr = true; // focus pnr input
@@ -14,16 +15,18 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
 
                 var onSuccess = function() {
                     $scope.widgetState.waiting = false;
+                    $scope.widgetState.errorid = undefined;
                     $location.path('/create/choose-cert-type/index');
                 };
 
                 var onNotFound = function() {
                     $scope.widgetState.waiting = false;
-                    $location.path('/create/edit-patient-name/notFound');
+                    $scope.widgetState.errorid = 'error.pu.namenotfound';
                 };
 
                 var onError = function() {
                     $scope.widgetState.waiting = false;
+                    $scope.widgetState.errorid = undefined;
                     $location.path('/create/edit-patient-name/errorOccured');
                 };
 

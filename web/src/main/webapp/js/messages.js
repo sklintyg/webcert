@@ -78,7 +78,8 @@ var wcMessages = {
         'error.failedtomakuleraintyg': 'Kunde inte makulera intyget. Försök igen senare.',
         'error.failedtocopyintyg': 'Kunde inte kopiera intyget. Försök igen senare.',
         'error.failedtocopyintyg.personidnotfound': 'Kunde inte kopiera intyget. Det nya person-id:t kunde inte hittas.',
-        'error.failedtosendintyg': 'Kunde inte skicka intyget. Försök igen senare.'
+        'error.failedtosendintyg': 'Kunde inte skicka intyget. Försök igen senare.',
+        'error.pu.namenotfound': 'Personnumret är inte registrerat i Personuppgifts-tjänsten. Intyg kan inte skrivas på felaktiga personnummer. Försök igen senare.'
     },
     'en': {
         'webcert.header': 'Webcert Application (en)'
