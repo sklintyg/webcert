@@ -38,7 +38,7 @@
 
   <beans profile="!dev">
     <http:conduit
-      name="\{urn:riv:(clinicalprocess:healthcond|insuranceprocess:healthreporting):.*.http-conduit">
+      name="\{urn:riv:(clinicalprocess:healthcond|insuranceprocess:healthreporting|itintegration:monitoring):.*.http-conduit">
       <http:client AllowChunking="false" AutoRedirect="true"
         Connection="Keep-Alive" />
       <http:tlsClientParameters disableCNCheck="true">
