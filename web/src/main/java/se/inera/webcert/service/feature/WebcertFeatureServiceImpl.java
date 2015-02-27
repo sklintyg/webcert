@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -30,7 +32,7 @@ import se.inera.certificate.modules.support.feature.ModuleFeature;
  *
  */
 @Service
-public class WebcertFeatureServiceImpl implements WebcertFeatureService {
+public class WebcertFeatureServiceImpl implements WebcertFeatureService, EnvironmentAware {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebcertFeatureService.class);
 
@@ -45,6 +47,8 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
     private Properties features;
 
     private Map<String, Boolean> featuresMap = new HashMap<String, Boolean>();
+
+	private Environment env;
 
     /**
      * Performs initialization of the featuresMap.
@@ -123,19 +127,20 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
 
         Assert.notNull(featureProps);
         Assert.notEmpty(featuresMap);
-
-        Enumeration e = featureProps.propertyNames();
-
-        while (e.hasMoreElements()) {
-            String featureKey = (String) e.nextElement();
-
-            Boolean featureState = Boolean.parseBoolean(featureProps.getProperty(featureKey));
-
+        
+        for(Entry<String, Boolean> entry : featuresMap.entrySet()){
+            String envProp = env.getProperty(entry.getKey());
+			Boolean featureState = null;
+			
+			if(envProp != null){
+				featureState = Boolean.parseBoolean(envProp);
+			} else if(featureProps.getProperty(entry.getKey()) != null){
+				featureState = Boolean.parseBoolean(featureProps.getProperty(entry.getKey()));
+			}
+			
             if (featureState != null) {
-                featuresMap.put(featureKey, featureState);
-                continue;
+            	entry.setValue(featureState);
             }
-
         }
     }
 
@@ -216,5 +221,10 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService {
     public Map<String, Boolean> getFeaturesMap() {
         return featuresMap;
     }
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.env = environment;
+	}
 
 }

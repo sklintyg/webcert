@@ -3,7 +3,6 @@ package se.inera.webcert.service.feature;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -23,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.core.env.Environment;
 
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.ModuleEntryPoint;
@@ -36,6 +36,9 @@ public class WebcertFeatureServiceTest {
     
     @Mock
     private IntygModuleRegistry mockModuleRegistry;
+    
+    @Mock
+    private Environment mockEnv;
     
     @InjectMocks
     private WebcertFeatureServiceImpl featureService;
@@ -141,6 +144,21 @@ public class WebcertFeatureServiceTest {
         assertFalse(featureService.isFeatureActive(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE1)));
         assertTrue(featureService.isFeatureActive(makeModuleName(ModuleFeature.HANTERA_FRAGOR, MODULE2)));
     }
+    
+    @Test
+    public void testEnvVariableShouldOverrideProperty() {
+        
+        Properties featureProps = new Properties();
+        featureProps.setProperty(WebcertFeature.HANTERA_INTYGSUTKAST.getName(), "true");
+        
+        when(mockEnv.getProperty(WebcertFeature.HANTERA_INTYGSUTKAST.getName())).thenReturn("false");
+        
+        featureService.setFeatures(featureProps);
+        featureService.initFeaturesMap();
+        
+        assertFalse(featureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST.getName())); //This should be overridden by env prop
+
+    }   
     
     @Test
     public void testGetActiveFeatures() {
