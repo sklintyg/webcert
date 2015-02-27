@@ -112,7 +112,7 @@ public class IntygServiceTest {
 
     @Before
     public void setupDefaultAuthorization() {
-        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(true);
     }
 
     @Before
@@ -144,7 +144,7 @@ public class IntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testFetchIntygWithFailingAuth() {
-        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(false);
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(false);
 
         intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }

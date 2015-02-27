@@ -82,7 +82,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     @Before
     public void setupDefaultAuthorization() {
-        when(webCertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(true);
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), eq(true))).thenReturn(true);
     }
 
     @Test
