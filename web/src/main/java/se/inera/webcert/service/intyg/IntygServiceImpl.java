@@ -41,6 +41,7 @@ import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.service.fragasvar.dto.FrageStallare;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.webcert.service.intyg.config.SendIntygConfiguration;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
@@ -364,7 +365,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
      * @return
      */
     private IntygServiceResult whenSuccessfulRevoke(String intygsId) {
-        
+
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);
         LOG.debug("Notification sent: certificate with id '{}' was revoked", intygsId);
@@ -372,13 +373,20 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.
         FragaSvar[] closedFragaSvarArr = fragaSvarService.closeAllNonClosedQuestions(intygsId);
-        
+
         for (FragaSvar closedFragaSvar : closedFragaSvarArr) {
-            notificationService.sendNotificationForQuestionHandled(closedFragaSvar);
-            LOG.debug("Notification sent: question with id '{}' (related with certificate with id '{}') was closed", closedFragaSvar.getInternReferens(),
+            String frageStallare = closedFragaSvar.getFrageStallare();
+            if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare)) {
+                notificationService.sendNotificationForQuestionHandled(closedFragaSvar);
+            } else if (FrageStallare.WEBCERT.equals(frageStallare)) {
+                notificationService.sendNotificationForAnswerHandled(closedFragaSvar);
+            }
+
+            LOG.debug("Notification sent: question with id '{}' (related with certificate with id '{}') was closed",
+                    closedFragaSvar.getInternReferens(),
                     intygsId);
         }
-        
+
         // Return OK
         return IntygServiceResult.OK;
     }

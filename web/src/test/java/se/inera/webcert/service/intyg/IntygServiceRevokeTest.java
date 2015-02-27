@@ -122,14 +122,16 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         RevokeMedicalCertificateResponseType response = new RevokeMedicalCertificateResponseType();
         response.setResult(result);
 
-        FragaSvar fragaSvar = buildQuestion(12345L, "<text>", LocalDateTime.now());
+        FragaSvar fragaSvar1 = buildQuestion(12345L, "<text>", "FK", Status.PENDING_INTERNAL_ACTION, LocalDateTime.now());
+        FragaSvar fragaSvar2 = buildQuestion(12345L, "<text>", "WC", Status.PENDING_EXTERNAL_ACTION, LocalDateTime.now());
+        FragaSvar fragaSvar3 = buildQuestion(12345L, "<text>", "FK", Status.PENDING_INTERNAL_ACTION, LocalDateTime.now());
 
         when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
         when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenReturn(
                 response);
         when(webCertUserService.isAuthorizedForUnit(anyString(), eq(false))).thenReturn(true);
         when(fragaSvarRepository.findByIntygsReferensIntygsId(INTYG_ID)).thenReturn(new ArrayList<FragaSvar>());
-        when(fragaSvarService.closeAllNonClosedQuestions(INTYG_ID)).thenReturn(new FragaSvar[] { fragaSvar, fragaSvar, fragaSvar });
+        when(fragaSvarService.closeAllNonClosedQuestions(INTYG_ID)).thenReturn(new FragaSvar[] { fragaSvar1, fragaSvar2, fragaSvar3 });
 
         // Do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
@@ -141,7 +143,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
 
         // verify that one message is sent for each question
-        verify(notificationService, times(3)).sendNotificationForQuestionHandled(any(FragaSvar.class));
+        verify(notificationService, times(1)).sendNotificationForAnswerHandled(fragaSvar2);
+        verify(notificationService, times(2)).sendNotificationForQuestionHandled(any(FragaSvar.class));
 
         assertEquals(IntygServiceResult.OK, res);
     }
@@ -195,7 +198,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         return intyg;
     }
 
-    private FragaSvar buildQuestion(Long id, String frageText, LocalDateTime fragaSkickadDatum) {
+    private FragaSvar buildQuestion(Long id, String frageText, String frageStallare, Status status, LocalDateTime fragaSkickadDatum) {
 
         IntygsReferens intygsReferens = new IntygsReferens();
         intygsReferens.setIntygsId(INTYG_ID);
@@ -203,7 +206,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         intygsReferens.setPatientId(PATIENT_ID);
 
         FragaSvar f = new FragaSvar();
-        f.setStatus(Status.PENDING_INTERNAL_ACTION);
+        f.setFrageStallare(frageStallare);
+        f.setStatus(status);
         f.setAmne(Amne.OVRIGT);
         f.setExternReferens("<fk-extern-referens>");
         f.setInternReferens(id);
