@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
@@ -13,6 +15,8 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 
 public class NotificationStoreImpl implements NotificationStore {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationStore.class);
 
     private static final double LOAD = 0.8;
 
@@ -47,6 +51,8 @@ public class NotificationStoreImpl implements NotificationStore {
     }
 
     public void purge(Multimap<String, CertificateStatusUpdateForCareType> notificationsMap) {
+        
+        LOG.debug("NotificationStore contains {} notifications, pruning old ones...", notificationsMap.size());
 
         // find the oldest ones
         Ordering<CertificateStatusUpdateForCareType> order = new Ordering<CertificateStatusUpdateForCareType>() {
@@ -71,6 +77,8 @@ public class NotificationStoreImpl implements NotificationStore {
             String intygsId = objToRemove.getUtlatande().getUtlatandeId().getExtension();
             notificationsMap.remove(intygsId, objToRemove);
         }
+        
+        LOG.debug("Pruning done! NotificationStore now contains {} notifications", notificationsMap.size());
     }
 
     public int getMaxSize() {
