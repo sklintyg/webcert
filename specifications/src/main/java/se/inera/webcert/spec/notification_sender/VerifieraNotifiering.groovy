@@ -6,7 +6,7 @@ class VerifieraNotifiering extends RestClientFixture {
 
     String id 
     String kod
-	long timeOut = 40000;
+	long timeOut = 4000;
 	private boolean handelseSkapad = false;
 	
 
