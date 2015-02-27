@@ -48,23 +48,31 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         int antalHanteradeSvar = 0;
 
         for (FragaSvarStatus fsStatus : fsStatuses) {
-            antalFragor++;
 
-            if (fsStatus.hasAnswerSet()) {
-                antalSvar++;
-                antalHanteradeFragor++;
-                if (Status.CLOSED.equals(fsStatus.getStatus())) {
+            if (isFromWebcert(fsStatus)) {
+                if (fsStatus.hasAnswerSet()) {
+                    antalSvar++;
+                }
+                if (fsStatus.isClosed()) {
                     antalHanteradeSvar++;
                 }
-            } else {
-                if (Status.CLOSED.equals(fsStatus.getStatus()) || Status.ANSWERED.equals(fsStatus.getStatus())) {
+            } else if (isFromFK(fsStatus)) {
+                antalFragor++;
+                if (fsStatus.isClosed()) {
                     antalHanteradeFragor++;
                 }
             }
-
         }
 
         return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor, antalHanteradeSvar);
+    }
+
+    public boolean isFromFK(FragaSvarStatus fsStatus) {
+        return fsStatus.getFrageStallare().equalsIgnoreCase(FRAGESTALLARE_FK);
+    }
+
+    public boolean isFromWebcert(FragaSvarStatus fsStatus) {
+        return fsStatus.getFrageStallare().equalsIgnoreCase(FRAGESTALLARE_WEBCERT);
     }
 
 }

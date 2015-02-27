@@ -43,7 +43,7 @@
 !3 Kolla antalet frågor och svar
 | skickade notifieringar |
 | id        | kod |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
-| $utkastId | HAN8|   0                  | 0          |  0                    | 1            |
+| $utkastId | HAN8|   0                  | 0          |  0                    | 0            |
 
 
 !3 Ta bort utkastet

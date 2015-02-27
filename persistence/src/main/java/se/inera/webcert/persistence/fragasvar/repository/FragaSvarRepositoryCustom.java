@@ -56,7 +56,7 @@ public interface FragaSvarRepositoryCustom extends FragaSvarFilteredRepositoryCu
      * @param intygsId
      * @return
      */
-    @Query("SELECT NEW se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus(fs.internReferens, fs.svarsText, fs.status) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
+    @Query("SELECT NEW se.inera.webcert.persistence.fragasvar.model.FragaSvarStatus(fs.internReferens, fs.frageStallare, fs.svarsText, fs.status) FROM FragaSvar fs WHERE fs.intygsReferens.intygsId = :intygsId")
     List<FragaSvarStatus> findFragaSvarStatusesForIntyg(@Param("intygsId") String intygsId);
     
     /**

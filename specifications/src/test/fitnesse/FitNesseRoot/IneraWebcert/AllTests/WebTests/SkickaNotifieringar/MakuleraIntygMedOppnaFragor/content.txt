@@ -42,12 +42,12 @@
 | verifiera notifiering | 
 | id         | kod  |  handelseSkapad?   |  
 | $utkastId  | HAN5 |  true              | 
-| $utkastId  | HAN9 |  true              | 
+| $utkastId  | HAN10 |  true              | 
 
 !3 Kolla antalet hanterade svar
 | skickade notifieringar |
-| id        | kod | antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
-| $utkastId | HAN9|   0                 | 0          |  1                    | 1            |
+| id        | kod  | antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| $utkastId | HAN10|   1                 | 0          |  0                    | 0            |
 
 
 !3 Rensa notifieringar
