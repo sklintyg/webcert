@@ -68,7 +68,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         QUESTION_SENT_TO_FK,
         ANSWER_SENT_TO_FK,
         QUESTION_FROM_FK_HANDLED,
-        ANSWER_FROM_FK_HANDLED;
+        ANSWER_FROM_FK_HANDLED,
+        ANSWER_FROM_FK_UNHANDLED;
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
@@ -417,6 +418,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     "FS-011: Cant revert status for question " + frageSvarId);
         }
 
+        NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
+
         if (StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
             fragaSvar.setStatus(Status.ANSWERED);
         } else {
@@ -427,7 +430,13 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             }
 
         }
-        return fragaSvarRepository.save(fragaSvar);
+        FragaSvar openedFragaSvar = fragaSvarRepository.save(fragaSvar);
+        
+        if (notificationEvent != null) {
+            sendNotification(openedFragaSvar, notificationEvent);
+        }
+
+        return openedFragaSvar;        
     }
 
     @Override
@@ -555,11 +564,15 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         Status fragaSvarStatus = fragaSvar.getStatus();
 
         if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare) && Status.PENDING_INTERNAL_ACTION.equals(fragaSvarStatus)) {
-            return NotificationEvent.QUESTION_FROM_FK_HANDLED;
+                return NotificationEvent.QUESTION_FROM_FK_HANDLED;
         }
 
-        if (FrageStallare.WEBCERT.equals(frageStallare) && Status.ANSWERED.equals(fragaSvarStatus)) {
-            return NotificationEvent.ANSWER_FROM_FK_HANDLED;
+        if (FrageStallare.WEBCERT.equals(frageStallare)) {
+            if (Status.ANSWERED.equals(fragaSvarStatus)) {
+                return NotificationEvent.ANSWER_FROM_FK_HANDLED;
+            } else if (Status.CLOSED.equals(fragaSvarStatus) && StringUtils.isNotEmpty(fragaSvar.getSvarsText())) {
+                return NotificationEvent.ANSWER_FROM_FK_UNHANDLED;
+            }
         }
 
         return null;
@@ -609,6 +622,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         case ANSWER_FROM_FK_HANDLED:
             notificationService.sendNotificationForAnswerHandled(fragaSvar);
             LOGGER.debug("Notification sent: a closed answer with id '{}' (related to certificate '{}') was received from FK", fragaSvarId, intygsId);
+            break;
+        case ANSWER_FROM_FK_UNHANDLED:
+            notificationService.sendNotificationForAnswerRecieved(fragaSvar);
+            LOGGER.debug("Notification sent: reopened a closed answer with id '{}' (related to certificate '{}') from FK", fragaSvarId,
+                    intygsId);
             break;
         case ANSWER_SENT_TO_FK:
             notificationService.sendNotificationForQuestionHandled(fragaSvar);

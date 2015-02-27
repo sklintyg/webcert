@@ -143,6 +143,18 @@ public class WebcertRestUtils {
     }
 
     /**
+     * Mark a question from FK as not 'handled'.
+     * @param intygsTyp the type of intyg (i.e fk7263)
+     * @param internReferens the internal referens to the question
+     * @return HttpResponseDecorator
+     */
+    public static HttpResponseDecorator setQuestionAsUnhandled(String intygsTyp, String internReferens) {
+        def restPath= "/moduleapi/fragasvar/${intygsTyp}/${internReferens}/oppna"
+        def response = webcert.get(path : restPath) 
+        response 
+    }
+
+    /**
      * 
      * @param intygsTyp
      * @param internReferens

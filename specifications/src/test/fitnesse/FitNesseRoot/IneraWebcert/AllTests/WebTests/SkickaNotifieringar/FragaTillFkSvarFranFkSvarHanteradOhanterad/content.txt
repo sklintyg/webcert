@@ -81,6 +81,28 @@
 | $utkastId | HAN10 |   1                  | 1          |  0                    | 0            |
 
 
+!3 Rensa notifieringar så att vi kan verifiera de relevanta
+
+|webcert rest utils|
+|reset?|
+|true|
+
+!3 Sätt svar som inte hanterat
+| markera svar som inte hanterat |
+| intygTyp | internReferens | markeradSomInteHanterad? |
+| fk7263   | $internReferens| true |
+
+!3 Verifiera notifiering HAN7
+| verifiera notifiering | 
+| id         | kod  |  handelseSkapad? |
+| $utkastId  | HAN7 |  true            |
+
+!3 Bör finnas ett svar nu
+| skickade notifieringar |
+| id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| $utkastId | HAN7  |   0                  | 1          |  0                    | 0            |
+
+
 !3 Ta bort utkastet
 | ta bort utkast |
 | utkastId |
