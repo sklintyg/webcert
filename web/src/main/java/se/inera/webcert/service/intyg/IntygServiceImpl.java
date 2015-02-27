@@ -18,6 +18,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertifica
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
 import se.inera.certificate.model.Status;
+import se.inera.certificate.model.common.internal.Vardenhet;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
@@ -113,7 +114,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygContentHolder fetchIntygData(String intygId, String typ) {
         IntygContentHolder intygData = getIntygData(intygId, typ);
-        verifyEnhetsAuth(intygData.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), true);
+        Vardenhet vardenhet = intygData.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
+        verifyEnhetsAuth(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), true);
         return intygData;
     }
 
@@ -323,8 +325,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
-    protected void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
-        if (!webCertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
+    protected void verifyEnhetsAuth(String vardgivarId, String enhetsId, boolean isReadOnlyOperation) {
+        if (!webCertUserService.isAuthorizedForUnit(vardgivarId, enhetsId, isReadOnlyOperation)) {
             LOG.info("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsId);

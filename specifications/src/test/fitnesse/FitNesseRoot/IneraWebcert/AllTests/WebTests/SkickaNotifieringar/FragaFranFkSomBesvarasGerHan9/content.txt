@@ -26,12 +26,12 @@
 !3 Om Försäkringskassan skickar en ny fråga
 | Fk skickar fraga |
 | amne | externReferens | frageText | intygsId | vardpersonal | vardenhet | resultat? |
-| OVRIGT | fitnesse | En annan fråga | $utkastId | SE4815162344-1B01 | SE4815162344-1A02 | OK |
+| OVRIGT | fitnesse47 | En annan fråga | $utkastId | SE4815162344-1B01 | SE4815162344-1A02 | OK |
 
 !3 så ska det finnas en fråga med extern referens 'FK-1234' från Försäkringskassan som behöver svaras på
 | Fragor och svar |
 | externReferens | finns? | fraga?         |
-| fitnesse       | true   | En annan fråga |
+| fitnesse47       | true   | En annan fråga |
 
 !3 Undersök vilka notifieringar som skickades och säkerställ att dessa matchar det förväntade utfallet (HAN6)
 | verifiera notifiering |
@@ -45,7 +45,7 @@
 !3 Besvara frågan 
 | besvara fraga fran fk |
 | intygTyp | externReferens  | fragaBesvarad? |
-| fk7263   | fitnesse        | true           |  
+| fk7263   | fitnesse47        | true           |  
 
 !3 Verifiera att HAN9 skickades korrekt
 | verifiera notifiering |
@@ -65,7 +65,7 @@
 
 | Ta bort fraga |
 | externReferens |
-| fitnesse |
+| fitnesse47 |
 
 | webcert rest utils |
 | reset? |
