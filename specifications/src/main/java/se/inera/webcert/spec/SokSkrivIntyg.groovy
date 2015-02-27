@@ -58,6 +58,14 @@ class SokSkrivIntyg {
         }
     }
 
+    def namnFinnsEjMeddelandeVisas() {
+        Browser.drive {
+            waitFor {
+                page.puFelmeddelande.isDisplayed()
+            }
+        }
+    }
+
     def gePatientFornamnEfternamn(String fornamn, String efternamn) {
         Browser.drive {
             page.fornamn = fornamn

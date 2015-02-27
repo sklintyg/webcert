@@ -9,6 +9,7 @@ class SokSkrivaIntygPage extends AbstractPage {
     static content = {
         personnummer { $("#pnr") }
         personnummerFortsattKnapp { $("#skapapersonnummerfortsatt") }
+        puFelmeddelande { $("#puerror") }
 
         logoutLink { $("#logoutLink") }
     }
