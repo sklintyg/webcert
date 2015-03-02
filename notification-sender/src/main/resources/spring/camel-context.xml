@@ -7,11 +7,22 @@
 
   <bean id="processNotificationRequestRouteBuilder" class="se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteBuilder"/>
 
-  <bean id="customObjectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper" />
+  <bean id="customObjectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
 
   <bean id="notificationMessageDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat">
     <constructor-arg ref="customObjectMapper"/>
     <constructor-arg value="se.inera.certificate.modules.support.api.notification.NotificationMessage"/>
+  </bean>
+
+  <bean id="jaxbMessageDataFormat" class="org.apache.camel.converter.jaxb.JaxbDataFormat">
+    <constructor-arg value="se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1"/>
+    <property name="partClass" value="se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType"/>
+    <property name="partNamespace">
+      <bean class="javax.xml.namespace.QName">
+        <constructor-arg value="urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:1"/>
+        <constructor-arg value="CertificateStatusUpdateForCare"/>
+      </bean>
+    </property>
   </bean>
 
   <camel:camelContext id="webcertNotification">
@@ -23,6 +34,9 @@
 
     <!-- Outgoing endpoint to CertificateStatusUpdateForCare service -->
     <camel:endpoint id="sendCertificateStatusUpdateEndpoint" uri="${sendCertificateStatusUpdateEndpointUri}"/>
+
+    <!-- Endpoint for transformed messages, ready to be sent to WS  -->
+    <camel:endpoint id="sendNotificationWSEndpoint" uri="${sendNotificationWSEndpointUri}"/>
 
     <camel:endpoint id="deadLetterEndpoint" uri="${deadLetterEndpointUri}"/>
 

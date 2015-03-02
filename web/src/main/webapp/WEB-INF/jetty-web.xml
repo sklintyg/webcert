@@ -60,6 +60,17 @@
       </New>
     </Arg>
   </New>
+  <New id="NotificationWSQueue" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref refid="webAppContext" />
+    </Arg>
+    <Arg>jms/NotificationWSQueue</Arg>
+    <Arg>
+      <New class="org.apache.activemq.command.ActiveMQQueue">
+        <Arg>NOTIFICATIONSENDER.WS.QUEUE</Arg>
+      </New>
+    </Arg>
+  </New>
   <New id="NotificationDLQ" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
       <Ref refid="webAppContext" />

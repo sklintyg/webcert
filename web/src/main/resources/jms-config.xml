@@ -35,6 +35,9 @@
   <bean id="notificationQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/jms/NotificationQueue" />
   </bean>
+  <bean id="notificationWSQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/jms/NotificationWSQueue" />
+  </bean>
   <bean id="notificationDLQ" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/jms/NotificationDLQ" />
   </bean>
