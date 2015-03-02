@@ -1,6 +1,6 @@
 package se.inera.webcert.service.log.dto;
 
-import se.inera.certificate.model.util.Strings;
+import se.inera.certificate.common.util.StringUtil;
 
 public class LogRequest {
 
@@ -23,7 +23,7 @@ public class LogRequest {
     }
 
     public void setPatientName(String fornamn, String mellannamn, String efternamn) {
-        setPatientName(Strings.join(" ", fornamn, mellannamn, efternamn));
+        setPatientName(StringUtil.join(" ", fornamn, mellannamn, efternamn));
     }
 
     public String getIntygId() {
