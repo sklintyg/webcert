@@ -57,7 +57,7 @@
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/min/moment.min.js"></script>
-      <script type="text/javascript" src="/vendor/polyfill.min.js"></script>
+      <script type="text/javascript" src="/vendor/polyfill.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/js/app.min.js?<spring:message code="buildNumber" />"></script>
     </c:when>
     <c:otherwise>
