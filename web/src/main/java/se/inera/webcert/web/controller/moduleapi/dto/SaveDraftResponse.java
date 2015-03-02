@@ -1,5 +1,7 @@
 package se.inera.webcert.web.controller.moduleapi.dto;
 
+import se.inera.certificate.modules.support.api.dto.ValidationMessageType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class SaveDraftResponse {
         this.messages = messages;
     }
 
-    public void addMessage(String field, String message) {
-        messages.add(new SaveDraftValidationMessage(field, message));
+    public void addMessage(String field, ValidationMessageType type, String message) {
+        messages.add(new SaveDraftValidationMessage(field, type, message));
     }
 }

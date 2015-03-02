@@ -22,12 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.dto.HoSPersonal;
-import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
-import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
-import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
-import se.inera.certificate.modules.support.api.dto.ValidationMessage;
-import se.inera.certificate.modules.support.api.dto.ValidationStatus;
+import se.inera.certificate.modules.support.api.dto.*;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -174,7 +169,7 @@ public class UtkastServiceImplTest {
 
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
-        ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
         WebCertUser user = createUser();
 

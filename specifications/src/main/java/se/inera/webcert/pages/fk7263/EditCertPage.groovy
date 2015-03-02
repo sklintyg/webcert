@@ -12,6 +12,8 @@ class EditCertPage extends AbstractPage {
         // Knappar
         sparaKnapp { $("#spara-utkast") }
         tillbakaButton(required: false) { $("#tillbakaButton") }
+        visaVadSomSaknasKnapp { $("#showCompleteButton") }
+        doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
@@ -41,6 +43,17 @@ class EditCertPage extends AbstractPage {
 
         // date picker
         datepicker { $("div[ng-switch='datepickerMode']") }
+
+        // Intygsvalidering
+        valideringIntygBaseratPa(required: false)        { $("#validationMessages_intygbaseratpa") }
+        valideringDiagnos(required: false)               { $("#validationMessages_diagnos") }
+        valideringFunktionsnedsattning(required: false)  { $("#validationMessages_funktionsnedsattning") }
+        valideringAktivitetsbegransning(required: false) { $("#validationMessages_aktivitetsbegransning") }
+        valideringSysselsattning(required: false)        { $("#validationMessages_sysselsattning") }
+        valideringArbetsformaga(required: false)         { $("#validationMessages_arbetsformaga") }
+        valideringPrognos(required: false)               { $("#validationMessages_prognos") }
+        valideringRekommendationer(required: false)      { $("#validationMessages_rekommendationer") }
+        valideringVardperson(required: false)            { $("#validationMessages_vardperson") }
     }
 }
 

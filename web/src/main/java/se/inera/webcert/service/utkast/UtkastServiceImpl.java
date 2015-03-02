@@ -338,8 +338,8 @@ public class UtkastServiceImpl implements UtkastService {
         draftValidation.setStatus(DraftValidationStatus.INVALID);
 
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
-            draftValidation.addMessage(new se.inera.webcert.service.utkast.dto.DraftValidationMessage(validationMsg.getField(), validationMsg
-                    .getMessage()));
+            draftValidation.addMessage(new se.inera.webcert.service.utkast.dto.DraftValidationMessage(
+                    validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage()));
         }
 
         LOG.debug("Validation failed with {} validation messages", draftValidation.getMessages().size());

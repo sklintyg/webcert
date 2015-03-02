@@ -1,8 +1,12 @@
 package se.inera.webcert.web.controller.moduleapi.dto;
 
+import se.inera.certificate.modules.support.api.dto.ValidationMessageType;
+
 public class SaveDraftValidationMessage {
 
     private String field;
+
+    private ValidationMessageType type;
 
     private String message;
 
@@ -10,9 +14,10 @@ public class SaveDraftValidationMessage {
 
     }
 
-    public SaveDraftValidationMessage(String field, String message) {
+    public SaveDraftValidationMessage(String field, ValidationMessageType type, String message) {
         super();
         this.field = field;
+        this.type = type;
         this.message = message;
     }
 
@@ -23,6 +28,8 @@ public class SaveDraftValidationMessage {
     public void setField(String field) {
         this.field = field;
     }
+
+    public ValidationMessageType getType() { return type; }
 
     public String getMessage() {
         return message;

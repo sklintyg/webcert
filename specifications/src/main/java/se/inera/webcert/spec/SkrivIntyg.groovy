@@ -50,6 +50,92 @@ class SkrivIntyg {
         intygsid
     }
 
+    def visaVadSomSaknas(){
+        Browser.drive {
+            page.visaVadSomSaknasKnapp.click();
+        }
+    }
+
+    def ingaValideringsfelVisas() {
+        def result = false
+        Browser.drive {
+            result = !page.valideringIntygBaseratPa.isDisplayed() &&
+                !page.valideringDiagnos.isDisplayed() &&
+                !page.valideringFunktionsnedsattning.isDisplayed() &&
+                !page.valideringAktivitetsbegransning.isDisplayed() &&
+                !page.valideringSysselsattning.isDisplayed() &&
+                !page.valideringArbetsformaga.isDisplayed() &&
+                !page.valideringPrognos.isDisplayed() &&
+                !page.valideringRekommendationer.isDisplayed() &&
+                !page.valideringVardperson.isDisplayed()
+        }
+        result
+    }
+
+    def valideringsfelIntygBaseratPaVisas() {
+        def result = false
+        Browser.drive{
+            result = page.valideringIntygBaseratPa.isDisplayed()
+        }
+        result
+    }
+    def valideringsfelDiagnosVisas() {
+        def result = false
+        Browser.drive{
+            result = page.valideringDiagnos.isDisplayed()
+        }
+        result
+    }
+    def valideringsfelFunktionsnedsattningVisas() {
+        def result = false
+        Browser.drive{
+            result = page.valideringFunktionsnedsattning.isDisplayed()
+        }
+        result
+    }
+    def valideringsfelAktivitetsbegransningVisas() {
+        def result = false
+        Browser.drive{
+            result = page.valideringAktivitetsbegransning.isDisplayed()
+        }
+        result
+    }
+    def valideringsfelSysselsattningVisas() {
+        def result = false
+        Browser.drive{
+            result = page.valideringSysselsattning.isDisplayed()
+        }
+        result
+    }
+    def valideringsfelArbetsformagaVisas() {
+        def result = false
+        Browser.drive{
+            result = page.valideringArbetsformaga.isDisplayed()
+        }
+        result
+    }
+    def valideringsfelPrognosVisas() {
+        def result = false
+        Browser.drive{
+            result = page.valideringPrognos.isDisplayed()
+        }
+        result
+    }
+    def valideringsfelRekommendationerVisas() {
+        def result = false
+        Browser.drive{
+            result = page.valideringRekommendationer.isDisplayed()
+        }
+        result
+    }
+    def valideringsfelVardpersonVisas() {
+        def result = false
+        Browser.drive{
+            result = page.valideringVardperson.isDisplayed()
+        }
+        result
+    }
+
     def sparaUtkast() {
         Browser.drive {
             page.sparaKnapp.click()
@@ -60,6 +146,15 @@ class SkrivIntyg {
         Browser.drive {
             waitFor {
                 page.intygetSparatMeddelande.isDisplayed()
+            }
+        }
+        true
+    }
+
+    boolean intygEjKomplettVisas() {
+        Browser.drive {
+            waitFor(6) {
+                page.intygetEjKomplettMeddelande.isDisplayed()
             }
         }
         true
