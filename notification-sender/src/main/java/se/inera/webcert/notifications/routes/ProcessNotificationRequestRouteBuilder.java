@@ -25,9 +25,9 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:createAndInitCertificateStatusRequestProcessor")
                 .log(LoggingLevel.INFO, LOG, simple("Notification is transformed for intygs-id: ${in.headers.intygsId}, with notification type: ${in.headers.handelse}").getText())
-                .to("direct:sendNotificationToWS");
+                .to("sendNotificationWSEndpoint");
 
-        from("direct:sendNotificationToWS").routeId("sendNotificationToWS")
+        from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
                 .errorHandler(deadLetterChannel("direct:redeliveryExhaustedEndpoint")
                         .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay)
                         .useExponentialBackOff())

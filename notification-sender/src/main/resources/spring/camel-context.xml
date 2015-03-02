@@ -24,6 +24,9 @@
     <!-- Outgoing endpoint to CertificateStatusUpdateForCare service -->
     <camel:endpoint id="sendCertificateStatusUpdateEndpoint" uri="${sendCertificateStatusUpdateEndpointUri}"/>
 
+    <!-- Endpoint for transformed messages, ready to be sent to WS  -->
+    <camel:endpoint id="sendNotificationWSEndpoint" uri="${sendNotificationWSEndpointUri}"/>
+
     <camel:endpoint id="deadLetterEndpoint" uri="${deadLetterEndpointUri}"/>
 
     <camel:dataFormats>
