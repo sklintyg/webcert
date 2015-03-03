@@ -8,7 +8,7 @@ xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
     <certificateType>fk7263</certificateType>
     <validFrom>2013-01-01</validFrom>
     <validTo>2013-03-15</validTo>
-    <issuerName>En Läkare</issuerName>
+    <issuerName>En LÃ¤kare</issuerName>
     <facilityName>Kir mott</facilityName>
     <signDate>2013-01-01</signDate>
     <available>true</available>
@@ -39,7 +39,7 @@ xmlns:hr="urn:riv:insuranceprocess:healthreporting:2">
 
     <skapadAv>
       <personal-id root="1.2.752.129.2.1.4.1" extension="Personal HSA-ID" />
-      <fullstandigtNamn>En Läkare</fullstandigtNamn>
+      <fullstandigtNamn>En LÃ¤kare</fullstandigtNamn>
       <enhet>
         <enhets-id root="1.2.752.129.2.1.4.1" extension="dialys" />
         <arbetsplatskod root="1.2.752.29.4.71" extension="123456789011" />
