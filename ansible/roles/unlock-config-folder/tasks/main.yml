@@ -7,3 +7,5 @@
 
 - name: unlock config repo
   command: /usr/local/bin/git-crypt unlock {{ inera_root }}/{{ gitcrypt_key_name }} chdir={{ config_folder }} 
+  args:
+    creates: {{ config_folder }}/.git/git-crypt
