@@ -45,10 +45,11 @@
       <artifactId>hsa-integration</artifactId>
     </dependency>
 
-    <!-- Intygstjanst -->
+    <!-- Tools -->
     <dependency>
-      <groupId>se.inera.intyg.intygstjanst</groupId>
-      <artifactId>intygstjanst-specifications</artifactId>
+      <groupId>se.inera.intyg.tools</groupId>
+      <artifactId>tools-specifications</artifactId>
+      <version>${tools.version}</version>
     </dependency>
 
     <!-- Schemas -->
@@ -64,7 +65,14 @@
       <groupId>se.riv.itintegration.monitoring</groupId>
       <artifactId>itintegration-monitoring-interactions</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-client</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
