@@ -22,9 +22,8 @@
     <common.version>0-SNAPSHOT</common.version>
     <common.version.range>(,2.1.0]</common.version.range>
 
-    <!-- Intygstjanst -->
-    <intygstjanst.version>0-SNAPSHOT</intygstjanst.version>
-    <intygstjanst.version.range>(,2.1.0]</intygstjanst.version.range>
+    <!-- Tools -->
+    <tools.version>0-SNAPSHOT</tools.version>
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
@@ -162,11 +161,11 @@
         <version>${common.version}</version>
       </dependency>
 
-      <!-- Intygstjanst -->
+      <!-- Tools -->
       <dependency>
-        <groupId>se.inera.intyg.intygstjanst</groupId>
-        <artifactId>intygstjanst-specifications</artifactId>
-        <version>${intygstjanst.version}</version>
+        <groupId>se.inera.intyg.tools</groupId>
+        <artifactId>tools-specifications</artifactId>
+        <version>${tools.version}</version>
       </dependency>
 
       <!-- Intygstyper -->

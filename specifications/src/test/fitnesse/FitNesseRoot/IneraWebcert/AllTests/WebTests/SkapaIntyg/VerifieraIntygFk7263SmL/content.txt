@@ -4,7 +4,7 @@
 
 |Intyg|
 |personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
-|19121212-1212|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fit-1|sml|nej|nej|
+|19121212-1212|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fit-1|!-SmL-!|nej|nej|
 
 !3 Logga in
 
