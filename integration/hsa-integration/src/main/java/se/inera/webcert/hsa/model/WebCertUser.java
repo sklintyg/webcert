@@ -2,11 +2,13 @@ package se.inera.webcert.hsa.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -142,7 +144,7 @@ public class WebCertUser implements Serializable {
 
     public Set<String> getAktivaFunktioner() {
         if (aktivaFunktioner == null) {
-            aktivaFunktioner = Collections.emptySet();
+            aktivaFunktioner = new HashSet<String>();
         }
 
         return aktivaFunktioner;

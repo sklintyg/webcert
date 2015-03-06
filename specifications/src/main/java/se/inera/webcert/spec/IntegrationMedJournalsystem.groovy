@@ -68,6 +68,17 @@ class IntegrationMedJournalsystem {
             }
         }
     }
+    
+    def utkastVisasViaIntegrationMedBehorighetsfel(String intygId, boolean expected = true) {
+        Browser.drive {
+            go "/visa/intyg/" + intygId
+            waitFor {
+                at EditCertPage
+                expected == page.errorPanel.isDisplayed()
+            }
+        }
+        true
+    }
 
     def nyttPersonnummerMeddelandeVisas() {
         Browser.drive {

@@ -21,5 +21,6 @@ class EditeraIntygPage extends AbstractPage {
         sparaBtn(required: false) { $("#spara-utkast") }
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
         intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
+        errorPanel { $("#error-panel") }
     }
 }
