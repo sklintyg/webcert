@@ -113,12 +113,6 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.User'
         $window.doneLoading = false;
         $window.dialogDoneLoading = true;
 
-        $rootScope.$on('$routeChangeStart', function() {
-            $window.doneLoading = false;
-        });
-        $rootScope.$on('$routeChangeSuccess', function() {
-            $window.doneLoading = true;
-        });
         $rootScope.$on('$stateChangeStart',
             function(event, toState, toParams, fromState, fromParams){
                 $window.doneLoading = false;
