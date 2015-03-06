@@ -14,6 +14,8 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.exception.FeatureNotAvailableException;
+import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -100,6 +102,14 @@ public abstract class AbstractApiController {
     protected void abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
         if (!checkIfWebcertFeatureIsAvailableForModule(webcertFeature, moduleType)) {
             throw new FeatureNotAvailableException(webcertFeature.getName());
+        }
+    }
+    
+    protected void abortIfUserNotAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId) {
+        if (!webCertUserService.isAuthorizedForUnit(vardgivarHsaId, enhetsHsaId, false)) {
+            LOG.info("User not authorized for enhet");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsHsaId);
         }
     }
 }
