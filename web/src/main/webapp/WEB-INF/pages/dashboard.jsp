@@ -74,7 +74,6 @@
     </c:otherwise>
   </c:choose>
   <script type="text/javascript" src="/vendor/netid-1.0.5.js"></script>
-  <script type="text/javascript" src="/siths.jsp"></script>
 
   <!--[if lte IE 8]>
   <script type="text/javascript" src="/web/webjars/respond/1.4.2/src/respond.js"></script>
