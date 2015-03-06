@@ -175,6 +175,16 @@ class HanteraUtkast {
         }
         true
     }
+    
+    boolean felmeddelandeVisas(boolean expected = true) {
+        Browser.drive {
+            at EditeraIntygPage
+            waitFor {
+                expected == page.errorPanel.isDisplayed()
+            }
+        }
+        true
+    }
 
     boolean visaSidanVisas() {
         Browser.drive {
