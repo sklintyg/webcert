@@ -77,6 +77,8 @@ public class UtkastModuleApiController extends AbstractApiController {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         Utkast utkast = utkastService.getDraft(intygsId);
+        
+        abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logReadOfIntyg(logRequest);

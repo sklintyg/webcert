@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
@@ -42,19 +43,32 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Override
     public boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
         WebCertUser user = getWebCertUser();
-        if (isReadOnlyOperation && user.hasAktivFunktion(WebcertFeature.FRAN_JOURNALSYSTEM.getName())) {
-            if (vardgivarHsaId != null) {
-                return user != null && user.getValdVardgivare().getId().equals(vardgivarHsaId);
-            }
-            return user != null && user.getIdsOfSelectedVardgivare().contains(enhetsHsaId);
-        } else {
-            return user != null && user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
-        }
+        return checkIfAuthorizedForUnit(user, vardgivarHsaId, enhetsHsaId, isReadOnlyOperation);
     }
-    
+
     @Override
     public boolean isAuthorizedForUnit(String enhetsHsaId, boolean isReadOnlyOperation) {
-        return isAuthorizedForUnit(null, enhetsHsaId, isReadOnlyOperation);
+        WebCertUser user = getWebCertUser();
+        return checkIfAuthorizedForUnit(user, null, enhetsHsaId, isReadOnlyOperation);
+    }
+
+    public boolean checkIfAuthorizedForUnit(WebCertUser user, String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
+
+        if (user == null) {
+            return false;
+        }
+
+        if (user.hasAktivFunktion(WebcertFeature.FRAN_JOURNALSYSTEM.getName())) {
+
+            if (isReadOnlyOperation && vardgivarHsaId != null) {
+                return user.getValdVardgivare().getId().equals(vardgivarHsaId);
+            }
+
+            return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
+
+        } else {
+            return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
+        }
     }
 
     public boolean isAuthorizedForUnits(List<String> enhetsHsaIds) {
@@ -63,9 +77,11 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     public void enableFeaturesOnUser(WebcertFeature... featuresToEnable) {
-
         WebCertUser user = getWebCertUser();
+        enableFeatures(user, featuresToEnable);
+    }
 
+    public void enableFeatures(WebCertUser user, WebcertFeature... featuresToEnable) {
         LOG.debug("User {} had these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
 
         for (WebcertFeature feature : featuresToEnable) {
@@ -83,6 +99,10 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
         WebCertUser user = getWebCertUser();
 
+        enableModuleFeatures(user, moduleName, modulefeaturesToEnable);
+    }
+
+    public void enableModuleFeatures(WebCertUser user, String moduleName, ModuleFeature... modulefeaturesToEnable) {
         for (ModuleFeature moduleFeature : modulefeaturesToEnable) {
 
             String moduleFeatureName = moduleFeature.getName();
@@ -97,7 +117,6 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             user.getAktivaFunktioner().add(moduleFeatureStr);
             LOG.debug("Added module feature {} to user", moduleFeatureStr);
         }
-
     }
 
     @Override
