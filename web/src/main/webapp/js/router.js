@@ -5,27 +5,27 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
 
     $stateProvider.
 
-        state('createIndex', {
+        state('create-index', {
             url: '/create/index',
             templateUrl: '/views/dashboard/create.choose-patient.html',
             controller: 'webcert.InitCertCtrl'
         }).
-        state('createChoosepatientIndex', {
+        state('create-choosepatient-index', {
             url: '/create/choose-patient/index',
             templateUrl: '/views/dashboard/create.choose-patient.html',
             controller: 'webcert.ChoosePatientCtrl'
         }).
-        state('createEditpatientname', {
+        state('create-edit-patientname', {
             url:'/create/edit-patient-name/:mode',
             templateUrl: '/views/dashboard/create.edit-patient-name.html',
             controller: 'webcert.EditPatientNameCtrl'
         }).
-        state('createChoosecerttypeIndex', {
+        state('create-choose-certtype-index', {
             url:'/create/choose-cert-type/index',
             templateUrl: '/views/dashboard/create.choose-cert-type.html',
             controller: 'webcert.ChooseCertTypeCtrl'
         }).
-        state('unhandledQa', {
+        state('unhandled-qa', {
             url:'/unhandled-qa',
             templateUrl: '/views/dashboard/unhandled-qa.html',
             controller: 'webcert.UnhandledQACtrl'
@@ -45,27 +45,27 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
             templateUrl: '/views/dashboard/view.qa.html',
             controller: 'webcert.ViewCertCtrl'
         }).
-        state('webcertAbout', {
+        state('webcert-about', {
             url: '/webcert/about',
             templateUrl: '/views/dashboard/about.webcert.html',
             controller: 'webcert.AboutWebcertCtrl'
         }).
-        state('supportAbout', {
+        state('support-about', {
             url: '/support/about',
             templateUrl: '/views/dashboard/about.support.html',
             controller: 'webcert.AboutWebcertCtrl'
         }).
-        state('certificatesAbout', {
+        state('certificates-about', {
             url: '/certificates/about',
             templateUrl: '/views/dashboard/about.certificates.html',
             controller: 'webcert.AboutWebcertCtrl'
         }).
-        state('faqAbout', {
+        state('faq-about', {
             url: '/faq/about',
             templateUrl: '/views/dashboard/about.faq.html',
             controller: 'webcert.AboutWebcertCtrl'
         }).
-        state('cookies_about', {
+        state('cookies-about', {
             url: '/cookies/about',
             templateUrl: '/views/dashboard/about.cookies.html',
             controller: 'webcert.AboutWebcertCtrl'
