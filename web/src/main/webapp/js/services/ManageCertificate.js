@@ -1,7 +1,7 @@
 angular.module('webcert').factory('webcert.ManageCertificate',
-    [ '$http', '$routeParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
+    [ '$http', '$stateParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
         'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.CertificateService',
-        function($http, $routeParams, $log, $location, $window, $timeout, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
+        function($http, $stateParams, $log, $location, $window, $timeout, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
             featureService, messageService, CertificateService) {
             'use strict';
 
@@ -184,7 +184,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 } else {
 
                     dialogModel.otherCareUnit = isOtherCareUnit;
-                    dialogModel.patientId = $routeParams.patientId;
+                    dialogModel.patientId = $stateParams.patientId;
                     dialogModel.deepIntegration = featureService.isFeatureActive('franJournalsystem');
 
                     copyDialog = dialogService.showDialog($scope, {

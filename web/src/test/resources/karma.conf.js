@@ -25,6 +25,7 @@ module.exports = function(config) {
             WEBJAR_DIR + 'angularjs/angular-route.js',
             WEBJAR_DIR + 'angularjs/angular-sanitize.js',
             WEBJAR_DIR + 'angular-ui-bootstrap/ui-bootstrap-tpls.js',
+            WEBJAR_DIR + 'angular-ui-router/angular-ui-router.js',
             WEBJAR_DIR + 'jquery/jquery.js',
             WEBJAR_DIR + 'momentjs/moment.js',
 

@@ -1,7 +1,7 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    [ '$filter', '$location', '$log', '$scope', '$cookieStore', '$routeParams', 'webcert.CreateCertificateDraft',
+    [ '$filter', '$location', '$log', '$scope', '$cookieStore', '$stateParams', 'webcert.CreateCertificateDraft',
         'webcert.ManageCertificate', 'common.IntygCopyRequestModel',
-        function($filter, $location, $log, $scope, $cookieStore, $routeParams, CreateCertificateDraft,
+        function($filter, $location, $log, $scope, $cookieStore, $stateParams, CreateCertificateDraft,
             ManageCertificate, IntygCopyRequestModel) {
             'use strict';
 
@@ -126,7 +126,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                         intygId: cert.intygId,
                         intygType: cert.intygType,
                         patientPersonnummer: $scope.personnummer,
-                        nyttPatientPersonnummer: $routeParams.patientId
+                        nyttPatientPersonnummer: $stateParams.patientId
                     }),
                     false
                 );

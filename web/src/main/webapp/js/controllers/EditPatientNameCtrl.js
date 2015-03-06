@@ -1,6 +1,6 @@
 angular.module('webcert').controller('webcert.EditPatientNameCtrl',
-    [ '$location', '$routeParams' ,'$scope', 'webcert.CreateCertificateDraft',
-        function($location, $routeParams, $scope, CreateCertificateDraft) {
+    [ '$location', '$stateParams' ,'$scope', 'webcert.CreateCertificateDraft',
+        function($location, $stateParams, $scope, CreateCertificateDraft) {
             'use strict';
 
             if (!CreateCertificateDraft.personnummer) {
@@ -15,9 +15,9 @@ angular.module('webcert').controller('webcert.EditPatientNameCtrl',
                 $scope.efternamn = CreateCertificateDraft.efternamn;
             }
             
-            $scope.personNotFound = ($routeParams.mode === 'notFound');
+            $scope.personNotFound = ($stateParams.mode === 'notFound');
             
-            $scope.errorOccured = ($routeParams.mode === 'errorOccured');
+            $scope.errorOccured = ($stateParams.mode === 'errorOccured');
             
             $scope.chooseCertType = function() {
                 CreateCertificateDraft.fornamn = $scope.fornamn;

@@ -2,14 +2,14 @@
  * Controller for logic related to viewing signed certs
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
-    [ '$rootScope', '$routeParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
+    [ '$rootScope', '$stateParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
         'webcert.ManageCertificate', 'common.UserPreferencesService', 'common.fragaSvarCommonService',
-        function($rootScope, $routeParams, $scope, $window, $location, $q, dialogService, ManageCertificate,
+        function($rootScope, $stateParams, $scope, $window, $location, $q, dialogService, ManageCertificate,
                  UserPreferencesService, fragaSvarCommonService) {
             'use strict';
 
             $scope.widgetState = {
-                certificateType: $routeParams.certificateType,
+                certificateType: $stateParams.certificateType,
                 fragaSvarAvailable: false,
                 skipShowUnhandledDialog : false,
                 setSkipShowUnhandledDialog : function(widgetState){
@@ -66,7 +66,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
             });
             $scope.$on('$destroy', unbindCheckHandledEvent);
 
-            ManageCertificate.getCertType($routeParams.certificateType, function(intygType) {
+            ManageCertificate.getCertType($stateParams.certificateType, function(intygType) {
                 $scope.widgetState.fragaSvarAvailable = intygType.fragaSvarAvailable;
                 $scope.widgetState.printStatus = intygType.printStatus;
             });

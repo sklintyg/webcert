@@ -2,7 +2,7 @@ describe('ViewCertCtrl', function() {
     'use strict';
 
     var manageCertificateSpy;
-    var $routeParams;
+    var $stateParams;
     var $httpBackend;
     var dialogService;
     var fragaSvarCommonService;
@@ -70,8 +70,8 @@ describe('ViewCertCtrl', function() {
         UserPreferencesService = jasmine.createSpyObj('UserPreferencesService', [ 'isSkipShowUnhandledDialogSet' ]);
         $provide.value('common.UserPreferencesService', UserPreferencesService);
 
-        $routeParams = {qaOnly:false};
-        $provide.value('$routeParams', $routeParams);
+        $stateParams = {qaOnly:false};
+        $provide.value('$stateParams', $stateParams);
 
 
     }));
@@ -94,7 +94,7 @@ describe('ViewCertCtrl', function() {
             // setup the current location
             $location.url(currentUrl);
 
-            $routeParams.qaOnly = false;
+            $stateParams.qaOnly = false;
 
             $controller = _$controller_;
             $controller('webcert.ViewCertCtrl',
@@ -106,7 +106,7 @@ describe('ViewCertCtrl', function() {
 
     describe('#checkSpecialQALink', function() {
         beforeEach(function(){
-            $routeParams.qaOnly = true;
+            $stateParams.qaOnly = true;
 
             $controller('webcert.ViewCertCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
@@ -122,7 +122,7 @@ describe('ViewCertCtrl', function() {
         it('Check if the user used the special qa-link to get here', function(){
 
 
-            $routeParams.qaOnly = true;
+            $stateParams.qaOnly = true;
 
             $controller('webcert.ViewCertCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
