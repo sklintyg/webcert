@@ -25,7 +25,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                     $scope.$broadcast('hasUnhandledQasEvent', deferred);
                     deferred.promise.then(function(unhandledQas) {
                         if (unhandledQas && unhandledQas.length > 0) {
-                            var modal = dialogService.showDialog($scope, {
+                            var modal = dialogService.showDialog({
                                 dialogId: 'qa-check-hanterad-dialog',
                                 titleId: 'label.qacheckhanterad.title',
                                 bodyTextId: 'label.qacheckhanterad.body',
