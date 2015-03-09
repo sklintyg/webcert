@@ -45,11 +45,18 @@
               </div>
               <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
             </c:when>
-
+            
             <c:when test="${param.reason eq \"medarbetaruppdrag\"}">
               <h1><spring:message code="error.medarbetaruppdrag.title" /></h1>
               <div id="noAuth" class="alert alert-danger">
                 <spring:message code="error.medarbetaruppdrag.text" />
+              </div>
+            </c:when>
+
+            <c:when test="${param.reason eq \"badcredentials\"}">
+              <h1><spring:message code="error.badcredentials.title" /></h1>
+              <div id="noAuth" class="alert alert-danger">
+                <spring:message code="error.badcredentials.text" />
               </div>
             </c:when>
 
