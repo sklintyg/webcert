@@ -13,8 +13,8 @@
 
 | script | !-SkrivIntyg-! |
 | check | prognos | YES |
-| check | ressattNej | NEJ |
-| check | rehabNej | NEJ |
+| check | ressatt | NEJ |
+| check | rehab | NEJ |
 
 !3 Populera intyget
 
