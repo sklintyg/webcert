@@ -196,9 +196,8 @@ $.get('/api/modules/map').then(function(modules) {
                     addExceptionHandler();
                 }
 
-                    // Everything is loaded, bootstrap the application with all dependencies.
-                    angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
-
+                // Everything is loaded, bootstrap the application with all dependencies.
+                angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
             });
         }).fail(function(error) {
             if (window.console) {
