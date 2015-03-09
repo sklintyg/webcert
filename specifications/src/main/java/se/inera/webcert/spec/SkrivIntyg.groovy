@@ -275,4 +275,73 @@ class SkrivIntyg {
         result
     }
 
+
+    String prognos() {
+        def result = '';
+        Browser.drive {
+            result = page.prognos.radioGroup.value();
+        }
+        result
+    }
+
+    String ressattNej() {
+        def result = ''
+        Browser.drive {
+            waitFor {
+                result = page.rekommendationer.ressattNej.value();
+            }
+        }
+        result
+    }
+
+    String ressattJa() {
+        def result = ''
+        Browser.drive {
+            waitFor {
+                result = page.rekommendationer.ressattJa.value();
+            }
+        }
+        result
+    }
+
+    String rehabJa() {
+        def result = ''
+        Browser.drive {
+            waitFor {
+                result = page.rekommendationer.rehabYes.value();
+            }
+        }
+        result
+    }
+
+
+    String rehab() {
+        def result = ''
+        Browser.drive {
+            waitFor {
+                result = page.rekommendationer.radioGroupRehab.value();
+            }
+        }
+        result
+    }
+
+    String rehabNej() {
+        def result = ''
+        Browser.drive {
+            waitFor {
+                result = page.rekommendationer.rehabNo.value();
+            }
+        }
+        result
+    }
+
+    boolean rehabNejInteSynes() {
+        def result = false
+        Browser.drive {
+            waitFor {
+                result = !page.rekommendationer.rehabNo.isDisplayed();
+            }
+        }
+        result
+    }
 }

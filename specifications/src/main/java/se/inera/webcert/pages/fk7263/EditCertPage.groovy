@@ -54,6 +54,7 @@ class EditCertPage extends AbstractPage {
         valideringPrognos(required: false)               { $("#validationMessages_prognos") }
         valideringRekommendationer(required: false)      { $("#validationMessages_rekommendationer") }
         valideringVardperson(required: false)            { $("#validationMessages_vardperson") }
+
     }
 }
 
@@ -130,6 +131,8 @@ class PrognosModule extends Module {
     static base = { $("#prognosForm") }
     static content = {
         prognos { $("input", name: "capacityForWorkForecast") }
+        radioGroup {$("input", name : "capacityForWorkForecast")}
+
         beskrivning { $("#capacityForWorkForecastText") }
     }
 
@@ -150,18 +153,27 @@ class PrognosModule extends Module {
             }
         }
     }
+
+    def prognosValue(){
+        return prognos.value();
+    }
 }
 
 class RekommendationerModule extends Module {
     static base = { $("#rekommendationerForm") }
     static content = {
+
+        radioGroupTravel {$("input", name:"recommendationsToFk.travel")}
+        arbetslivsinriktadRehabilitering { $("input", name:"recommendationsToFkReabInQuestion") }
+        radioGroupRehab { $("input", name:"recommendationsToFkReabInQuestion") }
         ressattJa { $("#rekommendationRessatt") }
         ressattNej { $("#rekommendationRessattEj") }
         kontaktAf { $("#rekommendationKontaktAf") }
         kontaktForetagshalsovard { $("#rekommendationKontaktForetagshalsovard") }
         ovrigt { $("#rekommendationOvrigt") }
         ovrigtBeskrivning { $("#rekommendationOvrigtBeskrivning") }
-        arbetslivsinriktadRehabilitering { $("input", name: "recommendationsToFkReabInQuestion") }
+        rehabYes { $("#rehabYes") }
+        rehabNo { $("#rehabNo") }
     }
 
     def valjArbetslivsinriktadRehabilitering(String arAktuell) {
