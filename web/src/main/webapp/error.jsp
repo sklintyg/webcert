@@ -46,24 +46,24 @@
               <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
             </c:when>
             
-            <c:when test="${param.reason eq \"medarbetaruppdrag\"}">
-              <h1><spring:message code="error.medarbetaruppdrag.title" /></h1>
+            <c:when test="${param.reason eq \"login.medarbetaruppdrag\"}">
+              <h1><spring:message code="error.login.medarbetaruppdrag.title" /></h1>
               <div id="noAuth" class="alert alert-danger">
-                <spring:message code="error.medarbetaruppdrag.text" />
+                <spring:message code="error.login.medarbetaruppdrag.text" />
               </div>
             </c:when>
 
-            <c:when test="${param.reason eq \"badcredentials\"}">
-              <h1><spring:message code="error.badcredentials.title" /></h1>
+            <c:when test="${param.reason eq \"login.failed\"}">
+              <h1><spring:message code="error.login.failed.title" /></h1>
               <div id="noAuth" class="alert alert-danger">
-                <spring:message code="error.badcredentials.text" />
+                <spring:message code="error.login.failed.text" />
               </div>
             </c:when>
 
-            <c:when test="${param.reason eq \"hsaerror\"}">
-              <h1><spring:message code="error.hsaerror.title" /></h1>
+            <c:when test="${param.reason eq \"login.hsaerror\"}">
+              <h1><spring:message code="error.login.hsaerror.title" /></h1>
               <div id="noAuth" class="alert alert-danger">
-                <spring:message code="error.hsaerror.text" />
+                <spring:message code="error.login.hsaerror.text" />
               </div>
             </c:when>
 
