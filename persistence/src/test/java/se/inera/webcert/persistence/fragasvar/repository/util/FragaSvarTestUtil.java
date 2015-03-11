@@ -1,15 +1,14 @@
 package se.inera.webcert.persistence.fragasvar.repository.util;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 import org.joda.time.LocalDateTime;
-
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+
+import java.util.Arrays;
+import java.util.HashSet;
 
 
 public class FragaSvarTestUtil {
@@ -22,8 +21,8 @@ public class FragaSvarTestUtil {
     private static LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2014-10-21T11:11:11");
     private static LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2014-10-21T12:00:00");
     
-    private static IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk", "Sven Persson",
-            FRAGE_SENT_DATE);
+    private static IntygsReferens INTYGS_REFERENS = new IntygsReferens("abc123", "fk", "19121212-1212",
+            "Sven Persson", FRAGE_SENT_DATE);
     
     public static String ENHET_1_ID = "ENHET_TEST_1_ID";
     public static String ENHET_2_ID = "ENHET_TEST_2_ID";
@@ -69,7 +68,6 @@ public class FragaSvarTestUtil {
 
     /**
      * Builds a FragaSvara, a question with reply, from the supplied params.
-     * @param id TODO
      * @param enhetsId
      * @param status
      * @param fragestallare

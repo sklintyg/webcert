@@ -304,8 +304,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     "FS-XXX: Cannot save Fraga when certificate is revoked!");
         }
 
-        IntygsReferens intygsReferens = FragaSvarConverter
-                .convertToIntygsReferens(intyg.getUtlatande());
+        IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(intyg.getUtlatande());
 
         FragaSvar fraga = new FragaSvar();
         fraga.setFrageStallare(FrageStallare.WEBCERT.getKod());

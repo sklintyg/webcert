@@ -382,4 +382,9 @@
     </createIndex>
   </changeSet>
 
+  <changeSet id="11" author="me">
+    <dropColumn tableName="FRAGASVAR" columnName="PATIENT_ID_ROOT"/>
+    <renameColumn tableName="FRAGASVAR" oldColumnName="PATIENT_ID_EXTENSION" newColumnName="PATIENT_ID"/>
+  </changeSet>
+
 </databaseChangeLog>

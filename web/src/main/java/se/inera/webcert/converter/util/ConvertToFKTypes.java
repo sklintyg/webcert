@@ -2,6 +2,8 @@ package se.inera.webcert.converter.util;
 
 import org.joda.time.LocalDateTime;
 
+import se.inera.certificate.validate.PersonnummerValidator;
+import se.inera.certificate.validate.SamordningsnummerValidator;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
@@ -72,11 +74,19 @@ public final class ConvertToFKTypes {
         if (ir == null) {
             return null;
         }
+
         LakarutlatandeEnkelType lu = new LakarutlatandeEnkelType();
         lu.setLakarutlatandeId(ir.getIntygsId());
+
         PatientType pt = new PatientType();
         pt.setFullstandigtNamn(ir.getPatientNamn());
-        pt.setPersonId(toII(ir.getPatientId().getPatientIdRoot(), ir.getPatientId().getPatientIdExtension()));
+
+        String root = PersonnummerValidator.PERSONNUMMER_ROOT;
+        if (SamordningsnummerValidator.isSamordningsNummer(ir.getPatientId())) {
+            root = SamordningsnummerValidator.SAMORDNINGSNUMMER_ROOT;
+        }
+
+        pt.setPersonId(toII(root, ir.getPatientId()));
 
         lu.setPatient(pt);
         lu.setSigneringsTidpunkt(ir.getSigneringsDatum());
