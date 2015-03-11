@@ -65,9 +65,6 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $log.debug('Query Error' + errorData);
                     $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
                 });
-
-                // Prepare copy dialog
-                ManageCertificate.initCopyDialog($scope);
             }
 
             /**
