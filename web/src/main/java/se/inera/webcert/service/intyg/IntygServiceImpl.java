@@ -17,6 +17,10 @@ import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Vardenhet;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
@@ -26,12 +30,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.v1
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateRequestType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendMedicalCertificateResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
-import se.inera.ifv.insuranceprocess.healthreporting.util.ModelConverter;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.utkast.model.Omsandning;
@@ -83,7 +81,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     private RevokeMedicalCertificateResponderInterface revokeService;
 
     @Autowired
-    private SendMedicalCertificateResponderInterface sendService;
+    private SendCertificateToRecipientResponderInterface sendService;
 
     @Autowired
     private OmsandningRepository omsandningRepository;
@@ -279,30 +277,21 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         try {
             LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
 
-            AttributedURIType address = new AttributedURIType();
-            address.setValue(logicalAddress);
+            SendCertificateToRecipientType request = new SendCertificateToRecipientType();
+            request.setUtlatandeId(intygsId);
+            request.setPersonId(intyg.getUtlatande().getGrundData().getPatient().getPersonId());
+            request.setMottagareId(recipient);
 
-            SendType send = new SendType();
-            send.setAdressVard(ModelConverter.toVardAdresseringsType(intyg.getUtlatande().getGrundData()));
-            send.setLakarutlatande(ModelConverter.toLakarutlatandeEnkelType(intyg.getUtlatande()));
-            send.setAvsantTidpunkt(LocalDateTime.now());
-            send.setVardReferensId(intyg.getUtlatande().getId());
-
-            SendMedicalCertificateRequestType parameters = new SendMedicalCertificateRequestType();
-            parameters.setSend(send);
-
-            SendMedicalCertificateResponseType response = sendService.sendMedicalCertificate(address, parameters);
+            SendCertificateToRecipientResponseType response = sendService.sendCertificateToRecipient(logicalAddress, request);
 
             // check whether call was successful or not
-            if (response.getResult().getResultCode() == ResultCodeEnum.ERROR) {
-                String message = response.getResult().getErrorId() + " : " + response.getResult().getErrorText();
-                LOG.error("Module problems occured when trying to send intyg " + intygsId + " : " + message);
+            if (ResultCodeType.ERROR.equals(response.getResult().getResultCode())) {
+                LOG.error("Error occured when trying to send intyg '{}'; {}", intygsId, response.getResult().getResultText());
                 scheduleResend(omsandning);
                 return IntygServiceResult.RESCHEDULED;
             } else {
-                if (response.getResult().getResultCode() == ResultCodeEnum.INFO) {
-                    String message = response.getResult().getInfoText();
-                    LOG.warn("Warning occured when trying to send intyg " + intygsId + " : " + message);
+                if (ResultCodeType.INFO.equals(response.getResult().getResultCode())) {
+                    LOG.warn("Warning occured when trying to send intyg '{}'; {}", intygsId, response.getResult().getResultText());
                 }
                 omsandningRepository.delete(omsandning);
 
@@ -313,7 +302,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
                 // Notify stakeholders when a certificate is sent
                 notificationService.sendNotificationForIntygSent(intygsId);
-                LOG.debug("Notification sent: certificate with id '{}' has been sent to FK", intygsId);
+                LOG.debug("Notification sent: certificate with id '{}' has been sent to '{}'", intygsId, recipient);
 
                 return IntygServiceResult.OK;
             }
