@@ -41,7 +41,12 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
             controller: 'webcert.ViewCertCtrl'
         }).
         state('fragasvar', {
-            url: '/fragasvar/:certificateType/:certificateId/:qaOnly?',
+            url: '/fragasvar/:certificateType/:certificateId',
+            templateUrl: '/views/dashboard/view.qa.html',
+            controller: 'webcert.ViewCertCtrl'
+        }).
+        state('fragasvar-qaonly', {
+            url: '/fragasvar/:certificateType/:certificateId/:qaOnly',
             templateUrl: '/views/dashboard/view.qa.html',
             controller: 'webcert.ViewCertCtrl'
         }).
