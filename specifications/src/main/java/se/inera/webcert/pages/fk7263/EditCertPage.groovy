@@ -24,6 +24,7 @@ class EditCertPage extends AbstractPage {
         integrationBorttaget { $("#integration-deleted") }
 
         // Intyg
+        form { $("form") }
         smittskydd { $("#smittskydd") }
         baserasPa { module BaserasPaModule }
         diagnos { module DiagnosModule }
@@ -36,10 +37,11 @@ class EditCertPage extends AbstractPage {
         prognos { module PrognosModule }
         atgardSjukvard { $("#measuresCurrent") }
         atgardAnnan { $("#measuresOther") }
-        rekommendationer { module RekommendationerModule }
+        rekommendationer { name -> module RekommendationerModule, form: form }
         kontaktFk { $("#kontaktFk") }
         ovrigt { $("#otherInformation") }
         vardenhet { module VardenhetModule }
+
 
         // date picker
         datepicker { $("div[ng-switch='datepickerMode']") }
@@ -160,12 +162,18 @@ class PrognosModule extends Module {
 }
 
 class RekommendationerModule extends Module {
+    // Toplevel form, directly accessible without locator expression
+    def form
     static base = { $("#rekommendationerForm") }
     static content = {
 
-        radioGroupTravel {$("input", name:"recommendationsToFk.travel")}
-        arbetslivsinriktadRehabilitering { $("input", name:"recommendationsToFkReabInQuestion") }
-        radioGroupRehab { $("input", name:"recommendationsToFkReabInQuestion") }
+        // Access radio groups directly from form, since locator expressions
+        // don't seem to work when multiple radio groups are found inside base scope
+
+        arbetslivsinriktadRehabilitering { $("input", name:"recommendationsToFkTravel") }
+        radioGroupResor { form.recommendationsToFkTravel }
+        radioGroupRehab {  form.recommendationsToFkReabInQuestion }
+
         ressattJa { $("#rekommendationRessatt") }
         ressattNej { $("#rekommendationRessattEj") }
         kontaktAf { $("#rekommendationKontaktAf") }
@@ -192,6 +200,8 @@ class RekommendationerModule extends Module {
         }
     }
 }
+
+
 
 class VardenhetModule extends Module {
     static base = { $("#vardenhetForm") }

@@ -70,18 +70,19 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Async("threadPoolTaskExecutor")
     public void sendMailForIncomingQuestion(FragaSvar fragaSvar) {
 
+        String type = "question";
         String careUnitId = fragaSvar.getVardperson().getEnhetsId();
 
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
 
         if (recipient == null) {
-            logError("question", fragaSvar, null);
+            logError(type, fragaSvar, null);
         } else {
             try {
                 String reason = "incoming question '" + fragaSvar.getInternReferens() + "'";
-                sendNotificationMailToEnhet(fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar), recipient, reason);
+                sendNotificationMailToEnhet(type, fragaSvar, INCOMING_QUESTION_SUBJECT, mailBodyForFraga(recipient, fragaSvar), recipient, reason);
             } catch (MailSendException | MessagingException e) {
-                logError("question", fragaSvar, e);
+                logError(type, fragaSvar, e);
             }
         }
     }
@@ -90,18 +91,19 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Async("threadPoolTaskExecutor")
     public void sendMailForIncomingAnswer(FragaSvar fragaSvar) {
 
+        String type = "answer";
         String careUnitId = fragaSvar.getVardperson().getEnhetsId();
 
         GetHsaUnitResponseType recipient = getHsaUnit(careUnitId);
 
         if (recipient == null) {
-            logError("answer", fragaSvar, null);
+            logError(type, fragaSvar, null);
         } else {
             try {
                 String reason = "incoming answer on question '" + fragaSvar.getInternReferens() + "'";
-                sendNotificationMailToEnhet(fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar), recipient, reason);
+                sendNotificationMailToEnhet(type, fragaSvar, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, fragaSvar), recipient, reason);
             } catch (MailSendException | MessagingException e) {
-                logError("answer", fragaSvar, e);
+                logError(type, fragaSvar, e);
             }
         }
     }
@@ -114,13 +116,19 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         this.webCertHostUrl = webCertHostUrl;
     }
 
-    private void sendNotificationMailToEnhet(FragaSvar fragaSvar, String subject, String body, GetHsaUnitResponseType receivingEnhet, String reason) throws MessagingException {
+    private void sendNotificationMailToEnhet(String type, FragaSvar fragaSvar, String subject, String body, GetHsaUnitResponseType receivingEnhet, String reason) throws MessagingException {
 
         String recipientAddress = receivingEnhet.getEmail();
 
-        // if recipient unit does not have a mail address configured, we try to lookup the unit's parent
-        if (recipientAddress == null) {
-            recipientAddress = getParentMailAddress(receivingEnhet.getHsaIdentity());
+        try {
+            // if recipient unit does not have a mail address configured, we try to lookup the unit's parent
+            if (recipientAddress == null) {
+                recipientAddress = getParentMailAddress(receivingEnhet.getHsaIdentity());
+            }
+        } catch (WebServiceException e) {
+            LOG.error("Failed to contact HSA to get HSA Id '" + receivingEnhet.getHsaIdentity() + "' : " + e.getMessage());
+            logError(type, fragaSvar, null);
+            return;
         }
 
         if (recipientAddress != null) {

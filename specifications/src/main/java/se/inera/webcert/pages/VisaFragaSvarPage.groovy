@@ -145,11 +145,11 @@ class VisaFragaSvarPage extends AbstractPage {
     }
 
     def fkKompletteringar(String internid) {
-        $("#fkKompletteringar-${internid}").click()
+        $("#unhandled-fkKompletteringar-${internid}").click()
     }
 
     def fkKontakter(String internid) {
-        $("#fkKontakter-${internid}").click()
+        $("#unhandled-fkKontakter-${internid}").click()
     }
 
     def qaFragaSkickadDatum(String internid) {

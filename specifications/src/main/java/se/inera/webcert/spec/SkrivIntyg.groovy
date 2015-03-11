@@ -284,6 +284,22 @@ class SkrivIntyg {
         result
     }
 
+    String ressatt() {
+        def result = ''
+        Browser.drive {
+            result = page.rekommendationer.radioGroupResor
+        }
+        result
+    }
+
+    String rehab() {
+        def result = ''
+        Browser.drive {
+            result = page.rekommendationer.radioGroupRehab
+        }
+        result
+    }
+
     String ressattNej() {
         def result = ''
         Browser.drive {
@@ -309,17 +325,6 @@ class SkrivIntyg {
         Browser.drive {
             waitFor {
                 result = page.rekommendationer.rehabYes.value();
-            }
-        }
-        result
-    }
-
-
-    String rehab() {
-        def result = ''
-        Browser.drive {
-            waitFor {
-                result = page.rekommendationer.radioGroupRehab.value();
             }
         }
         result

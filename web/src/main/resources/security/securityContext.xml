@@ -49,17 +49,18 @@
         class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
     <property name="exceptionMappings">
       <props>
-        <prop key="se.inera.auth.exceptions.MissingMedarbetaruppdragException">/error.jsp?reason=medarbetaruppdrag
+        <prop key="se.inera.auth.exceptions.MissingMedarbetaruppdragException">
+          /error.jsp?reason=login.medarbetaruppdrag
         </prop>
         <prop key="org.springframework.security.authentication.BadCredentialsException">
-          /error.jsp?reason=badcredentials
+          /error.jsp?reason=login.failed
         </prop>
         <prop key="se.inera.auth.exceptions.HsaServiceException">
-          /error.jsp?reason=hsaerror
+          /error.jsp?reason=login.hsaerror
         </prop>
       </props>
     </property>
-    <property name="defaultFailureUrl" value="/error.jsp"/>
+    <property name="defaultFailureUrl" value="/error.jsp?reason=login.failed"/>
   </bean>
 
   <bean id="http403ForbiddenEntryPoint"
