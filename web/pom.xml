@@ -83,17 +83,21 @@
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>fk7263</artifactId>
     </dependency>
-    <!-- 
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-bas</artifactId>
     </dependency>
+    <!-- 
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-diabetes</artifactId>
     </dependency>
      -->
     <!-- Interactions -->    
+    <dependency>
+        <groupId>se.inera.intyg.schemas.intygstjanster.ts.services.v1</groupId>
+        <artifactId>se-intygstjanster-ts-services-interactions</artifactId>
+    </dependency>
     <dependency>
       <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
       <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
