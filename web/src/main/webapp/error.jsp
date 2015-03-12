@@ -45,7 +45,7 @@
               </div>
               <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
             </c:when>
-            
+
 
             <c:when test="${param.reason eq \"login.medarbetaruppdrag\"}">
               <h1><spring:message code="error.login.medarbetaruppdrag.title" /></h1>
