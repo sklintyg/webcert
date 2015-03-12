@@ -19,13 +19,13 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
+import se.inera.certificate.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.v1.rivtabp20.RevokeMedicalCertificateResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificate.v1.rivtabp20.SendMedicalCertificateResponderInterface;
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
@@ -57,7 +57,7 @@ public abstract class AbstractIntygServiceTest {
     protected RegisterCertificateResponderInterface intygSender;
 
     @Mock
-    protected SendMedicalCertificateResponderInterface sendService;
+    protected SendCertificateToRecipientResponderInterface sendService;
 
     @Mock
     protected RevokeMedicalCertificateResponderInterface revokeService;

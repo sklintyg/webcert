@@ -13,11 +13,12 @@ public class IntygsReferens {
     public IntygsReferens() {
     }
 
-    public IntygsReferens(String intygsId, String intygsTyp, String patientNamn,
-                          LocalDateTime signeringsDatum) {
+    public IntygsReferens(String intygsId, String intygsTyp, String patientId,
+                          String patientName, LocalDateTime signeringsDatum) {
         this.intygsId = intygsId;
         this.intygsTyp = intygsTyp;
-        this.patientNamn = patientNamn;
+        this.patientId = patientId;
+        this.patientNamn = patientName;
         this.signeringsDatum = signeringsDatum;
     }
 
@@ -27,6 +28,9 @@ public class IntygsReferens {
     @Column(name = "INTYGS_TYP")
     private String intygsTyp;
 
+    @Column(name = "PATIENT_ID")
+    private String patientId;
+
     @Column(name = "PATIENT_NAMN")
     private String patientNamn;
 
@@ -34,8 +38,10 @@ public class IntygsReferens {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
     private LocalDateTime signeringsDatum;
 
+    /*
     @Embedded
-    private Id patientId;
+    private String patientId;
+    */
 
     public String getIntygsId() {
         return intygsId;
@@ -51,6 +57,14 @@ public class IntygsReferens {
 
     public void setIntygsTyp(String intygsTyp) {
         this.intygsTyp = intygsTyp;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public String getPatientNamn() {
@@ -69,6 +83,7 @@ public class IntygsReferens {
         this.signeringsDatum = signeringsDatum;
     }
 
+    /*
     public Id getPatientId() {
         return patientId;
     }
@@ -76,4 +91,5 @@ public class IntygsReferens {
     public void setPatientId(Id patientId) {
         this.patientId = patientId;
     }
+    */
 }
