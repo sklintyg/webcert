@@ -113,6 +113,12 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.User'
         $window.doneLoading = false;
         $window.dialogDoneLoading = true;
 
+        $rootScope.$on('$routeChangeStart', function() {
+            $window.doneLoading = false;
+        });
+        $rootScope.$on('$routeChangeSuccess', function() {
+            $window.doneLoading = true;
+        });
         $rootScope.$on('$stateChangeStart',
             function(event, toState, toParams, fromState, fromParams){
                 $window.doneLoading = false;
@@ -196,8 +202,9 @@ $.get('/api/modules/map').then(function(modules) {
                     addExceptionHandler();
                 }
 
-                // Everything is loaded, bootstrap the application with all dependencies.
-                angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
+                    // Everything is loaded, bootstrap the application with all dependencies.
+                    angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
+
             });
         }).fail(function(error) {
             if (window.console) {

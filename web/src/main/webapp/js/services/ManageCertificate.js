@@ -144,8 +144,6 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
             function _copy($scope, intygCopyRequest, isOtherCareUnit) {
 
-                _initCopyDialog();
-
                 function goToDraft(type, intygId) {
 
                     /**
