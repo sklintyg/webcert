@@ -27,6 +27,15 @@ class HanteraUtkast {
         }
     }
 
+    def valjIntygFranEjSigneradeIntyg(intygsid) {
+        Browser.drive {
+            $("#showBtn-$intygsid").click()
+            waitFor {
+                at se.inera.webcert.pages.fk7263.EditCertPage
+            }
+        }
+    }
+
     boolean ejSigneradeIntygSidanVisas() {
         Browser.drive {
             waitFor {
@@ -368,5 +377,9 @@ class HanteraUtkast {
         return result;
     }
 
-
+    def klickaPaTillbakaKnappen() {
+        Browser.drive {
+            page.tillbakaButton.click();
+        }
+    }
 }

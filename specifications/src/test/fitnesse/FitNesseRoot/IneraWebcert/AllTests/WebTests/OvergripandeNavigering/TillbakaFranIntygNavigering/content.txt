@@ -1,0 +1,52 @@
+Testa navigering från editera intygssidan. Verifierar WEBCERT-1603/1604
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+| klicka pa tillbaka knappen |
+
+!3 Man ska komma till välj intygstyp
+
+| script | !-SokSkrivIntyg-! |
+| valj intygstyp sidan visas |
+
+!3 Ta bort intyget
+
+| script | !-HanteraUtkast-! |
+| valj intyg fran ej signerade intyg | $intygsid |
+| radera utkast |
+
+!3 Efter borttagning ska man komma till välj intygstyp
+
+| script | !-SokSkrivIntyg-! |
+| valj intygstyp sidan visas |
+
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Om man kommer från ej signerade intyg och klcik tillbaka ska man komma dit
+
+| script | !-HanteraUtkast-! |
+| ga till ej signerade intyg |
+| valj intyg fran ej signerade intyg | $intygsid |
+| klicka pa tillbaka knappen |
+| ej signerade intyg sidan visas |
+
+!3 Tar man bort intyget ska man också komma tillbaka dit.
+
+| script | !-HanteraUtkast-! |
+| valj intyg fran ej signerade intyg | $intygsid |
+| radera utkast |
+| ej signerade intyg sidan visas |
