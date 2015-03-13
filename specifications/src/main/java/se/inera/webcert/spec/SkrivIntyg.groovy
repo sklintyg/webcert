@@ -350,4 +350,32 @@ class SkrivIntyg {
             page.tillbakaButton.click();
         }
     }
+
+    boolean verifieraAttTextForElementInnehallar(String elementId, String expectedText) {
+        def result = false;
+        Browser.drive {
+            waitFor {
+                def element = page.elementForId(elementId);
+                if(element != null && element instanceof ArrayList){
+                    element = element.get(0);
+                }
+                result = element?.text().contains(expectedText);
+            }
+        }
+        result
+    }
+
+    boolean verifieraAttTextForClassInnehallar(String classId, String expectedText) {
+        def result = false;
+        Browser.drive {
+            waitFor {
+                def element = page.elementForClass(classId);
+                if(element != null && element instanceof ArrayList){
+                    element = element.get(0);
+                }
+                result = element?.text().contains(expectedText);
+            }
+        }
+        result
+    }
 }
