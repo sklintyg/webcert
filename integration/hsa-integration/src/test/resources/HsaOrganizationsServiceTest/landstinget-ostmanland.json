@@ -1,8 +1,10 @@
 {
+    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
     "id" : "ostmanland",
     "namn" : "Landstinget Östmanland",
     "vardenheter" : [
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "vardcentrum-1",
             "namn" : "Vårdcentrum 1"
         }

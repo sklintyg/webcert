@@ -1,8 +1,10 @@
 {
+    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
     "id" : "IFV1239877878-1041",
     "namn" : "WebCert-Vårdgivare1",
     "vardenheter" : [
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "IFV1239877878-1042",
             "namn" : "WebCert-Enhet1",
             "epost" : "enhet1@webcert.invalid.se",

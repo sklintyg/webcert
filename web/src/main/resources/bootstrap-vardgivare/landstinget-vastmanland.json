@@ -1,32 +1,39 @@
 {
+    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
     "id" : "vastmanland",
     "namn" : "Landstinget Västmanland",
     "vardenheter" : [
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "centrum-vast",
             "namn" : "Vårdcentrum i Väst",
             "mottagningar" : [
                 {
+                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "dialys",
                     "namn" : "Dialys"
                 },
                 {
+                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "akuten",
                     "namn" : "Akuten"
                 }
             ]
         },
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "centrum-ost",
             "namn" : "Vårdcentrum i Öst",
             "mottagningar" : [
                 {
+                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "nagel",
                     "namn" : "Nagelmottagningen"
                 }
             ]
         },
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "centrum-norr",
             "namn" : "Vårdcentrum i Norr"
         }

@@ -1,12 +1,15 @@
 {
+    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
     "id" : "ifv-testdata",
     "namn" : "IFV Testdata",
     "vardenheter" : [
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "IFV1239877878-103C",
             "namn" : "OrgEnhet1"
         },
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "IFV1239877878-103F",
             "namn" : "OrgEnhet1",
             "epost" : "enhet1@webcert.invalid.se",
@@ -17,6 +20,7 @@
             "arbetsplatskod" : "1234567890"
         },
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "IFV1239877878-103G",
             "namn" : "OrgEnhet2",
             "epost" : "enhet1@webcert.invalid.se",
@@ -27,6 +31,7 @@
             "arbetsplatskod" : "1234567890"
         },
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "IFV1239877878-103H",
             "namn" : "VårdEnhet2A",
             "epost" : "enhet1@webcert.invalid.se",
@@ -37,6 +42,7 @@
             "arbetsplatskod" : "1234567890",
             "mottagningar" : [
                 {
+                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "IFV1239877878-103J",
                     "namn" : "Enhet2A1",
                     "epost" : "enhet1@webcert.invalid.se",
@@ -49,6 +55,7 @@
             ]
         },
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "IFV1239877878-103D",
             "namn" : "VårdEnhetA",
             "epost" : "enhet1@webcert.invalid.se",
