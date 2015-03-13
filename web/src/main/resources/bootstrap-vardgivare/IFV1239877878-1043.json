@@ -1,8 +1,10 @@
 {
+    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
     "id" : "IFV1239877878-1043",
     "namn" : "WebCert-Vårdgivare2",
     "vardenheter" : [
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "IFV1239877878-1045",
             "namn" : "WebCert-Enhet2",
             "epost" : "enhet1@webcert.invalid.se",
@@ -13,6 +15,7 @@
             "arbetsplatskod" : "1234567890",
             "mottagningar" : [
                 {
+                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "IFV1239877878-1046",
                     "namn" : "WebCert-Underenhet1",
                     "epost" : "underenhet1@webcert.invalid.se",
@@ -23,6 +26,7 @@
                     "arbetsplatskod" : "1234567890"
                 },
                 {
+                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "IFV1239877878-104C",
                     "namn" : "WebCert-Underenhet2",
                     "epost" : "underenhet2@webcert.invalid.se",
@@ -35,6 +39,7 @@
             ]
         },
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "IFV1239877878-104D",
             "namn" : "WebCert-Enhet3",
             "telefonnummer" : "0101234567890",
