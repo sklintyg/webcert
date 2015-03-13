@@ -42,9 +42,6 @@ public class LogServiceImplTest {
     @Mock
     private JmsTemplate template = mock(JmsTemplate.class);
 
-    @Mock
-    protected WebCertUserService webCertUserService = new WebCertUserServiceImpl();
-
     @InjectMocks
     LogServiceImpl logService = new LogServiceImpl();
 
@@ -55,14 +52,12 @@ public class LogServiceImplTest {
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
-        when(webCertUserService.getWebCertUser()).thenReturn(createWcUser());
-
         LogRequest logRequest = new LogRequest();
         logRequest.setIntygId("abc123");
         logRequest.setPatientId("19121212-1212");
         logRequest.setPatientName("Hans Olof van der Test");
         
-        logService.logReadOfIntyg(logRequest );
+        logService.logReadOfIntyg(logRequest, createWcUser());
 
         verify(template, only()).send(messageCreatorCaptor.capture());
 

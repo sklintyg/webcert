@@ -1,8 +1,10 @@
 package se.inera.webcert.service.intyg.config;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.text.MessageFormat;
+
+import se.inera.webcert.hsa.model.WebCertUser;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class SendIntygConfiguration {
 
@@ -11,15 +13,18 @@ public class SendIntygConfiguration {
     private String recipient;
 
     private boolean patientConsent;
+    
+    private WebCertUser webCertUser;
 
     public SendIntygConfiguration() {
 
     }
 
-    public SendIntygConfiguration(String recipient, boolean patientConsent) {
+    public SendIntygConfiguration(String recipient, boolean patientConsent, WebCertUser webCertUser) {
         super();
         this.recipient = recipient;
         this.patientConsent = patientConsent;
+        this.webCertUser = webCertUser;
     }
 
     @JsonIgnore
@@ -43,4 +48,13 @@ public class SendIntygConfiguration {
     public void setPatientConsent(boolean patientConsent) {
         this.patientConsent = patientConsent;
     }
+
+    public WebCertUser getWebCertUser() {
+        return webCertUser;
+    }
+
+    public void setWebCertUser(WebCertUser webCertUser) {
+        this.webCertUser = webCertUser;
+    }
+
 }

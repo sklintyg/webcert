@@ -8,6 +8,8 @@
   <bean id="jmsPDLLogTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="connectionFactory" />
     <property name="defaultDestination" ref="queue" />
+    <!-- Make transactional aware -->
+    <property name="sessionTransacted" value="true" />
   </bean>
 
   <bean id="jmsNotificationTemplate" class="org.springframework.jms.core.JmsTemplate">
