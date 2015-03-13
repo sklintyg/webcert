@@ -37,8 +37,16 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
         }).
         state('intyg', {
             url:'/intyg/:certificateType/:certificateId',
-            templateUrl: '/views/dashboard/view.certificate.html',
-            controller: 'webcert.ViewCertCtrl'
+            views: {
+                '' : {
+                    templateUrl: '/views/dashboard/view.certificate.html',
+                    controller: 'webcert.ViewCertCtrl'
+                },
+                'header@intyg' : {
+                    templateUrl: '/web/webjars/common/webcert/intyg/view/intyg-view-header/intyg-view-header.html',
+                    controller: 'common.IntygViewHeader'
+                }
+            }
         }).
         state('fragasvar', {
             url: '/fragasvar/:certificateType/:certificateId',
