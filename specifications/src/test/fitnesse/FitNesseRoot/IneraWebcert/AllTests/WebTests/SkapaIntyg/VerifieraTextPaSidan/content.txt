@@ -10,11 +10,18 @@
 | skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
 | $intygsid= | intygsid |
 
-!3 Verifiera text
-
+!3 Verifiera text webcert-1612
 | script | !-SkrivIntyg-! |
 | verifiera att text for class | soclink | innehallar | beslutsstöd |
 
+!3 Verifiera text webcert-1611
+| Populera Fk7263 |
+| diagnos1 |
+| !-a18-! |
+
+!3 Verifiera att text är nu med störa bokstäver webcert-1611
+| script | !-SkrivIntyg-! |
+| verifiera att text for id | diagnoseCode | innehallar | A18 |
 
 !3 Ta bort utkastet
 

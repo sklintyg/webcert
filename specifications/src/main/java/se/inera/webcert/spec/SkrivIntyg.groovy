@@ -351,18 +351,31 @@ class SkrivIntyg {
         }
     }
 
-    boolean verifieraAttTextForElementInnehallar(String elementId, String expectedText) {
+    boolean verifieraAttTextForIdInnehallar(String elementId, String expectedText) {
         def result = false;
         Browser.drive {
             waitFor {
                 def element = page.elementForId(elementId);
-                if(element != null && element instanceof ArrayList){
-                    element = element.get(0);
-                }
-                result = element?.text().contains(expectedText);
+                result = containText(element, expectedText);
             }
         }
         result
+    }
+
+    boolean containText(element, expectedText){
+        println(element);
+        if(element != null && element instanceof ArrayList){
+            element = element.get(0);
+        }
+        def text = '';
+        if(element){
+            if(element.value()){
+                text = element.value();
+            } else if(element.text()){
+                text = element.text();
+            }
+        }
+        return text.contains(expectedText);
     }
 
     boolean verifieraAttTextForClassInnehallar(String classId, String expectedText) {
@@ -370,10 +383,7 @@ class SkrivIntyg {
         Browser.drive {
             waitFor {
                 def element = page.elementForClass(classId);
-                if(element != null && element instanceof ArrayList){
-                    element = element.get(0);
-                }
-                result = element?.text().contains(expectedText);
+                result = containText(element, expectedText);
             }
         }
         result
