@@ -174,8 +174,9 @@ class RekommendationerModule extends Module {
         // this doesn't seem to work with the form.<group name> syntax
         // as a result I needed to use the input query for arbetslivsinriktadRehabilitering
         // when selecting the radio button group
-        arbetslivsinriktadRehabilitering { $("input", name:"recommendationsToFk.travel") }
-        radioGroupResor { form["recommendationsToFk.travel"] }
+        arbetslivsinriktadRehabilitering { $("input", name:"recommendationsToFkTravel") }
+
+        radioGroupResor { form["recommendationsToFkTravel"] }
         radioGroupRehab {  form.recommendationsToFkReabInQuestion }
 
         ressattJa { $("#rekommendationRessatt") }
