@@ -16,10 +16,14 @@
 
 <link rel="stylesheet" href="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+
 <link rel="stylesheet" href="/web/webjars/common/webcert/css/inera-webcert.css?<spring:message code="buildNumber" />"
+      media="screen">
+<link rel="stylesheet" href="/web/webjars/common/css/animate.min.css?<spring:message code="buildNumber" />"
       media="screen">
 <link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css?<spring:message code="buildNumber" />"
       media="screen">
+
 <link rel="stylesheet" href="/web/webjars/common/webcert/css/print.css?<spring:message code="buildNumber" />"
       media="print">
 
@@ -55,6 +59,7 @@
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-cookies.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-route.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-animate.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/min/moment.min.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.min.js?<spring:message code="buildNumber" />"></script>
@@ -67,6 +72,7 @@
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-cookies.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-route.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-animate.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/moment.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.js"></script>
