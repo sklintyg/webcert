@@ -182,11 +182,11 @@
         <artifactId>ts-bas</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
-      <!--<dependency>
+      <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>ts-diabetes</artifactId>
         <version>${intygstyper.version}</version>
-      </dependency>-->
+      </dependency>
 
       <!-- Schemas -->
       <dependency>
