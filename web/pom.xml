@@ -478,7 +478,6 @@
                     dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
                   </fileset>
                 </copy>
-                <!-- 
                 <copy
                   todir="${project.build.directory}/webjardependencies/ts-bas"
                   verbose="false">
@@ -486,6 +485,7 @@
                     dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
                   </fileset>
                 </copy>
+                <!-- 
                 <copy
                   todir="${project.build.directory}/webjardependencies/ts-diabetes"
                   verbose="false">
