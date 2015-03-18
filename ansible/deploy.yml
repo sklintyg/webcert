@@ -1,3 +1,4 @@
+---
 # This playbook deploys WebCert 
 
 - hosts: tomcat
@@ -9,7 +10,7 @@
     # latest release: 3.0.0-b47
     # latest snapshot: 3.0.0-a536
     version: 3.0.0-b47
-    config_version: master
+    config_version: release/v3.0.0
 
   roles:
     - app-resources
