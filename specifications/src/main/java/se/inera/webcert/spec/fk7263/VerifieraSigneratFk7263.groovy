@@ -16,7 +16,7 @@ class VerifieraSigneratFk7263 {
     boolean getBooleanResult(field) {
         def result = false
         Browser.drive {
-            result = page."$field".isDisplayed()
+            result = page."$field".isDisplayed() && page."$field" != "Ej angivet"
         }
         result
     }
@@ -73,6 +73,10 @@ class VerifieraSigneratFk7263 {
         getStringResult(getCurrentMethodName())
     }
 
+    boolean baseratPaList() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
     boolean undersokningAvPatienten() {
         getBooleanResult(getCurrentMethodName())
     }
@@ -82,6 +86,10 @@ class VerifieraSigneratFk7263 {
     }
 
     boolean journaluppgifter() {
+        getBooleanResult(getCurrentMethodName())
+    }
+
+    boolean annanReferens() {
         getBooleanResult(getCurrentMethodName())
     }
 
