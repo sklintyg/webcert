@@ -1,33 +1,40 @@
 {
+    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
     "id" : "testland",
     "namn" : "Landstinget Testland",
     "vardenheter" : [
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "cityakuten",
             "namn" : "Testland Cityakuten",
             "epost" : "cityakuten@testland.se"
         },
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "landcentralen",
             "namn" : "Landcentralen",
             "mottagningar" : [
                 {
+                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "vansterakuten",
                     "namn" : "Vänsterakuten",
                     "epost" : "vansterakuten@testland.se"
                 },
                 {
+                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "hogerakuten",
                     "epost" : "Högerakuten"
                 }
             ]
         },
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "sjocentralen",
             "namn" : "Sjöcentralen",
             "epost" : "sjocentralen@testland.se",
             "mottagningar" : [
                 {
+                	"@class" : "se.inera.webcert.hsa.model.Mottagning",
                     "id" : "kustakuten",
                     "namn" : "Kustakuten"
                 }
