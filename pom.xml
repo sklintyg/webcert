@@ -24,6 +24,7 @@
 
     <!-- Tools -->
     <tools.version>0-SNAPSHOT</tools.version>
+    <tools.version.range>(,2.1.0]</tools.version.range>
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
@@ -454,7 +455,7 @@
           <includeProperties>
             common.version, intygstjanst.version, intygstyper.version, clinicalprocess-healthcond-certificate.version,
             insuranceprocess-healthreporting.version, itintegration-monitoring.version, ehr-logstore.version,
-            schemas-common.version
+            schemas-common.version, tools-version
           </includeProperties>
           <properties>
             <property>
@@ -488,6 +489,10 @@
             <property>
               <name>schemas-common.version</name>
               <version>${schemas-common.version.range}</version>
+            </property>
+            <property>
+              <name>tools.version</name>
+              <version>${tools.version.range}</version>
             </property>
           </properties>
         </configuration>
