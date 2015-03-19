@@ -49,7 +49,6 @@
     <dependency>
       <groupId>se.inera.intyg.tools</groupId>
       <artifactId>tools-specifications</artifactId>
-      <version>${tools.version}</version>
     </dependency>
 
     <!-- Schemas -->
