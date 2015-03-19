@@ -24,7 +24,7 @@ class ValideraSvar extends WsClientFixture {
     
     public ValideraSvar(String logiskAddress) {
         super(logiskAddress)
-        String url = baseUrl + "receive-answer/v1.0"
+        String url = baseUrl + "services/receive-answer/v1.0"
         receiveMedicalCertificateAnswerResponder = createClient(ReceiveMedicalCertificateAnswerResponderInterface.class, url)
     }
 

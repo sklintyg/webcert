@@ -98,7 +98,7 @@ public class Vardgivare extends RestClientFixture {
     }
 
     def endTable() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         restClient.post(
                 path: 'hsa-api/vardgivare',
                 body: vardgivareJson(),

@@ -47,7 +47,7 @@ public class FragaSvar extends RestClientFixture {
     }
 
     def execute() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         def response = restClient.post(
                 path: 'questions',
                 body: questionAnswerJson(),

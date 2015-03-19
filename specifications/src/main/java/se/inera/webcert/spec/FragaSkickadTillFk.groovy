@@ -19,7 +19,7 @@ class FragaSkickadTillFk extends RestClientFixture {
     }
 
     public void execute() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         fragaJson = restClient.get(path: "fk-stub/fragor/").data
     }
 }

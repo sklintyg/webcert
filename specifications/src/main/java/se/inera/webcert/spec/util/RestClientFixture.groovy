@@ -20,7 +20,7 @@ class RestClientFixture {
      * Creates a RestClient which accepts all server certificates
      * @return
      */
-    def createRestClient(String url) {
+    static def createRestClient(String url) {
         def restClient = new RESTClient(url)
 
         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());

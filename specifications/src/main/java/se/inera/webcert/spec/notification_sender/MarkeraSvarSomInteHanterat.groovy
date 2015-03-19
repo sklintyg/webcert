@@ -14,7 +14,7 @@ import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
 
-class MarkeraSvarSomInteHanterat extends RestClientFixture {
+class MarkeraSvarSomInteHanterat {
 
     String intygTyp
     String hsaUser = "user1"
