@@ -39,6 +39,7 @@ import se.inera.webcert.web.controller.moduleapi.dto.SignaturTicketResponse;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
+import se.inera.webcert.web.service.WebCertUserService;
 
 /**
  * Controller for module interaction with drafts.
@@ -59,6 +60,9 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private WebCertUserService webCertUserService;
 
     /**
      * Returns the draft certificate as JSON identified by the intygId.
@@ -81,7 +85,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logReadOfIntyg(logRequest);
+        logService.logReadOfIntyg(logRequest, webCertUserService.getWebCertUser());
 
         DraftHolder draftHolder = new DraftHolder();
 
@@ -198,7 +202,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
 
-        logService.logPrintOfIntygAsDraft(logRequest);
+        logService.logPrintOfIntygAsDraft(logRequest, webCertUserService.getWebCertUser());
 
         return Response.ok().build();
     }

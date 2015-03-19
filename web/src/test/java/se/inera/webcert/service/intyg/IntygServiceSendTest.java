@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +19,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.sendcertifica
 import se.inera.certificate.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
 import se.inera.webcert.service.exception.WebCertServiceException;
@@ -36,6 +38,8 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     public void testSendIntyg() throws Exception {
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.okResult());
+        WebCertUser webCertUser = new WebCertUser();
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
 
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
                 .thenReturn(response);
@@ -45,7 +49,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         verify(omsandningRepository).save(any(Omsandning.class));
         verify(omsandningRepository).delete(any(Omsandning.class));
-        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
+        verify(logService).logSendIntygToRecipient(any(LogRequest.class), eq(webCertUser));
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
 
@@ -53,6 +57,8 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     public void testSendIntygReturnsInfo() throws Exception {
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.infoResult("Info text"));
+        WebCertUser webCertUser = new WebCertUser();
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
 
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
                 .thenReturn(response);
@@ -62,7 +68,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         verify(omsandningRepository).save(any(Omsandning.class));
         verify(omsandningRepository).delete(any(Omsandning.class));
-        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
+        verify(logService).logSendIntygToRecipient(any(LogRequest.class), eq(webCertUser));
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
 
@@ -85,7 +91,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     }
 
     @Test
-    public void testSendIntygFailingWithRuntimeException() throws Exception {
+    public void testSendIntygSendServiceFailingWithRuntimeException() throws Exception {
 
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
                 .thenThrow(new RuntimeException("A runtime exception"));
@@ -99,9 +105,31 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         } catch (WebCertServiceException e) {
             // Expected
         }
+        
+        verify(omsandningRepository, times(2)).save(any(Omsandning.class));
+    }
+    
+    @Test
+    public void testSendIntygPDLLogServiceFailingWithRuntimeException() throws Exception {
+                
+        SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
+        response.setResult(ResultTypeUtil.okResult());
+        when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
+                .thenReturn(response);
 
-        verify(omsandningRepository, times(1)).save(any(Omsandning.class));
-        verify(omsandningRepository, times(1)).delete(any(Omsandning.class));
+        doThrow(new RuntimeException("")).when(logService).logSendIntygToRecipient(any(LogRequest.class), any(WebCertUser.class));
+        
+        Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, INTYG_ID, INTYG_TYP_FK);
+        omsandning.setConfiguration(CONFIG_AS_JSON);
+
+        try {
+            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
+            Assert.fail("WebCertServiceException expected");
+        } catch (WebCertServiceException e) {
+            // Expected
+        }
+        
+        verify(omsandningRepository, times(2)).save(any(Omsandning.class));
     }
 
 }

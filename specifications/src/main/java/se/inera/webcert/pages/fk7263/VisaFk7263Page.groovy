@@ -64,11 +64,15 @@ class VisaFk7263Page extends VisaPage {
         // 3
         sjukdomsforlopp { $("#sjukdomsforlopp") }
 
-        // 4
+        // 4a
         funktionsnedsattning { $("#funktionsnedsattning") }
+
+        // 4b
+        baseratPaList { $("#baseratPaList") }
         undersokningAvPatienten { $("#undersokningAvPatienten") }
         telefonkontaktMedPatienten { $("#telefonkontaktMedPatienten") }
         journaluppgifter { $("#journaluppgifter") }
+        annanReferens { $("#annanReferens") }
         annanReferensBeskrivning { $("#annanReferensBeskrivning") }
 
         // 5

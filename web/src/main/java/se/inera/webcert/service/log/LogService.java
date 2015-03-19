@@ -1,5 +1,6 @@
 package se.inera.webcert.service.log;
 
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
 
 /**
@@ -15,7 +16,7 @@ public interface LogService {
      * @param logRequest
      *            logRequest
      */
-    void logReadOfIntyg(LogRequest logRequest);
+    void logReadOfIntyg(LogRequest logRequest, WebCertUser user);
 
     /**
      * Creates a log event when an user requests an intyg as PDF.
@@ -23,7 +24,7 @@ public interface LogService {
      * @param logRequest
      *            logRequest
      */
-    void logPrintOfIntygAsPDF(LogRequest logRequest);
+    void logPrintOfIntygAsPDF(LogRequest logRequest, WebCertUser user);
 
     /**
      * Creates a log event when an user requests a print-out of an intyg as draft.
@@ -31,7 +32,7 @@ public interface LogService {
      * @param logRequest
      *            logRequest
      */
-    void logPrintOfIntygAsDraft(LogRequest logRequest);
+    void logPrintOfIntygAsDraft(LogRequest logRequest, WebCertUser user);
 
     /**
      * Creates a log event when an user sends a signed intyg directly to a recipient.
@@ -39,5 +40,5 @@ public interface LogService {
      * @param logRequest
      *            logRequest
      */
-    void logSendIntygToRecipient(LogRequest logRequest);
+    void logSendIntygToRecipient(LogRequest logRequest, WebCertUser user);
 }

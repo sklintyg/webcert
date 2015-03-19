@@ -384,7 +384,7 @@
 
   <changeSet id="11" author="me">
     <dropColumn tableName="FRAGASVAR" columnName="PATIENT_ID_ROOT"/>
-    <renameColumn tableName="FRAGASVAR" oldColumnName="PATIENT_ID_EXTENSION" newColumnName="PATIENT_ID"/>
+    <renameColumn tableName="FRAGASVAR" columnDataType="varchar(255)" oldColumnName="PATIENT_ID_EXTENSION" newColumnName="PATIENT_ID"/>
   </changeSet>
 
 </databaseChangeLog>

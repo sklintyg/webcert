@@ -169,9 +169,14 @@ class RekommendationerModule extends Module {
 
         // Access radio groups directly from form, since locator expressions
         // don't seem to work when multiple radio groups are found inside base scope
-
+        // although according to http://www.gebish.org/manual/current/navigator.html#radio
+        // we should be able to directly set a value on the radio group which will change the selection
+        // this doesn't seem to work with the form.<group name> syntax
+        // as a result I needed to use the input query for arbetslivsinriktadRehabilitering
+        // when selecting the radio button group
         arbetslivsinriktadRehabilitering { $("input", name:"recommendationsToFkTravel") }
-        radioGroupResor { form.recommendationsToFkTravel }
+
+        radioGroupResor { form["recommendationsToFkTravel"] }
         radioGroupRehab {  form.recommendationsToFkReabInQuestion }
 
         ressattJa { $("#rekommendationRessatt") }

@@ -1,8 +1,10 @@
 {
+    "@class" : "se.inera.webcert.hsa.model.Vardgivare",
     "id" : "SE4815162344-1A01",
     "namn" : "WebCert-Integration Vårdgivare 1",
     "vardenheter" : [
         {
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "SE4815162344-1A02",
             "namn" : "WebCert-Integration Enhet 1",
             "epost" : "integration-enhet1@webcert.invalid.se",
@@ -12,6 +14,7 @@
             "postort" : "Storstaden",
             "arbetsplatskod" : "12345678"
         },{
+        	"@class" : "se.inera.webcert.hsa.model.Vardenhet",
             "id" : "SE4815162344-1A03",
             "namn" : "WebCert-Integration Enhet 2",
             "epost" : "integration-enhet2@webcert.invalid.se",

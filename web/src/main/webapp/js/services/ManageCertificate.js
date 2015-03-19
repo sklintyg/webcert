@@ -184,7 +184,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 } else {
 
                     dialogModel.otherCareUnit = isOtherCareUnit;
-                    dialogModel.patientId = $routeParams.patientId;
+                    dialogModel.patientId = intygCopyRequest.patientId;
                     dialogModel.deepIntegration = featureService.isFeatureActive('franJournalsystem');
 
                     copyDialog = dialogService.showDialog($scope, {
@@ -250,10 +250,10 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             function _sendSigneratIntyg(intygsId, intygsTyp, recipientId, patientConsent, dialogModel, sendDialog, onSuccess) {
                 dialogModel.showerror = false;
                 dialogModel.acceptprogressdone = false;
-                CertificateService.sendSigneratIntyg(intygsId, intygsTyp, recipientId, patientConsent, function() {
+                CertificateService.sendSigneratIntyg(intygsId, intygsTyp, recipientId, patientConsent, function(status) {
                     dialogModel.acceptprogressdone = true;
                     sendDialog.close();
-                    onSuccess();
+                    onSuccess(status);
                 }, function(error) {
                     $log.debug('Send cert failed: ' + error);
                     dialogModel.acceptprogressdone = true;
