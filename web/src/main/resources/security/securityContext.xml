@@ -101,6 +101,7 @@
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
+      <security:request-cache ref="httpSessionRequestCache" />
     </security:http>
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
@@ -108,6 +109,7 @@
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
+      <security:request-cache ref="httpSessionRequestCache" />
     </security:http>
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
@@ -124,11 +126,13 @@
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
+      <security:request-cache ref="httpSessionRequestCache" />
     </security:http>
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
+      <security:request-cache ref="httpSessionRequestCache" />
     </security:http>
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
@@ -162,10 +166,21 @@
       </security:filter-chain-map>
     </bean>
 
+    <!-- Decide which requests should be saved for redirection after successful login.
+         We don't want to save /api and /moduleapi requests since this will make the browser display the data. -->
+    <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
+      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/fragasvar\/.*"/>
+      <constructor-arg index="1" value="GET"/>
+    </bean>
+    <bean id="httpSessionRequestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
+      <property name="requestMatcher" ref="saveRequestMatcher" />
+    </bean>
+
     <!-- Handler deciding where to redirect user after successful login -->
     <bean id="successRedirectHandler"
           class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/web/start"/>
+      <property name="requestCache" ref="httpSessionRequestCache" />
     </bean>
 
     <!-- Central storage of cryptographic keys -->

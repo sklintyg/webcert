@@ -1,5 +1,6 @@
 package se.inera.webcert.service.intyg;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.ws.WebServiceException;
@@ -22,6 +23,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.sendcertifica
 import se.inera.certificate.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.certificate.model.Status;
+import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.model.common.internal.Vardenhet;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
@@ -55,6 +57,8 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author andreaskaltenbach
@@ -107,6 +111,9 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Autowired
     private FragaSvarService fragaSvarService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+    
     /* --------------------- Public scope --------------------- */
 
     @Override
@@ -144,7 +151,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents(), intyg.getStatuses());
 
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
-            logService.logPrintOfIntygAsPDF(logRequest);
+            logService.logPrintOfIntygAsPDF(logRequest, webCertUserService.getWebCertUser());
 
             return intygPdf;
 
@@ -199,16 +206,18 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygServiceResult sendIntyg(Omsandning omsandning) {
         SendIntygConfiguration sendConfig = configurationManager.unmarshallConfig(omsandning.getConfiguration(), SendIntygConfiguration.class);
-        IntygContentHolder intyg = getIntygData(omsandning.getIntygId(), omsandning.getIntygTyp());
+        Utlatande intyg = getUtlatandeForIntyg(omsandning.getIntygId(), omsandning.getIntygTyp());
         return sendIntyg(omsandning, sendConfig, intyg);
     }
 
     @Override
     public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean hasPatientConsent) {
 
-        IntygContentHolder intyg = fetchIntygData(intygsId, typ);
+        Utlatande intyg = getUtlatandeForIntyg(intygsId, typ);
+        Vardenhet vardenhet = intyg.getGrundData().getSkapadAv().getVardenhet();
+        verifyEnhetsAuth(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), true);
 
-        SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent);
+        SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getWebCertUser());
         String sendConfigAsJson = configurationManager.marshallConfig(sendConfig);
 
         Omsandning omsandning = createOmsandning(OmsandningOperation.SEND_INTYG, intygsId, typ, sendConfigAsJson);
@@ -268,7 +277,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
     /* --------------------- Protected scope --------------------- */
 
-    protected IntygServiceResult sendIntyg(Omsandning omsandning, SendIntygConfiguration sendConfig, IntygContentHolder intyg) {
+    protected IntygServiceResult sendIntyg(Omsandning omsandning, SendIntygConfiguration sendConfig, Utlatande intyg) {
 
         String intygsId = omsandning.getIntygId();
         String recipient = sendConfig.getRecipient();
@@ -279,7 +288,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
             SendCertificateToRecipientType request = new SendCertificateToRecipientType();
             request.setUtlatandeId(intygsId);
-            request.setPersonId(intyg.getUtlatande().getGrundData().getPatient().getPersonId());
+            request.setPersonId(intyg.getGrundData().getPatient().getPersonId());
             request.setMottagareId(recipient);
 
             SendCertificateToRecipientResponseType response = sendService.sendCertificateToRecipient(logicalAddress, request);
@@ -293,23 +302,27 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
                 if (ResultCodeType.INFO.equals(response.getResult().getResultCode())) {
                     LOG.warn("Warning occured when trying to send intyg '{}'; {}", intygsId, response.getResult().getResultText());
                 }
-                omsandningRepository.delete(omsandning);
-
                 // send PDL log event
-                LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
+                LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
                 logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
-                logService.logSendIntygToRecipient(logRequest);
+                logService.logSendIntygToRecipient(logRequest, sendConfig.getWebCertUser());
 
                 // Notify stakeholders when a certificate is sent
                 notificationService.sendNotificationForIntygSent(intygsId);
                 LOG.debug("Notification sent: certificate with id '{}' has been sent to '{}'", intygsId, recipient);
 
+                omsandningRepository.delete(omsandning);
+
                 return IntygServiceResult.OK;
             }
 
+        } catch (WebServiceException wse) {
+            LOG.error("An WebServiceException occured when trying to send intyg: " + intygsId, wse);
+            scheduleResend(omsandning);
+            return IntygServiceResult.RESCHEDULED;
         } catch (RuntimeException e) {
             LOG.error("Module problems occured when trying to send intyg " + intygsId, e);
-            omsandningRepository.delete(omsandning);
+            scheduleResend(omsandning);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
     }
@@ -335,6 +348,21 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
+    private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
+        Utkast utkast = utkastRepository.findOne(intygId);
+        if (utkast != null) {
+            try {
+                return objectMapper.readValue(utkast.getModel(), Utlatande.class);
+            } catch (IOException e) {
+                LOG.error("Module problems occured when trying to unmarshall utlandande.", e);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+            }
+        } else {
+            IntygContentHolder intyg = getIntygData(intygId, typ);
+            return intyg.getUtlatande();
+        }
+    }
+ 
     private void registerIntyg(Utkast utkast) throws IntygModuleFacadeException, ModuleException {
         LOG.debug("Attempting to register signed utkast {}", utkast.getIntygsId());
         modelFacade.registerCertificate(utkast.getIntygsTyp(), utkast.getModel());

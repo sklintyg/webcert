@@ -54,28 +54,28 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void logReadOfIntyg(LogRequest logRequest) {
-        send(populateLogMessage(logRequest, new IntygReadMessage(logRequest.getIntygId())));
+    public void logReadOfIntyg(LogRequest logRequest, WebCertUser user) {
+        send(populateLogMessage(logRequest, new IntygReadMessage(logRequest.getIntygId()), user));
     }
 
     @Override
-    public void logPrintOfIntygAsPDF(LogRequest logRequest) {
-        send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_PDF)));
+    public void logPrintOfIntygAsPDF(LogRequest logRequest, WebCertUser user) {
+        send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_PDF), user));
     }
 
     @Override
-    public void logPrintOfIntygAsDraft(LogRequest logRequest) {
-        send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_DRAFT)));
+    public void logPrintOfIntygAsDraft(LogRequest logRequest, WebCertUser user) {
+        send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_DRAFT), user));
     }
 
     @Override
-    public void logSendIntygToRecipient(LogRequest logRequest) {
-        send(populateLogMessage(logRequest, new SendIntygToRecipientMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo())));
+    public void logSendIntygToRecipient(LogRequest logRequest, WebCertUser user) {
+        send(populateLogMessage(logRequest, new SendIntygToRecipientMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo()), user));
     }
 
-    private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg) {
+    private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg, WebCertUser user) {
 
-        populateWithCurrentUserAndCareUnit(logMsg);
+        populateWithCurrentUserAndCareUnit(logMsg, user);
 
         Patient patient = new Patient(logRequest.getPatientId(), logRequest.getPatientName());
         logMsg.setPatient(patient);
@@ -95,8 +95,7 @@ public class LogServiceImpl implements LogService {
         return logMsg;
     }
 
-    private void populateWithCurrentUserAndCareUnit(AbstractLogMessage logMsg) {
-        WebCertUser user = webCertUserService.getWebCertUser();
+    private void populateWithCurrentUserAndCareUnit(AbstractLogMessage logMsg, WebCertUser user) {
         logMsg.setUserId(user.getHsaId());
         logMsg.setUserName(user.getNamn());
 

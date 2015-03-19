@@ -21,6 +21,6 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 | editera sidan visas |
 | intyget komplett meddelande visas | true |
 | radera utkast |
-| ej signerade intyg sidan visas |
+| ga till ej signerade intyg |
 | inga ej signerade intyg visas |
 

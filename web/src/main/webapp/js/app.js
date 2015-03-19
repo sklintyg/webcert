@@ -1,7 +1,7 @@
 /* global MODULE_CONFIG, wcMessages */
 window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
-var app = angular.module('webcert', ['ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize', 'common']);
+var app = angular.module('webcert', ['ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize', 'common', 'ngAnimate']);
 
 app.config(function($routeProvider) {
     'use strict';
