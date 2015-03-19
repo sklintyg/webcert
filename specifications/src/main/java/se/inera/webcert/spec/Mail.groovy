@@ -9,7 +9,7 @@ import se.inera.webcert.spec.util.RestClientFixture
 class Mail extends RestClientFixture {
 
     public List<Object> query() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         def mails = restClient.get(path: "mail-stub/mails").data
         QueryHelper.asList(mails)
     }

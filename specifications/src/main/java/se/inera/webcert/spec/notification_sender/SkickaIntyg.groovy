@@ -9,7 +9,7 @@ import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
 
-class SkickaIntyg extends RestClientFixture {
+class SkickaIntyg {
 
     String intygId
     String intygTyp

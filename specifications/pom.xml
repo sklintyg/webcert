@@ -19,8 +19,8 @@
     <geb.env>firefox</geb.env>
 
     <!-- URLs to services -->
-    <webcert.web.baseUrl>http://localhost:9088</webcert.web.baseUrl>
-    <webcert.baseUrl>http://localhost:9088/services/</webcert.baseUrl>
+    <webcert.web.baseUrl>http://localhost:9088/</webcert.web.baseUrl>
+    <webcert.baseUrl>http://localhost:9088/</webcert.baseUrl>
     <logsender.baseUrl>http://localhost:9090/log-sender/</logsender.baseUrl>
     <certificate.baseUrl>http://localhost:8080/inera-certificate/</certificate.baseUrl>
 
@@ -196,7 +196,7 @@
       <id>demo</id>
       <properties>
         <webcert.web.baseUrl>https://test.webcert.intygstjanster.se/</webcert.web.baseUrl>
-        <webcert.baseUrl>https://test.webcert.intygstjanster.se/services/</webcert.baseUrl>
+        <webcert.baseUrl>https://test.webcert.intygstjanster.se/</webcert.baseUrl>
         <logsender.baseUrl>https://test.webcert.intygstjanster.se/log-sender/</logsender.baseUrl>
         <certificate.baseUrl>http://10.250.34.20:8080/inera-certificate/</certificate.baseUrl>
       </properties>
@@ -205,7 +205,7 @@
       <id>nmt</id>
       <properties>
         <webcert.web.baseUrl>https://webcert.inera.nordicmedtest.se/</webcert.web.baseUrl>
-        <webcert.baseUrl>https://webcert.inera.nordicmedtest.se:21443/services/</webcert.baseUrl>
+        <webcert.baseUrl>https://webcert.inera.nordicmedtest.se:21443/</webcert.baseUrl>
         <logsender.baseUrl>https://webcert.inera.nordicmedtest.se:21443/log-sender/</logsender.baseUrl>
         <certificate.baseUrl>https://intygstjanst.inera.nordicmedtest.se:23443/inera-certificate/</certificate.baseUrl>
       </properties>
@@ -213,7 +213,7 @@
     <profile>
       <id>ssh-tunnel</id>
       <properties>
-        <webcert.baseUrl>http://localhost:28080/services/</webcert.baseUrl>
+        <webcert.baseUrl>http://localhost:28080/</webcert.baseUrl>
         <logsender.baseUrl>http://localhost:28080/log-sender/</logsender.baseUrl>
         <certificate.baseUrl>http://localhost:18080/inera-certificate/</certificate.baseUrl>
       </properties>
@@ -264,15 +264,6 @@
       <id>saucelabssafari</id>
       <properties>
         <geb.env>saucelabssafari</geb.env>
-      </properties>
-
-      <!-- Used for running fitnesse against the demo-server -->
-    </profile>
-    <profile>
-      <id>test-server</id>
-      <properties>
-        <webcert.baseUrl>https://test.webcert.intygstjanster.se/services/</webcert.baseUrl>
-        <certificate.baseUrl>http://10.250.34.20:8080/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
 

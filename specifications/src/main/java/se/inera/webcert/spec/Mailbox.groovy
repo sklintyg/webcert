@@ -8,7 +8,7 @@ import se.inera.webcert.spec.util.RestClientFixture
 class Mailbox extends RestClientFixture {
 
     public void rensa() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         restClient.delete(path: 'mail-stub/mails')
     }
 }

@@ -4,7 +4,7 @@ import se.inera.webcert.spec.util.RestClientFixture
 
 class RensaFragorOchSvar extends RestClientFixture {
 
-    def restClient = createRestClient(baseUrl)
+    def restClient = createRestClient("${baseUrl}services/")
 
     def taBortFragaMedExternReferens(String externReferens) {
         restClient.delete(path: "questions/extern/${externReferens}")

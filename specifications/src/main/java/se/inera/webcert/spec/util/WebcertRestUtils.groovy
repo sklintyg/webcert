@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.URLENC
 
-public class WebcertRestUtils {
+public class WebcertRestUtils extends RestClientFixture {
     private static final Logger LOG = LoggerFactory.getLogger(WebcertRestUtils.class)
-    static final def webcert = new RESTClient("http://localhost:9088/")
+    static final def webcert = createRestClient(baseUrl)
 
     static def login(String user) {
         def logins = [:];

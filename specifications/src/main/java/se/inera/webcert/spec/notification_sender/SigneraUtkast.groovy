@@ -9,7 +9,7 @@ import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
 
-class SigneraUtkast extends RestClientFixture {
+class SigneraUtkast {
 
     String intygId
     String intygTyp

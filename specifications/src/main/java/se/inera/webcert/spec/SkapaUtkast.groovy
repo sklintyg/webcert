@@ -68,8 +68,9 @@ class SkapaUtkast extends RestClientFixture {
         }
     }
 
+    def restClient = createRestClient("${baseUrl}services/")
+
     def execute() {
-        def restClient = createRestClient(baseUrl)
         restClient.post(path: "intyg", body: json(), requestContentType: JSON)
 
         def json
@@ -101,12 +102,10 @@ class SkapaUtkast extends RestClientFixture {
             }
         }
 
-        restClient = createRestClient(baseUrl)
         //Break the json
         restClient.put(path: "intyg/$intygId", body: json, requestContentType: JSON)
 
         if ("ja".equalsIgnoreCase(komplett)) {
-            restClient = createRestClient(baseUrl)
             restClient.put(path: "intyg/$intygId/komplett")
         }
     }

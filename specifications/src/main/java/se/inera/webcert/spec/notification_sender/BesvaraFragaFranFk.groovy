@@ -14,7 +14,7 @@ import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
 
-class BesvaraFragaFranFk extends RestClientFixture {
+class BesvaraFragaFranFk {
 
     String intygTyp
     String hsaUser = "user1"

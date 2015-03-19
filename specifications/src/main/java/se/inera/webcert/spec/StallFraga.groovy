@@ -22,7 +22,7 @@ public class StallFraga extends RestClientFixture {
     }
 
     def execute() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         def response = restClient.post(
                 path: "questions/skickafraga/${vardgivare}/${enhet}/${intygsId}/${typ}",
                 body: "{\"amne\":\"${ämne}\",\"frageText\":\"${frågeText}\"}",

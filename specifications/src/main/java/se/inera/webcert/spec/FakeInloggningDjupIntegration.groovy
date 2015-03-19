@@ -6,7 +6,7 @@ class FakeInloggningDjupIntegration extends RestClientFixture {
     def resp
 
     public void execute() {
-        def restClient = createRestClient("http://localhost:9088/")
+        def restClient = createRestClient(baseUrl)
         def postBody = 'userJsonDisplay={"fornamn" : "Ivar", "efternamn" : "Integration", "hsaId" : "SE4815162344-1B01", "enhetId" : "SE4815162344-1A02", "lakare" : true,"forskrivarKod": "2481632"}'
         resp = restClient.post(path: "fake", requestContentType: URLENC, body: postBody)
     }

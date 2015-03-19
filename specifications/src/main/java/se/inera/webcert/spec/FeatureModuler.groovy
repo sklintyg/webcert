@@ -19,7 +19,7 @@ class FeatureModuler extends RestClientFixture{
         status = 0;
         ex = false
 
-        def client = createRestClient("http://localhost:9088/")
+        def client = createRestClient(baseUrl)
 
         def headers = new HashMap<String,String>()
         headers.put("Cookie","JSESSIONID="+Browser.getJSession())

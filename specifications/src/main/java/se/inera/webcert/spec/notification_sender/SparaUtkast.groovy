@@ -9,7 +9,7 @@ import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
 
-class SparaUtkast extends RestClientFixture {
+class SparaUtkast {
 
     String intygId
     String intygTyp

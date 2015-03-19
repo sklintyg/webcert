@@ -7,7 +7,7 @@ class TaBortUtkast extends RestClientFixture {
     String utkastId
 
     def execute() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         restClient.delete(path: "intyg/$utkastId")
     }
 
