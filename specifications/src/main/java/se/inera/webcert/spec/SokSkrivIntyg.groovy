@@ -3,7 +3,9 @@ package se.inera.webcert.spec
 import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.EditCertPage
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
+import se.inera.webcert.pages.ts_bas.EditCertPage
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
+import se.inera.webcert.pages.ts_diabetes.EditCertPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 import org.openqa.selenium.Keys
 
@@ -165,12 +167,19 @@ class SokSkrivIntyg {
         kopiaintygsid
     }
 
-    def kopieraVisatIntyg() {
+    def kopieraVisatIntyg(typ) {
         Browser.drive {
             page.copy()
             waitFor {
-                at EditCertPage
+                if (typ == "FK7263") {
+                    at se.inera.webcert.pages.fk7263.EditCertPage
+                } else if (typ == "ts-bas") {
+                    at se.inera.webcert.pages.ts_bas.EditCertPage
+                } else if (typ == "ts-diabetes") {
+                    at se.inera.webcert.pages.ts_diabetes.EditCertPage
+                }
             }
+
             kopiaintygsid = currentUrl.substring(currentUrl.lastIndexOf("/") + 1)
             if (kopiaintygsid.indexOf("?") >= 0) {
                 kopiaintygsid = kopiaintygsid.substring(0, kopiaintygsid.indexOf("?"))
