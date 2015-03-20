@@ -349,7 +349,7 @@ class SkrivIntyg {
         }
         result
     }
-    
+
     def klickaPaTillbakaKnappen() {
         Browser.drive {
             page.tillbakaButton.click();
