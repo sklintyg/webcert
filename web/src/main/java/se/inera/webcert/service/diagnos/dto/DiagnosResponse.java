@@ -10,13 +10,16 @@ public class DiagnosResponse {
 
     private List<Diagnos> diagnoser;
 
+    private boolean moreResults;
+
     public DiagnosResponse() {
 
     }
 
-    public static DiagnosResponse ok(List<Diagnos> diagnoser) {
+    public static DiagnosResponse ok(List<Diagnos> diagnoser,  boolean moreResults) {
         DiagnosResponse diagnosResponse = new DiagnosResponse();
         diagnosResponse.setDiagnoser(diagnoser);
+        diagnosResponse.setMoreResults(moreResults);
         return diagnosResponse;
     }
 
@@ -70,5 +73,13 @@ public class DiagnosResponse {
 
     public void setDiagnoser(List<Diagnos> diagnoser) {
         this.diagnoser = diagnoser;
+    }
+
+    public boolean isMoreResults() {
+        return moreResults;
+    }
+
+    public void setMoreResults(boolean moreResults) {
+        this.moreResults = moreResults;
     }
 }
