@@ -11,10 +11,10 @@ import se.inera.webcert.notifications.service.exception.NonRecoverableCertificat
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilder.class);
 
-    @Value("${errorhanding.maxRedeliveries}")
+    @Value("${errorhandling.maxRedeliveries}")
     private int maxRedeliveries = 3;
 
-    @Value("${errorhanding.redeliveryDelay}")
+    @Value("${errorhandling.redeliveryDelay}")
     private long redeliveryDelay = 10;
 
     @Override
