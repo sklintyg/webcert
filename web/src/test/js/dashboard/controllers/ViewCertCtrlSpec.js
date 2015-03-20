@@ -73,7 +73,7 @@ describe('ViewCertCtrl', function() {
         $routeParams = {qaOnly:false};
         $provide.value('$routeParams', $routeParams);
 
-        $provide.value('common.featureService', { isFeatureActive: function() { return true; } }); // jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ])
+        $provide.value('common.featureService', { features: { 'HANTERA_FRAGOR': 'hanteraFragor' }, isFeatureActive: function() { return true; } }); // jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ])
     }));
 
     // Get references to the object we want to test from the context.
