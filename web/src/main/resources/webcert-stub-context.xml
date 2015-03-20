@@ -21,6 +21,18 @@
     </jaxrs:extensionMappings>
   </jaxrs:server>
 
+  <jaxrs:server address="/logMessages">
+    <jaxrs:serviceBeans>
+      <bean class="se.inera.webcert.integration.test.LogResource" />
+    </jaxrs:serviceBeans>
+    <jaxrs:providers>
+      <ref bean="jacksonJsonProvider" />
+    </jaxrs:providers>
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json" />
+    </jaxrs:extensionMappings>
+  </jaxrs:server>
+
   <jaxrs:server address="/intyg">
     <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.integration.test.IntygResource" />

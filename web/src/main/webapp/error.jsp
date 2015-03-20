@@ -38,6 +38,21 @@
               <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
             </c:when>
 
+            <c:when test="${param.reason eq \"timeout\"}">
+              <h1><spring:message code="info.loggedout.title" /></h1>
+              <div id="loggedOut" class="alert alert-info">
+                <spring:message code="error.sessiontimeout.text" />
+              </div>
+              <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
+            </c:when>
+
+            <c:when test="${param.reason eq \"timeout_integration\"}">
+              <h1><spring:message code="info.loggedout.title" /></h1>
+              <div id="loggedOut" class="alert alert-info">
+                <spring:message code="error.sessiontimeout.integration.text" />
+              </div>
+            </c:when>
+
             <c:when test="${param.reason eq \"denied\"}">
               <h1><spring:message code="error.noauth.title" /></h1>
               <div id="noAuth" class="alert alert-warning">

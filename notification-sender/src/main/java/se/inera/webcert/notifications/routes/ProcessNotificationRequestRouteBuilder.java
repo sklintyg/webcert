@@ -17,6 +17,9 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     @Value("${errorhandling.redeliveryDelay}")
     private long redeliveryDelay = 10;
 
+    @Value("${errorhandling.maxRedeliveryDelay}")
+    private long maxRedeliveryDelay = 10000L;
+
     @Override
     public void configure() throws Exception {
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
@@ -29,7 +32,7 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
 
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
                 .errorHandler(deadLetterChannel("direct:redeliveryExhaustedEndpoint")
-                        .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay)
+                        .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay).maximumRedeliveryDelay(maxRedeliveryDelay)
                         .useExponentialBackOff())
                 .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
                 .unmarshal("jaxbMessageDataFormat")

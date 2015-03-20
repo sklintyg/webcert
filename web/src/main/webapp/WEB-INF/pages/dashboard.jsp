@@ -59,6 +59,7 @@
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.12.1/ui-bootstrap-tpls.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-animate.min.js"></script>
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/min/moment.min.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/js/app.min.js?<spring:message code="buildNumber" />"></script>
@@ -71,6 +72,7 @@
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.12.1/ui-bootstrap-tpls.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.js"></script>
+      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-animate.js"></script>
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/moment.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.js"></script>
       <script type="text/javascript" src="/js/app.js"></script>
@@ -81,6 +83,5 @@
   <!--[if lte IE 8]>
   <script type="text/javascript" src="/web/webjars/respond/1.4.2/src/respond.js"></script>
   <![endif]-->
-
 </body>
 </html>

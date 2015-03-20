@@ -1,7 +1,7 @@
 /* global MODULE_CONFIG, wcMessages */
 window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
-var app = angular.module('webcert', ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common']);
+var app = angular.module('webcert', ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate']);
 
 app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider',
     function($httpProvider, http403ResponseInterceptorProvider) {
@@ -11,7 +11,7 @@ app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider',
         $httpProvider.interceptors.push('common.httpRequestInterceptorCacheBuster');
 
         // Configure 403 interceptor provider
-        http403ResponseInterceptorProvider.setRedirectUrl('/error.jsp?reason=denied');
+        http403ResponseInterceptorProvider.setRedirectUrl('/error.jsp');
         $httpProvider.responseInterceptors.push('common.http403ResponseInterceptor');
     }]);
 
@@ -101,13 +101,13 @@ function checkAddIndexOf() {
 }
 
 // Inject language resources
-app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.User',
-    function($log, $rootScope, $window, messageService, User) {
+app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserModel',
+    function($log, $rootScope, $window, messageService, UserModel) {
         'use strict';
 
         $rootScope.lang = 'sv';
         $rootScope.DEFAULT_LANG = 'sv';
-        User.setUserContext(MODULE_CONFIG.USERCONTEXT);
+        UserModel.setUserContext(MODULE_CONFIG.USERCONTEXT);
         messageService.addResources(wcMessages);
 
         $window.doneLoading = false;
