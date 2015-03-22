@@ -156,7 +156,7 @@
   </dependencies>
 
   <build>
-    <finalName>notification-sender</finalName>
+    <finalName>log-sender</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.activemq.tooling</groupId>
