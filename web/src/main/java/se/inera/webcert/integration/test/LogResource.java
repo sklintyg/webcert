@@ -19,11 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.log.messages.AbstractLogMessage;
 
-@Transactional
 public class LogResource {
 
     private long timeOut = 1000;
@@ -35,7 +33,7 @@ public class LogResource {
     }
     
     @Autowired
-    @Qualifier("jmsPDLLogTemplate")
+    @Qualifier("jmsPDLLogTemplateNoTx")
     private JmsTemplate jmsTemplate;
 
     @Autowired
@@ -63,7 +61,7 @@ public class LogResource {
     @Path("/count")
     @Produces(MediaType.APPLICATION_JSON)
     public int countMessages() {
-        return jmsTemplate.browse(new BrowserCallback<Integer>() {
+        return jmsTemplate.browse(queue, new BrowserCallback<Integer>() {
             @Override
             public Integer doInJms(Session session, QueueBrowser browser) throws JMSException {
                 Enumeration<?> messages = browser.getEnumeration();
@@ -72,7 +70,6 @@ public class LogResource {
                     messages.nextElement();
                     total++;
                 }
-                
                 return total;
             }
         });

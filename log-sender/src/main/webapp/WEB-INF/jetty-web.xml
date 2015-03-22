@@ -9,10 +9,6 @@
 
 -->
 <Configure id="webAppContext" class="org.eclipse.jetty.webapp.WebAppContext">
-  <Call name="setAttribute">
-    <Arg>org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern</Arg>
-    <Arg>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</Arg>
-  </Call>
   <New id="connectionFactory" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
       <Ref id="webAppContext"/>
@@ -20,7 +16,7 @@
     <Arg>jms/ConnectionFactory</Arg>
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
-        <Arg>vm://localhost?broker.persistent=false</Arg>
+        <Arg>tcp://localhost:61617</Arg>
       </New>
     </Arg>
   </New>

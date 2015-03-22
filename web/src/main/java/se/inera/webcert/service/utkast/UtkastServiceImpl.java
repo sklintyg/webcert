@@ -36,7 +36,9 @@ import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
@@ -98,6 +100,9 @@ public class UtkastServiceImpl implements UtkastService {
         LOG.debug("Utkast '{}' created and persisted", savedUtkast.getIntygsId());
 
         sendNotification(savedUtkast, Event.CREATED);
+
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
+        logService.logCreateIntyg(logRequest, webCertUserService.getWebCertUser());
 
         return savedUtkast.getIntygsId();
     }
@@ -219,7 +224,11 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     public Utkast getDraft(String intygId) {
-        return getIntygAsDraft(intygId);
+        Utkast utkast = getIntygAsDraft(intygId);
+        abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        logService.logReadOfIntyg(logRequest, webCertUserService.getWebCertUser());
+        return utkast;
     }
 
     @Override
@@ -236,12 +245,14 @@ public class UtkastServiceImpl implements UtkastService {
         Utkast intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         utkastRepository.save(intyg);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(intyg);
+        logService.logSignIntyg(logRequest, webCertUserService.getWebCertUser());
 
         return signatureService.serverSignature(intygsId);
     }
 
     @Override
-    public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request) {
+    public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent) {
 
         String intygId = request.getIntygId();
 
@@ -280,6 +291,11 @@ public class UtkastServiceImpl implements UtkastService {
         utkast = saveDraft(utkast);
         LOG.debug("Utkast '{}' updated", utkast.getIntygsId());
 
+        if (createPdlLogEvent) {
+            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+            logService.logUpdateIntyg(logRequest, webCertUserService.getWebCertUser());
+        }
+        
         // Notify stakeholders when a draft has been changed/updated
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
@@ -420,6 +436,9 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Notify stakeholders when a draft is deleted
         sendNotification(utkast, Event.DELETED);
+        
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        logService.logDeleteIntyg(logRequest, webCertUserService.getWebCertUser());
     }
 
     @Transactional
@@ -428,6 +447,14 @@ public class UtkastServiceImpl implements UtkastService {
         LOG.debug("Deleteing draft '{}'", utkast.getIntygsId());
     }
 
+
+    @Override
+    public void logPrintOfDraftToPDL(String intygId) {
+        Utkast utkast = utkastRepository.findOne(intygId);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        logService.logPrintOfIntygAsDraft(logRequest, webCertUserService.getWebCertUser());
+    }
+    
     private void updateWithUser(Utkast utkast) {
         updateWithUser(utkast, utkast.getModel());
     }
@@ -474,4 +501,11 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
+    protected void abortIfUserNotAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId) {
+        if (!webCertUserService.isAuthorizedForUnit(vardgivarHsaId, enhetsHsaId, false)) {
+            LOG.info("User not authorized for enhet");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "User not authorized for for enhet " + enhetsHsaId);
+        }
+    }
 }

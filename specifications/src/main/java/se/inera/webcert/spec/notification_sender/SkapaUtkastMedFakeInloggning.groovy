@@ -17,12 +17,10 @@ class SkapaUtkastMedFakeInloggning {
     String patientFornamn = "Test"
     String patientEfternamn = "Testsson"
     
-    String hsaUser = "user1"
-
     def response
 
     public void execute() {
-        WebcertRestUtils.login("$hsaUser")
+        WebcertRestUtils.login()
         response = WebcertRestUtils.createNewUtkast(intygTyp, json())
     }
 

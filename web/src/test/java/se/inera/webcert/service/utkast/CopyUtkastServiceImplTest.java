@@ -25,6 +25,7 @@ import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.persistence.utkast.model.Utkast;
@@ -35,10 +36,13 @@ import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
+import se.inera.webcert.web.service.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {
@@ -77,6 +81,12 @@ public class CopyUtkastServiceImplTest {
 
     @Mock
     private NotificationService mockNotificationService;
+
+    @Mock
+    private LogService logService;
+
+    @Mock
+    private WebCertUserService userService;
 
     @Mock
     private IntegreradeEnheterRegistry mockIntegreradeEnheterRegistry;
@@ -143,6 +153,10 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastRepository).save(any(Utkast.class));
         
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        
+        // Assert pdl log
+        verify(logService).logCreateIntyg(any(LogRequest.class), any(WebCertUser.class));
+
     }
 
     @Test

@@ -34,4 +34,8 @@
     <property name="jndiName" value="java:comp/env/jms/Queue" />
   </bean>
   
+  <beans profile="dev">
+    <import resource="log-sender-activemq-config.xml"/>
+  </beans>
+  
 </beans>

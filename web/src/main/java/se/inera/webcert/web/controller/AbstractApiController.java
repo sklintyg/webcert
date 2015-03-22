@@ -105,11 +105,4 @@ public abstract class AbstractApiController {
         }
     }
     
-    protected void abortIfUserNotAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId) {
-        if (!webCertUserService.isAuthorizedForUnit(vardgivarHsaId, enhetsHsaId, false)) {
-            LOG.info("User not authorized for enhet");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + enhetsHsaId);
-        }
-    }
 }

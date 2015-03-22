@@ -36,6 +36,7 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.util.ReflectionUtils;
@@ -192,6 +193,9 @@ public class SignaturServiceImplTest {
 
         verify(intygService).storeIntyg(completedUtkast);
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
+        // Assert pdl log
+        verify(logService).logSignIntyg(any(LogRequest.class), any(WebCertUser.class));
+
 
         assertNotNull(signatureTicket);
         
@@ -201,5 +205,26 @@ public class SignaturServiceImplTest {
         // Assert ticket status has changed from BEARBETAR to SIGNERAD
         status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.SIGNERAD, status.getStatus());
+    }
+
+    @Test
+    public void serverSignatureSuccess() throws IOException {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
+
+        // Do the call
+        SignaturTicket signatureTicket = intygSignatureService.serverSignature(INTYG_ID);
+
+        verify(intygService).storeIntyg(completedUtkast);
+        verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
+        // Assert pdl log
+        verify(logService).logSignIntyg(any(LogRequest.class), any(WebCertUser.class));
+
+
+        assertNotNull(signatureTicket);
+        
+        assertNotNull(completedUtkast.getSignatur());
+        assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
     }
 }
