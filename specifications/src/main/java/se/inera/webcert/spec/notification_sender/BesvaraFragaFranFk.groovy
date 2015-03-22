@@ -17,20 +17,12 @@ import org.apache.commons.io.IOUtils
 class BesvaraFragaFranFk {
 
     String intygTyp
-    String hsaUser = "user1"
     String externReferens
-
-    public setIntygTyp(String value) {
-        intygTyp = value
-    }
-    public setHsaUser(String value) {
-        hsaUser = value 
-    }
 
     def response
 
     public void execute() {
-        WebcertRestUtils.login(hsaUser)
+        WebcertRestUtils.login()
         def internReferens = WebcertRestUtils.translateExternalToInternalReferens(externReferens)
         response = WebcertRestUtils.answerQuestion(intygTyp, internReferens, makeText())
     }

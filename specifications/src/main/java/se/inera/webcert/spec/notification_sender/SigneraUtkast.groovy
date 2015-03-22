@@ -13,23 +13,11 @@ class SigneraUtkast {
 
     String intygId
     String intygTyp
-    String hsaUser = "user1"
-
-
-    public setIntygId (String value) {
-        intygId = value
-    }
-    public setIntygTyp(String value) {
-        intygTyp = value
-    }
-    public setHsaUser(String value) {
-        hsaUser = value 
-    }
 
     def response
 
     public void execute() {
-        WebcertRestUtils.login(hsaUser)
+        WebcertRestUtils.login()
         response = WebcertRestUtils.signUtkast(intygTyp, intygId)
     }
 

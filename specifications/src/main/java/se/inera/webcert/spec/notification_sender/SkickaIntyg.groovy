@@ -14,26 +14,11 @@ class SkickaIntyg {
     String intygId
     String intygTyp
     String mottagarId = "FK"
-    String hsaUser = "user1"
-
-
-    public setIntygId (String value) {
-        intygId = value
-    }
-    public setIntygTyp(String value) {
-        intygTyp = value
-    }
-    public setHsaUser(String value) {
-        hsaUser = value 
-    }
-    public setMottagarId(String value) {
-        mottagarId = value
-    }
 
     def response
 
     public void execute() {
-        WebcertRestUtils.login(hsaUser)
+        WebcertRestUtils.login()
         response = WebcertRestUtils.sendIntyg(intygTyp, intygId, mottagarId)
     }
 

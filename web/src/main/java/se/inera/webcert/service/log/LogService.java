@@ -11,12 +11,52 @@ import se.inera.webcert.service.log.dto.LogRequest;
 public interface LogService {
 
     /**
+     * Creates a log event when a user creates an intyg.
+     *
+     * @param logRequest
+     *            logRequest
+     */
+    void logCreateIntyg(LogRequest logRequest, WebCertUser user);
+
+    /**
      * Creates a log event when a user accesses an intyg.
      *
      * @param logRequest
      *            logRequest
      */
     void logReadOfIntyg(LogRequest logRequest, WebCertUser user);
+
+    /**
+     * Creates a log event when a user updates an intyg.
+     *
+     * @param logRequest
+     *            logRequest
+     */
+    void logUpdateIntyg(LogRequest logRequest, WebCertUser user);
+
+    /**
+     * Creates a log event when a user deletes an intyg.
+     *
+     * @param logRequest
+     *            logRequest
+     */
+    void logDeleteIntyg(LogRequest logRequest, WebCertUser user);
+
+    /**
+     * Creates a log event when a user signs an intyg.
+     *
+     * @param logRequest
+     *            logRequest
+     */
+    void logSignIntyg(LogRequest logRequest, WebCertUser user);
+
+    /**
+     * Creates a log event when a user revokes an intyg.
+     *
+     * @param logRequest
+     *            logRequest
+     */
+    void logRevokeIntyg(LogRequest logRequest, WebCertUser user);
 
     /**
      * Creates a log event when an user requests an intyg as PDF.

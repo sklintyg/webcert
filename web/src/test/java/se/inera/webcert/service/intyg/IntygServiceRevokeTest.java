@@ -44,6 +44,7 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.util.ReflectionUtils;
 
@@ -56,7 +57,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final String INTYG_ID = "abc123";
+    private static final String INTYG_ID = "123";
 
     @Mock
     private FragaSvarRepository fragaSvarRepository;
@@ -94,6 +95,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         RevokeMedicalCertificateResponseType response = new RevokeMedicalCertificateResponseType();
         response.setResult(result);
 
+        signedUtkast.setIntygsId(INTYG_ID);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
         // when(getCertificateService.getCertificateForCare(anyString(),
         // any(GetCertificateForCareRequestType.class))).thenReturn(getCertResponse);
@@ -109,6 +111,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         // verify that services were called
         verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
         verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
+        verify(logService).logRevokeIntyg(any(LogRequest.class), any(WebCertUser.class));
 
         assertEquals(IntygServiceResult.OK, res);
     }

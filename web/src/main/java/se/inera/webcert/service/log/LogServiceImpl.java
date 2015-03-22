@@ -14,7 +14,17 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
-import se.inera.log.messages.*;
+import se.inera.log.messages.AbstractLogMessage;
+import se.inera.log.messages.Enhet;
+import se.inera.log.messages.IntygCreateMessage;
+import se.inera.log.messages.IntygDeleteMessage;
+import se.inera.log.messages.IntygPrintMessage;
+import se.inera.log.messages.IntygReadMessage;
+import se.inera.log.messages.IntygRevokeMessage;
+import se.inera.log.messages.IntygSendMessage;
+import se.inera.log.messages.IntygSignMessage;
+import se.inera.log.messages.IntygUpdateMessage;
+import se.inera.log.messages.Patient;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
@@ -54,8 +64,33 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
+    public void logCreateIntyg(LogRequest logRequest, WebCertUser user) {
+        send(populateLogMessage(logRequest, new IntygCreateMessage(logRequest.getIntygId()), user));
+    }
+
+    @Override
+    public void logUpdateIntyg(LogRequest logRequest, WebCertUser user) {
+        send(populateLogMessage(logRequest, new IntygUpdateMessage(logRequest.getIntygId()), user));
+    }
+
+    @Override
     public void logReadOfIntyg(LogRequest logRequest, WebCertUser user) {
         send(populateLogMessage(logRequest, new IntygReadMessage(logRequest.getIntygId()), user));
+    }
+
+    @Override
+    public void logDeleteIntyg(LogRequest logRequest, WebCertUser user) {
+        send(populateLogMessage(logRequest, new IntygDeleteMessage(logRequest.getIntygId()), user));
+    }
+
+    @Override
+    public void logSignIntyg(LogRequest logRequest, WebCertUser user) {
+        send(populateLogMessage(logRequest, new IntygSignMessage(logRequest.getIntygId()), user));
+    }
+
+    @Override
+    public void logRevokeIntyg(LogRequest logRequest, WebCertUser user) {
+        send(populateLogMessage(logRequest, new IntygRevokeMessage(logRequest.getIntygId()), user));
     }
 
     @Override
@@ -70,7 +105,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logSendIntygToRecipient(LogRequest logRequest, WebCertUser user) {
-        send(populateLogMessage(logRequest, new SendIntygToRecipientMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo()), user));
+        send(populateLogMessage(logRequest, new IntygSendMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo()), user));
     }
 
     private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg, WebCertUser user) {
@@ -134,4 +169,5 @@ public class LogServiceImpl implements LogService {
             return session.createObjectMessage(logMsg);
         }
     }
+
 }

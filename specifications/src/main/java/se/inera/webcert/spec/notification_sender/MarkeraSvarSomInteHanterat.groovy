@@ -17,20 +17,12 @@ import org.apache.commons.io.IOUtils
 class MarkeraSvarSomInteHanterat {
 
     String intygTyp
-    String hsaUser = "user1"
     String internReferens
-
-    public setIntygTyp(String value) {
-        intygTyp = value
-    }
-    public setHsaUser(String value) {
-        hsaUser = value 
-    }
 
     def response
 
     public void execute() {
-        WebcertRestUtils.login(hsaUser)
+        WebcertRestUtils.login()
         response = WebcertRestUtils.setQuestionAsUnhandled(intygTyp, internReferens)
     }
 

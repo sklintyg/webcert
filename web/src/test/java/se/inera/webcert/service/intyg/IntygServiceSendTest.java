@@ -6,6 +6,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
 
@@ -150,12 +151,12 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         
         try {
             intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
-            Assert.fail("WebCertServiceException expected");
-        } catch (WebCertServiceException e) {
+            Assert.fail("RuntimeException expected");
+        } catch (RuntimeException e) {
             // Expected
         }
         
-        verify(omsandningRepository, times(2)).save(any(Omsandning.class));
+        verifyZeroInteractions(omsandningRepository);
     }
     
 }

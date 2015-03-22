@@ -29,7 +29,9 @@ import se.inera.webcert.service.draft.util.UpdateUserUtil;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
+import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -135,6 +137,9 @@ public class SignaturServiceImpl implements SignaturService {
         notificationService.sendNotificationForDraftSigned(utkast);
         LOG.debug("Notification sent: a certificate draft with id '{}' was signed using CLIENT method", utkast.getIntygsId());
 
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        logService.logSignIntyg(logRequest, webCertUserService.getWebCertUser());
+
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
 
@@ -184,6 +189,9 @@ public class SignaturServiceImpl implements SignaturService {
         // Notify stakeholders when a draft has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
         LOG.debug("Notification sent: a certificate draft with id '{}' was signed using SERVER method", utkast.getIntygsId());
+
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        logService.logSignIntyg(logRequest, webCertUserService.getWebCertUser());
 
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
