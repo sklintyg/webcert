@@ -142,6 +142,13 @@ class SkrivIntyg {
         }
     }
 
+    def vanta(int sekunder) {
+        Browser.drive {
+            Thread.sleep(sekunder * 1000)
+        }
+        true
+    }
+
     boolean intygSparatVisas() {
         Browser.drive {
             waitFor {

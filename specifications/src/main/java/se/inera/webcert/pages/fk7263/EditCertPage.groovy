@@ -63,7 +63,7 @@ class EditCertPage extends AbstractPage {
 class BaserasPaModule extends Module {
     static base = { $("#intygetbaseraspa") }
     static content = {
-        undersokning { $("#basedOnExamination") }
+        undersokning { $("input", type:'checkbox', id:"basedOnExamination") }
         undersokningDatum { $("#undersokningAvPatientenDate") }
         undersokningDatumToggle { $("#undersokningAvPatientenDate-toggle") }
         telefonkontakt { $("#basedOnPhoneContact") }
@@ -73,6 +73,10 @@ class BaserasPaModule extends Module {
         other { $("#basedOnOther") }
         otherDatum { $("#annanReferensDate") }
         otherText { $("#informationBasedOnOtherText") }
+    }
+
+    def setUndersokning(value){
+        undersokning.value(value.toBoolean());
     }
 }
 

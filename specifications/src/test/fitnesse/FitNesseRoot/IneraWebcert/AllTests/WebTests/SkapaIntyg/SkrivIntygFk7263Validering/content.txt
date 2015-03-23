@@ -69,13 +69,26 @@ Kontrollera valideringsmeddelanden.
 !3 Fyll i resten av intyget
 
 | Populera Fk7263 |
-| undersokning | funktionsnedsattning | aktivitetsbegransning |
-| true | funktionsnedsattning | aktivitetsbegransning |
-
-Vänta tills intyget är sparat.
+| undersokningDatum |
+| 2014-09-17 |
 
 | script | !-SkrivIntyg-! |
-| intyg sparat visas |
+| spara utkast |
+
+| Populera Fk7263 |
+| aktivitetsbegransning |
+| aktivitetsbegransning1 |
+
+| script | !-SkrivIntyg-! |
+| spara utkast |
+
+
+| Populera Fk7263 |
+| funktionsnedsattning |
+| funktionsnedsattning1 |
+
+| script | !-SkrivIntyg-! |
+| spara utkast |
 
 Inga valideringsfel ska vara kvar
 
