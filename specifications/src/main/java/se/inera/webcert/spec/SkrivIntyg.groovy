@@ -279,7 +279,15 @@ class SkrivIntyg {
     String prognos() {
         def result = '';
         Browser.drive {
-            result = page.prognos.radioGroup.value();
+            result = page.prognos.prognos.value();
+        }
+        result
+    }
+
+    boolean prognosArOvalt() {
+        def result = false;
+        Browser.drive {
+            result = page.prognos.prognos.value() == null;
         }
         result
     }

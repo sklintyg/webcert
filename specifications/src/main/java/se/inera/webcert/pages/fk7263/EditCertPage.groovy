@@ -34,7 +34,7 @@ class EditCertPage extends AbstractPage {
         arbete { module ArbeteModule }
         arbetsformaga { module ArbetsformagaModule }
         arbetsformagaBeskrivning { $("#capacityForWorkText") }
-        prognos { module PrognosModule }
+        prognos { name -> module PrognosModule, form: form }
         atgardSjukvard { $("#measuresCurrent") }
         atgardAnnan { $("#measuresOther") }
         rekommendationer { name -> module RekommendationerModule, form: form }
@@ -130,12 +130,15 @@ class ArbetsformagaModule extends Module {
 }
 
 class PrognosModule extends Module {
+    def form;
     static base = { $("#prognosForm") }
     static content = {
-        prognos { $("input", name: "capacityForWorkForecast") }
-        radioGroup {$("input", name : "capacityForWorkForecast")}
+
+        radioGroup { form.capacityForWorkForecast }
 
         beskrivning { $("#capacityForWorkForecastText") }
+        prognos { $("input", name: "capacityForWorkForecast") }
+
     }
 
     def valjPrognos(String valdPrognos) {
