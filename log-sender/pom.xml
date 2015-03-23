@@ -231,11 +231,11 @@
           <artifactId>activemq-spring</artifactId>
           <version>${activemq.version}</version>
         </dependency>
-          <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <version>${geronimo-jms-specs.version}</version>
-          </dependency>
+        <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jms_1.1_spec</artifactId>
+          <version>${geronimo-jms-specs.version}</version>
+        </dependency>
       </dependencies>
     </profile>
   </profiles>
