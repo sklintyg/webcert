@@ -50,13 +50,29 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
         }).
         state('fragasvar', {
             url: '/fragasvar/:certificateType/:certificateId',
-            templateUrl: '/views/dashboard/view.qa.html',
-            controller: 'webcert.ViewCertCtrl'
+            views: {
+                '' : {
+                    templateUrl: '/views/dashboard/view.qa.html',
+                    controller: 'webcert.ViewCertCtrl'
+                },
+                'header@fragasvar' : {
+                    templateUrl: '/web/webjars/common/webcert/intyg/view/intyg-view-header/intyg-view-header.html',
+                    controller: 'common.IntygViewHeader'
+                }
+            }
         }).
         state('fragasvar-qaonly', {
             url: '/fragasvar/:certificateType/:certificateId/:qaOnly',
-            templateUrl: '/views/dashboard/view.qa.html',
-            controller: 'webcert.ViewCertCtrl'
+            views: {
+                '' : {
+                    templateUrl: '/views/dashboard/view.qa.html',
+                    controller: 'webcert.ViewCertCtrl'
+                },
+                'header@fragasvar' : {
+                    templateUrl: '/web/webjars/common/webcert/intyg/view/intyg-view-header/intyg-view-header.html',
+                    controller: 'common.IntygViewHeader'
+                }
+            }
         }).
         state('webcert-about', {
             url: '/webcert/about',
