@@ -53,7 +53,10 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                 button2id: 'button1checkhanterad-dialog-ejhantera',
                                 button3text: 'label.qacheckhanterad.tillbaka',
                                 button3id: 'button1checkhanterad-dialog-tillbaka',
-                                autoClose: true
+                                autoClose: true,
+                                model : {
+                                    widgetState: $scope.widgetState
+                                }
                             });
                         } else {
                             fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindCheckHandledEvent);

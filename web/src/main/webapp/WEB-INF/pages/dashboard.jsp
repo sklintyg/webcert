@@ -36,8 +36,8 @@
 <body>
 
   <%-- ng-view that holds dynamic content managed by angular app --%>
-  <ui-view autoscroll="true" id="view">
-  </ui-view>
+  <div ui-view autoscroll="true" id="view">
+  </div>
 
   <%-- No script to show at least something when javascript is off --%>
   <noscript>
