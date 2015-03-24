@@ -7,10 +7,10 @@
     # repo - values: snapshot or release
     repo: release
 
-    # latest release: 3.0.0-b47
+    # latest release: 3.0.0-RC1
     # latest snapshot: 3.0.0-a536
-    version: 3.0.0-b47
-    config_version: release/v3.0.0
+    version: 3.0.0-RC1
+    config_version: origin/release/v3.0.0
 
   roles:
     - app-resources
