@@ -35,7 +35,6 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                     var deferred = $q.defer();
                                     $scope.$broadcast('markAnsweredAsHandledEvent', deferred, unhandledQas);
                                     deferred.promise.then(function(){
-
                                         modal.close('hantera');
                                         fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindCheckHandledEvent);
                                     });
