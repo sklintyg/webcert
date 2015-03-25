@@ -187,7 +187,7 @@ $.get('/api/modules/map').then(function(modules) {
 
         // Wait for all dependencies to load (for production dependencies are empty which is resolved immediately)
         $.when.apply(this, dependencyPromises).then(function() {
-            angular.element(document).ready(function() {
+            angular.element().ready(function() {
 
                 // Cant use common.featureService to check for this since it needs to be done before angular bootstrap.
                 if (MODULE_CONFIG.USERCONTEXT &&
