@@ -25,7 +25,6 @@ module.exports = function(config) {
             WEBJAR_DIR + 'angular-ui-router/angular-ui-router.js',
             WEBJAR_DIR + 'angularjs/angular-sanitize.js',
             WEBJAR_DIR + 'angular-ui-bootstrap/ui-bootstrap-tpls.js',
-            WEBJAR_DIR + 'angular-ui-router/angular-ui-router.js',
             WEBJAR_DIR + 'jquery/jquery.js',
             WEBJAR_DIR + 'momentjs/moment.js',
 
@@ -74,7 +73,8 @@ module.exports = function(config) {
             'karma-chrome-launcher',
             'karma-firefox-launcher',
             'karma-phantomjs-launcher',
-            'karma-mocha-reporter'
+            'karma-mocha-reporter',
+            'karma-ng-html2js-preprocessor'
         ],
 
         reporters: [ 'progress' ]

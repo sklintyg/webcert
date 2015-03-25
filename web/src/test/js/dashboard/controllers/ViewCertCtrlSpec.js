@@ -259,7 +259,7 @@ describe('ViewCertCtrl', function() {
 
                 // inside the handled button click, test that :
                 var args = dialogService.showDialog.calls.mostRecent().args;
-                var dialogOptions = args[1];
+                var dialogOptions = args[0];
                 // press the handled button
                 dialogOptions.button1click();
 
@@ -288,7 +288,7 @@ describe('ViewCertCtrl', function() {
 
                 // inside the handled button click, test that :
                 var args = dialogService.showDialog.calls.mostRecent().args;
-                var dialogOptions = args[1];
+                var dialogOptions = args[0];
                 // press the not handled button
                 dialogOptions.button2click();
                 // no action is taken, just close the dialog
@@ -303,7 +303,7 @@ describe('ViewCertCtrl', function() {
             it('back button click', function(){
                 // inside the handled button click, test that :
                 var args = dialogService.showDialog.calls.mostRecent().args;
-                var dialogOptions = args[1];
+                var dialogOptions = args[0];
                 // press the back button
                 dialogOptions.button3click();
                 // no action is taken, just close the dialog
