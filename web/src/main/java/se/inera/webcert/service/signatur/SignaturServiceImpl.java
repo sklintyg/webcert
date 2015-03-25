@@ -138,7 +138,7 @@ public class SignaturServiceImpl implements SignaturService {
         LOG.debug("Notification sent: a certificate draft with id '{}' was signed using CLIENT method", utkast.getIntygsId());
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logSignIntyg(logRequest, webCertUserService.getWebCertUser());
+        logService.logSignIntyg(logRequest);
 
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
@@ -191,7 +191,7 @@ public class SignaturServiceImpl implements SignaturService {
         LOG.debug("Notification sent: a certificate draft with id '{}' was signed using SERVER method", utkast.getIntygsId());
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logSignIntyg(logRequest, webCertUserService.getWebCertUser());
+        logService.logSignIntyg(logRequest);
 
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }

@@ -155,7 +155,7 @@ public class CopyUtkastServiceImplTest {
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         
         // Assert pdl log
-        verify(logService).logCreateIntyg(any(LogRequest.class), any(WebCertUser.class));
+        verify(logService).logCreateIntyg(any(LogRequest.class));
 
     }
 

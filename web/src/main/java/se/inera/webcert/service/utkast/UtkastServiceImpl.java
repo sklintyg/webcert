@@ -39,6 +39,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
@@ -101,8 +102,16 @@ public class UtkastServiceImpl implements UtkastService {
 
         sendNotification(savedUtkast, Event.CREATED);
 
+        LogUser logUser = new LogUser();
+        logUser.setUserId(request.getHosPerson().getHsaId());
+        logUser.setUserName(request.getHosPerson().getNamn());
+        logUser.setEnhetsId(request.getVardenhet().getHsaId());
+        logUser.setEnhetsNamn(request.getVardenhet().getNamn());
+        logUser.setVardgivareId(request.getVardenhet().getVardgivare().getHsaId());
+        logUser.setVardgivareNamn(request.getVardenhet().getVardgivare().getNamn());
+
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
-        logService.logCreateIntyg(logRequest, webCertUserService.getWebCertUser());
+        logService.logCreateIntyg(logRequest, logUser);
 
         return savedUtkast.getIntygsId();
     }
@@ -227,7 +236,7 @@ public class UtkastServiceImpl implements UtkastService {
         Utkast utkast = getIntygAsDraft(intygId);
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logReadOfIntyg(logRequest, webCertUserService.getWebCertUser());
+        logService.logReadIntyg(logRequest);
         return utkast;
     }
 
@@ -245,8 +254,6 @@ public class UtkastServiceImpl implements UtkastService {
         Utkast intyg = getIntygAsDraft(intygsId);
         updateWithUser(intyg);
         utkastRepository.save(intyg);
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(intyg);
-        logService.logSignIntyg(logRequest, webCertUserService.getWebCertUser());
 
         return signatureService.serverSignature(intygsId);
     }
@@ -293,7 +300,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         if (createPdlLogEvent) {
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-            logService.logUpdateIntyg(logRequest, webCertUserService.getWebCertUser());
+            logService.logUpdateIntyg(logRequest);
         }
         
         // Notify stakeholders when a draft has been changed/updated
@@ -438,7 +445,7 @@ public class UtkastServiceImpl implements UtkastService {
         sendNotification(utkast, Event.DELETED);
         
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logDeleteIntyg(logRequest, webCertUserService.getWebCertUser());
+        logService.logDeleteIntyg(logRequest);
     }
 
     @Transactional
@@ -452,7 +459,7 @@ public class UtkastServiceImpl implements UtkastService {
     public void logPrintOfDraftToPDL(String intygId) {
         Utkast utkast = utkastRepository.findOne(intygId);
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logPrintOfIntygAsDraft(logRequest, webCertUserService.getWebCertUser());
+        logService.logPrintIntygAsDraft(logRequest);
     }
     
     private void updateWithUser(Utkast utkast) {

@@ -194,7 +194,7 @@ public class SignaturServiceImplTest {
         verify(intygService).storeIntyg(completedUtkast);
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
-        verify(logService).logSignIntyg(any(LogRequest.class), any(WebCertUser.class));
+        verify(logService).logSignIntyg(any(LogRequest.class));
 
 
         assertNotNull(signatureTicket);
@@ -219,7 +219,7 @@ public class SignaturServiceImplTest {
         verify(intygService).storeIntyg(completedUtkast);
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
-        verify(logService).logSignIntyg(any(LogRequest.class), any(WebCertUser.class));
+        verify(logService).logSignIntyg(any(LogRequest.class));
 
 
         assertNotNull(signatureTicket);
