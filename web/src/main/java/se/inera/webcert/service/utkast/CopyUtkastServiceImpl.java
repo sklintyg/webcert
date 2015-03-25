@@ -49,9 +49,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Autowired
     private LogService logService;
 
-    @Autowired
-    private WebCertUserService webCertUserService;
-
     /*
      * (non-Javadoc)
      * 
@@ -93,7 +90,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
 
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
-            logService.logCreateIntyg(logRequest, webCertUserService.getWebCertUser());
+            logService.logCreateIntyg(logRequest);
 
             return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
 

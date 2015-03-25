@@ -111,7 +111,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         // verify that services were called
         verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
         verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
-        verify(logService).logRevokeIntyg(any(LogRequest.class), any(WebCertUser.class));
+        verify(logService).logRevokeIntyg(any(LogRequest.class));
 
         assertEquals(IntygServiceResult.OK, res);
     }

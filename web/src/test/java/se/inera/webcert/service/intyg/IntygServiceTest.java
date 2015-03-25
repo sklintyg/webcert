@@ -159,7 +159,7 @@ public class IntygServiceTest {
         // ensure that correct call is made to moduleFacade
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
         // Assert pdl log
-        verify(logservice).logReadOfIntyg(any(LogRequest.class), any(WebCertUser.class));
+        verify(logservice).logReadIntyg(any(LogRequest.class));
     }
 
     @Test

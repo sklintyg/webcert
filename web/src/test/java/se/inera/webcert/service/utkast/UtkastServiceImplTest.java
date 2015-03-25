@@ -152,7 +152,7 @@ public class UtkastServiceImplTest {
         verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class));
         
         // Assert pdl log
-        verify(logService).logDeleteIntyg(any(LogRequest.class), any(WebCertUser.class));
+        verify(logService).logDeleteIntyg(any(LogRequest.class));
     }
 
     @Test
@@ -163,7 +163,7 @@ public class UtkastServiceImplTest {
         draftService.logPrintOfDraftToPDL(INTYG_ID);
         
         // Assert pdl log
-        verify(logService).logPrintOfIntygAsDraft(any(LogRequest.class), any(WebCertUser.class));
+        verify(logService).logPrintIntygAsDraft(any(LogRequest.class));
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -212,7 +212,7 @@ public class UtkastServiceImplTest {
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
         // Assert pdl log
-        verify(logService).logUpdateIntyg(any(LogRequest.class), any(WebCertUser.class));
+        verify(logService).logUpdateIntyg(any(LogRequest.class));
 
         assertNotNull("An DraftValidation should be returned", res);
         assertFalse("Validation should fail", res.isDraftValid());

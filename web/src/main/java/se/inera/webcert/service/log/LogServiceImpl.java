@@ -28,6 +28,7 @@ import se.inera.log.messages.Patient;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
@@ -64,51 +65,115 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void logCreateIntyg(LogRequest logRequest, WebCertUser user) {
+    public void logCreateIntyg(LogRequest logRequest) {
+        logCreateIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+    }
+
+    @Override
+    public void logCreateIntyg(LogRequest logRequest, LogUser user) {
         send(populateLogMessage(logRequest, new IntygCreateMessage(logRequest.getIntygId()), user));
     }
 
     @Override
-    public void logUpdateIntyg(LogRequest logRequest, WebCertUser user) {
+    public void logUpdateIntyg(LogRequest logRequest) {
+        logUpdateIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+    }
+
+    @Override
+    public void logUpdateIntyg(LogRequest logRequest, LogUser user) {
         send(populateLogMessage(logRequest, new IntygUpdateMessage(logRequest.getIntygId()), user));
     }
 
     @Override
-    public void logReadOfIntyg(LogRequest logRequest, WebCertUser user) {
+    public void logReadIntyg(LogRequest logRequest) {
+        logReadIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+    }
+
+    @Override
+    public void logReadIntyg(LogRequest logRequest, LogUser user) {
         send(populateLogMessage(logRequest, new IntygReadMessage(logRequest.getIntygId()), user));
     }
 
     @Override
-    public void logDeleteIntyg(LogRequest logRequest, WebCertUser user) {
+    public void logDeleteIntyg(LogRequest logRequest) {
+        logDeleteIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+    }
+
+    @Override
+    public void logDeleteIntyg(LogRequest logRequest, LogUser user) {
         send(populateLogMessage(logRequest, new IntygDeleteMessage(logRequest.getIntygId()), user));
     }
 
     @Override
-    public void logSignIntyg(LogRequest logRequest, WebCertUser user) {
+    public void logSignIntyg(LogRequest logRequest) {
+        logSignIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+    }
+
+    @Override
+    public void logSignIntyg(LogRequest logRequest, LogUser user) {
         send(populateLogMessage(logRequest, new IntygSignMessage(logRequest.getIntygId()), user));
     }
 
     @Override
-    public void logRevokeIntyg(LogRequest logRequest, WebCertUser user) {
+    public void logRevokeIntyg(LogRequest logRequest) {
+        logRevokeIntyg(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+    }
+
+    @Override
+    public void logRevokeIntyg(LogRequest logRequest, LogUser user) {
         send(populateLogMessage(logRequest, new IntygRevokeMessage(logRequest.getIntygId()), user));
     }
 
     @Override
-    public void logPrintOfIntygAsPDF(LogRequest logRequest, WebCertUser user) {
+    public void logPrintIntygAsPDF(LogRequest logRequest) {
+        logPrintIntygAsPDF(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+    }
+
+    @Override
+    public void logPrintIntygAsPDF(LogRequest logRequest, LogUser user) {
         send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_PDF), user));
     }
 
     @Override
-    public void logPrintOfIntygAsDraft(LogRequest logRequest, WebCertUser user) {
+    public void logPrintIntygAsDraft(LogRequest logRequest) {
+        logPrintIntygAsDraft(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+    }
+
+    @Override
+    public void logPrintIntygAsDraft(LogRequest logRequest, LogUser user) {
         send(populateLogMessage(logRequest, new IntygPrintMessage(logRequest.getIntygId(), PRINTED_AS_DRAFT), user));
     }
 
     @Override
-    public void logSendIntygToRecipient(LogRequest logRequest, WebCertUser user) {
+    public void logSendIntygToRecipient(LogRequest logRequest) {
+        logSendIntygToRecipient(logRequest, getLogUser(webCertUserService.getWebCertUser()));
+    }
+
+    @Override
+    public void logSendIntygToRecipient(LogRequest logRequest, LogUser user) {
         send(populateLogMessage(logRequest, new IntygSendMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo()), user));
     }
 
-    private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg, WebCertUser user) {
+    private LogUser getLogUser(WebCertUser webCertUser) {
+        
+        LogUser logUser = new LogUser();
+
+        logUser.setUserId(webCertUser.getHsaId());
+        logUser.setUserName(webCertUser.getNamn());
+
+        SelectableVardenhet valdVardenhet = webCertUser.getValdVardenhet();
+        logUser.setEnhetsId(valdVardenhet.getId());
+        logUser.setEnhetsNamn(valdVardenhet.getNamn());
+
+        SelectableVardenhet valdVardgivare = webCertUser.getValdVardgivare();
+        logUser.setVardgivareId(valdVardgivare.getId());
+        logUser.setVardgivareNamn(valdVardgivare.getNamn());
+
+        return logUser;
+    }
+
+
+    private AbstractLogMessage populateLogMessage(LogRequest logRequest, AbstractLogMessage logMsg, LogUser user) {
 
         populateWithCurrentUserAndCareUnit(logMsg, user);
 
@@ -130,19 +195,11 @@ public class LogServiceImpl implements LogService {
         return logMsg;
     }
 
-    private void populateWithCurrentUserAndCareUnit(AbstractLogMessage logMsg, WebCertUser user) {
-        logMsg.setUserId(user.getHsaId());
-        logMsg.setUserName(user.getNamn());
+    private void populateWithCurrentUserAndCareUnit(AbstractLogMessage logMsg, LogUser user) {
+        logMsg.setUserId(user.getUserId());
+        logMsg.setUserName(user.getUserName());
 
-        SelectableVardenhet valdVardenhet = user.getValdVardenhet();
-        String enhetsId = valdVardenhet.getId();
-        String enhetsNamn = valdVardenhet.getNamn();
-
-        SelectableVardenhet valdVardgivare = user.getValdVardgivare();
-        String vardgivareId = valdVardgivare.getId();
-        String vardgivareNamn = valdVardgivare.getNamn();
-
-        Enhet vardenhet = new Enhet(enhetsId, enhetsNamn, vardgivareId, vardgivareNamn);
+        Enhet vardenhet = new Enhet(user.getEnhetsId(), user.getEnhetsNamn(), user.getVardgivareId(), user.getVardgivareNamn());
         logMsg.setUserCareUnit(vardenhet);
     }
 

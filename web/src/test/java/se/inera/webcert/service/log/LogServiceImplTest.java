@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -31,7 +32,6 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
-import se.inera.webcert.web.service.WebCertUserServiceImpl;
 
 /**
  * Created by pehr on 13/11/13.
@@ -42,6 +42,9 @@ public class LogServiceImplTest {
     @Mock
     private JmsTemplate template = mock(JmsTemplate.class);
 
+    @Mock
+    private WebCertUserService userService = mock(WebCertUserService.class);
+
     @InjectMocks
     LogServiceImpl logService = new LogServiceImpl();
 
@@ -49,6 +52,8 @@ public class LogServiceImplTest {
     public void serviceSendsDocumentAndIdForCreate() throws Exception {
         ReflectionTestUtils.setField(logService, "systemId", "webcert");
         ReflectionTestUtils.setField(logService, "systemName", "WebCert");
+        
+        Mockito.when(userService.getWebCertUser()).thenReturn(createWcUser());
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
@@ -57,7 +62,7 @@ public class LogServiceImplTest {
         logRequest.setPatientId("19121212-1212");
         logRequest.setPatientName("Hans Olof van der Test");
         
-        logService.logReadOfIntyg(logRequest, createWcUser());
+        logService.logReadIntyg(logRequest);
 
         verify(template, only()).send(messageCreatorCaptor.capture());
 

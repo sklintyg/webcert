@@ -123,7 +123,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         IntygContentHolder intygData = getIntygData(intygId, typ);
         verifyEnhetsAuth(intygData.getUtlatande(), true);
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intygData.getUtlatande());
-        logService.logReadOfIntyg(logRequest, webCertUserService.getWebCertUser());
+        logService.logReadIntyg(logRequest);
         return intygData;
     }
 
@@ -156,7 +156,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents(), intyg.getStatuses());
 
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
-            logService.logPrintOfIntygAsPDF(logRequest, webCertUserService.getWebCertUser());
+            logService.logPrintIntygAsPDF(logRequest);
 
             return intygPdf;
 
@@ -227,7 +227,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         // send PDL log event
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
         logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
-        logService.logSendIntygToRecipient(logRequest, sendConfig.getWebCertUser());
+        logService.logSendIntygToRecipient(logRequest);
 
         Omsandning omsandning = createOmsandning(OmsandningOperation.SEND_INTYG, intygsId, typ, sendConfigAsJson);
 
@@ -423,7 +423,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
         // Third: create a log event
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
-        logService.logRevokeIntyg(logRequest, webCertUserService.getWebCertUser());
+        logService.logRevokeIntyg(logRequest);
 
         // Return OK
         return IntygServiceResult.OK;
