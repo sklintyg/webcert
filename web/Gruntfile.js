@@ -18,6 +18,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-connect-proxy');
     grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-angular-templates');
 
 
     var SRC_DIR = 'src/main/webapp/js/';
@@ -86,9 +87,37 @@ module.exports = function(grunt) {
             }
         },
 
+        ngtemplates: {
+            options: {
+                // This should be the name of your apps angular module
+                module: 'webcert'
+                // doesn't work with our fantastically complicated html files ... let uglify do the compression
+                //htmlmin: {
+                //    collapseBooleanAttributes:      false,
+                //    collapseWhitespace:             false,
+                //    removeAttributeQuotes:          false,
+                //    removeComments:                 false, // Only if you don't use comment directives!
+                //    removeEmptyAttributes:          false,
+                //    removeRedundantAttributes:      false,
+                //    removeScriptTypeAttributes:     false,
+                //    removeStyleLinkTypeAttributes:  false
+                //}
+            },
+            webcert: {
+                cwd: SRC_DIR,
+                src: ['../views/**/*.html'],
+                dest: SRC_DIR + 'templates.js',
+                options: {
+                    url: function(url) {
+                        return url.replace('../', '/');
+                    }
+                }
+            }
+        },
+
 
         // server ======================================================================================================
-        connect : {
+        connect: {
             server: {
                 options: {
                     port: 9089,
@@ -101,28 +130,30 @@ module.exports = function(grunt) {
                         middlewares.push(
                             connect().use(
                                 '/web',
-                            connect.static(__dirname + '/src/main/webapp')
-                        ) );
+                                connect.static(__dirname + '/src/main/webapp')
+                            ));
                         middlewares.push(
                             connect().use(
                                 '/views',
                                 connect.static(__dirname + '/src/main/webapp/views')
-                            ) );
+                            ));
                         middlewares.push(
                             connect().use(
                                 '/js',
                                 connect.static(__dirname + '/src/main/webapp/js')
-                            ) );
+                            ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common',
-                                connect.static(__dirname + '/../../common/web/src/main/resources/META-INF/resources/webjars/common')
-                            ) );
+                                connect.static(__dirname +
+                                '/../../common/web/src/main/resources/META-INF/resources/webjars/common')
+                            ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/fk7263/webcert',
-                                connect.static(__dirname + '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert')
-                            ) );
+                                connect.static(__dirname +
+                                '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert')
+                            ));
 
                         middlewares.push(proxy);
                         return middlewares;
@@ -141,10 +172,10 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('default', ['concat', 'ngAnnotate', 'uglify']);
+    grunt.registerTask('default', ['ngtemplates', 'concat', 'ngAnnotate', 'uglify']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma']);
 
     // frontend only dev ===============================================================================================
-    grunt.registerTask('server', ['configureProxies:server','connect:server']);
+    grunt.registerTask('server', ['configureProxies:server', 'connect:server']);
 };
