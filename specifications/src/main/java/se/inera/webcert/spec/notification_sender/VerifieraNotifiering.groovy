@@ -2,7 +2,7 @@ package se.inera.webcert.spec.notification_sender
 import se.inera.webcert.spec.util.RestClientFixture
 import se.inera.webcert.spec.util.WebcertRestUtils
 
-class VerifieraNotifiering extends RestClientFixture {
+class VerifieraNotifiering {
 
     String id 
     String kod

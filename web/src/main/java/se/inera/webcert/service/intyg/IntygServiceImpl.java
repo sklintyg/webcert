@@ -119,8 +119,9 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygContentHolder fetchIntygData(String intygId, String typ) {
         IntygContentHolder intygData = getIntygData(intygId, typ);
-        Vardenhet vardenhet = intygData.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
-        verifyEnhetsAuth(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), true);
+        verifyEnhetsAuth(intygData.getUtlatande(), true);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intygData.getUtlatande());
+        logService.logReadOfIntyg(logRequest, webCertUserService.getWebCertUser());
         return intygData;
     }
 
@@ -147,7 +148,9 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygId);
 
-            IntygContentHolder intyg = fetchIntygData(intygId, intygTyp);
+            IntygContentHolder intyg = getIntygData(intygId, intygTyp);
+            verifyEnhetsAuth(intyg.getUtlatande(), true);
+
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents(), intyg.getStatuses());
 
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
@@ -214,11 +217,15 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean hasPatientConsent) {
 
         Utlatande intyg = getUtlatandeForIntyg(intygsId, typ);
-        Vardenhet vardenhet = intyg.getGrundData().getSkapadAv().getVardenhet();
-        verifyEnhetsAuth(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), true);
+        verifyEnhetsAuth(intyg, true);
 
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getWebCertUser());
         String sendConfigAsJson = configurationManager.marshallConfig(sendConfig);
+
+        // send PDL log event
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
+        logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
+        logService.logSendIntygToRecipient(logRequest, sendConfig.getWebCertUser());
 
         Omsandning omsandning = createOmsandning(OmsandningOperation.SEND_INTYG, intygsId, typ, sendConfigAsJson);
 
@@ -234,7 +241,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage) {
         LOG.info("Attempting to revoke intyg {}", intygsId);
 
-        IntygContentHolder intyg = fetchIntygData(intygsId, intygsTyp);
+        IntygContentHolder intyg = getIntygData(intygsId, intygsTyp);
+        verifyEnhetsAuth(intyg.getUtlatande(), true);
 
         if (intyg.isRevoked()) {
             LOG.info("Certificate with id '{}' is already revoked", intygsId);
@@ -258,10 +266,10 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         switch (resultOfCall.getResultCode()) {
         case OK:
             LOG.info("Successfully revoked intyg {}", intygsId);
-            return whenSuccessfulRevoke(intygsId);
+            return whenSuccessfulRevoke(intyg.getUtlatande());
         case INFO:
             LOG.warn("Call to revoke intyg {} returned an info message: {}", intygsId, resultOfCall.getInfoText());
-            return whenSuccessfulRevoke(intygsId);
+            return whenSuccessfulRevoke(intyg.getUtlatande());
         case ERROR:
             LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}",
                     new Object[] { intygsId, resultOfCall.getErrorText(), resultOfCall.getErrorId() });
@@ -302,11 +310,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
                 if (ResultCodeType.INFO.equals(response.getResult().getResultCode())) {
                     LOG.warn("Warning occured when trying to send intyg '{}'; {}", intygsId, response.getResult().getResultText());
                 }
-                // send PDL log event
-                LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
-                logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
-                logService.logSendIntygToRecipient(logRequest, sendConfig.getWebCertUser());
-
                 // Notify stakeholders when a certificate is sent
                 notificationService.sendNotificationForIntygSent(intygsId);
                 LOG.debug("Notification sent: certificate with id '{}' has been sent to '{}'", intygsId, recipient);
@@ -327,11 +330,12 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         }
     }
 
-    protected void verifyEnhetsAuth(String vardgivarId, String enhetsId, boolean isReadOnlyOperation) {
-        if (!webCertUserService.isAuthorizedForUnit(vardgivarId, enhetsId, isReadOnlyOperation)) {
+    protected void verifyEnhetsAuth(Utlatande utlatande, boolean isReadOnlyOperation) {
+        Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
+        if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), isReadOnlyOperation)) {
             LOG.info("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + enhetsId);
+                    "User not authorized for for enhet " + vardenhet.getEnhetsid());
         }
     }
 
@@ -383,8 +387,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
      * @param intygsId
      * @return
      */
-    private IntygServiceResult whenSuccessfulRevoke(String intygsId) {
-
+    private IntygServiceResult whenSuccessfulRevoke(Utlatande intyg) {
+        String intygsId = intyg.getId();
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);
         LOG.debug("Notification sent: certificate with id '{}' was revoked", intygsId);
@@ -405,6 +409,10 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
                     closedFragaSvar.getInternReferens(),
                     intygsId);
         }
+
+        // Third: create a log event
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
+        logService.logRevokeIntyg(logRequest, webCertUserService.getWebCertUser());
 
         // Return OK
         return IntygServiceResult.OK;

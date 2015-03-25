@@ -1,6 +1,7 @@
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.safari.SafariDriver
+import org.openqa.selenium.safari.SafariOptions
 import org.openqa.selenium.htmlunit.HtmlUnitDriver
 import org.openqa.selenium.remote.DesiredCapabilities
 import org.openqa.selenium.remote.RemoteWebDriver
@@ -47,7 +48,11 @@ environments {
         driver = { new ChromeDriver() }
     }
     safari {
-        driver = { new SafariDriver() }
+        driver = {
+            SafariOptions options = new SafariOptions(); 
+            options.setUseCleanSession(true); 
+            new SafariDriver(options)
+        }
     }
     firefox {
         driver = { new FirefoxDriver() }

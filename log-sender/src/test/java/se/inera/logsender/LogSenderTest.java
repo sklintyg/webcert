@@ -52,7 +52,7 @@ import se.inera.log.messages.Enhet;
 import se.inera.log.messages.IntygPrintMessage;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.log.messages.Patient;
-import se.inera.log.messages.SendIntygToRecipientMessage;
+import se.inera.log.messages.IntygSendMessage;
 import se.riv.ehr.log.store.storelog.v1.ObjectFactory;
 import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
 import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
@@ -91,8 +91,8 @@ public class LogSenderTest {
             add(populateLogMessage("2013-01-02T10:00", new IntygReadMessage("abc123")));
             add(populateLogMessage("2013-01-03T10:00", new IntygPrintMessage("abc123","web")));
             add(populateLogMessage("2013-01-04T10:00", new IntygPrintMessage("abc123","pdf")));
-            add(populateLogMessage("2013-01-05T10:00", new SendIntygToRecipientMessage("abc123", "FK")));
-            add(populateLogMessage("2013-01-06T10:00", new SendIntygToRecipientMessage("abc123", "TS")));
+            add(populateLogMessage("2013-01-05T10:00", new IntygSendMessage("abc123", "FK")));
+            add(populateLogMessage("2013-01-06T10:00", new IntygSendMessage("abc123", "TS")));
         }
     };
 

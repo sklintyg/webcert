@@ -29,7 +29,7 @@ class FkSkickarSvar extends WsClientFixture {
     public FkSkickarSvar(String logiskAddress) {
         super(logiskAddress)
         String serviceUrl = System.getProperty("service.receiveAnswerUrl")
-        String url = serviceUrl ? serviceUrl : baseUrl + "receive-answer/v1.0"
+        String url = serviceUrl ? serviceUrl : baseUrl + "services/receive-answer/v1.0"
         answerResponder = createClient(ReceiveMedicalCertificateAnswerResponderInterface.class, url)
     }
 

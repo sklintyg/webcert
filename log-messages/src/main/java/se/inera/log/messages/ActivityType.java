@@ -3,10 +3,13 @@ package se.inera.log.messages;
 public enum ActivityType {
 
     READ("Läsa"),
-    WRITE("Skriva"),
+    CREATE("Skapa"),
+    UPDATE("Spara"),
     SIGN("Signera"),
     DELETE("Radera"),
     PRINT("Utskrift"),
+    REVOKE("Återkalla"),
+    SEND("SkickaTillMottagare"),
     EMERGENCY_ACCESS("Nödöppning");
 
     private String type;

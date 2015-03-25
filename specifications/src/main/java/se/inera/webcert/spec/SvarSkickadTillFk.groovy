@@ -14,7 +14,7 @@ class SvarSkickadTillFk extends RestClientFixture implements GroovyObject {
     }
 
     public void execute() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         svarJson = restClient.get(path: "fk-stub/svar/").data
     }
 }

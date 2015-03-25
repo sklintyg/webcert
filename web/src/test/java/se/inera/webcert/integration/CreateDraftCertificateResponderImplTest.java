@@ -33,6 +33,7 @@ import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
+import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.utkast.UtkastService;

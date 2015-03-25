@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -22,7 +23,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
-import se.inera.certificate.modules.support.api.dto.*;
+import se.inera.certificate.modules.support.api.dto.HoSPersonal;
+import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
+import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
+import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
+import se.inera.certificate.modules.support.api.dto.ValidationMessage;
+import se.inera.certificate.modules.support.api.dto.ValidationMessageType;
+import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -35,6 +42,7 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
@@ -142,6 +150,20 @@ public class UtkastServiceImplTest {
         
         // Assert notification message
         verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class));
+        
+        // Assert pdl log
+        verify(logService).logDeleteIntyg(any(LogRequest.class), any(WebCertUser.class));
+    }
+
+    @Test
+    public void testLogPrintOfIntygAsDraft() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+
+        draftService.logPrintOfDraftToPDL(INTYG_ID);
+        
+        // Assert pdl log
+        verify(logService).logPrintOfIntygAsDraft(any(LogRequest.class), any(WebCertUser.class));
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -165,7 +187,7 @@ public class UtkastServiceImplTest {
     }
 
     @Test
-    public void testSaveAndValidateDraft() throws Exception {
+    public void testSaveAndValidateDraftFirstSave() throws Exception {
 
         ModuleApi mockModuleApi = mock(ModuleApi.class);
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
@@ -182,12 +204,48 @@ public class UtkastServiceImplTest {
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
                 new InternalModelResponse("{}"));
 
-        DraftValidation res = draftService.saveAndValidateDraft(request);
+        DraftValidation res = draftService.saveAndValidateDraft(request, true);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
         
         // Assert notification message
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
+
+        // Assert pdl log
+        verify(logService).logUpdateIntyg(any(LogRequest.class), any(WebCertUser.class));
+
+        assertNotNull("An DraftValidation should be returned", res);
+        assertFalse("Validation should fail", res.isDraftValid());
+        assertEquals("Validation should have 1 message", 1, res.getMessages().size());
+    }
+
+    @Test
+    public void testSaveAndValidateDraftSecondSave() throws Exception {
+
+        ModuleApi mockModuleApi = mock(ModuleApi.class);
+        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
+        ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
+        WebCertUser user = createUser();
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
+        when(userService.getWebCertUser()).thenReturn(user);
+        when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
+                new InternalModelResponse("{}"));
+
+        DraftValidation res = draftService.saveAndValidateDraft(request, false);
+
+        verify(mockUtkastRepository).save(any(Utkast.class));
+        
+        // Assert notification message
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
+
+        // Assert pdl log
+        verifyZeroInteractions(logService);
 
         assertNotNull("An DraftValidation should be returned", res);
         assertFalse("Validation should fail", res.isDraftValid());
@@ -218,7 +276,7 @@ public class UtkastServiceImplTest {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
-        draftService.saveAndValidateDraft(buildSaveAndValidateRequest());
+        draftService.saveAndValidateDraft(buildSaveAndValidateRequest(), false);
 
         verify(mockUtkastRepository).findOne(INTYG_ID);
     }
@@ -237,7 +295,7 @@ public class UtkastServiceImplTest {
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelResponse("{}"));
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenThrow(ModuleException.class);
 
-        draftService.saveAndValidateDraft(request);
+        draftService.saveAndValidateDraft(request, false);
     }
 
     private SaveAndValidateDraftRequest buildSaveAndValidateRequest() {

@@ -1,23 +1,24 @@
 package se.inera.webcert.spec.util
 
-import groovy.json.JsonBuilder
-import groovyx.net.http.HttpResponseDecorator
-import groovyx.net.http.RESTClient
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.URLENC
+import groovy.json.JsonOutput
+import groovyx.net.http.HttpResponseDecorator
 
-public class WebcertRestUtils {
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+public class WebcertRestUtils extends RestClientFixture {
     private static final Logger LOG = LoggerFactory.getLogger(WebcertRestUtils.class)
-    static final def webcert = new RESTClient("http://localhost:9088/")
+    static final def webcert = createRestClient(baseUrl)
 
-    static def login(String user) {
-        def logins = [:];
-        logins["user1"] = '{"fornamn" : "Ivar", "efternamn" : "Integration", "hsaId" : "SE4815162344-1B01", "enhetId" : "SE4815162344-1A02", "lakare" : true,"forskrivarKod": "2481632"}'
-        def loginData = logins[user]
-        def postBody = 'userJsonDisplay=' + logins[user]
-        def response = webcert.post(path: '/fake', body: postBody, requestContentType : URLENC )
+    static def login() {
+        login(webcert)
+    }
+
+    static def login(def restClient, String hsaId = "SE4815162344-1B01", String enhetId = "SE4815162344-1A02", boolean lakare = true) {
+        def loginData = JsonOutput.toJson([fornamn: 'fornamn', efternamn: 'efternamn', hsaId: hsaId, enhetId: enhetId, lakare: lakare, forskrivarKod: "2481632"])
+        def response = restClient.post(path: '/fake', body: "userJsonDisplay=${loginData}", requestContentType : URLENC )
         assert response.status == 302
         System.out.println("Using logindata: " + loginData)
     }

@@ -132,7 +132,7 @@ public class DiagnosServiceImpl implements DiagnosService {
             return DiagnosResponse.notFound();
         }
 
-        return DiagnosResponse.ok(matches);
+        return DiagnosResponse.ok(matches, false);
     }
 
     /*
@@ -155,10 +155,10 @@ public class DiagnosServiceImpl implements DiagnosService {
 
         switch (codeSystem) {
         case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults);
+            matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
             break;
         case KSH_97_P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults);
+            matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
             break;
         default:
             LOG.warn("Unknown code system '{}'", codeSystem);
@@ -170,12 +170,12 @@ public class DiagnosServiceImpl implements DiagnosService {
         }
 
         if (matches.size() <= nbrOfResults) {
-            return DiagnosResponse.ok(matches);
+            return DiagnosResponse.ok(matches, false);
         }
 
         LOG.debug("Returning {} diagnosises out of a match of {}", nbrOfResults, matches.size());
 
-        return DiagnosResponse.ok(matches.subList(0, nbrOfResults));
+        return DiagnosResponse.ok(matches.subList(0, nbrOfResults), true);
     }
 
     /*
@@ -201,10 +201,10 @@ public class DiagnosServiceImpl implements DiagnosService {
 
         switch (codeSystem) {
         case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString, nbrOfResults);
+            matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString, nbrOfResults + 1);
             break;
         case KSH_97_P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString, nbrOfResults);
+            matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString, nbrOfResults + 1);
             break;
         default:
             LOG.warn("Unknown code system '{}'", codeSystem);
@@ -215,7 +215,13 @@ public class DiagnosServiceImpl implements DiagnosService {
             return DiagnosResponse.notFound();
         }
 
-        return DiagnosResponse.ok(matches);
+        if (matches.size() <= nbrOfResults) {
+            return DiagnosResponse.ok(matches, false);
+        }
+
+        LOG.debug("Returning {} diagnosises out of a match of {}", nbrOfResults, matches.size());
+
+        return DiagnosResponse.ok(matches.subList(0, nbrOfResults), true);
     }
 
     /**

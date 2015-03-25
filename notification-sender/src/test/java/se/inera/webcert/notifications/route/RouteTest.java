@@ -177,12 +177,6 @@ public class RouteTest {
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
         assertIsSatisfied(mockErrorHandlerEndpoint);
         assertIsSatisfied(mockRedeliveryEndpoint);
-
-        // Assert redelivery delay time
-        long allowedGap = (new Double(maxRedeliveryDelay * 0.05)).longValue();
-        for (long l : redeliveryDelays) {
-            assertTrue(allowedGap > l - maxRedeliveryDelay);
-        }
     }
 
     @Test
