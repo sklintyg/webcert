@@ -282,7 +282,9 @@ class MedicineringModule extends Module {
 class BedomningModule extends Module {
     static base = { $("#bedomningForm") }
     static content = {
-        behorighet { $("input", name: "behorighet") }
+
+        behorighetBedomning { $("#behorighet_bedomning") }
+        behorighetKanInteTaStallning { $("#behorighet_kanintetastallning") }
         c1 { $("#korkortstyp0") }
         c1e { $("#korkortstyp1") }
         c { $("#korkortstyp2") }

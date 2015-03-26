@@ -4,6 +4,8 @@ import se.inera.webcert.pages.fk7263.EditCertPage
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
 
 import se.inera.webcert.pages.*
+import se.inera.webcert.pages.ts_bas.VisaTsBasPage
+import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 
 class HanteraUtkast {
 
@@ -78,10 +80,27 @@ class HanteraUtkast {
         }
     }
 
-    boolean visaIntygSidanVisas() {
+    boolean visaIntygSidanVisas(intygsTyp) {
         Browser.drive {
             waitFor {
                 at VisaFk7263Page
+            }
+
+            waitFor {
+                page.intygLaddat.isDisplayed()
+            }
+        }
+    }
+
+    boolean visaIntygSidanVisasMedTyp(intygsTyp) {
+        Browser.drive {
+            waitFor {
+                if(intygsTyp == "fk7263")
+                    at VisaFk7263Page
+                else if(intygsTyp == "ts-bas")
+                    at VisaTsBasPage
+                else if(intygsTyp == "ts-diabetes")
+                    at VisaTsDiabetesPage
             }
 
             waitFor {

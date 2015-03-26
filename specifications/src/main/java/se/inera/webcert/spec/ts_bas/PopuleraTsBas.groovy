@@ -147,8 +147,13 @@ class PopuleraTsBas {
 
             if (kommentar != null) page.kommentar = kommentar
 
-            if (behorighet != null) page.bedomning.behorighet = behorighet
-            page.bedomning.valjBehorigheter(bedomdBehorighet)
+            if (behorighet != null) {
+                if (behorighet)
+                    page.bedomning.valjBehorigheter(bedomdBehorighet)
+                else
+                    page.bedomning.behorighetKanInteTaStallning.click();
+            }
+
             if (specialist != null) page.bedomning.specialist = specialist
 
             if (vardenhetPostadress != null) page.vardenhet.postadress = vardenhetPostadress
