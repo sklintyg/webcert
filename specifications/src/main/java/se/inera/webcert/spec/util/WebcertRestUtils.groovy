@@ -10,7 +10,8 @@ import org.slf4j.LoggerFactory
 
 public class WebcertRestUtils extends RestClientFixture {
     private static final Logger LOG = LoggerFactory.getLogger(WebcertRestUtils.class)
-    static final def webcert = createRestClient(baseUrl)
+    static final String webCertBaseUrl = System.getProperty("webcert.baseUrl")
+    static final def webcert = createRestClient(webCertBaseUrl)
 
     static def login() {
         login(webcert)
