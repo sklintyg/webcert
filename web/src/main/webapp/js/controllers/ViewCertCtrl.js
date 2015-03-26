@@ -23,7 +23,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                 // to inform uthopp/cosmic users that intyg should not be created in webcert by them
 
                 // Check if QA is an active feature for the current intyg.
-                if(featureService.isFeatureActive(featureService.features.HANTERA_FRAGOR, $routeParams.certificateType)) {
+                if(featureService.isFeatureActive(featureService.features.HANTERA_FRAGOR, $stateParams.certificateType)) {
 
                     // if we're changing url
                     if(newUrl !== currentUrl && !UserPreferencesService.isSkipShowUnhandledDialogSet()){
