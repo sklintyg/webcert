@@ -251,7 +251,7 @@ describe('ViewCertCtrl', function() {
             expect($window.location.href).toEqual(currentUrl);
         });
 
-        describe('#buttonHandle', function() {
+        xdescribe('#buttonHandle', function() {
             it('handle button click', function(){
 
                 // This test is not QA only.
@@ -280,7 +280,7 @@ describe('ViewCertCtrl', function() {
             });
         });
 
-        describe('#buttonUnHandle', function() {
+        xdescribe('#buttonUnHandle', function() {
             it('un handled button click', function(){
 
                 // This test is not QA only.
@@ -301,7 +301,7 @@ describe('ViewCertCtrl', function() {
             });
         });
 
-        describe('#buttonBack', function() {
+        xdescribe('#buttonBack', function() {
             it('back button click', function(){
                 // inside the handled button click, test that :
                 var args = dialogService.showDialog.calls.mostRecent().args;

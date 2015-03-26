@@ -37,7 +37,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                         // When deferred is resolved in listener above the dialog is shown
                         deferred.promise.then(function(unhandledQas) {
                             if (unhandledQas && unhandledQas.length > 0) {
-                                var modal = dialogService.showDialog($scope, {
+                                var modal = dialogService.showDialog({
                                     dialogId: 'qa-check-hanterad-dialog',
                                     titleId: 'label.qacheckhanterad.title',
                                     bodyTextId: 'label.qacheckhanterad.body',
@@ -66,7 +66,10 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                     button2id: 'button1checkhanterad-dialog-ejhantera',
                                     button3text: 'label.qacheckhanterad.tillbaka',
                                     button3id: 'button1checkhanterad-dialog-tillbaka',
-                                    autoClose: true
+                                    autoClose: true,
+                                    model : {
+                                        widgetState: $scope.widgetState
+                                    }
                                 });
                             } else {
                                 fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindCheckHandledEvent);

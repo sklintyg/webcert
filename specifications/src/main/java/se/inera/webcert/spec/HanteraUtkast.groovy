@@ -22,7 +22,7 @@ class HanteraUtkast {
         Browser.drive {
             go "/web/dashboard#/unsigned"
             waitFor {
-                at UnsignedIntygPage
+                at UnsignedIntygPageIng
             }
         }
     }
