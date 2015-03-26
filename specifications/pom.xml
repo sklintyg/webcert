@@ -16,6 +16,8 @@
   <name>Webcert (FitNesse)</name>
 
   <properties>
+    <groovy.httpBuilder.version>0.7.1</groovy.httpBuilder.version>
+
     <geb.env>firefox</geb.env>
 
     <!-- URLs to services -->
