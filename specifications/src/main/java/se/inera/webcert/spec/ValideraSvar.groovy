@@ -19,11 +19,15 @@ class ValideraSvar extends WsClientFixture {
     ReceiveMedicalCertificateAnswerResponderInterface receiveMedicalCertificateAnswerResponder
 
     public ValideraSvar() {
-        this(WsClientFixture.LOGICAL_ADDRESS)
+        super()
     }
     
     public ValideraSvar(String logiskAddress) {
         super(logiskAddress)
+    }
+
+    @Override
+    public void init() {
         String url = baseUrl + "services/receive-answer/v1.0"
         receiveMedicalCertificateAnswerResponder = createClient(ReceiveMedicalCertificateAnswerResponderInterface.class, url)
     }

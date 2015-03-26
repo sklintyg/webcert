@@ -31,11 +31,15 @@ class JournalsystemSkaparUtkast extends WsClientFixtureNyaKontraktet {
     String typAvUtlatande = "fk7263"
     
     public JournalsystemSkaparUtkast() {
-        this(WsClientFixture.LOGICAL_ADDRESS)
+        super()
     }
 
     public JournalsystemSkaparUtkast(String logiskAddress) {
         super(logiskAddress)
+    }
+
+    @Override
+    public void init() {
         String serviceUrl = System.getProperty("service.createDraftUrl")
         String url = serviceUrl ? serviceUrl : baseUrl + "services/create-draft-certificate/v1.0"
         createDraftResponder = createClient(CreateDraftCertificateResponderInterface.class, url)
