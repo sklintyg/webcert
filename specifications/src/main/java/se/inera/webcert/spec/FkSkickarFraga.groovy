@@ -40,11 +40,15 @@ class FkSkickarFraga extends WsClientFixture {
     String vardgivarNamn
     
     public FkSkickarFraga() {
-        this(WsClientFixture.LOGICAL_ADDRESS)
+        super()
     }
 
     public FkSkickarFraga(String logiskAddress) {
         super(logiskAddress)
+    }
+
+    @Override
+    public void init() {
         String serviceUrl = System.getProperty("service.receiveQuestionUrl")
         String url = serviceUrl ? serviceUrl : baseUrl + "services/receive-question/v1.0"
         questionResponder = createClient(ReceiveMedicalCertificateQuestionResponderInterface.class, url)
