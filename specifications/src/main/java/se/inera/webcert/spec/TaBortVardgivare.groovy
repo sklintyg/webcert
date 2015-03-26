@@ -10,7 +10,7 @@ public class TaBortVardgivare extends RestClientFixture {
     def vardgivarid
 
     public void execute() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         restClient.delete(path: "hsa-api/vardgivare/$vardgivarid")
     }
 }

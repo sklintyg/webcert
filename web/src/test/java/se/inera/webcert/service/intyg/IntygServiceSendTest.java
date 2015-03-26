@@ -7,6 +7,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
@@ -49,7 +50,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         verify(omsandningRepository).save(any(Omsandning.class));
         verify(omsandningRepository).delete(any(Omsandning.class));
-        verify(logService).logSendIntygToRecipient(any(LogRequest.class), eq(webCertUser));
+        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
 
@@ -68,7 +69,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         verify(omsandningRepository).save(any(Omsandning.class));
         verify(omsandningRepository).delete(any(Omsandning.class));
-        verify(logService).logSendIntygToRecipient(any(LogRequest.class), eq(webCertUser));
+        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
 
@@ -117,19 +118,19 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
                 .thenReturn(response);
 
-        doThrow(new RuntimeException("")).when(logService).logSendIntygToRecipient(any(LogRequest.class), any(WebCertUser.class));
+        doThrow(new RuntimeException("")).when(logService).logSendIntygToRecipient(any(LogRequest.class));
         
         Omsandning omsandning = new Omsandning(OmsandningOperation.SEND_INTYG, INTYG_ID, INTYG_TYP_FK);
         omsandning.setConfiguration(CONFIG_AS_JSON);
 
         try {
             intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
-            Assert.fail("WebCertServiceException expected");
-        } catch (WebCertServiceException e) {
+            Assert.fail("RuntimeException expected");
+        } catch (RuntimeException e) {
             // Expected
         }
         
-        verify(omsandningRepository, times(2)).save(any(Omsandning.class));
+        verifyZeroInteractions(omsandningRepository);
     }
 
 }

@@ -156,7 +156,7 @@
   </dependencies>
 
   <build>
-    <finalName>notification-sender</finalName>
+    <finalName>log-sender</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.activemq.tooling</groupId>
@@ -169,7 +169,7 @@
           <webAppConfig>
             <contextPath>/log-sender</contextPath>
           </webAppConfig>
-          <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+          <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-web.xml</contextXml>
           <systemProperties>
             <systemProperty>
               <name>spring.profiles.active</name>
@@ -193,7 +193,7 @@
             </systemProperty>
             <systemProperty>
               <name>jetty.port</name>
-              <value>9090</value>
+              <value>9099</value>
             </systemProperty>
             <systemProperty>
               <name>java.awt.headless</name>
@@ -222,4 +222,21 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>jetty</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-spring</artifactId>
+          <version>${activemq.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jms_1.1_spec</artifactId>
+          <version>${geronimo-jms-specs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>

@@ -1,6 +1,7 @@
 package se.inera.webcert.spec
 
-import se.inera.log.messages.AbstractLogMessage;
+import se.inera.certificate.integration.json.CustomObjectMapper
+import se.inera.log.messages.AbstractLogMessage
 import se.inera.webcert.spec.util.RestClientFixture
 
 /**
@@ -8,9 +9,10 @@ import se.inera.webcert.spec.util.RestClientFixture
  */
 class LoggMeddelande extends RestClientFixture {
 
-    def restClient = createRestClient(baseUrl)
+    def restClient = createRestClient("${baseUrl}services/")
 
-    private AbstractLogMessage logMessage
+    
+    private def logMessage
     private int count
     
     def rensaLoggMeddelanden() {
@@ -18,11 +20,11 @@ class LoggMeddelande extends RestClientFixture {
     }
     
     def hamtaLoggMeddelande() {
-        logMessage = restClient.get(path: "logMessages/")
+        logMessage = restClient.get(path: "logMessages/").data
     }
     
     String aktivitet() {
-        logMessage.activityType.name
+        logMessage.activityType
     }
 
     int antalLoggMeddelanden() {

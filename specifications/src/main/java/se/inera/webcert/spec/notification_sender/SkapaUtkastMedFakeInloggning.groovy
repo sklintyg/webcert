@@ -1,7 +1,5 @@
 package se.inera.webcert.spec.notification_sender
 
-import se.inera.webcert.spec.util.WebcertRestUtils;
-import se.inera.webcert.spec.util.RestClientFixture
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.ContentType.URLENC
@@ -9,7 +7,9 @@ import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
 
-class SkapaUtkastMedFakeInloggning extends RestClientFixture {
+import se.inera.webcert.spec.util.WebcertRestUtils
+
+class SkapaUtkastMedFakeInloggning {
 
     String intygTyp = "fk7263"
 
@@ -17,12 +17,10 @@ class SkapaUtkastMedFakeInloggning extends RestClientFixture {
     String patientFornamn = "Test"
     String patientEfternamn = "Testsson"
     
-    String hsaUser = "user1"
-
     def response
 
     public void execute() {
-        WebcertRestUtils.login("$hsaUser")
+        WebcertRestUtils.login()
         response = WebcertRestUtils.createNewUtkast(intygTyp, json())
     }
 

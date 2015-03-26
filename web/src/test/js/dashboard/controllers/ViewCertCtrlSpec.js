@@ -73,12 +73,12 @@ describe('ViewCertCtrl', function() {
         $stateParams = {qaOnly:false};
         $provide.value('$stateParams', $stateParams);
 
-
+        $provide.value('common.featureService', { features: { 'HANTERA_FRAGOR': 'hanteraFragor' }, isFeatureActive: function() { return true; } }); // jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ])
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject([ '$controller', '$rootScope', '$q', '$httpBackend', '$location', '$window',
-        function( _$controller_, _$rootScope_,_$q_,_$httpBackend_, _$location_, _$window_) {
+    beforeEach(angular.mock.inject([ '$controller', '$rootScope', '$q', '$httpBackend', '$location', '$window', 'common.featureService',
+        function( _$controller_, _$rootScope_,_$q_,_$httpBackend_, _$location_, _$window_, featureService) {
 
             $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
@@ -95,11 +95,13 @@ describe('ViewCertCtrl', function() {
             $location.url(currentUrl);
 
             $stateParams.qaOnly = false;
+            $stateParams.certificateType = 'fk7263';
 
             $controller = _$controller_;
             $controller('webcert.ViewCertCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
 
+            spyOn(featureService, 'isFeatureActive').and.callThrough();
         }])
     );
 

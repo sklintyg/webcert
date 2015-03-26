@@ -1,0 +1,22 @@
+!3 Rensa utestående PDL-loggning-poster
+
+| script | logg meddelande |
+| rensa logg meddelanden |
+| check | antal logg meddelanden | 0 |
+
+!3 Skapa ett utkast
+|Journalsystem skapar utkast|
+|personId|fornamn|efternamn|hsaId|enhetsId|typAvUtlatande|utkastId?|resultat?|
+|19121212-1212|Test|Testorson|staffan|centrum-vast|fk7263|$utkastId=|OK|
+
+!3 Verifiera att en PDL-loggning gjorts
+
+| script | logg meddelande |
+| check | antal logg meddelanden | 1 |
+| hamta logg meddelande |
+| check | aktivitet | CREATE |
+
+!3 Radera utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |

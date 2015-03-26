@@ -20,20 +20,19 @@
 
     <!-- Common -->
     <common.version>0-SNAPSHOT</common.version>
-    <common.version.range>(,2.1.0]</common.version.range>
+    <common.version.range>(,2.2.0]</common.version.range>
 
     <!-- Tools -->
     <tools.version>0-SNAPSHOT</tools.version>
-    <tools.version.range>(,2.1.0]</tools.version.range>
+    <tools.version.range>(,2.2.0]</tools.version.range>
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
-    <intygstyper.version.range>(,2.1.0]</intygstyper.version.range>
+    <intygstyper.version.range>(,2.2.0]</intygstyper.version.range>
 
     <!-- Schemas -->
     <clinicalprocess-healthcond-certificate.version>0-SNAPSHOT</clinicalprocess-healthcond-certificate.version>
-    <clinicalprocess-healthcond-certificate.version.range>(,1.0.0]
-    </clinicalprocess-healthcond-certificate.version.range>
+    <clinicalprocess-healthcond-certificate.version.range>(,1.1.0]</clinicalprocess-healthcond-certificate.version.range>
 
     <insuranceprocess-healthreporting.version>0-SNAPSHOT</insuranceprocess-healthreporting.version>
     <insuranceprocess-healthreporting.version.range>(,1.0.0]</insuranceprocess-healthreporting.version.range>
@@ -45,7 +44,10 @@
     <ehr-logstore.version.range>(,1.0.0]</ehr-logstore.version.range>
 
     <schemas-common.version>0-SNAPSHOT</schemas-common.version>
-    <schemas-common.version.range>(,2.1.0]</schemas-common.version.range>
+    <schemas-common.version.range>(,2.2.0]</schemas-common.version.range>
+
+    <se-intygstjanster-ts-services.version>0-SNAPSHOT</se-intygstjanster-ts-services.version>
+    <se-intygstjanster-ts-services.version.range>(,1.0.0]</se-intygstjanster-ts-services.version.range>
 
   </properties>
 
@@ -175,15 +177,16 @@
         <artifactId>fk7263</artifactId>
         <version>${intygstyper.version}</version>
       </dependency>
-      <!--<dependency>
+      <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>ts-bas</artifactId>
         <version>${intygstyper.version}</version>
-      </dependency>--><!--<dependency>
+      </dependency>
+      <dependency>
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>ts-diabetes</artifactId>
         <version>${intygstyper.version}</version>
-      </dependency>-->
+      </dependency>
 
       <!-- Schemas -->
       <dependency>
@@ -211,6 +214,11 @@
         <artifactId>ehr-logstore-interactions</artifactId>
         <version>${ehr-logstore.version}</version>
       </dependency>
+     <dependency>
+        <groupId>se.inera.intyg.schemas.intygstjanster.ts.services.v1</groupId>
+        <artifactId>se-intygstjanster-ts-services-interactions</artifactId>
+        <version>${se-intygstjanster-ts-services.version}</version>
+     </dependency>
 
       <!-- Authentication -->
       <dependency>

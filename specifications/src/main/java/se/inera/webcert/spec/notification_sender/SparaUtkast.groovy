@@ -9,7 +9,7 @@ import static se.inera.webcert.spec.util.WebcertRestUtils.*
 
 import org.apache.commons.io.IOUtils
 
-class SparaUtkast extends RestClientFixture {
+class SparaUtkast {
 
     String intygId
     String intygTyp
@@ -20,7 +20,7 @@ class SparaUtkast extends RestClientFixture {
 
     // hosperson
     String hsaId
-    String namn
+    String namn = "enLäkare"
 
     // Enhet
     String enhetId = "SE4815162344-1A02"
@@ -37,46 +37,19 @@ class SparaUtkast extends RestClientFixture {
     String vardgivarnamn = "WebCert-Integration Vårdgivare 1"
 
     // Diagnos
-    String diagnosKod
-    String diagnosBeskrivning1
+    String diagnosKod = "S50"
+    String diagnosBeskrivning1 = "Kontusion på armbåge"
     
     String nedsattMed100 = null
 
-    boolean komplett
+    boolean komplett = false
     String kodverk = "ICD_10_SE"
 
-    public setIntygId (String value) {
-        intygId = value
-    }
-    public setIntygTyp(String value) {
-        intygTyp = value;
-    }
-    public setPatientPersonnummer(String value) {
-        patientPersonnummer = value;
-    }
-    public setPatientFornamn(String value) {
-        patientFornamn = value;
-    }
-    public setPatientEfternamn(String value) {
-        patientEfternamn = value;
-    }
-    public setHhsaId(String value) {
-        hsaId = value;
-    }
-    public setNamn(String value) {
-        namn = value;
-    }
-    public setEnhetId(String value) {
-        enhetId = value;
-    }
-    public setKomplett(boolean value ) {
-        komplett = value
-    }
     def response
     def json
 
     public void execute() {
-        WebcertRestUtils.login("user1")
+        WebcertRestUtils.login()
         if (komplett) {
             makeComplete()
         } else {

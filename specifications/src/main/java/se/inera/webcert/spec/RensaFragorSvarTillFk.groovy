@@ -7,13 +7,13 @@ import se.inera.webcert.spec.util.RestClientFixture
  */
 class RensaFragorSvarTillFk extends RestClientFixture {
 
+    def restClient = createRestClient("${baseUrl}services/")
+
     def rensaFragor() {
-        def restClient = createRestClient(baseUrl)
         restClient.delete(path: "fk-stub/fragor/")
     }
 
     def rensaSvar() {
-        def restClient = createRestClient(baseUrl)
         restClient.delete(path: "fk-stub/svar/")
     }
 }

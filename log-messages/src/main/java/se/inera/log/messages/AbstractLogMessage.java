@@ -1,9 +1,11 @@
 package se.inera.log.messages;
 
-import org.joda.time.LocalDateTime;
-
 import java.io.Serializable;
 import java.util.UUID;
+
+import org.joda.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * Base class for all log messages.
@@ -41,6 +43,9 @@ public class AbstractLogMessage implements Serializable {
 
     private Enhet resourceOwner;
 
+    public AbstractLogMessage() {
+        
+    }
     /**
      * Constructor for a log message.
      *

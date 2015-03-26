@@ -14,7 +14,7 @@ public interface UtkastService {
 
     String createNewDraft(CreateNewDraftRequest request);
 
-    DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request);
+    DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent);
 
     DraftValidation validateDraft(String intygId, String intygType, String draft);
 
@@ -31,5 +31,7 @@ public interface UtkastService {
     SignaturTicket createDraftHash(String intygsId);
 
     SignaturTicket serverSignature(String intygsId);
+    
+    void logPrintOfDraftToPDL(String intygId);
     
 }

@@ -10,7 +10,7 @@ class TaBortFraga extends RestClientFixture {
     String svarsText
     
     def execute() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         if (internReferens) restClient.delete(path: "questions/${internReferens}")
         if (externReferens) restClient.delete(path: "questions/extern/${externReferens}")
         if (frageText) restClient.delete(path: "questions/frageText/${frageText}")

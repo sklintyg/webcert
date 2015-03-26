@@ -10,6 +10,9 @@ public class Patient implements Serializable {
     private String patientId;
     private String patientNamn;
 
+    public Patient() {
+        
+    }
     public Patient(String patientId) {
         this(patientId, null);
     }

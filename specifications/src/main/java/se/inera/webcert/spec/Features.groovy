@@ -6,7 +6,7 @@ import se.inera.webcert.pages.UnhandledQAPage
 import se.inera.webcert.pages.UnsignedIntygPage
 import se.inera.webcert.spec.util.RestClientFixture
 
-class Features extends RestClientFixture {
+class Features {
     def gaTillSvaraOchFraga(boolean wait = true) {
         Browser.drive {
             go "/web/dashboard#/unhandled-qa"

@@ -16,7 +16,7 @@ public class HsaMedarbetare extends RestClientFixture {
     String[] medarbetaruppdrag
 
     public void execute() {
-        def restClient = createRestClient(baseUrl)
+        def restClient = createRestClient("${baseUrl}services/")
         restClient.post(
                 path: 'hsa-api/medarbetaruppdrag',
                 body: questionJson(),

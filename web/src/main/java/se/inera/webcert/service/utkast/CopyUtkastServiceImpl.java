@@ -17,10 +17,14 @@ import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
+import se.inera.webcert.service.log.LogRequestFactory;
+import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
+import se.inera.webcert.web.service.WebCertUserService;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -41,6 +45,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private LogService logService;
 
     /*
      * (non-Javadoc)
@@ -81,6 +88,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             // notify
             notificationService.sendNotificationForDraftCreated(savedUtkast);
             LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
+
+            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
+            logService.logCreateIntyg(logRequest);
 
             return new CreateNewDraftCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId());
 
