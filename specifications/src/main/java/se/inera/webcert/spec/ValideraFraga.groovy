@@ -19,11 +19,15 @@ class ValideraFraga extends WsClientFixture {
     ReceiveMedicalCertificateQuestionResponderInterface receiveMedicalCertificateQuestionResponder
 
     public ValideraFraga() {
-        this(WsClientFixture.LOGICAL_ADDRESS)
+        super()
     }
     
     public ValideraFraga(String logiskAddress) {
         super(logiskAddress)
+    }
+
+    @Override
+    public void init() {
         String url = baseUrl + "services/receive-question/v1.0"
         receiveMedicalCertificateQuestionResponder = createClient(ReceiveMedicalCertificateQuestionResponderInterface.class, url)
     }

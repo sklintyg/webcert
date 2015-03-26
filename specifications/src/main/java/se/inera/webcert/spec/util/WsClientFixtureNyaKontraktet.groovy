@@ -4,14 +4,14 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCode
 
 class WsClientFixtureNyaKontraktet extends WsClientFixture {
 
-    boolean nyaKontraktet = true
-    
 	public WsClientFixtureNyaKontraktet() {
 		super();
+        nyaKontraktet = true
 	}
 
 	public WsClientFixtureNyaKontraktet(String address) {
 		super(address)
+        nyaKontraktet = true
 	}
 
 }

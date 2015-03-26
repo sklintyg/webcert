@@ -1,6 +1,7 @@
 package se.inera.webcert.spec
 
 import org.springframework.core.io.ClassPathResource
+
 import se.inera.webcert.receivemedicalcertificateanswer.v1.rivtabp20.ReceiveMedicalCertificateAnswerResponderInterface
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType
@@ -23,11 +24,15 @@ class FkSkickarSvar extends WsClientFixture {
     String vardenhet
 
     public FkSkickarSvar() {
-        this(WsClientFixture.LOGICAL_ADDRESS)
+        super()
     }
 
     public FkSkickarSvar(String logiskAddress) {
         super(logiskAddress)
+    }
+
+    @Override
+    public void init() {
         String serviceUrl = System.getProperty("service.receiveAnswerUrl")
         String url = serviceUrl ? serviceUrl : baseUrl + "services/receive-answer/v1.0"
         answerResponder = createClient(ReceiveMedicalCertificateAnswerResponderInterface.class, url)
