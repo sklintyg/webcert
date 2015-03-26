@@ -44,6 +44,52 @@ app.config(function($provide) {
         }];
         return $delegate;
     });
+
+    // This decorator will add build number to all html requests
+    // The purpose is to allow the browser to cache templates but only for this build.
+    $provide.decorator('$http', function($delegate, $templateCache) {
+        var $http = $delegate;
+
+        var wrapper = function () {
+            // Apply global changes to arguments, or perform other
+            // nefarious acts.
+            return $http.apply($http, arguments);
+        };
+
+        // $http has convenience methods such as $http.get() that we have
+        // to pass through as well.
+        Object.keys($http).filter(function (key) {
+            return (typeof $http[key] === 'function');
+        }).forEach(function (key) {
+            wrapper[key] = function () {
+
+                // Apply global changes to arguments, or perform other
+                // nefarious acts.
+
+                if (key === 'get') {
+                    // Add build number to all html get requests.
+                    // Ignore templates already provided in templateCache (angular ui uses these)
+                    if (MODULE_CONFIG.BUILD_NUMBER &&
+                        arguments.length > 0 &&
+                        !$templateCache.get(arguments[0]) &&
+                        arguments[0].indexOf('.html', arguments[0].length - 5) !== -1) {
+                        // Add build number
+                        if (arguments[0].indexOf('?') >= 0) {
+                            arguments[0] += '&';
+                        }
+                        else {
+                            arguments[0] += '?';
+                        }
+                        arguments[0] += MODULE_CONFIG.BUILD_NUMBER;
+                    }
+                }
+
+                return $http[key].apply($http, arguments);
+            };
+        });
+
+        return wrapper;
+    });
 });
 
 // Global config of default date picker config (individual attributes can be
