@@ -1,7 +1,7 @@
 angular.module('webcert').factory('webcert.ManageCertificate',
-    [ '$http', '$stateParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
+    [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
         'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.CertificateService',
-        function($http, $stateParams, $log, $location, $window, $timeout, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
+        function($q, $http, $stateParams, $log, $location, $window, $timeout, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
             featureService, messageService, CertificateService) {
             'use strict';
 
@@ -201,8 +201,13 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                             _createCopyDraft(intygCopyRequest, function(draftResponse) {
                                 copyDialogModel.acceptprogressdone = true;
                                 $scope.widgetState.createErrorMessageKey = undefined;
-                                copyDialog.close();
-                                goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
+
+                                var deferred = $q.defer();
+                                deferred.promise.then(function(){
+                                    goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
+                                });
+                                copyDialog.close(deferred);
+
                             }, function(errorCode) {
                                 if (errorCode === 'DATA_NOT_FOUND') {
                                     copyDialogModel.errormessageid = 'error.failedtocopyintyg.personidnotfound';
