@@ -34,7 +34,7 @@ class EditCertPage extends AbstractPage {
         arbete { module ArbeteModule }
         arbetsformaga { module ArbetsformagaModule }
         arbetsformagaBeskrivning { $("#capacityForWorkText") }
-        prognos { module PrognosModule }
+        prognos { name -> module PrognosModule, form: form }
         atgardSjukvard { $("#measuresCurrent") }
         atgardAnnan { $("#measuresOther") }
         rekommendationer { name -> module RekommendationerModule, form: form }
@@ -63,7 +63,7 @@ class EditCertPage extends AbstractPage {
 class BaserasPaModule extends Module {
     static base = { $("#intygetbaseraspa") }
     static content = {
-        undersokning { $("#basedOnExamination") }
+        undersokning { $("input", type:'checkbox', id:"basedOnExamination") }
         undersokningDatum { $("#undersokningAvPatientenDate") }
         undersokningDatumToggle { $("#undersokningAvPatientenDate-toggle") }
         telefonkontakt { $("#basedOnPhoneContact") }
@@ -73,6 +73,10 @@ class BaserasPaModule extends Module {
         other { $("#basedOnOther") }
         otherDatum { $("#annanReferensDate") }
         otherText { $("#informationBasedOnOtherText") }
+    }
+
+    def setUndersokning(value){
+        undersokning.value(value.toBoolean());
     }
 }
 
@@ -130,12 +134,15 @@ class ArbetsformagaModule extends Module {
 }
 
 class PrognosModule extends Module {
+    def form;
     static base = { $("#prognosForm") }
     static content = {
-        prognos { $("input", name: "capacityForWorkForecast") }
-        radioGroup {$("input", name : "capacityForWorkForecast")}
+
+        radioGroup { form.capacityForWorkForecast }
 
         beskrivning { $("#capacityForWorkForecastText") }
+        prognos { $("input", name: "capacityForWorkForecast") }
+
     }
 
     def valjPrognos(String valdPrognos) {

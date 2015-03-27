@@ -55,6 +55,7 @@ class HanteraUtkast {
         }
     }
 
+
     def gaTillEditeraIntygMedTypOchIntygid(String typ, String intygid) {
         Browser.drive {
             go "/web/dashboard#/$typ/edit/$intygid"

@@ -81,15 +81,33 @@ class PopuleraFk7263 {
 
             if (smittskydd != null) page.smittskydd = smittskydd
 
-            if (undersokning != null) page.baserasPa.undersokning = undersokning
-            if (undersokningDatum != null) page.baserasPa.undersokningDatum = undersokningDatum
-            if (telefonkontakt != null) page.baserasPa.telefonkontakt = telefonkontakt
-            if (telefonkontaktDatum != null) page.baserasPa.telefonkontaktDatum = telefonkontaktDatum
-            if (journal != null) page.baserasPa.journal = journal
-            if (journalDatum != null) page.baserasPa.journalDatum = journalDatum
-            if (other != null) page.baserasPa.other = other
-            if (otherDatum != null) page.baserasPa.otherDatum = otherDatum
-            if (otherText != null) page.baserasPa.otherText = otherText
+            if (undersokning != null){
+                page.baserasPa.undersokning = undersokning
+            }
+            if (undersokningDatum != null) {
+                page.baserasPa.undersokningDatum = undersokningDatum
+            }
+            if (telefonkontakt != null){
+                page.baserasPa.telefonkontakt = telefonkontakt
+            }
+            if (telefonkontaktDatum != null) {
+                page.baserasPa.telefonkontaktDatum = telefonkontaktDatum
+            }
+            if (journal != null){
+                page.baserasPa.journal = journal
+            }
+            if (journalDatum != null) {
+                page.baserasPa.journalDatum = journalDatum
+            }
+            if (other != null) {
+                page.baserasPa.other = other
+            }
+            if (otherDatum != null) {
+                page.baserasPa.otherDatum = otherDatum
+            }
+            if (otherText != null) {
+                page.baserasPa.otherText = otherText
+            }
 
             if (diagnosKodverk == 'ICD_10_SE') {
                 page.diagnos.diagnoseKodverk_ICD_10_SE = true
@@ -146,9 +164,13 @@ class PopuleraFk7263 {
 
             if (sjukdomsforlopp != null) page.sjukdomsforlopp = sjukdomsforlopp
 
-            if (funktionsnedsattning != null) page.funktionsnedsattning = funktionsnedsattning
+            if (funktionsnedsattning != null) {
+                page.funktionsnedsattning = funktionsnedsattning
+            }
 
-            if (aktivitetsbegransning != null) page.aktivitetsbegransning = aktivitetsbegransning
+            if (aktivitetsbegransning != null){
+                page.aktivitetsbegransning = aktivitetsbegransning
+            }
 
             if (nuvarandearbete != null) page.arbete.nuvarande = nuvarandearbete
             if (arbetsuppgifter != null) page.arbete.arbetsuppgifter = arbetsuppgifter
@@ -203,6 +225,15 @@ class PopuleraFk7263 {
             if (vardenhetPostort != null) page.vardenhet.postort = vardenhetPostort
             if (vardenhetTelefonnummer != null) page.vardenhet.telefonnummer = vardenhetTelefonnummer
             if (vardenhetEpost != null) page.vardenhet.epost = vardenhetEpost
+        }
+    }
+
+    def scrollIntoView(elementId){
+        def jqScrollToVisible = "jQuery(\'#" + elementId + "\')[0].scrollIntoView();var current=jQuery('body').scrollTop(); jQuery('body').scrollTop(current-400);"
+        println("new")
+        println(jqScrollToVisible)
+        Browser.drive {
+            js.exec(jqScrollToVisible)
         }
     }
 

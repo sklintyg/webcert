@@ -23,11 +23,13 @@
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
     <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>
   </c:when>
   <c:otherwise>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.js"></script>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
     <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.js"></script>
   </c:otherwise>
 </c:choose>
 

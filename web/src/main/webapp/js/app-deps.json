@@ -1,4 +1,6 @@
 [
+    "/js/templates.js",
+    "/js/router.js",
     "/js/messages.js",
     "/js/controllers/AboutWebcertCtrl.js",
     "/js/controllers/ChooseCertTypeCtrl.js",

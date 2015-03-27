@@ -140,6 +140,10 @@
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
+      <artifactId>angular-ui-router</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
       <artifactId>bootstrap</artifactId>
     </dependency>
     <dependency>
@@ -370,7 +374,7 @@
             </systemProperty>
             <systemProperty>
               <name>webcert.resources.folder</name>
-              <value>${basedir}/../src/main/resources</value>
+              <value>/${basedir}/../src/main/resources</value>
             </systemProperty>
             <systemProperty>
               <name>jetty.port</name>

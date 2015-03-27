@@ -112,6 +112,8 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         String draftAsJson = fromBytesToString(payload);
 
+        LOG.debug("---- intyg : " + draftAsJson );
+
         SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, draftAsJson, autoSave);
 
         boolean firstSave = false;

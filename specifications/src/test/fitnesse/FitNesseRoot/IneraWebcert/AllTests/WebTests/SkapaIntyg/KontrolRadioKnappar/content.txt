@@ -25,7 +25,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 | true |
 
 | script | !-SkrivIntyg-! |
-| check | prognos | null |
+| prognos ar ovalt |
 | rehab nej inte synes|
 
 !3 Ta bort utkastet

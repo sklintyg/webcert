@@ -142,6 +142,13 @@ class SkrivIntyg {
         }
     }
 
+    def vanta(int sekunder) {
+        Browser.drive {
+            Thread.sleep(sekunder * 1000)
+        }
+        true
+    }
+
     boolean intygSparatVisas() {
         Browser.drive {
             waitFor {
@@ -279,7 +286,15 @@ class SkrivIntyg {
     String prognos() {
         def result = '';
         Browser.drive {
-            result = page.prognos.radioGroup.value();
+            result = page.prognos.prognos.value();
+        }
+        result
+    }
+
+    boolean prognosArOvalt() {
+        def result = false;
+        Browser.drive {
+            result = page.prognos.prognos.value() == null;
         }
         result
     }

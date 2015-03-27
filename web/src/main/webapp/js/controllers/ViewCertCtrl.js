@@ -2,14 +2,14 @@
  * Controller for logic related to viewing signed certs
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
-    [ '$rootScope', '$routeParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
+    [ '$rootScope', '$stateParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
         'webcert.ManageCertificate', 'common.UserPreferencesService', 'common.fragaSvarCommonService', 'common.featureService',
-        function($rootScope, $routeParams, $scope, $window, $location, $q, dialogService, ManageCertificate,
+        function($rootScope, $stateParams, $scope, $window, $location, $q, dialogService, ManageCertificate,
                  UserPreferencesService, fragaSvarCommonService, featureService) {
             'use strict';
 
             $scope.widgetState = {
-                certificateType: $routeParams.certificateType,
+                certificateType: $stateParams.certificateType,
                 fragaSvarAvailable: false,
                 skipShowUnhandledDialog : false,
                 setSkipShowUnhandledDialog : function(widgetState){
@@ -23,7 +23,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                 // to inform uthopp/cosmic users that intyg should not be created in webcert by them
 
                 // Check if QA is an active feature for the current intyg.
-                if(featureService.isFeatureActive(featureService.features.HANTERA_FRAGOR, $routeParams.certificateType)) {
+                if(featureService.isFeatureActive(featureService.features.HANTERA_FRAGOR, $stateParams.certificateType)) {
 
                     // if we're changing url
                     if(newUrl !== currentUrl && !UserPreferencesService.isSkipShowUnhandledDialogSet()){
@@ -37,7 +37,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                         // When deferred is resolved in listener above the dialog is shown
                         deferred.promise.then(function(unhandledQas) {
                             if (unhandledQas && unhandledQas.length > 0) {
-                                var modal = dialogService.showDialog($scope, {
+                                var modal = dialogService.showDialog({
                                     dialogId: 'qa-check-hanterad-dialog',
                                     titleId: 'label.qacheckhanterad.title',
                                     bodyTextId: 'label.qacheckhanterad.body',
@@ -66,7 +66,10 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                     button2id: 'button1checkhanterad-dialog-ejhantera',
                                     button3text: 'label.qacheckhanterad.tillbaka',
                                     button3id: 'button1checkhanterad-dialog-tillbaka',
-                                    autoClose: true
+                                    autoClose: true,
+                                    model : {
+                                        widgetState: $scope.widgetState
+                                    }
                                 });
                             } else {
                                 fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindCheckHandledEvent);
@@ -79,7 +82,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
             });
             $scope.$on('$destroy', unbindCheckHandledEvent);
 
-            ManageCertificate.getCertType($routeParams.certificateType, function(intygType) {
+            ManageCertificate.getCertType($stateParams.certificateType, function(intygType) {
                 $scope.widgetState.fragaSvarAvailable = intygType.fragaSvarAvailable;
                 $scope.widgetState.printStatus = intygType.printStatus;
             });

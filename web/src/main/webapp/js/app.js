@@ -1,69 +1,7 @@
 /* global MODULE_CONFIG, wcMessages */
 window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
-var app = angular.module('webcert', ['ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize', 'common', 'ngAnimate']);
-
-app.config(function($routeProvider) {
-    'use strict';
-
-    $routeProvider.
-        when('/create/index', {
-            // Route to initialize the create flow, template will be ignored.
-            templateUrl: '/views/dashboard/create.choose-patient.html',
-            controller: 'webcert.InitCertCtrl'
-        }).
-        when('/create/choose-patient/index', {
-            templateUrl: '/views/dashboard/create.choose-patient.html',
-            controller: 'webcert.ChoosePatientCtrl'
-        }).
-        when('/create/edit-patient-name/:mode', {
-            templateUrl: '/views/dashboard/create.edit-patient-name.html',
-            controller: 'webcert.EditPatientNameCtrl'
-        }).
-        when('/create/choose-cert-type/index', {
-            templateUrl: '/views/dashboard/create.choose-cert-type.html',
-            controller: 'webcert.ChooseCertTypeCtrl'
-        }).
-        when('/unhandled-qa', {
-            templateUrl: '/views/dashboard/unhandled-qa.html',
-            controller: 'webcert.UnhandledQACtrl'
-        }).
-        when('/unsigned', {
-            templateUrl: '/views/dashboard/unsigned.html',
-            controller: 'webcert.UnsignedCertCtrl'
-        }).
-        when('/intyg/:certificateType/:certificateId', {
-            templateUrl: '/views/dashboard/view.certificate.html',
-            controller: 'webcert.ViewCertCtrl'
-        }).
-        when('/fragasvar/:certificateType/:certificateId/:qaOnly?', {
-            templateUrl: '/views/dashboard/view.qa.html',
-            controller: 'webcert.ViewCertCtrl'
-        }).
-        when('/webcert/about', {
-            templateUrl: '/views/dashboard/about.webcert.html',
-            controller: 'webcert.AboutWebcertCtrl'
-        }).
-        when('/support/about', {
-            templateUrl: '/views/dashboard/about.support.html',
-            controller: 'webcert.AboutWebcertCtrl'
-        }).
-        when('/certificates/about', {
-            templateUrl: '/views/dashboard/about.certificates.html',
-            controller: 'webcert.AboutWebcertCtrl'
-        }).
-        when('/faq/about', {
-            templateUrl: '/views/dashboard/about.faq.html',
-            controller: 'webcert.AboutWebcertCtrl'
-        }).
-        when('/cookies/about', {
-            templateUrl: '/views/dashboard/about.cookies.html',
-            controller: 'webcert.AboutWebcertCtrl'
-        }).
-        otherwise({
-            redirectTo: '/create/index'
-        });
-});
+var app = angular.module('webcert', ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate']);
 
 app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider',
     function($httpProvider, http403ResponseInterceptorProvider) {
@@ -175,12 +113,24 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserM
         $window.doneLoading = false;
         $window.dialogDoneLoading = true;
 
-        $rootScope.$on('$routeChangeStart', function() {
-            $window.doneLoading = false;
-        });
-        $rootScope.$on('$routeChangeSuccess', function() {
-            $window.doneLoading = true;
-        });
+        $rootScope.$on('$stateChangeStart',
+            function(event, toState, toParams, fromState, fromParams){
+                $window.doneLoading = false;
+            });
+
+        $rootScope.$on('$stateNotFound',
+            function(event, unfoundState, fromState, fromParams){
+            })
+        $rootScope.$on('$stateChangeSuccess',
+            function(event, toState, toParams, fromState, fromParams){
+                $window.doneLoading = true;
+            })
+
+        $rootScope.$on('$stateChangeError',
+            function(event, toState, toParams, fromState, fromParams, error){
+                $log.log("$stateChangeError");
+                $log.log(toState);
+            })
     }]);
 
 // Get a list of all modules to find all files to load.

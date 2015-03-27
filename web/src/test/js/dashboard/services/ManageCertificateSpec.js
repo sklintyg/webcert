@@ -181,7 +181,7 @@ describe('ManageCertificate', function() {
                 'grundData' : { 'patient' : { 'personId': '19121212-1212'}, 'skapadAv' : {'vardenhet' : {'enhetsid' : '1234'} } }
             };
 
-            spyOn(dialogService, 'showDialog').and.callFake(function($scope, options) {
+            spyOn(dialogService, 'showDialog').and.callFake(function(options) {
                 options.button1click();
 
                 return {

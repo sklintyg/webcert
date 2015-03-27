@@ -1,7 +1,7 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    [ '$filter', '$location', '$log', '$scope', '$cookieStore', '$routeParams', 'webcert.CreateCertificateDraft',
+    [ '$window', '$filter', '$location', '$log', '$scope', '$cookieStore', '$stateParams', 'webcert.CreateCertificateDraft',
         'webcert.ManageCertificate', 'common.IntygCopyRequestModel',
-        function($filter, $location, $log, $scope, $cookieStore, $routeParams, CreateCertificateDraft,
+        function($window, $filter, $location, $log, $scope, $cookieStore, $stateParams, CreateCertificateDraft,
             ManageCertificate, IntygCopyRequestModel) {
             'use strict';
 
@@ -17,7 +17,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 activeErrorMessageKey: null,
                 createErrorMessageKey: null,
                 inlineErrorMessageKey: null,
-                currentList: undefined
+                currentList: undefined,
+                unsigned : 'certlist-empty' // unsigned, unsigned-mixed,
             };
 
             $scope.filterForm = {
@@ -60,14 +61,36 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $scope.widgetState.doneLoading = false;
                     $scope.widgetState.certListUnhandled = data;
                     $scope.updateCertList();
+                    hasUnsigned($scope.widgetState.currentList);
+                    $window.doneLoading = true;
                 }, function(errorData) {
                     $scope.widgetState.doneLoading = false;
                     $log.debug('Query Error' + errorData);
                     $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
                 });
+            }
 
-                // Prepare copy dialog
-                ManageCertificate.initCopyDialog($scope);
+            function hasUnsigned(list){
+                if(!list){
+                    return;
+                }
+                if(list.length === 0){
+                    $scope.widgetState.unsigned = 'certlist-empty';
+                    return;
+                }
+                var unsigned = true;
+                for(var i=0; i< list.length; i++){
+                    var item = list[i];
+                    if(item.status === 'DRAFT_COMPLETE' ){
+                        unsigned = false;
+                        break;
+                    }
+                }
+                if(unsigned){
+                    $scope.widgetState.unsigned = 'unsigned';
+                } else {
+                    $scope.widgetState.unsigned = 'signed';
+                }
             }
 
             /**
@@ -126,7 +149,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                         intygId: cert.intygId,
                         intygType: cert.intygType,
                         patientPersonnummer: $scope.personnummer,
-                        nyttPatientPersonnummer: $routeParams.patientId
+                        nyttPatientPersonnummer: $stateParams.patientId
                     }),
                     false
                 );
