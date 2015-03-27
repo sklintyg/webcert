@@ -154,7 +154,18 @@ module.exports = function(grunt) {
                                 connect.static(__dirname +
                                 '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert')
                             ));
-
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/ts-bas/webcert',
+                                connect.static(__dirname +
+                                '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert')
+                            ) );
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/ts-diabetes/webcert',
+                                connect.static(__dirname +
+                                '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert')
+                            ) );
                         middlewares.push(proxy);
                         return middlewares;
                     }
