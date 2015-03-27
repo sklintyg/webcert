@@ -18,7 +18,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 createErrorMessageKey: null,
                 inlineErrorMessageKey: null,
                 currentList: undefined,
-                unsigned : 'unsigned-empty' // unsigned, unsigned-mixed,
+                unsigned : 'certlist-empty' // unsigned, unsigned-mixed,
             };
 
             $scope.filterForm = {
@@ -74,6 +74,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 if(!list){
                     return;
                 }
+                if(list.length === 0){
+                    $scope.widgetState.unsigned = 'certlist-empty';
+                    return;
+                }
                 var unsigned = true;
                 for(var i=0; i< list.length; i++){
                     var item = list[i];
@@ -84,6 +88,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 }
                 if(unsigned){
                     $scope.widgetState.unsigned = 'unsigned';
+                } else {
+                    $scope.widgetState.unsigned = 'signed';
                 }
             }
 
