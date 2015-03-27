@@ -22,7 +22,7 @@ class HanteraUtkast {
         Browser.drive {
             go "/web/dashboard#/unsigned"
             waitFor {
-                at UnsignedIntygPageIng
+                at UnsignedIntygPage
             }
         }
     }
@@ -54,6 +54,7 @@ class HanteraUtkast {
             }
         }
     }
+
 
     def gaTillEditeraIntygMedTypOchIntygid(String typ, String intygid) {
         Browser.drive {

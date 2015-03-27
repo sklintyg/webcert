@@ -1,7 +1,7 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    [ '$filter', '$location', '$log', '$scope', '$cookieStore', '$stateParams', 'webcert.CreateCertificateDraft',
+    [ '$window', '$filter', '$location', '$log', '$scope', '$cookieStore', '$stateParams', 'webcert.CreateCertificateDraft',
         'webcert.ManageCertificate', 'common.IntygCopyRequestModel',
-        function($filter, $location, $log, $scope, $cookieStore, $stateParams, CreateCertificateDraft,
+        function($window, $filter, $location, $log, $scope, $cookieStore, $stateParams, CreateCertificateDraft,
             ManageCertificate, IntygCopyRequestModel) {
             'use strict';
 
@@ -17,7 +17,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 activeErrorMessageKey: null,
                 createErrorMessageKey: null,
                 inlineErrorMessageKey: null,
-                currentList: undefined
+                currentList: undefined,
+                unsigned : 'unsigned-empty' // unsigned, unsigned-mixed,
             };
 
             $scope.filterForm = {
@@ -60,11 +61,30 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $scope.widgetState.doneLoading = false;
                     $scope.widgetState.certListUnhandled = data;
                     $scope.updateCertList();
+                    hasUnsigned($scope.widgetState.currentList);
+                    $window.doneLoading = true;
                 }, function(errorData) {
                     $scope.widgetState.doneLoading = false;
                     $log.debug('Query Error' + errorData);
                     $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
                 });
+            }
+
+            function hasUnsigned(list){
+                if(!list){
+                    return;
+                }
+                var unsigned = true;
+                for(var i=0; i< list.length; i++){
+                    var item = list[i];
+                    if(item.status === 'DRAFT_COMPLETE' ){
+                        unsigned = false;
+                        break;
+                    }
+                }
+                if(unsigned){
+                    $scope.widgetState.unsigned = 'unsigned';
+                }
             }
 
             /**

@@ -250,7 +250,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _send($scope, cert, recipientId, titleId, onSuccess) {
+            function _send(cert, recipientId, titleId, onSuccess) {
 
                 var dialogSendModel ={
                     acceptprogressdone: true,
@@ -305,7 +305,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _makulera($scope, cert, confirmationMessage, onSuccess) {
+            function _makulera( cert, confirmationMessage, onSuccess) {
 
                 var dialogMakuleraModel = {
                     acceptprogressdone: true,
