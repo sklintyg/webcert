@@ -80,7 +80,7 @@ class HanteraUtkast {
         }
     }
 
-    boolean visaIntygSidanVisas(intygsTyp) {
+    boolean visaIntygSidanVisas() {
         Browser.drive {
             waitFor {
                 at VisaFk7263Page
