@@ -1,5 +1,5 @@
 ---
 # file: host_vars/intygstjanst-test
 
-# Spring profile
-profile: test,wc-all-stubs,wc-security-test
+# Spring profiles
+profiles: test,wc-all-stubs,wc-security-test,testability-api

@@ -5,8 +5,8 @@
 inera_root: /opt/inera
 releases_folder: "{{ inera_root }}/releases"
 
-# Spring profile
-profile: test
+# Spring profiles
+profiles: test
 
 # Configuration repository
 environment_name: "test"

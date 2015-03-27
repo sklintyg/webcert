@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
-  profile="dev,wc-all-stubs,wc-webcert-stub">
+  profile="dev,testability-api">
 
   <!-- REST services for inserting questions and certificate drafts directly 
     into the database for testing purposes -->
