@@ -4,27 +4,32 @@
     xmlns:jaxws="http://cxf.apache.org/jaxws"
     xmlns:jaxrs="http://cxf.apache.org/jaxrs"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
-    profile="dev,wc-all-stubs,wc-fk-stub">
+    >
 
-  <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare -->
-  <jaxws:endpoint address="/certificate-status-update-for-care-stub" implementor="se.inera.webcert.notificationstub.CertificateStatusUpdateForCareResponderStub" />
+  <beans profile="dev,wc-all-stubs,wc-fk-stub,testability-api">
+    <bean id="notificationStore" class="se.inera.webcert.notificationstub.NotificationStoreImpl">
+      <constructor-arg type="int" value="100" />
+    </bean>  
+  </beans>
 
-  <jaxrs:server address="/notification-stub">
-    <jaxrs:serviceBeans>
-      <ref bean="notificationStubRestApi"/>
-    </jaxrs:serviceBeans>
-    <jaxrs:providers>
-      <ref bean="jacksonJsonProvider"/>
-    </jaxrs:providers>
-    <jaxrs:extensionMappings>
-      <entry key="json" value="application/json"/>
-    </jaxrs:extensionMappings>
-  </jaxrs:server>
-
-  <bean id="notificationStore" class="se.inera.webcert.notificationstub.NotificationStoreImpl">
-    <constructor-arg type="int" value="100" />
-  </bean>
+  <beans profile="dev,wc-all-stubs,wc-fk-stub">
+    <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare -->
+    <jaxws:endpoint address="/certificate-status-update-for-care-stub" implementor="se.inera.webcert.notificationstub.CertificateStatusUpdateForCareResponderStub" />
+  </beans>
   
-  <bean id="notificationStubRestApi" class="se.inera.webcert.notificationstub.NotificationStubRestApi"/>
+  <beans profile="dev,testability-api">  
+    <jaxrs:server address="/notification-stub">
+      <jaxrs:serviceBeans>
+        <ref bean="notificationStubRestApi"/>
+      </jaxrs:serviceBeans>
+      <jaxrs:providers>
+        <ref bean="jacksonJsonProvider"/>
+      </jaxrs:providers>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json"/>
+      </jaxrs:extensionMappings>
+    </jaxrs:server>
+    <bean id="notificationStubRestApi" class="se.inera.webcert.notificationstub.NotificationStubRestApi"/>
+  </beans>
 
 </beans>

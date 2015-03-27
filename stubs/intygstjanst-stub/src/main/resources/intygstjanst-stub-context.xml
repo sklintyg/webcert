@@ -3,25 +3,29 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jaxws="http://cxf.apache.org/jaxws"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
-       profile="dev,wc-all-stubs,wc-it-stub">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
-  <jaxws:endpoint address="/get-certificate-for-care-stub" implementor="se.inera.webcert.intygstjanststub.GetCertificateForCareResponderStub"/>
-  <jaxws:endpoint address="/list-certificates-for-care-stub" implementor="se.inera.webcert.intygstjanststub.ListCertificatesForCareResponderStub"/>
+  <beans profile="dev,wc-all-stubs,wc-it-stub">
+    <jaxws:endpoint address="/get-certificate-for-care-stub" implementor="se.inera.webcert.intygstjanststub.GetCertificateForCareResponderStub"/>
+    <jaxws:endpoint address="/list-certificates-for-care-stub" implementor="se.inera.webcert.intygstjanststub.ListCertificatesForCareResponderStub"/>
 
-  <jaxrs:server address="/intygstjanst-stub">
-    <jaxrs:serviceBeans>
-      <ref bean="intygstjanstStubRestApi"/>
-    </jaxrs:serviceBeans>
-    <jaxrs:providers>
-      <ref bean="jacksonJsonProvider"/>
-    </jaxrs:providers>
-    <jaxrs:extensionMappings>
-      <entry key="json" value="application/json"/>
-    </jaxrs:extensionMappings>
-  </jaxrs:server>
+    <bean id="intygstjanstStubBootstrapBean" class="se.inera.webcert.intygstjanststub.BootstrapBean"/>
+  </beans>
 
-  <bean id="intygstjanstStubRestApi" class="se.inera.webcert.intygstjanststub.StubRestApi"/>
-  <bean id="intygstjanstStubBootstrapBean" class="se.inera.webcert.intygstjanststub.BootstrapBean"/>
+  <beans profile="dev,testability-api">
+    <jaxrs:server address="/intygstjanst-stub">
+      <jaxrs:serviceBeans>
+        <ref bean="intygstjanstStubRestApi"/>
+      </jaxrs:serviceBeans>
+      <jaxrs:providers>
+        <ref bean="jacksonJsonProvider"/>
+      </jaxrs:providers>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json"/>
+      </jaxrs:extensionMappings>
+    </jaxrs:server>
+  
+    <bean id="intygstjanstStubRestApi" class="se.inera.webcert.intygstjanststub.StubRestApi"/>
+  </beans>
 
 </beans>
