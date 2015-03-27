@@ -5,7 +5,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <beans profile="dev,wc-all-stubs,wc-webcert-stub">
+  <beans profile="dev,testability-api">
     <!-- Non-transactional JMS template to be used only in tests -->
     <bean id="jmsPDLLogTemplateNoTx" class="org.springframework.jms.core.JmsTemplate">
       <property name="connectionFactory" ref="connectionFactory" />

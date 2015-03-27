@@ -1,8 +1,8 @@
 ---
 # file: host_vars/intygstjanst-demo
 
-# Spring profile
-profile: test,wc-all-stubs,wc-security-test
+# Spring profiles
+profiles: test,wc-all-stubs,wc-security-test,testability-api
 
 # Configuration repository
 environment_name: "demo"
