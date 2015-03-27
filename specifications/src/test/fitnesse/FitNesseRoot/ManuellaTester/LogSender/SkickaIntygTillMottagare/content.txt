@@ -6,7 +6,7 @@
 
 !|Logg post|
 |systemId?|activityType?|purpose?|userId?|careProvider?|careUnit?|resourceType?|
-|systemId|SkickaTillMottagare|Vård och behandling|lakare1|vg1|enhet1|Intyg|
+|systemId|Utskrift|Vård och behandling|lakare1|vg1|enhet1|Intyg|
 
 
 |script|Logg post|
