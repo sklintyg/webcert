@@ -61,6 +61,15 @@ class HanteraUtkast {
     def gaTillEditeraIntygMedTypOchIntygid(String typ, String intygid) {
         Browser.drive {
             go "/web/dashboard#/$typ/edit/$intygid"
+            waitFor {
+                if (typ == "fk7263") {
+                    at se.inera.webcert.pages.fk7263.EditCertPage
+                } else if (typ == "ts-bas") {
+                    at se.inera.webcert.pages.ts_bas.EditCertPage
+                } else if (typ == "ts-diabetes") {
+                    at se.inera.webcert.pages.ts_diabetes.EditCertPage
+                }
+            }
         }
     }
 

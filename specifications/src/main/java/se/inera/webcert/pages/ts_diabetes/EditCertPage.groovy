@@ -14,6 +14,7 @@ class EditCertPage extends AbstractPage {
 
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
+        intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
 
         // Formulärfält
         patient { module PatientModule }
@@ -97,6 +98,27 @@ class IntygetAvserModule extends Module {
             if (behorigheter.contains("DE")) de = true
             if (behorigheter.contains("Taxi")) taxi = true
         }
+    }
+
+    def hamtaBehorigheter() {
+        def result = "";
+        if (am.value() == "on")      { if (result != "") { result += "," }; result += "AM" }
+        if (a1.value() == "on")      { if (result != "") { result += "," }; result += "A1" }
+        if (a2.value() == "on")      { if (result != "") { result += "," }; result += "A2" }
+        if (a.value() == "on")       { if (result != "") { result += "," }; result += "A" }
+        if (b.value() == "on")       { if (result != "") { result += "," }; result += "B" }
+        if (be.value() == "on")      { if (result != "") { result += "," }; result += "BE" }
+        if (traktor.value() == "on") { if (result != "") { result += "," }; result += "Traktor" }
+        if (c1.value() == "on")      { if (result != "") { result += "," }; result += "C1" }
+        if (c1e.value() == "on")     { if (result != "") { result += "," }; result += "C1E" }
+        if (c.value() == "on")       { if (result != "") { result += "," }; result += "C" }
+        if (ce.value() == "on")      { if (result != "") { result += "," }; result += "CE" }
+        if (d1.value() == "on")      { if (result != "") { result += "," }; result += "D1" }
+        if (d1e.value() == "on")     { if (result != "") { result += "," }; result += "D1E" }
+        if (d.value() == "on")       { if (result != "") { result += "," }; result += "D" }
+        if (de.value() == "on")      { if (result != "") { result += "," }; result += "DE" }
+        if (taxi.value() == "on")    { if (result != "") { result += "," }; result += "Taxi" }
+        result
     }
 }
 

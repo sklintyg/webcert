@@ -14,6 +14,7 @@ class EditCertPage extends AbstractPage {
 
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
+        intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
 
         // Formulärfält
         patient { module PatientModule }
@@ -90,6 +91,21 @@ class IntygetAvserModule extends Module {
             if (behorigheter.contains("Taxi")) taxi = true
             if (behorigheter.contains("Annat")) annat = true
         }
+    }
+
+    def hamtaBehorigheter() {
+        def result = "";
+        if (c1.value() == "on")    { if (result != "") { result += "," }; result += "C1" }
+        if (c1e.value() == "on")   { if (result != "") { result += "," }; result += "C1E" }
+        if (c.value() == "on")     { if (result != "") { result += "," }; result += "C" }
+        if (ce.value() == "on")    { if (result != "") { result += "," }; result += "CE" }
+        if (d1.value() == "on")    { if (result != "") { result += "," }; result += "D1" }
+        if (d1e.value() == "on")   { if (result != "") { result += "," }; result += "D1E" }
+        if (d.value() == "on")     { if (result != "") { result += "," }; result += "D" }
+        if (de.value() == "on")    { if (result != "") { result += "," }; result += "DE" }
+        if (taxi.value() == "on")  { if (result != "") { result += "," }; result += "Taxi" }
+        if (annat.value() == "on") { if (result != "") { result += "," }; result += "Annat" }
+        result
     }
 }
 
