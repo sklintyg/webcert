@@ -35,7 +35,7 @@
 </head>
 <body>
 
-  <%-- ng-view that holds dynamic content managed by angular app --%>
+  <%-- ui-view that holds dynamic content managed by angular app --%>
   <div ui-view autoscroll="true" id="view">
   </div>
 
