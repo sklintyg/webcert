@@ -7,7 +7,7 @@
     repo: release
 
     # latest release: 3.1.0-b50
-    # latest snapshot: 3.0.0-a536
+    # latest snapshot: 3.1.0-aNNN
     version: 3.1.0-b50
     config_version: master
 
