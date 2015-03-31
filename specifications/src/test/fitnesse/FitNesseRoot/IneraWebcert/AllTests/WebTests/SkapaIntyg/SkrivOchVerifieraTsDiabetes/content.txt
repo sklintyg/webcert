@@ -1,0 +1,47 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | ts-diabetes |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med information i samtliga fält så det blir komplett
+
+| Populera Ts Diabetes |
+| postadress | postnummer | postort | intygetAvser | identifieringstyp | diabetesAr | diabetestyp | diabetesBehandlingKost | diabetesBehandlingTabletter | diabetesBehandlingInsulin | diabetesBehandlingInsulinPeriod | diabetesBehandlingAnnan | hypoglykemierA | hypoglykemierB | hypoglykemierC | hypoglykemierD | hypoglykemierAllvarligForekomstEpisoder | hypoglykemierE | hypoglykemierAllvarligForekomstTrafikEpisoder | hypoglykemierF | hypoglykemierG | hypoglykemierAllvarligForekomstVakenTid | synA | synB | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion | synD | behorighet | bedomdBehorighet | bedomning |  kommentar | specialist | vardenhetPostadress | vardenhetPostnummer | vardenhetPostort | vardenhetTelefonnummer |
+| Storgatan 1 | 12345 | Göteborg | A,B,C | korkort | 2010 | typ2 | true | true | true | 2011 | Träning | false | false | false | false | | false | | true | true | 2014-01-02 | false | true | 1,1 | 1,2 | 0,2 | 0,8 | 0,6 | 0,9 | true | true | A,B,C  | bedomning | Inga kommentar | Sjukdomar | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+
+!3 Spara och signera
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| intyg sparat visas |
+
+| script | !-HanteraUtkast-! |
+| signera knapp visas |
+| signera knapp aktiverad |
+| signera utkast |
+| visa intyg sidan visas med typ | ts-bas |
+| intyget signerat meddelande visas |
+
+!3 Verifiera att fälten i intyget syns och innehåller korrekt data
+
+| Verifiera Signerat Ts Diabetes |
+| patientpostadress? | patientpostnummer? | patientpostort? | intygAvser? | identitet? | observationsperiod? | diabetestyp? | endastKost? | tabletter? | insulin? | insulinBehandlingsperiod? | annanBehandlingBeskrivning? | teckenNedsattHjarnfunktion? | saknarFormagaKannaVarningstecken? | allvarligForekomst? | allvarligForekomstBeskrivning? | allvarligForekomstTrafiken? | allvarligForekomstTrafikBeskrivning? | egenkontrollBlodsocker? | allvarligForekomstVakenTid? | allvarligForekomstVakenTidObservationstid? | separatOgonlakarintyg? | synfaltsprovningUtanAnmarkning? | hogerutanKorrektion? | hogermedKorrektion? | vansterutanKorrektion? | vanstermedKorrektion? | binokulartutanKorrektion? | binokulartmedKorrektion? | diplopi? | lamplighetInnehaBehorighet? | kommentar? | bedomning? | bedomningKanInteTaStallning? | lakareSpecialKompetens? | signeringsdatum? | vardperson_namn? | vardperson_enhetsnamn? | vardenhet_postadress? | vardenhet_postnummer? | vardenhet_postort? | vardenhet_telefonnummer? |
+| Storgatan 1 | 12345 | Göteborg | !-A, B, C-! | Svenskt körkort | 2010 | Typ 2 | Ja | Ja | Ja | 2012 | Träning | Nej | Nej | Nej | | Nej | | Nej | Nej |2012-12-12 | Nej | Ja | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | Ja | Ja | Kommentarer av det viktiga slaget | !-AM, A1, A2, A, B, BE, TRAKTOR, C1, C1E, C, CE, D1, D1E, D, DE, TAXI-! | | Kronologisk bastuberedning | | IFV1239877878-104B | IFV1239877878-1042 | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+
+!3 Ta bort utkastet och intyget
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+
+| ta bort intyg |
+| id |
+| $intygsid |
