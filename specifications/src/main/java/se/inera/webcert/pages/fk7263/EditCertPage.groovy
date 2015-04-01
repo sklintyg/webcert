@@ -141,7 +141,7 @@ class PrognosModule extends Module {
         radioGroup { form.capacityForWorkForecast }
 
         beskrivning { $("#capacityForWorkForecastText") }
-        prognos { $("input", name: "capacityForWorkForecast") }
+        prognos { $("input", name: "capacityForWork.forecast") }
 
     }
 
