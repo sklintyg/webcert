@@ -53,6 +53,7 @@ public class PingForConfigurationResponderImpl implements PingForConfigurationRe
         HealthStatus queueSize = healthCheck.checkSignatureQueue();
         HealthStatus pingIntygstjanst = healthCheck.checkIntygstjanst();
         HealthStatus uptime = healthCheck.checkUptime();
+        HealthStatus nbrOfUsers = healthCheck.checkNbrOfUsers();
 
         addConfiguration(response, "buildNumber", buildNumberString);
         addConfiguration(response, "buildTime", buildTimeString);
@@ -62,6 +63,8 @@ public class PingForConfigurationResponderImpl implements PingForConfigurationRe
         addConfiguration(response, "jmsStatus", jms.isOk() ? "ok" : "error");
         addConfiguration(response, "intygstjanst", pingIntygstjanst.isOk() ? "ok" : "no connection");
         addConfiguration(response, "signatureQueueSize", "" + queueSize.getMeasurement());
+        addConfiguration(response, "nbrOfUsers", "" + nbrOfUsers.getMeasurement());
+        
         return response;
     }
 
