@@ -17,7 +17,7 @@ Detta test ska visa på att man kan skicka ett signerat ts-intyg.
 !3 Verififera att intyget finns i stubben
 | ts intyg finns i stub |
 | id | exists? |
-| intyg-fit-8 | true |
+| intyg-fit-7 | true |
 
 !3 Rensa intyg från ts stub
 | ta bort ts intyg stub |
