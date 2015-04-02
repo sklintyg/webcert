@@ -66,11 +66,12 @@
   <bean id="http403ForbiddenEntryPoint"
         class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
-  <!-- Needed for keeping track of users -->
-  <bean id="sessionRegistry" class="org.springframework.security.core.session.SessionRegistryImpl" />
-
+  <!-- SessionRegistry is needed for keeping track of authenticated sessions (i.e users), this impl performs audit logging of login and logouts. -->
+  <bean id="loggingSessionRegistry" class="se.inera.auth.WebcertLoggingSessionRegistryImpl" />
+  
+  <!-- Session authentication strategy that registers authenticated sessions with the session registry -->
   <bean id="registerSessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">
-    <constructor-arg ref="sessionRegistry" />
+    <constructor-arg ref="loggingSessionRegistry" />
   </bean>
 
   <!-- =============================================================== -->
