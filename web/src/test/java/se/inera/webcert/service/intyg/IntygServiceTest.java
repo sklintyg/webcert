@@ -17,6 +17,7 @@ import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -168,12 +169,19 @@ public class IntygServiceTest {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
         request.setPersonId("19121212-1212");
         request.getEnhet().add("enhet-1");
-        when(listCertificatesForCareResponder.listCertificatesForCare(LOGICAL_ADDRESS, request)).thenReturn(
+
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
 
         List<IntygItem> list = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
 
-        verify(listCertificatesForCareResponder).listCertificatesForCare(LOGICAL_ADDRESS, request);
+        ArgumentCaptor<ListCertificatesForCareType> argument = ArgumentCaptor.forClass(ListCertificatesForCareType.class);
+
+        verify(listCertificatesForCareResponder).listCertificatesForCare(eq(LOGICAL_ADDRESS), argument.capture());
+
+        ListCertificatesForCareType actualRequest = argument.getValue();
+        assertEquals(request.getPersonId(), actualRequest.getPersonId());
+        assertEquals(request.getEnhet(), actualRequest.getEnhet());
 
         assertEquals(2, list.size());
 
@@ -196,7 +204,7 @@ public class IntygServiceTest {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
         request.setPersonId("19121212-1212");
         request.getEnhet().add("enhet-1");
-        when(listCertificatesForCareResponder.listCertificatesForCare(LOGICAL_ADDRESS, request)).thenReturn(
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listErrorResponse);
 
         intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
