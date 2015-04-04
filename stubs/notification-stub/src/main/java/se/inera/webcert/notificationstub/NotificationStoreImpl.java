@@ -12,6 +12,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatest
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Ordering;
 
 public class NotificationStoreImpl implements NotificationStore {
@@ -29,7 +30,8 @@ public class NotificationStoreImpl implements NotificationStore {
         this.minSize = Double.valueOf(maxSize * LOAD).intValue();
     }
 
-    private Multimap<String, CertificateStatusUpdateForCareType> notificationsMap = ArrayListMultimap.create();
+    private Multimap<String, CertificateStatusUpdateForCareType> rawNotificationsMap = ArrayListMultimap.create();
+    private Multimap<String, CertificateStatusUpdateForCareType> notificationsMap = Multimaps.synchronizedMultimap(rawNotificationsMap);
 
     /*
      * (non-Javadoc)
