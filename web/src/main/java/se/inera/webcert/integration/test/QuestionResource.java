@@ -124,8 +124,10 @@ public class QuestionResource {
     @Path("/extern/{externReferens}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteQuestionByExternReferens(@PathParam("externReferens") String externReferens) {
-        FragaSvar fraga = fragasvarRepository.findByExternReferens(externReferens);
-        fragasvarRepository.delete(fraga);
+        List<FragaSvar> fragor = fragasvarRepository.findByExternReferensLike(externReferens);
+        for (FragaSvar fraga : fragor) {
+            fragasvarRepository.delete(fraga);
+        }
         return Response.ok().build();
     }
 
