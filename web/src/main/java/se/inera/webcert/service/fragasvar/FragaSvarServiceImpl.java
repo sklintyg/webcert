@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
@@ -121,6 +122,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         validateAcceptsQuestions(fragaSvar);
 
+        LOGGER.info(LogMarkers.MONITORING, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(),
+                fragaSvar.getExternReferens());
+
         // persist the question
         return fragaSvarRepository.save(fragaSvar);
     }
@@ -145,6 +149,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarSigneringsDatum(svarSigneringsDatum);
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
+
+        LOGGER.info(LogMarkers.MONITORING, "Received answer to question '{}'", internId);
 
         // update the FragaSvar
         return fragaSvarRepository.save(fragaSvar);
@@ -261,6 +267,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
+        LOGGER.info(LogMarkers.MONITORING, "Sent answer to question '{}'", fragaSvarsId);
+
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
 
@@ -346,6 +354,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, response.getResult()
                     .getErrorText());
         }
+
+        LOGGER.info(LogMarkers.MONITORING, "Sent question '{}' for intyg '{}'", fraga.getInternReferens(), intygId);
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);

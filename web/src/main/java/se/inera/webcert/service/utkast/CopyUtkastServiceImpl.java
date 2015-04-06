@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
@@ -84,6 +85,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
 
             Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
+
+            LOG.info(LogMarkers.MONITORING, "Utkast '{}' created as a copy of '{}'", savedUtkast.getIntygsId(), originalIntygId);
 
             // notify
             notificationService.sendNotificationForDraftCreated(savedUtkast);

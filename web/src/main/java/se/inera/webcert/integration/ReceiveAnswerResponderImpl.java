@@ -70,8 +70,6 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
             throw new IllegalArgumentException("No question found with internal ID " + request.getAnswer().getVardReferensId(), e);
         }
 
-        LOGGER.info(LogMarkers.MONITORING, "Received answer to question '{}'", referensId);
-
         // Set result and send response back to caller
         response.setResult(ResultOfCallUtil.okResult());
 
