@@ -1,3 +1,11 @@
+!3 Ta bort eventuella kvarlämnade frågor
+
+|Ta bort fraga|
+|externReferens|
+|fitnesse|
+|fitnesse-saknat-intyg|
+|fitnesse-fel-enhet|
+
 !3 Givet ett intyg
 
 |Intyg|
