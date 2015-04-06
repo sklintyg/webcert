@@ -142,7 +142,10 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftThatIsUnsigned() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-
+        WebCertUser user = new WebCertUser();
+        user.setHsaId("hsaId");
+        when(userService.getWebCertUser()).thenReturn(user);
+        
         draftService.deleteUnsignedDraft(INTYG_ID);
 
         verify(mockUtkastRepository).findOne(INTYG_ID);
