@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -98,7 +99,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
 
-        LOG.debug("Utkast '{}' created and persisted", savedUtkast.getIntygsId());
+        LOG.info(LogMarkers.MONITORING, "Utkast '{}' created on unit '{}'", savedUtkast.getIntygsId(), request.getVardenhet().getHsaId());
 
         sendNotification(savedUtkast, Event.CREATED);
 
@@ -441,6 +442,9 @@ public class UtkastServiceImpl implements UtkastService {
         // Delete draft from repository
         deleteUnsignedDraft(utkast);
 
+        String hsaId = webCertUserService.getWebCertUser().getHsaId();
+        LOG.info(LogMarkers.MONITORING, "Utkast '{}' deleted by '{}'", utkast.getIntygsId(), hsaId);
+        
         // Notify stakeholders when a draft is deleted
         sendNotification(utkast, Event.DELETED);
         
@@ -510,7 +514,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     protected void abortIfUserNotAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId) {
         if (!webCertUserService.isAuthorizedForUnit(vardgivarHsaId, enhetsHsaId, false)) {
-            LOG.info("User not authorized for enhet");
+            LOG.debug("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsHsaId);
         }

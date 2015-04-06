@@ -18,6 +18,7 @@ import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.model.common.internal.Vardenhet;
@@ -168,6 +169,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygServiceResult storeIntyg(Utkast utkast) {
         Omsandning omsandning = createOmsandning(OmsandningOperation.STORE_INTYG, utkast.getIntygsId(), utkast.getIntygsTyp(), null);
+        LOG.info(LogMarkers.MONITORING, "Intyg '{}' registered with Intygstjänsten", utkast.getIntygsId());
+
         // Redan schedulerat för att skickas, men vi gör ett försök redan nu.
         return storeIntyg(utkast, omsandning);
     }
@@ -224,6 +227,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getWebCertUser());
         String sendConfigAsJson = configurationManager.marshallConfig(sendConfig);
 
+        LOG.info(LogMarkers.MONITORING, "Intyg '{}' sent to recipient '{}'", intygsId, recipient);
+
         // send PDL log event
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
         logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
@@ -241,13 +246,13 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
      */
     @Override
     public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage) {
-        LOG.info("Attempting to revoke intyg {}", intygsId);
+        LOG.debug("Attempting to revoke intyg {}", intygsId);
 
         IntygContentHolder intyg = getIntygData(intygsId, intygsTyp);
         verifyEnhetsAuth(intyg.getUtlatande(), true);
 
         if (intyg.isRevoked()) {
-            LOG.info("Certificate with id '{}' is already revoked", intygsId);
+            LOG.debug("Certificate with id '{}' is already revoked", intygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is already revoked");
         }
 
@@ -267,7 +272,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
         switch (resultOfCall.getResultCode()) {
         case OK:
-            LOG.info("Successfully revoked intyg {}", intygsId);
+            String hsaId = webCertUserService.getWebCertUser().getHsaId();
+            LOG.info(LogMarkers.MONITORING, "Intyg '{}' revoked by '{}'", intygsId, hsaId);
             return whenSuccessfulRevoke(intyg.getUtlatande());
         case INFO:
             LOG.warn("Call to revoke intyg {} returned an info message: {}", intygsId, resultOfCall.getInfoText());
@@ -294,7 +300,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         String intygsTyp = omsandning.getIntygTyp();
 
         try {
-            LOG.info("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
+            LOG.debug("Sending intyg {} of type {} to recipient {}", new Object[] { intygsId, intygsTyp, recipient });
 
             AttributedURIType address = new AttributedURIType();
             address.setValue(logicalAddress);
@@ -344,7 +350,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     protected void verifyEnhetsAuth(Utlatande utlatande, boolean isReadOnlyOperation) {
         Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
         if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), isReadOnlyOperation)) {
-            LOG.info("User not authorized for enhet");
+            LOG.debug("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + vardenhet.getEnhetsid());
         }
@@ -388,7 +394,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
         omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
         omsandningRepository.save(omsandning);
-        LOG.info("Rescheduled {}", omsandning.toString());
+        LOG.debug("Rescheduled {}", omsandning.toString());
     }
 
     /**
