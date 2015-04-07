@@ -8,6 +8,7 @@ class EditeraIntygPage extends AbstractPage {
 
     static content = {
         radera { $("#ta-bort-utkast") }
+        skrivUtBtn { $("#skriv-ut-utkast") }
         konfirmeraRadera { $("#confirm-draft-delete-button") }
         signeraBtn(required: false) { $("#signera-utkast-button") }
         konfirmeraSignera { $("#confirm-signera-utkast-button") }

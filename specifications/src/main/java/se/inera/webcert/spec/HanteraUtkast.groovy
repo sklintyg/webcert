@@ -411,4 +411,14 @@ class HanteraUtkast {
             page.tillbakaButton.click();
         }
     }
+
+    boolean skrivUtKnappVisas(boolean expected = true) {
+        Browser.drive {
+            at EditeraIntygPage
+            waitFor {
+                expected == page.skrivUtBtn.isDisplayed()
+            }
+        }
+        true
+    }
 }
