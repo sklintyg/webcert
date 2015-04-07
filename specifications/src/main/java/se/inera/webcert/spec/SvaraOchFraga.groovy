@@ -448,6 +448,18 @@ class SvaraOchFraga {
         true
     }
 
+    boolean skrivUtKnappVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                expected == page.skrivUtBtn.isDisplayed()
+            }
+        }
+        true
+    }
+
     boolean kopieraKnappVisas(boolean expected = true) {
         Browser.drive {
             waitFor {

@@ -17,6 +17,7 @@ class VisaFragaSvarPage extends AbstractPage {
         newQuestionTopic { $("#new-question-topic") }
         sendQuestionBtn { $("#sendQuestionBtn") }
         cancelQuestionBtn { $("#cancelQuestionBtn") }
+        skrivUtBtn(required: false) { $("#downloadprint") }
         kopieraBtn(required: false){ $("#copyBtn") }
         makuleraBtn(required: false){ $("#makuleraBtn") }
         skickaTillFkBtn(required: false){ $("#sendBtn") }

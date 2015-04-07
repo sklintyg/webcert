@@ -68,7 +68,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
                     templateUrl: '/views/dashboard/view.qa.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
-                'header@fragasvar' : {
+                'header@fragasvar-qaonly' : {
                     templateUrl: '/web/webjars/common/webcert/intyg/view/intyg-view-header/intyg-view-header.html',
                     controller: 'common.IntygViewHeader'
                 }
