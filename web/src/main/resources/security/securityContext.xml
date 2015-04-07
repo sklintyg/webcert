@@ -66,6 +66,14 @@
   <bean id="http403ForbiddenEntryPoint"
         class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
+  <!-- SessionRegistry is needed for keeping track of authenticated sessions (i.e users), this impl performs audit logging of login and logouts. -->
+  <bean id="loggingSessionRegistry" class="se.inera.auth.WebcertLoggingSessionRegistryImpl" />
+  
+  <!-- Session authentication strategy that registers authenticated sessions with the session registry -->
+  <bean id="registerSessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy">
+    <constructor-arg ref="loggingSessionRegistry" />
+  </bean>
+
   <!-- =============================================================== -->
   <!-- These URLs are unsecured in all profiles except wc-security-prod -->
   <!-- =============================================================== -->
@@ -85,6 +93,7 @@
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
     </security:http>
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="fakeAuthenticationProvider"/>
@@ -102,6 +111,7 @@
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache" />
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
     </security:http>
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
@@ -110,6 +120,7 @@
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache" />
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
     </security:http>
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
@@ -127,12 +138,14 @@
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache" />
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
     </security:http>
     <security:http entry-point-ref="http403ForbiddenEntryPoint">
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="httpSessionRequestCache" />
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
     </security:http>
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
@@ -142,6 +155,7 @@
   <beans profile="dev,wc-security-dev,wc-security-test">
     <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
+      <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
       <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
       <property name="authenticationFailureHandler" ref="failureHandler"/>
     </bean>
@@ -258,6 +272,7 @@
     <!-- Processing filter for WebSSO profile messages -->
     <bean id="samlWebSSOProcessingFilter" class="org.springframework.security.saml.SAMLProcessingFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
+      <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
       <property name="authenticationSuccessHandler" ref="successRedirectHandler"/>
       <property name="authenticationFailureHandler" ref="failureHandler"/>
     </bean>
