@@ -408,4 +408,10 @@ class SkrivIntyg {
         }
         result
     }
+
+    def klickaPaSmittskyd(val) {
+        Browser.drive {
+            page.smittskydd.value(val);
+        }
+    }
 }

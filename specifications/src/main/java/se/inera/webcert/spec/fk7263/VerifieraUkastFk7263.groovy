@@ -47,10 +47,12 @@ class VerifieraUtkastFk7263 {
                 }
             }
         } else {
-            if (!page."$field".isDisplayed()) {
-                result = "notshown"
-            } else {
-                result = page."$field".value()
+            Browser.drive {
+                if (!page."$field".isDisplayed()) {
+                    result = "notshown"
+                } else {
+                    result = page."$field".value()
+                }
             }
         }
         result
@@ -92,6 +94,10 @@ class VerifieraUtkastFk7263 {
     }
     String annanReferensBeskrivning() {
         getValueResult("baserasPa", "otherText")
+    }
+
+    String sjukdomsforlopp() {
+        getValueResult(null, getCurrentMethodName())
     }
     
 

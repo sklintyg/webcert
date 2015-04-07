@@ -1,0 +1,46 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera fk7263 - form2
+
+| Populera Fk7263 |
+| smittskydd | diagnos1 | diagnos1Text | diagnos2 | diagnos2Text | diagnos3 | diagnos3Text | diagnosFortydligande | diagnosSamsjuklighet |
+| false | !-B079X-! | Virusvårtor, ospecificerade | !-B080B-! | Falska kokoppor | !-B080W-! | Annan och icke specificerad infektion orsakad av ortopoxvirus | Kan vara något annat också | annat diagnos|
+
+| Populera Fk7263 |
+| sjukdomsforlopp |
+| Först feber, därefter massa konstiga prickar överallt |
+
+!3 Spara och signera
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| klickaPaSmittskyd | true |
+| klickaPaSmittskyd | false |
+
+!3 verifiera - form2
+
+| Verifiera Utkast Fk7263|
+| diagnos1?   | diagnos1Text? |
+| !-B079X-! | Virusvårtor, ospecificerade |
+
+!3 verifiera - form3
+| Verifiera Utkast Fk7263|
+| sjukdomsforlopp? |
+| Först feber, därefter massa konstiga prickar överallt | 
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
