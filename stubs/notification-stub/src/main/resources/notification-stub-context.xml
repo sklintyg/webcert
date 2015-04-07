@@ -6,13 +6,13 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
     >
 
-  <beans profile="dev,wc-all-stubs,wc-fk-stub,testability-api">
+  <beans profile="dev,wc-all-stubs,wc-notificationsender-stub,testability-api">
     <bean id="notificationStore" class="se.inera.webcert.notificationstub.NotificationStoreImpl">
       <constructor-arg type="int" value="100" />
     </bean>  
   </beans>
 
-  <beans profile="dev,wc-all-stubs,wc-fk-stub">
+  <beans profile="dev,wc-all-stubs,wc-notificationsender-stub">
     <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare -->
     <jaxws:endpoint address="/certificate-status-update-for-care-stub" implementor="se.inera.webcert.notificationstub.CertificateStatusUpdateForCareResponderStub" />
   </beans>

@@ -215,6 +215,7 @@
     <profile>
       <id>ssh-tunnel</id>
       <properties>
+        <webcert.web.baseUrl>http://localhost:28080/</webcert.web.baseUrl>
         <webcert.baseUrl>http://localhost:28080/</webcert.baseUrl>
         <logsender.baseUrl>http://localhost:28080/log-sender/</logsender.baseUrl>
         <certificate.baseUrl>http://localhost:18080/inera-certificate/</certificate.baseUrl>

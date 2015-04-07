@@ -63,9 +63,6 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
         // Transform to a FragaSvar object
         FragaSvar fragaSvar = converter.convert(request.getQuestion());
 
-        LOGGER.info(LogMarkers.MONITORING, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(),
-                fragaSvar.getExternReferens());
-
         // Notify stakeholders
         sendNotification(processQuestion(fragaSvar));
 
