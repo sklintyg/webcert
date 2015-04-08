@@ -47,10 +47,26 @@ class VerifieraUtkastFk7263 {
                 }
             }
         } else {
-            if (!page."$field".isDisplayed()) {
-                result = "notshown"
-            } else {
-                result = page."$field".value()
+            Browser.drive {
+                if (!page."$field".isDisplayed()) {
+                    result = "notshown"
+                } else {
+                    result = page."$field".value()
+                }
+            }
+        }
+        result
+    }
+
+    String getBoxResult(module, field) {
+        def result = ''
+        if (module != null) {
+            Browser.drive {
+                result = page."$module"."$field"
+            }
+        } else {
+            Browser.drive {
+                result = page."$field"
             }
         }
         result
@@ -65,6 +81,7 @@ class VerifieraUtkastFk7263 {
         result
     }
 
+    // --- form 2
     String diagnos1() {
         getValueResult("diagnos", getCurrentMethodName())
     }
@@ -87,12 +104,97 @@ class VerifieraUtkastFk7263 {
     String fortydligande() {
         getValueResult("diagnos", getCurrentMethodName())
     }
-    String beskrivning() {
-        getValueResult("prognos", getCurrentMethodName())
-    }
-    String annanReferensBeskrivning() {
-        getValueResult("baserasPa", "otherText")
-    }
-    
 
+    // --- form 3
+    String sjukdomsforlopp() {
+        getValueResult(null, getCurrentMethodName())
+    }
+
+    // --- form 4
+    String funktionsnedsattning() {
+        getValueResult(null, getCurrentMethodName())
+    }
+
+    // --- form 4b
+    boolean other() {
+        getValueResult("baserasPa", getCurrentMethodName())
+    }
+
+    String otherText() {
+        getValueResult("baserasPa", getCurrentMethodName())
+    }
+
+    boolean journal() {
+        getValueResult("baserasPa", getCurrentMethodName())
+    }
+
+    boolean telefonkontakt() {
+        getValueResult("baserasPa", getCurrentMethodName())
+    }
+
+    boolean undersokning() {
+        getValueResult("baserasPa", getCurrentMethodName())
+    }
+
+    // --- form 5
+    String aktivitetsbegransning() {
+        getValueResult(null, getCurrentMethodName())
+    }
+
+    // --- form 8a
+    boolean arbetslos() {
+        getValueResult("arbete", getCurrentMethodName())
+    }
+
+    boolean foraldraledig() {
+        getValueResult("arbete", getCurrentMethodName())
+    }
+
+    boolean nuvarande() {
+        getValueResult("arbete", getCurrentMethodName())
+    }
+
+    String arbetsuppgifter() {
+        getValueResult("arbete", getCurrentMethodName())
+    }
+
+    // --- form 6a
+    boolean rekommendationKontaktAf() {
+        getValueResult("rekommendationer", "kontaktAf")
+    }
+
+    boolean rekommendationKontaktForetagshalsovard() {
+        getValueResult("rekommendationer", "kontaktForetagshalsovard")
+    }
+
+    boolean rekommendationOvrigt() {
+        getValueResult("rekommendationer", "ovrigt")
+    }
+
+    String rekommendationOvrigtBeskrivning() {
+        getValueResult("rekommendationer", "ovrigtBeskrivning")
+    }
+
+    // --- form 7
+    String arbetslivsinriktadRehabilitering() {
+        getBoxResult("rekommendationer", "radioGroupRehab")
+    }
+
+    String recommendationsToFkTravel() {
+        getBoxResult("rekommendationer", "radioGroupResor")
+    }
+
+    // --- form 11
+    String recommendationsToFkReabInQuestion() {
+        getValueResult("rekommendationer", getCurrentMethodName())
+    }
+
+    // --- form 10
+    boolean prognos() {
+        getBoxResult("prognos", "radioGroup")
+    }
+
+    String prognosBeskrivning() {
+        getValueResult("prognos", "beskrivning")
+    }
 }

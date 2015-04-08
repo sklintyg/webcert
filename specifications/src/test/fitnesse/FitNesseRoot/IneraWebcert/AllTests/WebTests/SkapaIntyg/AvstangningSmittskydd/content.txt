@@ -1,0 +1,163 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!2 Populera intyget
+
+!4 Form2
+
+| Populera Fk7263 |
+| smittskydd | diagnos1 | diagnos1Text | diagnos2 | diagnos2Text | diagnos3 | diagnos3Text | diagnosFortydligande | diagnosSamsjuklighet |
+| false | !-B079X-! | Virusvårtor, ospecificerade | !-B080B-! | Falska kokoppor | !-B080W-! | Annan och icke specificerad infektion orsakad av ortopoxvirus | Kan vara något annat också | annat diagnos|
+
+!4 Form3
+
+| Populera Fk7263 |
+| sjukdomsforlopp |
+| Först feber, därefter massa konstiga prickar överallt |
+
+!4 Form4
+
+| Populera Fk7263 |
+| funktionsnedsattning  |
+| Kliar konstant        |
+
+
+!4 Form4b
+
+| Populera Fk7263 |
+|other  | otherText | journal   | telefonkontakt    | undersokning   |
+|true   | otherText | true      | true              | true          |
+
+
+!4 Form5
+
+| Populera Fk7263 |
+| aktivitetsbegransning |
+| Kan inte fokusera     |
+
+!4 Form 8a
+| Populera Fk7263 |
+| arbetslos     | foraldraledig     | nuvarandearbete         | arbetsuppgifter          |
+| true          | true              | true                    | nuvarandeArbetsuppgifter |
+
+!4 Form 6a
+| Populera Fk7263 |
+| rekommendationKontaktAf   | rekommendationKontaktForetagshalsovard    | rekommendationOvrigt  | rekommendationOvrigtBeskrivning   |
+| true                      | true                                      | true                  | rekommendationOvrigt              |
+
+!4 Form 7 - radio
+| Populera Fk7263 |
+| arbetslivsinriktadRehabilitering  |
+| ?               |
+
+!4 Form 11 - radio
+| Populera Fk7263 |
+| recommendationsToFkTravel |
+| ja |
+
+!4 Form 10 - radio
+| Populera Fk7263 |
+| prognos   | prognosBeskrivning |
+| ?         | capacityForWorkForecastText |
+
+!3 Spara och signera
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+
+| Populera Fk7263 |
+| smittskydd |
+| true |
+
+| script | !-SkrivIntyg-! |
+|check | diagnosArEjSynligt | true |
+
+| Populera Fk7263 |
+| smittskydd |
+| false |
+
+| script | !-SkrivIntyg-! |
+| check | diagnosArSynligt | true |
+
+!2 Verifiera
+
+!4 verifiera - form2
+
+| Verifiera Utkast Fk7263|
+| diagnos1?   | diagnos1Text? |
+| !-B079X-! | Virusvårtor, ospecificerade |
+
+!4 verifiera - form3
+
+| Verifiera Utkast Fk7263|
+| sjukdomsforlopp? |
+| Först feber, därefter massa konstiga prickar överallt | 
+
+!4 verifiera - form4
+
+| Verifiera Utkast Fk7263|
+| funktionsnedsattning? |
+| Kliar konstant |
+
+!4 verifiera - form4b
+
+| Verifiera Utkast Fk7263|
+|other?  | otherText? | journal?   | telefonkontakt?    | undersokning?   |
+|true   | otherText | true      | true              | true          |
+
+!4 verifiera - form5
+
+| Verifiera Utkast Fk7263|
+| aktivitetsbegransning? |
+| Kan inte fokusera     |
+
+!4 verifiera - form8a
+
+| Verifiera Utkast Fk7263|
+| arbetslos?     | foraldraledig?     | nuvarande?         | arbetsuppgifter?          |
+| true          | true              | true                    | nuvarandeArbetsuppgifter |
+
+!4 verifiera - form6a
+
+| Verifiera Utkast Fk7263|
+| rekommendationKontaktAf?   | rekommendationKontaktForetagshalsovard?    | rekommendationOvrigt?  | rekommendationOvrigtBeskrivning?   |
+| true                      | true                                      | true                  | rekommendationOvrigt              |
+
+
+!4 verifiera - form7
+
+| Verifiera Utkast Fk7263|
+| arbetslivsinriktadRehabilitering?  |
+| GAREJ              |
+
+
+!4 verifiera - form11
+
+| script | !-SkrivIntyg-! |
+| check | ressatt | JA |
+
+
+!4 verifiera - form10
+
+
+
+| script | !-SkrivIntyg-! |
+| check | prognos | null |
+
+| Verifiera Utkast Fk7263|
+| prognosBeskrivning? |
+| capacityForWorkForecastText |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
