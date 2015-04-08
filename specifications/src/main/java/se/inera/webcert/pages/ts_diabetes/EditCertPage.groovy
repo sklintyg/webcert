@@ -11,6 +11,8 @@ class EditCertPage extends AbstractPage {
 
         // Knappar
         sparaKnapp { $("#spara-utkast") }
+        visaVadSomSaknasKnapp { $("#showCompleteButton") }
+        doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
@@ -27,6 +29,16 @@ class EditCertPage extends AbstractPage {
         kommentar { $("#kommentar") }
         specialist { $("#specialist") }
         vardenhet { module VardenhetModule }
+
+        // Intygsvalidering
+        valideringPatient(required: false)              { $("#validationMessages_patient") }
+        valideringIntygAvser(required: false)           { $("#validationMessages_intygavser") }
+        valideringIdentitet(required: false)            { $("#validationMessages_identitet") }
+        valideringDiabetes(required: false)             { $("#validationMessages_diabetes") }
+        valideringHypoglykemier(required: false)        { $("#validationMessages_hypoglykemier") }
+        valideringSyn(required: false)                  { $("#validationMessages_syn") }
+        valideringBedomning(required: false)            { $("#validationMessages_bedomning") }
+        valideringVardEnhet(required: false)            { $("#validationMessages_vardenhet") }
     }
 }
 
