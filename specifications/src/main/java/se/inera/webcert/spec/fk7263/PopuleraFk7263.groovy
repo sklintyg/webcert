@@ -71,6 +71,7 @@ class PopuleraFk7263 {
     String vardenhetPostort
     String vardenhetTelefonnummer
     String vardenhetEpost
+    String recommendationsToFkTravel
 
     def execute() {
         Browser.drive {
@@ -79,28 +80,28 @@ class PopuleraFk7263 {
                 at EditCertPage
             }
 
-            if (smittskydd != null) page.smittskydd = smittskydd
+            if (smittskydd != null) page.setSmittskyddCheckBox(smittskydd)
 
             if (undersokning != null){
-                page.baserasPa.undersokning = undersokning
+                page.baserasPa.setUndersokningCheckBox(undersokning)
             }
             if (undersokningDatum != null) {
                 page.baserasPa.undersokningDatum = undersokningDatum
             }
             if (telefonkontakt != null){
-                page.baserasPa.telefonkontakt = telefonkontakt
+                page.baserasPa.setTelefonkontaktCheckBox(telefonkontakt)
             }
             if (telefonkontaktDatum != null) {
                 page.baserasPa.telefonkontaktDatum = telefonkontaktDatum
             }
             if (journal != null){
-                page.baserasPa.journal = journal
+                page.baserasPa.setJournalCheckBox(journal)
             }
             if (journalDatum != null) {
                 page.baserasPa.journalDatum = journalDatum
             }
             if (other != null) {
-                page.baserasPa.other = other
+                page.baserasPa.setOtherCheckBox(other);
             }
             if (otherDatum != null) {
                 page.baserasPa.otherDatum = otherDatum
@@ -217,6 +218,8 @@ class PopuleraFk7263 {
             if (rekommendationOvrigt != null) page.rekommendationer.ovrigt = rekommendationOvrigt
             if (rekommendationOvrigtBeskrivning != null) page.rekommendationer.ovrigtBeskrivning = rekommendationOvrigtBeskrivning
             page.rekommendationer.valjArbetslivsinriktadRehabilitering(arbetslivsinriktadRehabilitering)
+            page.rekommendationer.valjRecommendationsToFkTravel(recommendationsToFkTravel)
+
 
             if (kontaktFk != null) page.kontaktFk = kontaktFk
             if (ovrigt != null) page.ovrigt = ovrigt
@@ -225,15 +228,6 @@ class PopuleraFk7263 {
             if (vardenhetPostort != null) page.vardenhet.postort = vardenhetPostort
             if (vardenhetTelefonnummer != null) page.vardenhet.telefonnummer = vardenhetTelefonnummer
             if (vardenhetEpost != null) page.vardenhet.epost = vardenhetEpost
-        }
-    }
-
-    def scrollIntoView(elementId){
-        def jqScrollToVisible = "jQuery(\'#" + elementId + "\')[0].scrollIntoView();var current=jQuery('body').scrollTop(); jQuery('body').scrollTop(current-400);"
-        println("new")
-        println(jqScrollToVisible)
-        Browser.drive {
-            js.exec(jqScrollToVisible)
         }
     }
 

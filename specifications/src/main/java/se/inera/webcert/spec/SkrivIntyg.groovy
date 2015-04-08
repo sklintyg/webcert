@@ -411,7 +411,25 @@ class SkrivIntyg {
 
     def klickaPaSmittskyd(val) {
         Browser.drive {
-            page.smittskydd.value(val);
+            page.setSmittSkydCheckBox(val);
         }
+    }
+
+    boolean diagnosArSynligt(){
+        Browser.drive {
+            waitFor {
+                page.diagnos.isDisplayed();
+            }
+        }
+    }
+
+    boolean diagnosArEjSynligt(){
+        def result;
+        Browser.drive {
+            waitFor {
+                result = !page.diagnos.isDisplayed();
+            }
+        }
+        return result;
     }
 }
