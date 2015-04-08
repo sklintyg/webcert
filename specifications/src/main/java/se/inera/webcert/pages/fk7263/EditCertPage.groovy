@@ -167,7 +167,7 @@ class PrognosModule extends Module {
         radioGroup { form.capacityForWorkForecast }
 
         beskrivning { $("#capacityForWorkForecastText") }
-        prognos { $("input", name: "capacityForWork.forecast") }
+        prognos { $("input", name: "capacityForWorkForecast") }
 
     }
 
@@ -191,6 +191,7 @@ class PrognosModule extends Module {
     }
 
     def prognosValue(){
+        AbstractPage.scrollIntoView("capacityForWork4");
         return prognos.value();
     }
 }

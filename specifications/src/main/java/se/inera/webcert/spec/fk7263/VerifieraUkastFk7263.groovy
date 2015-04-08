@@ -190,7 +190,7 @@ class VerifieraUtkastFk7263 {
     }
 
     // --- form 10
-    boolean prognos() {
+    String prognos() {
         getBoxResult("prognos", "radioGroup")
     }
 

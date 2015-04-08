@@ -147,14 +147,9 @@
 
 !4 verifiera - form10
 
-
-
-| script | !-SkrivIntyg-! |
-| check | prognos | null |
-
 | Verifiera Utkast Fk7263|
-| prognosBeskrivning? |
-| capacityForWorkForecastText |
+| prognos? | prognosBeskrivning? |
+| UNKNOWN | capacityForWorkForecastText |
 
 !3 Ta bort utkastet
 
