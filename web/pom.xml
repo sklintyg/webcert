@@ -100,7 +100,7 @@
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
-      <artifactId>clinicalprocess_healthcond_certificate</artifactId>
+      <artifactId>clinicalprocess-healthcond-certificate</artifactId>
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting.v1</groupId>
