@@ -18,10 +18,5 @@ Detta test ska visa på att man kan kopiera ett signerat ts-bas-intyg och få et
 | script | !-HanteraUtkast-! |
 | editera sidan visas |
 | radera utkast |
-
-| script | !-SokSkrivIntyg-! |
-| valj intygstyp sidan visas |
-
-| script | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
 | inga ej signerade intyg visas |
