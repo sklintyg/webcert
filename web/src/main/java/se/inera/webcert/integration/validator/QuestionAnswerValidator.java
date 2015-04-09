@@ -2,9 +2,9 @@ package se.inera.webcert.integration.validator;
 
 import iso.v21090.dt.v1.II;
 import org.apache.commons.lang.StringUtils;
-import se.inera.certificate.schema.Constants;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
+import se.inera.intyg.common.schemas.Constants;
 import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;

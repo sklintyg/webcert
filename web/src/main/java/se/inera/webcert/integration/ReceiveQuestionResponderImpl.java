@@ -1,7 +1,5 @@
 package se.inera.webcert.integration;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
@@ -9,9 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.w3.wsaddressing10.AttributedURIType;
-
-import se.inera.certificate.logging.LogMarkers;
-import se.inera.ifv.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
+import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.webcert.converter.FragaSvarConverter;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.validator.QuestionAnswerValidator;
@@ -23,6 +19,8 @@ import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedic
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.service.notification.NotificationService;
+
+import java.util.List;
 
 /**
  * @author andreaskaltenbach

@@ -1,5 +1,7 @@
 package se.inera.webcert.integration;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +12,10 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftce
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
+import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
@@ -24,8 +26,6 @@ import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
-
-import java.util.List;
 
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
 
