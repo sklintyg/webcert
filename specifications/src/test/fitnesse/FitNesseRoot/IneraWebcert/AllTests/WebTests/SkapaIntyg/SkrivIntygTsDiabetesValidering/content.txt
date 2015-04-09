@@ -13,19 +13,20 @@
 
 Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fältet men inga andra valideringsfel ska visas.
 | Populera Ts Diabetes|
-| diabetesAr | synA | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion |
-| 3000 | false | 77 | 66 | 55 | 44 | 33 | 22 |
+| diabetesAr | intygetAvser | synA | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion | hypoglykemierG  | hypoglykemierAllvarligForekomstVakenTid |
+| 3000 | D | false | 77 | 66 | 55 | 44 | 33 | 22 | true | 3000-13-30 |
 
 | script | !-ValideringTsDiabetes-! |
 | intyg ej komplett visas |
 | validering diabetes visas |
 | validering syn visas |
+| validering hypoglykemier visas |
 
 !3 Med giltiga värden ska detta valideringsfel försvinna
 
 | Populera Ts Diabetes|
-| diabetesAr | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion |
-| 2002 | 1,0| 1,0 | 1,0 | 1,0 | 1,0 | 1,0 |
+| diabetesAr | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion | hypoglykemierG |
+| 2002 | 1,0| 1,0 | 1,0 | 1,0 | 1,0 | 1,0 | false |
 
 | script | !-ValideringTsDiabetes-! |
 | intyg ej komplett visas |
@@ -34,8 +35,8 @@ Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fälte
 !3 Om man valt "Visa vad som saknas" på ett tomt intyg ska alla valideringsfel för obligatoriska fält visas
 
 | Populera Ts Diabetes |
-| synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion |
-|||||||
+| intygetAvser | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion |
+||||||||
 
 !3 Vänta tills intyget är sparat.
 
