@@ -10,7 +10,7 @@ angular.module('webcert').directive('wcInsertCertificate',
             },
             link: function(scope, element) {
 
-                $.get('/web/webjars/' + scope.certificateType + '/webcert/js/intyg/view/intyg-view.html').then(function(file) {
+                $.get('/web/webjars/' + scope.certificateType + '/webcert/js/intyg/intyg.html').then(function(file) {
                     element.html(file);
                     element.replaceWith($compile(element.html())(scope));
                 }).fail(function(error) {
