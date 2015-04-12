@@ -10,7 +10,6 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftce
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande
-import se.inera.webcert.spec.util.WsClientFixture
 import se.inera.webcert.spec.util.WsClientFixtureNyaKontraktet
 
 /**
