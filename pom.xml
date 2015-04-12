@@ -28,7 +28,7 @@
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
-    <intygstyper.version.range>(,2.1.0]</intygstyper.version.range>
+    <intygstyper.version.range>(,2.1.1]</intygstyper.version.range>
 
     <!-- Schemas -->
     <clinicalprocess-healthcond-certificate.version>0-SNAPSHOT</clinicalprocess-healthcond-certificate.version>
