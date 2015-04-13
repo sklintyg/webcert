@@ -15,6 +15,15 @@ class VisaIntyg {
     }
 
 
+    def skickaVisatIntyg() {
+        Browser.drive {
+            waitFor {
+                at VisaPage
+                page.skickKnapp.click()
+            }
+        }
+    }
+
     boolean intygLaddat(boolean expected = true) {
         Browser.drive {
             waitFor {

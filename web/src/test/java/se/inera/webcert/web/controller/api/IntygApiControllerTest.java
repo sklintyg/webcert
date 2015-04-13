@@ -14,6 +14,7 @@ import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
 import se.inera.webcert.test.TestIntygFactory;
 import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -44,7 +45,7 @@ public class IntygApiControllerTest {
 
     private static List<Utkast> utkast = TestIntygFactory.createListWithUtkast();
 
-    private static List<IntygItem> intygItems = TestIntygFactory.createListWithIntygItems();
+    private static IntygItemListResponse intygItemListResponse = TestIntygFactory.createIntygItemListResponse(TestIntygFactory.createListWithIntygItems(), false);
 
     @Mock
     private WebCertUserService webCertUserService = mock(WebCertUserService.class);
@@ -72,7 +73,7 @@ public class IntygApiControllerTest {
     public void testListIntyg() {
 
         // Mock call to Intygstjanst
-        when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(intygItems);
+        when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(intygItemListResponse);
 
         // Mock call to database
         when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES)).thenReturn(utkast);

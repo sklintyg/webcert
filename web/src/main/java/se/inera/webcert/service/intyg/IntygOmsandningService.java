@@ -3,6 +3,10 @@ package se.inera.webcert.service.intyg;
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 
+/**
+ * @deprecated
+ *      Remove ASAP
+ */
 public interface IntygOmsandningService {
 
     /**

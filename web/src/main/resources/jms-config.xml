@@ -28,6 +28,12 @@
       <!-- Make transactional aware -->
       <property name="sessionTransacted" value="true" />
     </bean>
+
+    <bean id="jmsCertificateSenderTemplate" class="org.springframework.jms.core.JmsTemplate">
+      <property name="connectionFactory" ref="connectionFactory" />
+      <property name="defaultDestination" ref="certificateSenderQueue" />
+      <property name="sessionTransacted" value="true" />
+    </bean>
   
     <bean id="jmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/ConnectionFactory" />
@@ -52,6 +58,10 @@
     </bean>
     <bean id="notificationDLQ" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/NotificationDLQ" />
+    </bean>
+
+    <bean id="certificateSenderQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jms/CertificateSenderQueue" />
     </bean>
   </beans>
 

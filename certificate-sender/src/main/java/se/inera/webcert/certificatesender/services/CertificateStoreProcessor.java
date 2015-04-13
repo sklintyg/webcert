@@ -1,26 +1,22 @@
 package se.inera.webcert.certificatesender.services;
 
+import javax.xml.ws.WebServiceException;
+
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.stereotype.Component;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
-import se.inera.webcert.notifications.routes.RouteHeaders;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import javax.xml.ws.WebServiceException;
-
-@Component
 public class CertificateStoreProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStoreProcessor.class);
 

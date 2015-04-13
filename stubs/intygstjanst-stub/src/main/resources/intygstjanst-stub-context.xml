@@ -10,6 +10,10 @@
     <jaxws:endpoint address="/list-certificates-for-care-stub" implementor="se.inera.webcert.intygstjanststub.ListCertificatesForCareResponderStub"/>
 
     <bean id="intygstjanstStubBootstrapBean" class="se.inera.webcert.intygstjanststub.BootstrapBean"/>
+
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
+      <property name="proxyTargetClass" value="true"/>
+    </bean>
   </beans>
 
   <beans profile="dev,testability-api">

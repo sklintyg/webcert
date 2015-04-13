@@ -1,0 +1,50 @@
+!3 Lägg till komplett utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk |
+| webcert-fitnesse-signera-1 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104B | Åsa Andersson | IFV1239877878-1042 | ja | ICD_10_SE |
+
+
+!3 Logga in
+
+!|script     |!-LoggaIn-!                          |
+|logga in som|IFV1239877878-104B_IFV1239877878-1042|
+
+!3 Gå till sidan för att lista intyg för patient
+
+!|script                            |!-SokSkrivIntyg-!             |
+|ga till sok skriv intyg            |
+
+!4 Ange patient
+
+!|script                            |!-SokSkrivIntyg-!             |
+|valj patient                       |19121212-1212|
+
+!3 Visa utkast. Det är ej signerat ännu så det skall vara Utkastsidan som visas, ej Intyg
+| script | !-SokSkrivIntyg-!    |
+|visa intyg| webcert-fitnesse-signera-1 |
+|redigera utkast sidan visas|
+
+
+| script | !-HanteraUtkast-! |
+| signera knapp visas |
+| signera knapp aktiverad |
+| signera utkast |
+| visa intyg sidan visas |
+| intyget signerat meddelande visas |
+
+
+!3 Skicka intyget till FK
+| script | !-SokSkrivIntyg-!    |
+|skicka visat intyg till forsakringskassan|
+
+!3 Verifiera att intyget har skickats enligt GUI
+| script | !-SokSkrivIntyg-!    |
+|intyg skickat till forsakringskassan|true|
+
+
+!3 Ta bort utkast
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-signera-1 |

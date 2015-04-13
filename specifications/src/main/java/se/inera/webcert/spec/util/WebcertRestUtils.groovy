@@ -220,4 +220,17 @@ public class WebcertRestUtils extends RestClientFixture {
                 headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
         return response.data.totalCount;
     }
+
+    /**
+     * Instructs the Stub for Intygstjänsten (if active) to go into either ONLINE (normal operation) or OFFLINE (will throw
+     * WebServiceException for annotated methods) mode.
+     *
+     * @param mode ONLINE or OFFLINE
+     * @return true if mode change successful.
+     */
+    public static boolean setIntygTjanstStubInMode(String mode) {
+        def restPath = "/services/intygstjanst-stub/mode/" + mode
+        def resp = webcert.put(path: restPath)
+        return resp.success
+    }
 }

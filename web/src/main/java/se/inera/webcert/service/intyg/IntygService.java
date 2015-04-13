@@ -3,10 +3,7 @@ package se.inera.webcert.service.intyg;
 import java.util.List;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.service.intyg.dto.IntygContentHolder;
-import se.inera.webcert.service.intyg.dto.IntygItem;
-import se.inera.webcert.service.intyg.dto.IntygPdf;
-import se.inera.webcert.service.intyg.dto.IntygServiceResult;
+import se.inera.webcert.service.intyg.dto.*;
 
 /**
  * @author andreaskaltenbach
@@ -29,9 +26,10 @@ public interface IntygService {
      *            list of HSA IDs for the units
      * @param personnummer
      *            the person number
-     * @return list of certificates matching the search criteria
+     * @return list of certificates matching the search criteria wrapped in a response container also indicating whether
+     *         the data was fetched from intygstjansten ("online") or from webcert ("offline").
      */
-    List<IntygItem> listIntyg(List<String> enhetId, String personnummer);
+    IntygItemListResponse listIntyg(List<String> enhetId, String personnummer);
 
     /**
      * Returns a given certificate as PDF.

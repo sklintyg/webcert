@@ -63,10 +63,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     $scope.updateCertList();
                     hasUnsigned($scope.viewState.currentList);
                     $window.doneLoading = true;
-                }, function(errorData) {
+                }, function(errorData, errorCode) {
                     $scope.viewState.doneLoading = false;
                     $log.debug('Query Error' + errorData);
-                    $scope.viewState.activeErrorMessageKey = 'info.certload.error';
+                    $scope.viewState.activeErrorMessageKey = errorCode;
                 });
             }
 

@@ -395,4 +395,18 @@
     <renameColumn tableName="FRAGASVAR" columnDataType="varchar(255)" oldColumnName="PATIENT_ID_EXTENSION" newColumnName="PATIENT_ID"/>
   </changeSet>
 
+  <changeSet id="12" author="el">
+    <addColumn tableName="INTYG">
+      <column name="SKICKAD_TILL_MOTTAGARE_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="ATERKALLAD_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="SKICKAD_TILL_MOTTAGARE" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

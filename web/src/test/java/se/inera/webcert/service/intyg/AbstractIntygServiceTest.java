@@ -5,6 +5,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.mockito.InjectMocks;
@@ -25,6 +26,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetore
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.webcert.service.certificatesender.CertificateSenderService;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManagerImpl;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
@@ -34,6 +36,7 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturServiceImpl;
+import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.web.service.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 
@@ -84,6 +87,9 @@ public abstract class AbstractIntygServiceTest {
     @Mock
     protected MonitoringLogService monitoringService;
 
+    @Mock
+    protected CertificateSenderService certificateSenderService;
+
     // Here we test the real converter
     @Spy
     protected IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();
@@ -128,5 +134,11 @@ public abstract class AbstractIntygServiceTest {
                 return (Omsandning) invocation.getArguments()[0];
             }
         });
+    }
+
+    @Before
+    public void setupObjectMapperForConverter() {
+        // TODO Ask around, must be a cleaner way to inject stuff into a spied object?
+        ((IntygServiceConverterImpl) serviceConverter).setObjectMapper(new CustomObjectMapper());
     }
 }

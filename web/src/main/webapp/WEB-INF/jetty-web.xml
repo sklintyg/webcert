@@ -82,5 +82,16 @@
       </New>
     </Arg>
   </New>
+  <New id="CertificateSenderQueue" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>
+      <Ref refid="webAppContext" />
+    </Arg>
+    <Arg>jms/CertificateSenderQueue</Arg>
+    <Arg>
+      <New class="org.apache.activemq.command.ActiveMQQueue">
+        <Arg>CERTIFICATESENDER.QUEUE</Arg>
+      </New>
+    </Arg>
+  </New>
 
 </Configure>

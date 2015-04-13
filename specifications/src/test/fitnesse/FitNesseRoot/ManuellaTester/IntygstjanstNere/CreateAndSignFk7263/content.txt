@@ -1,0 +1,30 @@
+!3 Logga in
+
+!|script     |!-LoggaIn-!                          |
+|logga in som|IFV1239877878-104B_IFV1239877878-1042|
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med information i samtliga fält så det blir komplett
+
+| Populera Fk7263 |
+| smittskydd | tjanstgoringstid | nedsattMed100 |
+| true | 40 | true |
+
+!3 Spara och signera
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| intyg sparat visas |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |

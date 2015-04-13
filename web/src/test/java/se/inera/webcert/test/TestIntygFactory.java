@@ -12,6 +12,7 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
 
 /**
  * Util for building test data
@@ -33,6 +34,10 @@ public final class TestIntygFactory {
         list.add(createIntygItem("4", LocalDateTime.parse("2014-01-03T12:12:18")));
 
         return list;
+    }
+
+    public static IntygItemListResponse createIntygItemListResponse(List<IntygItem> intygItemList, boolean offlineMode) {
+        return new IntygItemListResponse(intygItemList, offlineMode);
     }
 
     public static IntygItem createIntygItem(String id, LocalDateTime signedDate) {

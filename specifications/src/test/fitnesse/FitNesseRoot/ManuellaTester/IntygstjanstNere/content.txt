@@ -1,0 +1,3 @@
+Tester för Webcert beteende när Intygstjänsten ligger nere. Kan köras antingen med helt nedstängd intygstjänst i miljön, eller genom att slå på wc-it-stub.
+
+!contents -R2 -g -p -f -h

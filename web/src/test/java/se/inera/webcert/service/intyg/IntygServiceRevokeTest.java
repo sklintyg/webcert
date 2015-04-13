@@ -112,6 +112,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
         verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
         verify(logService).logRevokeIntyg(any(LogRequest.class));
+        verify(intygRepository).save(any(Utkast.class));
 
         assertEquals(IntygServiceResult.OK, res);
     }
@@ -149,6 +150,9 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(notificationService, times(1)).sendNotificationForAnswerHandled(fragaSvar2);
         verify(notificationService, times(2)).sendNotificationForQuestionHandled(any(FragaSvar.class));
 
+        // Verify that revoke date was added to Utkast
+        verify(intygRepository).save(any(Utkast.class));
+
         assertEquals(IntygServiceResult.OK, res);
     }
 
@@ -169,6 +173,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
 
+        verify(intygRepository, times(0)).save(any(Utkast.class));
     }
 
     @Test(expected = WebServiceException.class)
@@ -179,6 +184,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         // Do the call
         intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
+
+        verify(intygRepository, times(0)).save(any(Utkast.class));
     }
 
     private HoSPerson buildHosPerson() {

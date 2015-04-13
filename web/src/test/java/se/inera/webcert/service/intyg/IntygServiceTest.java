@@ -1,12 +1,18 @@
 package se.inera.webcert.service.intyg;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import javax.xml.ws.WebServiceException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
+import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +28,11 @@ import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
+import se.inera.webcert.persistence.fragasvar.model.Amne;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.utkast.model.Signatur;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
@@ -30,6 +41,7 @@ import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
@@ -125,6 +137,11 @@ public class IntygServiceTest {
         intygService.setLogicalAddress(LOGICAL_ADDRESS);
     }
 
+    @Before
+    public void setupObjectMapperForIntygServiceConverter() {
+        ((IntygServiceConverterImpl) serviceConverter).setObjectMapper(new CustomObjectMapper());
+    }
+
     @Test
     public void testFetchIntyg() throws Exception {
 
@@ -179,7 +196,7 @@ public class IntygServiceTest {
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
 
-        List<IntygItem> list = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
 
         ArgumentCaptor<ListCertificatesForCareType> argument = ArgumentCaptor.forClass(ListCertificatesForCareType.class);
 
@@ -189,9 +206,9 @@ public class IntygServiceTest {
         assertEquals(request.getPersonId(), actualRequest.getPersonId());
         assertEquals(request.getEnhet(), actualRequest.getEnhet());
 
-        assertEquals(2, list.size());
+        assertEquals(2, intygItemListResponse.getIntygItemList().size());
 
-        IntygItem meta = list.get(0);
+        IntygItem meta = intygItemListResponse.getIntygItemList().get(0);
 
         assertEquals("1", meta.getId());
         assertEquals("fk7263", meta.getType());
@@ -214,5 +231,129 @@ public class IntygServiceTest {
                 listErrorResponse);
 
         intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+    }
+
+    @Test
+    public void testListIntygWithIntygstjanstUnavailable() throws IOException {
+
+        // setup intygstjansten WS mock to throw WebServiceException
+        ListCertificatesForCareType request = new ListCertificatesForCareType();
+        request.setPersonId("19121212-1212");
+        request.getEnhet().add("enhet-1");
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenThrow(
+                WebServiceException.class);
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList())).thenReturn(buildDraftList(false));
+
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        assertNotNull(intygItemListResponse);
+        assertEquals(1, intygItemListResponse.getIntygItemList().size());
+
+        // Assert pdl log not performed, e.g. listing is not a PDL loggable op.
+        verifyZeroInteractions(logservice);
+    }
+
+
+    @Test
+    public void testFetchIntygDataWhenIntygstjanstIsUnavailable() throws Exception {
+        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, null, null));
+        IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        assertEquals(intygContentHolder.getStatuses().size(), 1);
+        assertNotNull(intygContentHolder.getUtlatande());
+
+        // ensure that correct call is made to moduleFacade
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        // Assert pdl log
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+    }
+
+    @Test
+    public void testFetchIntygDataHasSentStatusWhenIntygstjanstIsUnavailableAndDraftHadSentDate() throws Exception {
+        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, LocalDateTime.now(), null));
+        IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        assertEquals(intygContentHolder.getStatuses().size(), 2);
+        assertEquals(intygContentHolder.getStatuses().get(0).getType(), CertificateState.SENT);
+        assertNotNull(intygContentHolder.getUtlatande());
+
+        // ensure that correct call is made to moduleFacade
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        // Assert pdl log
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+    }
+
+    @Test
+    public void testFetchIntygDataHasSentAndRevokedStatusesWhenIntygstjanstIsUnavailableAndDraftHadSentDateAndRevokedDate() throws Exception {
+        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
+        IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        assertEquals(intygContentHolder.getStatuses().size(), 3);
+        assertEquals(intygContentHolder.getStatuses().get(0).getType(), CertificateState.SENT);
+        assertEquals(intygContentHolder.getStatuses().get(1).getType(), CertificateState.CANCELLED);
+        assertEquals(intygContentHolder.getStatuses().get(2).getType(), CertificateState.RECEIVED);
+        assertNotNull(intygContentHolder.getUtlatande());
+
+        // ensure that correct call is made to moduleFacade
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        // Assert pdl log
+        verify(logservice).logReadIntyg(any(LogRequest.class));
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testFetchIntygDataFailsWhenIntygstjanstIsUnavailableAndUtkastInNotFound() throws Exception {
+        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
+        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+
+        // ensure that correct call is made to moduleFacade
+        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        verify(intygRepository).findOne(CERTIFICATE_ID);
+        // Assert pdl log
+        verifyZeroInteractions(logservice);
+    }
+
+    @Test
+    public void testDraftAddedToListResponseIfUnique() throws Exception {
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList())).thenReturn(buildDraftList(true));
+
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
+                listResponse);
+
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        assertEquals(3, intygItemListResponse.getIntygItemList().size());
+        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList());
+    }
+
+    @Test
+    public void testDraftNotAddedToListResponseIfNotUnique() throws Exception {
+        when(intygRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList())).thenReturn(buildDraftList(false));
+
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
+                listResponse);
+
+        IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
+        assertEquals(2, intygItemListResponse.getIntygItemList().size());
+        verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList());
+    }
+
+    private List<Utkast> buildDraftList(boolean unique) throws IOException {
+        List<Utkast> draftList = new ArrayList<>();
+        draftList.add(getDraft(unique ? "LONG-UNIQUE-ID":"1", LocalDateTime.now(), null));
+        return draftList;
+    }
+
+    private Utkast getDraft(String intygsId, LocalDateTime sendDate, LocalDateTime revokeDate) throws IOException {
+        Utkast utkast = new Utkast();
+        String json = IOUtils.toString(new ClassPathResource(
+                "FragaSvarServiceImplTest/utlatande.json").getInputStream(), "UTF-8");
+        utkast.setModel(json);
+        utkast.setIntygsId(intygsId);
+        utkast.setSkickadTillMottagareDatum(sendDate);
+        utkast.setAterkalladDatum(revokeDate);
+        utkast.setStatus(UtkastStatus.SIGNED);
+        Signatur signatur = new Signatur(LocalDateTime.now(), "Läkar Läkarsson", CERTIFICATE_ID, "", "", "");
+        utkast.setSignatur(signatur);
+
+        return utkast;
     }
 }
