@@ -53,7 +53,7 @@
       <artifactId>common-schemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
+      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate</groupId>
       <artifactId>clinicalprocess-healthcond-certificate</artifactId>
     </dependency>
 

@@ -95,15 +95,15 @@
      
     <!-- Interactions -->    
     <dependency>
-        <groupId>se.inera.intyg.schemas.intygstjanster.ts.services.v1</groupId>
-        <artifactId>se-intygstjanster-ts-services-interactions</artifactId>
+        <groupId>se.inera.intyg.schemas.intygstjanster.ts</groupId>
+        <artifactId>intygstjansten-ts</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
+      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate</groupId>
       <artifactId>clinicalprocess-healthcond-certificate</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting.v1</groupId>
+      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting</groupId>
       <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
     </dependency>
     <dependency>

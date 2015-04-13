@@ -46,8 +46,8 @@
     <schemas-common.version>0-SNAPSHOT</schemas-common.version>
     <schemas-common.version.range>(,2.2.0]</schemas-common.version.range>
 
-    <se-intygstjanster-ts-services.version>0-SNAPSHOT</se-intygstjanster-ts-services.version>
-    <se-intygstjanster-ts-services.version.range>(,1.0.0]</se-intygstjanster-ts-services.version.range>
+    <intygstjansten-ts.version>0-SNAPSHOT</intygstjansten-ts.version>
+    <intygstjansten-ts.version.range>(,1.0.0]</intygstjansten-ts.version.range>
 
   </properties>
 
@@ -200,12 +200,12 @@
         <version>${schemas-common.version}</version>
       </dependency>
       <dependency>
-        <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
+        <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate</groupId>
         <artifactId>clinicalprocess-healthcond-certificate</artifactId>
         <version>${clinicalprocess-healthcond-certificate.version}</version>
       </dependency>
       <dependency>
-        <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting.v1</groupId>
+        <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting</groupId>
         <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
         <version>${insuranceprocess-healthreporting.version}</version>
       </dependency>
@@ -220,9 +220,9 @@
         <version>${ehr-logstore.version}</version>
       </dependency>
      <dependency>
-        <groupId>se.inera.intyg.schemas.intygstjanster.ts.services.v1</groupId>
-        <artifactId>se-intygstjanster-ts-services-interactions</artifactId>
-        <version>${se-intygstjanster-ts-services.version}</version>
+        <groupId>se.inera.intyg.schemas.intygstjanster.ts</groupId>
+        <artifactId>intygstjansten-ts</artifactId>
+        <version>${intygstjansten-ts.version}</version>
      </dependency>
 
       <!-- Authentication -->
@@ -457,18 +457,14 @@
         <artifactId>versions-maven-plugin</artifactId>
         <configuration>
           <includeProperties>
-            common.version, intygstjanst.version, intygstyper.version, clinicalprocess-healthcond-certificate.version,
+            common.version,  intygstyper.version, clinicalprocess-healthcond-certificate.version,
             insuranceprocess-healthreporting.version, itintegration-monitoring.version, ehr-logstore.version,
-            schemas-common.version, tools-version
+            intygstjansten-ts.version, schemas-common.version, tools-version
           </includeProperties>
           <properties>
             <property>
               <name>common.version</name>
               <version>${common.version.range}</version>
-            </property>
-            <property>
-              <name>intygstjanst.version</name>
-              <version>${intygstjanst.version.range}</version>
             </property>
             <property>
               <name>intygstyper.version</name>
@@ -489,6 +485,10 @@
             <property>
               <name>ehr-logstore.version</name>
               <version>${ehr-logstore.version.range}</version>
+            </property>
+            <property>
+              <name>intygstjansten-ts.version</name>
+              <version>${intygstjansten-ts.version.range}</version>
             </property>
             <property>
               <name>schemas-common.version</name>
