@@ -303,13 +303,16 @@ public class IntygServiceTest {
     public void testFetchIntygDataFailsWhenIntygstjanstIsUnavailableAndUtkastInNotFound() throws Exception {
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenThrow(WebServiceException.class);
         when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
-        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
-
-        // ensure that correct call is made to moduleFacade
-        verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
-        verify(intygRepository).findOne(CERTIFICATE_ID);
-        // Assert pdl log
-        verifyZeroInteractions(logservice);
+        try {
+            intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        } catch (Exception e) {
+            // ensure that correct call is made to moduleFacade
+            verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+            verify(intygRepository).findOne(CERTIFICATE_ID);
+            // Assert pdl log
+            verifyZeroInteractions(logservice);
+            throw e;
+        }
     }
 
     @Test

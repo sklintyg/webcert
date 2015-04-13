@@ -293,7 +293,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + " for new question from vard!");
         }
 
-        // Fetch from Intygstjansten
+        // Fetch from Intygstjansten. Note that if Intygstjansten is unresponsive, the Intyg will be loaded from WebCert
+        // if possible.
         IntygContentHolder intyg = intygService.fetchIntygData(intygId, typ);
 
         // Get utfardande vardperson
