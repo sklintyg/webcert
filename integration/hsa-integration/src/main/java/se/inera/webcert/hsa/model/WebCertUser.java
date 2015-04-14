@@ -220,4 +220,11 @@ public class WebCertUser implements Serializable {
 
         return false;
     }
+
+    @JsonIgnore
+    @Override
+    public String toString() {
+        return hsaId +  " [authScheme=" + authenticationScheme + ", lakare=" + lakare + "]";
+    }
+
 }
