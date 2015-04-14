@@ -3,9 +3,7 @@ package se.inera.webcert.service.intyg;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import javax.xml.ws.WebServiceException;
@@ -42,6 +40,7 @@ import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
+import se.inera.webcert.service.intyg.dto.IntygPdf;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
@@ -337,6 +336,50 @@ public class IntygServiceTest {
         IntygItemListResponse intygItemListResponse = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
         assertEquals(2, intygItemListResponse.getIntygItemList().size());
         verify(intygRepository).findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList());
+    }
+
+    @Test
+    public void testFetchIntygAsPdfFromWebCertDraft() throws IOException, IntygModuleFacadeException {
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList())).thenReturn(buildPdfDocument());
+        IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        assertNotNull(intygPdf);
+
+        verify(intygRepository, times(1)).findOne(anyString());
+        verify(logservice).logPrintIntygAsPDF(any(LogRequest.class));
+        verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+    }
+
+    @Test
+    public void testFetchIntygAsPdfFromIntygstjansten() throws IOException, IntygModuleFacadeException {
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList())).thenReturn(buildPdfDocument());
+        IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        assertNotNull(intygPdf);
+
+        verify(logservice).logPrintIntygAsPDF(any(LogRequest.class));
+        verify(intygRepository, times(1)).findOne(anyString());
+        verify(moduleFacade, times(1)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testFetchIntygAsPdfNoIntygFound() throws IntygModuleFacadeException {
+        when(intygRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
+        when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(IntygModuleFacadeException.class);
+
+        try {
+            intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        } catch (Exception e) {
+            verify(moduleFacade, times(1)).getCertificate(anyString(), anyString());
+            verify(intygRepository, times(2)).findOne(CERTIFICATE_ID);
+            verifyZeroInteractions(logservice);
+            throw e;
+        }
+    }
+
+    private IntygPdf buildPdfDocument() {
+        IntygPdf pdf = new IntygPdf("fake".getBytes(), "fakepdf.pdf");
+        return pdf;
     }
 
     private List<Utkast> buildDraftList(boolean unique) throws IOException {

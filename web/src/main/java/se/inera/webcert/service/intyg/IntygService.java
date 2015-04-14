@@ -13,6 +13,9 @@ public interface IntygService {
     /**
      * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
      *
+     * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
+     * an attempt to find an utkast stored in Webcert will be performed.
+     *
      * @param intygId
      * @param typ
      * @return

@@ -504,6 +504,7 @@ public class FragaSvarServiceImplTest {
     private IntygContentHolder getRevokedIntygContentHolder() {
         List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
         status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new se.inera.certificate.model.Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         status.add(new se.inera.certificate.model.Status(CertificateState.CANCELLED, "MI", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, true);
     }
