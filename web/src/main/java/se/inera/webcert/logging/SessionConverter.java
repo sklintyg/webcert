@@ -13,13 +13,15 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
  */
 public class SessionConverter extends ClassicConverter {
 
+    private static final String NO_SESSION = "NO SESSION";
+
     @Override
     public String convert(ILoggingEvent event) {
         RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
         if (attrs != null) {
             return attrs.getSessionId();
         }
-        return "NO_SESSION";
+        return NO_SESSION;
     }
 
 }

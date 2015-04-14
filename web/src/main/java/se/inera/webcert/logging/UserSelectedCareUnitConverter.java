@@ -15,9 +15,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
  *
  * @author nikpet
  */
-public class UserConverter extends ClassicConverter {
+public class UserSelectedCareUnitConverter extends ClassicConverter {
 
-    private static final String NO_USER = "NO USER";
+    private static final String NO_UNIT_SELECTED = "NO UNIT";
 
     @Override
     public String convert(ILoggingEvent event) {
@@ -25,17 +25,20 @@ public class UserConverter extends ClassicConverter {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null) {
-            return NO_USER;
+            return NO_UNIT_SELECTED;
         }
 
         Object principal = auth.getPrincipal();
 
         if (principal instanceof WebCertUser) {
             WebCertUser user = (WebCertUser) auth.getPrincipal();
-            return user.getHsaId();
+            SelectableVardenhet valdVardenhet = user.getValdVardenhet();
+            if (valdVardenhet != null) {
+                return valdVardenhet.getId();
+            }
         }
 
-        return NO_USER;
+        return NO_UNIT_SELECTED;
     }
 
 }
