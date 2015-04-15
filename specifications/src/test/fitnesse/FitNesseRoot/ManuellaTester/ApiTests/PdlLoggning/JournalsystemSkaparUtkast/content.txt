@@ -7,7 +7,7 @@
 !3 Skapa ett utkast
 |Journalsystem skapar utkast|
 |personId|fornamn|efternamn|hsaId|enhetsId|typAvUtlatande|utkastId?|resultat?|
-|19121212-1212|Test|Testorson|staffan|centrum-vast|fk7263|$utkastId=|OK|
+|19000101-9801|Test|Testorson|staffan|centrum-vast|fk7263|$utkastId=|OK|
 
 !3 Verifiera att en PDL-loggning gjorts
 

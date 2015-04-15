@@ -6,12 +6,12 @@
 !3 Logga in och skapa ett nytt intygsutkast
 | skapa utkast med fake inloggning |
 | patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? |
-| 19121212-1212       | Test           | Testorsson       |           true | $utkastId=|
+| 19000101-9801       | Test           | Testorsson       |           true | $utkastId=|
 
 !3 Populera och spara utkastet
 | spara utkast |
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | diagnosKod | diagnosBeskrivning1  | nedsattMed100 | intygId    | intygTyp | komplett | utkastSparat? |
-| 19121212-1212 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"}              | $utkastId  | fk7263    | true | true |
+| 19000101-9801 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"}              | $utkastId  | fk7263    | true | true |
 
 !3 Givet att det finns ett komplett utkast, signera det (vilket ska ge en HAN2)
 | signera utkast | 
