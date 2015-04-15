@@ -53,7 +53,8 @@ class UnhandledQAPage extends AbstractPage {
     }
 
     def patientIdSyns(String internReferens) {
-        $("#patientId-${internReferens}").isDisplayed()
+        def patientId = $("#patientId-${internReferens}")
+        patientId.text() != ""
     }
 
     boolean hamtaFler() {
