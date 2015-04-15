@@ -1,17 +1,22 @@
 !contents -R2 -g -p -f -h
 Testet beskriver fallet när en användare lämna fråga svar lista med ej hanterad svar och klicka på ej hantera knappen.
 
+!3 Givet test-intyg i Intygstjänsten
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | skickat |
+| 19000101-9801 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104K | IFV1239877878-1045 | IFV1239877878-1043 | FK7263 | intyg-fit-fraga |ja |
 
 !3 Logga in
 
 | script | !-LoggaIn-! |
-| logga in som | eva_centrum-vast |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
 !3 Lägg till fråga
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
-| PAMINNELSE | FIT-QA-1000 | FK | En fråga | intyg-fit-1 | eva | Jan Nilsson | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
+| PAMINNELSE | FIT-QA-1000 | FK | En fråga | intyg-fit-fraga | IFV1239877878-104K | Lars Andersson | IFV1239877878-1045 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
 
 
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
@@ -43,4 +48,9 @@ Testet beskriver fallet när en användare lämna fråga svar lista med ej hante
 | internReferens |
 | $internReferens1 |
 
+!3 Ta bort intyg
+
+| ta bort intyg |
+| id |
+| intyg-fit-fraga |
 
