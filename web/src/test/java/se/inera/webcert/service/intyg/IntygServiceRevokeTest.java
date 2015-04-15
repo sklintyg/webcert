@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -36,6 +34,7 @@ import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
@@ -66,6 +65,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     private FragaSvarService fragaSvarService;
 
     private Utkast signedUtkast;
+    private Utkast revokedUtkast;
 
     @Before
     public void setup() {
@@ -73,7 +73,9 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         VardpersonReferens vardperson = buildVardpersonReferens(person);
         WebCertUser user = buildWebCertUser(person);
 
-        signedUtkast = buildIntyg(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+        signedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+        revokedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, json, vardperson);
+        revokedUtkast.setAterkalladDatum(LocalDateTime.now());
 
         when(webCertUserService.getWebCertUser()).thenReturn(user);
 
@@ -183,9 +185,26 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
                 new WebServiceException("WS exception", new ConnectException("IO exception")));
 
         // Do the call
-        intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
+        try {
+            intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
+        } catch (Exception e) {
+            verify(intygRepository, times(0)).save(any(Utkast.class));
+            throw e;
+        }
+    }
 
-        verify(intygRepository, times(0)).save(any(Utkast.class));
+    @Test(expected = WebCertServiceException.class)
+    public void testRevokeIntygThatHasAlreadyBeenRevokedFails() throws IntygModuleFacadeException {
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(revokedUtkast);
+        when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(IntygModuleFacadeException.class);
+        // Do the call
+        try {
+            intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
+        } catch (Exception e) {
+            verifyZeroInteractions(revokeService);
+            verify(intygRepository, times(0)).save(any(Utkast.class));
+            throw e;
+        }
     }
 
     private HoSPerson buildHosPerson() {
@@ -195,7 +214,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         return person;
     }
 
-    private Utkast buildIntyg(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast buildUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
 
         Utkast intyg = new Utkast();
         intyg.setIntygsId(intygId);

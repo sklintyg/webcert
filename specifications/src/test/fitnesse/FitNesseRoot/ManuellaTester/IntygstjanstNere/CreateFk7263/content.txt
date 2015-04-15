@@ -1,3 +1,5 @@
+Skapar ett FK7263 och sparar
+
 !3 Logga in
 
 !|script     |!-LoggaIn-!                          |
@@ -17,7 +19,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 | smittskydd | tjanstgoringstid | nedsattMed100 |
 | true | 40 | true |
 
-!3 Spara och signera
+!3 Spara
 
 | script | !-SkrivIntyg-! |
 | sparaUtkast |
