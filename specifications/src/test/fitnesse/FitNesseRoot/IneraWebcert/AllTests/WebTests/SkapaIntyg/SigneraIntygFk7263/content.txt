@@ -4,8 +4,8 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk |
-| webcert-fitnesse-signera-1 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | ICD_10_SE |
-| webcert-fitnesse-signera-2 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | KSH_97_P |
+| webcert-fitnesse-signera-1 | fk7263 | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | ICD_10_SE |
+| webcert-fitnesse-signera-2 | fk7263 | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | KSH_97_P |
 
 !3 Givet att det finns ett komplett utkast, verifiera att det går att signera det
 

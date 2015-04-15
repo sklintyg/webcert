@@ -4,7 +4,7 @@ Testet beskriver fallet när en läkare går in på ett ts-bas intyg som inte ä
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-signera-1 | ts-bas | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+| webcert-fitnesse-signera-1 | ts-bas | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
 
 !3 Givet att det finns ett utkast som inte är komplett, verifiera att det inte går att signera det
 

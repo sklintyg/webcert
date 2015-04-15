@@ -8,7 +8,7 @@
 !3 Skapa utkast
 | skapa utkast med fake inloggning |
 | patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? | 
-| 19121212-1212 | Test | Testorsson | true | $utkastId= |
+| 19000101-9801 | Test | Testorsson | true | $utkastId= |
 
 
 !3 Undersök vilka notifieringar som skickades och säkerställ att dessa matchar det förväntade utfallet

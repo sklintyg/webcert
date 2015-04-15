@@ -4,7 +4,7 @@ Detta test ska visa att struktur inte går förlorad vid kopiering när förlaga
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-kopiera-och-signera | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-kopiera-och-signera | fk7263 | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 
 !3 Signera utkastet
 | script | !-HanteraUtkast-! |
@@ -24,7 +24,7 @@ Detta test ska visa att struktur inte går förlorad vid kopiering när förlaga
 | script | !-SokSkrivIntyg-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | sok skriv intyg sidan visas sa smaningom |
-| valj patient | 19121212-1212 |
+| valj patient | 19000101-9801 |
 | valj intygstyp sidan visas |
 
 

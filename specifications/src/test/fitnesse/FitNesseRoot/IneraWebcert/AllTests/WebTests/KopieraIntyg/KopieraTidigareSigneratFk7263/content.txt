@@ -5,7 +5,7 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 | script | !-SokSkrivIntyg-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 | sok skriv intyg sidan visas sa smaningom |
-| valj patient | 19121212-1212 |
+| valj patient | 19000101-9801 |
 | valj intygstyp sidan visas |
 
 #| fyll i namn sidan visas |

@@ -2,7 +2,7 @@
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | komplett |
-| webcert-fitnesse-signera-1 | fk7263 | 19121212-1212 | ja |
+| webcert-fitnesse-signera-1 | fk7263 | 19000101-9801 | ja |
 
 !3 Rensa utestående PDL-loggning-poster
 

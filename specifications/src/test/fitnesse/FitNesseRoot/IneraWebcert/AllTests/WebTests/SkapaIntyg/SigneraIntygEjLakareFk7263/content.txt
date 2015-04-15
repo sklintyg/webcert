@@ -4,7 +4,7 @@ Testet beskriver fallet när en administratör går in på ett komplett fk7263 i
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-signera-1 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-signera-1 | fk7263 | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 
 !3 Givet att det finns ett utkast som är komplett, verifiera att det inte går att signera det
 
