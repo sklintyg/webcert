@@ -43,6 +43,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
@@ -76,6 +77,9 @@ public class UtkastServiceImplTest {
 
     @Mock
     private NotificationService notificationService;
+
+    @Mock
+    private MonitoringLogService mockMonitoringService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -145,15 +149,15 @@ public class UtkastServiceImplTest {
         WebCertUser user = new WebCertUser();
         user.setHsaId("hsaId");
         when(userService.getWebCertUser()).thenReturn(user);
-        
+
         draftService.deleteUnsignedDraft(INTYG_ID);
 
         verify(mockUtkastRepository).findOne(INTYG_ID);
         verify(mockUtkastRepository).delete(utkast);
-        
+
         // Assert notification message
         verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class));
-        
+
         // Assert pdl log
         verify(logService).logDeleteIntyg(any(LogRequest.class));
     }
@@ -164,7 +168,7 @@ public class UtkastServiceImplTest {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
 
         draftService.logPrintOfDraftToPDL(INTYG_ID);
-        
+
         // Assert pdl log
         verify(logService).logPrintIntygAsDraft(any(LogRequest.class));
     }
@@ -210,7 +214,7 @@ public class UtkastServiceImplTest {
         DraftValidation res = draftService.saveAndValidateDraft(request, true);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        
+
         // Assert notification message
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
@@ -243,7 +247,7 @@ public class UtkastServiceImplTest {
         DraftValidation res = draftService.saveAndValidateDraft(request, false);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        
+
         // Assert notification message
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 

@@ -21,6 +21,8 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
@@ -49,6 +51,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private LogService logService;
+    
+    @Autowired
+    private MonitoringLogService monitoringService;
 
     /*
      * (non-Javadoc)
@@ -86,7 +91,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
-            LOG.info(LogMarkers.MONITORING, "Utkast '{}' created as a copy of '{}'", savedUtkast.getIntygsId(), originalIntygId);
+            monitoringService.logEvent(MonitoringEvent.INTYG_COPIED, "Utkast '{}' created as a copy of '{}'", savedUtkast.getIntygsId(), originalIntygId);
 
             // notify
             notificationService.sendNotificationForDraftCreated(savedUtkast);

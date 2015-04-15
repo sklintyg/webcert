@@ -37,6 +37,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.util.ReflectionUtils;
@@ -56,7 +57,7 @@ public class SignaturServiceImplTest {
 
     @Mock
     IntygService intygService;
-    
+
     @Mock
     private LogService logService;
 
@@ -64,12 +65,15 @@ public class SignaturServiceImplTest {
     private NotificationService notificationService;
 
     @Mock
+    private MonitoringLogService monitoringService;
+
+    @Mock
     private WebCertUserService webcertUserService;
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
 
-    @Mock 
+    @Mock
     private ModuleApi moduleApi;
 
     @InjectMocks
@@ -102,7 +106,7 @@ public class SignaturServiceImplTest {
         utkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
         completedUtkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson);
         signedUtkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
-        
+
         internalModelResponse = new InternalModelResponse(INTYG_JSON);
         vardenhet = new Vardenhet("testID", "testNamn");
         vardgivare = new Vardgivare("123", "vardgivare");
@@ -116,8 +120,9 @@ public class SignaturServiceImplTest {
 
         when(webcertUserService.getWebCertUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
-        
+        when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(
+                internalModelResponse);
+
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
         ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
@@ -196,9 +201,8 @@ public class SignaturServiceImplTest {
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class));
 
-
         assertNotNull(signatureTicket);
-        
+
         assertNotNull(completedUtkast.getSignatur());
         assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
 
@@ -221,9 +225,8 @@ public class SignaturServiceImplTest {
         // Assert pdl log
         verify(logService).logSignIntyg(any(LogRequest.class));
 
-
         assertNotNull(signatureTicket);
-        
+
         assertNotNull(completedUtkast.getSignatur());
         assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
     }

@@ -54,6 +54,8 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -114,6 +116,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private NotificationService notificationService;
+    
+    @Autowired
+    private MonitoringLogService monitoringService;
 
     /* --------------------- Public scope --------------------- */
 
@@ -122,7 +127,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         validateAcceptsQuestions(fragaSvar);
 
-        LOGGER.info(LogMarkers.MONITORING, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(),
+        monitoringService.logEvent(MonitoringEvent.QUESTION_RECEIVED, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(),
                 fragaSvar.getExternReferens());
 
         // persist the question
@@ -150,7 +155,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
 
-        LOGGER.info(LogMarkers.MONITORING, "Received answer to question '{}'", internId);
+        monitoringService.logEvent(MonitoringEvent.ANSWER_RECEIVED, "Received answer to question '{}'", internId);
 
         // update the FragaSvar
         return fragaSvarRepository.save(fragaSvar);
@@ -267,7 +272,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        LOGGER.info(LogMarkers.MONITORING, "Sent answer to question '{}'", fragaSvarsId);
+        monitoringService.logEvent(MonitoringEvent.ANSWER_SENT, "Sent answer to question '{}'", fragaSvarsId);
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
@@ -355,7 +360,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        LOGGER.info(LogMarkers.MONITORING, "Sent question '{}' for intyg '{}'", fraga.getInternReferens(), intygId);
+        monitoringService.logEvent(MonitoringEvent.QUESTION_SENT, "Sent question '{}' for intyg '{}'", fraga.getInternReferens(), intygId);
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);

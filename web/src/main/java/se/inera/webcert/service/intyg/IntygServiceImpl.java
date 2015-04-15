@@ -56,6 +56,8 @@ import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -108,6 +110,9 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
 
     @Autowired
     private NotificationService notificationService;
+    
+    @Autowired
+    private MonitoringLogService monitoringService;
 
     @Autowired
     private FragaSvarService fragaSvarService;
@@ -167,7 +172,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygServiceResult storeIntyg(Utkast utkast) {
         Omsandning omsandning = createOmsandning(OmsandningOperation.STORE_INTYG, utkast.getIntygsId(), utkast.getIntygsTyp(), null);
-        LOG.info(LogMarkers.MONITORING, "Intyg '{}' registered with Intygstjänsten", utkast.getIntygsId());
+        monitoringService.logEvent(MonitoringEvent.INTYG_REGISTERED, "Intyg '{}' registered with Intygstjänsten", utkast.getIntygsId());
 
         // Redan schedulerat för att skickas, men vi gör ett försök redan nu.
         return storeIntyg(utkast, omsandning);
@@ -225,7 +230,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getWebCertUser());
         String sendConfigAsJson = configurationManager.marshallConfig(sendConfig);
 
-        LOG.info(LogMarkers.MONITORING, "Intyg '{}' sent to recipient '{}'", intygsId, recipient);
+        monitoringService.logEvent(MonitoringEvent.INTYG_SENT, "Intyg '{}' sent to recipient '{}'", intygsId, recipient);
 
         // send PDL log event
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
@@ -271,7 +276,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         switch (resultOfCall.getResultCode()) {
         case OK:
             String hsaId = webCertUserService.getWebCertUser().getHsaId();
-            LOG.info(LogMarkers.MONITORING, "Intyg '{}' revoked by '{}'", intygsId, hsaId);
+            monitoringService.logEvent(MonitoringEvent.INTYG_REVOKED, "Intyg '{}' revoked by '{}'", intygsId, hsaId);
             return whenSuccessfulRevoke(intyg.getUtlatande());
         case INFO:
             LOG.warn("Call to revoke intyg {} returned an info message: {}", intygsId, resultOfCall.getInfoText());

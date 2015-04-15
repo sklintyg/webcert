@@ -41,6 +41,8 @@ import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.log.dto.LogUser;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
@@ -80,6 +82,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private NotificationService notificationService;
+    
+    @Autowired
+    private MonitoringLogService monitoringService;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -99,7 +104,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
 
-        LOG.info(LogMarkers.MONITORING, "Utkast '{}' created on unit '{}'", savedUtkast.getIntygsId(), request.getVardenhet().getHsaId());
+        monitoringService.logEvent(MonitoringEvent.UTKAST_CREATED, "Utkast '{}' created on unit '{}'", savedUtkast.getIntygsId(), request.getVardenhet().getHsaId());
 
         sendNotification(savedUtkast, Event.CREATED);
 
@@ -443,7 +448,7 @@ public class UtkastServiceImpl implements UtkastService {
         deleteUnsignedDraft(utkast);
 
         String hsaId = webCertUserService.getWebCertUser().getHsaId();
-        LOG.info(LogMarkers.MONITORING, "Utkast '{}' deleted by '{}'", utkast.getIntygsId(), hsaId);
+        monitoringService.logEvent(MonitoringEvent.UTKAST_DELETED, "Utkast '{}' deleted by '{}'", utkast.getIntygsId(), hsaId);
         
         // Notify stakeholders when a draft is deleted
         sendNotification(utkast, Event.DELETED);
