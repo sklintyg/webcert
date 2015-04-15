@@ -26,7 +26,6 @@ class UnhandledQAPage extends AbstractPage {
         fetchMoreBtn { $("#hamtaFler") }
 
         logoutLink { $("#logoutLink") }
-
     }
 
     def visaAllaFragor() {
@@ -51,6 +50,10 @@ class UnhandledQAPage extends AbstractPage {
 
     def resetAdvancedFilter() {
         advancedFilterResetBtn.click()
+    }
+
+    def patientIdSyns(String internReferens) {
+        $("#patientId-${internReferens}").isDisplayed()
     }
 
     boolean hamtaFler() {

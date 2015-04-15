@@ -208,6 +208,15 @@ class SvaraOchFraga {
         result
     }
 
+    boolean personnummerSynsForFraga(String internReferens) {
+        def result = false
+
+        Browser.drive {
+            result = page.patientIdSyns(internReferens)
+        }
+        result
+    }
+
     def markeraFragaSomHanterad(String id) {
         Browser.drive {
             waitFor {
