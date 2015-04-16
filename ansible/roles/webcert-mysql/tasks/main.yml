@@ -1,5 +1,8 @@
 ---
 # file: roles/webcert-mysql/tasks/main.yml
+- name: Drop any existing mysql database for 'test' environment
+  mysql_db: name={{ database_name }} state=absent
+  when: environment_name == "test"
 
 - name: Create mysql database
   mysql_db: name={{ database_name }} state=present
