@@ -1,0 +1,5 @@
+[tomcat]
+webcert-test ansible_ssh_host=%%%DEV-IP%%% ansible_ssh_user=%%%DEV-USERNAME%%% ansible_ssh_port=22 ansible_ssh_private_key_file=~/.ssh/%%%DEV-PRIV-KEY%%%
+
+[mysql]
+webcert-test ansible_ssh_host=%%%DEV-IP%%% ansible_ssh_user=%%%DEV-USERNAME%%% ansible_ssh_port=22 ansible_ssh_private_key_file=~/.ssh/%%%DEV-PRIV-KEY%%%
