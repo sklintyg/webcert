@@ -102,7 +102,7 @@ class SvaraOchFraga {
     }
 
     boolean fraganArSkickadTillFkMeddelandeVisas(boolean expected = true) {
-            def result = false
+        def result = false
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
@@ -112,6 +112,16 @@ class SvaraOchFraga {
         result == expected
     }
 
+    def stangFkMeddelande() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                page.closeSentMessage.click()
+            }
+        }
+    }
 
     def fragaMedTextVisasIListanMedOhanteradeFragor(String text) {
         Browser.drive {
