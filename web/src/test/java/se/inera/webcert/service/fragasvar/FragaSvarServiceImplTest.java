@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -109,7 +110,7 @@ public class FragaSvarServiceImplTest {
     private Logger loggerMock;
 
     @Mock
-    private MonitoringLogService monitoringService;
+    private MonitoringLogService monitoringServiceMock;
     
     @InjectMocks
     private FragaSvarServiceImpl service;
@@ -283,6 +284,7 @@ public class FragaSvarServiceImplTest {
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         verify(sendQuestionToFKClientMock).sendMedicalCertificateQuestion(any(AttributedURIType.class),
                 any(SendMedicalCertificateQuestionType.class));
+        verify(monitoringServiceMock).logEvent(eq(MonitoringEvent.QUESTION_SENT), anyString(), any(Long.class), anyString());
 
         assertEquals(Status.PENDING_EXTERNAL_ACTION, capture.getValue().getStatus());
         assertEquals(getIntygContentHolder().getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), capture.getValue()
@@ -429,6 +431,7 @@ public class FragaSvarServiceImplTest {
         verify(sendAnswerToFKClientMock).sendMedicalCertificateAnswer(any(AttributedURIType.class),
                 any(SendMedicalCertificateAnswerType.class));
         verify(notificationServiceMock).sendNotificationForQuestionHandled(any(FragaSvar.class));
+        verify(monitoringServiceMock).logEvent(eq(MonitoringEvent.ANSWER_SENT), anyString(), any(Long.class));
 
         assertEquals("svarsText", result.getSvarsText());
         assertEquals(Status.CLOSED, result.getStatus());
