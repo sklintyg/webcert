@@ -50,6 +50,21 @@ Kontrollera valideringsmeddelanden.
 | valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
 | true | true | true | true | true | true | false | false | false |
 
+!3 Om man går tillbaka genom "Dölj vad som saknas" på ett tomt intyg ska dessa försvinna igen.
+
+| script | !-SkrivIntyg-! |
+| dolj vad som saknas |
+| intyg ej komplett visas |
+
+Kontrollera valideringsmeddelanden.
+
+| Skriv Intyg |
+| valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
+| false | false | false | false | false | false | false | false | false |
+
+| script | !-SkrivIntyg-! |
+| visa vad som saknas |
+
 !3 Fyll i diagnos, sysselsättning och arbetsförmåga
 | Populera Fk7263 |
 | diagnos1 | nuvarandearbete | arbetsuppgifter | nedsattMed100 |
