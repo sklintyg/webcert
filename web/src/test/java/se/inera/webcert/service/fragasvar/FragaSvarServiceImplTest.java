@@ -9,8 +9,18 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +34,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.common.internal.Utlatande;
@@ -54,20 +65,13 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
@@ -79,23 +83,35 @@ public class FragaSvarServiceImplTest {
     private LocalDateTime AUGUST = new LocalDateTime("2013-08-02T11:11:11");
     private LocalDateTime DECEMBER_YEAR_9999 = new LocalDateTime("9999-12-11T10:22:00");
 
-    @Mock private FragaSvarRepository fragasvarRepositoryMock;
+    @Mock
+    private FragaSvarRepository fragasvarRepositoryMock;
 
-    @Mock private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClientMock;
+    @Mock
+    private SendMedicalCertificateAnswerResponderInterface sendAnswerToFKClientMock;
 
-    @Mock private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClientMock;
+    @Mock
+    private SendMedicalCertificateQuestionResponderInterface sendQuestionToFKClientMock;
 
-    @Mock private IntygService intygServiceMock;
+    @Mock
+    private IntygService intygServiceMock;
 
-    @Mock private WebCertUserService webCertUserService;
+    @Mock
+    private WebCertUserService webCertUserService;
 
-    @Mock WebcertFeatureService webcertFeatureServiceMock;
+    @Mock
+    WebcertFeatureService webcertFeatureServiceMock;
 
-    @Mock private NotificationService notificationServiceMock;
+    @Mock
+    private NotificationService notificationServiceMock;
 
-    @Mock private Logger loggerMock;
+    @Mock
+    private Logger loggerMock;
 
-    @InjectMocks private FragaSvarServiceImpl service;
+    @Mock
+    private MonitoringLogService monitoringServiceMock;
+    
+    @InjectMocks
+    private FragaSvarServiceImpl service;
 
 
     @Before
@@ -266,6 +282,7 @@ public class FragaSvarServiceImplTest {
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         verify(sendQuestionToFKClientMock).sendMedicalCertificateQuestion(any(AttributedURIType.class),
                 any(SendMedicalCertificateQuestionType.class));
+        verify(monitoringServiceMock).logQuestionSent(any(Long.class), anyString());
 
         assertEquals(Status.PENDING_EXTERNAL_ACTION, capture.getValue().getStatus());
         assertEquals(getIntygContentHolder().getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), capture.getValue()
@@ -412,6 +429,7 @@ public class FragaSvarServiceImplTest {
         verify(sendAnswerToFKClientMock).sendMedicalCertificateAnswer(any(AttributedURIType.class),
                 any(SendMedicalCertificateAnswerType.class));
         verify(notificationServiceMock).sendNotificationForQuestionHandled(any(FragaSvar.class));
+        verify(monitoringServiceMock).logAnswerSent(any(Long.class), anyString());
 
         assertEquals("svarsText", result.getSvarsText());
         assertEquals(Status.CLOSED, result.getStatus());

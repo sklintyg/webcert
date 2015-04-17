@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -27,6 +26,7 @@ import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceMockedTest {
@@ -36,6 +36,9 @@ public class MailNotificationServiceMockedTest {
 
     @Mock
     private HSAWebServiceCalls hsaClient;
+    
+    @Mock
+    private MonitoringLogService monitoringService;
 
     @InjectMocks
     private MailNotificationServiceImpl mailNotificationService;

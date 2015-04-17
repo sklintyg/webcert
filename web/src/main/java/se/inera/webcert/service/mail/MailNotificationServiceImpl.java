@@ -15,11 +15,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import se.inera.certificate.logging.LogMarkers;
 import se.inera.ifv.hsawsresponder.v3.GetCareUnitResponseType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 /**
  * @author andreaskaltenbach
@@ -50,6 +50,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Autowired
     private HSAWebServiceCalls hsaClient;
+    
+    @Autowired
+    private MonitoringLogService monitoringService;
 
     private void logError(String type, FragaSvar fragaSvar, Exception e) {
         Long id = fragaSvar.getInternReferens();
@@ -133,10 +136,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         if (recipientAddress != null) {
             sendNotificationToUnit(recipientAddress, subject, body);
-            LOG.info(LogMarkers.MONITORING, "Mail sent to unit '{}' for {}", receivingEnhet.getHsaIdentity(), reason);
+            monitoringService.logMailSent(receivingEnhet.getHsaIdentity(), reason);
         } else {
             sendAdminMailAboutMissingEmailAddress(receivingEnhet, fragaSvar);
-            LOG.info(LogMarkers.MONITORING, "Mail sent to admin on behalf of unit '{}' for {}", receivingEnhet.getHsaIdentity(), reason);
+            monitoringService.logMailMissingAddress(receivingEnhet.getHsaIdentity(), reason);
         }
     }
 

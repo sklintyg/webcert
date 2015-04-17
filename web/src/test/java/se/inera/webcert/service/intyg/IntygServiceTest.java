@@ -44,6 +44,7 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
@@ -85,6 +86,9 @@ public class IntygServiceTest {
 
     @Mock
     private WebCertUserService webCertUserService;
+    
+    @Mock
+    private MonitoringLogService mockMonitoringService;
 
     @Before
     public void setupIntygstjanstResponse() throws Exception {
@@ -130,6 +134,8 @@ public class IntygServiceTest {
 
         // ensure that correctcall is made to intygstjanst
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
         assertEquals(json, intygData.getContents());
         assertEquals(CERTIFICATE_ID, intygData.getUtlatande().getId());
@@ -161,6 +167,8 @@ public class IntygServiceTest {
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
         // Assert pdl log
         verify(logservice).logReadIntyg(any(LogRequest.class));
+        // Assert monitoring log
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }
 
     @Test
