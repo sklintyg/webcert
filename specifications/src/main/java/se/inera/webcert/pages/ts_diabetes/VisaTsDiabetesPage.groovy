@@ -33,6 +33,7 @@ class VisaTsDiabetesPage extends VisaPage {
         insulin { $("#insulin") }
         insulinBehandlingsperiod { $("#insulinBehandlingsperiod") }
         annanBehandlingBeskrivning { $("#annanBehandlingBeskrivning") }
+        kunskapOmAtgarder { $("#kunskapOmAtgarder") }
         teckenNedsattHjarnfunktion { $("#teckenNedsattHjarnfunktion") }
         saknarFormagaKannaVarningstecken { $("#saknarFormagaKannaVarningstecken") }
         allvarligForekomst { $("#allvarligForekomst") }
