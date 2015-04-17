@@ -222,26 +222,32 @@ public class UtkastServiceImpl implements UtkastService {
         return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }
 
-    public Utkast getIntygAsDraft(String intygId) {
+    public Utkast getIntygAsDraft(String intygsId) {
 
-        LOG.debug("Fetching draft '{}'", intygId);
+        LOG.debug("Fetching utkast '{}'", intygsId);
 
-        Utkast intyg = utkastRepository.findOne(intygId);
+        Utkast utkast = utkastRepository.findOne(intygsId);
 
-        if (intyg == null) {
-            LOG.warn("Draft '{}' was not found", intygId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The draft could not be found");
+        if (utkast == null) {
+            LOG.warn("Utkast '{}' was not found", intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Utkast could not be found");
         }
 
-        return intyg;
+        return utkast;
     }
 
     @Override
     public Utkast getDraft(String intygId) {
         Utkast utkast = getIntygAsDraft(intygId);
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
+        
+        // Log read to PDL
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logReadIntyg(logRequest);
+        
+        // Log read to monitoring log
+        monitoringService.logUtkastRead(utkast.getIntygsId(), utkast.getIntygsTyp());
+        
         return utkast;
     }
 
@@ -468,8 +474,17 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     public void logPrintOfDraftToPDL(String intygId) {
         Utkast utkast = utkastRepository.findOne(intygId);
+        
+        if (utkast == null) {
+            return;
+        }
+        
+        // Log print to PDL log
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logPrintIntygAsDraft(logRequest);
+        
+        // Log print to monitoring log
+        monitoringService.logUtkastPrint(utkast.getIntygsId(), utkast.getIntygsTyp());
     }
     
     private void updateWithUser(Utkast utkast) {

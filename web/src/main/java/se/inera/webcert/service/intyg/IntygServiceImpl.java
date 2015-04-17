@@ -122,12 +122,18 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     /* --------------------- Public scope --------------------- */
 
     @Override
-    public IntygContentHolder fetchIntygData(String intygId, String typ) {
-        IntygContentHolder intygData = getIntygData(intygId, typ);
-        verifyEnhetsAuth(intygData.getUtlatande(), true);
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intygData.getUtlatande());
+    public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp) {
+        IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp);
+        verifyEnhetsAuth(intygsData.getUtlatande(), true);
+        
+        // Log read to PDL
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande());
         logService.logReadIntyg(logRequest);
-        return intygData;
+        
+        // Log read to monitoring log
+        monitoringService.logIntygRead(intygsId, intygsTyp);
+        
+        return intygsData;
     }
 
     @Override
@@ -149,17 +155,21 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     @Override
-    public IntygPdf fetchIntygAsPdf(String intygId, String intygTyp) {
+    public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp) {
         try {
-            LOG.debug("Fetching intyg '{}' as PDF", intygId);
+            LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
-            IntygContentHolder intyg = getIntygData(intygId, intygTyp);
+            IntygContentHolder intyg = getIntygData(intygsId, intygsTyp);
             verifyEnhetsAuth(intyg.getUtlatande(), true);
 
-            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygTyp, intyg.getContents(), intyg.getStatuses());
-
+            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses());
+            
+            // Log print as PDF to PDL log
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
             logService.logPrintIntygAsPDF(logRequest);
+            
+            // Log print as PDF to monitoring log
+            monitoringService.logIntygPrintPdf(intygsId, intygsTyp);
 
             return intygPdf;
 

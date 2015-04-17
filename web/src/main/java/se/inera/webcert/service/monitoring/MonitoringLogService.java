@@ -27,6 +27,10 @@ public interface MonitoringLogService {
 
     void logAnswerSent(Long fragaSvarsId, String intygsId);
 
+    void logIntygRead(String intygsId, String intygsTyp);
+
+    void logIntygPrintPdf(String intygsId, String intygsTyp);
+
     void logIntygSigned(String intygsId, String userHsaId, String authScheme);
 
     void logIntygRegistered(String intygsId, String intygsTyp);
@@ -42,5 +46,9 @@ public interface MonitoringLogService {
     void logUtkastEdited(String intygsId, String intygsTyp);
 
     void logUtkastDeleted(String intygsId, String intygsTyp);
+
+    void logUtkastRead(String intygsId, String intygsTyp);
+    
+    void logUtkastPrint(String intygsId, String intygsTyp);
 
 }

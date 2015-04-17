@@ -160,6 +160,8 @@ public class UtkastServiceImplTest {
 
         // Assert pdl log
         verify(logService).logDeleteIntyg(any(LogRequest.class));
+        
+        verify(mockMonitoringService).logUtkastDeleted(INTYG_ID, INTYG_TYPE);
     }
 
     @Test
@@ -171,6 +173,8 @@ public class UtkastServiceImplTest {
 
         // Assert pdl log
         verify(logService).logPrintIntygAsDraft(any(LogRequest.class));
+        
+        verify(mockMonitoringService).logUtkastPrint(INTYG_ID, INTYG_TYPE);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -220,6 +224,8 @@ public class UtkastServiceImplTest {
 
         // Assert pdl log
         verify(logService).logUpdateIntyg(any(LogRequest.class));
+        
+        verify(mockMonitoringService).logUtkastEdited(INTYG_ID, INTYG_TYPE);
 
         assertNotNull("An DraftValidation should be returned", res);
         assertFalse("Validation should fail", res.isDraftValid());
@@ -251,8 +257,9 @@ public class UtkastServiceImplTest {
         // Assert notification message
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
-        // Assert pdl log
+        // Assert that no logs are called
         verifyZeroInteractions(logService);
+        verifyZeroInteractions(mockMonitoringService);
 
         assertNotNull("An DraftValidation should be returned", res);
         assertFalse("Validation should fail", res.isDraftValid());

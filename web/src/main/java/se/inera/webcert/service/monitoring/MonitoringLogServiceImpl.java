@@ -59,6 +59,16 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logIntygRead(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.INTYG_READ, intygsId, intygsTyp);
+    }
+    
+    @Override
+    public void logIntygPrintPdf(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.INTYG_PRINT_PDF, intygsId, intygsTyp);
+    }
+
+    @Override
     public void logIntygSigned(String intygsId, String userHsaId, String authScheme) {
         logEvent(MonitoringEvent.INTYG_SIGNED, intygsId, userHsaId, authScheme);
     }
@@ -95,7 +105,17 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logUtkastDeleted(String intygsId, String intygsTyp) {
-        logEvent(MonitoringEvent.UTKAST_EDITED, intygsId, intygsTyp);
+        logEvent(MonitoringEvent.UTKAST_DELETED, intygsId, intygsTyp);
+    }
+    
+    @Override
+    public void logUtkastRead(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.UTKAST_READ, intygsId, intygsTyp);
+    }
+
+    @Override
+    public void logUtkastPrint(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.UTKAST_PRINT, intygsId, intygsTyp);
     }
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
@@ -116,14 +136,18 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         ANSWER_RECEIVED("Received answer to question '{}' regarding intyg '{}'"),
         QUESTION_SENT("Sent question '{}' regarding intyg '{}'"),
         ANSWER_SENT("Sent answer to question '{}' regarding intyg '{}'"),
+        INTYG_READ("Intyg '{}' of type '{}' was read"),
+        INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF"),
         INTYG_SIGNED("Intyg '{}' signed by '{}' using scheme '{}'"),
         INTYG_REGISTERED("Intyg '{}' of type '{}' registered with Intygstjänsten"),
         INTYG_SENT("Intyg '{}' sent to recipient '{}'"),
         INTYG_REVOKED("Intyg '{}' revoked by '{}'"),
         INTYG_COPIED("Utkast '{}' created as a copy of '{}'"),
+        UTKAST_READ("Utkast '{}' of type '{}' was read"),
         UTKAST_CREATED("Utkast '{}' of type '{}' created on unit '{}'"),
         UTKAST_EDITED("Utkast '{}' of type '{}' was edited"),
-        UTKAST_DELETED("Utkast '{}' of type '{}' was deleted");
+        UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
+        UTKAST_PRINT("Intyg '{}' of type '{}' was printed");
 
         private String msg;
 
