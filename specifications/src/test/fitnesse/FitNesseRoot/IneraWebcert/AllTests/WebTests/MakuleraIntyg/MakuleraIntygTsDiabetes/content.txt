@@ -4,14 +4,14 @@ Detta test visar att man kan makulera ett signerat ts-bas intyg från visa-vyn o
 
 | Intyg |
 | personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat |
-| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1042 | ts-diabetes | intyg-fit-105 | L | ja | nej |
+| 19000101-9801 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1042 | ts-diabetes | intyg-fit-105 | L | ja | nej |
 
 !3 Välj patient och visa intyget
 
 | script | !-SokSkrivIntyg-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 | sok skriv intyg sidan visas sa smaningom |
-| valj patient | 19121212-1212 |
+| valj patient | 19000101-9801 |
 | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-105 |
 | visa ts diabetes sidan visas |

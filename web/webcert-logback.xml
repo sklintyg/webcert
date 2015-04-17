@@ -49,8 +49,10 @@
       <fileNamePattern>${catalina.base}/logs/webcert-monitoring.%d{yyyy-MM-dd}.log
       </fileNamePattern>
     </rollingPolicy>
-    <encoder>
-      <pattern>%date{ISO8601} %-5level %logger{10} - %msg%n</pattern>
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
+        <param name="Pattern" value="%date{ISO8601} %session %user %selectedCareUnit - %msg%n" />
+      </layout>
     </encoder>
   </appender>
 

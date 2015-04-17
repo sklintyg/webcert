@@ -6,7 +6,7 @@ Testa navigering från editera intygssidan. Verifierar WEBCERT-1603/1604
 !3 Skapa ett nytt intygsutkast
 
 | script | !-SkrivIntyg-! |
-| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | FK7263 |
 | $intygsid= | intygsid |
 | klicka pa tillbaka knappen |
 
@@ -33,7 +33,7 @@ Testa navigering från editera intygssidan. Verifierar WEBCERT-1603/1604
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 | script | !-SkrivIntyg-! |
-| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | FK7263 |
 | $intygsid= | intygsid |
 
 !3 Om man kommer från ej signerade intyg och klcik tillbaka ska man komma dit

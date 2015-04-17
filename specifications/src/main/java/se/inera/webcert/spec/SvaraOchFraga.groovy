@@ -102,7 +102,7 @@ class SvaraOchFraga {
     }
 
     boolean fraganArSkickadTillFkMeddelandeVisas(boolean expected = true) {
-            def result = false
+        def result = false
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
@@ -112,6 +112,16 @@ class SvaraOchFraga {
         result == expected
     }
 
+    def stangFkMeddelande() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            waitFor {
+                page.closeSentMessage.click()
+            }
+        }
+    }
 
     def fragaMedTextVisasIListanMedOhanteradeFragor(String text) {
         Browser.drive {
@@ -204,6 +214,15 @@ class SvaraOchFraga {
             waitFor {
                 result = page.unhandledQATable.isDisplayed()
             }
+        }
+        result
+    }
+
+    boolean personnummerSynsForFraga(String internReferens) {
+        def result = false
+
+        Browser.drive {
+            result = page.patientIdSyns(internReferens)
         }
         result
     }

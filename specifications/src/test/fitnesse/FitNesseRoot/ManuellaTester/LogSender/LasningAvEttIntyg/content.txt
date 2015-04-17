@@ -1,6 +1,6 @@
 |producera logg meddelande|
 |aktivitet|vardperson|enhet|vardgivare|personnummer|
-|Läsa|lakare1|enhet1|vg1|19121212-1212|
+|Läsa|lakare1|enhet1|vg1|19000101-9801|
 
 |script|Vanta|5|sekunder|
 

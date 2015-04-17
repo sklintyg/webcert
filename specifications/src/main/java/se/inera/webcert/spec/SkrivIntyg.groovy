@@ -56,6 +56,12 @@ class SkrivIntyg {
         }
     }
 
+    def doljVadSomSaknas(){
+        Browser.drive {
+            page.doljVadSomSaknasKnapp.click();
+        }
+    }
+
     def ingaValideringsfelVisas() {
         def result = false
         Browser.drive {

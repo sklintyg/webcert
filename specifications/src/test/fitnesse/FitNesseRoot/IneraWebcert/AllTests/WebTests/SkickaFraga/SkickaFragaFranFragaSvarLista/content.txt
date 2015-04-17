@@ -32,6 +32,12 @@ Testet beskriver fallet när en användare skickar en ny fråga till försäkrin
 | ny fraga formular visas | false |
 | fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
 
+!3 Stäng blå info-ruta för skickat-meddelande
+
+| script | !-SvaraOchFraga-! |
+| stang fk meddelande |
+| fragan ar skickad till fk meddelande visas | false |
+
 !3 Verifiera att det även går att använda de övriga ämnena
 
 | script | !-SvaraOchFraga-! |

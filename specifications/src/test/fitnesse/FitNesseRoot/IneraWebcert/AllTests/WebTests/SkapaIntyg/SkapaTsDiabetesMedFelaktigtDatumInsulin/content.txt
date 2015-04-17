@@ -9,7 +9,7 @@
 !3 Skapa ett nytt intygsutkast
 
 | script | !-SkrivIntyg-! |
-| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | ts-diabetes |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | ts-diabetes |
 | $intygsid= | intygsid |
 
 !3 Populera intyget

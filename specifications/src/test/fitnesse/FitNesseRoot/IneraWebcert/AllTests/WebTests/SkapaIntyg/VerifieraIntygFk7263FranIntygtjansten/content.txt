@@ -2,14 +2,14 @@
 
 |Intyg|
 |personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
-|19121212-1212|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fit-1|L|nej|nej|
+|19000101-9801|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fit-1|L|nej|nej|
 
 !3 Logga in
 
 | script | !-SokSkrivIntyg-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 | sok skriv intyg sidan visas sa smaningom |
-| valj patient | 19121212-1212 |
+| valj patient | 19000101-9801 |
 | valj intygstyp sidan visas |
 | visa intyg | webcert-fit-1 |
 | visa intyg sidan visas |

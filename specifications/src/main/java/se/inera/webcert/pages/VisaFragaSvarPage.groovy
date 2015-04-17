@@ -29,6 +29,7 @@ class VisaFragaSvarPage extends AbstractPage {
         unhandledQAList { $("#unhandledQACol") }
 
         questionIsSentToFkMessage(required: false) { $("#question-is-sent-to-fk-message-text") }
+        closeSentMessage { $("#question-is-sent-to-fk-message-text > button") }
 
         certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
         certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
@@ -41,7 +42,6 @@ class VisaFragaSvarPage extends AbstractPage {
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
-
 
         tillbakaButton { $("#tillbakaButton") }
 

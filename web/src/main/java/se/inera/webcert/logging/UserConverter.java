@@ -5,7 +5,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
-
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
@@ -18,25 +17,25 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
  */
 public class UserConverter extends ClassicConverter {
 
+    private static final String NO_USER = "NO USER";
+
     @Override
     public String convert(ILoggingEvent event) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null) {
-            return "NO USER";
+            return NO_USER;
         }
 
-        WebCertUser user = (WebCertUser) auth.getPrincipal();
-        StringBuilder sb = new StringBuilder();
-        sb.append("UID: ").append(user.getHsaId());
+        Object principal = auth.getPrincipal();
 
-        SelectableVardenhet valdVardenhet = user.getValdVardenhet();
-        if (valdVardenhet != null) {
-            sb.append(" | CU: ").append(valdVardenhet.getId());
+        if (principal instanceof WebCertUser) {
+            WebCertUser user = (WebCertUser) auth.getPrincipal();
+            return user.getHsaId();
         }
 
-        return sb.toString();
+        return NO_USER;
     }
 
 }

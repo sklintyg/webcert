@@ -2,7 +2,7 @@
 
 |Intyg|
 |personnr|utfärdat|giltigtFrån|giltigtTill|utfärdarId|enhetsId|typ|id|mall|
-|19121212-1212|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|fitnesse-intyg-1|M|
+|19000101-9801|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|fitnesse-intyg-1|M|
 
 !3 Korrekt svar ger inga fel
 

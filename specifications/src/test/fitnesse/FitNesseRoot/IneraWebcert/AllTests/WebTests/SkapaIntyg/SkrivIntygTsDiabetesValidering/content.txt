@@ -48,7 +48,22 @@ Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fälte
 
 | Validering Ts Diabetes|
 | valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringDiabetesVisas? | valideringHypoglykemierVisas? | valideringSynVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
-| false| true | true | true | true | true | true | false |
+| false | true | true | true | true | true | true | false |
+
+!3 Om man går tillbaka genom "Dölj vad som saknas" på ett tomt intyg ska dessa försvinna igen.
+
+| script | !-SkrivIntyg-! |
+| dolj vad som saknas |
+| intyg ej komplett visas |
+
+Kontrollera valideringsmeddelanden.
+
+| Validering Ts Diabetes|
+| valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringDiabetesVisas? | valideringHypoglykemierVisas? | valideringSynVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
+| false | false | false | false | false | false | false | false |
+
+| script | !-SkrivIntyg-! |
+| visa vad som saknas |
 
 !3 Fyll i intyget avser och identifieringstyp 
 

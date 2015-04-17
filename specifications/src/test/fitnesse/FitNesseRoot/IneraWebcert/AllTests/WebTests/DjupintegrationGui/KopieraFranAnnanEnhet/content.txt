@@ -4,7 +4,7 @@ Detta test ska visa på att när man kopierar ett fk-intyg från en annan vårde
 
 | Intyg |
 | personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | mall | skickat | rättat |
-| 19121212-1212 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1046 | IFV1239877878-1043 | FK7263 | intyg-fit-100 | L | ja | nej |
+| 19000101-9801 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1046 | IFV1239877878-1043 | FK7263 | intyg-fit-100 | L | ja | nej |
 
 !3 Välj patient och visa intyget
 
