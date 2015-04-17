@@ -8,7 +8,7 @@ Testar att felmeddelande när man fyller i fält i intyget visas som de ska. Skr
 !3 Skapa ett nytt intygsutkast
 
 | script | !-SkrivIntyg-! |
-| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | FK7263 |
 | $intygsid= | intygsid |
 
 !3 Testa valideringsfel
@@ -49,6 +49,21 @@ Kontrollera valideringsmeddelanden.
 | Skriv Intyg |
 | valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
 | true | true | true | true | true | true | false | false | false |
+
+!3 Om man går tillbaka genom "Dölj vad som saknas" på ett tomt intyg ska dessa försvinna igen.
+
+| script | !-SkrivIntyg-! |
+| dolj vad som saknas |
+| intyg ej komplett visas |
+
+Kontrollera valideringsmeddelanden.
+
+| Skriv Intyg |
+| valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
+| false | false | false | false | false | false | false | false | false |
+
+| script | !-SkrivIntyg-! |
+| visa vad som saknas |
 
 !3 Fyll i diagnos, sysselsättning och arbetsförmåga
 | Populera Fk7263 |

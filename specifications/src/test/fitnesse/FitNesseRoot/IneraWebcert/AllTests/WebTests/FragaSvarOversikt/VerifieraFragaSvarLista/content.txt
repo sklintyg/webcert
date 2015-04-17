@@ -1,0 +1,25 @@
+Testet beskriver fallet när en användare visar Frågor och Svar översikten. Inga kolumner ska vara tomma här.
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Lägg till fråga
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
+| OVRIGT | FIT-QA-1000 | FK | En fråga från försäkringskassan | intyg-fit-1 | IFV1239877878-1049 | Jan Nilsson | IFV1239877878-1042 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
+
+!3 Verifiera att det går att visa innehållet i frågan i listan med ohanterade frågor
+
+!| script | SvaraOchFraga |
+| ga till svara och fraga |
+| lista med ohanterade fragor visas |
+| personnummer syns for fraga | $internReferens1 |
+
+!3 Ta bort fråga
+
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |

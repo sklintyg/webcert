@@ -6,7 +6,7 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Skapa ett nytt intygsutkast
 | script | !-SkrivIntyg-! |
-| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | FK7263 |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | FK7263 |
 | $intygsid= | intygsid |
 
 !3 Skapa minimalt intyg med smittskydd

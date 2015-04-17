@@ -43,7 +43,7 @@
       <qa:lakarutlatande-id>fitnesse-intyg-1</qa:lakarutlatande-id>
       <qa:signeringsTidpunkt>2013-11-30T12:12:12</qa:signeringsTidpunkt>
       <qa:patient>
-        <hr:person-id root="1.2.752.129.2.1.3.1" extension="19121212-1212"/>
+        <hr:person-id root="1.2.752.129.2.1.3.1" extension="19000101-9801"/>
         <hr:fullstandigtNamn>Test Testorsson</hr:fullstandigtNamn>
       </qa:patient>
     </lakarutlatande>

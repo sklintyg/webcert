@@ -9,7 +9,7 @@ Verifiera att de REST-tjänste som representerar avstängda features returnerar 
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-features-1 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-features-1 | fk7263 | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 
 #| feature utkast |
 #| statusCode? |
