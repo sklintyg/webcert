@@ -57,7 +57,6 @@ import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -172,7 +171,9 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygServiceResult storeIntyg(Utkast utkast) {
         Omsandning omsandning = createOmsandning(OmsandningOperation.STORE_INTYG, utkast.getIntygsId(), utkast.getIntygsTyp(), null);
-        monitoringService.logEvent(MonitoringEvent.INTYG_REGISTERED, "Intyg '{}' registered with Intygstjänsten", utkast.getIntygsId());
+        
+        // Audit log
+        monitoringService.logIntygRegistered(utkast.getIntygsId(), utkast.getIntygsTyp());
 
         // Redan schedulerat för att skickas, men vi gör ett försök redan nu.
         return storeIntyg(utkast, omsandning);
@@ -230,7 +231,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getWebCertUser());
         String sendConfigAsJson = configurationManager.marshallConfig(sendConfig);
 
-        monitoringService.logEvent(MonitoringEvent.INTYG_SENT, "Intyg '{}' sent to recipient '{}'", intygsId, recipient);
+        monitoringService.logIntygSent(intygsId, recipient);
 
         // send PDL log event
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
@@ -276,7 +277,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         switch (resultOfCall.getResultCode()) {
         case OK:
             String hsaId = webCertUserService.getWebCertUser().getHsaId();
-            monitoringService.logEvent(MonitoringEvent.INTYG_REVOKED, "Intyg '{}' revoked by '{}'", intygsId, hsaId);
+            monitoringService.logIntygRevoked(intygsId, hsaId);
             return whenSuccessfulRevoke(intyg.getUtlatande());
         case INFO:
             LOG.warn("Call to revoke intyg {} returned an info message: {}", intygsId, resultOfCall.getInfoText());

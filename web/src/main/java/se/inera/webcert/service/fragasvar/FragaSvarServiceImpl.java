@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
-import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
@@ -55,7 +54,6 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -127,8 +125,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         validateAcceptsQuestions(fragaSvar);
 
-        monitoringService.logEvent(MonitoringEvent.QUESTION_RECEIVED, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(),
-                fragaSvar.getExternReferens());
+        monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
+                fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getExternReferens());
 
         // persist the question
         return fragaSvarRepository.save(fragaSvar);
@@ -155,7 +153,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
 
-        monitoringService.logEvent(MonitoringEvent.ANSWER_RECEIVED, "Received answer to question '{}'", internId);
+        monitoringService.logAnswerReceived(fragaSvar.getInternReferens(),
+                fragaSvar.getIntygsReferens().getIntygsId());
 
         // update the FragaSvar
         return fragaSvarRepository.save(fragaSvar);
@@ -272,7 +271,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logEvent(MonitoringEvent.ANSWER_SENT, "Sent answer to question '{}'", fragaSvarsId);
+        monitoringService.logAnswerSent(fragaSvarsId, saved.getIntygsReferens().getIntygsId());
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
@@ -360,7 +359,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logEvent(MonitoringEvent.QUESTION_SENT, "Sent question '{}' for intyg '{}'", fraga.getInternReferens(), intygId);
+        monitoringService.logQuestionSent(fraga.getInternReferens(), intygId);
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);

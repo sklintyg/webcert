@@ -20,7 +20,6 @@ import se.inera.ifv.hsawsresponder.v3.GetHsaUnitResponseType;
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 
 /**
  * @author andreaskaltenbach
@@ -137,10 +136,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         if (recipientAddress != null) {
             sendNotificationToUnit(recipientAddress, subject, body);
-            monitoringService.logEvent(MonitoringEvent.MAIL_SENT, "Mail sent to unit '{}' for {}", receivingEnhet.getHsaIdentity(), reason);
+            monitoringService.logMailSent(receivingEnhet.getHsaIdentity(), reason);
         } else {
             sendAdminMailAboutMissingEmailAddress(receivingEnhet, fragaSvar);
-            monitoringService.logEvent(MonitoringEvent.MAIL_SENT, "Mail sent to admin on behalf of unit '{}' for {}", receivingEnhet.getHsaIdentity(), reason);
+            monitoringService.logMailMissingAddress(receivingEnhet.getHsaIdentity(), reason);
         }
     }
 

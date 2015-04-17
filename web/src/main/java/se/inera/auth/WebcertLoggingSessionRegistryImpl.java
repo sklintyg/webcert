@@ -8,7 +8,6 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 
 /**
  * Implementation of SessioRegistry that performs audit logging of login and logout.
@@ -21,7 +20,7 @@ public class WebcertLoggingSessionRegistryImpl extends SessionRegistryImpl {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebcertLoggingSessionRegistryImpl.class);
     
     @Autowired
-    private MonitoringLogService monitoringLog;
+    private MonitoringLogService monitoringService;
 
     @Override
     public void registerNewSession(String sessionId, Object principal) {
@@ -30,7 +29,7 @@ public class WebcertLoggingSessionRegistryImpl extends SessionRegistryImpl {
 
         if (principal != null && principal instanceof WebCertUser) {
             WebCertUser user = (WebCertUser) principal;
-            monitoringLog.logEvent(MonitoringEvent.USER_LOGIN, "Login user '{}' using scheme '{}'", user.getHsaId(), user.getAuthenticationScheme());
+            monitoringService.logUserLogin(user.getHsaId(), user.getAuthenticationScheme());
         }
 
         super.registerNewSession(sessionId, principal);
@@ -53,9 +52,9 @@ public class WebcertLoggingSessionRegistryImpl extends SessionRegistryImpl {
         if (principal instanceof WebCertUser) {
             WebCertUser user = (WebCertUser) principal;
             if (sessionInformation.isExpired()) {
-                monitoringLog.logEvent(MonitoringEvent.USER_LOGOUT, "Session expired for user '{}' using scheme '{}'", user.getHsaId(), user.getAuthenticationScheme());
+                monitoringService.logUserSessionExpired(user.getHsaId(), user.getAuthenticationScheme());
             } else {
-                monitoringLog.logEvent(MonitoringEvent.USER_LOGOUT, "Logout user '{}' using scheme '{}'", user.getHsaId(), user.getAuthenticationScheme());
+                monitoringService.logUserLogout(user.getHsaId(), user.getAuthenticationScheme());
             }
         }
 

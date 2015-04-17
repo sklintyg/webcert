@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -42,7 +41,6 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
@@ -104,7 +102,8 @@ public class UtkastServiceImpl implements UtkastService {
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
 
-        monitoringService.logEvent(MonitoringEvent.UTKAST_CREATED, "Utkast '{}' created on unit '{}'", savedUtkast.getIntygsId(), request.getVardenhet().getHsaId());
+        monitoringService.logUtkastCreated(savedUtkast.getIntygsId(),
+                savedUtkast.getIntygsTyp(), request.getVardenhet().getHsaId());
 
         sendNotification(savedUtkast, Event.CREATED);
 
@@ -307,6 +306,8 @@ public class UtkastServiceImpl implements UtkastService {
         if (createPdlLogEvent) {
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
             logService.logUpdateIntyg(logRequest);
+            
+            monitoringService.logUtkastEdited(utkast.getIntygsId(), utkast.getIntygsTyp());
         }
         
         // Notify stakeholders when a draft has been changed/updated
@@ -427,7 +428,7 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     public void deleteUnsignedDraft(String intygId) {
 
-        LOG.debug("Deleting draft with id '{}'", intygId);
+        LOG.debug("Deleting utkast '{}'", intygId);
 
         Utkast utkast = utkastRepository.findOne(intygId);
 
@@ -446,9 +447,9 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Delete draft from repository
         deleteUnsignedDraft(utkast);
-
-        String hsaId = webCertUserService.getWebCertUser().getHsaId();
-        monitoringService.logEvent(MonitoringEvent.UTKAST_DELETED, "Utkast '{}' deleted by '{}'", utkast.getIntygsId(), hsaId);
+        
+        // Audit log
+        monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
         
         // Notify stakeholders when a draft is deleted
         sendNotification(utkast, Event.DELETED);
@@ -460,7 +461,7 @@ public class UtkastServiceImpl implements UtkastService {
     @Transactional
     private void deleteUnsignedDraft(Utkast utkast) {
         utkastRepository.delete(utkast);
-        LOG.debug("Deleteing draft '{}'", utkast.getIntygsId());
+        LOG.debug("Deleted utkast '{}'", utkast.getIntygsId());
     }
 
 

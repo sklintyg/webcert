@@ -6,12 +6,20 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -58,22 +66,12 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
-import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest {
@@ -284,7 +282,7 @@ public class FragaSvarServiceImplTest {
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         verify(sendQuestionToFKClientMock).sendMedicalCertificateQuestion(any(AttributedURIType.class),
                 any(SendMedicalCertificateQuestionType.class));
-        verify(monitoringServiceMock).logEvent(eq(MonitoringEvent.QUESTION_SENT), anyString(), any(Long.class), anyString());
+        verify(monitoringServiceMock).logQuestionSent(any(Long.class), anyString());
 
         assertEquals(Status.PENDING_EXTERNAL_ACTION, capture.getValue().getStatus());
         assertEquals(getIntygContentHolder().getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), capture.getValue()
@@ -431,7 +429,7 @@ public class FragaSvarServiceImplTest {
         verify(sendAnswerToFKClientMock).sendMedicalCertificateAnswer(any(AttributedURIType.class),
                 any(SendMedicalCertificateAnswerType.class));
         verify(notificationServiceMock).sendNotificationForQuestionHandled(any(FragaSvar.class));
-        verify(monitoringServiceMock).logEvent(eq(MonitoringEvent.ANSWER_SENT), anyString(), any(Long.class));
+        verify(monitoringServiceMock).logAnswerSent(any(Long.class), anyString());
 
         assertEquals("svarsText", result.getSvarsText());
         assertEquals(Status.CLOSED, result.getStatus());

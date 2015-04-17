@@ -1,11 +1,40 @@
 package se.inera.webcert.service.monitoring;
 
-import se.inera.webcert.service.monitoring.MonitoringLogServiceImpl.MonitoringEvent;
 
 public interface MonitoringLogService {
-    
-    void logEvent(String logMsg, Object... logMsgArgs);
 
-    void logEvent(MonitoringEvent logEvent, String logMsg, Object... logMsgArgs);
+    void logMailSent(String unitHsaId, String reason);
+    
+    void logMailMissingAddress(String unitHsaId, String reason);
+
+    void logUserLogin(String userHsaId, String authScheme);
+
+    void logUserLogout(String userHsaId, String authScheme);
+
+    void logUserSessionExpired(String userHsaId, String authScheme);
+
+    void logQuestionReceived(String fragestallare, String intygsId, String externReferens);
+
+    void logAnswerReceived(Long fragaSvarsId, String intygsId);
+
+    void logQuestionSent(Long fragaSvarsId, String intygId);
+
+    void logAnswerSent(Long fragaSvarsId, String intygsId);
+
+    void logIntygSigned(String intygsId, String userHsaId, String authScheme);
+
+    void logIntygRegistered(String intygsId, String intygsTyp);
+
+    void logIntygSent(String intygsId, String recipient);
+
+    void logIntygRevoked(String intygsId, String hsaId);
+
+    void logIntygCopied(String copyIntygsId, String originalIntygId);
+
+    void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId);
+
+    void logUtkastEdited(String intygsId, String intygsTyp);
+
+    void logUtkastDeleted(String intygsId, String intygsTyp);
 
 }
