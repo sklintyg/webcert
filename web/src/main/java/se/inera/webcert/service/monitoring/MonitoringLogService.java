@@ -1,10 +1,16 @@
 package se.inera.webcert.service.monitoring;
 
-
+/**
+ * Service that writes messages to the monitoring log
+ * 
+ * 
+ * @author npet
+ *
+ */
 public interface MonitoringLogService {
 
     void logMailSent(String unitHsaId, String reason);
-    
+
     void logMailMissingAddress(String unitHsaId, String reason);
 
     void logUserLogin(String userHsaId, String authScheme);
