@@ -74,6 +74,10 @@ class IntygetAvserModule extends Module {
 
     def valjBehorigheter(String valdaBehorigheter) {
         if (valdaBehorigheter != null) {
+
+            // scroll into view
+            AbstractPage.scrollIntoView('typcheck0');
+
             am = false
             a1 = false
             a2 = false
