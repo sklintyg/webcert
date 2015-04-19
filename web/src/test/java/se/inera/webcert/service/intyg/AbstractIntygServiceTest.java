@@ -35,6 +35,7 @@ import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
 import se.inera.webcert.service.log.LogService;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturServiceImpl;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -79,6 +80,9 @@ public abstract class AbstractIntygServiceTest {
 
     @Mock
     protected NotificationService notificationService;
+    
+    @Mock
+    protected MonitoringLogService monitoringService;
 
     // Here we test the real converter
     @Spy

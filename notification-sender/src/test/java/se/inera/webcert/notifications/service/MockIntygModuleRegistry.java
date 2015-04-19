@@ -1,6 +1,7 @@
 package se.inera.webcert.notifications.service;
 
 import org.joda.time.LocalDateTime;
+
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
@@ -97,6 +98,11 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
                 utlatande.setUtlatandeId(utlatandeId);
                 certificateStatusUpdateForCareType.setUtlatande(utlatande);
                 return certificateStatusUpdateForCareType;
+            }
+
+            @Override
+            public String marshall(String jsonString) {
+                return null;
             }
         };
     }

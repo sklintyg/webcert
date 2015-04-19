@@ -38,6 +38,7 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
@@ -81,6 +82,9 @@ public class CopyUtkastServiceImplTest {
 
     @Mock
     private NotificationService mockNotificationService;
+
+    @Mock
+    private MonitoringLogService mockMonitoringService;
 
     @Mock
     private LogService logService;
@@ -151,9 +155,9 @@ public class CopyUtkastServiceImplTest {
         verify(mockPUService).getPerson(PATIENT_SSN);
         verify(mockUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateNewDraftCopyRequest.class), any(Person.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
-        
+
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
-        
+
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
 
@@ -180,7 +184,7 @@ public class CopyUtkastServiceImplTest {
         verify(mockUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateNewDraftCopyRequest.class), any(Person.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class));
-        
+
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
     }
 

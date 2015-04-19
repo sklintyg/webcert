@@ -238,7 +238,7 @@ public class LogSender {
                 session.commit();
                 return true;
             } catch (LoggtjanstExecutionException e) {
-                LOG.warn("Failed to send log entries to loggtjänst, JMS session will be rolled back.", e);
+                LOG.error("Failed to send log entries to loggtjänst, JMS session will be rolled back.", e);
                 session.rollback();
                 return false;
             }

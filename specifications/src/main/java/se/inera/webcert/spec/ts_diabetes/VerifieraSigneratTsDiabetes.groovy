@@ -82,6 +82,10 @@ class VerifieraSigneratTsDiabetes {
         getStringResult(getCurrentMethodName())
     }
 
+    String kunskapOmAtgarder() {
+        getStringResult(getCurrentMethodName())
+    }
+
     String teckenNedsattHjarnfunktion() {
         getStringResult(getCurrentMethodName())
     }

@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -33,6 +32,7 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -61,6 +61,9 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private NotificationService notificationService;
+    
+    @Autowired
+    private MonitoringLogService monitoringService; 
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -131,7 +134,8 @@ public class SignaturServiceImpl implements SignaturService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Kunde inte validera SITHS signatur", e);
         }*/
 
-        LOG.info(LogMarkers.MONITORING, "Intyg '{}' signed by '{}'", utkast.getIntygsId(), user.getHsaId());
+        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(),
+                user.getAuthenticationScheme());
 
         // Create and persist the new signature
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
@@ -186,11 +190,13 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the certificate
         Utkast utkast = getUtkastForSignering(intygsId);
 
-        LOG.info(LogMarkers.MONITORING, "Intyg '{}' signed by '{}'", utkast.getIntygsId(), user.getHsaId());
-
         // Create and persist signature
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
-
+        
+        // Audit signing
+        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(),
+                user.getAuthenticationScheme());
+        
         // Notify stakeholders when a draft has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
         LOG.debug("Notification sent: a certificate draft with id '{}' was signed using SERVER method", utkast.getIntygsId());
