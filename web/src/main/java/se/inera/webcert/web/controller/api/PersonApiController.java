@@ -3,8 +3,10 @@ package se.inera.webcert.web.controller.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.webcert.pu.model.PersonSvar;
 import se.inera.webcert.pu.services.PUService;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.PersonuppgifterResponse;
 
@@ -22,6 +24,9 @@ public class PersonApiController extends AbstractApiController {
 
     @Autowired
     private PUService puService;
+    
+    @Autowired
+    private MonitoringLogService monitoringService;
 
     @GET
     @Path("/{personnummer}")
@@ -31,6 +36,8 @@ public class PersonApiController extends AbstractApiController {
         LOG.debug("Hämtar personuppgifter för: {}", personnummer);
 
         PersonSvar personSvar = puService.getPerson(personnummer);
+        
+        monitoringService.logPULookup(personnummer, personSvar.getStatus().name());
 
         return Response.ok(new PersonuppgifterResponse(personSvar)).build();
     }

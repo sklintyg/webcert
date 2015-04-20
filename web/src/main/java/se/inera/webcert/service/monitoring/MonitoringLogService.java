@@ -50,5 +50,7 @@ public interface MonitoringLogService {
     void logUtkastRead(String intygsId, String intygsTyp);
     
     void logUtkastPrint(String intygsId, String intygsTyp);
+    
+    void logPULookup(String personNummer, String result);
 
 }

@@ -118,6 +118,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.UTKAST_PRINT, intygsId, intygsTyp);
     }
 
+    @Override
+    public void logPULookup(String personNummer, String result) {
+        logEvent(MonitoringEvent.PU_LOOKUP, personNummer, result);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
         
         StringBuilder logMsg = new StringBuilder();
@@ -147,7 +152,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_CREATED("Utkast '{}' of type '{}' created on unit '{}'"),
         UTKAST_EDITED("Utkast '{}' of type '{}' was edited"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
-        UTKAST_PRINT("Intyg '{}' of type '{}' was printed");
+        UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
+        PU_LOOKUP("Lookup performed on '{}' with result '{}'");
 
         private String msg;
 
