@@ -170,10 +170,9 @@ describe('ManageCertificate', function() {
 
         beforeEach(function() {
             $scope = {
-                widgetState: {
+                viewState: {
                     activeErrorMessageKey: null,
                     inlineErrorMessageKey: null,
-                    createErrorMessageKey: undefined
                 },
                 dialog: {
                     showerror: false,
