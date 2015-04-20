@@ -93,22 +93,32 @@
       <artifactId>ts-diabetes</artifactId>
     </dependency>
      
-    <!-- Interactions -->    
+    <!-- RIVTA Schemas -->
     <dependency>
-        <groupId>se.inera.intyg.schemas.intygstjanster.ts</groupId>
-        <artifactId>intygstjansten-ts</artifactId>
+      <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate</groupId>
-      <artifactId>clinicalprocess-healthcond-certificate</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting</groupId>
-      <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
+      <groupId>se.riv.insuranceprocess.healthreporting</groupId>
+      <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
     </dependency>
     <dependency>
       <groupId>se.riv.itintegration.monitoring</groupId>
-      <artifactId>itintegration-monitoring-interactions</artifactId>
+      <artifactId>itintegration-monitoring-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.riv.ehr.logstore</groupId>
+      <artifactId>ehr-logstore-schemas</artifactId>
+    </dependency>
+
+    <!-- Intyg Schemas -->
+    <dependency>
+      <groupId>se.inera.intyg.insuranceprocess.healthreporting</groupId>
+      <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.transportstyrelsen</groupId>
+      <artifactId>transportstyrelsen-schemas</artifactId>
     </dependency>
 
     <!-- Logging -->

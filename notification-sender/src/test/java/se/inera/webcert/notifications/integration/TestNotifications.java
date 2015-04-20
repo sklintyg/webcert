@@ -11,8 +11,6 @@ import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.Session;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.joda.time.LocalDateTime;
@@ -26,12 +24,16 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
+
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/test-notification-sender-config.xml", "/spring/test-service-context.xml" })
@@ -82,6 +84,7 @@ public class TestNotifications {
                 return (numberOfReceivedMessages == MESSAGES_EXPECTED);
             }
         });
+
         Map<String, CertificateStatusUpdateForCareType> exchange = certificateStatusUpdateForCareResponderStub.getExchange();
     }
 

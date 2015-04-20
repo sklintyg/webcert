@@ -55,16 +55,16 @@
 
     <!-- Schemas -->
     <dependency>
-      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate</groupId>
-      <artifactId>clinicalprocess-healthcond-certificate</artifactId>
+      <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting</groupId>
-      <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
+      <groupId>se.riv.insuranceprocess.healthreporting</groupId>
+      <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
     </dependency>
     <dependency>
       <groupId>se.riv.itintegration.monitoring</groupId>
-      <artifactId>itintegration-monitoring-interactions</artifactId>
+      <artifactId>itintegration-monitoring-schemas</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.jms</groupId>

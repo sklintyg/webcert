@@ -8,21 +8,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSendException;
 import org.w3.wsaddressing10.AttributedURIType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtab20.v1.ReceiveMedicalCertificateAnswerResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.validator.QuestionAnswerValidator;
-import se.inera.webcert.medcertqa.v1.InnehallType;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.Status;
-import se.inera.webcert.receivemedicalcertificateanswer.v1.rivtabp20.ReceiveMedicalCertificateAnswerResponderInterface;
-import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
-import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType;
-import se.inera.webcert.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.mail.MailNotificationService;
 import se.inera.webcert.service.notification.NotificationService;
 
 import java.util.List;
+
 
 /**
  * @author andreaskaltenbach

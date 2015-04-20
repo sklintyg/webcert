@@ -1,14 +1,15 @@
 package se.inera.webcert.loggtjanststub;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
-import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
-import se.riv.ehr.log.store.storelog.v1.StoreLogResponseType;
+import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;
+import se.riv.ehr.log.store.storelogresponder.v1.StoreLogRequestType;
+import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
 import se.riv.ehr.log.v1.LogType;
 import se.riv.ehr.log.v1.ResultCodeType;
+
+import java.util.concurrent.CopyOnWriteArrayList;
+
 
 /**
  * @author andreaskaltenbach

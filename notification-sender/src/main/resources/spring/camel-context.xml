@@ -15,8 +15,8 @@
   </bean>
 
   <bean id="jaxbMessageDataFormat" class="org.apache.camel.converter.jaxb.JaxbDataFormat">
-    <constructor-arg value="se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1"/>
-    <property name="partClass" value="se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType"/>
+    <constructor-arg value="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1"/>
+    <property name="partClass" value="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType"/>
     <property name="partNamespace">
       <bean class="javax.xml.namespace.QName">
         <constructor-arg value="urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:1"/>

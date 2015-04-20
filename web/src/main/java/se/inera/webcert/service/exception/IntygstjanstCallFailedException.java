@@ -1,6 +1,6 @@
 package se.inera.webcert.service.exception;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
 /**
  * @author andreaskaltenbach

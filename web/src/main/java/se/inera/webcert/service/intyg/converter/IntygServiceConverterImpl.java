@@ -4,18 +4,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.stereotype.Component;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 import se.inera.certificate.model.common.internal.Utlatande;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.converter.ClinicalProcessCertificateMetaTypeConverter;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.ModelConverter;
-import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
-import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Component
 public class IntygServiceConverterImpl implements IntygServiceConverter {

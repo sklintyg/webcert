@@ -1,16 +1,16 @@
 package se.inera.webcert.spec
 
+import org.joda.time.LocalDateTime
+import org.springframework.core.io.ClassPathResource
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType
+import se.inera.webcert.spec.util.WsClientFixture
+
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Unmarshaller
 import javax.xml.transform.stream.StreamSource
 
-import org.joda.time.LocalDateTime
-import org.springframework.core.io.ClassPathResource
-
-import se.inera.webcert.receivemedicalcertificatequestion.v1.rivtabp20.ReceiveMedicalCertificateQuestionResponderInterface
-import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType
-import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType
-import se.inera.webcert.spec.util.WsClientFixture
 
 /**
  * @author andreaskaltenbach

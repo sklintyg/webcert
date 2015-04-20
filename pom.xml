@@ -31,23 +31,31 @@
     <intygstyper.version.range>(,2.2.0]</intygstyper.version.range>
 
     <!-- Schemas -->
-    <clinicalprocess-healthcond-certificate.version>0-SNAPSHOT</clinicalprocess-healthcond-certificate.version>
-    <clinicalprocess-healthcond-certificate.version.range>(,1.1.0]</clinicalprocess-healthcond-certificate.version.range>
-
-    <insuranceprocess-healthreporting.version>0-SNAPSHOT</insuranceprocess-healthreporting.version>
-    <insuranceprocess-healthreporting.version.range>(,1.0.0]</insuranceprocess-healthreporting.version.range>
-
-    <itintegration-monitoring.version>0-SNAPSHOT</itintegration-monitoring.version>
-    <itintegration-monitoring.version.range>(,1.0.0]</itintegration-monitoring.version.range>
-
-    <ehr-logstore.version>0-SNAPSHOT</ehr-logstore.version>
-    <ehr-logstore.version.range>(,1.0.0]</ehr-logstore.version.range>
-
     <schemas-common.version>0-SNAPSHOT</schemas-common.version>
     <schemas-common.version.range>(,2.2.0]</schemas-common.version.range>
 
-    <intygstjansten-ts.version>0-SNAPSHOT</intygstjansten-ts.version>
-    <intygstjansten-ts.version.range>(,1.0.0]</intygstjansten-ts.version.range>
+    <!-- RIVTA Schemas -->
+    <rivta-clinicalprocess.version>0-SNAPSHOT</rivta-clinicalprocess.version>
+    <rivta-clinicalprocess.version.range>(,1.1.0]</rivta-clinicalprocess.version.range>
+
+    <intyg-insuranceprocess.version>0-SNAPSHOT</intyg-insuranceprocess.version>
+    <intyg-insuranceprocess.version.range>(,1.1.0]</intyg-insuranceprocess.version.range>
+
+    <rivta-itintegration-monitoring.version>0-SNAPSHOT</rivta-itintegration-monitoring.version>
+    <rivta-itintegration-monitoring.version.range>(,1.0.0]</rivta-itintegration-monitoring.version.range>
+
+    <rivta-ehr-logstore.version>0-SNAPSHOT</rivta-ehr-logstore.version>
+    <rivta-ehr-logstore.version.range>(,1.0.0]</rivta-ehr-logstore.version.range>
+
+    <!-- Intyg Schemas -->
+    <intyg-clinicalprocess.version>0-SNAPSHOT</intyg-clinicalprocess.version>
+    <intyg-clinicalprocess.version.range>(,1.1.0]</intyg-clinicalprocess.version.range>
+
+    <intyg-insuranceprocess.version>0-SNAPSHOT</intyg-insuranceprocess.version>
+    <intyg-insuranceprocess.version.range>(,1.1.0]</intyg-insuranceprocess.version.range>
+
+    <intyg-transportstyrelsen.version>0-SNAPSHOT</intyg-transportstyrelsen.version>
+    <intyg-transportstyrelsen.version.range>(,1.0.0]</intyg-transportstyrelsen.version.range>
 
   </properties>
 
@@ -199,31 +207,45 @@
         <artifactId>schemas-common</artifactId>
         <version>${schemas-common.version}</version>
       </dependency>
+
+      <!-- RIVTA Schemas -->
       <dependency>
-        <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate</groupId>
-        <artifactId>clinicalprocess-healthcond-certificate</artifactId>
-        <version>${clinicalprocess-healthcond-certificate.version}</version>
+        <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
+        <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
+        <version>${rivta-clinicalprocess.version}</version>
       </dependency>
       <dependency>
-        <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting</groupId>
-        <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
-        <version>${insuranceprocess-healthreporting.version}</version>
+        <groupId>se.riv.insuranceprocess.healthreporting</groupId>
+        <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
+        <version>${intyg-insuranceprocess.version}</version>
       </dependency>
       <dependency>
         <groupId>se.riv.itintegration.monitoring</groupId>
-        <artifactId>itintegration-monitoring-interactions</artifactId>
-        <version>${itintegration-monitoring.version}</version>
+        <artifactId>itintegration-monitoring-schemas</artifactId>
+        <version>${rivta-itintegration-monitoring.version}</version>
       </dependency>
       <dependency>
         <groupId>se.riv.ehr.logstore</groupId>
-        <artifactId>ehr-logstore-interactions</artifactId>
-        <version>${ehr-logstore.version}</version>
+        <artifactId>ehr-logstore-schemas</artifactId>
+        <version>${rivta-ehr-logstore.version}</version>
       </dependency>
-     <dependency>
-        <groupId>se.inera.intyg.schemas.intygstjanster.ts</groupId>
-        <artifactId>intygstjansten-ts</artifactId>
-        <version>${intygstjansten-ts.version}</version>
-     </dependency>
+
+      <!-- Intyg Schemas -->
+      <dependency>
+        <groupId>se.inera.intyg.clinicalprocess.healthcond.certificate</groupId>
+        <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
+        <version>${intyg-clinicalprocess.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.insuranceprocess.healthreporting</groupId>
+        <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
+        <version>${intyg-insuranceprocess.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.transportstyrelsen</groupId>
+        <artifactId>transportstyrelsen-schemas</artifactId>
+        <version>${intyg-transportstyrelsen.version}</version>
+      </dependency>
 
       <!-- Authentication -->
       <dependency>
@@ -280,8 +302,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
-      <!-- Integration -->
 
       <!-- Spring family -->
       <dependency>
@@ -457,8 +477,8 @@
         <artifactId>versions-maven-plugin</artifactId>
         <configuration>
           <includeProperties>
-            common.version,  intygstyper.version, clinicalprocess-healthcond-certificate.version,
-            insuranceprocess-healthreporting.version, itintegration-monitoring.version, ehr-logstore.version,
+            common.version,  intygstyper.version, rivta-clinicalprocess.version,
+            intyg-insuranceprocess.version, rivta-itintegration-monitoring.version, rivta-ehr-logstore.version,
             intygstjansten-ts.version, schemas-common.version, tools-version
           </includeProperties>
           <properties>
@@ -471,24 +491,24 @@
               <version>${intygstyper.version.range}</version>
             </property>
             <property>
-              <name>clinicalprocess-healthcond-certificate.version</name>
-              <version>${clinicalprocess-healthcond-certificate.version.range}</version>
+              <name>rivta-clinicalprocess.version</name>
+              <version>${rivta-clinicalprocess.version.range}</version>
             </property>
             <property>
-              <name>insuranceprocess-healthreporting.version</name>
-              <version>${insuranceprocess-healthreporting.version.range}</version>
+              <name>intyg-insuranceprocess.version</name>
+              <version>${intyg-insuranceprocess.version.range}</version>
             </property>
             <property>
-              <name>itintegration-monitoring.version</name>
-              <version>${itintegration-monitoring.version.range}</version>
+              <name>rivta-itintegration-monitoring.version</name>
+              <version>${rivta-itintegration-monitoring.version.range}</version>
             </property>
             <property>
-              <name>ehr-logstore.version</name>
-              <version>${ehr-logstore.version.range}</version>
+              <name>rivta-ehr-logstore.version</name>
+              <version>${rivta-ehr-logstore.version.range}</version>
             </property>
             <property>
-              <name>intygstjansten-ts.version</name>
-              <version>${intygstjansten-ts.version.range}</version>
+              <name>intyg-transportstyrelsen.version</name>
+              <version>${intyg-transportstyrelsen.version.range}</version>
             </property>
             <property>
               <name>schemas-common.version</name>

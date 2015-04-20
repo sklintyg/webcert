@@ -1,7 +1,7 @@
 package se.inera.webcert.fkstub.validation;
 
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
-import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 
 import java.util.List;
 

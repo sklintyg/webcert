@@ -2,21 +2,20 @@ package se.inera.webcert.notificationstub;
 
 import static org.junit.Assert.assertEquals;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
+import org.joda.time.LocalDateTime;
+import org.junit.Test;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Handelse;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.joda.time.LocalDateTime;
-import org.junit.Test;
-
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Handelse;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
 
 public class NotificationStoreTest {
 

@@ -53,8 +53,8 @@
       <artifactId>common-schemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting</groupId>
-      <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
+      <groupId>se.riv.insuranceprocess.healthreporting</groupId>
+      <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
     </dependency>
 
     <dependency>

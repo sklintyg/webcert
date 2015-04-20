@@ -24,8 +24,8 @@
       <artifactId>common-schemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate</groupId>
-      <artifactId>clinicalprocess-healthcond-certificate</artifactId>
+      <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
 
     <!-- Spring -->

@@ -4,14 +4,14 @@ import org.joda.time.LocalDateTime;
 
 import se.inera.certificate.validate.PersonnummerValidator;
 import se.inera.certificate.validate.SamordningsnummerValidator;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
-import se.inera.webcert.medcertqa.v1.Amnetyp;
-import se.inera.webcert.medcertqa.v1.InnehallType;
-import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
-import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
