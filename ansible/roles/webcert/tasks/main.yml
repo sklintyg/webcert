@@ -48,14 +48,9 @@
   template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
 - name: update configuration to {{ config_version }}
-  when: environment_name != "dev"
   git: repo={{ config_repository }}
        dest={{ config_folder }}
        version={{ config_version }}
-
-- name: copy configuration for dev use
-  when: environment_name == "dev"
-  command: cp -rf /vagrant/{{ config_name }}/{{ environment_name }} {{ config_folder }}
 
 - name: start tomcat
   service: name={{ tomcat_service }} state=started pattern=org.apache.catalina.startup.Bootstrap
