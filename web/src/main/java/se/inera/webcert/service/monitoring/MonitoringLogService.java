@@ -41,7 +41,7 @@ public interface MonitoringLogService {
 
     void logIntygCopied(String copyIntygsId, String originalIntygId);
 
-    void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId);
+    void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId, String userHsaId);
 
     void logUtkastEdited(String intygsId, String intygsTyp);
 

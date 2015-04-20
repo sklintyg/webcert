@@ -94,8 +94,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId) {
-        logEvent(MonitoringEvent.UTKAST_CREATED, intygsId, intygsTyp, unitHsaId);
+    public void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId, String userHsaId) {
+        logEvent(MonitoringEvent.UTKAST_CREATED, intygsId, intygsTyp, userHsaId, unitHsaId);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         INTYG_REVOKED("Intyg '{}' revoked by '{}'"),
         INTYG_COPIED("Utkast '{}' created as a copy of '{}'"),
         UTKAST_READ("Utkast '{}' of type '{}' was read"),
-        UTKAST_CREATED("Utkast '{}' of type '{}' created on unit '{}'"),
+        UTKAST_CREATED("Utkast '{}' of type '{}' created by '{}' on unit '{}'"),
         UTKAST_EDITED("Utkast '{}' of type '{}' was edited"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),

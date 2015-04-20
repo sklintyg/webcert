@@ -103,7 +103,7 @@ public class UtkastServiceImpl implements UtkastService {
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
 
         monitoringService.logUtkastCreated(savedUtkast.getIntygsId(),
-                savedUtkast.getIntygsTyp(), request.getVardenhet().getHsaId());
+                savedUtkast.getIntygsTyp(), savedUtkast.getEnhetsId(), savedUtkast.getSkapadAv().getHsaId());
 
         sendNotification(savedUtkast, Event.CREATED);
 
