@@ -167,16 +167,16 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
                 if ($cookieStore.get(_COPY_DIALOG_COOKIE)) {
                     $log.debug('copy cert without dialog' + intygCopyRequest);
-                    $scope.widgetState.activeErrorMessageKey = null;
-                    $scope.widgetState.inlineErrorMessageKey = null;
+                    $scope.viewState.activeErrorMessageKey = null;
+                    $scope.viewState.inlineErrorMessageKey = null;
                     _createCopyDraft(intygCopyRequest, function(draftResponse) {
                         goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                     }, function(errorCode) {
                         if (errorCode === 'DATA_NOT_FOUND') {
-                            $scope.widgetState.inlineErrorMessageKey = 'error.failedtocopyintyg.personidnotfound';
+                            $scope.viewState.inlineErrorMessageKey = 'error.failedtocopyintyg.personidnotfound';
                         }
                         else {
-                            $scope.widgetState.inlineErrorMessageKey = 'error.failedtocopyintyg';
+                            $scope.viewState.inlineErrorMessageKey = 'error.failedtocopyintyg';
                         }
                     });
                 } else {
@@ -200,11 +200,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                             copyDialogModel.acceptprogressdone = false;
                             _createCopyDraft(intygCopyRequest, function(draftResponse) {
                                 copyDialogModel.acceptprogressdone = true;
-                                if(!$scope.widgetState){
-                                    $scope.widgetState = { createErrorMessageKey:undefined };
-                                } else {
-                                    $scope.widgetState.createErrorMessageKey = undefined;
-                                }
+                                $scope.viewState.inlineErrorMessageKey = null;
                                 var deferred = $q.defer();
                                 deferred.promise.then(function(){
                                     goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
@@ -258,7 +254,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _send(cert, recipientId, titleId, onSuccess) {
+            function _send(intygId, intygType, recipientId, titleId, onSuccess) {
 
                 var dialogSendModel ={
                     acceptprogressdone: true,
@@ -275,8 +271,8 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     templateUrl: '/views/partials/send-dialog.html',
                     model: dialogSendModel,
                     button1click: function() {
-                        $log.debug('send cert from dialog' + cert);
-                        _sendSigneratIntyg(cert.id, cert.intygType, recipientId, dialogSendModel.patientConsent, dialogSendModel,
+                        $log.debug('send intyg from dialog. id:' + intygId + ', intygType:' + intygType + ', recipientId:' + recipientId);
+                        _sendSigneratIntyg(intygId, intygType, recipientId, dialogSendModel.patientConsent, dialogSendModel,
                             sendDialog, onSuccess);
                     },
                     button1text: 'common.send',
