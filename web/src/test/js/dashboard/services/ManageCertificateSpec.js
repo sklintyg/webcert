@@ -172,7 +172,7 @@ describe('ManageCertificate', function() {
             $scope = {
                 viewState: {
                     activeErrorMessageKey: null,
-                    inlineErrorMessageKey: null,
+                    inlineErrorMessageKey: null
                 },
                 dialog: {
                     showerror: false,
