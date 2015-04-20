@@ -11,23 +11,23 @@
   <!-- Clients using NTJP -->
   <beans>
     <jaxws:client id="sendQuestionToFKClient"
-      serviceClass="se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface"
+      serviceClass="se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface"
       address="${sendquestiontofk.endpoint.url}" />
 
     <jaxws:client id="sendAnswerToFKClient"
-      serviceClass="se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface"
+      serviceClass="se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface"
       address="${sendanswertofk.endpoint.url}" />
 
     <jaxws:client id="listCertificatesForCareResponder"
-      serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface"
+      serviceClass="se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface"
       address="${intygstjanst.listcertificatesforcare.endpoint.url}" />
 
     <jaxws:client id="sendCertificateClient"
-      serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface"
+      serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface"
       address="${intygstjanst.sendcertificate.endpoint.url}" />
 
     <jaxws:client id="revokeCertificateClient"
-      serviceClass="se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.v1.rivtabp20.RevokeMedicalCertificateResponderInterface"
+      serviceClass="se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface"
       address="${intygstjanst.revokecertificate.endpoint.url}" />
 
     <jaxws:client id="pingIntygstjanstForConfigurationClient"

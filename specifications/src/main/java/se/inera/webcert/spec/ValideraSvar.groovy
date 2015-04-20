@@ -1,7 +1,7 @@
 package se.inera.webcert.spec
 
 import se.inera.certificate.spec.util.FitnesseHelper
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtab20.v1.ReceiveMedicalCertificateAnswerResponderInterface
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtabp20.v1.ReceiveMedicalCertificateAnswerResponderInterface
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerResponseType
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType
 import se.inera.webcert.spec.util.WsClientFixture

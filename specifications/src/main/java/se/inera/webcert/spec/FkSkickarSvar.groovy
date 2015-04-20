@@ -1,7 +1,7 @@
 package se.inera.webcert.spec
 
 import org.springframework.core.io.ClassPathResource
-import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtab20.v1.ReceiveMedicalCertificateAnswerResponderInterface
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswer.rivtabp20.v1.ReceiveMedicalCertificateAnswerResponderInterface
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType
 import se.inera.webcert.spec.util.WsClientFixture
