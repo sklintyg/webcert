@@ -12,6 +12,7 @@ class SokSkrivaIntygPage extends AbstractPage {
         puFelmeddelande { $("#puerror") }
 
         logoutLink { $("#logoutLink") }
+        valjIntygTyp { $("#valj-intyg-typ")}
     }
 
     def selectCareUnit(String careUnit) {

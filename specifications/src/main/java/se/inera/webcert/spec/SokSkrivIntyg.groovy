@@ -33,6 +33,14 @@ class SokSkrivIntyg {
         }
     }
 
+    boolean valjIntyTypVisas() {
+        Browser.drive {
+            waitFor {
+                at SokSkrivaIntygMedListaPage;
+            }
+        }
+    }
+
     boolean sokSkrivIntygSidanVisas() {
         sokSkrivIntygSidanVisasSaSmaningom()
     }
@@ -113,6 +121,7 @@ class SokSkrivIntyg {
             waitFor {
                 page.copyBtn(intygId).isDisplayed()
             }
+            println('page ' + page);
             page.copy(intygId)
         }
     }
