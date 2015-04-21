@@ -200,16 +200,10 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                             copyDialogModel.acceptprogressdone = false;
                             _createCopyDraft(intygCopyRequest, function(draftResponse) {
                                 copyDialogModel.acceptprogressdone = true;
-<<<<<<< Updated upstream
                                 if($scope.viewState && $scope.viewState.inlineErrorMessageKey) {
                                     $scope.viewState.inlineErrorMessageKey = null;
                                 }
                                 var end = function(){
-=======
-                                $scope.viewState.inlineErrorMessageKey = null;
-                                var deferred = $q.defer();
-                                deferred.promise.then(function(){
->>>>>>> Stashed changes
                                     goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                                 };
                                 copyDialog.close({direct:end});
