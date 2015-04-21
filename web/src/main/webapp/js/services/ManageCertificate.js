@@ -255,7 +255,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _send(intygId, intygType, recipientId, titleId, onSuccess) {
+            function _send(cert, recipientId, titleId, bodyTextId, onSuccess) {
 
                 var dialogSendModel ={
                     acceptprogressdone: true,
@@ -268,7 +268,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 sendDialog = dialogService.showDialog({
                     dialogId: 'send-dialog',
                     titleId: titleId,
-                    bodyText: 'Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.',
+                    bodyTextId: bodyTextId,
                     templateUrl: '/views/partials/send-dialog.html',
                     model: dialogSendModel,
                     button1click: function() {

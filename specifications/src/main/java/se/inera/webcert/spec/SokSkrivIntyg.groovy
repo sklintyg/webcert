@@ -157,6 +157,17 @@ class SokSkrivIntyg {
         true
     }
 
+    boolean skickaStatusVisasMedRattMeddelande(boolean expected = true, String containsText) {
+
+        Browser.drive {
+
+            waitFor {
+                expected = page.certificateIsSentToRecipientMessage.text().contains(containsText)
+            }
+        }
+        expected
+    }
+
     def oppnaKopieraDialogen() {
         Browser.drive {
             page.copyButton.click()

@@ -15,3 +15,4 @@ Detta test ska visa på att man kan skicka ett signerat fk-intyg.
 | script | !-SokSkrivIntyg-! |
 | skicka visat intyg |
 | skicka status visas |
+| skicka status visas | true | med ratt meddelande | Försäkringskassans system |
