@@ -148,6 +148,22 @@ class SokSkrivIntyg {
         }
     }
 
+    def skickaDetVisadeIntygetAvTyp(String typ) {
+
+        Browser.drive {
+            waitFor {
+                if (typ == "fk7263") {
+                    at se.inera.webcert.pages.fk7263.VisaFk7263Page
+                } else if (typ == "ts-bas") {
+                    at se.inera.webcert.pages.ts_bas.VisaTsBasPage
+                } else if (typ == "ts-diabetes") {
+                    at se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
+                }
+                page.sendWithValidation()
+            }
+        }
+    }
+
     boolean skickaStatusVisas() {
         Browser.drive {
             waitFor {
