@@ -104,7 +104,7 @@
   <!-- The wc-security-test profile support both Säkerhetstjänst and Fake login -->
   <!-- =============================================================== -->
   <beans profile="wc-security-test">
-    <security:http entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)" path-type="regex">
+    <security:http entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" path-type="regex">
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
@@ -133,7 +133,7 @@
   <!-- =============================================================== -->
   <beans profile="prod,wc-security-prod">
     <!-- /visa/intyg/ is a deep integration link from VAS and should use saml sso -->
-    <security:http entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)" path-type="regex">
+    <security:http entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" path-type="regex">
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
@@ -181,9 +181,10 @@
     </bean>
 
     <!-- Decide which requests should be saved for redirection after successful login.
+         Triggers on: /web/* and deep-integration links /visa/* and /webcert/*
          We don't want to save /api and /moduleapi requests since this will make the browser display the data. -->
     <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
-      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/fragasvar\/.*"/>
+      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*"/>
       <constructor-arg index="1" value="GET"/>
     </bean>
     <bean id="httpSessionRequestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
