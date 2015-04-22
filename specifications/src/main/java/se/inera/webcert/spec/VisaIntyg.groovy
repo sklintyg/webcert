@@ -13,6 +13,7 @@ class VisaIntyg {
         }
     }
 
+
     boolean intygLaddat(boolean expected = true) {
         Browser.drive {
             waitFor {

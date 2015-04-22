@@ -10,6 +10,9 @@ class VisaPage extends AbstractPage {
         intygLaddat { $('#intyg-vy-laddad') }
 
         skickaKnapp { $("#sendBtn") }
+        skickaDialogCheck { $("#patientSamtycke") }
+        skickaDialogSkickaKnapp { $("#button1send-dialog") }
+
         skrivUtKnapp {$("#downloadprint") }
         kopieraKnapp { $("#copyBtn") }
         makuleraKnapp { $("#makuleraBtn") }
@@ -24,4 +27,19 @@ class VisaPage extends AbstractPage {
         }
     }
 
+    /**
+     * Generic send, does not validate content of send dialog body text
+     * @return
+     */
+    def send() {
+        skickaKnapp.click()
+        waitFor {
+            doneLoading()
+        }
+        skickaDialogCheck.click()
+        waitFor {
+            doneLoading()
+        }
+        skickaDialogSkickaKnapp.click()
+    }
 }

@@ -34,8 +34,8 @@ class VisaFk7263Page extends VisaPage {
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
-        skickaDialogCheck { $("#patientSamtycke") }
-        skickaDialogSkickaKnapp { $("#button1send-dialog") }
+
+        skickaDialogBody { $("span[key=\"fk7263.label.send.body\"]") }
 
         // kopiera dialog text webcert-1449
         copyDialog(required:false, toWait: true){ $("#copy-dialog") }
@@ -181,10 +181,11 @@ class VisaFk7263Page extends VisaPage {
         }
     }
 
-    def send() {
-        $("#sendBtn").click()
+    def sendWithValidation() {
+        skickaKnapp.click()
         waitFor {
             doneLoading()
+            skickaDialogBody.text().contains("Försäkringskassan.")
         }
         skickaDialogCheck.click()
         waitFor {

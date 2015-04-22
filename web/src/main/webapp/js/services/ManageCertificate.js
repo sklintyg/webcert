@@ -200,12 +200,13 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                             copyDialogModel.acceptprogressdone = false;
                             _createCopyDraft(intygCopyRequest, function(draftResponse) {
                                 copyDialogModel.acceptprogressdone = true;
-                                $scope.viewState.inlineErrorMessageKey = null;
-                                var deferred = $q.defer();
-                                deferred.promise.then(function(){
+                                if($scope.viewState && $scope.viewState.inlineErrorMessageKey) {
+                                    $scope.viewState.inlineErrorMessageKey = null;
+                                }
+                                var end = function() {
                                     goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
-                                });
-                                copyDialog.close(deferred);
+                                };
+                                copyDialog.close({direct:end});
 
                             }, function(errorCode) {
                                 if (errorCode === 'DATA_NOT_FOUND') {
@@ -254,7 +255,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _send(intygId, intygType, recipientId, titleId, onSuccess) {
+            function _send(intygId, intygType, recipientId, titleId, bodyTextId, onSuccess) {
 
                 var dialogSendModel ={
                     acceptprogressdone: true,
@@ -267,7 +268,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 sendDialog = dialogService.showDialog({
                     dialogId: 'send-dialog',
                     titleId: titleId,
-                    bodyText: 'Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.',
+                    bodyTextId: bodyTextId,
                     templateUrl: '/views/partials/send-dialog.html',
                     model: dialogSendModel,
                     button1click: function() {

@@ -11,8 +11,9 @@ Detta test ska visa på att man kan skicka ett signerat ts-intyg.
 
 !3 Skicka intyget och kontrollera att intyget skickats
 | script | !-SokSkrivIntyg-! |
-| skicka visat intyg |
+| skicka det visade intyget av typ | ts-bas |
 | skicka status visas |
+| skicka status visas | true | med ratt meddelande | Transportstyrelsen |
 
 !3 Verififera att intyget finns i stubben
 | ts intyg finns i stub |
