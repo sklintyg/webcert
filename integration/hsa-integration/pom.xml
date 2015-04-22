@@ -145,6 +145,9 @@
                     <extraarg>-verbose</extraarg>
                   </extraargs>
                   <wsdl>${schema.path}/wsdl/HsaWsInteraction_3.16.wsdl</wsdl>
+                  <wsdlLocation>
+                    classpath:schemas/wsdl/HsaWsInteraction_3.16.wsdl
+                  </wsdlLocation>
                 </wsdlOption>
 
               </wsdlOptions>
