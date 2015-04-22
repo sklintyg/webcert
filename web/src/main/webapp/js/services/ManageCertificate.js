@@ -203,7 +203,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                                 if($scope.viewState && $scope.viewState.inlineErrorMessageKey) {
                                     $scope.viewState.inlineErrorMessageKey = null;
                                 }
-                                var end = function(){
+                                var end = function() {
                                     goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                                 };
                                 copyDialog.close({direct:end});
