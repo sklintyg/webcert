@@ -104,6 +104,7 @@
   <!-- The wc-security-test profile support both Säkerhetstjänst and Fake login -->
   <!-- =============================================================== -->
   <beans profile="wc-security-test">
+    <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
     <security:http entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" path-type="regex">
       <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -132,7 +133,7 @@
   <!-- The wc-security-prod profile only supports Säkerhetstjänst login -->
   <!-- =============================================================== -->
   <beans profile="prod,wc-security-prod">
-    <!-- /visa/intyg/ is a deep integration link from VAS and should use saml sso -->
+    <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
     <security:http entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" path-type="regex">
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="FIRST" ref="metadataGeneratorFilter"/>
