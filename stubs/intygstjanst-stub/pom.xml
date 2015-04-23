@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.clinicalprocess.healthcond.certificate</groupId>
-      <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
+      <artifactId>intyg-clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
 
     <dependency>

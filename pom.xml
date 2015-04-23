@@ -233,17 +233,17 @@
       <!-- Intyg Schemas -->
       <dependency>
         <groupId>se.inera.intyg.clinicalprocess.healthcond.certificate</groupId>
-        <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
+        <artifactId>intyg-clinicalprocess-healthcond-certificate-schemas</artifactId>
         <version>${intyg-clinicalprocess.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.insuranceprocess.healthreporting</groupId>
-        <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
+        <artifactId>intyg-insuranceprocess-healthreporting-schemas</artifactId>
         <version>${intyg-insuranceprocess.version}</version>
       </dependency>
       <dependency>
         <groupId>se.inera.intyg.transportstyrelsen</groupId>
-        <artifactId>transportstyrelsen-schemas</artifactId>
+        <artifactId>intyg-transportstyrelsen-schemas</artifactId>
         <version>${intyg-transportstyrelsen.version}</version>
       </dependency>
 
