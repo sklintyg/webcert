@@ -17,6 +17,8 @@ class VisaPage extends AbstractPage {
         kopieraKnapp { $("#copyBtn") }
         makuleraKnapp { $("#makuleraBtn") }
 
+        kopieraDialogMsgForlangningSjukskrivning(required:false) { $("#msgForlangningSjukskrivning") }
+
     }
 
     boolean intygLaddat(boolean expected) {

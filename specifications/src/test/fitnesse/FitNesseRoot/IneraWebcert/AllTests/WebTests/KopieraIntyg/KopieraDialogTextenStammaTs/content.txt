@@ -7,16 +7,14 @@ Detta test säkerstalla att texten är som i jira webcert-1447
 | sok skriv intyg sidan visas sa smaningom |
 | valj patient | 19000101-9801 |
 | valj intygstyp sidan visas |
-| visa intyg | intyg-fit-1 |
+| visa intyg | intyg-fit-8 |
 | visa intyg sidan visas |
 
 !4 Testa att tooltip för Kopiera-knapp innehåller text för förnyelse av sjukintyg
 | script | !-SokSkrivIntyg-! |
-| kopiera knapp har text sjukskrivning |
+| kopiera knapp har inte text sjukskrivning |
 
-!4 Testa att nytt personnumer text inte visas i kopieradialogen, men att förlängning av sjukskrivning visas.
+!4 Testa att text förlängning av sjukskrivning inte visas.
 | script | !-IntegrationMedJournalsystem-! |
 | toggle kopiera dialogen | true |
-| nytt person nummer text inte visas |
-| inte fran journal system text visas |
-| forlangning sjukskrivning visas |
+| forlangning sjukskrivning inte visas |
