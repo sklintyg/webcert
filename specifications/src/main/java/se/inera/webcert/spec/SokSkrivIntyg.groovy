@@ -363,4 +363,26 @@ class SokSkrivIntyg {
             }
         }
     }
+
+    boolean kopieraKnappHarTextSjukskrivning() {
+        def result
+        Browser.drive {
+            waitFor {
+                result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+                        page.kopieraKnapp.attr("title").contains("sjukskrivning")
+            }
+        }
+        return result
+    }
+
+    boolean kopieraKnappHarInteTextSjukskrivning() {
+        def result
+        Browser.drive {
+            waitFor {
+                result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+                        !page.kopieraKnapp.attr("title").contains("sjukskrivning")
+            }
+        }
+        return result
+    }
 }

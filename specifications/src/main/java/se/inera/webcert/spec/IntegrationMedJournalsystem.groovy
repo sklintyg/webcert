@@ -368,6 +368,26 @@ class IntegrationMedJournalsystem {
         result
     }
 
+    boolean forlangningSjukskrivningVisas() {
+        def result
+        Browser.drive {
+            waitFor() {
+                result = page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();
+            }
+        }
+        return result
+    }
+
+    boolean forlangningSjukskrivningInteVisas() {
+        def result
+        Browser.drive {
+            waitFor() {
+                result = !page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();
+            }
+        }
+        return result
+    }
+
     def sleepForNSeconds(String time) {
         def n = time as int;
         def originalMilliseconds = System.currentTimeMillis()

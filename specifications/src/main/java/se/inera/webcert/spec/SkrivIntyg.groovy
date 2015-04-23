@@ -62,6 +62,16 @@ class SkrivIntyg {
         }
     }
 
+    boolean visaVadSomSaknasListaVisas(boolean expected) {
+        Browser.drive {
+            sleep(500)
+            waitFor {
+                page.visaVadSomSaknasLista.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
     def ingaValideringsfelVisas() {
         def result = false
         Browser.drive {
@@ -176,7 +186,7 @@ class SkrivIntyg {
     boolean verifieraAttSjukskrivningsperiodenAr(int expected) {
         Browser.drive {
             waitFor {
-                sleep(500)
+                sleep(200)
                 expected == page.arbetsformaga.period.text().toInteger()
             }
         }

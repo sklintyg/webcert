@@ -8,6 +8,7 @@ class VisaTsBasPage extends VisaPage {
 
         intygSaknas { $("#cert-load-error") }
         intygLaddat { $('#intyg-vy-laddad') }
+        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
 
         copyButton { $("#copyBtn") }
         makuleraButton { $("#makuleraBtn") }

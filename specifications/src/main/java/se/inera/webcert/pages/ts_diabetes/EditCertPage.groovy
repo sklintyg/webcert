@@ -212,6 +212,7 @@ class HypoglykemierModule extends Module {
         fragaF { $("input", name: "hypof") }
         fragaG { $("input", name: "hypog") }
         allvarligForekomstVakenTid { $("#allvarligForekomstVakenTidObservationstid") }
+        allvarligForekomstVakenTidObservationstid_toggle { $("#allvarligForekomstVakenTidObservationstid-toggle") }
     }
 }
 
