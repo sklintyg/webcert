@@ -33,7 +33,7 @@ class HanteraUtkast {
         Browser.drive {
             $("#showBtn-$intygsid").click()
             waitFor {
-                at se.inera.webcert.pages.fk7263.EditCertPage
+                at se.inera.webcert.pages.EditeraIntygPage
             }
         }
     }

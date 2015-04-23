@@ -148,6 +148,22 @@ class SokSkrivIntyg {
         }
     }
 
+    def skickaDetVisadeIntygetAvTyp(String typ) {
+
+        Browser.drive {
+            waitFor {
+                if (typ == "fk7263") {
+                    at se.inera.webcert.pages.fk7263.VisaFk7263Page
+                } else if (typ == "ts-bas") {
+                    at se.inera.webcert.pages.ts_bas.VisaTsBasPage
+                } else if (typ == "ts-diabetes") {
+                    at se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
+                }
+                page.sendWithValidation()
+            }
+        }
+    }
+
     boolean skickaStatusVisas() {
         Browser.drive {
             waitFor {
@@ -155,6 +171,17 @@ class SokSkrivIntyg {
             }
         }
         true
+    }
+
+    boolean skickaStatusVisasMedRattMeddelande(boolean expected = true, String containsText) {
+
+        Browser.drive {
+
+            waitFor {
+                expected = page.certificateIsSentToRecipientMessage.text().contains(containsText)
+            }
+        }
+        expected
     }
 
     def oppnaKopieraDialogen() {
@@ -335,5 +362,27 @@ class SokSkrivIntyg {
                 page.selectCareUnit(careUnit);
             }
         }
+    }
+
+    boolean kopieraKnappHarTextSjukskrivning() {
+        def result
+        Browser.drive {
+            waitFor {
+                result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+                        page.kopieraKnapp.attr("title").contains("sjukskrivning")
+            }
+        }
+        return result
+    }
+
+    boolean kopieraKnappHarInteTextSjukskrivning() {
+        def result
+        Browser.drive {
+            waitFor {
+                result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+                        !page.kopieraKnapp.attr("title").contains("sjukskrivning")
+            }
+        }
+        return result
     }
 }

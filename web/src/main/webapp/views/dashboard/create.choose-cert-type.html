@@ -98,7 +98,7 @@
                   <td>
                     <button ng-show="cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'" class="btn btn-info"
                             wc-feature-active feature="kopieraIntyg" intygstyp="{{cert.intygType}}"
-                            title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras. Kopiera kan användas exempelvis vid förlängning av en sjukskrivning." ng-click="copyIntyg(cert)"
+                            title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras." ng-click="copyIntyg(cert)"
                             id="copyBtn-{{cert.intygId}}">
                       Kopiera
                     </button>

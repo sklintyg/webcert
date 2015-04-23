@@ -184,6 +184,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     copyDialogModel.otherCareUnit = isOtherCareUnit;
                     copyDialogModel.patientId = $stateParams.patientId;
                     copyDialogModel.deepIntegration = featureService.isFeatureActive('franJournalsystem');
+                    copyDialogModel.intygTyp = intygCopyRequest.intygType;
 
                     var copyDialog = dialogService.showDialog({
                         dialogId: 'copy-dialog',
@@ -203,7 +204,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                                 if($scope.viewState && $scope.viewState.inlineErrorMessageKey) {
                                     $scope.viewState.inlineErrorMessageKey = null;
                                 }
-                                var end = function(){
+                                var end = function() {
                                     goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                                 };
                                 copyDialog.close({direct:end});
@@ -255,7 +256,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _send(intygId, intygType, recipientId, titleId, onSuccess) {
+            function _send(intygId, intygType, recipientId, titleId, bodyTextId, onSuccess) {
 
                 var dialogSendModel ={
                     acceptprogressdone: true,
@@ -268,7 +269,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 sendDialog = dialogService.showDialog({
                     dialogId: 'send-dialog',
                     titleId: titleId,
-                    bodyText: 'Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.',
+                    bodyTextId: bodyTextId,
                     templateUrl: '/views/partials/send-dialog.html',
                     model: dialogSendModel,
                     button1click: function() {

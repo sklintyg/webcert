@@ -13,5 +13,6 @@ Detta test ska visa på att man kan skicka ett signerat fk-intyg.
 !3 Skicka intyget och kontrollera att intyget skickats
 
 | script | !-SokSkrivIntyg-! |
-| skicka visat intyg |
+| skicka det visade intyget av typ | fk7263 |
 | skicka status visas |
+| skicka status visas | true | med ratt meddelande | Försäkringskassans system |

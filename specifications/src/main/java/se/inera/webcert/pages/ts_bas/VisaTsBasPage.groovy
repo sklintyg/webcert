@@ -8,14 +8,15 @@ class VisaTsBasPage extends VisaPage {
 
         intygSaknas { $("#cert-load-error") }
         intygLaddat { $('#intyg-vy-laddad') }
+        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
 
         copyButton { $("#copyBtn") }
         makuleraButton { $("#makuleraBtn") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
-        skickaDialogCheck { $("#patientSamtycke") }
-        skickaDialogSkickaKnapp { $("#button1send-dialog") }
+
+        skickaDialogBodyTsBas { $("span[key=\"ts-bas.label.send.body\"]") }
 
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
@@ -100,10 +101,11 @@ class VisaTsBasPage extends VisaPage {
         makuleraDialogKopieraKnapp.click()
     }
 
-    def send() {
-        $("#sendBtn").click()
+    def sendWithValidation() {
+        skickaKnapp.click()
         waitFor {
             doneLoading()
+            skickaDialogBodyTsBas.text().trim().equals("")
         }
         skickaDialogCheck.click()
         waitFor {
