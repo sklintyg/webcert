@@ -13,6 +13,7 @@ class VisaFk7263Page extends VisaPage {
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
         certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
 
         // copy dialog
         annanEnhetText { $("#annanVardenhet")}

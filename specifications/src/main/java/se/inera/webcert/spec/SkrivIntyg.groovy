@@ -62,6 +62,16 @@ class SkrivIntyg {
         }
     }
 
+    boolean visaVadSomSaknasListaVisas(boolean expected) {
+        Browser.drive {
+            sleep(500)
+            waitFor {
+                page.visaVadSomSaknasLista.isDisplayed() == expected
+            }
+        }
+        true
+    }
+
     def ingaValideringsfelVisas() {
         def result = false
         Browser.drive {
