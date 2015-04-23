@@ -114,11 +114,11 @@
     <!-- Intyg Schemas -->
     <dependency>
       <groupId>se.inera.intyg.insuranceprocess.healthreporting</groupId>
-      <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
+      <artifactId>intyg-insuranceprocess-healthreporting-schemas</artifactId>
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.transportstyrelsen</groupId>
-      <artifactId>transportstyrelsen-schemas</artifactId>
+      <artifactId>intyg-transportstyrelsen-schemas</artifactId>
     </dependency>
 
     <!-- Logging -->
