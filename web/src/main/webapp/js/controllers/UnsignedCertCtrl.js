@@ -158,6 +158,26 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 return converted;
             }
 
+            function isToBeforeFrom() {
+                var to = $scope.filterForm.lastFilterQuery.filter.savedTo;
+                var from = $scope.filterForm.lastFilterQuery.filter.savedFrom;
+                if (to === null || to === undefined || to === '') {
+                    return false;
+                }
+                if (from === null || from === undefined || from === '') {
+                    return false;
+                }
+
+                var mto = moment(to);
+                var mfrom = moment(from);
+
+                if(!mto.isValid() || !mfrom.isValid()) {
+                    return false;
+                }
+
+                return moment(to).isBefore(from);
+            }
+
             /**
              * Exposed scope functions
              **/
@@ -174,6 +194,8 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
                 $scope.widgetState.invalidFromDate = $scope.filterFormElement['filter-changedate-from'].$error.date;
                 $scope.widgetState.invalidToDate = $scope.filterFormElement['filter-changedate-to'].$error.date;
+                $scope.widgetState.invalidToBeforeFromDate = isToBeforeFrom();
+
 
                 $scope.widgetState.runningQuery = true;
                 ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function(successData) {
