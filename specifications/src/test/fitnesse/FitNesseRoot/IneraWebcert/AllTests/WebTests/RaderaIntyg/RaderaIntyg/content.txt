@@ -9,5 +9,4 @@
 | ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-tabort-1|
 | editera sidan visas |
 | radera utkast |
-| ga till ej signerade intyg |
 | inga ej signerade intyg visas |

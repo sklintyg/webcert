@@ -35,17 +35,10 @@
     <schemas-common.version.range>(,2.2.0]</schemas-common.version.range>
 
     <!-- RIVTA Schemas -->
-    <rivta-clinicalprocess.version>0-SNAPSHOT</rivta-clinicalprocess.version>
-    <rivta-clinicalprocess.version.range>(,1.1.0]</rivta-clinicalprocess.version.range>
-
-    <rivta-insuranceprocess.version>0-SNAPSHOT</rivta-insuranceprocess.version>
-    <rivta-insuranceprocess.version.range>(,1.1.0]</rivta-insuranceprocess.version.range>
-
-    <rivta-itintegration-monitoring.version>0-SNAPSHOT</rivta-itintegration-monitoring.version>
-    <rivta-itintegration-monitoring.version.range>(,1.1.0]</rivta-itintegration-monitoring.version.range>
-
-    <rivta-ehr-logstore.version>0-SNAPSHOT</rivta-ehr-logstore.version>
-    <rivta-ehr-logstore.version.range>(,1.1.0]</rivta-ehr-logstore.version.range>
+    <rivta-clinicalprocess.version>1.0.RC3.0</rivta-clinicalprocess.version>
+    <rivta-insuranceprocess.version>3.1.0.0</rivta-insuranceprocess.version>
+    <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
+    <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
 
     <!-- Intyg Schemas -->
     <intyg-clinicalprocess.version>0-SNAPSHOT</intyg-clinicalprocess.version>
@@ -479,10 +472,6 @@
           <includeProperties>
             common.version,
             intygstyper.version,
-            rivta-clinicalprocess.version,
-            rivta-insuranceprocess.version,
-            rivta-itintegration-monitoring.version,
-            rivta-ehr-logstore.version,
             intyg-clinicalprocess.version,
             intyg-insuranceprocess.version,
             intyg-transportstyrelsen.version
@@ -497,22 +486,6 @@
             <property>
               <name>intygstyper.version</name>
               <version>${intygstyper.version.range}</version>
-            </property>
-            <property>
-              <name>rivta-clinicalprocess.version</name>
-              <version>${rivta-clinicalprocess.version.range}</version>
-            </property>
-            <property>
-              <name>rivta-insuranceprocess.version</name>
-              <version>${rivta-insuranceprocess.version.range}</version>
-            </property>
-            <property>
-              <name>rivta-itintegration-monitoring.version</name>
-              <version>${rivta-itintegration-monitoring.version.range}</version>
-            </property>
-            <property>
-              <name>rivta-ehr-logstore.version</name>
-              <version>${rivta-ehr-logstore.version.range}</version>
             </property>
             <property>
               <name>intyg-clinicalprocess.version</name>
