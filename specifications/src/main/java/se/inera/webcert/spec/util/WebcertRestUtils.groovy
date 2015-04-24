@@ -1,5 +1,7 @@
 package se.inera.webcert.spec.util
 
+import se.inera.webcert.spec.Browser
+
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.URLENC
 import groovy.json.JsonOutput
@@ -207,5 +209,15 @@ public class WebcertRestUtils extends RestClientFixture {
     public static boolean reset() {
         def resp = webcert.post(path: "services/notification-stub/clear")
         return resp.success
+    }
+
+    /**
+     * Get the number of unsigned certificates for currently logged in user.
+     */
+    public static Integer getNumberOfUnsignedCertificates() {
+        def restPath = "/api/utkast"
+        def response = webcert.get(path : restPath, requestContentType : JSON, query: ["complete":"false"],
+                headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
+        return response.data.totalCount;
     }
 }

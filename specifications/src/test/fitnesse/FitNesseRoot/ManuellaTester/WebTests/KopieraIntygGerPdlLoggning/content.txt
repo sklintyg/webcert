@@ -37,7 +37,6 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 | script | !-HanteraUtkast-! |
 | editera sidan visas |
 | radera utkast |
-| ga till ej signerade intyg |
 | inga ej signerade intyg visas |
 
 !3 Rensa kvarvarande PDL-loggning-poster
