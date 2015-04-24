@@ -7,6 +7,8 @@ import se.inera.webcert.pages.*
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 
+import se.inera.webcert.spec.util.WebcertRestUtils
+
 class HanteraUtkast {
 
     def loggaInSom(String id) {
@@ -47,16 +49,8 @@ class HanteraUtkast {
     }
 
     boolean ingaEjSigneradeIntygVisas() {
-        Browser.drive {
-            waitFor {
-                at UnsignedIntygPage
-            }
-            waitFor {
-                page.ingaEjSigneradeIntyg.isDisplayed()
-            }
-        }
+        return WebcertRestUtils.getNumberOfUnsignedCertificates() == 0
     }
-
 
     def gaTillEditeraIntygMedTypOchIntygid(String typ, String intygid) {
         Browser.drive {

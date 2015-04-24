@@ -19,6 +19,13 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 
 | script | !-HanteraUtkast-! |
 | editera sidan visas |
+
+!3 WEBCERT-1732 prognosBeskrivning  måste fyllas i om Går ej att bedöma är valt
+| Populera Fk7263 |
+| prognosBeskrivning |
+| Måste fyllas i |
+
+| script | !-HanteraUtkast-! |
 | intyget komplett meddelande visas | true |
 | radera utkast |
 
@@ -26,7 +33,6 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 | visa intyg sidan visas |
 
 | script | !-HanteraUtkast-! |
-| ga till ej signerade intyg |
 | inga ej signerade intyg visas |
 
 
