@@ -7,6 +7,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -645,7 +646,7 @@ public class FragaSvarServiceImplTest {
     }
 
     @Test
-    public void testOpenAsUnhandledFromFKNoAnsw() {
+    public void testOpenAsUnhandledFromFK() {
         FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
         fragaSvar.setFrageStallare(FrageStallare.FORSAKRINGSKASSAN.getKod());
         fragaSvar.setFrageText("Fråga till WC från FK");
@@ -657,6 +658,7 @@ public class FragaSvarServiceImplTest {
 
         service.openQuestionAsUnhandled(1L);
 
+        verify(notificationServiceMock).sendNotificationForQuestionReceived(any(FragaSvar.class));
         verify(fragasvarRepositoryMock).findOne(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         assertEquals(Status.PENDING_INTERNAL_ACTION, capture.getValue().getStatus());
@@ -675,6 +677,7 @@ public class FragaSvarServiceImplTest {
 
         service.openQuestionAsUnhandled(1L);
 
+        verifyZeroInteractions(notificationServiceMock);
         verify(fragasvarRepositoryMock).findOne(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         assertEquals(Status.PENDING_EXTERNAL_ACTION, capture.getValue().getStatus());
@@ -694,6 +697,7 @@ public class FragaSvarServiceImplTest {
 
         service.openQuestionAsUnhandled(1L);
 
+        verify(notificationServiceMock).sendNotificationForAnswerRecieved(any(FragaSvar.class));
         verify(fragasvarRepositoryMock).findOne(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         assertEquals(Status.ANSWERED, capture.getValue().getStatus());
