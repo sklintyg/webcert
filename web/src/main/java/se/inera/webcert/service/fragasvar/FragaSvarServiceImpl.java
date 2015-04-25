@@ -69,6 +69,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         QUESTION_SENT_TO_FK,
         ANSWER_SENT_TO_FK,
         QUESTION_FROM_FK_HANDLED,
+        QUESTION_FROM_FK_UNHANDLED,
         ANSWER_FROM_FK_HANDLED,
         ANSWER_FROM_FK_UNHANDLED;
     }
@@ -573,8 +574,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         FrageStallare frageStallare = FrageStallare.getByKod(fragaSvar.getFrageStallare());
         Status fragaSvarStatus = fragaSvar.getStatus();
 
-        if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare) && Status.PENDING_INTERNAL_ACTION.equals(fragaSvarStatus)) {
+        if (FrageStallare.FORSAKRINGSKASSAN.equals(frageStallare)) {
+            if (Status.PENDING_INTERNAL_ACTION.equals(fragaSvarStatus)) {
                 return NotificationEvent.QUESTION_FROM_FK_HANDLED;
+            } else if (Status.CLOSED.equals(fragaSvarStatus)) {
+                return NotificationEvent.QUESTION_FROM_FK_UNHANDLED;
+            }
         }
 
         if (FrageStallare.WEBCERT.equals(frageStallare)) {
@@ -645,6 +650,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         case QUESTION_FROM_FK_HANDLED:
             notificationService.sendNotificationForQuestionHandled(fragaSvar);
             LOGGER.debug("Notification sent: a closed question with id '{}' (related to certificate '{}') was received from FK", fragaSvarId,
+                    intygsId);
+            break;
+        case QUESTION_FROM_FK_UNHANDLED:
+            notificationService.sendNotificationForQuestionReceived(fragaSvar);
+            LOGGER.debug("Notification sent: reopened a closed question with id '{}' (related to certificate '{}') from FK", fragaSvarId,
                     intygsId);
             break;
         case QUESTION_SENT_TO_FK:

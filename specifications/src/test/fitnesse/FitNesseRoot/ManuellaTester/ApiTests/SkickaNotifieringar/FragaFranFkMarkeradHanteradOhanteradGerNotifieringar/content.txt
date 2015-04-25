@@ -1,0 +1,81 @@
+!3 Logga in och skapa ett nytt intygsutkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? |
+| 19000101-9801 | Test | Testorsson | true | $utkastId= |
+
+!3 Populera och spara utkastet
+| spara utkast |
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | diagnosKod | diagnosBeskrivning1 | nedsattMed100 | intygId | intygTyp | komplett | utkastSparat? |
+| 19000101-9801 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | S50 | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId | fk7263 | true | true |
+
+!3 Signera utkastet
+| signera utkast |
+| intygId | intygTyp | utkastSignerat? |
+| $utkastId | fk7263 | true |
+
+!3 Rensa gamla notifieringar
+| webcert rest utils |
+| reset? |
+| true |
+
+!3 Om Försäkringskassan skickar en ny fråga
+| Fk skickar fraga |
+| amne | externReferens | frageText | intygsId | vardpersonal | vardenhet | resultat? |
+| OVRIGT | fitnesse47 | En annan fråga | $utkastId | SE4815162344-1B01 | SE4815162344-1A02 | OK |
+
+!3 så ska det finnas en fråga med extern referens 'fitnesse47' från Försäkringskassan som behöver svaras på
+| Fragor och svar |
+| externReferens   | finns? | fraga?         | internId? |
+| fitnesse47       | true   | En annan fråga | $frageId= |
+
+!3 Undersök vilka notifieringar som skickades och säkerställ att dessa matchar det förväntade utfallet (HAN6)
+| verifiera notifiering |
+| id        | kod  | handelseSkapad? |
+| $utkastId | HAN6 | true            |
+
+| skickade notifieringar |
+| id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| $utkastId | HAN6  |   0                  | 0          | 0                     | 1            |
+
+!3 Markera frågan som hanterad 
+| hantera fraga svar |
+| intygsTyp | frageId  | hanterad | hsaId             | enhetId           |
+| fk7263    | $frageId | true     | SE4815162344-1B01 | SE4815162344-1A02 |
+
+!3 Verifiera att HAN9 skickades korrekt
+| verifiera notifiering |
+| id        | kod  | handelseSkapad? |
+| $utkastId | HAN9 | true            |
+
+!3 Bör finnas en av varje
+| skickade notifieringar |
+| id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| $utkastId | HAN9  |   0                  | 0          | 1                     | 1            |
+
+!3 Markera frågan som ohanterad 
+| hantera fraga svar |
+| intygsTyp | frageId  | hanterad | hsaId             | enhetId           |
+| fk7263    | $frageId | false    | SE4815162344-1B01 | SE4815162344-1A02 |
+
+!3 Verifiera att HAN6 skickades korrekt
+| verifiera notifiering |
+| id        | kod  | handelseSkapad? |
+| $utkastId | HAN6 | true            |
+
+!3 Hanterade frågor bör ha räknats ner
+| skickade notifieringar |
+| id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
+| $utkastId | HAN6  |   0                  | 0          | 0                     | 1            |
+
+!3 Ta bort test-intyg
+| ta bort Intyg |
+| id |
+| $utkastId |
+
+| Ta bort fraga |
+| internReferens |
+| $frageId |
+
+| webcert rest utils |
+| reset? |
+| true |
