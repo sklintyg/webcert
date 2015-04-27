@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urn:RegisterCertificate
+  xmlns:urn="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:1"
+  xmlns:ns2="urn:riv:clinicalprocess:healthcond:certificate:ts-diabetes:1"
+  xmlns="urn:riv:clinicalprocess:healthcond:certificate:1">
+  <urn:utlatande>
+
+    <utlatande-id root="1.2.752.129.2.1.2.1" extension="ts-diabetes-maximal" />
+
+    <typAvUtlatande code="ts-diabetes"
+      codeSystem="f6fb361a-e31d-48b8-8657-99b63912dd9b" codeSystemName="kv_utlåtandetyp_intyg" />
+
+    <kommentar>Kommentarer av det viktiga slaget</kommentar>
+
+    <signeringsdatum>2013-08-12T15:57:00</signeringsdatum>
+
+    <patient>
+      <person-id extension="19121212-1212" root="1.2.752.129.2.1.3.1" />
+      <fornamn>Herr</fornamn>
+      <efternamn>Dundersjuk</efternamn>
+      <postadress>Testvägen 12</postadress>
+      <postnummer>123456</postnummer>
+      <postort>Testort</postort>
+    </patient>
+
+    <skapadAv>
+      <personal-id extension="SE0000000000-1333" root="1.2.752.129.2.1.4.1" />
+      <fullstandigtNamn>Doktor Thompson</fullstandigtNamn>
+      <enhet>
+        <enhets-id extension="SE0000000000-1337" root="1.2.752.129.2.1.4.1" />
+        <enhetsnamn>Vårdenhet Väst</enhetsnamn>
+        <postadress>Enhetsvägen 12</postadress>
+        <postnummer>54321</postnummer>
+        <postort>Tumba</postort>
+        <telefonnummer>08-1337</telefonnummer>
+        <vardgivare>
+          <vardgivare-id root="1.2.752.129.2.1.4.1"
+            extension="SE0000000000-HAHAHHSAA" />
+          <vardgivarnamn>Vårdgivarnamn</vardgivarnamn>
+        </vardgivare>
+      </enhet>
+    </skapadAv>
+
+    <vardkontakt>
+      <vardkontakttyp code="5880005" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <idKontroll code="IDK6" codeSystem="e7cc8f30-a353-4c42-b17a-a189b6876647"
+        codeSystemName="kv_id_kontroll" />
+    </vardkontakt>
+
+    <!-- AKTIVITETER -->
+    <!-- Egenkontroll av blodsocker -->
+    <aktivitet>
+      <aktivitetskod code="308113006" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <forekomst>true</forekomst>
+    </aktivitet>
+
+    <!-- Synfältsprövning -->
+    <aktivitet>
+      <aktivitets-id root="1.2.752.129.2.1.2.1" extension="1" />
+      <aktivitetskod code="86944008" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <ns2:metod code="MET1" codeSystem="b0c078c6-512a-42a5-ab42-a3380f369ac3"
+        codeSystemName="kv_metod" />
+    </aktivitet>
+
+    <!-- Prövning av ögats rörlighet -->
+    <aktivitet>
+      <aktivitets-id root="1.2.752.129.2.1.2.1" extension="2" />
+      <aktivitetskod code="AKT18"
+        codeSystem="8040b4d1-67dc-42e1-a938-de5374e9526a"
+        codeSystemName="kv_aktiviteter_intyg" />
+    </aktivitet>
+    <!-- Aktiviteter end -->
+
+    <!-- REKOMMMENDATIONER begin -->
+    <!-- Patienten uppfyller kraven.. -->
+    <rekommendation>
+      <rekommendationskod code="REK8"
+        codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR1" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR2" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR3" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR4" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR5" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR6" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR7" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR8" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR9" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR12" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR13" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR14" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR15" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR16" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR17" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR18" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+    </rekommendation>
+
+    <!-- Specialistkompetens inom.. -->
+    <rekommendation>
+      <rekommendationskod code="REK9"
+        codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <beskrivning>Kronologisk bastuberedning</beskrivning>
+    </rekommendation>
+
+    <!-- Lämplighet att inneha... -->
+    <rekommendation>
+      <rekommendationskod code="REK10"
+        codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde>true</ns2:varde>
+    </rekommendation>
+    <!-- Rekommendation end -->
+
+    <!-- OBSERVATIONER begins -->
+
+    <!-- Diabetes typ2 -->
+    <observation>
+      <observationskod code="E11" codeSystem="1.2.752.116.1.1.1.1.3"
+        codeSystemName="ICD-10" />
+      <observationsperiod>
+        <from>2012</from>
+      </observationsperiod>
+      <forekomst>true</forekomst>
+    </observation>
+
+    <!-- Behandlingar -->
+    <observation>
+      <observationskod code="170746002" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <forekomst>true</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="170745003" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <forekomst>true</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="170747006" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <observationsperiod>
+        <from>2012</from>
+      </observationsperiod>
+      <forekomst>true</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="OBS10"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <beskrivning>Hypnos</beskrivning>
+      <forekomst>true</forekomst>
+    </observation>
+
+    <!-- Hypoglykemi -->
+    <observation>
+      <observationskod code="OBS19"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <forekomst>true</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="OBS20"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <forekomst>true</forekomst>
+    </observation>
+    <observation>
+      <observationskod code="OBS21"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <forekomst>true</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="OBS22"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <beskrivning>Beskrivning</beskrivning>
+      <forekomst>true</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="OBS23"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <beskrivning>Beskrivning</beskrivning>
+      <forekomst>true</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="OBS24"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <observationstid>2012-12-12</observationstid>
+      <forekomst>true</forekomst>
+    </observation>
+
+    <!-- Syn -->
+    <observation>
+      <observations-id root="1.2.752.129.2.1.2.1"
+        extension="3" />
+      <observationskod code="OBS25"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <forekomst>true</forekomst>
+    </observation>
+
+    <!-- Utan korrektion -->
+    <!-- Höger öga -->
+    <observation>
+      <observationskod code="420050001" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <ns2:varde value="0.0" />
+      <ns2:lateralitet code="24028007" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+    </observation>
+
+    <!-- Vänster öga -->
+    <observation>
+      <observationskod code="420050001" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <ns2:varde value="0.0" />
+      <ns2:lateralitet code="7771000" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+    </observation>
+
+    <!-- Binokulärt -->
+    <observation>
+      <observationskod code="420050001" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <ns2:varde value="0.0" />
+      <ns2:lateralitet code="51440002" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+    </observation>
+
+    <!-- Med korrektion -->
+    <!-- Höger öga -->
+    <observation>
+      <observationskod code="397535007" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <ns2:varde value="0.0" />
+      <ns2:lateralitet code="24028007" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+    </observation>
+
+    <!-- Vänster öga -->
+    <observation>
+      <observationskod code="397535007" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <ns2:varde value="0.0" />
+      <ns2:lateralitet code="7771000" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+    </observation>
+
+    <!-- Binokulärt -->
+    <observation>
+      <observationskod code="397535007" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <ns2:varde value="0.0" />
+      <ns2:lateralitet code="51440002" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+    </observation>
+
+    <!-- Dubbelseende -->
+    <observation>
+      <observations-id root="1.2.752.129.2.1.2.1"
+        extension="4" />
+      <observationskod code="H53.2" codeSystem="1.2.752.116.1.1.1.1.3"
+        codeSystemName="ICD-10" />
+      <forekomst>true</forekomst>
+    </observation>
+
+    <!-- Observationer ends -->
+
+
+    <!-- ObservationAktivitetRelation begin -->
+    <ns2:observationAktivitetRelation>
+      <observations-id root="1.2.752.129.2.1.2.1"
+        extension="4" />
+      <aktivitets-id root="1.2.752.129.2.1.2.1" extension="2" />
+    </ns2:observationAktivitetRelation>
+
+    <ns2:observationAktivitetRelation>
+      <observations-id root="1.2.752.129.2.1.2.1"
+        extension="3" />
+      <aktivitets-id root="1.2.752.129.2.1.2.1" extension="1" />
+    </ns2:observationAktivitetRelation>
+    <!-- ObservationAktivitetRelation ends -->
+
+
+    <ns2:intygAvser code="IAV1" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV2" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV3" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV4" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV5" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV6" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV7" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV8" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV9" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV11" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV12" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV13" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV14" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV15" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV16" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+    <ns2:intygAvser code="IAV17" codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770"
+      codeSystemName="kv_intyget_avser" />
+
+    <ns2:bilaga>
+      <ns2:bilagetyp code="BIL1" codeSystem="80595600-7477-4a6c-baeb-d2439e86b8bc"
+        codeSystemName="kv_bilaga" />
+      <forekomst>false</forekomst>
+    </ns2:bilaga>
+
+    <ns2:utgava>06</ns2:utgava>
+    <ns2:version>02</ns2:version>
+  </urn:utlatande>
+</urn:RegisterCertificate>

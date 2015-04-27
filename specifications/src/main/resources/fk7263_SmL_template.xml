@@ -1,0 +1,56 @@
+<ns3:RegisterMedicalCertificate xmlns="urn:riv:insuranceprocess:healthreporting:mu7263:3" xmlns:ns2="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns3="urn:riv:insuranceprocess:healthreporting:RegisterMedicalCertificateResponder:3" xmlns:ns4="http://www.w3.org/2005/08/addressing">
+   <ns3:lakarutlatande>
+      <lakarutlatande-id>09a9f186-ba33-4a6b-9014-0564e6868387</lakarutlatande-id>
+      <typAvUtlatande>Läkarintyg enligt 3 kap, 8 § lagen (1962:381) om allmän försäkring</typAvUtlatande>
+      <signeringsdatum>2011-01-24T00:00:00.000</signeringsdatum>
+      <skickatDatum>2011-03-23T09:28:10.876</skickatDatum>
+      <patient>
+         <ns2:person-id extension="19121212-1212" root="1.2.752.129.2.1.3.1"/>
+         <ns2:fullstandigtNamn>Test Testorsson</ns2:fullstandigtNamn>
+      </patient>
+      <skapadAvHosPersonal>
+         <ns2:personal-id extension="Personal HSA-ID" root="1.2.752.129.2.1.4.1"/>
+         <ns2:fullstandigtNamn>En Läkare</ns2:fullstandigtNamn>
+         <ns2:enhet>
+            <ns2:enhets-id extension="VardenhetY" root="1.2.752.129.2.1.4.1"/>
+            <ns2:arbetsplatskod extension="123456789011" root="1.2.752.29.4.71"/>
+            <ns2:enhetsnamn>Kir mott</ns2:enhetsnamn>
+            <ns2:postadress>Lasarettsvägen 13</ns2:postadress>
+            <ns2:postnummer>85150</ns2:postnummer>
+            <ns2:postort>Sundsvall</ns2:postort>
+            <ns2:telefonnummer>060-1818000</ns2:telefonnummer>
+            <ns2:vardgivare>
+               <ns2:vardgivare-id extension="VardgivareId" root="1.2.752.129.2.1.4.1"/>
+               <ns2:vardgivarnamn>Landstinget Norrland</ns2:vardgivarnamn>
+            </ns2:vardgivare>
+         </ns2:enhet>
+      </skapadAvHosPersonal>
+     <aktivitet>
+         <aktivitetskod>Avstangning_enligt_SmL_pga_smitta</aktivitetskod>
+      </aktivitet>
+      <aktivitet>
+         <aktivitetskod>Forandrat_ressatt_till_arbetsplatsen_ar_aktuellt</aktivitetskod>
+      </aktivitet>
+       <funktionstillstand>
+         <beskrivning>Illamående och diarré.</beskrivning>
+         <typAvFunktionstillstand>Kroppsfunktion</typAvFunktionstillstand>
+      </funktionstillstand>
+      <funktionstillstand>
+         <beskrivning>Patienten arbetar i kök, sjukdomen omöjliggör kontakt med matvaror.</beskrivning>
+         <typAvFunktionstillstand>Aktivitet</typAvFunktionstillstand>
+         <arbetsformaga>
+            <prognosangivelse>Aterstallas_helt</prognosangivelse>
+            <arbetsformagaNedsattning>
+               <varaktighetFrom>2011-05-05</varaktighetFrom>
+               <varaktighetTom>2011-06-16</varaktighetTom>
+               <nedsattningsgrad>Helt_nedsatt</nedsattningsgrad>
+            </arbetsformagaNedsattning>
+            <arbetsformagaNedsattning>
+               <varaktighetFrom>2011-06-17</varaktighetFrom>
+               <varaktighetTom>2011-06-30</varaktighetTom>
+               <nedsattningsgrad>Nedsatt_med_1/2</nedsattningsgrad>
+            </arbetsformagaNedsattning>
+         </arbetsformaga>
+      </funktionstillstand>
+   </ns3:lakarutlatande>
+</ns3:RegisterMedicalCertificate>

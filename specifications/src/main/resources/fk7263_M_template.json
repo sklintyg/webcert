@@ -1,0 +1,72 @@
+{"id": "80832895-5a9c-450a-bd74-08af43750788",
+ "typ": "fk7263",
+    "grundData": {
+        "signeringsdatum": "2011-01-26T00:00:00.000",
+        "skapadAv": {
+            "personId": "Personal HSA-ID",
+            "fullstandigtNamn": "En Läkare",
+            "vardenhet": {
+                "enhetsid": "VardenhetY",
+                "enhetsnamn": "Kir mott",
+                "postadress": "Lasarettsvägen 13",
+                "postnummer": "85150",
+                "postort": "Sundsvall",
+                "telefonnummer": "060-1818000",
+                "vardgivare": {
+                    "vardgivarid": "VardgivarId",
+                    "vardgivarnamn": "Landstinget Norrland"
+                },
+                "arbetsplatsKod": "123456789011"
+            }
+        },
+        "patient": {
+            "personId": "19121212-1212",
+            "fullstandigtNamn": "Test Testorsson",
+            "efternamn": "Test Testorsson"
+        }
+    },
+    "giltighet":{
+        "from" :"2011-01-24",
+        "tom" :"2011-03-31"
+    },
+
+    "avstangningSmittskydd":false,
+
+    "undersokningAvPatienten" : "2011-01-24",
+    "telefonkontaktMedPatienten" : "2011-01-27",
+    "kommentar" : "Prognosen för patienten är god.\nHan kommer att kunna återgå till sitt arbete efter genomförd behandling.",
+
+    "rekommendationKontaktForetagshalsovarden" : true,
+    "rekommendationKontaktArbetsformedlingen" : false,
+    "rekommendationOvrigt" : "Avslappningsövningar och balansövningar, t ex promenad i ojämn terräng.",
+    "rekommendationOvrigtCheck" : true,
+    "annanAtgard" : "Patienten ansvarar för att armen hålls i stillhet",
+    "rehabilitering" : "rehabiliteringGarInteAttBedoma",
+
+    "ressattTillArbeteEjAktuellt" : true,
+    "kontaktMedFk" : true,
+
+    "sjukdomsforlopp" : "Patienten upplever svår yrsel vid häftiga rörelser och är allmänt påverkad av sjukdomen.",
+
+    "diagnosKod" : "H81",
+    "diagnosBeskrivning": "Sjukdomar i örat och mastoidutskottet",
+
+    "nuvarandeArbete":true,
+    "nuvarandeArbetsuppgifter":"Cirkusartist",
+
+    "funktionsnedsattning" : "Ospecifierad rubbning i balansapparatens funktion. Svårighet att utföra handlingar som kräver bra balans och kroppskontroll.",
+    "aktivitetsbegransning" : "Patienten arbetar trapetsartist på Cirkus Cirkör, sjukdomen försvårar utövandet av yrket",
+    "prognosBedomning" : "arbetsformagaPrognosJa",
+    "arbetsformagaPrognos" : "Patienten kan inte utöva sitt yrke förrän en förbättring sker med avseende på yrseln. Det är förenat med livsfara att utföra trapetskonster och samtidigt lida av yrsel. Patientens besvär kommer dock att först minska för att därefter helt upphöra efter genomförd behandling.",
+
+    "nedsattMed50":{
+    	"from" :"2011-02-21",
+    	"tom" :"2011-03-31"
+    },
+    "nedsattMed100":{
+        "from" :"2011-01-24",
+        "tom" :"2011-02-20"
+    },
+    "arbetsloshet" : false,
+    "foraldrarledighet" : false
+}

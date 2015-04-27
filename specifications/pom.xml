@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>se.inera.intyg.common</groupId>
+    <artifactId>common</artifactId>
+    <version>0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>common-specifications</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Intyg Common (FitNesse fixturer)</name>
+
+  <properties>
+    <groovy.httpBuilder.version>0.7.1</groovy.httpBuilder.version>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>integration-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- RIVTA Schemas -->
+    <dependency>
+      <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.riv.insuranceprocess.healthreporting</groupId>
+      <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.riv.itintegration.monitoring</groupId>
+      <artifactId>itintegration-monitoring-schemas</artifactId>
+    </dependency>
+
+    <!-- Intyg Schemas -->
+    <dependency>
+      <groupId>se.inera.intyg.insuranceprocess.healthreporting</groupId>
+      <artifactId>intyg-insuranceprocess-healthreporting-schemas</artifactId>
+    </dependency>
+
+    <!-- Others -->
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy.modules.http-builder</groupId>
+      <artifactId>http-builder</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.fitnesse</groupId>
+      <artifactId>fitnesse</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.gebish</groupId>
+      <artifactId>geb-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.skyscreamer</groupId>
+      <artifactId>jsonassert</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-collections</groupId>
+          <artifactId>commons-collections</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>    
+  </dependencies>
+
+</project>

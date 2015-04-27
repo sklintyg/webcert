@@ -1,0 +1,50 @@
+{"id": "80832895-5a9c-450a-bd74-08af43750788",
+ "typ": "fk7263",
+    "grundData": {
+        "signeringsdatum": "2011-01-26T00:00:00.000",
+        "skapadAv": {
+            "personId": "Personal HSA-ID",
+            "fullstandigtNamn": "En Läkare",
+            "vardenhet": {
+                "enhetsid": "VardenhetY",
+                "enhetsnamn": "Kir mott",
+                "postadress": "Lasarettsvägen 13",
+                "postnummer": "85150",
+                "postort": "Sundsvall",
+                "telefonnummer": "060-1818000",
+                "vardgivare": {
+                    "vardgivarid": "VardgivarId",
+                    "vardgivarnamn": "Landstinget Norrland"
+                },
+                "arbetsplatsKod": "123456789011"
+            }
+        },
+        "patient": {
+            "personId": "19121212-1212",
+            "fullstandigtNamn": "Test Testorsson",
+            "efternamn": "Test Testorsson"
+        }
+    },
+    "giltighet":{
+        "from" :"2011-01-26",
+        "tom" :"2011-02-13"
+    },
+
+    "avstangningSmittskydd":false,
+
+    "undersokningAvPatienten" : "2011-01-12",
+
+
+    "diagnosKod" : "M25",
+
+    "nuvarandeArbete":true,
+    "nuvarandeArbetsuppgifter":"Brevbärare",
+
+    "funktionsnedsattning" : "Svullnad och värmeökning. Smärta vid manipulation.",
+    "aktivitetsbegransning" : "Patienten arbetar som postiljon i distrikt med höghus, sjukdomen omöjliggör gång i trappor.",
+
+    "nedsattMed100":{
+        "from" :"2011-01-24",
+        "tom" :"2011-02-20"
+    }
+}

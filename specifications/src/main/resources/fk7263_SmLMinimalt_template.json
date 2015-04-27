@@ -1,0 +1,39 @@
+{"id": "23aba5ad-1bbe-47fd-b889-a1390660201b",
+ "typ": "fk7263",
+    "grundData": {
+        "signeringsdatum": "2014-06-17T08:49:34.000",
+        "skapadAv": {
+            "personId": "Personal HSA-ID",
+            "fullstandigtNamn": "En Läkare",
+            "vardenhet": {
+                "enhetsid": "VardenhetY",
+                "enhetsnamn": "Kir mott",
+                "postadress": "Lasarettsvägen 13",
+                "postnummer": "85150",
+                "postort": "Sundsvall",
+                "telefonnummer": "060-1818000",
+                "vardgivare": {
+                    "vardgivarid": "VardgivarId",
+                    "vardgivarnamn": "Landstinget Norrland"
+                },
+                "arbetsplatsKod": "123456789011"
+            }
+        },
+        "patient": {
+            "personId": "19121212-1212",
+            "fullstandigtNamn": "Test Testorsson",
+            "efternamn": "Test Testorsson"
+        }
+    },
+    "giltighet":{
+        "from" :"2011-06-17",
+        "tom" :"2011-06-17"
+    },
+
+    "avstangningSmittskydd":true,
+    
+    "nedsattMed50":{
+    	"from" :"2011-06-17",
+    	"tom" :"2011-06-17"
+    }
+}

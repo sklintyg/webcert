@@ -1,0 +1,43 @@
+<SendMedicalCertificateAnswer
+	xmlns="urn:riv:insuranceprocess:healthreporting:SendMedicalCertificateAnswerResponder:1"
+	xmlns:ns2="urn:riv:insuranceprocess:healthreporting:medcertqa:1"
+	xmlns:ns3="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns4="http://www.w3.org/2005/08/addressing">
+	<Answer>
+		<vardReferens-id>123456789</vardReferens-id>
+		<fkReferens-id>XXXXXXXXX</fkReferens-id>
+		<amne>Ovrigt</amne>
+		<fraga>
+			<ns2:meddelandeText>XXXXXXX</ns2:meddelandeText>
+			<ns2:signeringsTidpunkt>2011-04-29T10:03:36</ns2:signeringsTidpunkt>
+		</fraga>
+		<svar>
+			<ns2:meddelandeText>Mats senaste svar!!</ns2:meddelandeText>
+			<ns2:signeringsTidpunkt>2013-05-20T15:34:35</ns2:signeringsTidpunkt>
+		</svar>
+		<avsantTidpunkt>2013-05-20T15:35:09</avsantTidpunkt>
+		<adressVard>
+			<ns2:hosPersonal>
+				<ns3:personal-id extension="Personal HSA-ID" root="1.2.752.129.2.1.4.1" />
+				<ns3:fullstandigtNamn>En Läkare</ns3:fullstandigtNamn>
+				<ns3:enhet>
+					<ns3:enhets-id extension="VardenhetY" root="1.2.752.129.2.1.4.1" />
+					<ns3:enhetsnamn>Kir mott som ligger till vänster</ns3:enhetsnamn>
+					<ns3:vardgivare>
+						<ns3:vardgivare-id extension="VardgivarId"
+							root="1.2.752.129.2.1.4.1" />
+						<ns3:vardgivarnamn>Landstinget Göteborg</ns3:vardgivarnamn>
+					</ns3:vardgivare>
+				</ns3:enhet>
+			</ns2:hosPersonal>
+		</adressVard>
+		<lakarutlatande>
+			<ns2:lakarutlatande-id>65aafe58-de99-48d3-bc24-42bf7973ff0f
+			</ns2:lakarutlatande-id>
+			<ns2:signeringsTidpunkt>2013-05-20T15:30:55</ns2:signeringsTidpunkt>
+			<ns2:patient>
+				<ns3:person-id extension="19121212-1212" root="1.2.752.129.2.1.3.1" />
+				<ns3:fullstandigtNamn>Test Testorsson</ns3:fullstandigtNamn>
+			</ns2:patient>
+		</lakarutlatande>
+	</Answer>
+</SendMedicalCertificateAnswer>

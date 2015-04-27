@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RegisterMedicalCertificate
+	xmlns="urn:riv:insuranceprocess:healthreporting:RegisterMedicalCertificateResponder:3"
+	xmlns:ns3="urn:riv:insuranceprocess:healthreporting:2" xmlns:ns5="urn:riv:insuranceprocess:healthreporting:mu7263:3">
+	<lakarutlatande>
+		<ns5:lakarutlatande-id>6ea04fd0-5fef-4809-823b-efeddf8a4d55
+		</ns5:lakarutlatande-id>
+		<ns5:typAvUtlatande>Läkarintyg enligt 3 kap, 8 § lagen (1962:381) om
+			allmän försäkring
+		</ns5:typAvUtlatande>
+		<ns5:signeringsdatum>2013-03-17T00:00:00</ns5:signeringsdatum>
+		<ns5:skickatDatum>2013-03-17T00:00:00</ns5:skickatDatum>
+		<ns5:patient>
+			<ns3:person-id root="1.2.752.129.2.1.3.1" extension="19121212-1212" />
+			<ns3:fullstandigtNamn>Test Testorsson</ns3:fullstandigtNamn>
+		</ns5:patient>
+		<ns5:skapadAvHosPersonal>
+			<ns3:personal-id root="1.2.752.129.2.1.4.1"
+				extension="Personal HSA-ID" />
+			<ns3:fullstandigtNamn>En Läkare</ns3:fullstandigtNamn>
+			<ns3:forskrivarkod>1234567</ns3:forskrivarkod>
+			<ns3:enhet>
+				<ns3:enhets-id root="1.2.752.129.2.1.4.1" extension="Enhetsid" />
+				<ns3:arbetsplatskod root="1.2.752.29.4.71"
+					extension="123456789011" />
+				<ns3:enhetsnamn>Kir Mott</ns3:enhetsnamn>
+				<ns3:postadress>Lasarettvägen 13</ns3:postadress>
+				<ns3:postnummer>85150</ns3:postnummer>
+				<ns3:postort>Sundsvall</ns3:postort>
+				<ns3:telefonnummer>060-8188000</ns3:telefonnummer>
+				<ns3:vardgivare>
+					<ns3:vardgivare-id root="1.2.752.129.2.1.4.1"
+						extension="VardgivarId" />
+					<ns3:vardgivarnamn>Landstinget Norrland</ns3:vardgivarnamn>
+				</ns3:vardgivare>
+			</ns3:enhet>
+		</ns5:skapadAvHosPersonal>
+
+		<ns5:vardkontakt>
+			<ns5:vardkontakttyp>Min_undersokning_av_patienten</ns5:vardkontakttyp>
+			<ns5:vardkontaktstid>2013-03-17</ns5:vardkontaktstid>
+		</ns5:vardkontakt>
+
+		<ns5:medicinsktTillstand>
+			<ns5:tillstandskod code="S47" />
+		</ns5:medicinsktTillstand>
+		
+		<!--  Remove this as soon as converter is fixed -->
+		<ns5:bedomtTillstand>
+			<ns5:beskrivning>Placeholder</ns5:beskrivning>
+		</ns5:bedomtTillstand>
+		<!-- remove to here -->
+		
+		<ns5:funktionstillstand>
+			<ns5:beskrivning>Kraftigt nedsatt rörlighet i överarmen pga skadan.
+				Böj- och sträckförmågan är mycket dålig.
+				Smärtar vid rörelse vilket
+				ger att patienten inte kan använda armen särkilt
+				mycket.
+			</ns5:beskrivning>
+			<ns5:typAvFunktionstillstand>Kroppsfunktion</ns5:typAvFunktionstillstand>
+		</ns5:funktionstillstand>
+
+		<ns5:funktionstillstand>
+			<ns5:beskrivning>Patienten bör/kan inte använda armen förrän skadan
+				läkt. Skadan förvärras vid för tidigt
+				påtvingad belastning. Patienten
+				kan inte lyfta armen utan den ska hållas
+				riktad nedåt och i fast läge
+				så mycket
+				som möjligt under tiden för läkning.
+			</ns5:beskrivning>
+			<ns5:typAvFunktionstillstand>Aktivitet</ns5:typAvFunktionstillstand>
+			<ns5:arbetsformaga>
+				<ns5:arbetsuppgift>
+					<ns5:typAvArbetsuppgift>Dirigent
+						Dirigerar en för större orkester på
+						deltid
+					</ns5:typAvArbetsuppgift>
+				</ns5:arbetsuppgift>
+				<ns5:arbetsformagaNedsattning>
+					<ns5:varaktighetFrom>2013-03-17</ns5:varaktighetFrom>
+					<ns5:varaktighetTom>2013-04-07</ns5:varaktighetTom>
+					<ns5:nedsattningsgrad>Helt_nedsatt</ns5:nedsattningsgrad>
+				</ns5:arbetsformagaNedsattning>
+			</ns5:arbetsformaga>
+		</ns5:funktionstillstand>
+
+
+	</lakarutlatande>
+</RegisterMedicalCertificate>

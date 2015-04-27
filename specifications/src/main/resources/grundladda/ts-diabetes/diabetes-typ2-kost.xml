@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urn:RegisterCertificate
+  xmlns:urn="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:1"
+  xmlns:ns2="urn:riv:clinicalprocess:healthcond:certificate:ts-diabetes:1"
+  xmlns="urn:riv:clinicalprocess:healthcond:certificate:1">
+  <urn:utlatande>
+
+    <utlatande-id root="1.2.752.129.2.1.2.1" extension="ts-diabetes-diabetes-typ2-kost" />
+
+    <typAvUtlatande code="ts-diabetes"
+      codeSystem="f6fb361a-e31d-48b8-8657-99b63912dd9b" codeSystemName="kv_utlåtandetyp_intyg" />
+
+    <signeringsdatum>2013-08-12T15:57:00</signeringsdatum>
+
+    <patient>
+      <person-id extension="19121212-1212" root="1.2.752.129.2.1.3.1" />
+      <fornamn>Johnny</fornamn>
+      <efternamn>Appleseed</efternamn>
+      <postadress>Testvägen 12</postadress>
+      <postnummer>123456</postnummer>
+      <postort>Testort</postort>
+    </patient>
+
+    <skapadAv>
+      <personal-id extension="SE0000000000-1333" root="1.2.752.129.2.1.4.1" />
+      <fullstandigtNamn>Doktor Thompson</fullstandigtNamn>
+      <enhet>
+        <enhets-id extension="SE0000000000-1337" root="1.2.752.129.2.1.4.1" />
+        <enhetsnamn>Vårdenhet Väst</enhetsnamn>
+        <postadress>Enhetsvägen 12</postadress>
+        <postnummer>54321</postnummer>
+        <postort>Tumba</postort>
+        <telefonnummer>08-1337</telefonnummer>
+        <vardgivare>
+          <vardgivare-id root="1.2.752.129.2.1.4.1"
+            extension="SE0000000000-HAHAHHSAA" />
+          <vardgivarnamn>Vårdgivarnamn</vardgivarnamn>
+        </vardgivare>
+      </enhet>
+    </skapadAv>
+
+    <vardkontakt>
+      <vardkontakttyp code="5880005" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <idKontroll code="IDK6" codeSystem="e7cc8f30-a353-4c42-b17a-a189b6876647"
+        codeSystemName="kv_id_kontroll" />
+    </vardkontakt>
+
+    <!-- AKTIVITETER -->
+    <!-- Aktiviteter end -->
+
+    <!-- Rekommendation begin -->
+    <rekommendation>
+      <rekommendationskod code="REK8"
+        codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+      <ns2:varde code="VAR12" codeSystem="5a931b99-bda8-4f1e-8a6d-6f8a3f40a459"
+        codeSystemName="kv_rekommendation_intyg" />
+    </rekommendation>
+    <!-- Rekommendation end -->
+
+    <!-- Observationer begins -->
+
+    <observation>
+      <observationskod code="E11" codeSystem="1.2.752.116.1.1.1.1.3"
+        codeSystemName="ICD-10" />
+      <observationsperiod>
+        <from>2012</from>
+      </observationsperiod>
+      <forekomst>true</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="170745003" codeSystem="1.2.752.116.2.1.1.1"
+        codeSystemName="SNOMED-CT" />
+      <forekomst>true</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="OBS19"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <forekomst>false</forekomst>
+    </observation>
+
+    <observation>
+      <observationskod code="OBS20"
+        codeSystem="335d4bed-7e1d-4f81-ae7d-b39b266ef1a3"
+        codeSystemName="kv_observationer_intyg" />
+      <forekomst>false</forekomst>
+    </observation>
+    <!-- Observationer ends -->
+
+    <!-- ObservationAktivitetRelation begin -->
+    <!-- ObservationAktivitetRelation ends -->
+
+    <ns2:intygAvser code="IAV12"
+      codeSystem="24c41b8d-258a-46bf-a08a-b90738b28770" codeSystemName="kv_intyget_avser" />
+
+    <ns2:bilaga>
+      <ns2:bilagetyp code="BIL1"
+        codeSystem="80595600-7477-4a6c-baeb-d2439e86b8bc"
+        codeSystemName="kv_bilaga" />
+      <ns2:forekomst>true</ns2:forekomst>
+    </ns2:bilaga>
+
+    <ns2:utgava>06</ns2:utgava>
+    <ns2:version>02</ns2:version>
+  </urn:utlatande>
+</urn:RegisterCertificate>
