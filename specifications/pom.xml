@@ -49,8 +49,8 @@
 
     <!-- Tools -->
     <dependency>
-      <groupId>se.inera.intyg.tools</groupId>
-      <artifactId>tools-specifications</artifactId>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>common-specifications</artifactId>
     </dependency>
 
     <!-- Schemas -->

@@ -22,10 +22,6 @@
     <common.version>0-SNAPSHOT</common.version>
     <common.version.range>(,2.2.0]</common.version.range>
 
-    <!-- Tools -->
-    <tools.version>0-SNAPSHOT</tools.version>
-    <tools.version.range>(,2.2.0]</tools.version.range>
-
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
     <intygstyper.version.range>(,2.2.0]</intygstyper.version.range>
@@ -38,10 +34,10 @@
 
     <!-- Intyg Schemas -->
     <intyg-clinicalprocess.version>0-SNAPSHOT</intyg-clinicalprocess.version>
-    <intyg-clinicalprocess.version.range>(,1.1.0]</intyg-clinicalprocess.version.range>
+    <intyg-clinicalprocess.version.range>(,1.0.0]</intyg-clinicalprocess.version.range>
 
     <intyg-insuranceprocess.version>0-SNAPSHOT</intyg-insuranceprocess.version>
-    <intyg-insuranceprocess.version.range>(,1.1.0]</intyg-insuranceprocess.version.range>
+    <intyg-insuranceprocess.version.range>(,1.0.0]</intyg-insuranceprocess.version.range>
 
     <intyg-transportstyrelsen.version>0-SNAPSHOT</intyg-transportstyrelsen.version>
     <intyg-transportstyrelsen.version.range>(,1.0.0]</intyg-transportstyrelsen.version.range>
@@ -165,12 +161,10 @@
         <artifactId>common-schemas</artifactId>
         <version>${common.version}</version>
       </dependency>
-
-      <!-- Tools -->
       <dependency>
-        <groupId>se.inera.intyg.tools</groupId>
-        <artifactId>tools-specifications</artifactId>
-        <version>${tools.version}</version>
+        <groupId>se.inera.intyg.common</groupId>
+        <artifactId>common-specifications</artifactId>
+        <version>${common.version}</version>
       </dependency>
 
       <!-- Intygstyper -->
@@ -464,7 +458,6 @@
             intyg-clinicalprocess.version,
             intyg-insuranceprocess.version,
             intyg-transportstyrelsen.version
-            tools-version
           </includeProperties>
           <properties>
             <property>
@@ -486,10 +479,6 @@
             <property>
               <name>intyg-transportstyrelsen.version</name>
               <version>${intyg-transportstyrelsen.version.range}</version>
-            </property>
-            <property>
-              <name>tools.version</name>
-              <version>${tools.version.range}</version>
             </property>
           </properties>
         </configuration>
