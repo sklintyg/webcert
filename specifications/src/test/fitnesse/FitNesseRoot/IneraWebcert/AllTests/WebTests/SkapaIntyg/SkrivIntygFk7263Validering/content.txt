@@ -65,10 +65,10 @@ Kontrollera valideringsmeddelanden.
 | script | !-SkrivIntyg-! |
 | visa vad som saknas |
 
-!3 Fyll i diagnos, sysselsättning och arbetsförmåga
+!3 Fyll i diagnos och arbetsförmåga
 | Populera Fk7263 |
-| diagnos1 | nuvarandearbete | arbetsuppgifter | nedsattMed100 |
-| a00 | true | Fitnessetestare | true |
+| diagnos1 | nedsattMed100 |
+| a00 | true |
 
 Vänta tills intyget är sparat.
 
@@ -79,13 +79,36 @@ Kontrollera valideringsmeddelanden.
 
 | Skriv Intyg |
 | valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
-| true | false | true | true | false | false | false | false | false |
+| true | false | true | true | true | false | false | false | false |
 
-!3 Fyll i resten av intyget
+!3 Fyll blanktecken i sysselsättning, funktionsnedsattning och aktivitetsbegransning
+| Populera Fk7263 |
+| nuvarandearbete | arbetsuppgifter | funktionsnedsattning | aktivitetsbegransning | 
+| true | <space> | <space> | <space> |
+
+Vänta tills intyget är sparat.
+
+| script | !-SkrivIntyg-! |
+| intyg ej komplett visas |
+
+Kontrollera valideringsmeddelanden.
+
+| Skriv Intyg |
+| valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
+| true | false | true | true | true | false | false | false | false |
+
+!3 Fyll i resten av intyget korrekt
 
 | Populera Fk7263 |
 | undersokningDatum |
 | 2014-09-17 |
+
+| script | !-SkrivIntyg-! |
+| spara utkast |
+
+| Populera Fk7263 |
+| arbetsuppgifter |
+| arbetsuppgifter1 |
 
 | script | !-SkrivIntyg-! |
 | spara utkast |
@@ -96,7 +119,6 @@ Kontrollera valideringsmeddelanden.
 
 | script | !-SkrivIntyg-! |
 | spara utkast |
-
 
 | Populera Fk7263 |
 | funktionsnedsattning |
