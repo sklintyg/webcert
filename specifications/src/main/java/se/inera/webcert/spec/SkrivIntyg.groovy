@@ -425,6 +425,21 @@ class SkrivIntyg {
         result
     }
 
+    /**
+     * Returns true if the specified text does NOT exist in any of the markup within the specified element id. E.g,
+     * note that this looks at all HTML, not just text within the element.
+     */
+    boolean verifieraAttMarkupForIdInteInnehaller(String elementId, String text) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                def element = $('#' + elementId)
+                result = !element.contains(text)
+            }
+        }
+        result
+    }
+
     def klickaPaSmittskyd(val) {
         Browser.drive {
             page.setSmittSkydCheckBox(val);
