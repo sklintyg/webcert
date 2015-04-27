@@ -163,7 +163,7 @@ class SkrivIntyg {
     boolean verifieraAttSjukskrivningsperiodenAr(int expected) {
         Browser.drive {
             waitFor {
-                sleep(500)
+                sleep(2000)
                 expected == page.arbetsformaga.period.text().toInteger()
             }
         }

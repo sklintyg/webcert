@@ -79,9 +79,11 @@ class PopuleraFk7263 {
                 at EditCertPage
             }
 
-            if (smittskydd != null) page.smittskydd = smittskydd
+            if (smittskydd != null) page.setSmittskyddCheckBox(smittskydd)
 
-            if (undersokning != null) page.baserasPa.undersokning = undersokning
+            if (undersokning != null){
+                page.baserasPa.setUndersokningCheckBox(undersokning)
+            }
             if (undersokningDatum != null) page.baserasPa.undersokningDatum = undersokningDatum
             if (telefonkontakt != null) page.baserasPa.telefonkontakt = telefonkontakt
             if (telefonkontaktDatum != null) page.baserasPa.telefonkontaktDatum = telefonkontaktDatum

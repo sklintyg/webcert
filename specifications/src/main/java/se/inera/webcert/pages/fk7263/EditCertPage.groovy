@@ -66,6 +66,12 @@ class EditCertPage extends AbstractPage {
     def elementForClass(classId){
         return $("." + classId);
     }
+
+    def setSmittskyddCheckBox(val){
+        println("setSmittSkydCheckBox");
+        AbstractPage.scrollIntoView(smittskydd.attr("id"));
+        smittskydd.value(val);
+    }
 }
 
 class BaserasPaModule extends Module {
@@ -82,6 +88,12 @@ class BaserasPaModule extends Module {
         otherDatum { $("#annanReferensDate") }
         otherText { $("#informationBasedOnOtherText") }
     }
+
+    def setUndersokningCheckBox(value){
+        AbstractPage.scrollIntoView(undersokning.attr("id"));
+        undersokning = value;
+    }
+
 }
 
 class DiagnosModule extends Module {
