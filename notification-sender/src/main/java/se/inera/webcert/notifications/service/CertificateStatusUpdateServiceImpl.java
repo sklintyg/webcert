@@ -32,7 +32,7 @@ public class CertificateStatusUpdateServiceImpl {
         try {
             response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
         } catch (Exception e) {
-            LOG.error("Exception occured when sending status update", e);
+            LOG.warn("Exception occured when sending status update: {}", e.getMessage());
             throw e;
         }
 
