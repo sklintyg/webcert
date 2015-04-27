@@ -4,11 +4,18 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import org.openqa.selenium.Keys
+
 import se.inera.webcert.pages.fk7263.EditCertPage
 import se.inera.webcert.spec.Browser
+import se.inera.webcert.spec.util.StringConverter
+import fitnesse.slim.converters.ConverterRegistry
 
 class PopuleraFk7263 {
 
+    PopuleraFk7263() {
+        ConverterRegistry.addConverter(String.class, new StringConverter());
+    }
+    
     public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     Boolean smittskydd
