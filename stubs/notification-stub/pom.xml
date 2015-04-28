@@ -21,26 +21,10 @@
   </properties>
 
   <dependencies>
-    
+    <!-- Common -->
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context-support</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-    
-    <!-- Logging -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>common-schemas</artifactId>
     </dependency>
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
@@ -48,11 +32,6 @@
     </dependency>
 
     <!-- Schemas -->
-    <dependency>
-      <groupId>se.inera.intyg.common</groupId>
-      <artifactId>common-schemas</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
       <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
@@ -62,9 +41,30 @@
       <artifactId>intyg-clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
 
+    <!-- Misc -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
 
     <!-- Tests -->
@@ -76,7 +76,6 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
     </dependency>
-    
   </dependencies>
 
 </project>

@@ -47,7 +47,7 @@
       <artifactId>hsa-integration</artifactId>
     </dependency>
 
-    <!-- Tools -->
+    <!-- Common -->
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
       <artifactId>common-specifications</artifactId>
@@ -66,6 +66,8 @@
       <groupId>se.riv.itintegration.monitoring</groupId>
       <artifactId>itintegration-monitoring-schemas</artifactId>
     </dependency>
+
+    <!-- Misc -->
     <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms-api</artifactId>
