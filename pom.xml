@@ -20,15 +20,15 @@
 
     <!-- Common -->
     <common.version>0-SNAPSHOT</common.version>
-    <common.version.range>(,2.1.0]</common.version.range>
+    <common.version.range>(,2.1.6]</common.version.range>
 
     <!-- Tools -->
     <tools.version>0-SNAPSHOT</tools.version>
-    <tools.version.range>(,2.1.0]</tools.version.range>
+    <tools.version.range>(,2.1.6]</tools.version.range>
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
-    <intygstyper.version.range>(,2.1.5]</intygstyper.version.range>
+    <intygstyper.version.range>(,2.1.6]</intygstyper.version.range>
 
     <!-- Schemas -->
     <clinicalprocess-healthcond-certificate.version>0-SNAPSHOT</clinicalprocess-healthcond-certificate.version>
