@@ -30,7 +30,7 @@
     <rivta-clinicalprocess.version>1.0.RC3.0</rivta-clinicalprocess.version>
     <rivta-insuranceprocess.version>3.1.0.0</rivta-insuranceprocess.version>
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
-    <rivta-ehr-logstore.version>1.2.0.</rivta-ehr-logstore.version>
+    <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
 
     <intyg-clinicalprocess.version>0-SNAPSHOT</intyg-clinicalprocess.version>
     <intyg-clinicalprocess.version.range>(,1.0.0]</intyg-clinicalprocess.version.range>
