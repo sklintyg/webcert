@@ -32,12 +32,6 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 | ny fraga formular visas | false |
 | fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
 
-!3 Verifiera att frågan har skickats till försäkringskassan (stub)
-
-| fraga skickad till fk |
-| fraga? | intygsId? |
-| En fråga från Fitnesse 1 | intyg-fit-1 |
-
 !3 1. Verifiera att det går att hitta frågan igen
 
 | script | !-SvaraOchFraga-! |
@@ -50,11 +44,6 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
 | fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
-
-!3 Ta bort fråga från försäkringskassan (stub)
-
-| script | !-RensaFragorSvarTillFk-! |
-| rensa fragor |
 
 !3 Ta bort de frågor vi har skickat
 
