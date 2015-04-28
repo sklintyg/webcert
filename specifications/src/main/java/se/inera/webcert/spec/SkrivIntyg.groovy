@@ -89,6 +89,7 @@ class SkrivIntyg {
     }
 
     def valideringsfelIntygBaseratPaVisas() {
+        sleep(300)
         def result = false
         Browser.drive{
             result = page.valideringIntygBaseratPa.isDisplayed()

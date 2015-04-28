@@ -29,6 +29,7 @@ class SvaraOchFraga {
         Browser.drive {
             go "/web/dashboard#/create/index"
         }
+        Thread.sleep(300);
     }
 
     boolean sokSkrivaIntygSidanVisas() {
@@ -742,6 +743,7 @@ class SvaraOchFraga {
             waitFor {
                 page.tillbakaButtonClick()
             }
+            Thread.sleep(300);
         }
     }
 
