@@ -29,6 +29,8 @@ public class Intyg extends RestClientFixture {
     private boolean deletedByCareGiver
     
 	private String template
+
+    def certificate
 	
 	public void setSkickat(String value) {
 		skickat = value?.equalsIgnoreCase("ja")
@@ -80,6 +82,7 @@ public class Intyg extends RestClientFixture {
     }
 
     private certificateJson() {
+        def doc = document()
 		def stateList = [[state:"RECEIVED", target:"MI", timestamp:utfärdat + "T12:00:00.000"]]
         if (skickat)
 			stateList << [state:"SENT", target:"FK", timestamp:utfärdat + "T12:00:10.000"]
@@ -88,6 +91,10 @@ public class Intyg extends RestClientFixture {
         String additionalInfo = "";
         if (typ.equalsIgnoreCase("fk7263"))
             additionalInfo = "${giltigtFrån} - ${giltigtTill}"
+        else if (typ.equalsIgnoreCase("ts-bas") || typ.equalsIgnoreCase("ts-diabetes")) {
+            def korkortstyper = certificate.intygAvser.korkortstyp*.type
+            additionalInfo = "${korkortstyper.join(', ')}"
+        }
         [id:String.format(id, utfärdat),
             type:typ.toLowerCase(),
             civicRegistrationNumber:personnr,
@@ -101,7 +108,7 @@ public class Intyg extends RestClientFixture {
             deletedByCareGiver : deletedByCareGiver,
             additionalInfo : additionalInfo,
 			certificateStates: stateList,
-            document: document()
+            document: doc
         ]
     }
 
@@ -110,7 +117,6 @@ public class Intyg extends RestClientFixture {
     }
 
     protected document(typ) {
-        def certificate
         try {
             // slurping the FK7263 template
             certificate = new JsonSlurper().parse(new InputStreamReader(new ClassPathResource("${typ}_${mall}_template.json").getInputStream()))
