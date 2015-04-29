@@ -1,5 +1,8 @@
 package se.inera.webcert.integration.test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -11,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
@@ -33,6 +37,24 @@ public class IntygResource {
     public Response deleteDraft(@PathParam("id") String id) {
         Utkast utkast = utkastRepository.findOne(id);
         utkastRepository.delete(utkast);
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/enhet/{enhetsId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteDraftsByEnhet(@PathParam("enhetsId") String enhetsId) {
+        List<String> enhetsIds = new ArrayList<String>();
+        enhetsIds.add(enhetsId);
+        List<UtkastStatus> statuses = new ArrayList<UtkastStatus>();
+        statuses.add(UtkastStatus.DRAFT_INCOMPLETE);
+        statuses.add(UtkastStatus.DRAFT_COMPLETE);
+        List<Utkast> utkast = utkastRepository.findByEnhetsIdsAndStatuses(enhetsIds, statuses);
+        if (utkast != null) {
+            for (Utkast u : utkast) {
+                utkastRepository.delete(u);
+            }
+        }
         return Response.ok().build();
     }
 
