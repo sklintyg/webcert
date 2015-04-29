@@ -30,7 +30,10 @@
   <security:http security="none" pattern="/favicon.ico"/>
   
   <!-- Logger for SAML messages and events -->
-  <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger"/>
+  <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger">
+    <property name="logMessages" value="true"/>
+    <property name="logErrors" value="true"/>
+  </bean>
 
   <bean id="userDetailsService" class="se.inera.auth.WebCertUserDetailsService"/>
 
