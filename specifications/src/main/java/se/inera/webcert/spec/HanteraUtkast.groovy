@@ -124,6 +124,7 @@ class HanteraUtkast {
             waitFor {
                 page.konfirmeraRadera.click()
             }
+            Thread.sleep(300);
         }
     }
 
@@ -210,8 +211,8 @@ class HanteraUtkast {
     
     boolean felmeddelandeVisas(boolean expected = true) {
         Browser.drive {
-            at EditeraIntygPage
             waitFor {
+                at EditeraIntygPage
                 expected == page.errorPanel.isDisplayed()
             }
         }

@@ -30,8 +30,8 @@
               </div>
 
               <!-- error message -->
-              <div id="create-error" ng-show="widgetState.createErrorMessageKey" class="alert alert-danger">
-                <span message key="{{widgetState.createErrorMessageKey}}"></span>
+              <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
+                <span message key="{{viewState.createErrorMessageKey}}"></span>
               </div>
 
               <div class="alert alert-warning col-lg-7" ng-show="intygType != 'default' && intygType != undefined">
@@ -61,25 +61,25 @@
           </label>
         </div>
 
-        <div wc-spinner label="info.loadingdata" show-spinner="widgetState.doneLoading"
-             show-content="!widgetState.doneLoading">
+        <div wc-spinner label="info.loadingdata" show-spinner="viewState.doneLoading"
+             show-content="!viewState.doneLoading">
           <div class="webcert-col-section qa-table-section" id="intygLista">
 
             <!-- No certs for person -->
             <div id="current-list-noResults-unit"
-                 ng-show="!widgetState.activeErrorMessageKey && widgetState.currentList.length<1"
+                 ng-show="!viewState.activeErrorMessageKey && viewState.currentList.length<1"
                  class="alert alert-info">
               <span message key="info.nocertsfound"></span>
             </div>
 
             <!-- error message -->
-            <div id="current-list-noResults-error" ng-show="widgetState.activeErrorMessageKey"
+            <div id="current-list-noResults-error" ng-show="viewState.activeErrorMessageKey"
                  class="alert alert-danger">
-              <span message key="{{widgetState.activeErrorMessageKey}}"></span>
+              <span message key="{{viewState.activeErrorMessageKey}}"></span>
             </div>
 
             <!-- Previous certs table -->
-            <div class="row" ng-show="widgetState.currentList.length>0" id="prevCertTable">
+            <div class="row" ng-show="viewState.currentList.length>0" id="prevCertTable">
               <table class="col-md-12 table table-striped table-qa">
                 <tr>
                   <th></th>
@@ -89,7 +89,7 @@
                   <th title="">Sparat datum</th>
                   <th title="">Sparat/signerat av</th>
                 </tr>
-                <tr ng-repeat="cert in widgetState.currentList">
+                <tr ng-repeat="cert in viewState.currentList">
                   <td>
                     <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert)"
                             id="showBtn-{{cert.intygId}}">Visa
@@ -111,7 +111,7 @@
               </table>
 
             </div>
-            <span class="{{widgetState.unsigned}}"></span>
+            <span class="{{viewState.unsigned}}"></span>
           </div>
         </div>
         <!-- spinner end -->

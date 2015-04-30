@@ -12,7 +12,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             // Page setup
             $scope.focusFirstInput = true;
-            $scope.widgetState = {
+            $scope.viewState = {
                 doneLoading: true,
                 activeErrorMessageKey: null,
                 createErrorMessageKey: null,
@@ -58,15 +58,15 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
                 // Load certs for person with specified pnr
                 ManageCertificate.getCertificatesForPerson($scope.personnummer, function(data) {
-                    $scope.widgetState.doneLoading = false;
-                    $scope.widgetState.certListUnhandled = data;
+                    $scope.viewState.doneLoading = false;
+                    $scope.viewState.certListUnhandled = data;
                     $scope.updateCertList();
-                    hasUnsigned($scope.widgetState.currentList);
+                    hasUnsigned($scope.viewState.currentList);
                     $window.doneLoading = true;
                 }, function(errorData) {
-                    $scope.widgetState.doneLoading = false;
+                    $scope.viewState.doneLoading = false;
                     $log.debug('Query Error' + errorData);
-                    $scope.widgetState.activeErrorMessageKey = 'info.certload.error';
+                    $scope.viewState.activeErrorMessageKey = 'info.certload.error';
                 });
             }
 
@@ -75,7 +75,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     return;
                 }
                 if(list.length === 0){
-                    $scope.widgetState.unsigned = 'certlist-empty';
+                    $scope.viewState.unsigned = 'certlist-empty';
                     return;
                 }
                 var unsigned = true;
@@ -87,9 +87,9 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     }
                 }
                 if(unsigned){
-                    $scope.widgetState.unsigned = 'unsigned';
+                    $scope.viewState.unsigned = 'unsigned';
                 } else {
-                    $scope.widgetState.unsigned = 'signed';
+                    $scope.viewState.unsigned = 'signed';
                 }
             }
 
@@ -106,8 +106,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
              */
 
             $scope.updateCertList = function() {
-                $scope.widgetState.currentList =
-                    $filter('TidigareIntygFilter')($scope.widgetState.certListUnhandled, $scope.filterForm.intygFilter);
+                $scope.viewState.currentList =
+                    $filter('TidigareIntygFilter')($scope.viewState.certListUnhandled, $scope.filterForm.intygFilter);
             };
 
             $scope.changePatient = function() {
@@ -127,11 +127,11 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                     patientPostort: CreateCertificateDraft.postort
                 };
                 CreateCertificateDraft.createDraft(createDraftRequestPayload, function(data) {
-                    $scope.widgetState.createErrorMessageKey = undefined;
+                    $scope.viewState.createErrorMessageKey = undefined;
                     $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data, true);
                 }, function(error) {
                     $log.debug('Create draft failed: ' + error.message);
-                    $scope.widgetState.createErrorMessageKey = 'error.failedtocreateintyg';
+                    $scope.viewState.createErrorMessageKey = 'error.failedtocreateintyg';
                 });
             };
 

@@ -11,6 +11,7 @@ class SokSkrivValjIntygTypPage extends AbstractPage {
         intygtypFortsattKnapp { $("#intygTypeFortsatt") }
         intygTyp { $("#intygType") }
         intygLista { $("#intygLista") }
+        kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         fortsattKnapp { $("#intygTypeFortsatt") }
     }

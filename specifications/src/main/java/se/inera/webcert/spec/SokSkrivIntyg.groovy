@@ -33,14 +33,6 @@ class SokSkrivIntyg {
         }
     }
 
-    boolean valjIntyTypVisas() {
-        Browser.drive {
-            waitFor {
-                at SokSkrivaIntygMedListaPage;
-            }
-        }
-    }
-
     boolean sokSkrivIntygSidanVisas() {
         sokSkrivIntygSidanVisasSaSmaningom()
     }
@@ -114,6 +106,32 @@ class SokSkrivIntyg {
             }
         }
         true
+    }
+
+    def ateraktiveraKopieraDialogen() {
+        Browser.deleteCookie("wc.dontShowCopyDialog");
+    }
+
+    def valjKopieraTidigareIntyg(String intygId) {
+        Browser.drive {
+            page.copyBtn(intygId).click()
+            waitFor {
+                doneLoading()
+            }
+        }
+    }
+
+    def valjVisaInteIgenIDialogen() {
+        Browser.drive {
+            page.kopieraDialogVisaInteIgen.click()
+        }
+    }
+
+
+    def valjKopieraIDialogen() {
+        Browser.drive {
+            page.kopieraDialogKopieraKnapp.click()
+        }
     }
 
     def kopieraTidigareIntyg(String intygId) {

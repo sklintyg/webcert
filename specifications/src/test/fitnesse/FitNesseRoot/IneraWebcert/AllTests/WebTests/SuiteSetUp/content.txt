@@ -1,5 +1,26 @@
 !include -c .IneraWebcert.AllTests.SuiteSetUp
 
+!3 Ta bort eventuella kvarvarande utkast på enheten
+| script | ta bort utkast |
+|ta bort utkast for enhet| IFV1239877878-1042 |
+
+!3 Ta bort eventuella kvarvarande frågor på enheten
+| script | ta bort fraga |
+|ta bort fragor for enhet| IFV1239877878-1042 |
+
+!3 Ta bort eventuella kvarvarande intyg
+
+| ta bort intyg |
+| id |
+| intyg-fit-1 |
+| intyg-fit-2 |
+| intyg-fit-3-revoked |
+| intyg-fit-6 |
+| intyg-fit-4 |
+| intyg-fit-7 |
+| intyg-fit-5 |
+| intyg-fit-8 |
+
 !3 Givet test-intyg i Intygstjänsten
 
 | Intyg |

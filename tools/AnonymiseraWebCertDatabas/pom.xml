@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -13,25 +15,21 @@
   <groupId>se.inera.webcert.tools</groupId>
   <artifactId>anonymisera-webcert-databas</artifactId>
   <version>1.0.7</version>
-  <packaging>jar</packaging>
+
   <name>Anonymisering av intyg och frågor/svar i webcert</name>
 
   <dependencies>
-
+    <!-- Common -->
     <dependency>
-      <groupId>se.inera.intyg.tools</groupId>
+      <groupId>se.inera.intyg.common</groupId>
       <artifactId>anonymisering</artifactId>
       <version>1.0.3</version>
     </dependency>
 
+    <!-- Groovy -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
     </dependency>
 
     <dependency>
@@ -54,6 +52,12 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-dbcp2</artifactId>
+    </dependency>
+
+    <!-- Misc -->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
     </dependency>
 
     <!-- Test dependencies -->
