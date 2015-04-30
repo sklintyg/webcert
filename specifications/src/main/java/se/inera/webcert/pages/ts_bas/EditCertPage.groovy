@@ -1,9 +1,10 @@
 package se.inera.webcert.pages.ts_bas
 
 import geb.Module
-import se.inera.certificate.page.AbstractPage
+import se.inera.webcert.pages.AbstractEditCertPage
+import se.inera.webcert.pages.VardenhetModule
 
-class EditCertPage extends AbstractPage {
+class EditCertPage extends AbstractEditCertPage {
 
     static at = { doneLoading() && $("#edit-ts-bas").isDisplayed() }
 
@@ -363,15 +364,5 @@ class BedomningModule extends Module {
             if (behorigheter.contains("Taxi")) taxi = true
             if (behorigheter.contains("Annat")) annat = true
         }
-    }
-}
-
-class VardenhetModule extends Module {
-    static base = { $("#vardenhetForm") }
-    static content = {
-        postadress { $("#clinicInfoPostalAddress") }
-        postnummer { $("#clinicInfoPostalCode") }
-        postort { $("#clinicInfoPostalCity") }
-        telefonnummer { $("#clinicInfoPhone") }
     }
 }

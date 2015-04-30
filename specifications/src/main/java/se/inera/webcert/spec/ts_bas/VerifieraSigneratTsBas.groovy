@@ -16,7 +16,7 @@ class VerifieraSigneratTsBas {
     }
 
     boolean getBooleanResult(field) {
-        def result = false
+        boolean result
         Browser.drive {
             result = page."$field".isDisplayed()
         }
@@ -24,7 +24,7 @@ class VerifieraSigneratTsBas {
     }
 
     String getStringResult(field) {
-        def result = ''
+        String result = ''
         Browser.drive {
             if (!page."$field".isDisplayed()) {
                 result = "notshown"

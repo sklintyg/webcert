@@ -19,6 +19,7 @@ Felaktigt datumform ska ge valideringsfel för det fältet men inga andra valide
 | felaktigt |
 
 | script | !-SkrivIntyg-! |
+| spara utkast |
 | intyg ej komplett visas |
 | valideringsfel intyg baserat pa visas |
 
@@ -29,6 +30,7 @@ Felaktigt datumform ska ge valideringsfel för det fältet men inga andra valide
 | 2014-09-17 |
 
 | script | !-SkrivIntyg-! |
+| spara utkast |
 | intyg ej komplett visas |
 | inga valideringsfel visas |
 
@@ -36,11 +38,10 @@ Felaktigt datumform ska ge valideringsfel för det fältet men inga andra valide
 
 | Populera Fk7263 |
 | undersokningDatum |
-| |
-
-Vänta tills intyget är sparat.
+| <empty> |
 
 | script | !-SkrivIntyg-! |
+| spara utkast |
 | visa vad som saknas |
 | intyg ej komplett visas |
 
@@ -70,9 +71,8 @@ Kontrollera valideringsmeddelanden.
 | diagnos1 | nedsattMed100 |
 | a00 | true |
 
-Vänta tills intyget är sparat.
-
 | script | !-SkrivIntyg-! |
+| spara utkast |
 | intyg ej komplett visas |
 
 Kontrollera valideringsmeddelanden.
@@ -86,9 +86,8 @@ Kontrollera valideringsmeddelanden.
 | nuvarandearbete | arbetsuppgifter | funktionsnedsattning | aktivitetsbegransning | 
 | true | <space> | <space> | <space> |
 
-Vänta tills intyget är sparat.
-
 | script | !-SkrivIntyg-! |
+| spara utkast |
 | intyg ej komplett visas |
 
 Kontrollera valideringsmeddelanden.
@@ -103,28 +102,19 @@ Kontrollera valideringsmeddelanden.
 | undersokningDatum |
 | 2014-09-17 |
 
-| script | !-SkrivIntyg-! |
-| spara utkast |
-
 | Populera Fk7263 |
 | arbetsuppgifter |
 | arbetsuppgifter1 |
-
-| script | !-SkrivIntyg-! |
-| spara utkast |
 
 | Populera Fk7263 |
 | aktivitetsbegransning |
 | aktivitetsbegransning1 |
 
-| script | !-SkrivIntyg-! |
-| spara utkast |
-
 | Populera Fk7263 |
 | funktionsnedsattning |
 | funktionsnedsattning1 |
 
-| script | !-SkrivIntyg-! |
+| script | Skriv Intyg |
 | spara utkast |
 
 Inga valideringsfel ska vara kvar

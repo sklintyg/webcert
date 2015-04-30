@@ -11,8 +11,8 @@
 
 !3 Verifiera text webcert-1738
 | script | !-SkrivIntyg-! |
-| verifiera att markup for id | bedomningForm | inte innehaller | Trafikmedicin |
-| verifiera att markup for id | bedomningForm | inte innehaller | /img/link_icon.png |
+| reject | markup for id | bedomningForm | innehaller | Trafikmedicin |
+| reject | markup for id | bedomningForm | innehaller | /img/link_icon.png |
 
 !3 Ta bort utkastet
 

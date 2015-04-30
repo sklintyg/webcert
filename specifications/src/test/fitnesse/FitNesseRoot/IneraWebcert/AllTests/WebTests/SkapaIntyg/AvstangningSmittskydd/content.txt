@@ -78,14 +78,16 @@
 | true |
 
 | script | !-SkrivIntyg-! |
-|check | diagnosArEjSynligt | true |
+| spara utkast |
+|reject | diagnosArSynligt |
 
 | Populera Fk7263 |
 | smittskydd |
 | false |
 
 | script | !-SkrivIntyg-! |
-| check | diagnosArSynligt | true |
+| spara utkast |
+| ensure | diagnosArSynligt |
 
 !2 Verifiera
 
