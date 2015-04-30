@@ -112,6 +112,7 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserM
 
         $window.doneLoading = false;
         $window.dialogDoneLoading = true;
+        $window.rendered = true;
 
         $rootScope.$on('$stateChangeStart',
             function(event, toState, toParams, fromState, fromParams){
