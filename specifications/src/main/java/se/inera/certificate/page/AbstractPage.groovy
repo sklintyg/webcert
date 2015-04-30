@@ -5,14 +5,16 @@ import geb.Page
 
 abstract class AbstractPage extends Page {
 
-    def doneLoading() {
-        js.doneLoading && js.dialogDoneLoading
+    static boolean doneLoading() {
+        boolean result
+        Browser.drive {
+            result = js.doneLoading && js.dialogDoneLoading && js.rendered
+        }
+        result
     }
 
-    def static scrollIntoView(elementId){
+    static void scrollIntoView(elementId){
         def jqScrollToVisible = "jQuery(\'#" + elementId + "\')[0].scrollIntoView();var current=jQuery('body').scrollTop(); jQuery('body').scrollTop(current-400);"
-        println("------------ scrollintoview")
-        println(jqScrollToVisible)
         Browser.drive {
             js.exec(jqScrollToVisible)
         }
