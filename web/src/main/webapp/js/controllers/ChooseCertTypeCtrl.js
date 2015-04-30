@@ -144,7 +144,8 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.copyIntyg = function(cert) {
-                ManageCertificate.copy($scope,
+                $scope.viewState.createErrorMessageKey = null;
+                ManageCertificate.copy($scope.viewState,
                     IntygCopyRequestModel.build({
                         intygId: cert.intygId,
                         intygType: cert.intygType,

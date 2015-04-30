@@ -77,6 +77,9 @@
                  class="alert alert-danger">
               <span message key="{{viewState.activeErrorMessageKey}}"></span>
             </div>
+            <div ng-show="viewState.inlineErrorMessageKey" class="alert alert-danger">
+              <span message key="{{viewState.inlineErrorMessageKey}}"></span>
+            </div>
 
             <!-- Previous certs table -->
             <div class="row" ng-show="viewState.currentList.length>0" id="prevCertTable">
