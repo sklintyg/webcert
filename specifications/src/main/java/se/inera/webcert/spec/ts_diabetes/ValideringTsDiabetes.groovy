@@ -1,6 +1,6 @@
 package se.inera.webcert.spec.ts_diabetes
 
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 class ValideringTsDiabetes {
 

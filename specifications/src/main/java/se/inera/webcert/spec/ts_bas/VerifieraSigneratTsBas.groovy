@@ -2,7 +2,7 @@ package se.inera.webcert.spec.ts_bas
 
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 import org.codehaus.groovy.runtime.StackTraceUtils
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 class VerifieraSigneratTsBas {
 

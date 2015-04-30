@@ -1,6 +1,8 @@
 package se.inera.webcert.spec
 
 import org.openqa.selenium.Keys
+
+import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.SokSkrivValjIntygTypPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 

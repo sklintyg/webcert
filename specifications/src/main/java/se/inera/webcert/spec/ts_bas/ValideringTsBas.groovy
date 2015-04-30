@@ -1,6 +1,7 @@
 package se.inera.webcert.spec.ts_bas
 
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
+
 
 class ValideringTsBas {
 
