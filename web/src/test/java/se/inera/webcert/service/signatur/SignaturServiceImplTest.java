@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
+import javax.persistence.OptimisticLockException;
+
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,9 +105,9 @@ public class SignaturServiceImplTest {
         vardperson.setHsaId(hoSPerson.getHsaId());
         vardperson.setNamn(hoSPerson.getNamn());
 
-        utkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
-        completedUtkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson);
-        signedUtkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+        utkast = createUtkast(INTYG_ID, 1, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
+        completedUtkast = createUtkast(INTYG_ID, 2, INTYG_TYPE, UtkastStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson);
+        signedUtkast = createUtkast(INTYG_ID, 3, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
 
         internalModelResponse = new InternalModelResponse(INTYG_JSON);
         vardenhet = new Vardenhet("testID", "testNamn");
@@ -127,9 +129,10 @@ public class SignaturServiceImplTest {
         ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
-    private Utkast createUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
+        utkast.setVersion(version);
         utkast.setIntygsTyp(type);
         utkast.setStatus(status);
         utkast.setModel(model);
@@ -141,22 +144,28 @@ public class SignaturServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void getSignatureHashReturnsErrorIfIntygNotCompleted() {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        intygSignatureService.createDraftHash(INTYG_ID);
-        fail();
+        intygSignatureService.createDraftHash(INTYG_ID, utkast.getVersion());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void getSignatureHashReturnsErrorIfIntygAlreadySigned() {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        intygSignatureService.createDraftHash(INTYG_ID);
-        fail();
+        intygSignatureService.createDraftHash(INTYG_ID, signedUtkast.getVersion());
+    }
+
+    @Test(expected = OptimisticLockException.class)
+    public void getSignatureHashReturnsErrorIfWrongVersion() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        intygSignatureService.createDraftHash(INTYG_ID, signedUtkast.getVersion()-1);
     }
 
     @Test
     public void getSignatureHashReturnsTicket() throws ModuleNotFoundException, ModuleException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
-        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         assertEquals(INTYG_ID, ticket.getIntygsId());
+        assertEquals(completedUtkast.getVersion(), ticket.getVersion());
         assertEquals(SignaturTicket.Status.BEARBETAR, ticket.getStatus());
     }
 
@@ -165,28 +174,28 @@ public class SignaturServiceImplTest {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
 
         intygSignatureService.clientSignature("unknownId", "SIGNATURE");
-        fail();
     }
 
     @Test(expected = WebCertServiceException.class)
     public void clientSignatureFailsIfIntygWasModified() throws IOException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
-        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
 
         completedUtkast.setModel("{}");
 
         String signature = "{\"signatur\":\"SIGNATURE\"}";
 
         intygSignatureService.clientSignature(ticket.getId(), signature);
-        fail();
     }
 
     @Test
     public void clientSignatureSuccess() throws IOException {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
 
-        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID);
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
 
@@ -218,7 +227,7 @@ public class SignaturServiceImplTest {
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
         // Do the call
-        SignaturTicket signatureTicket = intygSignatureService.serverSignature(INTYG_ID);
+        SignaturTicket signatureTicket = intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
 
         verify(intygService).storeIntyg(completedUtkast);
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));

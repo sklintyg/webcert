@@ -7,15 +7,14 @@ import java.util.List;
 
 public class SaveDraftResponse {
 
+    private long version;
+    
     private DraftValidationStatus status;
 
     private List<SaveDraftValidationMessage> messages = new ArrayList<SaveDraftValidationMessage>();
 
-    public SaveDraftResponse() {
-
-    }
-
-    public SaveDraftResponse(DraftValidationStatus status) {
+    public SaveDraftResponse(long version, DraftValidationStatus status) {
+        this.version = version;
         this.status = status;
     }
 
@@ -37,5 +36,9 @@ public class SaveDraftResponse {
 
     public void addMessage(String field, ValidationMessageType type, String message) {
         messages.add(new SaveDraftValidationMessage(field, type, message));
+    }
+
+    public long getVersion() {
+        return version;
     }
 }
