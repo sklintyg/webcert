@@ -11,6 +11,8 @@ import se.inera.webcert.persistence.utkast.model.UtkastStatus;
  */
 public class DraftHolder {
 
+    private long version;
+    
     private boolean vidarebefordrad;
 
     private UtkastStatus status;
@@ -21,6 +23,16 @@ public class DraftHolder {
     public DraftHolder() {
 
     }
+
+    public long getVersion() {
+        return version;
+    }
+
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
 
     public boolean isVidarebefordrad() {
         return vidarebefordrad;

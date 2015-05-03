@@ -18,8 +18,8 @@ public class SignaturTicketTrackerTest {
     @Test
     public void prune() {
         for (int i = 1; i < 100; i++) {
-            tracker.trackTicket(new SignaturTicket("old-" + i, BEARBETAR, "intygid", LocalDateTime.now(), "1234", new LocalDateTime().minusMinutes(6)));
-            tracker.trackTicket(new SignaturTicket(String.valueOf(i), BEARBETAR, "intygid", LocalDateTime.now(), "1234", new LocalDateTime()));
+            tracker.trackTicket(new SignaturTicket("old-" + i, BEARBETAR, "intygid", 1, LocalDateTime.now(), "1234", new LocalDateTime().minusMinutes(6)));
+            tracker.trackTicket(new SignaturTicket(String.valueOf(i), BEARBETAR, "intygid", 1, LocalDateTime.now(), "1234", new LocalDateTime()));
         }
         SignaturTicket tracked = tracker.getTicket("1");
         assertEquals(BEARBETAR, tracked.getStatus());
@@ -28,7 +28,7 @@ public class SignaturTicketTrackerTest {
 
     @Test
     public void updateStatus() {
-        tracker.trackTicket(new SignaturTicket("id", BEARBETAR, "intygid", LocalDateTime.now(), "1234", new LocalDateTime()));
+        tracker.trackTicket(new SignaturTicket("id", BEARBETAR, "intygid", 1, LocalDateTime.now(), "1234", new LocalDateTime()));
         tracker.updateStatus("id", SIGNERAD);
         SignaturTicket tracked = tracker.getTicket("id");
         assertEquals(SIGNERAD, tracked.getStatus());

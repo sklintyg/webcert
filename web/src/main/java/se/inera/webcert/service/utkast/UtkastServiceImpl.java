@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.OptimisticLockException;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,7 @@ import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -242,25 +245,41 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public SignaturTicket createDraftHash(String intygsId) {
+    @Transactional
+    public SignaturTicket createDraftHash(String intygsId, long version) {
         Utkast intyg = getIntygAsDraft(intygsId);
-        updateWithUser(intyg);
-        utkastRepository.save(intyg);
 
-        return signatureService.createDraftHash(intygsId);
+        // check that the draft hasn't been modified concurrently
+        if (intyg.getVersion() != version) {
+            LOG.debug("Utkast '{}' was concurrently modified", intygsId);
+            throw new OptimisticLockException(intyg.getSenastSparadAv().getNamn());
+        }
+
+        updateWithUser(intyg);
+        intyg = utkastRepository.save(intyg);
+
+        return signatureService.createDraftHash(intygsId, intyg.getVersion());
     }
 
     @Override
-    public SignaturTicket serverSignature(String intygsId) {
+    @Transactional
+    public SignaturTicket serverSignature(String intygsId, long version) {
         Utkast intyg = getIntygAsDraft(intygsId);
-        updateWithUser(intyg);
-        utkastRepository.save(intyg);
 
-        return signatureService.serverSignature(intygsId);
+        // check that the draft hasn't been modified concurrently
+        if (intyg.getVersion() != version) {
+            LOG.debug("Utkast '{}' was concurrently modified", intygsId);
+            throw new OptimisticLockException(intyg.getSenastSparadAv().getNamn());
+        }
+
+        updateWithUser(intyg);
+        intyg = utkastRepository.save(intyg);
+
+        return signatureService.serverSignature(intygsId, intyg.getVersion());
     }
 
     @Override
-    public DraftValidation saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent) {
+    public SaveAndValidateDraftResponse saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent) {
 
         String intygId = request.getIntygId();
 
@@ -271,6 +290,12 @@ public class UtkastServiceImpl implements UtkastService {
         if (utkast == null) {
             LOG.warn("Utkast '{}' was not found", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
+        }
+
+        // check that the draft hasn't been modified concurrently
+        if (utkast.getVersion() != request.getVersion()) {
+            LOG.debug("Utkast '{}' was concurrently modified", intygId);
+            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
         }
 
         // check that the draft is still a draft
@@ -315,7 +340,7 @@ public class UtkastServiceImpl implements UtkastService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
 
-        return draftValidation;
+        return new SaveAndValidateDraftResponse(utkast.getVersion(), draftValidation);
     }
 
     @Transactional
@@ -351,7 +376,6 @@ public class UtkastServiceImpl implements UtkastService {
     private DraftValidation convertToDraftValidation(ValidateDraftResponse dr) {
 
         DraftValidation draftValidation = new DraftValidation();
-
         ValidationStatus validationStatus = dr.getStatus();
 
         if (ValidationStatus.VALID.equals(validationStatus)) {
@@ -420,7 +444,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public void deleteUnsignedDraft(String intygId) {
+    public void deleteUnsignedDraft(String intygId, long version) {
 
         LOG.debug("Deleting draft with id '{}'", intygId);
 
@@ -430,6 +454,12 @@ public class UtkastServiceImpl implements UtkastService {
         if (utkast == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "The draft could not be deleted since it could not be found");
+        }
+
+        // check that the draft hasn't been modified concurrently
+        if (utkast.getVersion() != version) {
+            LOG.debug("Utkast '{}' was concurrently modified", intygId);
+            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
         }
 
         // check that the draft is still unsigned
