@@ -387,7 +387,7 @@
     <renameColumn tableName="FRAGASVAR" columnDataType="varchar(255)" oldColumnName="PATIENT_ID_EXTENSION" newColumnName="PATIENT_ID"/>
   </changeSet>
 
-  <changeSet id="11" author="bb">
+  <changeSet id="12" author="bb">
      <addColumn tableName="INTYG">
       <column name="VERSION" type="bigint" defaultValue="0">
         <constraints nullable="false"/>
