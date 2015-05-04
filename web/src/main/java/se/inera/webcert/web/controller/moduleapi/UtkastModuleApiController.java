@@ -1,7 +1,6 @@
 package se.inera.webcert.web.controller.moduleapi;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import javax.persistence.OptimisticLockException;
@@ -25,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
@@ -128,6 +128,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
             return Response.ok().entity(responseEntity).build();
         } catch (OptimisticLockException e) {
+            LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
     }
@@ -230,6 +231,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         try {
             ticket = utkastService.serverSignature(intygsId, version);
         } catch (OptimisticLockException e) {
+            LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
         
@@ -263,6 +265,8 @@ public class UtkastModuleApiController extends AbstractApiController {
         try {
             ticket = signaturService.clientSignature(biljettId, rawSignaturString);
         } catch (OptimisticLockException e) {
+            ticket = signaturService.ticketStatus(biljettId);
+            LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", ticket.getIntygsId(), intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
 
@@ -287,6 +291,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         try {
             ticket = utkastService.createDraftHash(intygsId, version);
         } catch (OptimisticLockException e) {
+            LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
         return new SignaturTicketResponse(ticket);
