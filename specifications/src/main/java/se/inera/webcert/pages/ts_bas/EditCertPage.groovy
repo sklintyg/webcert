@@ -104,7 +104,7 @@ class IntygetAvserModule extends Module {
 
             def behorigheter = valdaBehorigheter.split(",");
 
-            AbstractPage.scrollIntoView("intygetAvserForm");
+            AbstractEditCertPage.scrollIntoView("intygetAvserForm");
 
             if (behorigheter.contains("C1")) c1 = true
             if (behorigheter.contains("C1E")) c1e = true

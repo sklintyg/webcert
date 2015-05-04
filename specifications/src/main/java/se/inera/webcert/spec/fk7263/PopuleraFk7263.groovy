@@ -81,7 +81,7 @@ class PopuleraFk7263 {
                 at EditCertPage
             }
 
-            if (smittskydd != null) page.setSmittskyddCheckBox(smittskydd)
+            if (smittskydd != null) page.setSmittskydd(smittskydd)
 
             if (undersokning != null){
                 page.baserasPa.setUndersokningCheckBox(undersokning)
