@@ -50,6 +50,10 @@ Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fälte
 | valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringDiabetesVisas? | valideringHypoglykemierVisas? | valideringSynVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
 | false | true | true | true | true | true | true | false |
 
+!3 Kontrollera att fellänk är klickbar
+| script | !-SkrivIntyg-! |
+| klicka pa fellank | ts-diabetes.label.bedomning |
+
 !3 Om man går tillbaka genom "Dölj vad som saknas" på ett tomt intyg ska dessa försvinna igen.
 
 | script | !-SkrivIntyg-! |
