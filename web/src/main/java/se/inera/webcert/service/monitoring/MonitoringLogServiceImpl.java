@@ -124,6 +124,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logUtkastConcurrentlyEdited(String intygsId, String intygsTyp) {
+        logEvent(MonitoringEvent.UTKAST_CONCURRENTLY_EDITED, intygsId, intygsTyp);
+    }
+
+    @Override
     public void logUtkastDeleted(String intygsId, String intygsTyp) {
         logEvent(MonitoringEvent.UTKAST_DELETED, intygsId, intygsTyp);
     }
@@ -181,6 +186,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_READ("Utkast '{}' of type '{}' was read"),
         UTKAST_CREATED("Utkast '{}' of type '{}' created by '{}' on unit '{}'"),
         UTKAST_EDITED("Utkast '{}' of type '{}' was edited"),
+        UTKAST_CONCURRENTLY_EDITED("Utkast '{}' of type '{}' was concurrently edited by multiple users"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'");

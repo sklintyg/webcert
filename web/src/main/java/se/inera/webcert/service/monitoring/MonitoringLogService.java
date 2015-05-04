@@ -45,6 +45,8 @@ public interface MonitoringLogService {
 
     void logUtkastEdited(String intygsId, String intygsTyp);
 
+    void logUtkastConcurrentlyEdited(String intygsId, String intygsTyp);
+
     void logUtkastDeleted(String intygsId, String intygsTyp);
 
     void logUtkastRead(String intygsId, String intygsTyp);
