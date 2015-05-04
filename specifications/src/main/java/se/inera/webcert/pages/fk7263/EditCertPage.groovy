@@ -2,8 +2,10 @@ package se.inera.webcert.pages.fk7263
 
 import geb.Module
 import se.inera.certificate.page.AbstractPage
+import se.inera.webcert.pages.AbstractEditCertPage
+import se.inera.webcert.pages.VardenhetModule
 
-class EditCertPage extends AbstractPage {
+class EditCertPage extends AbstractEditCertPage {
 
     static at = { doneLoading() && $("#edit-fk7263").isDisplayed() }
 
@@ -58,12 +60,15 @@ class EditCertPage extends AbstractPage {
         valideringVardperson(required: false)            { $("#validationMessages_vardperson") }
 
     }
-
-    def setSmittskyddCheckBox(val){
-        println("setSmittSkydCheckBox");
+    
+    def setSmittskydd(boolean val){
         AbstractPage.scrollIntoView(smittskydd.attr("id"));
         smittskydd.value(val);
+        waitFor {
+            doneLoading()
+        }
     }
+
 }
 
 class BaserasPaModule extends Module {
@@ -272,18 +277,5 @@ class RekommendationerModule extends Module {
 
     def recommendationsToFkTravelValue(){
         return recommendationsToFkTravel.value();
-    }
-}
-
-
-
-class VardenhetModule extends Module {
-    static base = { $("#vardenhetForm") }
-    static content = {
-        postadress { $("#clinicInfoPostalAddress") }
-        postnummer { $("#clinicInfoPostalCode") }
-        postort { $("#clinicInfoPostalCity") }
-        telefonnummer { $("#clinicInfoPhone") }
-        epost { $("#clinicInfoEmail") }
     }
 }

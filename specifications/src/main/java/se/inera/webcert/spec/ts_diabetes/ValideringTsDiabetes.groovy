@@ -1,29 +1,33 @@
 package se.inera.webcert.spec.ts_diabetes
 
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 class ValideringTsDiabetes {
 
-    boolean intygSparatVisas() {
+    void sparaUtkast() {
         Browser.drive {
-            waitFor {
-                page.intygetSparatMeddelande.isDisplayed()
-            }
+            page.spara()
         }
-        true
+    }
+
+    boolean intygSparatVisas() {
+        boolean result
+        Browser.drive {
+            result = page.intygetSparatMeddelande.isDisplayed()
+        }
+        result
     }
 
     boolean intygEjKomplettVisas() {
+        boolean result
         Browser.drive {
-            waitFor(6) {
-                page.intygetEjKomplettMeddelande.isDisplayed()
-            }
+            result = page.intygetEjKomplettMeddelande.isDisplayed()
         }
-        true
+        result
     }
 
-    def ingaValideringsfelVisas() {
-        def result = false
+    boolean ingaValideringsfelVisas() {
+        boolean result
         Browser.drive {
             result = !page.valideringPatient.isDisplayed() &&
                     !page.valideringIntygAvser.isDisplayed() &&
@@ -37,64 +41,64 @@ class ValideringTsDiabetes {
         result
     }
 
-    def valideringPatientVisas() {
-        def result = false
+    boolean valideringPatientVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringPatient.isDisplayed()
         }
         result
     }
 
-    def valideringIntygAvserVisas() {
-        def result = false
+    boolean valideringIntygAvserVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringIntygAvser.isDisplayed()
         }
         result
     }
 
-    def valideringIdentitetVisas() {
-        def result = false
+    boolean valideringIdentitetVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringIdentitet.isDisplayed()
         }
         result
     }
 
-    def valideringDiabetesVisas() {
-        def result = false
+    boolean valideringDiabetesVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringDiabetes.isDisplayed()
         }
         result
     }
 
-    def valideringHypoglykemierVisas() {
-        def result = false
+    boolean valideringHypoglykemierVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringHypoglykemier.isDisplayed()
         }
         result
     }
 
-    def valideringSynVisas() {
-        def result = false
+    boolean valideringSynVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringSyn.isDisplayed()
         }
         result
     }
 
-    def valideringBedomningVisas() {
-        def result = false
+    boolean valideringBedomningVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringBedomning.isDisplayed()
         }
         result
     }
 
-    def valideringVardEnhetVisas() {
-        def result = false
+    boolean valideringVardEnhetVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringVardEnhet.isDisplayed()
         }

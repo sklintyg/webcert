@@ -19,6 +19,14 @@ class SokSkrivaIntygPage extends AbstractPage {
         $("#select-active-unit-${careUnit}").click()
     }
 
+    def angePatient(String patient) {
+        personnummer = patient
+        personnummerFortsattKnapp.click()
+        waitFor {
+            doneLoading()
+        }
+    }
+    
     def logout() {
         logoutLink.click()
     }

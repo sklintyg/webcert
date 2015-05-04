@@ -2,7 +2,7 @@ package se.inera.webcert.spec.ts_bas
 
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 import org.codehaus.groovy.runtime.StackTraceUtils
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 class VerifieraSigneratTsBas {
 
@@ -16,7 +16,7 @@ class VerifieraSigneratTsBas {
     }
 
     boolean getBooleanResult(field) {
-        def result = false
+        boolean result
         Browser.drive {
             result = page."$field".isDisplayed()
         }
@@ -24,7 +24,7 @@ class VerifieraSigneratTsBas {
     }
 
     String getStringResult(field) {
-        def result = ''
+        String result = ''
         Browser.drive {
             if (!page."$field".isDisplayed()) {
                 result = "notshown"

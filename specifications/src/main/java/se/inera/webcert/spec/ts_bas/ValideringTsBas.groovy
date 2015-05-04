@@ -1,29 +1,34 @@
 package se.inera.webcert.spec.ts_bas
 
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
+
 
 class ValideringTsBas {
 
-    boolean intygSparatVisas() {
+    void sparaUtkast() {
         Browser.drive {
-            waitFor {
-                page.intygetSparatMeddelande.isDisplayed()
-            }
+            page.spara()
         }
-        true
+    }
+
+    boolean intygSparatVisas() {
+        boolean result
+        Browser.drive {
+            result = page.intygetSparatMeddelande.isDisplayed()
+        }
+        result
     }
 
     boolean intygEjKomplettVisas() {
+        boolean result
         Browser.drive {
-            waitFor(6) {
-                page.intygetEjKomplettMeddelande.isDisplayed()
-            }
+            result = page.intygetEjKomplettMeddelande.isDisplayed()
         }
-        true
+        result
     }
 
-    def ingaValideringsfelVisas() {
-        def result = false
+    boolean ingaValideringsfelVisas() {
+        boolean result
         Browser.drive {
             result = !page.valideringPatient.isDisplayed() &&
                 !page.valideringIntygAvser.isDisplayed() &&
@@ -48,152 +53,152 @@ class ValideringTsBas {
         result
     }
 
-    def valideringPatientVisas() {
-        def result = false
+    boolean valideringPatientVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringPatient.isDisplayed()
         }
         result
     }
 
-    def valideringIntygAvserVisas() {
-        def result = false
+    boolean valideringIntygAvserVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringIntygAvser.isDisplayed()
         }
         result
     }
 
-    def valideringIdentitetVisas() {
-        def result = false
+    boolean valideringIdentitetVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringIdentitet.isDisplayed()
         }
         result
     }
 
-    def valideringSynVisas() {
-        def result = false
+    boolean valideringSynVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringSyn.isDisplayed()
         }
         result
     }
 
-    def valideringHorselBalansVisas() {
-        def result = false
+    boolean valideringHorselBalansVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringHorselBalans.isDisplayed()
         }
         result
     }
 
-    def valideringFunktionsNedsattningVisas() {
-        def result = false
+    boolean valideringFunktionsNedsattningVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringFunktionsNedsattning.isDisplayed()
         }
         result
     }
 
-    def valideringHjartkarlVisas() {
-        def result = false
+    boolean valideringHjartkarlVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringHjartkarl.isDisplayed()
         }
         result
     }
 
-    def valideringNeurologiVisas() {
-        def result = false
+    boolean valideringNeurologiVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringNeurologi.isDisplayed()
         }
         result
     }
 
-    def valideringMedvetandestorningVisas() {
-        def result = false
+    boolean valideringMedvetandestorningVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringMedvetandestorning.isDisplayed()
         }
         result
     }
 
-    def valideringNjurarVisas() {
-        def result = false
+    boolean valideringNjurarVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringNjurar.isDisplayed()
         }
         result
     }
 
-    def valideringKognitivtVisas() {
-        def result = false
+    boolean valideringKognitivtVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringKognitivt.isDisplayed()
         }
         result
     }
 
-    def valideringSomnVakenhetVisas() {
-        def result = false
+    boolean valideringSomnVakenhetVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringSomnVakenhet.isDisplayed()
         }
         result
     }
 
-    def valideringNarkotikaLakemedelVisas() {
-        def result = false
+    boolean valideringNarkotikaLakemedelVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringNarkotikaLakemedel.isDisplayed()
         }
         result
     }
 
-    def valideringPsykisktVisas() {
-        def result = false
+    boolean valideringPsykisktVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringPsykiskt.isDisplayed()
         }
         result
     }
 
-    def valideringUtvecklingsStorningVisas() {
-        def result = false
+    boolean valideringUtvecklingsStorningVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringUtvecklingsStorning.isDisplayed()
         }
         result
     }
 
-    def valideringSjukhusVardVisas() {
-        def result = false
+    boolean valideringSjukhusVardVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringSjukhusVard.isDisplayed()
         }
         result
     }
 
-    def valideringMedicineringVisas() {
-        def result = false
+    boolean valideringMedicineringVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringMedicinering.isDisplayed()
         }
         result
     }
 
-    def valideringBedomningVisas() {
-        def result = false
+    boolean valideringBedomningVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringBedomning.isDisplayed()
         }
         result
     }
 
-    def valideringVardEnhetVisas() {
-        def result = false
+    boolean valideringVardEnhetVisas() {
+        boolean result
         Browser.drive{
             result = page.valideringVardEnhet.isDisplayed()
         }

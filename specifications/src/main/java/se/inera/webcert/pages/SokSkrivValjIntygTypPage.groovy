@@ -41,4 +41,19 @@ class SokSkrivValjIntygTypPage extends AbstractPage {
     def valjIntygstypTsDiabetes() {
         intygTyp.value("3")
     }
+    
+    def valjIntygsTyp(String typ) {
+        if (typ == "FK7263") {
+            valjIntygstypFk7263();
+        } else if (typ == "ts-bas") {
+            valjIntygstypTsBas();
+        } else if (typ == "ts-diabetes") {
+            valjIntygstypTsDiabetes();
+        }
+        fortsattKnapp.click();
+        waitFor {
+            doneLoading()
+        }
+    }
+
 }

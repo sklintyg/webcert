@@ -2,7 +2,7 @@ package se.inera.webcert.spec.fk7263
 
 import org.codehaus.groovy.runtime.StackTraceUtils
 
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.fk7263.EditCertPage
 
 class VerifieraUtkastFk7263 {

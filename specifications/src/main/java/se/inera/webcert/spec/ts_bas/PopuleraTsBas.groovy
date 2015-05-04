@@ -1,7 +1,7 @@
 package se.inera.webcert.spec.ts_bas
 
 import se.inera.webcert.pages.ts_bas.EditCertPage
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 class PopuleraTsBas {
 

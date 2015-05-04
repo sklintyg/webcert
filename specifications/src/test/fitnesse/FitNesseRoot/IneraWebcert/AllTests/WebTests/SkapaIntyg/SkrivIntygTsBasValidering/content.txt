@@ -17,6 +17,7 @@ Ogiltiga värden för syn ska ge valideringsfel för det fältet men inga andra 
 | 77 | 66 | 55 | 44 | 33 | 22 |
 
 | script | !-ValideringTsBas-! |
+| spara utkast |
 | intyg ej komplett visas |
 | validering syn visas |
 
@@ -27,6 +28,7 @@ Ogiltiga värden för syn ska ge valideringsfel för det fältet men inga andra 
 | 1,0| 1,0 | 1,0 | 1,0 | 1,0 | 1,0 |
 
 | script | !-ValideringTsBas-! |
+| spara utkast |
 | intyg ej komplett visas |
 | inga valideringsfel visas |
 
@@ -70,6 +72,7 @@ Kontrollera valideringsmeddelanden.
 | C | korkort |
 
 | script | !-ValideringTsBas-! |
+| spara utkast |
 | intyg ej komplett visas |
 
 !3 Kontrollera valideringsmeddelanden.

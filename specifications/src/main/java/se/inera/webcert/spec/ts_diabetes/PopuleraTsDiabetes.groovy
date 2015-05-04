@@ -1,7 +1,7 @@
 package se.inera.webcert.spec.ts_diabetes
 
 import se.inera.webcert.pages.ts_diabetes.EditCertPage
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 class PopuleraTsDiabetes {
 

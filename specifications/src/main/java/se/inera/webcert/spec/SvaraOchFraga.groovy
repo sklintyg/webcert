@@ -1,5 +1,6 @@
 package se.inera.webcert.spec
 
+import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.IndexPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
 import se.inera.webcert.pages.UnhandledQAPage

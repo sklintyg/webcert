@@ -142,7 +142,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _copy($scope, intygCopyRequest, isOtherCareUnit) {
+            function _copy(viewState, intygCopyRequest, isOtherCareUnit) {
 
                 _initCopyDialog();
 
@@ -167,16 +167,16 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
                 if ($cookieStore.get(_COPY_DIALOG_COOKIE)) {
                     $log.debug('copy cert without dialog' + intygCopyRequest);
-                    $scope.viewState.activeErrorMessageKey = null;
-                    $scope.viewState.inlineErrorMessageKey = null;
+                    viewState.activeErrorMessageKey = null;
+                    viewState.inlineErrorMessageKey = null;
                     _createCopyDraft(intygCopyRequest, function(draftResponse) {
                         goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                     }, function(errorCode) {
                         if (errorCode === 'DATA_NOT_FOUND') {
-                            $scope.viewState.inlineErrorMessageKey = 'error.failedtocopyintyg.personidnotfound';
+                            viewState.inlineErrorMessageKey = 'error.failedtocopyintyg.personidnotfound';
                         }
                         else {
-                            $scope.viewState.inlineErrorMessageKey = 'error.failedtocopyintyg';
+                            viewState.inlineErrorMessageKey = 'error.failedtocopyintyg';
                         }
                     });
                 } else {
@@ -201,8 +201,8 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                             copyDialogModel.acceptprogressdone = false;
                             _createCopyDraft(intygCopyRequest, function(draftResponse) {
                                 copyDialogModel.acceptprogressdone = true;
-                                if($scope.viewState && $scope.viewState.inlineErrorMessageKey) {
-                                    $scope.viewState.inlineErrorMessageKey = null;
+                                if(viewState && viewState.inlineErrorMessageKey) {
+                                    viewState.inlineErrorMessageKey = null;
                                 }
                                 var end = function() {
                                     goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
