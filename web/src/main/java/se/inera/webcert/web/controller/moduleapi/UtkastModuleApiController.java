@@ -1,6 +1,7 @@
 package se.inera.webcert.web.controller.moduleapi;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import javax.persistence.OptimisticLockException;
@@ -227,7 +228,12 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version, @Context HttpServletRequest request) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignaturTicket ticket = utkastService.serverSignature(intygsId, version);
+        SignaturTicket ticket;
+        try {
+            ticket = utkastService.serverSignature(intygsId, version);
+        } catch (OptimisticLockException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, "Utkastet har ändrats av " + e.getMessage());
+        }
         
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -255,7 +261,12 @@ public class UtkastModuleApiController extends AbstractApiController {
         }
 
         String rawSignaturString = fromBytesToString(rawSignatur);
-        SignaturTicket ticket = signaturService.clientSignature(biljettId, rawSignaturString);
+        SignaturTicket ticket;
+        try {
+            ticket = signaturService.clientSignature(biljettId, rawSignaturString);
+        } catch (OptimisticLockException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, "Utkastet har ändrats av " + e.getMessage());
+        }
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -274,7 +285,12 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignaturTicket ticket = utkastService.createDraftHash(intygsId, version);
+        SignaturTicket ticket;
+        try {
+            ticket = utkastService.createDraftHash(intygsId, version);
+        } catch (OptimisticLockException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, "Utkastet har ändrats av " + e.getMessage());
+        }
         return new SignaturTicketResponse(ticket);
     }
 
