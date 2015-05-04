@@ -11,8 +11,21 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                 controller: function($scope) {
 
                     $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
+                    $scope.units = $scope.units.slice(0, 1)
+                        .concat($scope.units.slice(1, $scope.units.length).sort(
+                                    function(a, b) {
+                                        return (a.namn > b.namn) - (a.namn < b.namn);
+                    }));
                     $scope.units.unshift({id: 'wc-all', namn: 'Alla frågor och svar på denna vårdenhet'});
                     $scope.selectedUnit = null;
+
+                    /**
+                     * Toggles if the enheter without an actie question should
+                     * be shown
+                     */
+                    $scope.toggleShowInactive = function() {
+                        $scope.showInactive = !$scope.showInactive;
+                    };
 
                     $scope.$on('wc-stat-update', function(event, message) {
 

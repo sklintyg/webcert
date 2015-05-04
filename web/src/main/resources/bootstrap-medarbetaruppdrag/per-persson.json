@@ -1,0 +1,16 @@
+{
+    "hsaId": "perpersson",
+    "forNamn": "Per",
+    "efterNamn": "Persson",
+    "uppdrag":[
+        {
+            "enhet": "anestesikliniken"
+        },
+        {
+            "enhet": "kvinnokliniken"
+        },
+        {
+            "enhet": "medicinkliniken"
+        }
+    ]
+}

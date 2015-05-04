@@ -8,7 +8,9 @@ class UnhandledQAPage extends AbstractPage {
 
     static content = {
         unitstatUnhandledQuestionsBadgde(required: false) { $("#stat-unitstat-unhandled-question-count") }
-        careUnitSelector(required: false) { $("#wc-care-unit-clinic-selector") }
+        careUnitSelector(required: false) { $("div#wc-care-unit-clinic-selector") }
+        careUnitModal(required: false) { $("a#wc-care-unit-clinic-selector") }
+        careUnitModalBody(required: false) { $(".modal-body") }
         unhandledQATable(required: false) { $("#qaTable") }
 
         noResultsOnUnitInfo { $("#current-list-noResults-unit") }
@@ -37,6 +39,38 @@ class UnhandledQAPage extends AbstractPage {
 
     def selectCareUnit(String careUnit) {
         $("#select-active-unit-${careUnit}").click()
+    }
+
+    def isCareUnitVisible(String careUnit) {
+        $("#select-active-unit-${careUnit}").isDisplayed()
+    }
+
+    def clickCareUnitModal() {
+        careUnitModal.click();
+    }
+
+    def expandEnhetModal(String id) {
+        $("#expand-enhet-${id}").click()
+    }
+
+    def modalIsDisplayed() {
+        careUnitModalBody.isDisplayed();
+    }
+
+    def isCareUnitModalVisible(String careUnit) {
+        $("#select-active-unit-${careUnit}-modal").isDisplayed()
+    }
+
+    def selectCareUnitModal(String careUnit) {
+        $("#select-active-unit-${careUnit}-modal").click()
+    }
+
+    boolean isNumberPresent(String careUnit, String expected) {
+        expected == $("#select-active-unit-${careUnit}").find(".qa-circle").text()
+    }
+
+    boolean isNumberPresentInModal(String careUnit, String expected) {
+        expected == $("#fraga-svar-stat-${careUnit}").text()
     }
 
     def showQA(String internReferens) {

@@ -272,6 +272,14 @@
                 "enhetId" : "centrum-norr",
                 "lakare" : false,
                 "forskrivarKod": "2481632"
+            },
+            {
+                "fornamn" : "Per",
+                "efternamn" : "Persson",
+                "hsaId" : "perpersson",
+                "enhetId" : "anestesikliniken",
+                "lakare" : true,
+                "forskrivarKod": "1111"
             }
         ];
 
@@ -295,7 +303,6 @@
 
         <div id="content-container">
             <div class="content row">
-
 
                 <h1>Testinloggningar Webcert</h1>
 
@@ -330,6 +337,7 @@
                         <option value="20" id="fitnesse-admin1">Fitnesse Admin (Administratör Vardenhet Fitnesse 1)</option>
                         <option value="21" id="fitnesse-admin2">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
                         <option value="21">Han Solo (Administratör, Centrum Norr)</option>
+                        <option value="22" id="perpersson_anestesikliniken">Per Persson (Läkare Anestesikliniken)</option>
                     </select>
                     <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary"
                            style="margin-top: 20px;width: 100%">

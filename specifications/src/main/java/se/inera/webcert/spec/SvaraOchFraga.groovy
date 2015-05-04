@@ -865,7 +865,6 @@ class SvaraOchFraga {
 
     boolean infotextIngetSokresultatVisas(boolean expected = true) {
         def result
-        Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
@@ -881,4 +880,93 @@ class SvaraOchFraga {
     }
 
 
+    def visasAllaFragorKnappen(boolean expected = true) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = expected == page.visaAllaFragaBtn.isDisplayed()
+        }
+        return result
+    }
+
+    boolean visasEnhetsknappen(String id, boolean expected = true) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = expected == page.isCareUnitVisible(id)
+        }
+        return result
+    }
+
+    boolean forEnhetenArSiffran(String id, String expected) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = page.isNumberPresent(id, expected)
+        }
+        return result
+    }
+
+    def klickaUppModal() {
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            page.clickCareUnitModal()
+            sleep(10L)
+            waitFor {
+                page.modalIsDisplayed()
+            }
+        }
+    }
+
+    boolean visasEnhetsvaletIModal(String id, boolean expected = true) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                page.modalIsDisplayed()
+            }
+            result = expected == page.isCareUnitModalVisible(id)
+        }
+        return result
+    }
+
+    boolean forEnhetenIModalenArSiffran(String id, String expected) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = page.isNumberPresentInModal(id, expected)
+        }
+        return result
+    }
+
+    def expanderaIModal(String id) {
+        Browser.drive {
+            waitFor {
+                page.modalIsDisplayed()
+            }
+            page.expandEnhetModal(id)
+            sleep(1000L)
+            waitFor {
+                page.modalIsDisplayed()
+            }
+        }
+    }
+
+    def valjEnhetIModal(String id) {
+        Browser.drive {
+            waitFor {
+                page.modalIsDisplayed()
+            }
+            page.selectCareUnitModal(id)
+        }
+    }
 }
