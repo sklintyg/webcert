@@ -130,7 +130,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
             return Response.ok().entity(responseEntity).build();
         } catch (OptimisticLockException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, "Utkastet har ändrats av " + e.getMessage());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
     }
 
@@ -232,7 +232,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         try {
             ticket = utkastService.serverSignature(intygsId, version);
         } catch (OptimisticLockException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, "Utkastet har ändrats av " + e.getMessage());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
         
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
@@ -265,7 +265,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         try {
             ticket = signaturService.clientSignature(biljettId, rawSignaturString);
         } catch (OptimisticLockException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, "Utkastet har ändrats av " + e.getMessage());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
@@ -289,7 +289,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         try {
             ticket = utkastService.createDraftHash(intygsId, version);
         } catch (OptimisticLockException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, "Utkastet har ändrats av " + e.getMessage());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
         return new SignaturTicketResponse(ticket);
     }
