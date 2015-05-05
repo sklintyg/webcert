@@ -39,7 +39,6 @@ Det ska inte gå att signera ett utkast som angett Prognos "Går ej att bedöma"
 
 | script | !-SkrivIntyg-! |
 | sparaUtkast |
-| intyg sparat visas |
 
 !3 Detta intyg ska inte gå att signera eftersom prognosBeskrivning saknas
 
