@@ -13,6 +13,7 @@ import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.Utla
 import se.inera.certificate.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
@@ -107,7 +108,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         switch (miusOnUnit.size()) {
         case 0:
-            LOG.error("Found no MIUs for user '{}' on unit '{}', returning null", invokingUserHsaId, invokingUnitHsaId);
             return null;
         case 1:
             return miusOnUnit.get(0);
@@ -142,7 +142,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         String invokingUnitHsaId = utlatandeType.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
         String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId, invokingUnitHsaId);
-        LOG.error(errMsg);
+        LOG.error(LogMarkers.MONITORING, errMsg);
         return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
     }
 
