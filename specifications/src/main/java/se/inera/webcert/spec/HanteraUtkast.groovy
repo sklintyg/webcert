@@ -144,6 +144,15 @@ class HanteraUtkast {
         }
     }
 
+    boolean signeraUtkastBara() {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.signeraBtn.click()
+        }
+    }
+
     boolean signeringKraverLakareVisas(boolean expected = true) {
         Browser.drive {
             asType EditeraIntygPage

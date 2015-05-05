@@ -389,4 +389,11 @@ class SkrivIntyg {
         }
         result
     }
+
+    boolean alertInnehalarText(String text){
+        Browser.drive {
+            page.alert().isDisplayed();
+            return containText(page.alert, text);
+        }
+    }
 }
