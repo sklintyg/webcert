@@ -1,7 +1,7 @@
 /* global MODULE_CONFIG, wcMessages */
 window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
-var app = angular.module('webcert', ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate']);
+var app = angular.module('webcert', ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll']);
 
 app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider',
     function($httpProvider, http403ResponseInterceptorProvider) {

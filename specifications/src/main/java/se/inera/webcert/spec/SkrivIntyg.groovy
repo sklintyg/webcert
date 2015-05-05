@@ -411,4 +411,17 @@ class SkrivIntyg {
         }
         result
     }
+
+    /**
+     * Clicks the anchor identified as having the supplied string as message key.
+     *
+     * @param messageKeyForLink
+     * @return
+     */
+    def klickaPaFellank(String messageKeyForLink) {
+        Browser.drive {
+            def errorLink = $('a').find('span[key="' + messageKeyForLink + '"]');
+            errorLink.click()
+        }
+    }
 }

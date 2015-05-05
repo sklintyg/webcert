@@ -51,6 +51,14 @@ Kontrollera valideringsmeddelanden.
 | valideringsfel intyg baserat pa visas? | valideringsfel diagnos visas? | valideringsfel funktionsnedsattning visas? | valideringsfel aktivitetsbegransning visas? | valideringsfel sysselsattning visas? | valideringsfel arbetsformaga visas? | valideringsfel prognos visas? | valideringsfel rekommendationer visas? | valideringsfel vardperson visas? |
 | true | true | true | true | true | true | false | false | false |
 
+
+!3 Respektive länk till formulärdel med fel skall trigga scrollning till avsett avsnitt vid klick (webcert-1751/1752)
+
+| script | !-SkrivIntyg-! |
+| klicka pa fellank | fk7263.label.sysselsattning |
+
+Sidan skall nu ha scrollats till relevant element. Selenium fixar tyvärr inte att verifiera att scroll skett eller att ett visst element är "in viewport" så vi får nöja oss med att länken gick att klicka på.
+
 !3 Om man går tillbaka genom "Dölj vad som saknas" på ett tomt intyg ska dessa försvinna igen.
 
 | script | !-SkrivIntyg-! |
