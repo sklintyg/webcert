@@ -29,9 +29,9 @@ abstract class AbstractEditCertPage extends AbstractPage {
     }
 
     def tillbaka() {
-        page.tillbakaButton.click();
+        tillbakaButton.click();
         waitFor {
-            page.doneLoading()
+            doneLoading()
         }
     }
     
