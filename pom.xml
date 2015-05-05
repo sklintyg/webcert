@@ -11,7 +11,7 @@
 
   <groupId>se.inera.intyg.webcert</groupId>
   <artifactId>webcert</artifactId>
-  <version>0-SNAPSHOT</version>
+  <version>3.1.0-b66</version>
   <packaging>pom</packaging>
 
   <name>Webcert</name>
@@ -19,11 +19,11 @@
   <properties>
 
     <!-- Common -->
-    <common.version>0-SNAPSHOT</common.version>
+    <common.version>2.2.0-b44</common.version>
     <common.version.range>(,2.2.0]</common.version.range>
 
     <!-- Intygstyper -->
-    <intygstyper.version>0-SNAPSHOT</intygstyper.version>
+    <intygstyper.version>2.2.0-b48</intygstyper.version>
     <intygstyper.version.range>(,2.2.0]</intygstyper.version.range>
 
     <!-- Schemas -->
@@ -38,7 +38,7 @@
     <intyg-insuranceprocess.version>0-SNAPSHOT</intyg-insuranceprocess.version>
     <intyg-insuranceprocess.version.range>(,1.0.0]</intyg-insuranceprocess.version.range>
 
-    <intyg-transportstyrelsen.version>0-SNAPSHOT</intyg-transportstyrelsen.version>
+    <intyg-transportstyrelsen.version>1.0.0-b6</intyg-transportstyrelsen.version>
     <intyg-transportstyrelsen.version.range>(,1.0.0]</intyg-transportstyrelsen.version.range>
 
   </properties>
