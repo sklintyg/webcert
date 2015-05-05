@@ -3,6 +3,7 @@ package se.inera.webcert.web.controller.moduleapi;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
@@ -23,26 +24,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.log.LogRequestFactory;
-import se.inera.webcert.service.log.LogService;
-import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.DraftValidationMessage;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.moduleapi.dto.SignaturTicketResponse;
-import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.DraftHolder;
+import se.inera.webcert.web.controller.moduleapi.dto.DraftValidationStatus;
 import se.inera.webcert.web.controller.moduleapi.dto.SaveDraftResponse;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.web.controller.moduleapi.dto.SignaturTicketResponse;
 
 /**
  * Controller for module interaction with drafts.
@@ -84,7 +83,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
         
         DraftHolder draftHolder = new DraftHolder();
-
+        draftHolder.setVersion(utkast.getVersion());
         draftHolder.setVidarebefordrad(utkast.getVidarebefordrad());
         draftHolder.setStatus(utkast.getStatus());
         draftHolder.setContent(utkast.getModel());
@@ -101,10 +100,10 @@ public class UtkastModuleApiController extends AbstractApiController {
      *            Object holding the certificate and its current status.
      */
     @PUT
-    @Path("/{intygsTyp}/{intygsId}")
+    @Path("/{intygsTyp}/{intygsId}/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
+    public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version, @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
@@ -112,7 +111,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         String draftAsJson = fromBytesToString(payload);
 
-        SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, draftAsJson, autoSave);
+        SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, version, draftAsJson, autoSave);
 
         boolean firstSave = false;
         HttpSession session = request.getSession(true);
@@ -122,17 +121,23 @@ public class UtkastModuleApiController extends AbstractApiController {
         }
         session.setAttribute(LAST_SAVED_DRAFT, intygsId);
 
-        DraftValidation draftValidation = utkastService.saveAndValidateDraft(serviceRequest, firstSave);
+        try {
+            SaveAndValidateDraftResponse validateResponse = utkastService.saveAndValidateDraft(serviceRequest, firstSave);
 
-        SaveDraftResponse responseEntity = buildSaveDraftResponse(draftValidation);
+            SaveDraftResponse responseEntity = buildSaveDraftResponse(validateResponse.getVersion(), validateResponse.getDraftValidation());
 
-        return Response.ok().entity(responseEntity).build();
+            return Response.ok().entity(responseEntity).build();
+        } catch (OptimisticLockException e) {
+            LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
     }
 
-    private SaveAndValidateDraftRequest createSaveAndValidateDraftRequest(String intygId, String draftAsJson, Boolean autoSave) {
+    private SaveAndValidateDraftRequest createSaveAndValidateDraftRequest(String intygId, long version, String draftAsJson, Boolean autoSave) {
         SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
 
         request.setIntygId(intygId);
+        request.setVersion(version);
         request.setDraftAsJson(draftAsJson);
         request.setAutoSave(autoSave);
 
@@ -142,13 +147,13 @@ public class UtkastModuleApiController extends AbstractApiController {
         return request;
     }
 
-    private SaveDraftResponse buildSaveDraftResponse(DraftValidation draftValidation) {
+    private SaveDraftResponse buildSaveDraftResponse(long version, DraftValidation draftValidation) {
 
         if (draftValidation.isDraftValid()) {
-            return new SaveDraftResponse(DraftValidationStatus.COMPLETE);
+            return new SaveDraftResponse(version, DraftValidationStatus.COMPLETE);
         }
 
-        SaveDraftResponse responseEntity = new SaveDraftResponse(DraftValidationStatus.INCOMPLETE);
+        SaveDraftResponse responseEntity = new SaveDraftResponse(version, DraftValidationStatus.INCOMPLETE);
 
         List<DraftValidationMessage> validationMessages = draftValidation.getMessages();
 
@@ -174,15 +179,15 @@ public class UtkastModuleApiController extends AbstractApiController {
      *            The id of the certificate
      */
     @DELETE
-    @Path("/{intygsTyp}/{intygsId}")
+    @Path("/{intygsTyp}/{intygsId}/{version}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response discardDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @Context HttpServletRequest request) {
+    public Response discardDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version, @Context HttpServletRequest request) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
         LOG.debug("Deleting draft with id {}", intygsId);
 
-        utkastService.deleteUnsignedDraft(intygsId);
+        utkastService.deleteUnsignedDraft(intygsId, version);
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -218,11 +223,17 @@ public class UtkastModuleApiController extends AbstractApiController {
      * @return SignaturTicketResponse
      */
     @POST
-    @Path("/{intygsTyp}/{intygsId}/signeraserver")
+    @Path("/{intygsTyp}/{intygsId}/{version}/signeraserver")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @Context HttpServletRequest request) {
+    public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version, @Context HttpServletRequest request) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignaturTicket ticket = utkastService.serverSignature(intygsId);
+        SignaturTicket ticket;
+        try {
+            ticket = utkastService.serverSignature(intygsId, version);
+        } catch (OptimisticLockException e) {
+            LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
         
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -250,7 +261,14 @@ public class UtkastModuleApiController extends AbstractApiController {
         }
 
         String rawSignaturString = fromBytesToString(rawSignatur);
-        SignaturTicket ticket = signaturService.clientSignature(biljettId, rawSignaturString);
+        SignaturTicket ticket;
+        try {
+            ticket = signaturService.clientSignature(biljettId, rawSignaturString);
+        } catch (OptimisticLockException e) {
+            ticket = signaturService.ticketStatus(biljettId);
+            LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", ticket.getIntygsId(), intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -265,11 +283,17 @@ public class UtkastModuleApiController extends AbstractApiController {
      * @return SignaturTicketResponse
      */
     @POST
-    @Path("/{intygsTyp}/{intygsId}/signeringshash")
+    @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
+    public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-        SignaturTicket ticket = utkastService.createDraftHash(intygsId);
+        SignaturTicket ticket;
+        try {
+            ticket = utkastService.createDraftHash(intygsId, version);
+        } catch (OptimisticLockException e) {
+            LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
         return new SignaturTicketResponse(ticket);
     }
 

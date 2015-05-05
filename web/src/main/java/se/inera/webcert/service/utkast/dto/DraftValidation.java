@@ -10,7 +10,6 @@ public class DraftValidation {
     private List<DraftValidationMessage> messages = new ArrayList<DraftValidationMessage>();
 
     public DraftValidation() {
-
     }
 
     public DraftValidationStatus getStatus() {

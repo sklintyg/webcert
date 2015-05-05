@@ -1,0 +1,48 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | SE4815162344-1B01_SE4815162344-1A02 |
+
+!3 Person 1 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med så lite information som möjligt för att det ska bli komplett.
+
+| Populera Fk7263 |
+| smittskydd | tjanstgoringstid | nedsattMed100 |
+| true | 40 | true |
+
+!3 Spara
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| intyg sparat visas |
+
+!3 Person 2 editera Intyget, generare ett nytt version 2
+
+| spara utkast |
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | intygId | intygTyp | komplett | basic | useSameLogin | version |
+| 19000101-9801 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | $intygsid | fk7263 | false | true | true | 1 |
+
+!3 Person 1 försöka att uppdatera och spara intyget, förtfarande på version 1
+
+| Populera Fk7263 |
+| smittskydd | tjanstgoringstid | nedsattMed25 |
+| true | 40 | true |
+
+!3 Spara
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| verifiera att text for id | alertSaveErrorMessage | innehallar | Utkastet har ändrats av en annan användare medan du arbetat på samma utkast |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |

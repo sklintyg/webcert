@@ -19,6 +19,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDateTime;
@@ -68,6 +69,9 @@ public class Utkast {
 
     @Column(name = "PATIENT_EFTERNAMN")
     private String patientEfternamn;
+
+    @Version
+    private long version;
 
     @Embedded
     @AttributeOverrides({ @AttributeOverride(name = "hsaId", column = @Column(name = "SKAPAD_AV_HSAID")),
@@ -211,6 +215,14 @@ public class Utkast {
 
     public void setPatientEfternamn(String patientEfternamn) {
         this.patientEfternamn = patientEfternamn;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 
     public VardpersonReferens getSkapadAv() {

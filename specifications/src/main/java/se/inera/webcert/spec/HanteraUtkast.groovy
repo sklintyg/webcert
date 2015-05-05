@@ -141,8 +141,15 @@ class HanteraUtkast {
                 at EditeraIntygPage
             }
             page.signeraBtn.click()
-            sleep(300)
-            page.konfirmeraSignera.click()
+        }
+    }
+
+    boolean signeraUtkastBara() {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.signeraBtn.click()
         }
     }
 

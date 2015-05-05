@@ -16,6 +16,7 @@ import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -73,7 +74,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
             return webCertUser;
         } catch (MissingMedarbetaruppdragException e) {
-            LOG.error("Missing MIU for user {}", assertion.getHsaId());
+            LOG.error(LogMarkers.MONITORING, "Missing MIU for user {}", assertion.getHsaId());
             throw e;
         } catch (Exception e) {
             LOG.error("Error building user {}, failed with message {}", assertion.getHsaId(), e.getMessage());

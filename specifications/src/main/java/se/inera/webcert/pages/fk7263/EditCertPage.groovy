@@ -2,6 +2,7 @@ package se.inera.webcert.pages.fk7263
 
 import geb.Module
 import se.inera.certificate.page.AbstractPage
+import se.inera.webcert.spec.Browser
 
 class EditCertPage extends AbstractPage {
 
@@ -57,14 +58,7 @@ class EditCertPage extends AbstractPage {
         valideringRekommendationer(required: false)      { $("#validationMessages_rekommendationer") }
         valideringVardperson(required: false)            { $("#validationMessages_vardperson") }
 
-    }
-
-    def elementForId(elementId){
-        return $("#" + elementId);
-    }
-
-    def elementForClass(classId){
-        return $("." + classId);
+        alert(require:false) { $('.alert') }
     }
 
     def setSmittskyddCheckBox(val){

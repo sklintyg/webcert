@@ -9,5 +9,6 @@ public enum WebCertServiceErrorCodeEnum {
     MODULE_PROBLEM, // Problem that occured inside a module
     UNKNOWN_INTERNAL_PROBLEM, // All others
     DATA_NOT_FOUND, //certificate (or other resource) not found
-    CERTIFICATE_REVOKED
+    CERTIFICATE_REVOKED,
+    CONCURRENT_MODIFICATION
 }

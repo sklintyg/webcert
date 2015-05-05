@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import se.inera.certificate.logging.LogMarkers;
 import se.inera.ifv.hsawsresponder.v3.AddressType;
 import se.inera.ifv.hsawsresponder.v3.AttributeListType;
 import se.inera.ifv.hsawsresponder.v3.AttributeValueListType;
@@ -166,12 +168,12 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         HsawsSimpleLookupResponseType lookupResponse = client.callHsawsSimpleLookup(lookupType);
         switch (lookupResponse.getResponseValues().size()) {
         case 0:
-            LOG.error("Enhet {} med hsaId {} saknas.", namn, hsaId);
+            LOG.error(LogMarkers.HSA, "Enhet {} med hsaId {} saknas.", namn, hsaId);
             return null;
         case 1:
             return lookupResponse.getResponseValues().get(0).getDN();
         default:
-            LOG.warn("hsaId {} används till fler än 1 enhet. Detta är troligen ett konfigurations-fel i HSA-katalogen.", hsaId);
+            LOG.warn(LogMarkers.HSA, "hsaId {} används till fler än 1 enhet. Detta är troligen ett konfigurations-fel i HSA-katalogen.", hsaId);
             return lookupResponse.getResponseValues().get(0).getDN();
         }
     }
@@ -236,7 +238,7 @@ public class HsaOrganizationsServiceImpl implements HsaOrganizationsService {
         LOG.debug("Fetching data for mottagning '{}'", mottagningsHsaId);
 
         if (response == null) {
-            LOG.error("Mottagning '{}' was not found in HSA. Inconsistent data in HSA", mottagningsHsaId);
+            LOG.error(LogMarkers.HSA, "Mottagning '{}' was not found in HSA. Inconsistent data in HSA", mottagningsHsaId);
             return null;
         }
 
