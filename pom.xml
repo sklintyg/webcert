@@ -446,7 +446,7 @@
           <includeProperties>
             common.version, intygstjanst.version, intygstyper.version, clinicalprocess-healthcond-certificate.version,
             insuranceprocess-healthreporting.version, itintegration-monitoring.version, ehr-logstore.version,
-            schemas-common.version, tools-version
+            schemas-common.version, tools.version
           </includeProperties>
           <properties>
             <property>
