@@ -52,4 +52,8 @@ public class Browser {
         Cookie cookie = new Cookie(cookieName, cookieValue)
         browser.getDriver().manage().addCookie(cookie)
     }
+
+    static String getTitle() {
+        browser.getDriver().getTitle()
+    }
 }
