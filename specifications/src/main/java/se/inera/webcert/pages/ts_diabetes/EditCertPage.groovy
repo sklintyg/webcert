@@ -1,6 +1,7 @@
 package se.inera.webcert.pages.ts_diabetes
 
 import geb.Module
+import se.inera.certificate.page.AbstractPage
 import se.inera.webcert.pages.AbstractEditCertPage
 import se.inera.webcert.pages.VardenhetModule
 
@@ -77,7 +78,7 @@ class IntygetAvserModule extends Module {
         if (valdaBehorigheter != null) {
 
             // scroll into view
-            AbstractPage.scrollIntoView('typcheck0');
+            AbstractPage.scrollIntoView("typcheck0");
 
             am = false
             a1 = false
