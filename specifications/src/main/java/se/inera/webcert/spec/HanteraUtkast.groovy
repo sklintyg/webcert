@@ -141,8 +141,6 @@ class HanteraUtkast {
                 at EditeraIntygPage
             }
             page.signeraBtn.click()
-            sleep(300)
-            page.konfirmeraSignera.click()
         }
     }
 
