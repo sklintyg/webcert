@@ -14,6 +14,10 @@
 | reject | markup for id | bedomningForm | innehaller | Trafikmedicin |
 | reject | markup for id | bedomningForm | innehaller | /img/link_icon.png |
 
+!3 Verifiera att utkastet inte saknar några översättningsnycklar
+| script | !-SkrivIntyg-! |
+| inga oversattningsnycklar saknas |
+
 !3 Ta bort utkastet
 
 | ta bort utkast |

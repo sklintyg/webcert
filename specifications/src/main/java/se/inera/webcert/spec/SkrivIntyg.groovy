@@ -424,4 +424,16 @@ class SkrivIntyg {
             errorLink.click()
         }
     }
+
+    /**
+     * Checks the full markup of the <body> for the text string "[Missing " and returns
+     * false if it is found.
+     */
+    boolean ingaOversattningsnycklarSaknas() {
+        def result
+        Browser.drive {
+            result = $('body').text().contains("[Missing ")
+        }
+        !result
+    }
 }

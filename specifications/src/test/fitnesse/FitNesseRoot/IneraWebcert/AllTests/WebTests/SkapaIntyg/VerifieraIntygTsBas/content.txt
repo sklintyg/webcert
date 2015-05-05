@@ -20,6 +20,10 @@
 | patientpostadress? | patientpostnummer? | patientpostort? | intygAvser? | identitet? | synfaltsdefekter? | nattblindhet? | diplopi? | nystagmus? | hogerOgautanKorrektion? | hogerOgamedKorrektion? | hogerOgakontaktlins? | vansterOgautanKorrektion? | vansterOgamedKorrektion? | vansterOgakontaktlins? | binokulartutanKorrektion? | binokulartmedKorrektion? | korrektionsglasensStyrka? | horselBalansbalansrubbningar? | horselBalanssvartUppfattaSamtal4Meter? | funktionsnedsattning? | funktionsnedsattningbeskrivning? | funktionsnedsattningotillrackligRorelseformaga? | hjartKarlSjukdom? | hjarnskadaEfterTrauma? | riskfaktorerStroke? | beskrivningRiskfaktorer? | harDiabetes? | diabetesTyp? | kost? | tabletter? | insulin? | neurologiskSjukdom? | medvetandestorning? | medvetandestorningbeskrivning? | nedsattNjurfunktion? | sviktandeKognitivFunktion? | teckenSomnstorningar? | teckenMissbruk? | foremalForVardinsats? | provtagningBehovs? | lakarordineratLakemedelsbruk? | lakemedelOchDos? | psykiskSjukdom? | psykiskUtvecklingsstorning? | harSyndrom? | stadigvarandeMedicinering? | medicineringbeskrivning? | kommentar? | kommentarEjAngivet? | bedomning? | bedomningKanInteTaStallning? | lakareSpecialKompetens? | lakareSpecialKompetensEjAngivet? | signeringsdatum? | vardperson_namn? | vardperson_enhetsnamn? | vardenhet_postadress? | vardenhet_postnummer? | vardenhet_postort? | vardenhet_telefonnummer? |
 | Testvägen 12 | 12345 | Testort | !-C1, C1E, C, CE, D1, D1E, D, DE, TAXI, ANNAT-! | Pass | Ja | Ja | Ja | Ja | 0,0	 | 0,0 | Ja | 0,0 | 0,0 | Ja | 0,0 | 0,0 | Ja | Ja | Ja | Ja | Spik i foten |Ja | Ja | Ja | Ja | Förkärlek för Elvismackor | Ja | Typ 2 | Kost | | | Ja | Ja | Beskrivning | Ja | Ja | Ja | Ja | Ja | Ja | Ja | Läkemedel och dos | Ja | Ja | Ja | Ja | Alvedon | Här kommer en övrig kommentar | | !-C1, C1E, C, CE, D1, D1E, D, DE, TAXI, ANNAT-! | | Spektralanalys | | 1 april 2013 | IFV1239877878-104B | IFV1239877878-1042 | Enhetsvägen 12 | 54321 | Tumba | 08-1337 |
 
+!3 Verifiera att inga översättningsnycklar saknas
+
+| script | !-SkrivIntyg-! |
+| inga oversattningsnycklar saknas |
 
 !3 Ta bort intyget
 
