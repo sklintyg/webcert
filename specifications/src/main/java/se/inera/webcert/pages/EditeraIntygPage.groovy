@@ -1,8 +1,6 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.page.AbstractPage
-
-class EditeraIntygPage extends AbstractPage {
+class EditeraIntygPage extends AbstractEditCertPage {
 
     static at = { doneLoading() && $(".edit-form").isDisplayed() }
 

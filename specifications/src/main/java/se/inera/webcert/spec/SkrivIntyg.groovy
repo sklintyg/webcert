@@ -55,10 +55,10 @@ class SkrivIntyg {
         }
     }
 
-    boolean visaVadSomSaknasListaVisas() {
+    boolean visaVadSomSaknasListaVisas(boolean expected = false) {
         boolean result
         Browser.drive {
-            result = page.visaVadSomSaknasLista.isDisplayed()
+            result = page.visaVadSomSaknasLista.isDisplayed() == expected
         }
         result
     }
