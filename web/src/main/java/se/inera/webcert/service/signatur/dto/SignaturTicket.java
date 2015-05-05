@@ -11,14 +11,16 @@ public class SignaturTicket {
     private final String id;
     private final Status status;
     private final String intygsId;
+    private final long version;
     private final String hash;
     private final LocalDateTime timestamp;
     private final LocalDateTime signeringstid;
 
-    public SignaturTicket(String id, Status status, String intygsId, LocalDateTime signeringstid, String hash, LocalDateTime timestamp) {
+    public SignaturTicket(String id, Status status, String intygsId, long version, LocalDateTime signeringstid, String hash, LocalDateTime timestamp) {
         this.id = id;
         this.status = status;
         this.intygsId = intygsId;
+        this.version = version;
         this.hash = hash;
         this.timestamp = timestamp;
         this.signeringstid = signeringstid;
@@ -36,6 +38,10 @@ public class SignaturTicket {
         return intygsId;
     }
 
+    public long getVersion() {
+        return version;
+    }
+
     public LocalDateTime getSigneringstid() {
         return signeringstid;
     }
@@ -49,7 +55,7 @@ public class SignaturTicket {
     }
 
     public SignaturTicket withStatus(Status status) {
-        return new SignaturTicket(id, status, intygsId, signeringstid, hash, new LocalDateTime());
+        return new SignaturTicket(id, status, intygsId, version, signeringstid, hash, new LocalDateTime());
     }
 
     @Override

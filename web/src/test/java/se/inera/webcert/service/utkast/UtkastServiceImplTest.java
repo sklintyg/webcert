@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -13,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.OptimisticLockException;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +51,7 @@ import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
+import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.webcert.web.service.WebCertUserService;
 
@@ -59,6 +64,9 @@ public class UtkastServiceImplTest {
     private static final String INTYG_JSON = "A bit of text representing json";
 
     private static final String INTYG_TYPE = "fk7263";
+
+    private static final long UTKAST_VERSION = 1;
+    private static final long INTYG_VERSION = 2;
 
     @Mock
     private UtkastRepository mockUtkastRepository;
@@ -127,13 +135,14 @@ public class UtkastServiceImplTest {
         vardperson.setHsaId(hoSPerson.getHsaId());
         vardperson.setNamn(hoSPerson.getNamn());
 
-        utkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
-        signedUtkast = createUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+        utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
+        signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
     }
 
-    private Utkast createUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
+        utkast.setVersion(version);
         utkast.setIntygsTyp(type);
         utkast.setStatus(status);
         utkast.setModel(model);
@@ -150,7 +159,7 @@ public class UtkastServiceImplTest {
         user.setHsaId("hsaId");
         when(userService.getWebCertUser()).thenReturn(user);
 
-        draftService.deleteUnsignedDraft(INTYG_ID);
+        draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
 
         verify(mockUtkastRepository).findOne(INTYG_ID);
         verify(mockUtkastRepository).delete(utkast);
@@ -162,6 +171,33 @@ public class UtkastServiceImplTest {
         verify(logService).logDeleteIntyg(any(LogRequest.class));
         
         verify(mockMonitoringService).logUtkastDeleted(INTYG_ID, INTYG_TYPE);
+    }
+
+    @Test
+    public void testDeleteDraftWrongVersion() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        WebCertUser user = new WebCertUser();
+        user.setHsaId("hsaId");
+        when(userService.getWebCertUser()).thenReturn(user);
+
+        try {
+            draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion()-1);
+            Assert.fail("OptimisticLockException expected");
+        } catch (OptimisticLockException e) {
+            // Expected
+        }
+
+        verify(mockUtkastRepository).findOne(INTYG_ID);
+        verifyNoMoreInteractions(mockUtkastRepository);
+
+        // Assert notification message
+        verifyZeroInteractions(notificationService);
+
+        // Assert pdl log
+        verifyZeroInteractions(logService);
+        
+        verifyZeroInteractions(mockMonitoringService);
     }
 
     @Test
@@ -182,9 +218,7 @@ public class UtkastServiceImplTest {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
-        draftService.deleteUnsignedDraft(INTYG_ID);
-
-        verify(mockUtkastRepository).findOne(INTYG_ID);
+        draftService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -192,16 +226,22 @@ public class UtkastServiceImplTest {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
 
-        draftService.deleteUnsignedDraft(INTYG_ID);
+        draftService.deleteUnsignedDraft(INTYG_ID, 0);
+    }
 
-        verify(mockUtkastRepository).findOne(INTYG_ID);
+    @Test(expected = OptimisticLockException.class)
+    public void testDeleteDraftThatIsSignedWrongVersion() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+
+        draftService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion()-1);
     }
 
     @Test
     public void testSaveAndValidateDraftFirstSave() throws Exception {
 
         ModuleApi mockModuleApi = mock(ModuleApi.class);
-        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
+        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
         WebCertUser user = createUser();
@@ -215,7 +255,7 @@ public class UtkastServiceImplTest {
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
                 new InternalModelResponse("{}"));
 
-        DraftValidation res = draftService.saveAndValidateDraft(request, true);
+        SaveAndValidateDraftResponse res = draftService.saveAndValidateDraft(request, true);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
 
@@ -228,15 +268,15 @@ public class UtkastServiceImplTest {
         verify(mockMonitoringService).logUtkastEdited(INTYG_ID, INTYG_TYPE);
 
         assertNotNull("An DraftValidation should be returned", res);
-        assertFalse("Validation should fail", res.isDraftValid());
-        assertEquals("Validation should have 1 message", 1, res.getMessages().size());
+        assertFalse("Validation should fail", res.getDraftValidation().isDraftValid());
+        assertEquals("Validation should have 1 message", 1, res.getDraftValidation().getMessages().size());
     }
 
     @Test
     public void testSaveAndValidateDraftSecondSave() throws Exception {
 
         ModuleApi mockModuleApi = mock(ModuleApi.class);
-        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
+        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Arrays.asList(valMsg));
         WebCertUser user = createUser();
@@ -250,7 +290,7 @@ public class UtkastServiceImplTest {
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
                 new InternalModelResponse("{}"));
 
-        DraftValidation res = draftService.saveAndValidateDraft(request, false);
+        SaveAndValidateDraftResponse res = draftService.saveAndValidateDraft(request, false);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
 
@@ -262,8 +302,8 @@ public class UtkastServiceImplTest {
         verifyZeroInteractions(mockMonitoringService);
 
         assertNotNull("An DraftValidation should be returned", res);
-        assertFalse("Validation should fail", res.isDraftValid());
-        assertEquals("Validation should have 1 message", 1, res.getMessages().size());
+        assertFalse("Validation should fail", res.getDraftValidation().isDraftValid());
+        assertEquals("Validation should have 1 message", 1, res.getDraftValidation().getMessages().size());
     }
 
     private WebCertUser createUser() {
@@ -290,7 +330,7 @@ public class UtkastServiceImplTest {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
-        draftService.saveAndValidateDraft(buildSaveAndValidateRequest(), false);
+        draftService.saveAndValidateDraft(buildSaveAndValidateRequest(signedUtkast), false);
 
         verify(mockUtkastRepository).findOne(INTYG_ID);
     }
@@ -300,7 +340,7 @@ public class UtkastServiceImplTest {
     public void testSaveAndValidateDraftWithExceptionInModule() throws Exception {
 
         ModuleApi mockModuleApi = mock(ModuleApi.class);
-        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest();
+        SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         WebCertUser user = createUser();
 
         when(userService.getWebCertUser()).thenReturn(user);
@@ -312,10 +352,11 @@ public class UtkastServiceImplTest {
         draftService.saveAndValidateDraft(request, false);
     }
 
-    private SaveAndValidateDraftRequest buildSaveAndValidateRequest() {
+    private SaveAndValidateDraftRequest buildSaveAndValidateRequest(Utkast utkast) {
         SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
-        request.setIntygId(INTYG_ID);
-        request.setDraftAsJson(INTYG_JSON);
+        request.setIntygId(utkast.getIntygsId());
+        request.setVersion(utkast.getVersion());
+        request.setDraftAsJson(utkast.getModel());
         request.setSavedBy(hoSPerson);
         request.setAutoSave(false);
         return request;

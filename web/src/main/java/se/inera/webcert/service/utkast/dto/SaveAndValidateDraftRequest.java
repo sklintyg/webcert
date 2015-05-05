@@ -5,6 +5,8 @@ import se.inera.webcert.service.dto.HoSPerson;
 public class SaveAndValidateDraftRequest {
 
     private String intygId;
+    
+    private long version;
 
     private String draftAsJson;
 
@@ -22,6 +24,14 @@ public class SaveAndValidateDraftRequest {
 
     public void setIntygId(String intygId) {
         this.intygId = intygId;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 
     public String getDraftAsJson() {
