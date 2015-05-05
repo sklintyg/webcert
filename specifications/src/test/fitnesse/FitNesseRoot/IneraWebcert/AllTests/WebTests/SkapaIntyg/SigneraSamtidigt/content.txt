@@ -1,0 +1,44 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | SE4815162344-1B01_SE4815162344-1A02 |
+
+!3 Person 1 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Person 1 Populera intyget
+
+Person 1 Populera intyget med så lite information som möjligt för att det ska bli komplett.
+
+| Populera Fk7263 |
+| smittskydd | tjanstgoringstid | nedsattMed100 |
+| true | 40 | true |
+
+!3 Person 1 Spara
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| intyg sparat visas |
+
+!3 Person 2 Signera intyg genom rest
+ 
+| Signera Utkast|
+| intygId | intygTyp | version | useSameLogin |
+| $intygsid | fk7263 | 1 | true |
+
+!3 Person 1 Signera intyget
+| script | !-HanteraUtkast-! |
+| signera knapp aktiverad |
+| signera utkast bara |
+
+| script | !-SkrivIntyg-! |
+| verifiera att text for id | dialogErrorText | innehallar | Utkastet har ändrats av en annan användare medan du arbetat på samma utkast |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
