@@ -46,6 +46,7 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.service.feature.WebcertFeatureService;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 /**
  * @author andreaskaltenbach
@@ -68,6 +69,9 @@ public class WebCertUserDetailsServiceTest {
     
     @Mock
     private WebcertFeatureService webcertFeatureService;
+
+    @Mock
+    private MonitoringLogService monitoringLogService;
 
     private Vardgivare vardgivare;
 
