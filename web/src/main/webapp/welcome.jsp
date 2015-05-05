@@ -282,7 +282,11 @@
             //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
             jsonElView.value = JSON.stringify(loginArr[selector.selectedIndex], undefined, 1);
             jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 1));
-        }
+        };
+
+        window.doneLoading = true;
+        window.dialogDoneLoading = true;
+        window.rendered = true;
     </script>
 </head>
 <body onLoad="updateJsonInput()">

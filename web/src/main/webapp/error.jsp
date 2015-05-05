@@ -147,7 +147,12 @@
       } else {
         cookiejar.style.visibility = 'hidden';
       }
-    }
+    };
+
+    window.doneLoading = true;
+    window.dialogDoneLoading = true;
+    window.rendered = true;
+
   </script>
 
 </body>
