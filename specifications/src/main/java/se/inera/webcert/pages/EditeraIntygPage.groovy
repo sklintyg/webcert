@@ -10,7 +10,6 @@ class EditeraIntygPage extends AbstractEditCertPage {
         skrivUtBtn { $("#skriv-ut-utkast") }
         konfirmeraRadera { $("#confirm-draft-delete-button") }
         signeraBtn(required: false) { $("#signera-utkast-button") }
-        konfirmeraSignera { $("#confirm-signera-utkast-button") }
         signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         enhetsPostadress(required: false) { $("#clinicInfoPostalAddress") }
