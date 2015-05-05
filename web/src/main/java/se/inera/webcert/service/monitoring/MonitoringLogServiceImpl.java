@@ -59,6 +59,16 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logMissingMedarbetarUppdrag(String userHsaId) {
+        logEvent(MonitoringEvent.USER_MISSING_MIU, userHsaId);
+    }
+
+    @Override
+    public void logMissingMedarbetarUppdrag(String userHsaId, String enhetsId) {
+        logEvent(MonitoringEvent.USER_MISSING_MIU_ON_ENHET, userHsaId, enhetsId);
+    }
+
+    @Override
     public void logQuestionReceived(String fragestallare, String intygsId, String externReferens) {
         logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, intygsId, externReferens);
     }
@@ -172,6 +182,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         USER_LOGIN("Login user '{}' using scheme '{}'"),
         USER_LOGOUT("Logout user '{}' using scheme '{}'"),
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
+        USER_MISSING_MIU("No valid MIU was found for user '{}'"),
+        USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),
         QUESTION_RECEIVED("Received question from '{}' regarding intyg '{}' with reference '{}'"),
         ANSWER_RECEIVED("Received answer to question '{}' regarding intyg '{}'"),
         QUESTION_SENT("Sent question '{}' regarding intyg '{}'"),

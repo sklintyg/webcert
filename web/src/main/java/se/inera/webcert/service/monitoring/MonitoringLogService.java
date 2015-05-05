@@ -19,6 +19,10 @@ public interface MonitoringLogService {
 
     void logUserSessionExpired(String userHsaId, String authScheme);
 
+    void logMissingMedarbetarUppdrag(String userHsaId);
+    
+    void logMissingMedarbetarUppdrag(String userHsaId, String enhetsId);
+
     void logQuestionReceived(String fragestallare, String intygsId, String externReferens);
 
     void logAnswerReceived(Long fragaSvarsId, String intygsId);

@@ -23,6 +23,7 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.service.feature.WebcertFeatureService;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 /**
  * @author andreaskaltenbach
@@ -45,6 +46,9 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     @Autowired
     private WebcertFeatureService webcertFeatureService;
+
+    @Autowired
+    private MonitoringLogService monitoringLogService;
 
     @Override
     public Object loadUserBySAML(SAMLCredential credential) {
@@ -73,7 +77,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
             return webCertUser;
         } catch (MissingMedarbetaruppdragException e) {
-            LOG.error("Missing MIU for user {}", assertion.getHsaId());
+            monitoringLogService.logMissingMedarbetarUppdrag(assertion.getHsaId());
             throw e;
         } catch (Exception e) {
             LOG.error("Error building user {}, failed with message {}", assertion.getHsaId(), e.getMessage());
