@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
-import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.model.common.internal.Vardenhet;
@@ -207,6 +206,11 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     public IntygServiceResult storeIntyg(Omsandning omsandning) {
+        Utkast utkast = utkastRepository.findOne(omsandning.getIntygId());
+        if (utkast == null) {
+            LOG.warn("Could not store intyg in Intygstjansten, no draft found for intyg id '{}'", omsandning.getIntygId());
+            return IntygServiceResult.FAILED;
+        }
         return storeIntyg(utkastRepository.findOne(omsandning.getIntygId()), omsandning);
     }
 
@@ -262,7 +266,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     @Override
     public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage) {
         LOG.debug("Attempting to revoke intyg {}", intygsId);
-
         IntygContentHolder intyg = getIntygData(intygsId, intygsTyp);
         verifyEnhetsAuth(intyg.getUtlatande(), true);
 

@@ -21,6 +21,10 @@
 | intyg-fit-5 |
 | intyg-fit-8 |
 
+!3 Ta bort eventuella kvarvarande omsändningar
+| script | !-TaBortOmsandning-! |
+| ta bort omsandningar |
+
 !3 Givet test-intyg i Intygstjänsten
 
 | Intyg |
