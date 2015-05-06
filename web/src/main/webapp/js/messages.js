@@ -65,6 +65,7 @@ var wcMessages = {
 
         //info messages
         'info.nounsignedcertsfound': '<strong>Inga ej signerade intyg hittades.</strong>',
+        'info.nounsigned.certs.for.unit': '<strong>Inga ej signerade intyg hittades på enheten.</strong>',
         'info.nounansweredcertsfound': '<strong>Inga intyg med ohanterade frågor hittades.</strong>',
         'info.noreadytosigncertsfound': '<strong>Inga klarmarkerade intyg hittades.</strong>',
         'info.loadingdata': '<strong>Uppdaterar lista...</strong>',
