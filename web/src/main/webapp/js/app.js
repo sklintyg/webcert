@@ -110,6 +110,7 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserM
         UserModel.setUserContext(MODULE_CONFIG.USERCONTEXT);
         messageService.addResources(wcMessages);
 
+        $window.animations = 0;
         $window.doneLoading = false;
         $window.dialogDoneLoading = true;
         $window.rendered = true;
