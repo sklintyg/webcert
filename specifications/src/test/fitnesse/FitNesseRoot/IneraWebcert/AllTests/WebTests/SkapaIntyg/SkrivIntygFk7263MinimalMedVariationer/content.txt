@@ -39,7 +39,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | ladda om |
 
 | script | !-SkrivIntyg-! |
-| check | sjukskrivningsperiod | 40 |
+| check | sjukskrivningsperiod | 41 |
 
 !4 En 25% sjukskrivning ger rätt antal timmar
 
@@ -67,7 +67,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | true | true | true | true |
 
 | script | !-SkrivIntyg-! |
-| check | sjukskrivningsperiod | 31 |
+| check | sjukskrivningsperiod | 28 |
 
 !3 Ta bort utkastet
 
