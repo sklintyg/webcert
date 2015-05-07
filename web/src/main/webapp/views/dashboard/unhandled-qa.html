@@ -121,15 +121,16 @@
 
               <!-- No results message for unhandled -->
               <div id="current-list-noResults-unit"
-                   ng-show="widgetState.currentList.length < 1 && !widgetState.activeErrorMessageKey"
+                   ng-show="widgetState.doneLoading && widgetState.currentList.length < 1 && !widgetState.activeErrorMessageKey && !widgetState.filteredYet"
                    class="alert alert-info">
-                <span message key="info.query.noresults"></span>
+                <span message key="info.nounanswered.qa.for.unit"></span>
               </div>
 
               <!-- No results message for query -->
               <div id="current-list-noResults-query"
-                   ng-show="widgetState.totalCount < 1 && !widgetState.activeErrorMessageKey" class="alert alert-info">
-                <span message key="info.nounanswered.qa.for.unit"></span>
+                   ng-show="widgetState.doneLoading && widgetState.totalCount < 1 && !widgetState.activeErrorMessageKey && widgetState.filteredYet"
+                   class="alert alert-info">
+                <span message key="info.query.noresults"></span>
               </div>
 
               <!-- error message -->
