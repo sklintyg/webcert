@@ -2,6 +2,7 @@ package se.inera.webcert.pu.model;
 
 public class Person {
     private final String personnummer;
+    private final boolean sekretessmarkering;
     private final String fornamn;
     private final String mellannamn;
     private final String efternamn;
@@ -9,8 +10,9 @@ public class Person {
     private final String postnummer;
     private final String postort;
 
-    public Person(String personnummer, String fornamn, String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
+    public Person(String personnummer, boolean sekretessmarkering, String fornamn, String mellannamn, String efternamn, String postadress, String postnummer, String postort) {
         this.personnummer = personnummer;
+        this.sekretessmarkering = sekretessmarkering;
         this.fornamn = fornamn;
         this.mellannamn = mellannamn;
         this.efternamn = efternamn;
@@ -21,6 +23,10 @@ public class Person {
 
     public String getPersonnummer() {
         return personnummer;
+    }
+
+    public boolean isSekretessmarkering() {
+        return sekretessmarkering;
     }
 
     public String getFornamn() {

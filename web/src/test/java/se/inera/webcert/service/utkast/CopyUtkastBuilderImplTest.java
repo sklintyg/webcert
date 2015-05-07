@@ -124,7 +124,7 @@ public class CopyUtkastBuilderImplTest {
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE)).thenReturn(ich);
 
         CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
-        Person patientDetails = new Person(PATIENT_SSN, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
+        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);
@@ -151,7 +151,7 @@ public class CopyUtkastBuilderImplTest {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
         CreateNewDraftCopyRequest copyRequest = buildCopyRequest();
-        Person patientDetails = new Person(PATIENT_SSN, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
+        Person patientDetails = new Person(PATIENT_SSN, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345", "postort");
 
         InternalModelResponse imr = new InternalModelResponse(INTYG_JSON);
         when(mockModuleApi.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any(InternalModelHolder.class))).thenReturn(imr);

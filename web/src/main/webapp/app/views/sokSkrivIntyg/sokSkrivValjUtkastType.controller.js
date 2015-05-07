@@ -26,6 +26,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             };
 
             $scope.personnummer = PatientModel.personnummer;
+            $scope.sekretessmarkering = PatientModel.sekretessmarkering;
             $scope.fornamn = PatientModel.fornamn;
             $scope.mellannamn = PatientModel.mellannamn;
             $scope.efternamn = PatientModel.efternamn;

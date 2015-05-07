@@ -36,7 +36,7 @@ public class PersonApiControllerTest {
         String personnummer = "19121212-1212";
 
         when(puService.getPerson(anyString())).thenReturn(
-                new PersonSvar(new Person(personnummer, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
+                new PersonSvar(new Person(personnummer, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
 
         Response response = personCtrl.getPersonuppgifter(personnummer);
 
@@ -45,6 +45,32 @@ public class PersonApiControllerTest {
 
         PersonuppgifterResponse res = (PersonuppgifterResponse) response.getEntity();
         assertEquals(PersonSvar.Status.FOUND, res.getStatus());
+        assertEquals(false, res.getPerson().isSekretessmarkering());
+        assertEquals("fnamn", res.getPerson().getFornamn());
+        assertEquals("mnamn", res.getPerson().getMellannamn());
+        assertEquals("enamn", res.getPerson().getEfternamn());
+        assertEquals("paddr", res.getPerson().getPostadress());
+        assertEquals("pnr", res.getPerson().getPostnummer());
+        assertEquals("port", res.getPerson().getPostort());
+
+        verify(mockMonitoringService).logPULookup(personnummer, "FOUND");
+    }
+
+    @Test
+    public void testGetPersonuppgifterSekretess() {
+        String personnummer = "19121212-1212";
+
+        when(puService.getPerson(anyString())).thenReturn(
+                new PersonSvar(new Person(personnummer, true, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
+
+        Response response = personCtrl.getPersonuppgifter(personnummer);
+
+        assertNotNull(response);
+        assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
+
+        PersonuppgifterResponse res = (PersonuppgifterResponse) response.getEntity();
+        assertEquals(PersonSvar.Status.FOUND, res.getStatus());
+        assertEquals(true, res.getPerson().isSekretessmarkering());
         assertEquals("fnamn", res.getPerson().getFornamn());
         assertEquals("mnamn", res.getPerson().getMellannamn());
         assertEquals("enamn", res.getPerson().getEfternamn());

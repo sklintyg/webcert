@@ -14,6 +14,7 @@ class SokSkrivValjIntygTypPage extends AbstractPage {
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         fortsattKnapp { $("#intygTypeFortsatt") }
+        sekretessmarkering { $("#sekretessmarkering") }
     }
 
     def copyBtn(String intygId) {

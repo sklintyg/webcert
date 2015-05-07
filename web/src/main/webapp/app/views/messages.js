@@ -19,6 +19,9 @@ var wcMessages = {
         'label.patient': 'Patient:',
         'label.signselectedcerts': 'Signera valda intyg',
 
+        'label.createutkast.sekretessmarkering': '<p>Patienten ha en sekretessmarkering. Det innebär att patientens folkbokföringsuppgifeter är skyddade. Var vänlig hantera dem varsamt.</p>På grund av sekretessmarkeringen går det inte att skriva nya elektroniska intyg.',
+        'label.copyutkast.sekretessmarkering': 'På grund av sekretessmarkeringen går det inte att kopiera intyg.',
+
         'label.confirmaddress': 'Återanvänd uppgifter',
         'label.confirmsign': 'Signera intyget',
         'label.copycert': 'Kopiera intyg',

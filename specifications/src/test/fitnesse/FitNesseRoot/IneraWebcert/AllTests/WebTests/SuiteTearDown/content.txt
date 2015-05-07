@@ -13,4 +13,5 @@
 | intyg-fit-7 |
 | intyg-fit-5 |
 | intyg-fit-8 |
+| intyg-fit-9 |
 

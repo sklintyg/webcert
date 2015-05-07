@@ -21,6 +21,7 @@ angular.module('webcert').factory('webcert.PatientProxy',
                     $log.debug(data);
 
                     if (data.status === 'FOUND' && data.person) {
+                        that.sekretessmarkering = data.person.sekretessmarkering;
                         that.fornamn = data.person.fornamn;
                         that.mellannamn = data.person.mellannamn;
                         that.efternamn = data.person.efternamn;

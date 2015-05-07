@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import se.inera.webcert.pu.model.Person;
+import se.inera.webcert.pu.model.PersonSvar;
 
 import static org.junit.Assert.*;
 
@@ -48,5 +49,16 @@ public class PUServiceTest {
     public void checkNonExistingPerson() {
         Person person = service.getPerson("19121212-7169").getPerson();
         assertNull(person);
+    }
+
+    @Test
+    public void checkConfidentialPerson() {
+        Person person = service.getPerson("19540123-2540").getPerson();
+        assertEquals("Maj", person.getFornamn());
+        assertEquals("Pärsson", person.getEfternamn());
+        assertEquals("KUNGSGATAN 5", person.getPostadress());
+        assertEquals("41234", person.getPostnummer());
+        assertEquals("GÖTEBORG", person.getPostort());
+        assertTrue(person.isSekretessmarkering());
     }
 }

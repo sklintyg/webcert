@@ -26,6 +26,7 @@ describe('ChoosePatientCtrl', function() {
                             status: 'FOUND',
                             person: {
                                 personnummer: personnummer,
+                                sekretessmarkering: false,
                                 fornamn: 'Test',
                                 mellannamn: 'Svensson',
                                 efternamn: 'Testsson',

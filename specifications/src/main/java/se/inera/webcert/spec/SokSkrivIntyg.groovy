@@ -81,6 +81,22 @@ class SokSkrivIntyg {
         }
     }
 
+    boolean valjIntygstypSynlig() {
+        boolean result
+        Browser.drive {
+            result = page.intygTyp.isDisplayed()
+        }
+        result
+    }
+
+    boolean sekretessmarkeringTextSynlig() {
+        boolean result
+        Browser.drive {
+            result = page.sekretessmarkering.isDisplayed()
+        }
+        result
+    }
+
     String patientensNamnAr() {
         String result
         Browser.drive {

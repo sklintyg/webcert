@@ -19,13 +19,19 @@
             <div class="webcert-col-section qa-table-section">
               <div class="form-group">
                 <label for="intygType" class="control-label">Skriv nytt intyg</label>
-                <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType"
+                <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType" ng-show="!sekretessmarkering"
                         data-ng-options="type.id as type.label for type in certTypes" wc-focus-me="focusFirstInput"></select>
               </div>
-              <div class="form-group">
+              <div ng-show="!sekretessmarkering" class="form-group">
                 <button id="intygTypeFortsatt" class="btn btn-success" type="submit"
                         ng-disabled="intygType == 'default'">Fortsätt
                 </button>
+              </div>
+              <div ng-if="sekretessmarkering" class="form-group">
+                <div class="alert alert-warning col-lg-7" id="sekretessmarkering">
+                  <span message key='label.createutkast.sekretessmarkering'></span>
+                </div>
+                <div class="clearfix"></div>
               </div>
 
               <!-- error message -->
@@ -45,6 +51,12 @@
       <!-- Tidigare intyg table -->
       <div class="webcert-col-section">
         <h2 class="col-head">Tidigare intyg för {{fornamn}} {{efternamn}}</h2>
+        <div class="form-group" ng-if="sekretessmarkering">
+          <div class="alert alert-warning col-lg-7">
+            <span message key='label.copyutkast.sekretessmarkering'></span>
+          </div>
+          <div class="clearfix"></div>
+        </div>
         <div class="form-group">
           <label class="radio-inline">
             <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
@@ -98,10 +110,10 @@
                     </button>
                   </td>
                   <td>
-                    <button ng-show="cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'" class="btn btn-info"
-                            wc-feature-active feature="kopieraIntyg" intygstyp="{{cert.intygType}}"
-                            title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras." ng-click="copyIntyg(cert)"
-                            id="copyBtn-{{cert.intygId}}">
+                    <button ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
+                            class="btn btn-info" wc-feature-active feature="kopieraIntyg" intygstyp="{{cert.intygType}}"
+                            title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras."
+                            ng-click="copyIntyg(cert)" id="copyBtn-{{cert.intygId}}">
                       Kopiera
                     </button>
                   </td>

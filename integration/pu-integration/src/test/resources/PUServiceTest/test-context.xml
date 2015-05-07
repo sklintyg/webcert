@@ -17,7 +17,7 @@
 
     <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
     <bean class="se.inera.webcert.pu.stub.PUBootstrapBean"/>
-    <bean class="se.inera.webcert.pu.stub.PersonStore"/>
+    <bean class="se.inera.webcert.pu.stub.ResidentStore"/>
 
     <bean class="se.inera.webcert.pu.services.PUServiceImpl"/>
 

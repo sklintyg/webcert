@@ -20,6 +20,7 @@
 | intyg-fit-7 |
 | intyg-fit-5 |
 | intyg-fit-8 |
+| intyg-fit-9 |
 
 !3 Ta bort eventuella kvarvarande omsändningar
 | script | !-TaBortOmsandning-! |
@@ -37,7 +38,7 @@
 | 19000101-9801 | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-1042 | IFV1239877878-1041 | ts-bas | intyg-fit-7 | L | nej | nej |
 | 19000101-9801 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1042 | IFV1239877878-1041 | ts-diabetes | intyg-fit-5 | L | ja | nej |
 | 19000101-9801 | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-1042 | IFV1239877878-1041 | ts-diabetes | intyg-fit-8 | L | nej | nej |
-
+| 19540123-2540 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1042 | IFV1239877878-1041 | FK7263 | intyg-fit-9 | L | ja | nej |
 
 !| Config |
 | property | value |
