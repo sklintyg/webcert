@@ -385,6 +385,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
                 $cookieStore.put('enhetsId', unit.id);
                 enhetId = unit.id;
 
+                $scope.widgetState.filteredYet = false; // so proper info message is displayed if no items are found
                 $scope.widgetState.filterFormCollapsed = true; // collapse filter form so it isn't in the way
 
                 initLakareList(unit.id); // Update lakare list for filter form
