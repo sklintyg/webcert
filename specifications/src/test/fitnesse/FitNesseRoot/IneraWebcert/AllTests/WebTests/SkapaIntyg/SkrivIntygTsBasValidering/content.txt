@@ -77,6 +77,11 @@ Kontrollera valideringsmeddelanden.
 
 !3 Kontrollera att patient validering visas
 
+| script | !-SkrivIntyg-! |
+| dolj vad som saknas |
+| intyg ej komplett visas |
+| visa vad som saknas |
+
 | Validering Ts Bas |
 | valideringPatientVisas? |
 | true |
