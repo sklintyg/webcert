@@ -347,7 +347,6 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 return makuleraDialog;
             }
 
-
             // Return public API for the service
             return {
                 getCertTypes: _getCertTypes,
