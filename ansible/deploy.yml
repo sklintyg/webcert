@@ -7,7 +7,7 @@
     # repo - values: snapshot or release
     repo: release
 
-    version: 3.0.7
+    version: 3.0.9
     config_version: origin/release/v3.0.0
 
   roles:
