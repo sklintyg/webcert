@@ -36,7 +36,7 @@ class PopuleraTsDiabetes {
     String synBinokulartUtanKorrektion
     String synBinokulartMedKorrektion
     Boolean synD
-    Boolean behorighet
+    String behorighet
     String bedomdBehorighet
     Boolean bedomning
     String kommentar
@@ -90,8 +90,13 @@ class PopuleraTsDiabetes {
             if (synBinokulartMedKorrektion != null) page.syn.binokulartMedKorrektion = synBinokulartMedKorrektion
             if (synD != null) page.syn.fragaD = synD
 
-            if (behorighet != null) page.bedomning.behorighet = behorighet
-            page.bedomning.valjBehorigheter(bedomdBehorighet)
+            if (behorighet != null) {
+                page.bedomning.valjBehorighet(behorighet)
+                if (behorighet == 'BEDOMNING') {
+                    page.bedomning.valjBehorigheter(bedomdBehorighet)
+                }
+            }
+
             if (bedomning != null) page.bedomning.bedomning = bedomning
 
             if (kommentar != null) page.kommentar = kommentar

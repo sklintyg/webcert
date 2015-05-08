@@ -1,6 +1,7 @@
 package se.inera.webcert.pages.ts_bas
 
 import geb.Module
+import se.inera.certificate.page.AbstractPage
 import se.inera.webcert.pages.AbstractEditCertPage
 import se.inera.webcert.pages.VardenhetModule
 
@@ -20,6 +21,7 @@ class EditCertPage extends AbstractEditCertPage {
         intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
 
         // Formulärfält
+        form { $("#certForm") }
         patient { module PatientModule }
         intygetAvser { module IntygetAvserModule }
         identitet { module IdentitetModule }
@@ -322,8 +324,13 @@ class MedicineringModule extends Module {
 }
 
 class BedomningModule extends Module {
+    def form
     static base = { $("#bedomningForm") }
     static content = {
+
+        behorighet { $("input", name: "behorighet") }
+
+        radioGroupBehorighet { form.behorighet }
 
         behorighetBedomning { $("#behorighet_bedomning") }
         behorighetKanInteTaStallning { $("#behorighet_kanintetastallning") }
@@ -338,6 +345,21 @@ class BedomningModule extends Module {
         taxi { $("#korkortstyp8") }
         annat { $("#korkortstyp9") }
         specialist { $("#specialist") }
+    }
+
+    def valjBehorighet(String value) {
+        if (value != null) {
+            AbstractPage.scrollIntoView("behorighet_bedomning");
+            def validTypes = ["BEDOMNING", "KANINTETASTALLNING"];
+            assert validTypes.contains(value),
+                    "Fältet 'behorighet' kan endast innehålla något av följande värden: ${validTypes}"
+
+            if ("BEDOMNING" == value) {
+                behorighet = "BEDOMNING"
+            } else if ("KANINTETASTALLNING" == value) {
+                behorighet = "KANINTETASTALLNING"
+            }
+        }
     }
 
     def valjBehorigheter(String valdaBehorigheter) {

@@ -21,6 +21,7 @@ class EditCertPage extends AbstractEditCertPage {
         intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
 
         // Formulärfält
+        form { $("certForm") }
         patient { module PatientModule }
         intygetAvser { module IntygetAvserModule }
         identitet { module IdentitetModule }
@@ -234,9 +235,16 @@ class SynModule extends Module {
 }
 
 class BedomningModule extends Module {
+    def form
     static base = { $("#bedomningForm") }
     static content = {
+
         behorighet { $("input", name: "behorighet") }
+        behorighetBedomning { $("#behorighet_bedomning") }
+        behorighetKanInteTaStallning { $("#behorighet_kanintetastallning") }
+
+        radioGroupBehorighet { form.behorighet }
+
         am { $("#korkortstyp0") }
         a1 { $("#korkortstyp1") }
         a2 { $("#korkortstyp2") }
@@ -254,6 +262,21 @@ class BedomningModule extends Module {
         de { $("#korkortstyp14") }
         taxi { $("#korkortstyp15") }
         bedomning { $("input", name:  "bedomning") }
+    }
+
+    def valjBehorighet(String value) {
+        if (value != null) {
+            AbstractPage.scrollIntoView("behorighet_bedomning");
+            def validTypes = ["BEDOMNING", "KANINTETASTALLNING"];
+            assert validTypes.contains(value),
+                    "Fältet 'behorighet' kan endast innehålla något av följande värden: ${validTypes}"
+
+            if ("BEDOMNING" == value) {
+                behorighet = "BEDOMNING"
+            } else if ("KANINTETASTALLNING" == value) {
+                behorighet = "KANINTETASTALLNING"
+            }
+        }
     }
 
     def valjBehorigheter(String valdaBehorigheter) {
