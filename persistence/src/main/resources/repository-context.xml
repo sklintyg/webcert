@@ -16,6 +16,10 @@
     <property name="entityManagerFactory" ref="entityManagerFactory" />
   </bean>
 
+  <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <constructor-arg index="0" ref="transactionManager"/>
+  </bean>
+
   <!-- Performs database initialization and update when in dev mode or if the wc-init-db profiles is used -->
   <beans profile="dev,wc-init-db">
     <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
