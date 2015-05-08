@@ -211,7 +211,7 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
             LOG.warn("Could not store intyg in Intygstjansten, no draft found for intyg id '{}'", omsandning.getIntygId());
             return IntygServiceResult.FAILED;
         }
-        return storeIntyg(utkastRepository.findOne(omsandning.getIntygId()), omsandning);
+        return storeIntyg(utkast, omsandning);
     }
 
     public IntygServiceResult storeIntyg(Utkast utkast, Omsandning omsandning) {
