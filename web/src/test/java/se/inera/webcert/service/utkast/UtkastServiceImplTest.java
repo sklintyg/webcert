@@ -25,6 +25,10 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
@@ -88,6 +92,15 @@ public class UtkastServiceImplTest {
 
     @Mock
     private MonitoringLogService mockMonitoringService;
+
+    @Spy
+    private TransactionTemplate transactionTemplate = new TransactionTemplate() {
+        @Override
+        public Object execute(TransactionCallback callback) {
+            TransactionStatus status = new DefaultTransactionStatus(null, false, false, false, false, null);
+            return callback.doInTransaction(status);
+        }
+    };
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
