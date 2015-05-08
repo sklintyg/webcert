@@ -232,6 +232,28 @@ class HanteraUtkast {
         }
     }
 
+    String kanInteTaStallningTsBas() {
+        def result
+        Browser.drive {
+            waitFor {
+                at se.inera.webcert.pages.ts_bas.EditCertPage
+            }
+            result = page.bedomning.radioGroupBehorighet
+        }
+        result
+    }
+
+    String kanInteTaStallningTsDiabetes() {
+        def result
+        Browser.drive {
+            waitFor {
+                at se.inera.webcert.pages.ts_diabetes.EditCertPage
+            }
+            result = page.bedomning.radioGroupBehorighet
+        }
+        result
+    }
+
     String postadress() {
         def result
         Browser.drive {

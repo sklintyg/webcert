@@ -3,6 +3,15 @@ package se.inera.webcert.spec.ts_bas
 import se.inera.certificate.spec.Browser
 
 class VerifieraUtkastTsBas {
+
+    boolean kanInteTaStallning() {
+        def result
+        Browser.drive {
+            result = page.behorighetKanInteTaStallning.value()
+        }
+        result
+    }
+
     String postadress() {
         def result
         Browser.drive {
