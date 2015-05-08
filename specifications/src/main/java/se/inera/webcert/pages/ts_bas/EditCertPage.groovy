@@ -353,15 +353,16 @@ class BedomningModule extends Module {
     def valjBehorighet(String value) {
         if (value != null) {
             AbstractPage.scrollIntoView("behorighet_bedomning");
-            def validTypes = ["BEDOMNING", "KANINTETASTALLNING"];
-            assert validTypes.contains(value),
-                    "Fältet 'behorighet' kan endast innehålla något av följande värden: ${validTypes}"
-
-            if ("BEDOMNING" == value) {
-                behorighet = "BEDOMNING"
-            } else if ("KANINTETASTALLNING" == value) {
-                behorighet = "KANINTETASTALLNING"
-            }
+            behorighet = value;
+//            def validTypes = ["BEDOMNING", "KANINTETASTALLNING"];
+//            assert validTypes.contains(value),
+//                    "Fältet 'behorighet' kan endast innehålla något av följande värden: ${validTypes}"
+//
+//            if ("BEDOMNING" == value) {
+//                behorighet = "BEDOMNING"
+//            } else if ("KANINTETASTALLNING" == value) {
+//                behorighet = "KANINTETASTALLNING"
+//            }
         }
     }
 

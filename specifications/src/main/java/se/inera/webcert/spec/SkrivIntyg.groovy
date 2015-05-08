@@ -148,11 +148,11 @@ class SkrivIntyg {
         // we need to check if intygSparatVisas, if it has then we should not try clicking on
         // the spara button.
         Browser.drive {
-            if(!page.intygetSparatMeddelande.isDisplayed()){
+            if(page.intygetSparatMeddelande != null && page.intygetSparatMeddelande.isDisplayed()){
+                println('auto save has happened!')
+            } else {
                 page.spara()
                 println('before auto save so click on the save button')
-            } else {
-                println('auto save has happened!')
             }
         }
     }
@@ -166,7 +166,9 @@ class SkrivIntyg {
 
     boolean intygSparatVisas() {
         Browser.drive {
-            assert page.intygetSparatMeddelande.isDisplayed()
+            waitFor {
+                page.intygetSparatMeddelande.isDisplayed()
+            }
         }
         true
     }
