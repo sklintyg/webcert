@@ -238,7 +238,7 @@ class HanteraUtkast {
             waitFor {
                 at se.inera.webcert.pages.ts_bas.EditCertPage
             }
-            result = page.bedomning.radioGroupBehorighet
+            result = page.bedomning.behorighetGroup
         }
         result
     }
@@ -249,7 +249,7 @@ class HanteraUtkast {
             waitFor {
                 at se.inera.webcert.pages.ts_diabetes.EditCertPage
             }
-            result = page.bedomning.radioGroupBehorighet
+            result = page.bedomning.behorighetGroup
         }
         result
     }

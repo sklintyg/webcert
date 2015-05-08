@@ -21,7 +21,7 @@ class EditCertPage extends AbstractEditCertPage {
         intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
 
         // Formulärfält
-        form { $("#certForm") }
+        form { $("form") }
         patient { module PatientModule }
         intygetAvser { module IntygetAvserModule }
         identitet { module IdentitetModule }
@@ -41,7 +41,9 @@ class EditCertPage extends AbstractEditCertPage {
         sjukhusvard { module SjukhusvardModule }
         medicinering { module MedicineringModule }
         kommentar { $("#kommentar") }
-        bedomning { module BedomningModule }
+
+        bedomning { name -> module BedomningModule, form: form }
+
         vardenhet { module VardenhetModule }
 
         // Intygsvalidering
@@ -329,9 +331,7 @@ class BedomningModule extends Module {
     static content = {
 
         behorighet { $("input", name: "behorighet") }
-
-        radioGroupBehorighet { form.behorighet }
-
+        behorighetGroup { form.behorighet}
         behorighetBedomning { $("#behorighet_bedomning") }
         behorighetKanInteTaStallning { $("#behorighet_kanintetastallning") }
         c1 { $("#korkortstyp0") }

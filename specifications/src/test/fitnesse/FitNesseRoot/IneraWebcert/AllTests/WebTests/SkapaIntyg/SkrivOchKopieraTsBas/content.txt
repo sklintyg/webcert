@@ -19,7 +19,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 
 !3 Kontrollera att kan inte ta ställning är satt.
 !| script | HanteraUtkast |
-| check | kan inte ta stallning ts bas | KANINTETASTALLNING|
+| check | kan inte ta stallning ts bas | false|
 
 !3 Spara och signera
 
@@ -40,7 +40,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 
 !3 Kontrollera att kan inte ta ställning fortfarande är satt.
 !| script | HanteraUtkast |
-| check | kan inte ta stallning ts bas | KANINTETASTALLNING |
+| check | kan inte ta stallning ts bas | true |
 
 !3 Ta bort utkastet
 

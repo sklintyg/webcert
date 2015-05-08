@@ -21,14 +21,14 @@ class EditCertPage extends AbstractEditCertPage {
         intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
 
         // Formulärfält
-        form { $("certForm") }
+        form { $("form") }
         patient { module PatientModule }
         intygetAvser { module IntygetAvserModule }
         identitet { module IdentitetModule }
         allmant { module AllmantModule }
         hypoglykemier { module HypoglykemierModule }
         syn { module SynModule }
-        bedomning { module BedomningModule}
+        bedomning { name -> module BedomningModule, form: form }
         kommentar { $("#kommentar") }
         specialist { $("#specialist") }
         vardenhet { module VardenhetModule }
@@ -243,7 +243,7 @@ class BedomningModule extends Module {
         behorighetBedomning { $("#behorighet_bedomning") }
         behorighetKanInteTaStallning { $("#behorighet_kanintetastallning") }
 
-        radioGroupBehorighet { form.behorighet }
+        behorighetGroup { form.behorighet}
 
         am { $("#korkortstyp0") }
         a1 { $("#korkortstyp1") }
