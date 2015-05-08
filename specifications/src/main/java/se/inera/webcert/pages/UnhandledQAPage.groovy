@@ -11,6 +11,9 @@ class UnhandledQAPage extends AbstractPage {
         careUnitSelector(required: false) { $("#wc-care-unit-clinic-selector") }
         unhandledQATable(required: false) { $("#qaTable") }
 
+        noResultsOnUnitInfo { $("#current-list-noResults-unit") }
+        noResultsForQueryInfo { $("#current-list-noResults-query") }
+
         advancedFilterBtn { $("#show-advanced-filter-btn") }
         advancedFilterForm { $("#advanced-filter-form") }
         advandecFilterFormFragestallare { $("input", name: "frageStallare") }

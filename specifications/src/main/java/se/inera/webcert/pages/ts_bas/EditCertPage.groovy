@@ -95,6 +95,7 @@ class IntygetAvserModule extends Module {
 
     def valjBehorigheter(String valdaBehorigheter) {
         if (valdaBehorigheter != null) {
+            AbstractPage.scrollIntoView('intygetAvserForm');
             c1 = false
             c1e = false
             c = false
@@ -152,6 +153,7 @@ class IdentitetModule extends Module {
 
     def valjTyp(String identifieringstyp) {
         if (identifieringstyp != null) {
+            AbstractPage.scrollIntoView('identitetForm');
             def validTypes = ["idkort", "foretagskort", "korkort", "kannedom", "forsakran", "pass"]
             assert validTypes.contains(identifieringstyp),
                     "Fältet 'identifieringstyp' kan endast innehålla något av följande värden: ${validTypes}"
@@ -232,6 +234,7 @@ class DiabetesModule extends Module {
 
     def valjTyp(String valdDiabetestyp) {
         if (valdDiabetestyp != null) {
+            AbstractPage.scrollIntoView('diabetesForm');
             def validTypes = ["typ1", "typ2"]
             assert validTypes.contains(valdDiabetestyp),
                     "Fältet 'diabetestyp' kan endast innehålla något av följande värden: ${validTypes}"
@@ -364,6 +367,7 @@ class BedomningModule extends Module {
 
     def valjBehorigheter(String valdaBehorigheter) {
         if (valdaBehorigheter != null) {
+            AbstractPage.scrollIntoView('bedomningForm');
             c1 = false
             c1e = false
             c = false

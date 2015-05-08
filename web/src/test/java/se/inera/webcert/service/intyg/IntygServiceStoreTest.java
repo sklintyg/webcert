@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -70,6 +71,14 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
         verify(omsandningRepository, times(1)).delete(any(Omsandning.class));
     }
 
+    @Test
+    public void testStoreIntygFailingWithStatusWhenNoUtkastFound() {
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(null);
+        IntygServiceResult intygServiceResult = intygService.storeIntyg(createOmsandning());
+        assertEquals(IntygServiceResult.FAILED, intygServiceResult);
+        verify(omsandningRepository, times(0)).delete(any(Omsandning.class));
+    }
+
     private Utkast createUtkast() {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(INTYG_ID);
@@ -77,6 +86,13 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
         utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setModel(json);
         return utkast;
+    }
+
+    private Omsandning createOmsandning() {
+        Omsandning omsandning = new Omsandning();
+        omsandning.setIntygId(INTYG_ID);
+        omsandning.setIntygTyp(INTYG_TYP_FK);
+        return omsandning;
     }
 
 }

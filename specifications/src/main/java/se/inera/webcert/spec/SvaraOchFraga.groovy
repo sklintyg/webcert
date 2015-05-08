@@ -89,7 +89,7 @@ class SvaraOchFraga {
         true
     }
 
-    def filtreraFragorOchSvar() {
+    def filtreraFragorOchSvar(boolean waitForTableToBeDisplayed = true) {
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
@@ -97,8 +97,10 @@ class SvaraOchFraga {
             waitFor {
                 page.advancedFilterSearchBtn.click()
             }
-            waitFor {
-                page.unhandledQATable.isDisplayed()
+            if (waitForTableToBeDisplayed) {
+                waitFor {
+                    page.unhandledQATable.isDisplayed()
+                }
             }
         }
     }
@@ -843,4 +845,40 @@ class SvaraOchFraga {
             }
         }
     }
+
+    boolean infotextIngaFragarPaEnhetVisas(boolean expected = true) {
+        def result
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            if (expected) {
+                waitFor {
+                    result = page.noResultsOnUnitInfo.isDisplayed()
+                }
+            } else {
+                result = page.noResultsOnUnitInfo.isDisplayed()
+            }
+        }
+        return result == expected
+    }
+
+    boolean infotextIngetSokresultatVisas(boolean expected = true) {
+        def result
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            if (expected) {
+                waitFor {
+                    result = page.noResultsForQueryInfo.isDisplayed()
+                }
+            } else {
+                result = page.noResultsForQueryInfo.isDisplayed()
+            }
+        }
+        return result == expected
+    }
+
+
 }

@@ -6,6 +6,9 @@ import se.inera.certificate.page.AbstractPage
 abstract class AbstractEditCertPage extends AbstractPage {
 
     def spara() {
+        waitFor {
+            doneLoading()
+        }
         if (sparaKnapp.isEnabled()) {
             sparaKnapp.click()
             waitFor {

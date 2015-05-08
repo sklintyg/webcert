@@ -112,6 +112,9 @@ class SokSkrivIntyg {
 
     def valjKopieraTidigareIntyg(String intygId) {
         Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
             page.copyBtn(intygId).click()
             waitFor {
                 doneLoading()

@@ -144,8 +144,16 @@ class SkrivIntyg {
     }
 
     void sparaUtkast() {
+        // ocassionally the spara button has gone back to disabled becuase the auto save has already happened.
+        // we need to check if intygSparatVisas, if it has then we should not try clicking on
+        // the spara button.
         Browser.drive {
-            page.spara()
+            if(!page.intygetSparatMeddelande.isDisplayed()){
+                page.spara()
+                println('before auto save so click on the save button')
+            } else {
+                println('auto save has happened!')
+            }
         }
     }
 
@@ -268,6 +276,9 @@ class SkrivIntyg {
     boolean datePickerVisas() {
         def result
         Browser.drive {
+            waitFor {
+                page.doneLoading()
+            }
             result = page.datepicker.isDisplayed()
         }
         result
