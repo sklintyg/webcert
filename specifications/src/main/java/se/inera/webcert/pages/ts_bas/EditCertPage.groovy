@@ -47,7 +47,7 @@ class EditCertPage extends AbstractEditCertPage {
         vardenhet { module VardenhetModule }
 
         // Intygsvalidering
-        valideringPatient(required: false)              { $("#validationMessages_patient") }
+        valideringPatient(required: false)              { $("#validationMessages_patientadress") }
         valideringIntygAvser(required: false)           { $("#validationMessages_intygavser") }
         valideringIdentitet(required: false)            { $("#validationMessages_identitet") }
         valideringSyn(required: false)                  { $("#validationMessages_syn") }

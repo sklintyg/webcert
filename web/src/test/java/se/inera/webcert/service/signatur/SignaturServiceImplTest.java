@@ -144,26 +144,28 @@ public class SignaturServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void getSignatureHashReturnsErrorIfIntygNotCompleted() {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        intygSignatureService.createDraftHash(INTYG_ID, utkast.getVersion());
+        intygSignatureService.prepareUtkastForSignering(INTYG_ID, utkast.getVersion(), webcertUserService.getWebCertUser(), LocalDateTime.now());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void getSignatureHashReturnsErrorIfIntygAlreadySigned() {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        intygSignatureService.createDraftHash(INTYG_ID, signedUtkast.getVersion());
+        intygSignatureService.prepareUtkastForSignering(INTYG_ID, signedUtkast.getVersion(), webcertUserService.getWebCertUser(), LocalDateTime.now());
     }
 
     @Test(expected = OptimisticLockException.class)
     public void getSignatureHashReturnsErrorIfWrongVersion() {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        intygSignatureService.createDraftHash(INTYG_ID, signedUtkast.getVersion()-1);
+        intygSignatureService.prepareUtkastForSignering(INTYG_ID, signedUtkast.getVersion()-1, webcertUserService.getWebCertUser(), LocalDateTime.now());
     }
 
     @Test
     public void getSignatureHashReturnsTicket() throws ModuleNotFoundException, ModuleException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
-        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
+        LocalDateTime now = LocalDateTime.now();
+        Utkast utkast = intygSignatureService.prepareUtkastForSignering(INTYG_ID, completedUtkast.getVersion(), webcertUserService.getWebCertUser(), now);
+        SignaturTicket ticket = intygSignatureService.createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), now);
         assertEquals(INTYG_ID, ticket.getIntygsId());
         assertEquals(completedUtkast.getVersion(), ticket.getVersion());
         assertEquals(SignaturTicket.Status.BEARBETAR, ticket.getStatus());
@@ -180,7 +182,10 @@ public class SignaturServiceImplTest {
     public void clientSignatureFailsIfIntygWasModified() throws IOException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
-        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
+        LocalDateTime now = LocalDateTime.now();
+        Utkast utkast = intygSignatureService.prepareUtkastForSignering(INTYG_ID, completedUtkast.getVersion(), webcertUserService.getWebCertUser(), now);
+        SignaturTicket ticket = intygSignatureService.createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), now);
+
 
         completedUtkast.setModel("{}");
 
@@ -195,7 +200,9 @@ public class SignaturServiceImplTest {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
 
-        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
+        LocalDateTime now = LocalDateTime.now();
+        Utkast utkast = intygSignatureService.prepareUtkastForSignering(INTYG_ID, completedUtkast.getVersion(), webcertUserService.getWebCertUser(), now);
+        SignaturTicket ticket = intygSignatureService.createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), now);
         SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
 
@@ -227,7 +234,9 @@ public class SignaturServiceImplTest {
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
         // Do the call
-        SignaturTicket signatureTicket = intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
+        LocalDateTime now = LocalDateTime.now();
+        Utkast utkast = intygSignatureService.prepareUtkastForSignering(INTYG_ID, completedUtkast.getVersion(), webcertUserService.getWebCertUser(), now);
+        SignaturTicket signatureTicket = intygSignatureService.serverSignature(utkast, webcertUserService.getWebCertUser(), now);
 
         verify(intygService).storeIntyg(completedUtkast);
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));

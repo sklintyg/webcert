@@ -62,6 +62,11 @@ Kontrollera valideringsmeddelanden.
 | valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringSynVisas? | valideringHorselBalansVisas? | valideringFunktionsNedsattningVisas? | valideringHjartkarlVisas? | valideringNeurologiVisas? | valideringMedvetandestorningVisas? | valideringNjurarVisas? | valideringKognitivtVisas? | valideringSomnVakenhetVisas? | valideringNarkotikaLakemedelVisas? | valideringPsykisktVisas? | valideringUtvecklingsStorningVisas? | valideringSjukhusVardVisas? | valideringMedicineringVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
 | false| false | false | false | false | false | false | false | false | false | false | false | false | false | false | false | false | false | false |
 
+!3 Ta bort postnummer på patienten, validera att patientadress valideringsmeddelande visas
+| Populera Ts Bas |
+| postnummer |
+| |
+
 | script | !-SkrivIntyg-! |
 | visa vad som saknas |
 
@@ -70,11 +75,22 @@ Kontrollera valideringsmeddelanden.
 | script | !-SkrivIntyg-! |
 | klicka pa fellank | ts-bas.label.bedomning |
 
-!3 Fyll i intyget avser och identifieringstyp 
+!3 Kontrollera att patient validering visas
+
+| script | !-SkrivIntyg-! |
+| dolj vad som saknas |
+| intyg ej komplett visas |
+| visa vad som saknas |
+
+| Validering Ts Bas |
+| valideringPatientVisas? |
+| true |
+
+!3 Fyll i intyget avser, postnummer och identifieringstyp 
 
 | Populera Ts Bas |
-| intygetAvser | identifieringstyp |
-| C | korkort |
+| intygetAvser | identifieringstyp | postnummer |
+| C | korkort | 12345 |
 
 | script | !-ValideringTsBas-! |
 | spara utkast |
@@ -84,7 +100,7 @@ Kontrollera valideringsmeddelanden.
 
 | Validering Ts Bas |
 | valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringSynVisas? | valideringHorselBalansVisas? | valideringFunktionsNedsattningVisas? | valideringHjartkarlVisas? | valideringNeurologiVisas? | valideringMedvetandestorningVisas? | valideringNjurarVisas? | valideringKognitivtVisas? | valideringSomnVakenhetVisas? | valideringNarkotikaLakemedelVisas? | valideringPsykisktVisas? | valideringUtvecklingsStorningVisas? | valideringSjukhusVardVisas? | valideringMedicineringVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
-| false| false | false| true | true | true | true | true | true | true | true | true | true | true | true | true | true | true | false |
+| false| false | false| true | true | true | true | true | true | true | true | true | true | true | true | true | true | true | false | 
 
 | ta bort utkast |
 | utkastId |

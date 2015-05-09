@@ -36,7 +36,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
             controller: 'webcert.UnsignedCertCtrl'
         }).
         state('intyg', {
-            url:'/intyg/:certificateType/:certificateId?:patientId&:hospName',
+            url:'/intyg/:certificateType/:certificateId?:patientId&:hospName&:signed',
             views: {
                 '' : {
                     templateUrl: '/views/dashboard/view.certificate.html',
