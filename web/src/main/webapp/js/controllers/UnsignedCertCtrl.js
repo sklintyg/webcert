@@ -92,13 +92,15 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             ManageCertificate.getUnsignedCertificates(function(data) {
 
-                dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-from']);
-                dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-to']);
-
                 $scope.widgetState.doneLoading = true;
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.widgetState.currentList = data.results;
                 $scope.widgetState.totalCount = data.totalCount;
+
+                // These need to be after doneloading or they won't be available sometimes.
+                dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-from']);
+                dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-to']);
+
             }, function() {
                 $log.debug('Query Error');
                 $scope.widgetState.doneLoading = true;
