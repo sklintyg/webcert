@@ -15,7 +15,7 @@ Populera intyget med information i samtliga fält utom 2 c-e som ska vara dolda 
 
 | Populera Ts Diabetes |
 | postadress | postnummer | postort | intygetAvser | identifieringstyp | diabetesAr | diabetestyp | diabetesBehandlingKost | diabetesBehandlingTabletter | diabetesBehandlingInsulin | diabetesBehandlingAnnan | hypoglykemierA | hypoglykemierB | hypoglykemierF | hypoglykemierG | synA | behorighet | bedomning | kommentar | specialist | vardenhetPostadress | vardenhetPostnummer | vardenhetPostort | vardenhetTelefonnummer |
-| Storgatan 1 | 12345 | Göteborg | C | korkort | 2010 | typ2 | true | false | false | Träning | false | false | false | false | true | false | false | | | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+| Storgatan 1 | 12345 | Göteborg | C | korkort | 2010 | typ2 | true | false | false | Träning | false | false | false | false | true | true | false | | | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
 
 !3 Spara och signera
 

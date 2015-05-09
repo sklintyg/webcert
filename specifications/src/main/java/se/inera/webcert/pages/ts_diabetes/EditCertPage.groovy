@@ -246,7 +246,7 @@ class BedomningModule extends Module {
         behorighetBedomning { $("#behorighet_bedomning") }
         behorighetKanInteTaStallning { $("#behorighet_kanintetastallning") }
 
-        behorighetGroup { form.behorighet}
+        behorighetGroup { form.behorighet }
 
         am { $("#korkortstyp0") }
         a1 { $("#korkortstyp1") }
@@ -267,7 +267,7 @@ class BedomningModule extends Module {
         bedomning { $("input", name:  "bedomning") }
     }
 
-    def valjBehorighet(String value) {
+    def valjBehorighet(Boolean value) {
         if (value != null) {
             AbstractPage.scrollIntoView("behorighet_bedomning");
             behorighet = value;

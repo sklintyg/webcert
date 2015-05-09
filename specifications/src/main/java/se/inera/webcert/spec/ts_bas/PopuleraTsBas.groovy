@@ -59,7 +59,7 @@ class PopuleraTsBas {
     Boolean medicineringA
     String medicineringBeskrivning
     String kommentar
-    String behorighet
+    Boolean behorighet
     String bedomdBehorighet
     String specialist
     String vardenhetPostadress
@@ -149,7 +149,7 @@ class PopuleraTsBas {
 
             if (behorighet != null) {
                 page.bedomning.valjBehorighet(behorighet)
-                if (behorighet == 'BEDOMNING') {
+                if (!behorighet) { // behorighet == kanInteTaStallning så false är bedömning
                     page.bedomning.valjBehorigheter(bedomdBehorighet)
                 }
             }
