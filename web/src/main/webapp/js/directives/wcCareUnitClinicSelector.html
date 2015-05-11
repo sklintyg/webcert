@@ -1,60 +1,60 @@
 <div>
-    <div class="row"
-         id="care-unit-selector-row-{{unit.id}}"
-         ng-repeat="unit in units">
-        <!-- Index zero and one should always be shown. These are the 'all' and
-             'current vardenhet' option -->
-        <div class="col-md-12 unit-table"
-             ng-if="$index < 2 || unit.fragaSvar > 0">
-            <button id="select-active-unit-{{unit.id}}"
-                    type="button"
-                    ng-click="selectUnit(unit)"
-                    class="qa-unit"
-                    ng-class="{selected : selectedUnit == unit}">
-                <span ng-class="$index < 2 ? 'qa-unit-strong' : 'qa-unit-weak'">{{unit.namn}}</span>
-                <span class="qa-circle"
-                      ng-class="{'qa-circle-active': unit.fragaSvar>0}"
-                      title="{{unit.tooltip}}">{{unit.fragaSvar}}
-                </span>
-            </button>
-        </div>
+  <div class="row"
+       id="care-unit-selector-row-{{unit.id}}"
+       ng-repeat="unit in units">
+    <!-- Index zero and one should always be shown. These are the 'all' and
+         'current vardenhet' option -->
+      <div class="col-md-12 unit-table"
+           ng-if="$index < 2 || unit.fragaSvar > 0">
+        <button id="select-active-unit-{{unit.id}}"
+                type="button"
+                ng-click="selectUnit(unit)"
+                class="qa-unit"
+                ng-class="{selected : selectedUnit == unit}">
+          <span ng-class="$index < 2 ? 'qa-unit-strong' : 'qa-unit-weak'">{{unit.namn}}</span>
+          <span class="qa-circle"
+                ng-class="{'qa-circle-active': unit.fragaSvar>0}"
+                title="{{unit.tooltip}}">{{unit.fragaSvar}}
+          </span>
+        </button>
+      </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 unit-table">
+      <button id="ovriga"
+              type="button"
+              ng-click="toggleShowInactive()"
+              class="qa-unit">
+        <strong>
+          <span class="glyphicon"
+                ng-class="showInactive ? 'glyphicon-minus-sign' : 'glyphicon-plus-sign'" >
+          </span> Övriga arbetsplatser <span class="qa-circle">0</span>
+        </strong>
+      </button>
     </div>
-    <div class="row">
-        <div class="col-md-12 unit-table">
-            <button id="ovriga"
-                    type="button"
-                    ng-click="toggleShowInactive()"
-                    class="qa-unit">
-                <strong>
-                    <span class="glyphicon"
-                          ng-class="showInactive ? 'glyphicon-minus-sign' : 'glyphicon-plus-sign'" >
-                    </span> Övriga arbetsplatser <span class="qa-circle">0</span>
-                </strong>
-            </button>
-        </div>
-    </div>
-    <div class="row"
-         ng-show="showInactive"
-         ng-repeat="unit in units">
-        <!--
-            We never want to show wc-all and we only want to show the vardenhet
-            if there exist one or more unhandled question.
+  </div>
+  <div class="row"
+       ng-show="showInactive"
+       ng-repeat="unit in units">
+    <!--
+      We never want to show wc-all and we only want to show the vardenhet
+      if there exist one or more unhandled question.
 
-            Mottagningar we want to show if it does not have any unhandled
-            question.
-        -->
-        <div class="col-md-12 unit-table"
-             ng-show="$index > 1 && unit.fragaSvar == 0">
-            <button id="select-active-unit-{{unit.id}}"
-                    type="button"
-                    ng-click="selectUnit(unit)"
-                    class="qa-unit"
-                    ng-class="{selected : selectedUnit == unit}">
-                <span ng-class="$index < 2 ? 'qa-unit-strong' : 'qa-unit-weak'">{{unit.namn}}</span>
-                <span class="qa-circle"
-                      title="{{unit.tooltip}}">0
-                </span>
-            </button>
-        </div>
+      Mottagningar we want to show if it does not have any unhandled
+      question.
+    -->
+    <div class="col-md-12 unit-table"
+         ng-show="$index > 1 && unit.fragaSvar == 0">
+      <button id="select-active-unit-{{unit.id}}"
+              type="button"
+              ng-click="selectUnit(unit)"
+              class="qa-unit"
+              ng-class="{selected : selectedUnit == unit}">
+        <span ng-class="$index < 2 ? 'qa-unit-strong' : 'qa-unit-weak'">{{unit.namn}}</span>
+        <span class="qa-circle"
+              title="{{unit.tooltip}}">0
+        </span>
+      </button>
     </div>
+  </div>
 </div>

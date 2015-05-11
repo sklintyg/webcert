@@ -20,7 +20,7 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                     $scope.selectedUnit = null;
 
                     /**
-                     * Toggles if the enheter without an actie question should
+                     * Toggles if the enheter without an active question should
                      * be shown
                      */
                     $scope.toggleShowInactive = function() {

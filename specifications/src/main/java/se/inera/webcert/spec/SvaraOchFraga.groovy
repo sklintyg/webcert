@@ -865,6 +865,7 @@ class SvaraOchFraga {
 
     boolean infotextIngetSokresultatVisas(boolean expected = true) {
         def result
+        Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
@@ -878,7 +879,6 @@ class SvaraOchFraga {
         }
         return result == expected
     }
-
 
     def visasAllaFragorKnappen(boolean expected = true) {
         def result = false

@@ -9,7 +9,7 @@
       <!-- load animation for entire page -->
       <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading"
            show-content="widgetState.doneLoading">
-        <div ng-show="units.length > 2">
+        <div ng-show="units.length > 2 && units[0].fragaSvar > 0">
           <h2 class="less-top-padding">
             Välj vårdenhet eller mottagning</h2>
 
@@ -19,14 +19,17 @@
           </div>
 
         </div>
+        <div ng-show="units.length > 2 && units[0].fragaSvar == 0">
+          <p message key="info.nounanswered.qa.for.unit"></p>
+          <p>Du kan filtrera fram tidigare hanterade frågor och svar här nedan</p>
+        </div>
 
         <div ng-if="isActiveUnitChosen()">
-          <h2 class="col-head" ng-class="{'less-top-padding' : units.length < 2}">{{selectedUnit.namn}}</h2>
+          <h2 class="col-head" ng-class="{'less-top-padding' : units.length < 3}">{{selectedUnit.namn}}</h2>
 
           <!-- search filter -->
           <div class="webcert-bottom-padding-section">
-            <span
-                ng-if="!widgetState.filteredYet">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
+              <span ng-if="!widgetState.filteredYet && (units.length < 3 || units[0].fragaSvar > 0)">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
             <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
                     ng-click="widgetState.filterFormCollapsed = !widgetState.filterFormCollapsed"
                     ng-switch="widgetState.filterFormCollapsed">
@@ -34,7 +37,8 @@
             </button>
 
             <!-- Filter form -->
-            <div id="advanced-filter-form" ng-show="!widgetState.filterFormCollapsed"
+            <div id="advanced-filter-form"
+                 ng-show="!widgetState.filterFormCollapsed"
                  class="qa-filter-panel form-horizontal">
 
               <!-- frågor och svar som är -->
@@ -120,13 +124,6 @@
                show-content="!widgetState.runningQuery">
 
             <div class="webcert-col-section qa-table-section">
-
-              <!-- No results message for unhandled -->
-              <div id="current-list-noResults-unit"
-                   ng-show="widgetState.doneLoading && widgetState.currentList.length < 1 && !widgetState.activeErrorMessageKey && !widgetState.filteredYet"
-                   class="alert alert-info">
-                <span message key="info.nounanswered.qa.for.unit"></span>
-              </div>
 
               <!-- No results message for query -->
               <div id="current-list-noResults-query"

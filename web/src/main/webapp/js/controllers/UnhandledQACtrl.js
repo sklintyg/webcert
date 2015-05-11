@@ -3,9 +3,9 @@
  */
 angular.module('webcert').controller('webcert.UnhandledQACtrl',
     ['$rootScope', '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'common.fragaSvarCommonService', 'webcert.ManageCertificate', 'webcert.QuestionAnswer',
+        'common.fragaSvarCommonService', 'common.User', 'webcert.ManageCertificate', 'webcert.QuestionAnswer',
         function($rootScope, $cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService,
-            fragaSvarCommonService, ManageCertificate, QuestionAnswer) {
+            fragaSvarCommonService, User, ManageCertificate, QuestionAnswer) {
             'use strict';
 
             var PAGE_SIZE = 10;
@@ -366,6 +366,9 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
             // Broadcast by statService on poll
             $scope.$on('wc-stat-update', function(event, message) {
                 unitStats = message;
+                if (!$scope.widgetState.filteredYet && User.getValdVardenhet().mottagningar && unitStats.fragaSvarValdEnhet == 0) {
+                    $scope.widgetState.filterFormCollapsed = false;
+                }
             });
 
             // Broadcast by wcCareUnitClinicSelector directive on load and selection
