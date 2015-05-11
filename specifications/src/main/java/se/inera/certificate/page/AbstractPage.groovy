@@ -19,4 +19,9 @@ abstract class AbstractPage extends Page {
             js.exec(jqScrollToVisible)
         }
     }
+
+    static boolean isButtonEnabled(button){
+        return button.@disabled == 'true';
+    }
+
 }
