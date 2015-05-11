@@ -20,7 +20,7 @@ abstract class AbstractPage extends Page {
         }
     }
 
-    static boolean isButtonEnabled(button){
+    static boolean isButtonDisabled(button){
         return button.@disabled == 'true';
     }
 
