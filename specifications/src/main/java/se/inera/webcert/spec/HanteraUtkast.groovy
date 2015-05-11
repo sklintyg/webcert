@@ -1,5 +1,6 @@
 package se.inera.webcert.spec
 
+import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.EditCertPage
@@ -374,8 +375,10 @@ class HanteraUtkast {
             waitFor {
                 at EditeraIntygPage
             }
-            waitFor {
+            if(AbstractPage.isButtonEnabled(page.sparaBtn)){
                 page.sparaBtn.click()
+            } else {
+                // utkast är redan sparat genom autospar
             }
         }
     }
