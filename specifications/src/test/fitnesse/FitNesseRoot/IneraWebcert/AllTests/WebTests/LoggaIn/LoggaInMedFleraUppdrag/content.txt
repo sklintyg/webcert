@@ -28,4 +28,5 @@ Testet beskriver fallet när en användare med flera uppdrag loggar in.
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
+| $internReferens2 |
 
