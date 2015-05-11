@@ -13,26 +13,27 @@ import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 
 public interface UtkastService {
 
+    SignaturTicket clientSignature(String biljettId, String rawSignaturString);
+
+    SignaturTicket createDraftHash(String intygsId, long version);
+
     String createNewDraft(CreateNewDraftRequest request);
-
-    SaveAndValidateDraftResponse saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent);
-
-    DraftValidation validateDraft(String intygId, String intygType, String draft);
-
-    List<Lakare> getLakareWithDraftsByEnhet(String enhetsId);
-
-    Utkast setForwardOnDraft(String intygsId, Boolean forwarded);
-
-    Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds);
 
     void deleteUnsignedDraft(String intygId, long version);
 
     Utkast getDraft(String intygId);
 
-    SignaturTicket createDraftHash(String intygsId, long version);
+    List<Lakare> getLakareWithDraftsByEnhet(String enhetsId);
+
+    Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds);
+
+    void logPrintOfDraftToPDL(String intygId);
+
+    SaveAndValidateDraftResponse saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent);
+
+    Utkast setForwardOnDraft(String intygsId, Boolean forwarded);
 
     SignaturTicket serverSignature(String intygsId, long version);
-    
-    void logPrintOfDraftToPDL(String intygId);
-    
+
+    SignaturTicket ticketStatus(String biljettId);
 }

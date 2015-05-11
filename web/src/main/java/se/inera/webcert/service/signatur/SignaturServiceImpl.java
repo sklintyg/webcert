@@ -1,12 +1,6 @@
 package se.inera.webcert.service.signatur;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
-
-import javax.persistence.OptimisticLockException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -14,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -39,7 +32,11 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.persistence.OptimisticLockException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 @Service
 public class SignaturServiceImpl implements SignaturService {
@@ -65,7 +62,7 @@ public class SignaturServiceImpl implements SignaturService {
     private NotificationService notificationService;
     
     @Autowired
-    private MonitoringLogService monitoringService; 
+    private MonitoringLogService monitoringService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -75,7 +72,9 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Override
     public SignaturTicket ticketStatus(String ticketId) {
+
         SignaturTicket ticket = ticketTracker.getTicket(ticketId);
+
         if (ticket != null && ticket.getId().equals(ticketId)) {
             return ticket;
         } else {
@@ -102,7 +101,7 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Override
     @Transactional(noRollbackFor=javax.xml.ws.WebServiceException.class)
-    public SignaturTicket clientSignature(String ticketId, String rawSignatur) {
+    public SignaturTicket clientSignature(String ticketId, String rawSignatur, WebCertUser user) {
 
         // Lookup signature ticket
         SignaturTicket ticket = ticketTracker.getTicket(ticketId);
@@ -116,21 +115,7 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion());
 
-        // Fetch Webcert user
-        WebCertUser user = webCertUserService.getWebCertUser();
-
-        // Check signature is valid and created by signing user
-        /*try {
-            String signature = objectMapper.readTree(rawSignatur).get("signatur").textValue();
-            if (!signatureService.validateSiths(user.getHsaId(), ticket.getHash(), signature)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Kunde inte validera SITHS signatur");
-            }
-        } catch (IOException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Kunde inte validera SITHS signatur", e);
-        }*/
-
-        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(),
-                user.getAuthenticationScheme());
+        monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(), user.getAuthenticationScheme());
 
         // Create and persist the new signature
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
@@ -172,7 +157,7 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     @Override
-    @Transactional(noRollbackFor=javax.xml.ws.WebServiceException.class)
+    @Transactional(noRollbackFor = javax.xml.ws.WebServiceException.class)
     public SignaturTicket serverSignature(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
         LOG.debug("Signera utkast '{}'", utkast.getIntygsId());
 
@@ -218,9 +203,9 @@ public class SignaturServiceImpl implements SignaturService {
     /**
      * Update utkast with "senast sparad av" information
      *
-     * @param utkast
-     * @param userId
-     * @param userName
+     * @param utkast the draft
+     * @param user the current Webcert user
+     * @param signeringstid the time for the signature
      * @return
      */
     private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {

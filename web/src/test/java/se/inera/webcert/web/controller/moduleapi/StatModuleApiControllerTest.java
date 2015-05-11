@@ -4,13 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyListOf;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.Response;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
@@ -31,6 +23,12 @@ import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatModuleApiControllerTest {
@@ -53,14 +51,11 @@ public class StatModuleApiControllerTest {
     private StatModuleApiController statController;
 
     private WebCertUser mockUser;
-
     private Map<String, Long> fragaSvarStatsMap;
-
     private Map<String, Long> intygStatsMap;
-
     private Vardgivare vg;
-
     private Vardenhet ve1, ve2, ve3, ve4;
+
 
     @Before
     public void setupDataAndExpectations() {
