@@ -324,7 +324,6 @@ public class UtkastServiceImpl implements UtkastService {
         return new SaveAndValidateDraftResponse(utkast.getVersion(), draftValidation);
     }
 
-    @Transactional
     private Utkast saveDraft(Utkast utkast) {
         Utkast savedUtkast = utkastRepository.save(utkast);
         LOG.debug("Draft '{}' saved", savedUtkast.getIntygsId());
