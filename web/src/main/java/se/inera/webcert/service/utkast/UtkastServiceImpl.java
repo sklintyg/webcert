@@ -224,7 +224,7 @@ public class UtkastServiceImpl implements UtkastService {
         return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }
 
-    public Utkast getIntygAsDraft(String intygsId) {
+    private Utkast getIntygAsDraft(String intygsId) {
 
         LOG.debug("Fetching utkast '{}'", intygsId);
 
