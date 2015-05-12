@@ -2,9 +2,14 @@ package se.inera.webcert.service.signatur;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
+import javax.persistence.OptimisticLockException;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -13,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
@@ -39,14 +45,13 @@ import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-
 @RunWith(MockitoJUnitRunner.class)
 public class SignaturServiceImplTest {
 
     private static final String INTYG_ID = "abc123";
+
     private static final String INTYG_JSON = "A bit of text representing json";
+
     private static final String INTYG_TYPE = "fk7263";
 
     @Mock
@@ -77,13 +82,18 @@ public class SignaturServiceImplTest {
     private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
 
     private Utkast utkast;
-    private Utkast completedUtkast;
-    private Utkast signedUtkast;
-    private HoSPerson hoSPerson;
-    private Vardenhet vardenhet;
-    private Vardgivare vardgivare;
-    private InternalModelResponse internalModelResponse;
 
+    private Utkast completedUtkast;
+
+    private Utkast signedUtkast;
+
+    private HoSPerson hoSPerson;
+
+    private Vardenhet vardenhet;
+
+    private Vardgivare vardgivare;
+
+    private InternalModelResponse internalModelResponse;
 
     @Before
     public void setup() throws ModuleException, ModuleNotFoundException {
@@ -164,24 +174,24 @@ public class SignaturServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void clientSignatureFailsIfTicketDoesNotExist() {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
-        intygSignatureService.clientSignature("unknownId", "SIGNATURE", webcertUserService.getWebCertUser());
+
+        intygSignatureService.clientSignature("unknownId", "SIGNATURE");
     }
 
     @Test(expected = WebCertServiceException.class)
     public void clientSignatureFailsIfIntygWasModified() throws IOException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
-
         LocalDateTime now = LocalDateTime.now();
-        WebCertUser user = webcertUserService.getWebCertUser();
-        Utkast utkast = intygSignatureService.prepareUtkastForSignering(INTYG_ID, completedUtkast.getVersion(), user, now);
+        Utkast utkast = intygSignatureService.prepareUtkastForSignering(INTYG_ID, completedUtkast.getVersion(), webcertUserService.getWebCertUser(), now);
         SignaturTicket ticket = intygSignatureService.createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), now);
 
-        // modify draft
+
         completedUtkast.setModel("{}");
 
         String signature = "{\"signatur\":\"SIGNATURE\"}";
-        intygSignatureService.clientSignature(ticket.getId(), signature, user);
+
+        intygSignatureService.clientSignature(ticket.getId(), signature);
     }
 
     @Test
@@ -191,8 +201,7 @@ public class SignaturServiceImplTest {
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
 
         LocalDateTime now = LocalDateTime.now();
-        WebCertUser user = webcertUserService.getWebCertUser();
-        Utkast utkast = intygSignatureService.prepareUtkastForSignering(INTYG_ID, completedUtkast.getVersion(), user, now);
+        Utkast utkast = intygSignatureService.prepareUtkastForSignering(INTYG_ID, completedUtkast.getVersion(), webcertUserService.getWebCertUser(), now);
         SignaturTicket ticket = intygSignatureService.createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), now);
         SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
         assertEquals(SignaturTicket.Status.BEARBETAR, status.getStatus());
@@ -201,7 +210,7 @@ public class SignaturServiceImplTest {
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
         // Do the call
-        SignaturTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature, user);
+        SignaturTicket signatureTicket = intygSignatureService.clientSignature(ticket.getId(), signature);
 
         verify(intygService).storeIntyg(completedUtkast);
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
@@ -209,6 +218,7 @@ public class SignaturServiceImplTest {
         verify(logService).logSignIntyg(any(LogRequest.class));
 
         assertNotNull(signatureTicket);
+
         assertNotNull(completedUtkast.getSignatur());
         assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
 
