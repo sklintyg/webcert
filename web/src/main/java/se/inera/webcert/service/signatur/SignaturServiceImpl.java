@@ -129,16 +129,6 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch Webcert user
         WebCertUser user = webCertUserService.getWebCertUser();
 
-        // Check signature is valid and created by signing user
-        /*try {
-            String signature = objectMapper.readTree(rawSignatur).get("signatur").textValue();
-            if (!signatureService.validateSiths(user.getHsaId(), ticket.getHash(), signature)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Kunde inte validera SITHS signatur");
-            }
-        } catch (IOException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, "Kunde inte validera SITHS signatur", e);
-        }*/
-
         monitoringService.logIntygSigned(utkast.getIntygsId(), user.getHsaId(),
                 user.getAuthenticationScheme());
 
