@@ -306,6 +306,9 @@ public class UtkastServiceImpl implements UtkastService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
 
+        // Flush JPA changes, to make sure the version attribute is updated
+        utkastRepository.flush();
+        
         return new SaveAndValidateDraftResponse(utkast.getVersion(), draftValidation);
     }
 
