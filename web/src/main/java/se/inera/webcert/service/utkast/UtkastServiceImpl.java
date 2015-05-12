@@ -413,6 +413,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional
     public void deleteUnsignedDraft(String intygId, long version) {
 
         LOG.debug("Deleting draft with id '{}'", intygId);
@@ -439,7 +440,8 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         // Delete draft from repository
-        deleteUnsignedDraft(utkast);
+        utkastRepository.delete(utkast);
+        LOG.debug("Deleted draft '{}'", utkast.getIntygsId());
 
         String hsaId = webCertUserService.getWebCertUser().getHsaId();
         LOG.info(LogMarkers.MONITORING, "Utkast '{}' deleted by '{}'", utkast.getIntygsId(), hsaId);
@@ -450,13 +452,6 @@ public class UtkastServiceImpl implements UtkastService {
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logDeleteIntyg(logRequest);
     }
-
-    @Transactional
-    private void deleteUnsignedDraft(Utkast utkast) {
-        utkastRepository.delete(utkast);
-        LOG.debug("Deleteing draft '{}'", utkast.getIntygsId());
-    }
-
 
     @Override
     public void logPrintOfDraftToPDL(String intygId) {
