@@ -229,7 +229,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
         SignaturTicket ticket;
         try {
-            ticket = utkastService.serverSignature(intygsId, version);
+            ticket = signaturService.serverSignature(intygsId, version);
         } catch (OptimisticLockException e) {
             LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
@@ -289,7 +289,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
         SignaturTicket ticket;
         try {
-            ticket = utkastService.createDraftHash(intygsId, version);
+            ticket = signaturService.createDraftHash(intygsId, version);
         } catch (OptimisticLockException e) {
             LOG.info(LogMarkers.MONITORING, "Utkast '{}' of type '{}' was concurrently edited by multiple users", intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
