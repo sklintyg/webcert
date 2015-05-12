@@ -30,6 +30,7 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.draft.util.UpdateUserUtil;
 import se.inera.webcert.service.dto.HoSPerson;
@@ -459,6 +460,18 @@ public class UtkastServiceImpl implements UtkastService {
         logService.logPrintIntygAsDraft(logRequest);
     }
     
+    @Override
+    @Transactional(readOnly=true)
+    public List<Utkast> filterIntyg(UtkastFilter filter) {
+        return utkastRepository.filterIntyg(filter);
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public int countFilterIntyg(UtkastFilter filter) {
+        return utkastRepository.countFilterIntyg(filter);
+    }
+
     private void updateWithUser(Utkast utkast, String modelJson) {
         WebCertUser user = webCertUserService.getWebCertUser();
         se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = UpdateUserUtil.createUserObject(user);

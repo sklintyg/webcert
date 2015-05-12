@@ -58,9 +58,6 @@ public class UtkastApiController extends AbstractApiController {
     @Autowired
     private UtkastService intygDraftService;
 
-    @Autowired
-    private UtkastRepository utkastRepository;
-
     /**
      * Creates a filtered query to get drafts for a specific unit.
      *
@@ -109,11 +106,11 @@ public class UtkastApiController extends AbstractApiController {
 
     private QueryIntygResponse performUtkastFilterQuery(UtkastFilter filter) {
 
-        List<Utkast> intygList = utkastRepository.filterIntyg(filter);
+        List<Utkast> intygList = intygDraftService.filterIntyg(filter);
 
         List<ListIntygEntry> listIntygEntries = IntygDraftsConverter.convertUtkastsToListIntygEntries(intygList);
 
-        int totalCountOfFilteredIntyg = utkastRepository.countFilterIntyg(filter);
+        int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
 
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
