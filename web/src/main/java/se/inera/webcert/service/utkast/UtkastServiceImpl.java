@@ -460,10 +460,6 @@ public class UtkastServiceImpl implements UtkastService {
         logService.logPrintIntygAsDraft(logRequest);
     }
     
-    private void updateWithUser(Utkast utkast) {
-        updateWithUser(utkast, utkast.getModel());
-    }
-
     private void updateWithUser(Utkast utkast, String modelJson) {
         WebCertUser user = webCertUserService.getWebCertUser();
         se.inera.certificate.modules.support.api.dto.HoSPersonal hosPerson = UpdateUserUtil.createUserObject(user);
