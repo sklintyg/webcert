@@ -425,6 +425,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional
     public void deleteUnsignedDraft(String intygId, long version) {
 
         LOG.debug("Deleting utkast '{}'", intygId);
@@ -451,8 +452,9 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         // Delete draft from repository
-        deleteUnsignedDraft(utkast);
-        
+        utkastRepository.delete(utkast);
+        LOG.debug("Deleted draft '{}'", utkast.getIntygsId());
+
         // Audit log
         monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
         
@@ -462,13 +464,6 @@ public class UtkastServiceImpl implements UtkastService {
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logDeleteIntyg(logRequest);
     }
-
-    @Transactional
-    private void deleteUnsignedDraft(Utkast utkast) {
-        utkastRepository.delete(utkast);
-        LOG.debug("Deleted utkast '{}'", utkast.getIntygsId());
-    }
-
 
     @Override
     public void logPrintOfDraftToPDL(String intygId) {
