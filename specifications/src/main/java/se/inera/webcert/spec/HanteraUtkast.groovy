@@ -1,6 +1,5 @@
 package se.inera.webcert.spec
 
-import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.EditCertPage
@@ -190,7 +189,7 @@ class HanteraUtkast {
         Browser.drive {
             at EditeraIntygPage
             waitFor {
-                expected == page.intygetEjKomplettMeddelande.isDisplayed()
+                expected == page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
             }
         }
         true
@@ -200,7 +199,7 @@ class HanteraUtkast {
         Browser.drive {
             at EditeraIntygPage
             waitFor {
-                expected == page.intygetSparatMeddelande.isDisplayed()
+                expected == page.intygetSparatOchKomplettMeddelande.isDisplayed()
             }
         }
         true

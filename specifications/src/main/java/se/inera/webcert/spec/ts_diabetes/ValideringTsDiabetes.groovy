@@ -14,7 +14,7 @@ class ValideringTsDiabetes {
     boolean intygSparatVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetSparatMeddelande.isDisplayed()
+            result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
         }
         result
     }
@@ -22,7 +22,7 @@ class ValideringTsDiabetes {
     boolean intygEjKomplettVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetEjKomplettMeddelande.isDisplayed()
+            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
         result
     }

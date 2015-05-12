@@ -6,36 +6,23 @@ import se.inera.certificate.page.AbstractPage
 abstract class AbstractEditCertPage extends AbstractPage {
 
     def spara() {
-        println("------ spara!")
-        waitFor {
-            doneLoading()
-        }
-        if (sparaKnapp.isEnabled()) {
-            println("about to click spara!")
-            try {
-                sparaKnapp.click()
-            } catch(all){
-                println('auto save happened real fast, button disabled and hence unclickable!')
-            }
-            waitFor {
-                doneLoading()
-            }
-        } else {
-            println("auto save happened! spara button was disabled...")
-        }
+        vantaTillsUtkastetSparat();
     }
     
     def visaVadSomSaknas() {
         visaVadSomSaknasKnapp.click();
-        waitFor {
-            doneLoading()
-        }
+        vantaTillsUtkastetSparat();
     }
     
     def doljVadSomSaknas() {
         doljVadSomSaknasKnapp.click();
-        waitFor {
-            doneLoading()
+        vantaTillsUtkastetSparat();
+    }
+
+    def vantaTillsUtkastetSparat() {
+        // Autospar kör med max 5 sekunders mellanrum.
+        waitFor(5) {
+            intygetSparatOchKomplettMeddelande.isDisplayed() || intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
     }
 

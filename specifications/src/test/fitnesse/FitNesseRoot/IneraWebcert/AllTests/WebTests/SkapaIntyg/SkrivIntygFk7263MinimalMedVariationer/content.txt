@@ -69,6 +69,10 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | script | !-SkrivIntyg-! |
 | check | sjukskrivningsperiod | 28 |
 
+!4 Spara utkastet för att inte få varningsrutan om att utkastet ej är sparat vid stängning av sidan
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+
 !3 Ta bort utkastet
 
 | ta bort utkast |

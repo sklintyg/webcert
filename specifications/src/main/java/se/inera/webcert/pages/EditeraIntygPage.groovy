@@ -17,9 +17,8 @@ class EditeraIntygPage extends AbstractEditCertPage {
         enhetsPostort(required: false) { $("#clinicInfoPostalCity") }
         enhetsTelefonnummer(required: false) { $("#clinicInfoPhone") }
         enhetsEpost(required: false) { $("#clinicInfoEmail") }
-        sparaKnapp(required: false) { $("#spara-utkast") }
-        intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
-        intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
+        intygetSparatOchKomplettMeddelande { $("#intyget-sparat-och-komplett-meddelande") }
+        intygetSparatOchEjKomplettMeddelande { $("#intyget-sparat-och-ej-komplett-meddelande") }
         errorPanel { $("#error-panel") }
         visaVadSomSaknasKnapp { $("#showCompleteButton") }
         visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }

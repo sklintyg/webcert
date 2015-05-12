@@ -3,7 +3,6 @@ package se.inera.webcert.spec.ts_bas
 import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 
-
 class ValideringTsBas {
 
     boolean sparaUtkast() {
@@ -15,7 +14,7 @@ class ValideringTsBas {
     boolean intygSparatVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetSparatMeddelande.isDisplayed()
+            result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
         }
         result
     }
@@ -23,7 +22,7 @@ class ValideringTsBas {
     boolean intygEjKomplettVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetEjKomplettMeddelande.isDisplayed()
+            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
         result
     }

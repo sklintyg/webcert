@@ -230,7 +230,7 @@ class SkrivIntyg {
     boolean intygSparatVisas() {
         Browser.drive {
             waitFor {
-                page.intygetSparatMeddelande.isDisplayed()
+                page.intygetSparatOchKomplettMeddelande.isDisplayed()
             }
         }
         true
@@ -238,7 +238,7 @@ class SkrivIntyg {
 
     boolean intygEjKomplettVisas() {
         Browser.drive {
-            assert page.intygetEjKomplettMeddelande.isDisplayed()
+            assert page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
         true
     }
