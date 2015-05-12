@@ -45,7 +45,6 @@ import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturService;
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
@@ -256,39 +255,6 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional
-    public SignaturTicket createDraftHash(String intygsId, long version) {
-        Utkast intyg = getIntygAsDraft(intygsId);
-
-        // check that the draft hasn't been modified concurrently
-        if (intyg.getVersion() != version) {
-            LOG.debug("Utkast '{}' was concurrently modified", intygsId);
-            throw new OptimisticLockException(intyg.getSenastSparadAv().getNamn());
-        }
-
-        updateWithUser(intyg);
-        intyg = utkastRepository.save(intyg);
-
-        return signatureService.createDraftHash(intygsId, intyg.getVersion());
-    }
-
-    @Override
-    @Transactional
-    public SignaturTicket serverSignature(String intygsId, long version) {
-        Utkast intyg = getIntygAsDraft(intygsId);
-
-        // check that the draft hasn't been modified concurrently
-        if (intyg.getVersion() != version) {
-            LOG.debug("Utkast '{}' was concurrently modified", intygsId);
-            throw new OptimisticLockException(intyg.getSenastSparadAv().getNamn());
-        }
-
-        updateWithUser(intyg);
-        intyg = utkastRepository.save(intyg);
-
-        return signatureService.serverSignature(intygsId, intyg.getVersion());
-    }
-
-    @Override
     public SaveAndValidateDraftResponse saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent) {
 
         String intygId = request.getIntygId();
