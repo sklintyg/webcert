@@ -189,7 +189,7 @@ public class SignaturServiceImpl implements SignaturService {
         WebCertUser user = webCertUserService.getWebCertUser();
 
         // Fetch the certificate
-        Utkast utkast = getUtkastForSignering(intygsId, version);
+        Utkast utkast = getUtkastForSignering(intygsId, ticket.getVersion());
 
         LOG.info(LogMarkers.MONITORING, "Intyg '{}' signed by '{}'", utkast.getIntygsId(), user.getHsaId());
 
