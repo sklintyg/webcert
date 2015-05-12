@@ -236,6 +236,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Utkast getDraft(String intygId) {
         Utkast utkast = getIntygAsDraft(intygId);
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
@@ -365,6 +366,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Lakare> getLakareWithDraftsByEnhet(String enhetsId) {
 
         List<Lakare> lakareList = new ArrayList<>();
@@ -379,6 +381,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional
     public Utkast setForwardOnDraft(String intygsId, Boolean forwarded) {
 
         Utkast utkast = utkastRepository.findOne(intygsId);
@@ -394,6 +397,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds) {
 
         Map<String, Long> resultsMap = new HashMap<>();
@@ -454,6 +458,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void logPrintOfDraftToPDL(String intygId) {
         Utkast utkast = utkastRepository.findOne(intygId);
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
