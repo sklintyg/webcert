@@ -193,7 +193,7 @@ public class SignaturServiceImpl implements SignaturService {
         WebCertUser user = webCertUserService.getWebCertUser();
 
         // Fetch the certificate
-        Utkast utkast = getUtkastForSignering(intygsId, version);
+        Utkast utkast = getUtkastForSignering(intygsId, ticket.getVersion());
 
         // Create and persist signature
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
