@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
@@ -83,6 +84,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     }
 
     @Override
+    @Transactional
     public HealthStatus checkDB() {
         boolean ok;
         StopWatch stopWatch = new StopWatch();

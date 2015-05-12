@@ -163,6 +163,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<FragaSvar> getFragaSvar(List<String> enhetsHsaIds) {
         List<FragaSvar> result = fragaSvarRepository.findByEnhetsId(enhetsHsaIds);
         if (result != null) {
@@ -176,6 +177,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<FragaSvar> getFragaSvar(String intygId) {
 
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
@@ -455,6 +457,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public QueryFragaSvarResponse filterFragaSvar(QueryFragaSvarParameter filterParameters) {
 
         FragaSvarFilter filter = createFragaSvarFilter(filterParameters);
@@ -470,6 +473,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Lakare> getFragaSvarHsaIdByEnhet(String enhetsId) {
 
         List<String> enhetsIdParams = new ArrayList<>();
@@ -493,6 +497,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long getUnhandledFragaSvarForUnitsCount(List<String> vardenheterIds) {
         return fragaSvarRepository.countUnhandledForEnhetsIds(vardenheterIds);
     }
