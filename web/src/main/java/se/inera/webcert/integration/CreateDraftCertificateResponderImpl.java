@@ -75,7 +75,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         return createSuccessResponse(nyttUtkastsId);
     }
 
-    @Transactional
     private String createNewDraft(Utlatande utlatandeRequest, MiuInformationType unitMIU) {
 
         String invokingUserHsaId = utlatandeRequest.getSkapadAv().getPersonalId().getExtension();
