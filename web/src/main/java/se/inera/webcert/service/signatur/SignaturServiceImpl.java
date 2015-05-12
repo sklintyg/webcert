@@ -82,19 +82,26 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Override
     @Transactional
-    public Utkast prepareUtkastForSignering(String intygId, long version, WebCertUser user, LocalDateTime signeringstid) {
+    public SignaturTicket createDraftHash(String intygId, long version) {
         LOG.debug("Hash for clientsignature of draft '{}'", intygId);
 
         // Fetch the certificate draft
         Utkast utkast = getUtkastForSignering(intygId, version);
 
+        // Fetch Webcert user
+        WebCertUser user = webCertUserService.getWebCertUser();
+
+        LocalDateTime signeringstid = LocalDateTime.now();
+        
         // Update certificate with user information
         utkast = updateUtkastForSignering(utkast, user, signeringstid);
 
         // Save the certificate draft
         utkast = utkastRepository.save(utkast);
 
-        return utkast;
+        SignaturTicket statusTicket = createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), signeringstid);
+
+        return statusTicket;
     }
 
     @Override
@@ -169,14 +176,21 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Override
     @Transactional(noRollbackFor=javax.xml.ws.WebServiceException.class)
-    public SignaturTicket serverSignature(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
-        LOG.debug("Signera utkast '{}'", utkast.getIntygsId());
+    public SignaturTicket serverSignature(String intygsId, long version) {
+        LOG.debug("Signera utkast '{}'", intygsId);
+
+        // On server side we need to create our own signature ticket
+        SignaturTicket ticket = createDraftHash(intygsId, version);
+
+        // Fetch Webcert user
+        WebCertUser user = webCertUserService.getWebCertUser();
+
+        // Fetch the certificate
+        Utkast utkast = getUtkastForSignering(intygsId, version);
 
         LOG.info(LogMarkers.MONITORING, "Intyg '{}' signed by '{}'", utkast.getIntygsId(), user.getHsaId());
 
         // Create and persist signature
-        SignaturTicket ticket = createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), signeringstid);
-
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
         // Notify stakeholders when a draft has been signed
@@ -234,7 +248,7 @@ public class SignaturServiceImpl implements SignaturService {
         return utkast;
     }
 
-    public SignaturTicket createSignaturTicket(String intygId, long version, String payload, LocalDateTime signeringstid) {
+    private SignaturTicket createSignaturTicket(String intygId, long version, String payload, LocalDateTime signeringstid) {
         try {
             String hash = createHash(payload);
             String id = UUID.randomUUID().toString();
