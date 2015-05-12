@@ -102,6 +102,9 @@ public class SignaturServiceImpl implements SignaturService {
         // Save the certificate draft
         utkast = utkastRepository.save(utkast);
 
+        // Flush JPA changes, to make sure the version attribute is updated
+        utkastRepository.flush();
+
         SignaturTicket statusTicket = createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), signeringstid);
 
         return statusTicket;
