@@ -90,12 +90,12 @@ describe('UnsignedCertCtrlSpec', function() {
 
         it('should change forwarded state on a utkast when clicking a forward checkbox', function() {
             $scope.onForwardedChange(mockResponse.utkast);
-            expect(utkastNotifyService.onForwardedChange).toHaveBeenCalled();
+            expect(utkastNotifyService.onNotifyChange).toHaveBeenCalled();
         });
 
         it('should open external mail client when user wants to forward a utkast', function() {
             $scope.openMailDialog(mockResponse.utkast);
-            expect(utkastNotifyService.forwardIntyg).toHaveBeenCalled();
+            expect(utkastNotifyService.notifyUtkast).toHaveBeenCalled();
         });
     });
 
