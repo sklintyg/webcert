@@ -7,12 +7,14 @@ public class SignaturTicketResponse {
     private final String status;
     private final String intygsId;
     private final String hash;
+    private final long version;
 
     public SignaturTicketResponse(SignaturTicket ticket) {
         id = ticket.getId();
         status = ticket.getStatus().name();
         intygsId = ticket.getIntygsId();
         hash = ticket.getHash();
+        version = ticket.getVersion();
     }
 
     public String getId() {
@@ -29,5 +31,9 @@ public class SignaturTicketResponse {
 
     public String getHash() {
         return hash;
+    }
+
+    public long getVersion() {
+        return version;
     }
 }

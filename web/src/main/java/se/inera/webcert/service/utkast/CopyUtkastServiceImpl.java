@@ -25,7 +25,6 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
-import se.inera.webcert.web.service.WebCertUserService;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -130,19 +129,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         return personSvar.getPerson();
     }
-
-    /*
-     * private void sendNotification(Utkast utkast) {
-     * 
-     * NotificationRequestType notificationRequestType =
-     * NotificationMessageFactory.createNotificationFromCreatedDraft(utkast);
-     * String logMsg = "Notification sent: utkast with id '{}' was created as a copy.";
-     * 
-     * notificationService.notify(notificationRequestType);
-     * 
-     * LOG.debug(logMsg, utkast.getIntygsId());
-     * }
-     */
 
     private void checkIntegreradEnhet(CopyUtkastBuilderResponse builderResponse) {
 

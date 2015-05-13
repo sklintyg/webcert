@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
 import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
 import se.inera.webcert.service.monitoring.dto.HealthStatus;
@@ -58,6 +60,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     @Qualifier("pingIntygstjanstForConfigurationClient")
     private PingForConfigurationResponderInterface intygstjanstPingForConfiguration;
 
+    @Override
     public HealthStatus checkHSA() {
         boolean ok;
         StopWatch stopWatch = new StopWatch();
@@ -74,6 +77,8 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return status;
     }
 
+    @Override
+    @Transactional
     public HealthStatus checkDB() {
         boolean ok;
         StopWatch stopWatch = new StopWatch();
@@ -85,6 +90,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return status;
     }
 
+    @Override
     public HealthStatus checkJMS() {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -95,6 +101,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return status;
     }
 
+    @Override
     public HealthStatus checkSignatureQueue() {
         boolean ok;
         long size = -1;
@@ -111,6 +118,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return new HealthStatus(size, ok);
     }
 
+    @Override
     public HealthStatus checkIntygstjanst() {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -121,15 +129,11 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return status;
     }
 
+    @Override
     public HealthStatus checkUptime() {
         long uptime = System.currentTimeMillis() - START_TIME;
         LOG.info("Current system uptime is {}", DurationFormatUtils.formatDurationWords(uptime, true, true));
         return new HealthStatus(uptime, true);
-    }
-
-    public String checkUptimeAsString() {
-        HealthStatus uptime = checkUptime();
-        return DurationFormatUtils.formatDurationWords(uptime.getMeasurement(), true, true);
     }
 
     private boolean pingIntygstjanst() {
