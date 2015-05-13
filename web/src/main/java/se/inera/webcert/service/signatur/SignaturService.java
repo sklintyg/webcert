@@ -10,12 +10,8 @@ public interface SignaturService {
     /**
      * This method is used when signing using other methods than NetId.
      *
-     * @param utkast
-     *            the draft
-     * @param user
-     *            the current Webcert user
-     * @param signeringstid
-     *            the signature time
+     * @param intygId intygid
+     * @param version version
      * @return SignatureTicket
      */
     SignaturTicket serverSignature(Utkast utkast, WebCertUser user, LocalDateTime signeringstid);
@@ -25,10 +21,9 @@ public interface SignaturService {
      * 
      * @param biljettId
      * @param rawSignatur
-     * @param user
      * @return
      */
-    SignaturTicket clientSignature(String biljettId, String rawSignatur, WebCertUser user);
+    SignaturTicket clientSignature(String biljettId, String rawSignatur);
 
     /**
      * Checks the status of the signing ticket.
@@ -41,11 +36,9 @@ public interface SignaturService {
     /**
      * This method is used to prepare utkast before creating hash for signature.
      * 
-     * @param intygId
-     *            The id of the draft to generate signing ticket for
-     * @param version
-     *            version
-     * @param user
+     * @param intygId The id of the draft to generate signing ticket for
+     * @param version version
+     * @param WebCertUser user
      * @param signeringstid
      * @return
      */
