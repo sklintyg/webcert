@@ -11,7 +11,7 @@
 
   <groupId>se.inera.intyg.webcert</groupId>
   <artifactId>webcert</artifactId>
-  <version>3.0.10</version>
+  <version>0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Webcert</name>
@@ -19,32 +19,32 @@
   <properties>
 
     <!-- Common -->
-    <common.version>2.1.8</common.version>
+    <common.version>0-SNAPSHOT</common.version>
     <common.version.range>(,2.1.8]</common.version.range>
 
     <!-- Tools -->
-    <tools.version>2.1.7</tools.version>
+    <tools.version>0-SNAPSHOT</tools.version>
     <tools.version.range>(,2.1.7]</tools.version.range>
 
     <!-- Intygstyper -->
-    <intygstyper.version>2.1.7</intygstyper.version>
+    <intygstyper.version>0-SNAPSHOT</intygstyper.version>
     <intygstyper.version.range>(,2.1.7]</intygstyper.version.range>
 
     <!-- Schemas -->
-    <clinicalprocess-healthcond-certificate.version>1.0.0</clinicalprocess-healthcond-certificate.version>
+    <clinicalprocess-healthcond-certificate.version>0-SNAPSHOT</clinicalprocess-healthcond-certificate.version>
     <clinicalprocess-healthcond-certificate.version.range>(,1.0.0]
     </clinicalprocess-healthcond-certificate.version.range>
 
-    <insuranceprocess-healthreporting.version>1.0.0</insuranceprocess-healthreporting.version>
+    <insuranceprocess-healthreporting.version>0-SNAPSHOT</insuranceprocess-healthreporting.version>
     <insuranceprocess-healthreporting.version.range>(,1.0.0]</insuranceprocess-healthreporting.version.range>
 
-    <itintegration-monitoring.version>1.0.0</itintegration-monitoring.version>
+    <itintegration-monitoring.version>0-SNAPSHOT</itintegration-monitoring.version>
     <itintegration-monitoring.version.range>(,1.0.0]</itintegration-monitoring.version.range>
 
-    <ehr-logstore.version>1.0.0</ehr-logstore.version>
+    <ehr-logstore.version>0-SNAPSHOT</ehr-logstore.version>
     <ehr-logstore.version.range>(,1.0.0]</ehr-logstore.version.range>
 
-    <schemas-common.version>2.1.0</schemas-common.version>
+    <schemas-common.version>0-SNAPSHOT</schemas-common.version>
     <schemas-common.version.range>(,2.1.0]</schemas-common.version.range>
 
   </properties>
