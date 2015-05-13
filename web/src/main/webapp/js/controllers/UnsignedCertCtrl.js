@@ -3,9 +3,9 @@
  */
 angular.module('webcert').controller('webcert.UnsignedCertCtrl',
     [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'webcert.ManageCertificate', 'common.User', 'common.intygNotifyService', 'common.DateUtilsService',
+        'webcert.ManageCertificate', 'common.User', 'common.utkastNotifyService', 'common.DateUtilsService',
         function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService, ManageCertificate,
-            User, intygNotifyService, dateUtilsService) {
+            User, utkastNotifyService, dateUtilsService) {
             'use strict';
 
             // Constant settings
@@ -242,16 +242,32 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             // Handle forwarding
             $scope.openMailDialog = function(cert) {
+
                 cert.updateState = {
-                    vidarebefordradInProgress: true
+                    inProgress: true
                 };
-                intygNotifyService.forwardIntyg(cert, cert.updateState);
+
+                var utkastNotifyRequest = {
+                    intygId : cert.id,
+                    intygType: cert.intygsTyp,
+                    vidarebefordrad: cert.vidarebefordrad,
+                    inProgress: cert.updateState.inProgress
+                };
+                utkastNotifyService.notifyUtkast(utkastNotifyRequest);
             };
 
             $scope.onForwardedChange = function(cert) {
+
                 cert.updateState = {
-                    vidarebefordradInProgress: true
+                    inProgress: true
                 };
-                intygNotifyService.onForwardedChange(cert, cert.updateState);
+
+                var utkastNotifyRequest = {
+                    intygId : cert.id,
+                    intygType: cert.intygType,
+                    vidarebefordrad: cert.vidarebefordrad,
+                    inProgress: cert.updateState.inProgress
+                };
+                utkastNotifyService.onNotifyChange(utkastNotifyRequest);
             };
         }]);

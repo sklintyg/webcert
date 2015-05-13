@@ -9,7 +9,7 @@ describe('UnsignedCertCtrlSpec', function() {
     var controller;
     var mockResponse;
     var mockFactory;
-    var intygNotifyService;
+    var utkastNotifyService;
 
     beforeEach(function() {
 
@@ -25,8 +25,8 @@ describe('UnsignedCertCtrlSpec', function() {
             var User = mockFactory.buildUserMinimal();
             $provide.value('common.User', User);
             $provide.value('common.dialogService', mockFactory.buildDialogService());
-            intygNotifyService = jasmine.createSpyObj('common.intygNotifyService', [ 'onForwardedChange', 'forwardIntyg' ]);
-            $provide.value('common.intygNotifyService', intygNotifyService);
+            utkastNotifyService = jasmine.createSpyObj('common.utkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
+            $provide.value('common.utkastNotifyService', utkastNotifyService);
             $provide.value('common.featureService', jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]));
             $provide.value('common.messageService', {});
             $provide.value('common.CertificateService', {});
@@ -90,12 +90,12 @@ describe('UnsignedCertCtrlSpec', function() {
 
         it('should change forwarded state on a utkast when clicking a forward checkbox', function() {
             $scope.onForwardedChange(mockResponse.utkast);
-            expect(intygNotifyService.onForwardedChange).toHaveBeenCalled();
+            expect(utkastNotifyService.onForwardedChange).toHaveBeenCalled();
         });
 
         it('should open external mail client when user wants to forward a utkast', function() {
             $scope.openMailDialog(mockResponse.utkast);
-            expect(intygNotifyService.forwardIntyg).toHaveBeenCalled();
+            expect(utkastNotifyService.forwardIntyg).toHaveBeenCalled();
         });
     });
 
