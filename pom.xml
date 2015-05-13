@@ -20,7 +20,7 @@
 
     <!-- Common -->
     <common.version>0-SNAPSHOT</common.version>
-    <common.version.range>(,2.1.7]</common.version.range>
+    <common.version.range>(,2.1.8]</common.version.range>
 
     <!-- Tools -->
     <tools.version>0-SNAPSHOT</tools.version>
