@@ -17,6 +17,13 @@ Detta test ska visa på att man kan kopiera ett signerat ts-bas-intyg och få et
 
 | script | !-HanteraUtkast-! |
 | editera sidan visas |
+
+Tillse att synskärpa med värde 0 visas som 0,0. WEBCERT-1812
+| Verifiera Utkast Ts Diabetes |
+| hogerOgaUtanKorrektion? | vansterOgaUtanKorrektion? | hogerOgaMedKorrektion? | vansterOgaMedKorrektion? | binokulartUtanKorrektion? | binokulartMedKorrektion? |
+| 0,0 | 0,0 | 0,0 | 0,0 | 0,0 | 0,0 |
+
+| script | !-HanteraUtkast-! |
 | radera utkast |
 
 | script | !-SokSkrivIntyg-! |
