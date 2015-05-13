@@ -60,7 +60,7 @@ module.exports = function(grunt) {
                     jshintrc: '../target/build-tools/jshint/.jshintrc',
                     force: true
                 },
-                src: ['Gruntfile.js', SRC_DIR + '**/*.js', TEST_DIR + '**/*.js', '!' + SRC_DIR + '/app.min.js']
+                src: ['Gruntfile.js', !SRC_DIR + 'vendor/*.js', SRC_DIR + '**/*.js', TEST_DIR + '**/*.js', '!' + SRC_DIR + '/app.min.js']
             }
         },
 
