@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.certificate.model.common.internal.GrundData;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
@@ -111,6 +112,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
      * @see se.inera.webcert.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
      */
     @Override
+    @Transactional(readOnly = true)
     public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
             ModuleException {
 

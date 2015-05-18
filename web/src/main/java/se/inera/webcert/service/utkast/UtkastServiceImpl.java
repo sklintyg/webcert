@@ -9,16 +9,12 @@ import java.util.Map;
 import javax.persistence.OptimisticLockException;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -33,6 +29,7 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.draft.util.UpdateUserUtil;
 import se.inera.webcert.service.dto.HoSPerson;
@@ -49,7 +46,6 @@ import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturService;
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.DraftValidationStatus;
@@ -93,9 +89,6 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private WebCertUserService webCertUserService;
-
-    @Autowired
-    private TransactionTemplate transactionTemplate;
 
     @Override
     @Transactional
@@ -232,7 +225,7 @@ public class UtkastServiceImpl implements UtkastService {
         return new CreateNewDraftHolder(request.getIntygId(), hosPerson, patient);
     }
 
-    public Utkast getIntygAsDraft(String intygsId) {
+    private Utkast getIntygAsDraft(String intygsId) {
 
         LOG.debug("Fetching utkast '{}'", intygsId);
 
@@ -247,6 +240,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Utkast getDraft(String intygId) {
         Utkast utkast = getIntygAsDraft(intygId);
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
@@ -262,105 +256,74 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public SignaturTicket createDraftHash(String intygsId, long version) {
-        // Fetch Webcert user
-        WebCertUser user = webCertUserService.getWebCertUser();
-
-        LocalDateTime signeringstid = LocalDateTime.now();
-
-        Utkast utkast = signatureService.prepareUtkastForSignering(intygsId, version, user, signeringstid);
-
-        return signatureService.createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), signeringstid);
-    }
-
-    @Override
-    public SignaturTicket serverSignature(String intygsId, long version) {
-
-        // Fetch Webcert user
-        WebCertUser user = webCertUserService.getWebCertUser();
-
-        LocalDateTime signeringstid = LocalDateTime.now();
-
-        Utkast utkast = signatureService.prepareUtkastForSignering(intygsId, version, user, signeringstid);
-
-        return signatureService.serverSignature(utkast, user, signeringstid);
-    }
-
-    @Override
+    @Transactional
     public SaveAndValidateDraftResponse saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent) {
 
-        UtkastAndDraftValidation utkastAndDraftValidation = saveAndValidateDraftInternal(request, createPdlLogEvent);
+        String intygId = request.getIntygId();
 
-        return new SaveAndValidateDraftResponse(utkastAndDraftValidation.getUtkast().getVersion(), utkastAndDraftValidation.getDraftValidation());
-    }
+        LOG.debug("Saving and validating utkast '{}'", intygId);
 
-    private UtkastAndDraftValidation saveAndValidateDraftInternal(final SaveAndValidateDraftRequest request, final boolean createPdlLogEvent) {
-        return transactionTemplate.execute(new TransactionCallback<UtkastAndDraftValidation>() {
-            @Override
-            public UtkastAndDraftValidation doInTransaction(TransactionStatus status) {
-                String intygId = request.getIntygId();
+        Utkast utkast = utkastRepository.findOne(intygId);
 
-                LOG.debug("Saving and validating utkast '{}'", intygId);
+        if (utkast == null) {
+            LOG.warn("Utkast '{}' was not found", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
+        }
 
-                Utkast utkast = utkastRepository.findOne(intygId);
+        // check that the draft hasn't been modified concurrently
+        if (utkast.getVersion() != request.getVersion()) {
+            LOG.debug("Utkast '{}' was concurrently modified", intygId);
+            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
+        }
 
-                if (utkast == null) {
-                    LOG.warn("Utkast '{}' was not found", intygId);
-                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
-                }
+        // check that the draft is still a draft
+        if (!isTheDraftStillADraft(utkast.getStatus())) {
+            LOG.error("Utkast '{}' can not be updated since it is no longer in draft mode", intygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "This utkast can not be updated since it is no longer in draft mode");
+        }
 
-                // check that the draft hasn't been modified concurrently
-                if (utkast.getVersion() != request.getVersion()) {
-                    LOG.debug("Utkast '{}' was concurrently modified", intygId);
-                    throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
-                }
+        String intygType = utkast.getIntygsTyp();
+        String draftAsJson = request.getDraftAsJson();
 
-                // check that the draft is still a draft
-                if (!isTheDraftStillADraft(utkast.getStatus())) {
-                    LOG.error("Utkast '{}' can not be updated since it is no longer in draft mode", intygId);
-                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                            "This utkast can not be updated since it is no longer in draft mode");
-                }
+        // Keep persisted json for comparsion
+        String persistedJson = utkast.getModel();
 
-                String intygType = utkast.getIntygsTyp();
-                String draftAsJson = request.getDraftAsJson();
+        // Update draft with user information
+        updateWithUser(utkast, draftAsJson);
 
-                // Keep persisted json for comparsion
-                String persistedJson = utkast.getModel();
+        // Is draft valid?
+        DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
 
-                // Update draft with user information
-                updateWithUser(utkast, draftAsJson);
+        UtkastStatus utkastStatus = (draftValidation.isDraftValid()) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
+        utkast.setStatus(utkastStatus);
 
-                // Is draft valid?
-                DraftValidation draftValidation = validateDraft(intygId, intygType, draftAsJson);
+        // Save the updated draft
+        utkast = saveDraft(utkast);
+        LOG.debug("Utkast '{}' updated", utkast.getIntygsId());
 
-                UtkastStatus utkastStatus = (draftValidation.isDraftValid()) ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
-                utkast.setStatus(utkastStatus);
+        if (createPdlLogEvent) {
+            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+            logService.logUpdateIntyg(logRequest);
 
-                // Save the updated draft
-                utkast = saveDraft(utkast);
-                LOG.debug("Utkast '{}' updated", utkast.getIntygsId());
+            monitoringService.logUtkastEdited(utkast.getIntygsId(), utkast.getIntygsTyp());
+        }
 
-                if (createPdlLogEvent) {
-                    LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-                    logService.logUpdateIntyg(logRequest);
-
-                    monitoringService.logUtkastEdited(utkast.getIntygsId(), utkast.getIntygsTyp());
-                }
-
-                // Notify stakeholders when a draft has been changed/updated
-                try {
-                    ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-                    if (moduleApi.isModelChanged(persistedJson, draftAsJson)) {
-                        LOG.debug("*** Detected changes in model, sending notification! ***");
-                        sendNotification(utkast, Event.CHANGED);
-                    }
-                } catch (ModuleException | ModuleNotFoundException e) {
-                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-                }
-                return new UtkastAndDraftValidation(utkast, draftValidation);
+        // Notify stakeholders when a draft has been changed/updated
+        try {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            if (moduleApi.isModelChanged(persistedJson, draftAsJson)) {
+                LOG.debug("*** Detected changes in model, sending notification! ***");
+                sendNotification(utkast, Event.CHANGED);
             }
-        });
+        } catch (ModuleException | ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+        }
+
+        // Flush JPA changes, to make sure the version attribute is updated
+        utkastRepository.flush();
+        
+        return new SaveAndValidateDraftResponse(utkast.getVersion(), draftValidation);
     }
 
     private Utkast saveDraft(Utkast utkast) {
@@ -415,6 +378,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Lakare> getLakareWithDraftsByEnhet(String enhetsId) {
 
         List<Lakare> lakareList = new ArrayList<>();
@@ -429,6 +393,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional
     public Utkast setForwardOnDraft(String intygsId, Boolean forwarded) {
 
         Utkast utkast = utkastRepository.findOne(intygsId);
@@ -444,6 +409,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds) {
 
         Map<String, Long> resultsMap = new HashMap<>();
@@ -463,6 +429,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional
     public void deleteUnsignedDraft(String intygId, long version) {
 
         LOG.debug("Deleting utkast '{}'", intygId);
@@ -489,8 +456,9 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         // Delete draft from repository
-        deleteUnsignedDraft(utkast);
-        
+        utkastRepository.delete(utkast);
+        LOG.debug("Deleted draft '{}'", utkast.getIntygsId());
+
         // Audit log
         monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
         
@@ -501,14 +469,8 @@ public class UtkastServiceImpl implements UtkastService {
         logService.logDeleteIntyg(logRequest);
     }
 
-    @Transactional
-    private void deleteUnsignedDraft(Utkast utkast) {
-        utkastRepository.delete(utkast);
-        LOG.debug("Deleted utkast '{}'", utkast.getIntygsId());
-    }
-
-
     @Override
+    @Transactional(readOnly = true)
     public void logPrintOfDraftToPDL(String intygId) {
         Utkast utkast = utkastRepository.findOne(intygId);
         
@@ -524,8 +486,16 @@ public class UtkastServiceImpl implements UtkastService {
         monitoringService.logUtkastPrint(utkast.getIntygsId(), utkast.getIntygsTyp());
     }
     
-    private void updateWithUser(Utkast utkast) {
-        updateWithUser(utkast, utkast.getModel());
+    @Override
+    @Transactional(readOnly=true)
+    public List<Utkast> filterIntyg(UtkastFilter filter) {
+        return utkastRepository.filterIntyg(filter);
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public int countFilterIntyg(UtkastFilter filter) {
+        return utkastRepository.countFilterIntyg(filter);
     }
 
     private void updateWithUser(Utkast utkast, String modelJson) {
@@ -575,24 +545,6 @@ public class UtkastServiceImpl implements UtkastService {
             LOG.debug("User not authorized for enhet");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User not authorized for for enhet " + enhetsHsaId);
-        }
-    }
-
-    private class UtkastAndDraftValidation {
-        private final Utkast utkast;
-        private final DraftValidation draftValidation;
-
-        public UtkastAndDraftValidation(Utkast utkast, DraftValidation draftValidation) {
-            this.utkast = utkast;
-            this.draftValidation = draftValidation;
-        }
-
-        public DraftValidation getDraftValidation() {
-            return draftValidation;
-        }
-
-        public Utkast getUtkast() {
-            return utkast;
         }
     }
 }

@@ -13,6 +13,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -23,6 +24,7 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
+    @Transactional(readOnly=true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -42,6 +44,8 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
         return query.getResultList();
     }
 
+    @Override
+    @Transactional(readOnly=true)
     public int countFilterIntyg(UtkastFilter filter) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();

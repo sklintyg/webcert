@@ -1,8 +1,5 @@
 package se.inera.webcert.service.signatur;
 
-import org.joda.time.LocalDateTime;
-import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 
 public interface SignaturService {
@@ -14,7 +11,7 @@ public interface SignaturService {
      * @param version version
      * @return SignatureTicket
      */
-    SignaturTicket serverSignature(Utkast utkast, WebCertUser user, LocalDateTime signeringstid);
+    SignaturTicket serverSignature(String intygId, long version);
 
     /**
      * This method is used when signing using NetId
@@ -34,19 +31,12 @@ public interface SignaturService {
     SignaturTicket ticketStatus(String biljettId);
 
     /**
-     * This method is used to prepare utkast before creating hash for signature.
+     * This method is used to generate a signing ticket based on the payload of an Intyg.
      * 
      * @param intygId The id of the draft to generate signing ticket for
      * @param version version
-     * @param WebCertUser user
-     * @param signeringstid
      * @return
      */
-    Utkast prepareUtkastForSignering(String intygId, long version, WebCertUser user, LocalDateTime signeringstid);
+    SignaturTicket createDraftHash(String intygId, long version);
 
-    /**
-     * This method is used to generate a signing ticket based on the payload of an Intyg.
-     *
-     */
-    SignaturTicket createSignaturTicket(String intygId, long version, String payload, LocalDateTime signeringstid);
 }
