@@ -170,9 +170,9 @@
                       </button>
                     </td>
                     <td class="center">
-                      <input id="selected" type="checkbox" ng-disabled="cert.updateState.notifieraInProgress" ng-model="cert.vidarebefordrad"
+                      <input id="selected" type="checkbox" ng-disabled="cert.updateState.vidarebefordraInProgress" ng-model="cert.vidarebefordrad"
                              ng-change="onNotifyChange(cert)" />
-                      <span ng-if="cert.updateState.notifieraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+                      <span ng-if="cert.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
                     </td>
                     <td class="unbreakable"><span message
                                                   key="certificatetypes.{{cert.intygType}}.typename"></span>

@@ -243,17 +243,17 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             };
 
             // Handle forwarding
-            $scope.openMailDialog = function(cert) {
-                cert.updateState = {
-                    notifieraInProgress: false
+            $scope.openMailDialog = function(utkast) {
+                utkast.updateState = {
+                    vidarebefordraInProgress: false
                 };
-                ManageCertView.notifyUtkast(cert.intygId, cert.intygType, cert.vidarebefordrad, cert.updateState);
+                ManageCertView.notifyUtkast(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
             };
 
-            $scope.onNotifyChange = function(cert) {
-                cert.updateState = {
-                    notifieraInProgress: false
+            $scope.onNotifyChange = function(utkast) {
+                utkast.updateState = {
+                    vidarebefordraInProgress: false
                 };
-                ManageCertView.onNotifyChange(cert.intygId, cert.intygType, cert.vidarebefordrad, cert.updateState);
+                ManageCertView.onNotifyChange(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
             };
         }]);
