@@ -19,7 +19,11 @@
 		<span message key="{{button3text}}"></span>
 	</button>
 	<div class="webcert-top-padding-section" data-ng-show="model.showerror">
-		<div class="alert alert-danger alert-dialog-error">
-			<span message key="{{model.errormessageid}}"></span></div>
+    <div class="alert alert-danger alert-dialog-error" ng-if="model.errormessage">
+      <span ng-bind-html="model.errormessage"></span>
+    </div>
+		<div class="alert alert-danger alert-dialog-error" ng-if="model.errormessageid">
+			<span message key="{{model.errormessageid}}"></span>
+    </div>
 	</div>
 </div>

@@ -192,7 +192,12 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         LOG.debug("Deleting draft with id {}", intygsId);
 
-        utkastService.deleteUnsignedDraft(intygsId, version);
+        try {
+            utkastService.deleteUnsignedDraft(intygsId, version);
+        } catch (OptimisticLockException e) {
+            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
