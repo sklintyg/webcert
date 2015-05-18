@@ -20,6 +20,8 @@ public class ListIntygEntry {
 
     private boolean vidarebefordrad;
 
+    private long version;
+
     public ListIntygEntry() {
 
     }
@@ -86,6 +88,14 @@ public class ListIntygEntry {
 
     public void setVidarebefordrad(boolean vidarebefordrad) {
         this.vidarebefordrad = vidarebefordrad;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 
 }

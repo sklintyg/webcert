@@ -114,6 +114,7 @@ public final class IntygDraftsConverter {
         entry.setPatientId(utkast.getPatientPersonnummer());
         entry.setVidarebefordrad(utkast.getVidarebefordrad());
         entry.setStatus(utkast.getStatus().toString());
+        entry.setVersion(utkast.getVersion());
 
         return entry;
     }
