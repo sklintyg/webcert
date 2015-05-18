@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
+@Transactional(readOnly = true)
 public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     /**
      * Should return a list of {@link Utkast} entities in the repository that has an enhetsId matching one of the

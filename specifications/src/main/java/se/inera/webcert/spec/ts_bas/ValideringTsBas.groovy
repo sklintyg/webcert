@@ -1,11 +1,12 @@
 package se.inera.webcert.spec.ts_bas
 
+import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 
 
 class ValideringTsBas {
 
-    void sparaUtkast() {
+    boolean sparaUtkast() {
         Browser.drive {
             page.spara()
         }

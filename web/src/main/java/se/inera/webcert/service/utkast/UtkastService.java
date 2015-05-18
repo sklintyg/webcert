@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.webcert.service.dto.Lakare;
-import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
@@ -29,10 +29,10 @@ public interface UtkastService {
 
     Utkast getDraft(String intygId);
 
-    SignaturTicket createDraftHash(String intygsId, long version);
-
-    SignaturTicket serverSignature(String intygsId, long version);
-    
     void logPrintOfDraftToPDL(String intygId);
+    
+    List<Utkast> filterIntyg(UtkastFilter filter);
+    
+    int countFilterIntyg(UtkastFilter filter);
     
 }

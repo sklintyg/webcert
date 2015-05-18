@@ -1,10 +1,11 @@
 package se.inera.webcert.spec.ts_diabetes
 
+import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 
 class ValideringTsDiabetes {
 
-    void sparaUtkast() {
+    boolean sparaUtkast() {
         Browser.drive {
             page.spara()
         }

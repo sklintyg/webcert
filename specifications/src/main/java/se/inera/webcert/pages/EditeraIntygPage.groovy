@@ -17,7 +17,7 @@ class EditeraIntygPage extends AbstractEditCertPage {
         enhetsPostort(required: false) { $("#clinicInfoPostalCity") }
         enhetsTelefonnummer(required: false) { $("#clinicInfoPhone") }
         enhetsEpost(required: false) { $("#clinicInfoEmail") }
-        sparaBtn(required: false) { $("#spara-utkast") }
+        sparaKnapp(required: false) { $("#spara-utkast") }
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
         intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
         errorPanel { $("#error-panel") }
