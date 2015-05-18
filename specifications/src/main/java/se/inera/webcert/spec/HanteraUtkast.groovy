@@ -375,12 +375,7 @@ class HanteraUtkast {
             waitFor {
                 at EditeraIntygPage
             }
-            println("skrivUtBtn disabled : " + AbstractPage.isButtonDisabled(page.skrivUtBtn));
-            if(!AbstractPage.isButtonDisabled(page.sparaBtn)){
-                page.sparaBtn.click()
-            } else {
-                // utkast är redan sparat genom autospar
-            }
+            page.spara()
         }
     }
 

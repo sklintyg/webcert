@@ -144,16 +144,8 @@ class SkrivIntyg {
     }
 
     void sparaUtkast() {
-        // ocassionally the spara button has gone back to disabled becuase the auto save has already happened.
-        // we need to check if intygSparatVisas, if it has then we should not try clicking on
-        // the spara button.
         Browser.drive {
-            if(page.intygetSparatMeddelande != null && page.intygetSparatMeddelande.isDisplayed()){
-                println('auto save has happened!')
-            } else {
-                page.spara()
-                println('before auto save so click on the save button')
-            }
+            page.spara()
         }
     }
 
