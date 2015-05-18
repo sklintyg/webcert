@@ -394,7 +394,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional
-    public Utkast setForwardOnDraft(String intygsId, Boolean notified) {
+    public Utkast setNotifiedOnDraft(String intygsId, Boolean notified) {
 
         Utkast utkast = utkastRepository.findOne(intygsId);
 

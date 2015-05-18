@@ -9,7 +9,7 @@ describe('UnsignedCertCtrlSpec', function() {
     var controller;
     var mockResponse;
     var mockFactory;
-    var utkastNotifyService;
+    var ManageCertView;
 
     beforeEach(function() {
 
@@ -25,11 +25,14 @@ describe('UnsignedCertCtrlSpec', function() {
             var User = mockFactory.buildUserMinimal();
             $provide.value('common.User', User);
             $provide.value('common.dialogService', mockFactory.buildDialogService());
-            utkastNotifyService = jasmine.createSpyObj('common.utkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
+            var utkastNotifyService = jasmine.createSpyObj('common.utkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
             $provide.value('common.utkastNotifyService', utkastNotifyService);
             $provide.value('common.featureService', jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]));
             $provide.value('common.messageService', {});
             $provide.value('common.CertificateService', {});
+
+            ManageCertView = jasmine.createSpyObj('common.ManageCertView', [ 'onNotifyChange', 'notifyUtkast' ]);
+            $provide.value('common.ManageCertView', ManageCertView);
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
 
@@ -89,13 +92,13 @@ describe('UnsignedCertCtrlSpec', function() {
     describe('UnsignedCertCtrl QA forwarding', function() {
 
         it('should change forwarded state on a utkast when clicking a forward checkbox', function() {
-            $scope.onForwardedChange(mockResponse.utkast);
-            expect(utkastNotifyService.onNotifyChange).toHaveBeenCalled();
+            $scope.onNotifyChange(mockResponse.utkast);
+            expect(ManageCertView.onNotifyChange).toHaveBeenCalled();
         });
 
         it('should open external mail client when user wants to forward a utkast', function() {
             $scope.openMailDialog(mockResponse.utkast);
-            expect(utkastNotifyService.notifyUtkast).toHaveBeenCalled();
+            expect(ManageCertView.notifyUtkast).toHaveBeenCalled();
         });
     });
 
