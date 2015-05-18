@@ -394,7 +394,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional
-    public Utkast setForwardOnDraft(String intygsId, Boolean forwarded) {
+    public Utkast setForwardOnDraft(String intygsId, Boolean notified) {
 
         Utkast utkast = utkastRepository.findOne(intygsId);
 
@@ -403,7 +403,7 @@ public class UtkastServiceImpl implements UtkastService {
                     "Could not find Utkast with id: " + intygsId);
         }
 
-        utkast.setVidarebefordrad(forwarded);
+        utkast.setVidarebefordrad(notified);
 
         return saveDraft(utkast);
     }

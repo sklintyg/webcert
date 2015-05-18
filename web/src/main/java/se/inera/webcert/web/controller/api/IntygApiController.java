@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.certificate.model.common.internal.Vardenhet;
 import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -167,11 +166,11 @@ public class IntygApiController extends AbstractApiController {
     }
 
     /**
-     * Sets the forwarded flag on an Intyg.
+     * Sets the notified flag on an Intyg.
      *
      * @param intygsId
      *            Id of the Intyg
-     * @param forwarded
+     * @param notified
      *            True or False
      * @return
      *         Response
@@ -180,11 +179,11 @@ public class IntygApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/vidarebefordra")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setForwardOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, Boolean forwarded) {
+    public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, Boolean notified) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
-        Utkast updatedIntyg = utkastService.setForwardOnDraft(intygsId, forwarded);
+        Utkast updatedIntyg = utkastService.setNotifiedOnDraft(intygsId, notified);
 
         LOG.debug("Set forward to {} on intyg {} with id '{}'",
                 new Object[] { updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId() });

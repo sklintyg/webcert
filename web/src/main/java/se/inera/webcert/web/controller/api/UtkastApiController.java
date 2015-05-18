@@ -96,7 +96,7 @@ public class UtkastApiController extends AbstractApiController {
             utkastFilter.setSavedFrom(filterParameters.getSavedFrom());
             utkastFilter.setSavedTo(filterParameters.getSavedTo());
             utkastFilter.setSavedByHsaId(filterParameters.getSavedBy());
-            utkastFilter.setForwarded(filterParameters.getForwarded());
+            utkastFilter.setNotified(filterParameters.getNotified());
             utkastFilter.setPageSize(filterParameters.getPageSize() == null ? DEFAULT_PAGE_SIZE : filterParameters.getPageSize());
             utkastFilter.setStartFrom(filterParameters.getStartFrom() == null ? 0 : filterParameters.getStartFrom());
         }

@@ -74,8 +74,8 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
             pred = builder.and(pred, root.<UtkastStatus>get("status").in(filter.getStatusList()));
         }
 
-        if (filter.getForwarded() != null) {
-            pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getForwarded()));
+        if (filter.getNotified() != null) {
+            pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getNotified()));
         }
 
         if (filter.getSavedFrom() != null) {

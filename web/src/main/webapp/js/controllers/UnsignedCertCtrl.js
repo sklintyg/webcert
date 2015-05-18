@@ -3,9 +3,9 @@
  */
 angular.module('webcert').controller('webcert.UnsignedCertCtrl',
     [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'webcert.ManageCertificate', 'common.User', 'common.utkastNotifyService', 'common.DateUtilsService',
+        'webcert.ManageCertificate', 'common.User', 'common.utkastNotifyService', 'common.DateUtilsService', 'common.ManageCertView',
         function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService, ManageCertificate,
-            User, utkastNotifyService, dateUtilsService) {
+            User, utkastNotifyService, dateUtilsService, ManageCertView) {
             'use strict';
 
             // Constant settings
@@ -50,7 +50,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 startFrom: 0,
                 pageSize: PAGE_SIZE,
                 filter: {
-                    forwarded: undefined, // 3-state, undefined, true, false
+                    notified: undefined, // 3-state, undefined, true, false
                     complete: undefined, // 3-state, undefined, true, false
                     savedFrom: undefined,
                     savedTo: undefined,
@@ -60,7 +60,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             // Default view filter form widget states
             var defaultFilterFormData = {
-                forwarded: 'default',
+                notified: 'default',
                 complete: 'default',
                 lastFilterQuery: defaultFilterQuery
             };
@@ -97,9 +97,11 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 $scope.widgetState.currentList = data.results;
                 $scope.widgetState.totalCount = data.totalCount;
 
-                // These need to be after doneloading or they won't be available sometimes.
-                dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-from']);
-                dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-to']);
+                $timeout(function() {
+                    // These need to be loaded later and after doneloading or they won't be available sometimes.
+                    dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-from']);
+                    dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-to']);
+                }, 500);
 
             }, function() {
                 $log.debug('Query Error');
@@ -146,8 +148,8 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 converted.enhetsId = filterQuery.enhetsId;
                 converted.startFrom = filterQuery.startFrom;
                 converted.pageSize = filterQuery.pageSize;
-                converted.forwarded =
-                        $scope.filterForm.forwarded !== 'default' ? $scope.filterForm.forwarded : undefined;
+                converted.notified =
+                        $scope.filterForm.notified !== 'default' ? $scope.filterForm.notified : undefined;
                 converted.complete =
                         $scope.filterForm.complete !== 'default' ? $scope.filterForm.complete : undefined;
                 converted.savedFrom = $filter('date')(converted.savedFrom, 'yyyy-MM-dd');
@@ -242,32 +244,16 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             // Handle forwarding
             $scope.openMailDialog = function(cert) {
-
                 cert.updateState = {
-                    inProgress: true
+                    notifieraInProgress: false
                 };
-
-                var utkastNotifyRequest = {
-                    intygId : cert.id,
-                    intygType: cert.intygsTyp,
-                    vidarebefordrad: cert.vidarebefordrad,
-                    inProgress: cert.updateState.inProgress
-                };
-                utkastNotifyService.notifyUtkast(utkastNotifyRequest);
+                ManageCertView.notifyUtkast(cert.intygId, cert.intygType, cert.vidarebefordrad, cert.updateState);
             };
 
-            $scope.onForwardedChange = function(cert) {
-
+            $scope.onNotifyChange = function(cert) {
                 cert.updateState = {
-                    inProgress: true
+                    notifieraInProgress: false
                 };
-
-                var utkastNotifyRequest = {
-                    intygId : cert.id,
-                    intygType: cert.intygType,
-                    vidarebefordrad: cert.vidarebefordrad,
-                    inProgress: cert.updateState.inProgress
-                };
-                utkastNotifyService.onNotifyChange(utkastNotifyRequest);
+                ManageCertView.onNotifyChange(cert.intygId, cert.intygType, cert.vidarebefordrad, cert.updateState);
             };
         }]);

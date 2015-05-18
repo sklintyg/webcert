@@ -12,7 +12,7 @@ public class QueryIntygParameter {
 
     private String savedBy;
 
-    private Boolean forwarded;
+    private Boolean notified;
 
     private Boolean complete;
 
@@ -52,12 +52,12 @@ public class QueryIntygParameter {
         this.savedBy = savedBy;
     }
 
-    public Boolean getForwarded() {
-        return forwarded;
+    public Boolean getNotified() {
+        return notified;
     }
 
-    public void setForwarded(Boolean forwarded) {
-        this.forwarded = forwarded;
+    public void setNotified(Boolean notified) {
+        this.notified = notified;
     }
 
     public Boolean getComplete() {

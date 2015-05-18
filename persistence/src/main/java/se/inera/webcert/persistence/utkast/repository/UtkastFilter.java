@@ -13,7 +13,7 @@ public class UtkastFilter {
 
     private String savedByHsaId;
 
-    private Boolean forwarded;
+    private Boolean notified;
 
     private LocalDateTime savedFrom;
 
@@ -49,12 +49,12 @@ public class UtkastFilter {
         this.savedByHsaId = savedByHsaId;
     }
 
-    public Boolean getForwarded() {
-        return forwarded;
+    public Boolean getNotified() {
+        return notified;
     }
 
-    public void setForwarded(Boolean forwarded) {
-        this.forwarded = forwarded;
+    public void setNotified(Boolean notified) {
+        this.notified = notified;
     }
 
     public LocalDateTime getSavedFrom() {

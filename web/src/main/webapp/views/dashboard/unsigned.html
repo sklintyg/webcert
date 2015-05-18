@@ -27,16 +27,16 @@
                 <label class="col-sm-2 control-label">Utkast som är</label>
                 <div class="col-sm-10">
                   <label class="radio-inline">
-                    <input id="forwardedAll" name="forwarded" type="radio" ng-model="filterForm.forwarded"
+                    <input id="notifiedAll" name="notified" type="radio" ng-model="filterForm.notified"
                            value="default"> Alla utkast
                   </label>
                   <label class="radio-inline">
-                    <input id="forwarded" name="forwarded" type="radio" value="true" ng-model="filterForm.forwarded">
+                    <input id="notified" name="notified" type="radio" value="true" ng-model="filterForm.notified">
                     Vidarebefordrade
                   </label>
                   <label class="radio-inline">
-                    <input id="forwardedNot" name="forwarded" type="radio" value="false"
-                           ng-model="filterForm.forwarded"> Ej vidarebefordrade
+                    <input id="notifiedNot" name="notified" type="radio" value="false"
+                           ng-model="filterForm.notified"> Ej vidarebefordrade
                   </label>
                 </div>
               </div>
@@ -170,9 +170,9 @@
                       </button>
                     </td>
                     <td class="center">
-                      <input id="selected" type="checkbox" ng-disabled="cert.updateState.updateInProgress" ng-model="cert.vidarebefordrad"
-                             ng-change="onForwardedChange(cert)" />
-                      <span ng-if="cert.updateState.updateInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+                      <input id="selected" type="checkbox" ng-disabled="cert.updateState.notifieraInProgress" ng-model="cert.vidarebefordrad"
+                             ng-change="onNotifyChange(cert)" />
+                      <span ng-if="cert.updateState.notifieraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
                     </td>
                     <td class="unbreakable"><span message
                                                   key="certificatetypes.{{cert.intygType}}.typename"></span>
