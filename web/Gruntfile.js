@@ -132,7 +132,7 @@ module.exports = function(grunt) {
             tsdiabetes: {
                 cwd: __dirname + TSDIABETES_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + TSDIABETES_DIR +'/js/templates.js',
+                dest: __dirname + TSDIABETES_DIR + '/templates.js',
                 options:{
                     module: 'ts-diabetes',
                     url: function(url) {
@@ -143,7 +143,7 @@ module.exports = function(grunt) {
             tsbas: {
                 cwd: __dirname + TSBAS_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + TSBAS_DIR + '/js/templates.js',
+                dest: __dirname + TSBAS_DIR + '/templates.js',
                 options:{
                     module: 'ts-bas',
                     url: function(url) {
@@ -154,7 +154,7 @@ module.exports = function(grunt) {
             fk7263: {
                 cwd: __dirname + FK7263_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + FK7263_DIR + '/js/templates.js',
+                dest: __dirname + FK7263_DIR + '/templates.js',
                 options:{
                     module: 'fk7263',
                     url: function(url) {
@@ -208,18 +208,6 @@ module.exports = function(grunt) {
                                 '/web/webjars/ts-diabetes/webcert',
                                 connect.static(__dirname + TSDIABETES_DIR)
                             ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-bas/webcert',
-                                connect.static(__dirname +
-                                '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert')
-                            ) );
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-diabetes/webcert',
-                                connect.static(__dirname +
-                                '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert')
-                            ) );
                         middlewares.push(proxy);
                         return middlewares;
                     }
