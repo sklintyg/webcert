@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -22,15 +23,17 @@ import se.inera.webcert.web.service.WebCertUserService;
 import javax.ws.rs.core.Response;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-@Ignore
+//@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class IntygApiControllerTest {
 
@@ -47,6 +50,8 @@ public class IntygApiControllerTest {
 
     private static IntygItemListResponse intygItemListResponse = TestIntygFactory.createIntygItemListResponse(TestIntygFactory.createListWithIntygItems(), false);
 
+    private WebCertUser user;
+
     @Mock
     private WebCertUserService webCertUserService = mock(WebCertUserService.class);
 
@@ -62,11 +67,20 @@ public class IntygApiControllerTest {
     @Before
     public void setupExpectations() {
 
-        WebCertUser user = mock(WebCertUser.class);
+        mockUser();
+    }
 
-        when(webCertUserService.getWebCertUser()).thenReturn(user);
+    private void mockUser() {
+        user = mock(WebCertUser.class);
+        SelectableVardenhet vardenhet = mock(SelectableVardenhet.class);
+        when(vardenhet.getId()).thenReturn(ENHET_ID);
+
+        when(user.getValdVardenhet()).thenReturn(vardenhet);
+
         when(user.getIdsOfSelectedVardenhet()).thenReturn(ENHET_IDS);
         when(user.getValdVardenhet().getId()).thenReturn(ENHET_ID);
+
+        when(webCertUserService.getWebCertUser()).thenReturn(user);
     }
 
     @Test
@@ -83,6 +97,40 @@ public class IntygApiControllerTest {
         List<ListIntygEntry> res = (List<ListIntygEntry>) response.getEntity();
 
         assertNotNull(res);
-        assertEquals(4, res.size());
+        assertEquals(2, res.size());
     }
+
+    @Test
+    public void testListIntygWhenUserHasNoAssignments() {
+        when(user.getIdsOfSelectedVardenhet()).thenReturn(Collections.<String>emptyList());
+
+        Response response = intygCtrl.listDraftsAndIntygForPerson(PNR);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        verifyZeroInteractions(intygService);
+        verifyZeroInteractions(mockUtkastRepository);
+    }
+
+    @Test
+    public void testListIntygOfflineMode() {
+        IntygItemListResponse offlineIntygItemListResponse = TestIntygFactory.createIntygItemListResponse(TestIntygFactory.createListWithIntygItems(), true);
+
+        // Mock call to Intygstjanst
+        when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(offlineIntygItemListResponse);
+
+        // Mock call to database
+        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR, ENHET_IDS, DRAFT_STATUSES)).thenReturn(utkast);
+
+        Response response = intygCtrl.listDraftsAndIntygForPerson(PNR);
+
+        List<ListIntygEntry> res = (List<ListIntygEntry>) response.getEntity();
+
+        assertNotNull(res);
+        assertEquals(2, res.size());
+        assertEquals("true", response.getHeaderString("offline_mode"));
+    }
+
+
+
+
 }

@@ -174,7 +174,7 @@ public class IntygApiController extends AbstractApiController {
 
         Response.ResponseBuilder responseBuilder = Response.ok(allIntyg);
         if (intygItemListResponse.isOfflineMode()) {
-            responseBuilder = responseBuilder.header(OFFLINE_MODE, "true");
+            responseBuilder = responseBuilder.header(OFFLINE_MODE, Boolean.TRUE.toString());
         }
         return responseBuilder.build();
     }
