@@ -21,7 +21,7 @@ public interface UtkastService {
 
     List<Lakare> getLakareWithDraftsByEnhet(String enhetsId);
 
-    Utkast setNotifiedOnDraft(String intygsId, Boolean notified);
+    Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified);
 
     Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds);
 

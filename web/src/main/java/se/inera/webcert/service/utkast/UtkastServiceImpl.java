@@ -394,13 +394,19 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional
-    public Utkast setNotifiedOnDraft(String intygsId, Boolean notified) {
+    public Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified) {
 
         Utkast utkast = utkastRepository.findOne(intygsId);
 
         if (utkast == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "Could not find Utkast with id: " + intygsId);
+        }
+
+        // check that the draft hasn't been modified concurrently
+        if (utkast.getVersion() != version) {
+            LOG.debug("Utkast '{}' was concurrently modified", intygsId);
+            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
         }
 
         utkast.setVidarebefordrad(notified);

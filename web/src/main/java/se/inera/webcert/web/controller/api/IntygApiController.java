@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.OptimisticLockException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,6 +30,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygItem;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.utkast.CopyUtkastService;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
@@ -63,6 +65,9 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private CopyUtkastService copyUtkastService;
+
+    @Autowired
+    private MonitoringLogService monitoringLogService;
 
     public IntygApiController() {
 
@@ -176,14 +181,21 @@ public class IntygApiController extends AbstractApiController {
      *         Response
      */
     @PUT
-    @Path("/{intygsTyp}/{intygsId}/vidarebefordra")
+    @Path("/{intygsTyp}/{intygsId}/{version}/vidarebefordra")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, Boolean notified) {
+    public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+                                       @PathParam("version") long version, Boolean notified) {
 
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
 
-        Utkast updatedIntyg = utkastService.setNotifiedOnDraft(intygsId, notified);
+        Utkast updatedIntyg;
+        try {
+            updatedIntyg = utkastService.setNotifiedOnDraft(intygsId, version, notified);
+        } catch (OptimisticLockException e) {
+            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
 
         LOG.debug("Set forward to {} on intyg {} with id '{}'",
                 new Object[] { updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId() });
