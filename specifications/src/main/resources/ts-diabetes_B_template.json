@@ -1,5 +1,5 @@
 {
-    "id": "987654321",
+    "id": "987654111",
     "typ": "TS_DIABETES_U06_V02",
     "grundData": {
         "signeringsdatum": "2013-08-12T15:57:00.000",
@@ -114,7 +114,6 @@
             {"type": "DE", "selected": true},
             {"type": "TAXI", "selected": true}
         ],
-        "lakareSpecialKompetens" : "Kronologisk bastuberedning",
-        "lamplighetInnehaBehorighet" : "true"
+        "lakareSpecialKompetens" : "Kronologisk bastuberedning"
     }
 }
