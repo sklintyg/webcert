@@ -6,14 +6,22 @@ import se.inera.certificate.page.AbstractPage
 abstract class AbstractEditCertPage extends AbstractPage {
 
     def spara() {
+        println("------ spara!")
         waitFor {
             doneLoading()
         }
         if (sparaKnapp.isEnabled()) {
-            sparaKnapp.click()
+            println("about to click spara!")
+            try {
+                sparaKnapp.click()
+            } catch(all){
+                println('auto save happened real fast, button disabled and hence unclickable!')
+            }
             waitFor {
                 doneLoading()
             }
+        } else {
+            println("auto save happened! spara button was disabled...")
         }
     }
     

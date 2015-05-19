@@ -268,7 +268,7 @@ class SkrivIntyg {
 
     def oppnaDatePicker(){
         Browser.drive {
-            baserasPa.undersokningDatumToggle.click();
+            baserasPa.undersokningDatumToggle();
             waitFor {
                 page.doneLoading()
             }
