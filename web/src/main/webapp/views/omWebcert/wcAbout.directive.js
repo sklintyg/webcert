@@ -9,7 +9,7 @@ angular.module('webcert').directive('wcAbout',
             scope: {
                 menuDefsAbout: '@'
             },
-            templateUrl: '/js/directives/wcAbout.html',
+            templateUrl: '/views/omWebcert/wcAbout.directive.html',
             controller: function($scope) {
                 // Expose "now" as a model property for the template to render as todays date
                 $scope.today = new Date();

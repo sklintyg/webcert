@@ -65,7 +65,7 @@
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/min/moment.min.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>
-      <script type="text/javascript" src="/js/app.min.js?<spring:message code="buildNumber" />"></script>
+      <script type="text/javascript" src="/app.min.js?<spring:message code="buildNumber" />"></script>
     </c:when>
     <c:otherwise>
 	  <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.js"></script>
@@ -79,7 +79,7 @@
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/moment.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.js"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>
-      <script type="text/javascript" src="/js/app.js"></script>
+      <script type="text/javascript" src="/app.js"></script>
     </c:otherwise>
   </c:choose>
   <script type="text/javascript" src="/vendor/netid-1.0.5.js"></script>

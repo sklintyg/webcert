@@ -21,11 +21,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    var SRC_DIR = 'src/main/webapp/js/';
+    var SRC_DIR = 'src/main/webapp/';
     var TEST_DIR = 'src/test/js/';
 
     var webcert = grunt.file.readJSON(SRC_DIR + 'app-deps.json').map(function(file) {
-        return file.replace(/\/js\//g, SRC_DIR);
+        return file.replace(/\/views\//g, SRC_DIR);
     });
 
     webcert = [SRC_DIR + 'app.js'].concat(webcert);
@@ -119,9 +119,9 @@ module.exports = function(grunt) {
 
         ngtemplates : {
             webcert: {
-                cwd: __dirname + '/src/main/webapp/js/',
-                src: ['../views/**/*.html'],
-                dest: __dirname + '/src/main/webapp/js/templates.js',
+                cwd: __dirname + '/src/main/webapp/',
+                src: ['/views/**/*.html'],
+                dest: __dirname + '/src/main/webapp/templates.js',
                 options: {
                     module: 'webcert',
                     url: function(url) {
@@ -182,11 +182,6 @@ module.exports = function(grunt) {
                             connect().use(
                                 '/views',
                                 connect.static(__dirname + '/src/main/webapp/views')
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/js',
-                                connect.static(__dirname + '/src/main/webapp/js')
                             ));
                         middlewares.push(
                             connect().use(

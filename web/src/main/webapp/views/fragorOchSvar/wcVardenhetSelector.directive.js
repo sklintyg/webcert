@@ -7,7 +7,7 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                 restrict: 'A',
                 transclude: false,
                 replace: true,
-                templateUrl: '/js/directives/wcCareUnitClinicSelector.html',
+                templateUrl: '/views/fragorOchSvar/wcVardenhetSelector.directive.html',
                 controller: function($scope) {
 
                     $scope.units = User.getVardenhetFilterList(User.getValdVardenhet());
