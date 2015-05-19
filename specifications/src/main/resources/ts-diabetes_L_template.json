@@ -114,7 +114,6 @@
             {"type": "DE", "selected": true},
             {"type": "TAXI", "selected": true}
         ],
-        "lakareSpecialKompetens" : "Kronologisk bastuberedning",
-        "lamplighetInnehaBehorighet" : true
+        "lakareSpecialKompetens" : "Kronologisk bastuberedning"
     }
 }
