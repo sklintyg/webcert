@@ -169,7 +169,7 @@ class HanteraUtkast {
 
     boolean signeringKraverLakareVisas(boolean expected = true) {
         Browser.drive {
-            asType EditeraIntygPage
+            at EditeraIntygPage
             waitFor {
                 expected == page.signRequiresDoctorMessage.isDisplayed()
             }
@@ -179,7 +179,6 @@ class HanteraUtkast {
 
     boolean intygetSigneratMeddelandeVisas(boolean expected = true) {
         Browser.drive {
-            asType EditeraIntygPage
             waitFor {
                 expected == page.certificateIsSentToITMessage.isDisplayed()
             }
@@ -189,7 +188,7 @@ class HanteraUtkast {
 
     boolean intygetEjKomplettMeddelandeVisas(boolean expected = true) {
         Browser.drive {
-            asType EditeraIntygPage
+            at EditeraIntygPage
             waitFor {
                 expected == page.intygetEjKomplettMeddelande.isDisplayed()
             }
@@ -199,7 +198,7 @@ class HanteraUtkast {
 
     boolean intygetKomplettMeddelandeVisas(boolean expected = true) {
         Browser.drive {
-            asType EditeraIntygPage
+            at EditeraIntygPage
             waitFor {
                 expected == page.intygetSparatMeddelande.isDisplayed()
             }
