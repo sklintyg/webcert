@@ -2,17 +2,26 @@ package se.inera.webcert.pages
 
 import geb.Module
 import se.inera.certificate.page.AbstractPage
-import se.inera.certificate.spec.Browser
 
 abstract class AbstractEditCertPage extends AbstractPage {
 
-    boolean spara() {
-        Browser.drive {
-            if(!AbstractPage.isButtonDisabled(sparaKnapp)){
+    def spara() {
+        println("------ spara!")
+        waitFor {
+            doneLoading()
+        }
+        if (sparaKnapp.isEnabled()) {
+            println("about to click spara!")
+            try {
                 sparaKnapp.click()
-            } else {
-                // utkast är redan sparat genom autospar
+            } catch(all){
+                println('auto save happened real fast, button disabled and hence unclickable!')
             }
+            waitFor {
+                doneLoading()
+            }
+        } else {
+            println("auto save happened! spara button was disabled...")
         }
     }
     

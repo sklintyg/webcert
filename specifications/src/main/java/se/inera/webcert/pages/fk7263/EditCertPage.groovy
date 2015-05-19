@@ -109,6 +109,11 @@ class BaserasPaModule extends Module {
     def setUndersokning(value){
         undersokning.value(value.toBoolean());
     }
+
+    def undersokningDatumToggle(){
+        AbstractPage.scrollIntoView("undersokningAvPatientenDate-toggle");
+        undersokningDatumToggle.click();
+    }
 }
 
 class DiagnosModule extends Module {
