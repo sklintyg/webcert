@@ -79,69 +79,140 @@ class SkrivIntyg {
         result
     }
 
+    // --- validering
+
     boolean valideringsfelIntygBaseratPaVisas() {
-        def result
         Browser.drive{
-            result = page.valideringIntygBaseratPa.isDisplayed()
+            waitFor{
+                page.valideringIntygBaseratPa.isDisplayed()
+            }
         }
-        result
     }
     boolean valideringsfelDiagnosVisas() {
-        def result
-        Browser.drive{
-            result = page.valideringDiagnos.isDisplayed()
+        Browser.drive {
+            waitFor {
+                page.valideringDiagnos.isDisplayed()
+            }
         }
-        result
     }
     boolean valideringsfelFunktionsnedsattningVisas() {
-        def result
         Browser.drive{
-            result = page.valideringFunktionsnedsattning.isDisplayed()
+            waitFor {
+                page.valideringFunktionsnedsattning.isDisplayed()
+            }
         }
-        result
     }
     boolean valideringsfelAktivitetsbegransningVisas() {
-        def result
         Browser.drive{
-            result = page.valideringAktivitetsbegransning.isDisplayed()
+            waitFor {
+                page.valideringAktivitetsbegransning.isDisplayed()
+            }
         }
-        result
     }
     boolean valideringsfelSysselsattningVisas() {
-        def result
         Browser.drive{
-            result = page.valideringSysselsattning.isDisplayed()
+            waitFor{
+                page.valideringSysselsattning.isDisplayed();
+            }
         }
-        result
     }
     boolean valideringsfelArbetsformagaVisas() {
-        def result
         Browser.drive{
-            result = page.valideringArbetsformaga.isDisplayed()
+            waitFor{
+                page.valideringArbetsformaga.isDisplayed()
+            }
         }
-        result
     }
     boolean valideringsfelPrognosVisas() {
-        def result
         Browser.drive{
-            result = page.valideringPrognos.isDisplayed()
+            waitFor{
+                page.valideringPrognos.isDisplayed()
+            }
         }
-        result
     }
     boolean valideringsfelRekommendationerVisas() {
-        def result
         Browser.drive{
-            result = page.valideringRekommendationer.isDisplayed()
+            waitFor{
+                page.valideringRekommendationer.isDisplayed()
+            }
         }
-        result
     }
     boolean valideringsfelVardpersonVisas() {
-        def result
         Browser.drive{
-            result = page.valideringVardperson.isDisplayed()
+            waitFor {
+             page.valideringVardperson.isDisplayed()
+            }
         }
-        result
     }
+
+    // ---
+    boolean valideringsfelIntygBaseratPaEjVisas() {
+
+        Browser.drive{
+            waitFor{
+                !page.valideringIntygBaseratPa.isDisplayed()
+            }
+        }
+
+    }
+    boolean valideringsfelDiagnosEjVisas() {
+
+        Browser.drive{
+            waitFor{
+                !page.valideringDiagnos.isDisplayed()
+            }
+        }
+    }
+    boolean valideringsfelFunktionsnedsattningEjVisas() {
+        Browser.drive{
+            waitFor{
+                !page.valideringFunktionsnedsattning.isDisplayed()
+            }
+        }
+    }
+    boolean valideringsfelAktivitetsbegransningEjVisas() {
+        Browser.drive{
+            waitFor{
+                !page.valideringAktivitetsbegransning.isDisplayed()
+            }
+        }
+    }
+    boolean valideringsfelSysselsattningEjVisas() {
+        Browser.drive{
+            waitFor{
+                !page.valideringSysselsattning.isDisplayed()
+            }
+        }
+    }
+    boolean valideringsfelArbetsformagaEjVisas() {
+        Browser.drive{
+            waitFor{
+                !page.valideringArbetsformaga.isDisplayed()
+            }
+        }
+    }
+    boolean valideringsfelPrognosEjVisas() {
+        Browser.drive{
+            waitFor{
+                !page.valideringPrognos.isDisplayed()
+            }
+        }
+    }
+    boolean valideringsfelRekommendationerEjVisas() {
+        Browser.drive{
+            waitFor{
+                !page.valideringRekommendationer.isDisplayed()
+            }
+        }
+    }
+    boolean valideringsfelVardpersonEjVisas() {
+        Browser.drive{
+            waitFor{
+                !page.valideringVardperson.isDisplayed()
+            }
+        }
+    }
+    // ------- validering end
 
     void sparaUtkast() {
         Browser.drive {
