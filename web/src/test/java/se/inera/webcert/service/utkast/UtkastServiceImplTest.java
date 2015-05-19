@@ -1,8 +1,6 @@
 package se.inera.webcert.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -360,6 +358,33 @@ public class UtkastServiceImplTest {
         request.setSavedBy(hoSPerson);
         request.setAutoSave(false);
         return request;
+    }
+
+    @Test
+    public void testNotifyDraft() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+
+        draftService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion(), true);
+
+        assertTrue(utkast.getVidarebefordrad());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testNotifyDraftThatDoesNotExist() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
+
+        draftService.setNotifiedOnDraft(INTYG_ID, 0, true);
+    }
+
+    @Test(expected = OptimisticLockException.class)
+    public void testNotifyDraftWrongVersion() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+
+        draftService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
     }
 
 }

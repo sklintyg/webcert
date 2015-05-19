@@ -394,7 +394,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional
-    public Utkast setForwardOnDraft(String intygsId, Boolean forwarded) {
+    public Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified) {
 
         Utkast utkast = utkastRepository.findOne(intygsId);
 
@@ -403,7 +403,13 @@ public class UtkastServiceImpl implements UtkastService {
                     "Could not find Utkast with id: " + intygsId);
         }
 
-        utkast.setVidarebefordrad(forwarded);
+        // check that the draft hasn't been modified concurrently
+        if (utkast.getVersion() != version) {
+            LOG.debug("Utkast '{}' was concurrently modified", intygsId);
+            throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
+        }
+
+        utkast.setVidarebefordrad(notified);
 
         return saveDraft(utkast);
     }
