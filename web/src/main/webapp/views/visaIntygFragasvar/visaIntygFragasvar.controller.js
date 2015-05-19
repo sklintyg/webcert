@@ -41,7 +41,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
                                     dialogId: 'qa-check-hanterad-dialog',
                                     titleId: 'label.qacheckhanterad.title',
                                     bodyTextId: 'label.qacheckhanterad.body',
-                                    templateUrl: '/views/partials/qa-check-hanterad-dialog.html',
+                                    templateUrl: '/partials/qa-check-hanterad-dialog.html',
                                     button1click: function() {
                                         $window.doneLoading = false; // should be resolved in the ajax callback in QACtrl
                                         var deferred = $q.defer();
