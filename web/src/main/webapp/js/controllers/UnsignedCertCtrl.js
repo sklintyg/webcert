@@ -97,10 +97,11 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 $scope.widgetState.currentList = data.results;
                 $scope.widgetState.totalCount = data.totalCount;
 
-                // These need to be after doneloading or they won't be available sometimes.
-                dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-from']);
-                dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-to']);
-
+                $timeout(function() {
+                    // These need to be after doneloading or they won't be available sometimes.
+                    dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-from']);
+                    dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-to']);
+                });
             }, function() {
                 $log.debug('Query Error');
                 $scope.widgetState.doneLoading = true;
@@ -242,16 +243,34 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             // Handle forwarding
             $scope.openMailDialog = function(cert) {
-                cert.updateState = {
-                    vidarebefordradInProgress: true
+                var utkastNotifyRequest = {
+                    intygId : cert.intygId,
+                    intygType: cert.intygType,
+                    intygVersion: cert.version,
+                    vidarebefordrad: cert.vidarebefordrad,
+                    updateFunc: function(vidarebefordrad, version) {
+                        cert.vidarebefordrad = vidarebefordrad;
+                        if (version) {
+                            cert.version = version;
+                        }
+                    }
                 };
-                intygNotifyService.forwardIntyg(cert, cert.updateState);
+                intygNotifyService.forwardIntyg(utkastNotifyRequest);
             };
 
             $scope.onForwardedChange = function(cert) {
-                cert.updateState = {
-                    vidarebefordradInProgress: true
+                var utkastNotifyRequest = {
+                    intygId : cert.intygId,
+                    intygType: cert.intygType,
+                    intygVersion: cert.version,
+                    vidarebefordrad: cert.vidarebefordrad,
+                    updateFunc: function(vidarebefordrad, version) {
+                        cert.vidarebefordrad = vidarebefordrad;
+                        if (version) {
+                            cert.version = version;
+                        }
+                    }
                 };
-                intygNotifyService.onForwardedChange(cert, cert.updateState);
+                intygNotifyService.onForwardedChange(utkastNotifyRequest);
             };
         }]);
