@@ -1,4 +1,4 @@
-angular.module('webcert').factory('webcert.ManageCertificate',
+angular.module('webcert').factory('webcert.UtkastProxy',
     [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
         'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.CertificateService',
         function($q, $http, $stateParams, $log, $location, $window, $timeout, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
@@ -8,7 +8,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             /**
              * Load list of all certificates types
              */
-            function _getCertTypes(onSuccess, onError) {
+            function _getUtkastTypes(onSuccess, onError) {
                 var restPath = '/api/modules/map';
                 $http.get(restPath).success(function(data) {
                     $log.debug('got data:', data);
@@ -34,7 +34,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             /**
              * Get intyg type data
              */
-            function _getCertType(intygType, onSuccess) {
+            function _getUtkastType(intygType, onSuccess) {
 
                 _getCertTypes(function(types) {
 
@@ -51,26 +51,10 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             }
 
             /*
-             * Load certificate list of all certificates for a person
-             */
-            function _getCertificatesForPerson(personId, onSuccess, onError) {
-                $log.debug('_getCertificatesForPerson type:' + personId);
-                var restPath = '/api/intyg/person/' + personId;
-                $http.get(restPath).success(function(data) {
-                    $log.debug('got data:' + data);
-                    onSuccess(data);
-                }).error(function(data, status) {
-                    $log.error('error ' + status);
-                    // Let calling code handle the error of no data response
-                    onError(status);
-                });
-            }
-
-            /*
              * Load unsigned certificate list for valdVardenhet
              */
-            function _getUnsignedCertificates(onSuccess, onError) {
-                $log.debug('_getUnsignedCertificates:');
+            function _getUtkastList(onSuccess, onError) {
+                $log.debug('_getUtkastList:');
                 var restPath = '/api/utkast/'; // release version
                 $http.get(restPath).success(function(data) {
                     $log.debug('got data:' + data);
@@ -85,8 +69,8 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             /*
              * Load more unsigned certificates by query
              */
-            function _getUnsignedCertificatesByQueryFetchMore(query, onSuccess, onError) {
-                $log.debug('_getUnsignedCertificatesByQueryFetchMore');
+            function _getUtkastFetchMore(query, onSuccess, onError) {
+                $log.debug('_getUtkastFetchMore');
                 var restPath = '/api/utkast';
                 $http.get(restPath, { params: query }).success(function(data) {
                     $log.debug('_getUnsignedCertificatesByQueryFetchMore got data:' + data);
@@ -98,7 +82,7 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _getCertificateSavedByList(onSuccess, onError) {
+            function _getUtkastSavedByList(onSuccess, onError) {
                 $log.debug('_getCertificateSavedByList');
                 var restPath = '/api/utkast/lakare/';
                 $http.get(restPath).success(function(data) {
@@ -344,12 +328,12 @@ angular.module('webcert').factory('webcert.ManageCertificate',
 
             // Return public API for the service
             return {
-                getCertTypes: _getCertTypes,
-                getCertType: _getCertType,
-                getCertificatesForPerson: _getCertificatesForPerson,
-                getUnsignedCertificates: _getUnsignedCertificates,
-                getUnsignedCertificatesByQueryFetchMore: _getUnsignedCertificatesByQueryFetchMore,
-                getCertificateSavedByList: _getCertificateSavedByList,
+                getUtkastTypes: _getUtkastTypes,
+                getUtkastType: _getUtkastType,
+                getUtkastList: _getUtkastList,
+                getUtkastFetchMore: _getUtkastFetchMore,
+                getUtkastSavedByList: _getUtkastSavedByList,
+
                 makulera: _makulera,
                 send: _send,
                 COPY_DIALOG_COOKIE: _COPY_DIALOG_COOKIE,

@@ -2,7 +2,8 @@ describe('ChooseCertTypeCtrl', function() {
     'use strict';
 
     var $controller;
-    var ManageCertificate;
+    var UtkastProxy;
+    var IntygProxy;
     var $scope;
     var $location;
 
@@ -12,8 +13,11 @@ describe('ChooseCertTypeCtrl', function() {
             var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
             $provide.value('common.statService', statService);
 
-            ManageCertificate = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getCertTypes', 'getCertificatesForPerson', 'initCopyDialog' ]);
-            $provide.value('webcert.ManageCertificate', ManageCertificate);
+            UtkastProxy = jasmine.createSpyObj('webcert.UtkastProxy', [ 'getUtkastTypes', 'initCopyDialog' ]);
+            $provide.value('webcert.UtkastProxy', UtkastProxy);
+
+            IntygProxy = jasmine.createSpyObj('webcert.IntygProxy', [ 'getIntygForPatient' ]);
+            $provide.value('webcert.IntygProxy', IntygProxy);
 
             $provide.value('common.IntygCopyRequestModel', {});
         });

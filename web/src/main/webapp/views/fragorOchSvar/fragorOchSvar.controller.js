@@ -3,9 +3,9 @@
  */
 angular.module('webcert').controller('webcert.UnhandledQACtrl',
     ['$rootScope', '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'common.fragaSvarCommonService', 'webcert.ManageCertificate', 'webcert.QuestionAnswer',
+        'common.fragaSvarCommonService', 'webcert.QuestionAnswer',
         function($rootScope, $cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService,
-            fragaSvarCommonService, ManageCertificate, QuestionAnswer) {
+            fragaSvarCommonService, QuestionAnswer) {
             'use strict';
 
             var PAGE_SIZE = 10;

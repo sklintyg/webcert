@@ -3,8 +3,8 @@
  */
 angular.module('webcert').controller('webcert.UnsignedCertCtrl',
     [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'webcert.ManageCertificate', 'common.User', 'common.utkastNotifyService', 'common.DateUtilsService', 'common.ManageCertView',
-        function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService, ManageCertificate,
+        'webcert.UtkastProxy', 'common.User', 'common.utkastNotifyService', 'common.DateUtilsService', 'common.ManageCertView',
+        function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService, UtkastProxy,
             User, utkastNotifyService, dateUtilsService, ManageCertView) {
             'use strict';
 
@@ -90,7 +90,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             loadFilterForm();
             $scope.widgetState.doneLoading = false;
 
-            ManageCertificate.getUnsignedCertificates(function(data) {
+            UtkastProxy.getUtkastList(function(data) {
 
                 $scope.widgetState.doneLoading = true;
                 $scope.widgetState.activeErrorMessageKey = null;
@@ -126,7 +126,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
                 $scope.widgetState.loadingSavedByList = true;
 
-                ManageCertificate.getCertificateSavedByList(function(list) {
+                UtkastProxy.getUtkastSavedByList(function(list) {
                     $scope.widgetState.loadingSavedByList = false;
                     $scope.widgetState.savedByList = list;
                     if (list && (list.length > 0)) {
@@ -202,7 +202,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
 
                 $scope.widgetState.runningQuery = true;
-                ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function(successData) {
+                UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
                     $scope.widgetState.runningQuery = false;
                     $scope.widgetState.currentList = successData.results;
                     $scope.widgetState.totalCount = successData.totalCount;
@@ -226,7 +226,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 var filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
                 $scope.widgetState.fetchingMoreInProgress = true;
 
-                ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function(successData) {
+                UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
                     $scope.widgetState.fetchingMoreInProgress = false;
                     for (var i = 0; i < successData.results.length; i++) {
                         $scope.widgetState.currentList.push(successData.results[i]);

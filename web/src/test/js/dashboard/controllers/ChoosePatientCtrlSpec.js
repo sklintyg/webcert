@@ -13,7 +13,7 @@ describe('ChoosePatientCtrl', function() {
 /*            var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
             $provide.value('common.statService', statService);
 
-            ManageCertificate = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getCertTypes', 'getCertificatesForPerson', 'initCopyDialog' ]);
+            ManageCertificate = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getUtkastTypes', 'getIntygForPatient', 'initCopyDialog' ]);
             $provide.value('webcert.ManageCertificate', ManageCertificate);
 
             $provide.value('common.IntygCopyRequestModel', {});*/

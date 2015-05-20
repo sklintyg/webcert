@@ -3,8 +3,8 @@
  */
 angular.module('webcert').controller('webcert.ViewCertCtrl',
     [ '$rootScope', '$stateParams', '$scope', '$window', '$location', '$q', 'common.dialogService',
-        'webcert.ManageCertificate', 'common.UserPreferencesService', 'common.fragaSvarCommonService', 'common.featureService',
-        function($rootScope, $stateParams, $scope, $window, $location, $q, dialogService, ManageCertificate,
+        'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.fragaSvarCommonService', 'common.featureService',
+        function($rootScope, $stateParams, $scope, $window, $location, $q, dialogService, UtkastProxy,
                  UserPreferencesService, fragaSvarCommonService, featureService) {
             'use strict';
 
@@ -82,7 +82,7 @@ angular.module('webcert').controller('webcert.ViewCertCtrl',
             });
             $scope.$on('$destroy', unbindCheckHandledEvent);
 
-            ManageCertificate.getCertType($stateParams.certificateType, function(intygType) {
+            UtkastProxy.getUtkastType($stateParams.certificateType, function(intygType) {
                 $scope.widgetState.fragaSvarAvailable = intygType.fragaSvarAvailable;
                 $scope.widgetState.printStatus = intygType.printStatus;
             });

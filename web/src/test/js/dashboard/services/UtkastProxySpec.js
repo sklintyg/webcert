@@ -1,7 +1,7 @@
-describe('ManageCertificate', function() {
+describe('UtkastProxy', function() {
     'use strict';
 
-    var ManageCertificate;
+    var UtkastProxy;
     var $httpBackend;
     var featureService;
     var dialogService;
@@ -44,13 +44,13 @@ describe('ManageCertificate', function() {
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.ManageCertificate', '$httpBackend', '$cookieStore',
+    beforeEach(angular.mock.inject(['webcert.UtkastProxy', '$httpBackend', '$cookieStore',
         '$q', '$location',
         '$timeout', 'common.messageService',
-        function(_ManageCertificate_, _$httpBackend_, _$cookieStore_,
+        function(_UtkastProxy_, _$httpBackend_, _$cookieStore_,
             _$q_,
             _$location_, _$timeout_, _messageService_) {
-            ManageCertificate = _ManageCertificate_;
+            UtkastProxy = _UtkastProxy_;
             $httpBackend = _$httpBackend_;
             $cookieStore = _$cookieStore_;
             $location = _$location_;
@@ -61,7 +61,7 @@ describe('ManageCertificate', function() {
             };
         }]));
 
-    describe('#getCertTypes', function() {
+    describe('#getUtkastTypes', function() {
 
         it('should call onSuccess callback with list of cert types from the server', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
@@ -86,7 +86,7 @@ describe('ManageCertificate', function() {
                 }
             ]);
 
-            ManageCertificate.getCertTypes(onSuccess, onError);
+            UtkastProxy.getUtkastTypes(onSuccess, onError);
             $httpBackend.flush();
 
             expect(onSuccess).toHaveBeenCalledWith([
@@ -116,46 +116,7 @@ describe('ManageCertificate', function() {
             var onError = jasmine.createSpy('onError');
             $httpBackend.expectGET('/api/modules/map').respond(500);
 
-            ManageCertificate.getCertTypes(onSuccess, onError);
-            $httpBackend.flush();
-
-            expect(onSuccess).not.toHaveBeenCalled();
-            expect(onError).toHaveBeenCalled();
-        });
-    });
-
-    describe('#getCertificatesForPerson', function() {
-
-        var personId;
-        beforeEach(function() {
-            personId = '19121212-1212';
-        });
-
-        it('should call onSuccess callback with list of certificates for person from the server', function() {
-            var onSuccess = jasmine.createSpy('onSuccess');
-            var onError = jasmine.createSpy('onError');
-
-            featureService.isFeatureActive.and.returnValue(true);
-
-            $httpBackend.expectGET('/api/intyg/person/' + personId).respond([
-                { 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false }
-            ]);
-
-            ManageCertificate.getCertificatesForPerson(personId, onSuccess, onError);
-            $httpBackend.flush();
-
-            expect(onSuccess).toHaveBeenCalledWith([
-                { 'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false }
-            ]);
-            expect(onError).not.toHaveBeenCalled();
-        });
-
-        it('should call onError if the list cannot be fetched from the server', function() {
-            var onSuccess = jasmine.createSpy('onSuccess');
-            var onError = jasmine.createSpy('onError');
-            $httpBackend.expectGET('/api/intyg/person/' + personId).respond(500);
-
-            ManageCertificate.getCertificatesForPerson(personId, onSuccess, onError);
+            UtkastProxy.getUtkastTypes(onSuccess, onError);
             $httpBackend.flush();
 
             expect(onSuccess).not.toHaveBeenCalled();
@@ -200,27 +161,27 @@ describe('ManageCertificate', function() {
 
         it('should immediately request a utkast copy of cert if the copy cookie is set', function() {
 
-            $cookieStore.put(ManageCertificate.COPY_DIALOG_COOKIE, true);
+            $cookieStore.put(UtkastProxy.COPY_DIALOG_COOKIE, true);
 
             $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
                 {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
             );
-            ManageCertificate.copy($scope.viewState, cert);
+            UtkastProxy.copy($scope.viewState, cert);
             $httpBackend.flush();
             $timeout.flush();
             expect(dialogService.showDialog).not.toHaveBeenCalled();
             expect($location.path).toHaveBeenCalledWith('/fk7263/edit/nytt-utkast-id', true);
 
-            $cookieStore.remove(ManageCertificate.COPY_DIALOG_COOKIE);
+            $cookieStore.remove(UtkastProxy.COPY_DIALOG_COOKIE);
         });
 
         it('should show the copy dialog if the copy cookie is not set', function() {
 
-            $cookieStore.remove(ManageCertificate.COPY_DIALOG_COOKIE);
+            $cookieStore.remove(UtkastProxy.COPY_DIALOG_COOKIE);
             $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
                 {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
             );
-            ManageCertificate.copy($scope.viewState, cert);
+            UtkastProxy.copy($scope.viewState, cert);
             $httpBackend.flush();
             $timeout.flush();
 
@@ -247,7 +208,7 @@ describe('ManageCertificate', function() {
             $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
                 {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
             );
-            ManageCertificate.__test__.createCopyDraft(cert, onSuccess, onError);
+            UtkastProxy.__test__.createCopyDraft(cert, onSuccess, onError);
             $httpBackend.flush();
 
             expect(onSuccess).toHaveBeenCalledWith({'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'});

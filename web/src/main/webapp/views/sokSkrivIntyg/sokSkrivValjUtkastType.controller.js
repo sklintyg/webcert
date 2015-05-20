@@ -1,8 +1,8 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
     [ '$window', '$filter', '$location', '$log', '$scope', '$cookieStore', '$stateParams', 'webcert.CreateCertificateDraft',
-        'webcert.ManageCertificate', 'common.IntygCopyRequestModel',
+        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygCopyRequestModel',
         function($window, $filter, $location, $log, $scope, $cookieStore, $stateParams, CreateCertificateDraft,
-            ManageCertificate, IntygCopyRequestModel) {
+            IntygProxy, UtkastProxy, IntygCopyRequestModel) {
             'use strict';
 
             /**
@@ -50,14 +50,13 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 }
 
                 // Load cert types user can choose from
-                ManageCertificate.getCertTypes(function(types) {
-
+                UtkastProxy.getUtkastTypes(function(types) {
                     $scope.certTypes = types;
                     $scope.intygType = CreateCertificateDraft.intygType;
                 });
 
                 // Load certs for person with specified pnr
-                ManageCertificate.getCertificatesForPerson($scope.personnummer, function(data) {
+                IntygProxy.getIntygForPatient($scope.personnummer, function(data) {
                     $scope.viewState.doneLoading = false;
                     $scope.viewState.certListUnhandled = data;
                     $scope.updateCertList();
