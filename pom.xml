@@ -11,7 +11,7 @@
 
   <groupId>se.inera.intyg.webcert</groupId>
   <artifactId>webcert</artifactId>
-  <version>3.1.0-RC1</version>
+  <version>0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Webcert</name>
@@ -19,11 +19,11 @@
   <properties>
 
     <!-- Common -->
-    <common.version>2.2.0-RC1</common.version>
+    <common.version>0-SNAPSHOT</common.version>
     <common.version.range>(,2.2.0]</common.version.range>
 
     <!-- Intygstyper -->
-    <intygstyper.version>2.2.0-RC1</intygstyper.version>
+    <intygstyper.version>0-SNAPSHOT</intygstyper.version>
     <intygstyper.version.range>(,2.2.0]</intygstyper.version.range>
 
     <!-- Schemas -->
@@ -32,13 +32,13 @@
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
 
-    <intyg-clinicalprocess.version>1.0.0-a172</intyg-clinicalprocess.version>
+    <intyg-clinicalprocess.version>0-SNAPSHOT</intyg-clinicalprocess.version>
     <intyg-clinicalprocess.version.range>(,1.0.0]</intyg-clinicalprocess.version.range>
 
-    <intyg-insuranceprocess.version>1.0.0-a172</intyg-insuranceprocess.version>
+    <intyg-insuranceprocess.version>0-SNAPSHOT</intyg-insuranceprocess.version>
     <intyg-insuranceprocess.version.range>(,1.0.0]</intyg-insuranceprocess.version.range>
 
-    <intyg-transportstyrelsen.version>1.0.0-RC1</intyg-transportstyrelsen.version>
+    <intyg-transportstyrelsen.version>0-SNAPSHOT</intyg-transportstyrelsen.version>
     <intyg-transportstyrelsen.version.range>(,1.0.0]</intyg-transportstyrelsen.version.range>
 
   </properties>
