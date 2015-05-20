@@ -143,14 +143,14 @@ $.get('/api/modules/map').then(function(modules) {
     var modulePromises = [];
 
     if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'true') {
-        modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/js/module.min.js?' +
+        modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.min.js?' +
         MODULE_CONFIG.BUILD_NUMBER));
         // All dependencies in module-deps.json are included in module.min.js
         // All dependencies in app-deps.json are included in app.min.js
 
     } else {
-        modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/js/module.js'));
-        modulePromises.push($.get('/web/webjars/common/webcert/js/module-deps.json'));
+        modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.js'));
+        modulePromises.push($.get('/web/webjars/common/webcert/module-deps.json'));
         modulePromises.push($.get('/app-deps.json'));
 
         // Prevent jQuery from appending cache buster to the url to make it easier to debug.
