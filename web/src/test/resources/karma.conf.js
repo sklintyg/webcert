@@ -37,7 +37,7 @@ module.exports = function(config) {
             { pattern: TEST_DIR + '**/*Spec.js' }
         ],
 
-        exclude: [ SRC_DIR + 'app.js', SRC_DIR + 'app.min.js' ],
+        exclude: [ SRC_DIR + 'app.js', SRC_DIR + 'app.min.js', SRC_DIR + '/js/app.js', SRC_DIR + '/js/app.min.js' ],
 
         // web server port
         port: 9876,

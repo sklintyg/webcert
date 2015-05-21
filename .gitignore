@@ -22,5 +22,7 @@ web/node_modules/
 web/src/main/webapp/js/coverage/
 web/src/main/webapp/js/app.min.js
 web/src/main/webapp/js/templates.js
+web/src/main/webapp/app.min.js
+web/src/main/webapp/templates.js
 web/src/test/js/coverage/
 web/src/test/coverage/
