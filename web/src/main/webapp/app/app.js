@@ -151,7 +151,7 @@ $.get('/api/modules/map').then(function(modules) {
     } else {
         modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.js'));
         modulePromises.push($.get('/web/webjars/common/webcert/module-deps.json'));
-        modulePromises.push($.get('/app-deps.json'));
+        modulePromises.push($.get('/app/app-deps.json'));
 
         // Prevent jQuery from appending cache buster to the url to make it easier to debug.
         $.ajaxSetup({
