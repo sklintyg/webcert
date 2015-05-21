@@ -3,9 +3,9 @@
  */
 angular.module('webcert').controller('webcert.UnsignedCertCtrl',
     [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'webcert.UtkastProxy', 'common.User', 'common.utkastNotifyService', 'common.DateUtilsService', 'common.ManageCertView',
+        'webcert.UtkastProxy', 'common.User', 'common.utkastNotifyService', 'common.DateUtilsService',
         function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService, UtkastProxy,
-            User, utkastNotifyService, dateUtilsService, ManageCertView) {
+            User, utkastNotifyService, dateUtilsService) {
             'use strict';
 
             // Constant settings
@@ -247,13 +247,13 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 utkast.updateState = {
                     vidarebefordraInProgress: false
                 };
-                ManageCertView.notifyUtkast(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
+                utkastNotifyService.notifyUtkast(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
             };
 
             $scope.onNotifyChange = function(utkast) {
                 utkast.updateState = {
                     vidarebefordraInProgress: false
                 };
-                ManageCertView.onNotifyChange(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
+                utkastNotifyService.onNotifyChange(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
             };
         }]);

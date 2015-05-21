@@ -9,7 +9,7 @@ describe('UnsignedCertCtrlSpec', function() {
     var controller;
     var mockResponse;
     var mockFactory;
-    var ManageCertView;
+    var utkastNotifyService;
 
     beforeEach(function() {
 
@@ -25,14 +25,11 @@ describe('UnsignedCertCtrlSpec', function() {
             var User = mockFactory.buildUserMinimal();
             $provide.value('common.User', User);
             $provide.value('common.dialogService', mockFactory.buildDialogService());
-            var utkastNotifyService = jasmine.createSpyObj('common.utkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
+            utkastNotifyService = jasmine.createSpyObj('common.utkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
             $provide.value('common.utkastNotifyService', utkastNotifyService);
             $provide.value('common.featureService', jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]));
             $provide.value('common.messageService', {});
             $provide.value('common.CertificateService', {});
-
-            ManageCertView = jasmine.createSpyObj('common.ManageCertView', [ 'onNotifyChange', 'notifyUtkast' ]);
-            $provide.value('common.ManageCertView', ManageCertView);
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
 
@@ -93,12 +90,12 @@ describe('UnsignedCertCtrlSpec', function() {
 
         it('should change forwarded state on a utkast when clicking a forward checkbox', function() {
             $scope.onNotifyChange(mockResponse.utkast);
-            expect(ManageCertView.onNotifyChange).toHaveBeenCalled();
+            expect(utkastNotifyService.onNotifyChange).toHaveBeenCalled();
         });
 
         it('should open external mail client when user wants to forward a utkast', function() {
             $scope.openMailDialog(mockResponse.utkast);
-            expect(ManageCertView.notifyUtkast).toHaveBeenCalled();
+            expect(utkastNotifyService.notifyUtkast).toHaveBeenCalled();
         });
     });
 

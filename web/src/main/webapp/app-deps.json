@@ -16,7 +16,7 @@
     "/views/sokSkrivIntyg/sokSkrivIntygStart.controller.js",
     "/views/sokSkrivIntyg/wcVisited.directive.js",
     "/views/sokSkrivIntyg/tidigareIntyg.filter.js",
-    "/views/sokSkrivIntyg/sokSkrivIntyg.service.js",
+    "/views/sokSkrivIntyg/patient.model.js",
     "/views/visaIntygFragasvar/visaIntygFragasvar.controller.js",
     "/views/visaIntygFragasvar/wcInsertIntyg.directive.js",
     "/views/visaIntygFragasvar/wcInsertFragasvar.directive.js"

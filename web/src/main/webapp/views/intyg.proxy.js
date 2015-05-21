@@ -1,6 +1,6 @@
 angular.module('webcert').factory('webcert.IntygProxy',
-    [ '$http', '$stateParams', '$log',
-        function($http, $stateParams, $log) {
+    [ '$http', '$stateParams', '$log', 'common.statService',
+        function($http, $stateParams, $log, statService) {
             'use strict';
 
              /*

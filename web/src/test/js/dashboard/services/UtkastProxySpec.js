@@ -9,6 +9,13 @@ describe('UtkastProxy', function() {
     var $location;
     var $timeout;
     var $q;
+    var statService;
+
+    var createDraftRequestPayload = {
+        'intygType':'fk7263','patientPersonnummer':'19121212-1212','patientFornamn':'Test',
+        'patientMellannamn':'Svensson','patientEfternamn':'Testsson','patientPostadress':'Storgatan 23',
+        'patientPostnummer':'12345','patientPostort':'Staden'
+    };
 
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
@@ -36,7 +43,8 @@ describe('UtkastProxy', function() {
 
         $provide.value('common.featureService', featureService);
         $provide.value('common.dialogService', dialogService);
-        $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat']));
+        statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
+        $provide.value('common.statService', statService);
         $provide.value('common.User', User);
         $provide.value('common.CertificateService', {});
         $provide.value('common.messageService', {});
@@ -60,6 +68,48 @@ describe('UtkastProxy', function() {
                 return 'Välj typ av intyg';
             };
         }]));
+
+    describe('#createUtkast', function() {
+
+        it('should create a draft if the payload is correct', function() {
+
+            var onSuccess = jasmine.createSpy('onSuccess');
+            var onError = jasmine.createSpy('onError');
+            $httpBackend.
+                expectPOST('/api/utkast/fk7263', {
+                    intygType: 'fk7263',
+                    patientPersonnummer: '19121212-1212',
+                    patientFornamn: 'Test',
+                    patientMellannamn: 'Svensson',
+                    patientEfternamn: 'Testsson',
+                    patientPostadress: 'Storgatan 23',
+                    patientPostnummer: '12345',
+                    patientPostort: 'Staden'
+                }).
+                respond(200, '12345');
+
+            UtkastProxy.createUtkast(createDraftRequestPayload, onSuccess, onError);
+            $httpBackend.flush();
+
+            expect(onSuccess).toHaveBeenCalledWith('12345');
+            expect(onError).not.toHaveBeenCalled();
+            expect(statService.refreshStat).toHaveBeenCalled();
+        });
+
+        it('should call onError if the server cannot create a draft', function() {
+
+            var onSuccess = jasmine.createSpy('onSuccess');
+            var onError = jasmine.createSpy('onError');
+            $httpBackend.expectPOST('/api/utkast/fk7263').respond(500);
+
+            UtkastProxy.createUtkast(createDraftRequestPayload, onSuccess, onError);
+            $httpBackend.flush();
+
+            expect(onSuccess).not.toHaveBeenCalled();
+            expect(onError).toHaveBeenCalled();
+            expect(statService.refreshStat).not.toHaveBeenCalled();
+        });
+    });
 
     describe('#getUtkastTypes', function() {
 
@@ -121,98 +171,6 @@ describe('UtkastProxy', function() {
 
             expect(onSuccess).not.toHaveBeenCalled();
             expect(onError).toHaveBeenCalled();
-        });
-    });
-
-    describe('#copy', function() {
-
-        var $scope;
-        var cert;
-
-        beforeEach(function() {
-            $scope = {
-                viewState: {
-                    activeErrorMessageKey: null,
-                    inlineErrorMessageKey: null
-                },
-                dialog: {
-                    showerror: false,
-                    acceptprogressdone: false,
-                    errormessageid: null
-                }
-            };
-            cert = {
-                'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false,
-                'grundData' : { 'patient' : { 'personId': '19121212-1212'}, 'skapadAv' : {'vardenhet' : {'enhetsid' : '1234'} } }
-            };
-
-            spyOn(dialogService, 'showDialog').and.callFake(function(options) {
-                options.button1click();
-
-                return {
-                    opened: { then: function() {} },
-                    close: function() {}
-                };
-            });
-
-            spyOn($location, 'path').and.callThrough();
-
-        });
-
-        it('should immediately request a utkast copy of cert if the copy cookie is set', function() {
-
-            $cookieStore.put(UtkastProxy.COPY_DIALOG_COOKIE, true);
-
-            $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
-                {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
-            );
-            UtkastProxy.copy($scope.viewState, cert);
-            $httpBackend.flush();
-            $timeout.flush();
-            expect(dialogService.showDialog).not.toHaveBeenCalled();
-            expect($location.path).toHaveBeenCalledWith('/fk7263/edit/nytt-utkast-id', true);
-
-            $cookieStore.remove(UtkastProxy.COPY_DIALOG_COOKIE);
-        });
-
-        it('should show the copy dialog if the copy cookie is not set', function() {
-
-            $cookieStore.remove(UtkastProxy.COPY_DIALOG_COOKIE);
-            $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
-                {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
-            );
-            UtkastProxy.copy($scope.viewState, cert);
-            $httpBackend.flush();
-            $timeout.flush();
-
-            expect(dialogService.showDialog).toHaveBeenCalled();
-
-        });
-    });
-
-    describe('_createCopyDraft', function() {
-
-        var cert;
-        beforeEach(function() {
-            cert = {
-                'intygId': 'intyg-1', 'source': 'IT', 'intygType': 'fk7263', 'status': 'SENT', 'lastUpdatedSigned': '2011-03-23T09:29:15.000', 'updatedSignedBy': 'Eva Holgersson', 'vidarebefordrad': false,
-                'grundData' : { 'patient' : { 'personId': '19121212-1212'}}
-            };
-        });
-
-        it('should request a copy and redirect to the edit page', function() {
-
-            var onSuccess = jasmine.createSpy('onSuccess');
-            var onError = jasmine.createSpy('onError');
-
-            $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
-                {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
-            );
-            UtkastProxy.__test__.createCopyDraft(cert, onSuccess, onError);
-            $httpBackend.flush();
-
-            expect(onSuccess).toHaveBeenCalledWith({'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'});
-            expect(onError).not.toHaveBeenCalled();
         });
     });
 });

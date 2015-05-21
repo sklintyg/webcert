@@ -1,8 +1,8 @@
 angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
-    [ '$window', '$filter', '$location', '$log', '$scope', '$cookieStore', '$stateParams', 'webcert.CreateCertificateDraft',
-        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygCopyRequestModel',
-        function($window, $filter, $location, $log, $scope, $cookieStore, $stateParams, CreateCertificateDraft,
-            IntygProxy, UtkastProxy, IntygCopyRequestModel) {
+    [ '$window', '$filter', '$location', '$log', '$scope', '$cookieStore', '$stateParams', 'common.IntygService',
+        'webcert.IntygProxy', 'webcert.UtkastProxy', 'common.IntygCopyRequestModel', 'webcert.PatientModel',
+        function($window, $filter, $location, $log, $scope, $cookieStore, $stateParams, CommonIntygService,
+            IntygProxy, UtkastProxy, IntygCopyRequestModel, PatientModel) {
             'use strict';
 
             /**
@@ -25,10 +25,10 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 intygFilter: 'current' // possible values: current, revoked, all
             };
 
-            $scope.personnummer = CreateCertificateDraft.personnummer;
-            $scope.fornamn = CreateCertificateDraft.fornamn;
-            $scope.mellannamn = CreateCertificateDraft.mellannamn;
-            $scope.efternamn = CreateCertificateDraft.efternamn;
+            $scope.personnummer = PatientModel.personnummer;
+            $scope.fornamn = PatientModel.fornamn;
+            $scope.mellannamn = PatientModel.mellannamn;
+            $scope.efternamn = PatientModel.efternamn;
 
             $scope.intygType = 'default';
             $scope.certificateTypeText = '';
@@ -44,15 +44,15 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
             function onPageLoad() {
 
                 // Redirect to index if pnr and name isn't specified
-                if (!CreateCertificateDraft.personnummer || !CreateCertificateDraft.fornamn ||
-                    !CreateCertificateDraft.efternamn) {
+                if (!PatientModel.personnummer || !PatientModel.fornamn ||
+                    !PatientModel.efternamn) {
                     $location.url(changePatientUrl, true);
                 }
 
                 // Load cert types user can choose from
                 UtkastProxy.getUtkastTypes(function(types) {
                     $scope.certTypes = types;
-                    $scope.intygType = CreateCertificateDraft.intygType;
+                    $scope.intygType = PatientModel.intygType;
                 });
 
                 // Load certs for person with specified pnr
@@ -117,15 +117,15 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
                 var createDraftRequestPayload = {
                     intygType: $scope.intygType,
-                    patientPersonnummer: CreateCertificateDraft.personnummer,
-                    patientFornamn: CreateCertificateDraft.fornamn,
-                    patientMellannamn: CreateCertificateDraft.mellannamn,
-                    patientEfternamn: CreateCertificateDraft.efternamn,
-                    patientPostadress: CreateCertificateDraft.postadress,
-                    patientPostnummer: CreateCertificateDraft.postnummer,
-                    patientPostort: CreateCertificateDraft.postort
+                    patientPersonnummer: PatientModel.personnummer,
+                    patientFornamn: PatientModel.fornamn,
+                    patientMellannamn: PatientModel.mellannamn,
+                    patientEfternamn: PatientModel.efternamn,
+                    patientPostadress: PatientModel.postadress,
+                    patientPostnummer: PatientModel.postnummer,
+                    patientPostort: PatientModel.postort
                 };
-                CreateCertificateDraft.createDraft(createDraftRequestPayload, function(data) {
+                UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
                     $scope.viewState.createErrorMessageKey = undefined;
                     $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data, true);
                 }, function(error) {
@@ -144,7 +144,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
 
             $scope.copyIntyg = function(cert) {
                 $scope.viewState.createErrorMessageKey = null;
-                ManageCertificate.copy($scope.viewState,
+                CommonIntygService.copy($scope.viewState,
                     IntygCopyRequestModel.build({
                         intygId: cert.intygId,
                         intygType: cert.intygType,

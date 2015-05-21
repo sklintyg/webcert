@@ -20,6 +20,7 @@ describe('ChooseCertTypeCtrl', function() {
             $provide.value('webcert.IntygProxy', IntygProxy);
 
             $provide.value('common.IntygCopyRequestModel', {});
+            $provide.value('common.IntygService', {});
         });
 
         inject(function($rootScope, _$location_, _$controller_) {
