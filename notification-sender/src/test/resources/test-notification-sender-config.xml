@@ -14,7 +14,7 @@
 
   <context:annotation-config />
 
-  <context:component-scan base-package="se.inera.webcert.notifications,se.inera.webcert.persistance" />
+  <context:component-scan base-package="se.inera.webcert.notifications" />
   
   <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub"/>
   
