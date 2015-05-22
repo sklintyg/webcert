@@ -31,7 +31,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 | signera knapp visas |
 | signera knapp aktiverad |
 | signera utkast |
-| visa intyg sidan visas |
+| visa intyg sidan visas med typ | ts-bas |
 
 !3 Kopiera intyget
 
