@@ -25,8 +25,8 @@ describe('UnsignedCertCtrlSpec', function() {
             var User = mockFactory.buildUserMinimal();
             $provide.value('common.User', User);
             $provide.value('common.dialogService', mockFactory.buildDialogService());
-            utkastNotifyService = jasmine.createSpyObj('common.utkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
-            $provide.value('common.utkastNotifyService', utkastNotifyService);
+            utkastNotifyService = jasmine.createSpyObj('common.UtkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
+            $provide.value('common.UtkastNotifyService', utkastNotifyService);
             $provide.value('common.featureService', jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]));
             $provide.value('common.messageService', {});
             $provide.value('common.CertificateService', {});

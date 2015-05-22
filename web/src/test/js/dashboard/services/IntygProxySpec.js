@@ -5,10 +5,6 @@ describe('IntygProxy', function() {
     var $httpBackend;
     var featureService;
     var dialogService;
-    var $cookieStore;
-    var $location;
-    var $timeout;
-    var $q;
 
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {

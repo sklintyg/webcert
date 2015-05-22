@@ -2,7 +2,7 @@ describe('ChoosePatientCtrl', function() {
     'use strict';
 
     var $controller;
-    var CreateCertificateDraft;
+    var PatientProxy;
     var $scope;
     var $location;
     var controller;
@@ -19,8 +19,8 @@ describe('ChoosePatientCtrl', function() {
             $provide.value('common.IntygCopyRequestModel', {});*/
 
 
-            CreateCertificateDraft = {
-                getNameAndAddress: function(personnummer, onSuccess, onNotFound, onError) {
+            PatientProxy = {
+                getPatient: function(personnummer, onSuccess, onNotFound, onError) {
                     if(personnummer === '191212121212') {
                         onSuccess ({
                             status: 'FOUND',
@@ -42,7 +42,7 @@ describe('ChoosePatientCtrl', function() {
                     }
                 }
             };
-            $provide.value('webcert.CreateCertificateDraft', CreateCertificateDraft);
+            $provide.value('webcert.PatientProxy', PatientProxy);
         });
 
         inject(function($rootScope, _$location_, _$controller_) {
@@ -56,7 +56,7 @@ describe('ChoosePatientCtrl', function() {
     describe('lookupPatient', function() {
 
         beforeEach(function() {
-            spyOn(CreateCertificateDraft, 'getNameAndAddress').and.callThrough();
+            spyOn(PatientProxy, 'getPatient').and.callThrough();
         });
 
         it('should call onSuccess on a correct personnummer accepted by the PU-tjanst', function() {
@@ -64,7 +64,7 @@ describe('ChoosePatientCtrl', function() {
             $scope.personnummer = '191212121212';
             $scope.lookupPatient();
 
-            expect(CreateCertificateDraft.getNameAndAddress).toHaveBeenCalled();
+            expect(PatientProxy.getPatient).toHaveBeenCalled();
             expect($scope.widgetState.waiting).toBe(false);
             expect($scope.widgetState.errorid).toBe(undefined);
         });
@@ -72,7 +72,7 @@ describe('ChoosePatientCtrl', function() {
         it('should set signed path', function() {
             $scope.personnummer = '191010101010';
             $scope.lookupPatient();
-            expect(CreateCertificateDraft.getNameAndAddress).toHaveBeenCalled();
+            expect(PatientProxy.getPatient).toHaveBeenCalled();
             expect($scope.widgetState.waiting).toBe(false);
             expect($scope.widgetState.errorid).toBe('error.pu.namenotfound');
         });

@@ -2,7 +2,7 @@
 module.exports = function(config) {
     'use strict';
 
-    var SRC_DIR = 'src/main/webapp/';
+    var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
     var WEBJAR_DIR = 'target/webjardependencies/';
 
