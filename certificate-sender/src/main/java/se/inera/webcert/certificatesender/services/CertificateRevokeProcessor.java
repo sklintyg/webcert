@@ -14,6 +14,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
 import se.inera.webcert.certificatesender.services.converter.RevokeRequestConverter;
+import se.inera.webcert.common.Constants;
 
 import javax.xml.ws.WebServiceException;
 
@@ -31,14 +32,13 @@ public class CertificateRevokeProcessor {
     private RevokeRequestConverter revokeRequestConverter;
 
 
-    private static final String INTYGS_ID = "INTYGS_ID";
-    private static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
+
 
     public void process(Message message) throws Exception {
         LOG.debug("Receiving message: {}", message.getMessageId());
 
-        String intygsId = (String) message.getHeader(INTYGS_ID);
-        String logicalAddress = (String) message.getHeader(LOGICAL_ADDRESS);
+        String intygsId = (String) message.getHeader(Constants.INTYGS_ID);
+        String logicalAddress = (String) message.getHeader(Constants.LOGICAL_ADDRESS);
         String xmlBody = (String) message.getBody();
 
         RevokeMedicalCertificateRequestType request = revokeRequestConverter.fromXml(xmlBody);
@@ -53,34 +53,36 @@ public class CertificateRevokeProcessor {
 
             // Take care of the response
             resultOfCall = response.getResult();
+
+            switch (resultOfCall.getResultCode()) {
+                case OK:
+
+                case INFO:
+                    return;
+                case ERROR:
+                    switch (resultOfCall.getErrorId()) {
+                        case APPLICATION_ERROR:
+                        case TECHNICAL_ERROR:
+                            LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}. Rethrowing as TemporaryException",
+                                    new Object[] { intygsId, resultOfCall.getErrorText(), resultOfCall.getErrorId() });
+                            throw new TemporaryException(resultOfCall.getErrorText());
+                        case TRANSFORMATION_ERROR:
+                        case VALIDATION_ERROR:
+                            LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}. Rethrowing as PermanentException",
+                                    new Object[] { intygsId, resultOfCall.getErrorText(), resultOfCall.getErrorId() });
+                            throw new PermanentException(resultOfCall.getErrorText());
+                    }
+                    throw new TemporaryException(resultOfCall.getErrorText());
+                default:
+                    throw new TemporaryException(resultOfCall.getErrorText());
+            }
+
         } catch (WebServiceException e) {
             LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}. Will retry",
                     new Object[]{intygsId, resultOfCall.getErrorText(), resultOfCall.getErrorId()});
             throw new TemporaryException(resultOfCall.getErrorText());
         }
 
-        switch (resultOfCall.getResultCode()) {
-            case OK:
 
-            case INFO:
-                return;
-            case ERROR:
-                switch (resultOfCall.getErrorId()) {
-                    case APPLICATION_ERROR:
-                    case TECHNICAL_ERROR:
-                        LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}. Will retry",
-                                new Object[] { intygsId, resultOfCall.getErrorText(), resultOfCall.getErrorId() });
-                        throw new TemporaryException(resultOfCall.getErrorText());
-                    case TRANSFORMATION_ERROR:
-                    case VALIDATION_ERROR:
-                        LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}. Will not retry",
-                                new Object[] { intygsId, resultOfCall.getErrorText(), resultOfCall.getErrorId() });
-                        throw new PermanentException(resultOfCall.getErrorText());
-                }
-
-                throw new TemporaryException(resultOfCall.getErrorText());
-            default:
-                throw new TemporaryException(resultOfCall.getErrorText());
-        }
     }
 }

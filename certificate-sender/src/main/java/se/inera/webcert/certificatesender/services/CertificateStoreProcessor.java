@@ -14,30 +14,25 @@ import se.inera.certificate.modules.support.api.exception.ExternalServiceCallExc
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
+import se.inera.webcert.common.Constants;
 
-import com.google.common.annotations.VisibleForTesting;
-
+/**
+ * Camel message processor responsible for consuming {@link Constants#STORE_MESSAGE} messages,
+ * using the ModuleApi to register certificates in intygstjansten.
+ */
 public class CertificateStoreProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStoreProcessor.class);
-
-    private static final java.lang.String INTYGS_TYP = "INTYGS_TYP";
-    private static final java.lang.String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
-    @VisibleForTesting
-    void setModuleRegistry(IntygModuleRegistry moduleRegistry) {
-        this.moduleRegistry = moduleRegistry;
-    }
-
     public void process(Message message) throws Exception {
         LOG.debug("Receiving message: {}", message.getMessageId());
 
-        ModuleApi moduleApi = moduleRegistry.getModuleApi((String) message.getHeader(INTYGS_TYP));
+        ModuleApi moduleApi = moduleRegistry.getModuleApi((String) message.getHeader(Constants.INTYGS_TYP));
 
         try {
-            moduleApi.registerCertificate(new InternalModelHolder((String) message.getBody()), (String) message.getHeader(LOGICAL_ADDRESS));
+            moduleApi.registerCertificate(new InternalModelHolder((String) message.getBody()), (String) message.getHeader(Constants.LOGICAL_ADDRESS));
         } catch (ExternalServiceCallException e) {
             switch (e.getErroIdEnum()) {
                 case TECHNICAL_ERROR:
@@ -55,5 +50,4 @@ public class CertificateStoreProcessor {
             throw new PermanentException(e.getMessage());
         }
     }
-
 }

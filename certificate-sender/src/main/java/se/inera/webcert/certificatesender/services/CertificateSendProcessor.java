@@ -10,6 +10,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetore
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
+import se.inera.webcert.common.Constants;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 
 import javax.xml.ws.WebServiceException;
@@ -21,11 +22,6 @@ public class CertificateSendProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateSendProcessor.class);
 
-    private static final java.lang.String INTYGS_ID = "INTYGS_ID";
-    private static final java.lang.String PERSON_ID = "PERSON_ID";
-    private static final java.lang.String RECIPIENT = "RECIPIENT";
-    private static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
-
     @Autowired
     private SendCertificateToRecipientResponderInterface sendService;
 
@@ -33,10 +29,10 @@ public class CertificateSendProcessor {
     public void process(Message message) throws Exception {
         LOG.debug("Receiving message: {}", message.getMessageId());
 
-        String intygsId = (String) message.getHeader(INTYGS_ID);
-        String personId = (String) message.getHeader(PERSON_ID);
-        String recipient = (String) message.getHeader(RECIPIENT);
-        String logicalAddress = (String) message.getHeader(LOGICAL_ADDRESS);
+        String intygsId = (String) message.getHeader(Constants.INTYGS_ID);
+        String personId = (String) message.getHeader(Constants.PERSON_ID);
+        String recipient = (String) message.getHeader(Constants.RECIPIENT);
+        String logicalAddress = (String) message.getHeader(Constants.LOGICAL_ADDRESS);
 
         SendCertificateToRecipientType request = new SendCertificateToRecipientType();
         request.setUtlatandeId(intygsId);
@@ -46,32 +42,33 @@ public class CertificateSendProcessor {
         SendCertificateToRecipientResponseType response = null;
         try {
             response = sendService.sendCertificateToRecipient(logicalAddress, request);
+            // check whether call was successful or not
+            if (ResultCodeType.ERROR.equals(response.getResult().getResultCode())) {
+
+                LOG.error("Error occured when trying to send intyg '{}'; {}", intygsId, response.getResult().getResultText());
+
+                switch (response.getResult().getErrorId()) {
+                    case APPLICATION_ERROR:
+                    case TECHNICAL_ERROR:
+                        throw new TemporaryException(response.getResult().getResultText());
+                    case REVOKED:
+                    case VALIDATION_ERROR:
+                        throw new PermanentException(response.getResult().getResultText());
+                }
+
+                throw new TemporaryException("Error occured when trying to send intyg '"+intygsId+"'; "+response.getResult().getResultText());
+            } else {
+                if (ResultCodeType.INFO.equals(response.getResult().getResultCode())) {
+                    LOG.warn("Warning occured when trying to send intyg '{}'; {}. Will not requeue." , intygsId, response.getResult().getResultText());
+                }
+            }
         } catch (WebServiceException e) {
             LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}. Will retry",
                     new Object[]{intygsId, response.getResult().getResultText(), response.getResult().getErrorId()});
             throw new TemporaryException(response.getResult().getResultText());
         }
 
-        // check whether call was successful or not
-        if (ResultCodeType.ERROR.equals(response.getResult().getResultCode())) {
 
-            LOG.error("Error occured when trying to send intyg '{}'; {}", intygsId, response.getResult().getResultText());
-
-            switch (response.getResult().getErrorId()) {
-                case APPLICATION_ERROR:
-                case TECHNICAL_ERROR:
-                    throw new TemporaryException(response.getResult().getResultText());
-                case REVOKED:
-                case VALIDATION_ERROR:
-                    throw new PermanentException(response.getResult().getResultText());
-            }
-
-            throw new TemporaryException("Error occured when trying to send intyg '"+intygsId+"'; "+response.getResult().getResultText());
-        } else {
-            if (ResultCodeType.INFO.equals(response.getResult().getResultCode())) {
-                LOG.warn("Warning occured when trying to send intyg '{}'; {}. Will not requeue." , intygsId, response.getResult().getResultText());
-            }
-        }
     }
 
 }

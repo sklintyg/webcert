@@ -44,6 +44,7 @@
   </properties>
 
   <modules>
+    <module>common</module>
     <module>persistence</module>
     <module>log-messages</module>
     <module>log-sender</module>
@@ -137,6 +138,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>certificate-sender</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>common</artifactId>
         <version>${project.version}</version>
       </dependency>
 

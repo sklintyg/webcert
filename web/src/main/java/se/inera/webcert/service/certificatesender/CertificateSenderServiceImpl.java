@@ -1,5 +1,10 @@
 package se.inera.webcert.service.certificatesender;
 
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +14,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.jms.*;
+import se.inera.webcert.common.Constants;
 
 /**
  * Created by eriklupander on 2015-05-20.
@@ -20,21 +24,10 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateSenderServiceImpl.class);
 
-    // TODO Refactor into webcert-common when it becomes available.
-    private static final java.lang.String INTYGS_ID = "INTYGS_ID";
-    private static final java.lang.String INTYGS_TYP = "INTYGS_TYP";
-    private static final java.lang.String PERSON_ID = "PERSON_ID";
-    private static final java.lang.String RECIPIENT = "RECIPIENT";
-    private static final java.lang.String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
-
-    private static final String STORE_MESSAGE = "STORE";
-    private static final String SEND_MESSAGE = "SEND";
-    private static final String REVOKE_MESSAGE = "REVOKE";
-    private static final String MESSAGE_TYPE = "MESSAGE_TYPE";
+    private static final String JMSX_GROUP_ID = "JMSXGroupID";
 
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
-
 
     @Autowired(required = false)
     @Qualifier("jmsCertificateSenderTemplate")
@@ -80,9 +73,9 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(this.body);
             message.setStringProperty("JMSXGroupID", intygsId);
-            message.setStringProperty(MESSAGE_TYPE, STORE_MESSAGE);
-            message.setStringProperty(INTYGS_TYP, intygsTyp);
-            message.setStringProperty(LOGICAL_ADDRESS, logicalAddress);
+            message.setStringProperty(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE);
+            message.setStringProperty(Constants.INTYGS_TYP, intygsTyp);
+            message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
             return message;
         }
     }
@@ -103,13 +96,13 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage();
-            message.setStringProperty("JMSXGroupID", intygsId);
-            message.setStringProperty(MESSAGE_TYPE, SEND_MESSAGE);
+            message.setStringProperty(JMSX_GROUP_ID, intygsId);
+            message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
 
-            message.setStringProperty(INTYGS_ID, intygsId);
-            message.setStringProperty(PERSON_ID, personId);
-            message.setStringProperty(RECIPIENT, recipientId);
-            message.setStringProperty(LOGICAL_ADDRESS, logicalAddress);
+            message.setStringProperty(Constants.INTYGS_ID, intygsId);
+            message.setStringProperty(Constants.PERSON_ID, personId);
+            message.setStringProperty(Constants.RECIPIENT, recipientId);
+            message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
             return message;
         }
     }
@@ -129,10 +122,10 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(xmlBody);
             message.setStringProperty("JMSXGroupID", intygsId);
-            message.setStringProperty(MESSAGE_TYPE, REVOKE_MESSAGE);
+            message.setStringProperty(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE);
 
-            message.setStringProperty(INTYGS_ID, intygsId);
-            message.setStringProperty(LOGICAL_ADDRESS, logicalAddress);
+            message.setStringProperty(Constants.INTYGS_ID, intygsId);
+            message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
             return message;
         }
     }
