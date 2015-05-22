@@ -87,7 +87,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
             url: '/fragasvar/:certificateType/:certificateId',
             views: {
                 'content@' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/fragaSvar.html',
+                    templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
                 'header@webcert.fragasvar' : {
@@ -101,7 +101,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
             url: '/fragasvar/:certificateType/:certificateId/:qaOnly',
             views: {
                 'content@' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/fragaSvar.html',
+                    templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
                 'header@webcert.fragasvar-qaonly' : {
