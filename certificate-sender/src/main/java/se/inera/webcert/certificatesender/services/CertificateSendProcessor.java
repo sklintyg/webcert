@@ -1,19 +1,21 @@
 package se.inera.webcert.certificatesender.services;
 
+import javax.xml.ws.WebServiceException;
+
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
+import se.inera.webcert.certificatesender.services.validator.CertificateMessageValidator;
 import se.inera.webcert.common.Constants;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-
-import javax.xml.ws.WebServiceException;
 
 /**
  * Created by eriklupander on 2015-05-21.
@@ -25,9 +27,15 @@ public class CertificateSendProcessor {
     @Autowired
     private SendCertificateToRecipientResponderInterface sendService;
 
+    @Autowired
+    @Qualifier("certificateSendMessageValidator")
+    private CertificateMessageValidator certificateSendMessageValidator;
+
 
     public void process(Message message) throws Exception {
         LOG.debug("Receiving message: {}", message.getMessageId());
+
+        certificateSendMessageValidator.validate(message);
 
         String intygsId = (String) message.getHeader(Constants.INTYGS_ID);
         String personId = (String) message.getHeader(Constants.PERSON_ID);
@@ -42,8 +50,8 @@ public class CertificateSendProcessor {
         SendCertificateToRecipientResponseType response = null;
         try {
             response = sendService.sendCertificateToRecipient(logicalAddress, request);
-            // check whether call was successful or not
-            if (ResultCodeType.ERROR.equals(response.getResult().getResultCode())) {
+
+            if (ResultCodeType.ERROR == response.getResult().getResultCode()) {
 
                 LOG.error("Error occured when trying to send intyg '{}'; {}", intygsId, response.getResult().getResultText());
 
@@ -63,12 +71,9 @@ public class CertificateSendProcessor {
                 }
             }
         } catch (WebServiceException e) {
-            LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}. Will retry",
-                    new Object[]{intygsId, response.getResult().getResultText(), response.getResult().getErrorId()});
-            throw new TemporaryException(response.getResult().getResultText());
+            LOG.error("Call to revoke intyg {} caused an error: {}. Will retry",
+                    new Object[]{intygsId, e.getMessage()});
+            throw new TemporaryException(e.getMessage());
         }
-
-
     }
-
 }

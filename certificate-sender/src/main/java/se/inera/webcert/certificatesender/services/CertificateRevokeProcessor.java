@@ -4,6 +4,7 @@ import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.w3.wsaddressing10.AttributedURIType;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
@@ -14,6 +15,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
 import se.inera.webcert.certificatesender.services.converter.RevokeRequestConverter;
+import se.inera.webcert.certificatesender.services.validator.CertificateMessageValidator;
 import se.inera.webcert.common.Constants;
 
 import javax.xml.ws.WebServiceException;
@@ -31,11 +33,14 @@ public class CertificateRevokeProcessor {
     @Autowired
     private RevokeRequestConverter revokeRequestConverter;
 
-
-
+    @Autowired
+    @Qualifier("certificateRevokeMessageValidator")
+    private CertificateMessageValidator certificateRevokeMessageValidator;
 
     public void process(Message message) throws Exception {
         LOG.debug("Receiving message: {}", message.getMessageId());
+
+        certificateRevokeMessageValidator.validate(message);
 
         String intygsId = (String) message.getHeader(Constants.INTYGS_ID);
         String logicalAddress = (String) message.getHeader(Constants.LOGICAL_ADDRESS);
@@ -78,11 +83,9 @@ public class CertificateRevokeProcessor {
             }
 
         } catch (WebServiceException e) {
-            LOG.error("Call to revoke intyg {} caused an error: {}, ErrorId: {}. Will retry",
-                    new Object[]{intygsId, resultOfCall.getErrorText(), resultOfCall.getErrorId()});
-            throw new TemporaryException(resultOfCall.getErrorText());
+            LOG.error("Call to revoke intyg {} caused an error: {}. Will retry",
+                    new Object[]{intygsId, e.getMessage()});
+            throw new TemporaryException(e.getMessage());
         }
-
-
     }
 }

@@ -5,6 +5,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import javax.xml.bind.JAXBException;
 
 /**
+ * Defines toXml and fromXml methods for convenient conversion to/from {@RevokeMedicalCertificateRequestType} and XML.
+ *
  * Created by eriklupander on 2015-05-21.
  */
 public interface RevokeRequestConverter {

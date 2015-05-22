@@ -15,6 +15,7 @@ import se.inera.certificate.modules.support.api.exception.ExternalServiceCallExc
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
+import se.inera.webcert.certificatesender.services.validator.CertificateMessageValidator;
 import se.inera.webcert.common.Constants;
 
 import javax.xml.ws.WebServiceException;
@@ -36,6 +37,9 @@ public class CertificateStoreProcessorTest {
 
     @Mock
     ModuleApi moduleApi;
+
+    @Mock
+    CertificateMessageValidator certificateStoreMessageValidator;
 
     @Mock
     Message message;
