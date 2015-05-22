@@ -3,6 +3,7 @@ package se.inera.webcert.security;
 import javax.xml.transform.stream.StreamSource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.cxf.helpers.XMLUtils;
 import org.junit.BeforeClass;
@@ -14,6 +15,7 @@ import org.opensaml.xml.io.Unmarshaller;
 import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
+
 import se.inera.auth.SakerhetstjanstAssertion;
 
 /**
@@ -23,6 +25,7 @@ public class SakerhetstjanstAssertionTest {
 
     private static Assertion assertionWithEnhet;
     private static Assertion assertionWithoutEnhet;
+    private static Assertion assertionWithMultipleTitles;
 
     @BeforeClass
     public static void readSamlAssertions() throws Exception {
@@ -38,6 +41,10 @@ public class SakerhetstjanstAssertionTest {
         doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
                 "SakerhetstjanstAssertionTest/saml-assertion-without-enhet.xml").getInputStream()));
         assertionWithoutEnhet = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
+
+        doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
+                "SakerhetstjanstAssertionTest/saml-assertion-with-multiple-titles.xml").getInputStream()));
+        assertionWithMultipleTitles = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
     }
 
     @Test
@@ -45,7 +52,7 @@ public class SakerhetstjanstAssertionTest {
 
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(assertionWithEnhet);
 
-        assertEquals("204010", assertion.getTitelKod());
+        assertTrue(assertion.getTitelKod().contains("204010"));
         assertEquals("8787878", assertion.getForskrivarkod());
         assertEquals("TST5565594230-106J", assertion.getHsaId());
         assertEquals("Markus", assertion.getFornamn());
@@ -62,5 +69,11 @@ public class SakerhetstjanstAssertionTest {
         SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(assertionWithoutEnhet);
 
         assertEquals("T_SERVICES_SE165565594230-106X", assertion.getHsaId());
+    }
+
+    @Test
+    public void testAssertionWithMultipleTitles() {
+        SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(assertionWithMultipleTitles);
+        assertTrue(assertion.getTitelKod().contains("204010"));
     }
 }
