@@ -24,13 +24,13 @@ module.exports = function(grunt) {
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
 
-    var webcert = grunt.file.readJSON(SRC_DIR + '/app-deps.json').map(function(file) {
+    var webcert = grunt.file.readJSON(SRC_DIR + 'app-deps.json').map(function(file) {
         return file.replace(/\/app\//g, SRC_DIR);
     });
 
-    webcert = [SRC_DIR + '/app.js'].concat(webcert);
+    webcert = [SRC_DIR + 'app.js'].concat(webcert);
 
-    grunt.log.write(JSON.stringify(webcert));
+//    grunt.log.write(JSON.stringify(webcert));
 
     var COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common';
     var TSBAS_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
