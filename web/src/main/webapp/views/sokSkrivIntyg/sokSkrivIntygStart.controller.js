@@ -1,9 +1,9 @@
 angular.module('webcert').controller('webcert.InitCertCtrl',
-    [ '$location', 'webcert.CreateCertificateDraft',
-        function($location, CreateCertificateDraft) {
+    [ '$location', 'webcert.PatientModel',
+        function($location, PatientModel) {
             'use strict';
 
-            CreateCertificateDraft.reset();
+            PatientModel.reset();
             $location.replace(true);
             $location.path('/create/choose-patient/index');
         }]);

@@ -1,18 +1,18 @@
 angular.module('webcert').controller('webcert.EditPatientNameCtrl',
-    [ '$location', '$stateParams' ,'$scope', 'webcert.CreateCertificateDraft',
-        function($location, $stateParams, $scope, CreateCertificateDraft) {
+    [ '$location', '$stateParams' ,'$scope', 'webcert.PatientModel',
+        function($location, $stateParams, $scope, PatientModel) {
             'use strict';
 
-            if (!CreateCertificateDraft.personnummer) {
+            if (!PatientModel.personnummer) {
                 $location.url('/create/choose-patient/index', true);
             }
 
-            $scope.personnummer = CreateCertificateDraft.personnummer;
-            $scope.fornamn = CreateCertificateDraft.fornamn;
-            if (CreateCertificateDraft.mellannamn) {
-                $scope.efternamn = CreateCertificateDraft.mellannamn + ' ' + CreateCertificateDraft.efternamn;
+            $scope.personnummer = PatientModel.personnummer;
+            $scope.fornamn = PatientModel.fornamn;
+            if (PatientModel.mellannamn) {
+                $scope.efternamn = PatientModel.mellannamn + ' ' + PatientModel.efternamn;
             } else {
-                $scope.efternamn = CreateCertificateDraft.efternamn;
+                $scope.efternamn = PatientModel.efternamn;
             }
             
             $scope.personNotFound = ($stateParams.mode === 'notFound');
@@ -20,9 +20,9 @@ angular.module('webcert').controller('webcert.EditPatientNameCtrl',
             $scope.errorOccured = ($stateParams.mode === 'errorOccured');
             
             $scope.chooseCertType = function() {
-                CreateCertificateDraft.fornamn = $scope.fornamn;
-                CreateCertificateDraft.mellannamn = null;
-                CreateCertificateDraft.efternamn = $scope.efternamn;
+                PatientModel.fornamn = $scope.fornamn;
+                PatientModel.mellannamn = null;
+                PatientModel.efternamn = $scope.efternamn;
                 $location.path('/create/choose-cert-type/index');
             };
 

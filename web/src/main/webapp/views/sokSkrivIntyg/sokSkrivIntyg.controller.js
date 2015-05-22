@@ -1,6 +1,6 @@
 angular.module('webcert').controller('webcert.ChoosePatientCtrl',
-    ['$location', '$scope', 'webcert.CreateCertificateDraft',
-        function($location, $scope, CreateCertificateDraft) {
+    ['$location', '$scope', 'webcert.PatientModel', 'webcert.PatientProxy',
+        function($location, $scope, PatientModel, PatientProxy) {
             'use strict';
 
             $scope.widgetState = {
@@ -9,7 +9,7 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
             };
 
             $scope.focusPnr = true; // focus pnr input
-            $scope.personnummer = CreateCertificateDraft.personnummer;
+            $scope.personnummer = PatientModel.personnummer;
 
             $scope.lookupPatient = function() {
 
@@ -32,7 +32,7 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
 
                 $scope.widgetState.waiting = true;
 
-                CreateCertificateDraft.getNameAndAddress($scope.personnummer,
+                PatientProxy.getPatient($scope.personnummer,
                     onSuccess, onNotFound, onError);
             };
         }]);

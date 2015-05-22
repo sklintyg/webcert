@@ -3,7 +3,7 @@
  */
 angular.module('webcert').controller('webcert.UnsignedCertCtrl',
     [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'webcert.UtkastProxy', 'common.User', 'common.utkastNotifyService', 'common.DateUtilsService',
+        'webcert.UtkastProxy', 'common.User', 'common.UtkastNotifyService', 'common.DateUtilsService',
         function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService, UtkastProxy,
             User, utkastNotifyService, dateUtilsService) {
             'use strict';

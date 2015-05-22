@@ -2,6 +2,8 @@
     "/templates.js",
     "/views/router.js",
     "/views/messages.js",
+    "/views/intyg.proxy.js",
+    "/views/patient.proxy.js",
     "/views/utkast.proxy.js",
     "/views/ejSigneradeUtkast/ejSigneradeUtkast.controller.js",
     "/views/fragorOchSvar/fragorOchSvar.controller.js",
