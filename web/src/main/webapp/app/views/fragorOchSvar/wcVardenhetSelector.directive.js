@@ -1,6 +1,6 @@
 angular.module('webcert').directive('wcCareUnitClinicSelector',
-    [ '$cookieStore', '$rootScope', '$timeout', 'common.User',
-        function($cookieStore, $rootScope, $timeout, User) {
+    [ '$cookieStore', '$rootScope', '$timeout', 'common.User', 'common.statService',
+        function($cookieStore, $rootScope, $timeout, User, statService) {
             'use strict';
 
             return {
@@ -27,8 +27,7 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                         $scope.showInactive = !$scope.showInactive;
                     };
 
-                    $scope.$on('wc-stat-update', function(event, message) {
-
+                    function _updateStats(event, message) {
                         // Get the latest stats
                         var unitStats = message;
 
@@ -66,7 +65,12 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                                 });
                             }
                         });
-                    });
+                    }
+
+                    if (statService.getLatestData()) {
+                        _updateStats(null, statService.getLatestData());
+                    }
+                    $scope.$on('wc-stat-update', _updateStats);
 
                     $scope.selectUnit = function(unit) {
                         $scope.selectedUnit = unit;
