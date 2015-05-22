@@ -182,8 +182,8 @@ module.exports = function(grunt) {
                             ));
                         middlewares.push(
                             connect().use(
-                                '/views',
-                                connect.static(__dirname + '/src/main/webapp/views')
+                                '/app',
+                                connect.static(__dirname + '/src/main/webapp/app')
                             ));
                         middlewares.push(
                             connect().use(
