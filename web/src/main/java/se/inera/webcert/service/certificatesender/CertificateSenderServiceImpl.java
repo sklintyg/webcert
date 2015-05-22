@@ -72,7 +72,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(this.body);
-            message.setStringProperty("JMSXGroupID", intygsId);
+            message.setStringProperty(JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE);
             message.setStringProperty(Constants.INTYGS_TYP, intygsTyp);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
@@ -121,7 +121,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         @Override
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(xmlBody);
-            message.setStringProperty("JMSXGroupID", intygsId);
+            message.setStringProperty(JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);

@@ -20,8 +20,11 @@ public class CertificateStoreMessageValidatorImpl implements CertificateMessageV
     }
 
     private void validateBodyExists(Object body) throws PermanentException {
-        if (body == null) {
-            throw new PermanentException("Body of " + Constants.STORE_MESSAGE + " must not be null");
+        if( body != null && !(body instanceof String)) {
+            return;
+        }
+        if (nullOrEmpty( (String) body)) {
+            throw new PermanentException("Body of " + Constants.STORE_MESSAGE + " must not be null or empty");
         }
     }
 

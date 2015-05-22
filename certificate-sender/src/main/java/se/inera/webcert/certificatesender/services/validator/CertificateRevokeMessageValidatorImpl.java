@@ -23,8 +23,12 @@ public class CertificateRevokeMessageValidatorImpl implements CertificateMessage
     }
 
     private void validateBodyExists(Object body) throws PermanentException {
+
         if (body == null) {
             throw new PermanentException("Body of " + Constants.REVOKE_MESSAGE + " must not be null");
+        }
+        if (body instanceof String && nullOrEmpty( (String) body)) {
+            throw new PermanentException("Body of " + Constants.REVOKE_MESSAGE + " must not be empty");
         }
     }
 
