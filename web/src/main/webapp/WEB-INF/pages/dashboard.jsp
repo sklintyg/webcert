@@ -37,9 +37,10 @@
 </head>
 <body>
 
+  <div ui-view="header" autoscroll="true" id="wcHeader" class="print-hide"></div>
+
   <%-- ui-view that holds dynamic content managed by angular app --%>
-  <div ui-view autoscroll="true" id="view">
-  </div>
+  <div ui-view="content" autoscroll="false" id="view"></div>
 
   <%-- No script to show at least something when javascript is off --%>
   <noscript>

@@ -5,99 +5,155 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
     'use strict';
     $stateProvider.
 
-        state('create-index', {
+        state('webcert', {
+            views: {
+                'header': {
+                    templateUrl: '/web/webjars/common/webcert/gui/headers/wcHeader.partial.html',
+                    controller: 'common.wcHeaderController'
+                }
+            }
+        }).
+
+        state('webcert.create-index', {
             url: '/create/index',
-            templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
-            controller: 'webcert.InitCertCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
+                    controller: 'webcert.InitCertCtrl'
+                }
+            }
         }).
-        state('create-choosepatient-index', {
+        state('webcert.create-choosepatient-index', {
             url: '/create/choose-patient/index',
-            templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
-            controller: 'webcert.ChoosePatientCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
+                    controller: 'webcert.ChoosePatientCtrl'
+                }
+            }
         }).
-        state('create-edit-patientname', {
+        state('webcert.create-edit-patientname', {
             url:'/create/edit-patient-name/:mode',
-            templateUrl: '/app/views/sokSkrivIntyg/sokSkrivPatientName.html',
-            controller: 'webcert.EditPatientNameCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/sokSkrivIntyg/sokSkrivPatientName.html',
+                    controller: 'webcert.EditPatientNameCtrl'
+                }
+            }
         }).
-        state('create-choose-certtype-index', {
+        state('webcert.create-choose-certtype-index', {
             url:'/create/choose-cert-type/index',
-            templateUrl: '/app/views/sokSkrivIntyg/sokSkrivValjUtkastType.html',
-            controller: 'webcert.ChooseCertTypeCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/sokSkrivIntyg/sokSkrivValjUtkastType.html',
+                    controller: 'webcert.ChooseCertTypeCtrl'
+                }
+            }
         }).
-        state('unhandled-qa', {
+        state('webcert.unhandled-qa', {
             url:'/unhandled-qa',
-            templateUrl: '/app/views/fragorOchSvar/fragorOchSvar.html',
-            controller: 'webcert.UnhandledQACtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/fragorOchSvar/fragorOchSvar.html',
+                    controller: 'webcert.UnhandledQACtrl'
+                }
+            }
         }).
-        state('unsigned', {
+        state('webcert.unsigned', {
             url: '/unsigned',
-            templateUrl: '/app/views/ejSigneradeUtkast/ejSigneradeUtkast.html',
-            controller: 'webcert.UnsignedCertCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/ejSigneradeUtkast/ejSigneradeUtkast.html',
+                    controller: 'webcert.UnsignedCertCtrl'
+                }
+            }
         }).
-        state('intyg', {
+        state('webcert.intyg', {
+            data: { defaultActive : 'index' },
             url:'/intyg/:certificateType/:certificateId?:patientId&:hospName&:signed',
             views: {
-                '' : {
+                'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
-                'header@intyg' : {
+                'header@webcert.intyg' : {
                     templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
         }).
-        state('fragasvar', {
+        state('webcert.fragasvar', {
+            data: { defaultActive : 'unhandled-qa' },
             url: '/fragasvar/:certificateType/:certificateId',
             views: {
-                '' : {
+                'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
-                'header@fragasvar' : {
+                'header@webcert.fragasvar' : {
                     templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
         }).
-        state('fragasvar-qaonly', {
+        state('webcert.fragasvar-qaonly', {
+            data: { defaultActive : 'unhandled-qa' },
             url: '/fragasvar/:certificateType/:certificateId/:qaOnly',
             views: {
-                '' : {
+                'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
-                'header@fragasvar-qaonly' : {
+                'header@webcert.fragasvar-qaonly' : {
                     templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
         }).
-        state('webcert-about', {
+        state('webcert.webcert-about', {
             url: '/webcert/about',
-            templateUrl: '/app/views/omWebcert/omWebcert.webcert.html',
-            controller: 'webcert.AboutWebcertCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/omWebcert/omWebcert.webcert.html',
+                    controller: 'webcert.AboutWebcertCtrl'
+                }
+            }
         }).
-        state('support-about', {
+        state('webcert.support-about', {
             url: '/support/about',
-            templateUrl: '/app/views/omWebcert/omWebcert.support.html',
-            controller: 'webcert.AboutWebcertCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/omWebcert/omWebcert.support.html',
+                    controller: 'webcert.AboutWebcertCtrl'
+                }
+            }
         }).
-        state('certificates-about', {
+        state('webcert.certificates-about', {
             url: '/certificates/about',
-            templateUrl: '/app/views/omWebcert/omWebcert.certificates.html',
-            controller: 'webcert.AboutWebcertCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/omWebcert/omWebcert.certificates.html',
+                    controller: 'webcert.AboutWebcertCtrl'
+                }
+            }
         }).
-        state('faq-about', {
+        state('webcert.faq-about', {
             url: '/faq/about',
-            templateUrl: '/app/views/omWebcert/omWebcert.faq.html',
-            controller: 'webcert.AboutWebcertCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/omWebcert/omWebcert.faq.html',
+                    controller: 'webcert.AboutWebcertCtrl'
+                }
+            }
         }).
-        state('cookies-about', {
+        state('webcert.cookies-about', {
             url: '/cookies/about',
-            templateUrl: '/app/views/omWebcert/omWebcert.cookies.html',
-            controller: 'webcert.AboutWebcertCtrl'
+            views: {
+                'content@': {
+                    templateUrl: '/app/views/omWebcert/omWebcert.cookies.html',
+                    controller: 'webcert.AboutWebcertCtrl'
+                }
+            }
         });
 
         $urlRouterProvider.when('', '/create/index');
