@@ -21,6 +21,7 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     public void configure() throws Exception {
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
                 .onException(Exception.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .transacted()
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:createAndInitCertificateStatusRequestProcessor")
                 .log(LoggingLevel.INFO, LOG, simple("Notification is transformed for intygs-id: ${in.headers.intygsId}, with notification type: ${in.headers.handelse}").getText())
@@ -32,6 +33,7 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
                         .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay)
                         .useExponentialBackOff())
                 .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .transacted()
                 .unmarshal("jaxbMessageDataFormat")
                 .to("sendCertificateStatusUpdateEndpoint");
 

@@ -34,11 +34,9 @@ import se.inera.certificate.modules.support.api.notification.NotificationMessage
 import se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration({ "/test-notification-sender-config.xml", "/spring/test-service-context.xml" })
+@ContextConfiguration({ "/test-notification-sender-config.xml", "/spring/integration-test-properties-context.xml" })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestNotifications {
-
-    private static final int MESSAGES_EXPECTED = 3;
 
     private static final int SECONDS_TO_WAIT = 10;
 
@@ -79,10 +77,9 @@ public class TestNotifications {
             @Override
             public Boolean call() throws Exception {
                 int numberOfReceivedMessages = certificateStatusUpdateForCareResponderStub.getNumberOfReceivedMessages();
-                return (numberOfReceivedMessages == MESSAGES_EXPECTED);
+                return (numberOfReceivedMessages == 3);
             }
         });
-        Map<String, CertificateStatusUpdateForCareType> exchange = certificateStatusUpdateForCareResponderStub.getExchange();
     }
 
     private String notificationMessageToJson(NotificationMessage notificationMessage) throws Exception {
