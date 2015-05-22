@@ -1,23 +1,16 @@
 package se.inera.webcert.service.intyg;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.certificate.modules.support.api.exception.ExternalServiceCallException;
-import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.service.exception.WebCertServiceException;
-import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,9 +37,6 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
 
         IntygServiceResult res = intygService.storeIntyg(utkast);
         assertEquals(IntygServiceResult.RESCHEDULED, res);
-        
-        // this error should schedule a resend
-        verify(omsandningRepository, times(2)).save(any(Omsandning.class));
     }
 
     // TODO This test needs to be moved to the new certificate-sender module.
@@ -75,7 +65,8 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
         when(intygRepository.findOne(INTYG_ID)).thenReturn(null);
         IntygServiceResult intygServiceResult = intygService.storeIntyg(createUtkast());
         assertEquals(IntygServiceResult.FAILED, intygServiceResult);
-        verify(omsandningRepository, times(0)).delete(any(Omsandning.class));
+
+        verifyZeroInteractions(certificateSenderService);
     }
 
     private Utkast createUtkast() {
@@ -86,12 +77,4 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
         utkast.setModel(json);
         return utkast;
     }
-
-    private Omsandning createOmsandning() {
-        Omsandning omsandning = new Omsandning();
-        omsandning.setIntygId(INTYG_ID);
-        omsandning.setIntygTyp(INTYG_TYP_FK);
-        return omsandning;
-    }
-
 }

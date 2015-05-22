@@ -395,7 +395,7 @@
     <renameColumn tableName="FRAGASVAR" columnDataType="varchar(255)" oldColumnName="PATIENT_ID_EXTENSION" newColumnName="PATIENT_ID"/>
   </changeSet>
 
-  <changeSet id="12" author="el">
+  <changeSet id="13" author="el">
     <addColumn tableName="INTYG">
       <column name="SKICKAD_TILL_MOTTAGARE_DATUM" type="datetime">
         <constraints nullable="true" />
@@ -407,6 +407,9 @@
         <constraints nullable="true" />
       </column>
     </addColumn>
+
+    <dropTable cascadeConstraints="true"
+        tableName="OMSANDNING"/>
   </changeSet>
 
 </databaseChangeLog>

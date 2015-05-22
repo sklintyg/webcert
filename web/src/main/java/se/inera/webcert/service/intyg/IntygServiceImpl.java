@@ -13,12 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.model.common.internal.Vardenhet;
+import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeType;
+import se.inera.webcert.certificatesender.services.converter.RevokeRequestConverter;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -29,12 +32,10 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.fragasvar.dto.FrageStallare;
-import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
 import se.inera.webcert.service.intyg.config.SendIntygConfiguration;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
-import se.inera.webcert.certificatesender.services.converter.RevokeRequestConverter;
 import se.inera.webcert.service.intyg.dto.*;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
@@ -68,9 +69,6 @@ public class IntygServiceImpl implements IntygService {
     @Autowired
     private WebCertUserService webCertUserService;
 
-    //@Autowired
-    //private RevokeMedicalCertificateResponderInterface revokeService;
-
     @Autowired
     private RevokeRequestConverter revokeRequestConverter;
 
@@ -82,9 +80,6 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private IntygServiceConverter serviceConverter;
-
-//    @Autowired
-//    private IntygServiceConfigurationManager configurationManager;
 
     @Autowired
     private LogService logService;
@@ -201,54 +196,6 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-//    @Transactional(propagation = Propagation.REQUIRES_NEW)
-//    public Omsandning createOmsandning(OmsandningOperation operation, String intygId, String typ, String configuration) {
-//        Omsandning omsandning = new Omsandning(operation, intygId, typ);
-//        omsandning.setAntalForsok(0);
-//        omsandning.setGallringsdatum(new LocalDateTime().plusHours(24 * 7));
-//        omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
-//
-//        if (configuration != null) {
-//            omsandning.setConfiguration(configuration);
-//        }
-//
-//        LOG.debug("Creating Omsandning with operation {} for intyg {}", operation, intygId);
-//
-//        return omsandningRepository.save(omsandning);
-//    }
-
-//    public IntygServiceResult storeIntyg(Omsandning omsandning) {
-//        Utkast utkast = utkastRepository.findOne(omsandning.getIntygId());
-//        if (utkast == null) {
-//            LOG.warn("Could not store intyg in Intygstjansten, no draft found for intyg id '{}'", omsandning.getIntygId());
-//            return IntygServiceResult.FAILED;
-//        }
-//        return storeIntyg(utkast, omsandning);
-//    }
-//
-//    public IntygServiceResult storeIntyg(Utkast utkast, Omsandning omsandning) {
-//        try {
-//            registerIntyg(utkast);
-//            omsandningRepository.delete(omsandning);
-//            return IntygServiceResult.OK;
-//        } catch (ExternalServiceCallException | WebServiceException esce) {
-//            LOG.error("An WebServiceException occured when trying to fetch and send intyg: " + utkast.getIntygsId(), esce);
-//            scheduleResend(omsandning);
-//            return IntygServiceResult.RESCHEDULED;
-//        } catch (ModuleException | IntygModuleFacadeException e) {
-//            LOG.error("Module problems occured when trying to send intyg " + utkast.getIntygsId(), e);
-//            omsandningRepository.delete(omsandning);
-//            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-//        }
-//    }
-
-//    @Override
-//    public IntygServiceResult sendIntyg(Omsandning omsandning) {
-//        SendIntygConfiguration sendConfig = configurationManager.unmarshallConfig(omsandning.getConfiguration(), SendIntygConfiguration.class);
-//        Utlatande intyg = getUtlatandeForIntyg(omsandning.getIntygId(), omsandning.getIntygTyp());
-//        return sendIntyg(omsandning, sendConfig, intyg);
-//    }
-
     @Override
     public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean hasPatientConsent) {
 
@@ -356,7 +303,7 @@ public class IntygServiceImpl implements IntygService {
     private IntygContentHolder getIntygData(String intygId, String typ) {
         try {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
-            List<Status> status = certificate.getMetaData().getStatus();
+            List<Status> status = resolveStatus(intygId, certificate.getMetaData()); //.getStatus();
             String internalIntygJsonModel = certificate.getInternalModel();
             return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), status, certificate.isRevoked());
         } catch (IntygModuleFacadeException me) {
@@ -376,6 +323,37 @@ public class IntygServiceImpl implements IntygService {
             }
             return buildIntygContentHolder(typ, utkast);
         }
+    }
+
+    /**
+     * This hack may need a bit of explaining. If intygstjänsten has a SIGNED intyg, but the utkast has been marked
+     * with a SENT date, it may very well be that the async operation to send it to FK/TS hasn't completed yet. In that
+     * case, change the status here to SENT since that is how we should show this intyg.
+     *
+     * This method adds an "artifical" CertificateStatus.SENT if the above criteria applies.
+     *
+     * @param metaData
+     * @return
+     */
+    private List<Status> resolveStatus(String intygId, CertificateMetaData metaData) {
+        boolean isRecieved = false;
+        boolean isSent = false;
+        for (Status status : metaData.getStatus()) {
+            if (status.getType() == CertificateState.RECEIVED) {
+                isRecieved = true;
+            }
+            if (status.getType() == CertificateState.SENT) {
+                isSent = true;
+            }
+        }
+        if (isRecieved && !isSent) {
+            Utkast utkast = utkastRepository.findOne(intygId);
+            if (utkast != null && utkast.getStatus() == UtkastStatus.SIGNED && utkast.getSkickadTillMottagareDatum() != null) {
+                Status status = new Status(CertificateState.SENT, utkast.getSkickadTillMottagare(), utkast.getSkickadTillMottagareDatum());
+                metaData.getStatus().add(status);
+            }
+        }
+        return metaData.getStatus();
     }
 
 
@@ -411,18 +389,6 @@ public class IntygServiceImpl implements IntygService {
             return intyg.getUtlatande();
         }
     }
-
-//    private void registerIntyg(Utkast utkast) throws IntygModuleFacadeException, ModuleException {
-//        LOG.debug("Attempting to register signed utkast {}", utkast.getIntygsId());
-//        modelFacade.registerCertificate(utkast.getIntygsTyp(), utkast.getModel());
-//        LOG.debug("Successfully registered signed utkast {}", utkast.getIntygsId());
-//    }
-//    private void scheduleResend(Omsandning omsandning) {
-//        omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
-//        omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
-//        omsandningRepository.save(omsandning);
-//        LOG.debug("Rescheduled {}", omsandning.toString());
-//    }
 
     /**
      * Send a notification message to stakeholders informing that

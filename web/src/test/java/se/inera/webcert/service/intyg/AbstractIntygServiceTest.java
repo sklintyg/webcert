@@ -1,19 +1,17 @@
 package se.inera.webcert.service.intyg;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
@@ -23,8 +21,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.ri
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
-import se.inera.webcert.persistence.utkast.model.Omsandning;
-import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.certificatesender.CertificateSenderService;
 import se.inera.webcert.service.intyg.config.IntygServiceConfigurationManager;
@@ -36,11 +32,8 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.SignaturServiceImpl;
-import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.web.service.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
-
-import java.util.ArrayList;
 
 
 public abstract class AbstractIntygServiceTest {
@@ -71,9 +64,6 @@ public abstract class AbstractIntygServiceTest {
 
     @Mock
     protected UtkastRepository intygRepository;
-
-    @Mock
-    protected OmsandningRepository omsandningRepository;
 
     @Mock
     protected WebCertUserService webCertUserService;
@@ -124,16 +114,6 @@ public abstract class AbstractIntygServiceTest {
     @Before
     public void setupDefaultAuthorization() {
         when(webCertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(false);
-    }
-
-    @Before
-    public void setupOmsandningSave() {
-        when(omsandningRepository.save(any(Omsandning.class))).thenAnswer(new Answer<Omsandning>() {
-            @Override
-            public Omsandning answer(InvocationOnMock invocation) throws Throwable {
-                return (Omsandning) invocation.getArguments()[0];
-            }
-        });
     }
 
     @Before

@@ -154,8 +154,6 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         } catch (RuntimeException e) {
             // Expected
         }
-        
-        verifyZeroInteractions(omsandningRepository);
         verify(intygRepository, times(0)).save(any(Utkast.class));
     }
 
