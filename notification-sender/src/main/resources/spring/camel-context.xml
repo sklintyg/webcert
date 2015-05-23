@@ -25,7 +25,7 @@
     </property>
   </bean>
 
-  <camel:camelContext id="webcertNotification">
+  <camel:camelContext id="webcertNotification" trace="true">
 
     <camel:routeBuilder ref="processNotificationRequestRouteBuilder"/>
 
@@ -37,6 +37,9 @@
 
     <!-- Endpoint for transformed messages, ready to be sent to WS  -->
     <camel:endpoint id="sendNotificationWSEndpoint" uri="${sendNotificationWSEndpointUri}"/>
+
+    <!-- Endpoint for messages that have failed once, ready to be sent to WS again -->
+    <camel:endpoint id="failedMessagesEndpoint" uri="${failedMessagesEndpointUri}"/>
 
     <camel:endpoint id="deadLetterEndpoint" uri="${deadLetterEndpointUri}"/>
 
