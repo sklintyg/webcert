@@ -20,6 +20,8 @@
   <bean id="jms" class="org.apache.activemq.camel.component.ActiveMQComponent">
     <property name="connectionFactory" ref="jmsFactory"/>
     <property name="transactionManager" ref="jmsTransactionManager"/>
+    <property name="transacted" value="true"/>
+    <property name="cacheLevelName" value="CACHE_CONSUMER"/>
   </bean>
 
   <bean id="PROPAGATION_REQUIRED" class="org.apache.camel.spring.spi.SpringTransactionPolicy">

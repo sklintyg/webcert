@@ -94,7 +94,7 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
                 CertificateStatusUpdateForCareType certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
                 UtlatandeType utlatande = new UtlatandeType();
                 UtlatandeId utlatandeId = new UtlatandeId();
-                utlatandeId.setExtension("id1");
+                utlatandeId.setExtension(notificationMessage.getIntygsId());
                 utlatande.setUtlatandeId(utlatandeId);
                 certificateStatusUpdateForCareType.setUtlatande(utlatande);
                 return certificateStatusUpdateForCareType;
