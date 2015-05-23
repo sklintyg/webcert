@@ -29,11 +29,21 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
                 .to("sendNotificationWSEndpoint");
 
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
-                .errorHandler(deadLetterChannel("direct:redeliveryExhaustedEndpoint")
+                .errorHandler(deadLetterChannel("failedMessagesEndpoint").useOriginalMessage())
+                .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .transacted()
+                .to("direct:sendWSMessage");
+
+        from("failedMessagesEndpoint").routeId("sendNotificationToWSSecondary")
+                .errorHandler(deadLetterChannel("direct:redeliveryExhaustedEndpoint").useOriginalMessage()
                         .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay)
                         .useExponentialBackOff())
                 .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
                 .transacted()
+                .to("direct:sendWSMessage");
+
+        from("direct:sendWSMessage")
+                .errorHandler(noErrorHandler())
                 .unmarshal("jaxbMessageDataFormat")
                 .to("sendCertificateStatusUpdateEndpoint");
 
@@ -43,7 +53,7 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
 
         from("direct:redeliveryExhaustedEndpoint").routeId("redeliveryErrorLogging")
                 .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
-                .marshal("jaxbMessageDataFormat")
+                //.marshal("jaxbMessageDataFormat")
                 .to("deadLetterEndpoint")
                 .stop();
     }

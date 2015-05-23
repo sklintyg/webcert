@@ -59,6 +59,7 @@ public class RouteTest {
 
     @Before
     public void setup() {
+        camelContext.setTracing(true);
         mockRequestProcessorEndpoint.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
