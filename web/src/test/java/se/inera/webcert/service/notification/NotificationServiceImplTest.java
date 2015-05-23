@@ -12,6 +12,7 @@ import static org.mockito.Matchers.eq;
 import java.io.IOException;
 
 import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Ignore;
@@ -91,10 +92,11 @@ public class NotificationServiceImplTest {
 
         verify(template, only()).send(messageCreatorCaptor.capture());
 
+        TextMessage textMessage = mock(TextMessage.class);
         Session session = mock(Session.class);
 
         ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        when(session.createTextMessage(stringArgumentCaptor.capture())).thenReturn(null);
+        when(session.createTextMessage(stringArgumentCaptor.capture())).thenReturn(textMessage);
 
         MessageCreator messageCreator = messageCreatorCaptor.getValue();
         messageCreator.createMessage(session);

@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +195,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
         
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
-        send(notificationMessage);
+        send(notificationMessage, utkast.getVardgivarId());
     }
 
     public void createAndSendNotification(Utkast utkast, HandelseType handelse) {
@@ -207,7 +208,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
         
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
-        send(notificationMessage);
+        send(notificationMessage, utkast.getVardgivarId());
     }
 
     public void createAndSendNotification(FragaSvar fragaSvar, HandelseType handelse) {
@@ -220,11 +221,11 @@ public class NotificationServiceImpl implements NotificationService {
         }
         
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
-        send(notificationMessage);
+        send(notificationMessage, utkast.getVardgivarId());
     }
 
     /* -- Package visibility -- */
-    void send(NotificationMessage notificationMessage) {
+    void send(NotificationMessage notificationMessage, String vardgivarId) {
 
         if (jmsTemplate == null) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
@@ -235,7 +236,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
 
-        jmsTemplate.send(new NotificationMessageCreator(notificationMessageAsJson));
+        jmsTemplate.send(new NotificationMessageCreator(notificationMessageAsJson, vardgivarId));
     }
 
     String notificationMessageToJson(NotificationMessage notificationMessage) {
@@ -250,13 +251,17 @@ public class NotificationServiceImpl implements NotificationService {
     static final class NotificationMessageCreator implements MessageCreator {
 
         private String value;
+        private String vardgivarId;
 
-        public NotificationMessageCreator(String notificationMessage) {
+        public NotificationMessageCreator(String notificationMessage, String vardgivarId) {
             this.value = notificationMessage;
+            this.vardgivarId = vardgivarId;
         }
 
         public Message createMessage(Session session) throws JMSException {
-            return session.createTextMessage(this.value);
+            TextMessage textMessage = session.createTextMessage(this.value);
+            textMessage.setStringProperty("JMSXGroupID", vardgivarId);
+            return textMessage;
         }
     }
 
