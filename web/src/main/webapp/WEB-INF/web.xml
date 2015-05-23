@@ -205,6 +205,12 @@
   </resource-ref>
 
   <resource-ref>
+    <res-ref-name>jms/NotificationWSQueueSecondary</res-ref-name>
+    <res-type>javax.jms.Queue</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+
+  <resource-ref>
     <res-ref-name>jms/NotificationDLQ</res-ref-name>
     <res-type>javax.jms.Queue</res-type>
     <res-auth>Container</res-auth>
