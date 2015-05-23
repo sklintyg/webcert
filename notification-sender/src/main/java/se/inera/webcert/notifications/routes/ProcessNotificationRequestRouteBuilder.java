@@ -53,7 +53,6 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
 
         from("direct:redeliveryExhaustedEndpoint").routeId("redeliveryErrorLogging")
                 .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
-                //.marshal("jaxbMessageDataFormat")
                 .to("deadLetterEndpoint")
                 .stop();
     }

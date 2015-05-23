@@ -50,6 +50,9 @@
     <bean id="notificationWSQueue" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/NotificationWSQueue" />
     </bean>
+    <bean id="NotificationWSQueueSecondary" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jms/NotificationWSQueueSecondary" />
+    </bean>
     <bean id="notificationDLQ" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jms/NotificationDLQ" />
     </bean>
