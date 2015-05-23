@@ -11,7 +11,13 @@
 
   <logger name="org.apache.camel" level="info"/>
 
+  <logger name="org.apache.activemq" level="info"/>
+
+  <logger name="org.apache.xbean" level="warn"/>
+
   <logger name="se.inera.webcert.notifications" level="debug"/>
+
+  <logger name="se.inera.webcert.notifications.resend" level="error"/>
 
   <root>
     <level value="debug"/>
