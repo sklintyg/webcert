@@ -57,7 +57,7 @@
     <module>integration/eid-integration</module>
     <module>integration/hsa-integration</module>
     <module>integration/pu-integration</module>
-    <module>specifications</module>
+    <!--module>specifications</module -->
     <module>stubs/fk-stub</module>
     <module>stubs/loggtjanst-stub</module>
     <module>stubs/intygstjanst-stub</module>
