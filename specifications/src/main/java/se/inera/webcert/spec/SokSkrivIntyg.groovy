@@ -45,8 +45,7 @@ class SokSkrivIntyg {
 
     def valjPatient(String personNummer) {
         Browser.drive {
-            page.personnummer = personNummer
-            page.personnummerFortsattKnapp.click()
+            page.angePatient(personNummer)
         }
     }
 
@@ -82,16 +81,15 @@ class SokSkrivIntyg {
         }
     }
 
-    boolean patientensNamnAr(String expected) {
+    String patientensNamnAr() {
+        String result
         Browser.drive {
             waitFor {
                 at SokSkrivValjIntygTypPage
             }
-            waitFor {
-                expected == page.patientNamn.text()
-            }
+            result = page.patientNamn.text()
         }
-        true
+        result
     }
 
     boolean kopieraKnappVisasForIntyg(boolean expected = true, String intygId) {

@@ -1,9 +1,9 @@
 package se.inera.webcert.service.intyg;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
 
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
@@ -13,14 +13,13 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
@@ -37,8 +36,6 @@ import se.inera.webcert.service.signatur.SignaturServiceImpl;
 import se.inera.webcert.web.service.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v1.RegisterCertificateResponderInterface;
 
-import java.util.ArrayList;
-
 
 public abstract class AbstractIntygServiceTest {
 
@@ -47,12 +44,6 @@ public abstract class AbstractIntygServiceTest {
     protected static final String INTYG_ID = "intyg-1";
 
     protected static final String INTYG_TYP_FK = "fk7263";
-
-    @Mock
-    protected GetRecipientsForCertificateResponderInterface getRecipientsForCertificateService;
-
-    @Mock
-    protected GetCertificateForCareResponderInterface getCertificateService;
 
     @Mock
     protected RegisterCertificateResponderInterface intygSender;
