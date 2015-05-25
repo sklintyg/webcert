@@ -92,8 +92,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @param json
      * @return HttpResponseDecorator
      */
-    public static HttpResponseDecorator saveUtkast(String intygsTyp, String utkastId, String json) {
-        def response = webcert.put(path : "moduleapi/utkast/${intygsTyp}/${utkastId}", body : json, requestContentType : JSON)
+    public static HttpResponseDecorator saveUtkast(String intygsTyp, String utkastId, long version, String json) {
+        def response = webcert.put(path : "moduleapi/utkast/${intygsTyp}/${utkastId}/${version}", body : json, requestContentType : JSON)
         response
     }
 
@@ -103,8 +103,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @param intygsId
      * @return HttpResponseDecorator
      */
-    public static HttpResponseDecorator signUtkast(String intygsTyp, String intygsId) {
-        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/signeraserver", requestContentType : JSON)
+    public static HttpResponseDecorator signUtkast(String intygsTyp, String intygsId, long version) {
+        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType : JSON)
         response
     }
 
@@ -184,8 +184,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @param utkastId
      * @return HttpResponseDecorator
      */
-    public static HttpResponseDecorator deleteUtkast(String intygsTyp, String utkastId) {
-        def restPath ="/moduleapi/utkast/${intygsTyp}/${utkastId}"
+    public static HttpResponseDecorator deleteUtkast(String intygsTyp, String utkastId, long version) {
+        def restPath ="/moduleapi/utkast/${intygsTyp}/${utkastId}/${version}/"
         def response = webcert.delete(path : restPath)
         response
     }

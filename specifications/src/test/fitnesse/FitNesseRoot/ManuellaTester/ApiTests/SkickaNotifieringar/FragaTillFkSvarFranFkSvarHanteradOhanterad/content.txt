@@ -7,16 +7,20 @@
 
 !3 Skapa ett utkast, fyll på med data och spara och signera
 | skapa utkast med fake inloggning |
-| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? |
-| 19000101-9801       | Test           | Testorsson       |           true | $utkastId=|
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId?  | version?  |
+| 19000101-9801       | Test           | Testorsson       |           true | $utkastId= | $version= |
 
 | spara utkast |
-| patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId             | kodverk   | diagnosKod | diagnosBeskrivning1 | nedsattMed100 | intygId    | intygTyp | komplett | utkastSparat? |
-| 19000101-9801 | Test | Testorsson | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId   | fk7263    | true |true | 
+| patientPersonnummer | patientFornamn    | patientEfternamn  | hsaId             | namn             | enhetId           | kodverk   | diagnosKod | diagnosBeskrivning1  | nedsattMed100                                            | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
+| 19000101-9801       | Test              | Testorsson        | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId  | fk7263   | $version | true     | true          | $version= | 
+
+| hamta utkast |
+| intygsId   | intygsTyp | utkastHamtat? | version?  | 
+| $utkastId  | fk7263    | true          | $version= |
 
 | signera utkast | 
-| intygId   | intygTyp | utkastSignerat? |
-| $utkastId | fk7263   | true            |
+| intygId   | intygTyp | version  | utkastSignerat? |
+| $utkastId | fk7263   | $version | true            |
 
 !3 Skicka intyget till Försäkringskassan så att vi kan ställa frågor på det
 | skicka intyg |
@@ -28,14 +32,12 @@
 | reset? | 
 | true | 
 
-
 !4 Ställ fråga och verifiera att frågehantering fungerar
 
 !3 Ställ en fråga på det nyss skickade intyget, detta skall ge en notifiering av typen HAN8
 | skapa fraga till fk |
 | intygId   | intygTyp |  fragaSkapad? | internReferens?  | 
 | $utkastId | fk7263   |   true        | $internReferens= |
-
 
 !3 Verifiera notifiering HAN8
 | verifiera notifiering | 
@@ -47,12 +49,10 @@
 | id        | kod |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
 | $utkastId | HAN8|   0                  | 0          |  0                    | 0            |
 
-
 !3 Skicka svar från FK
 | Fk skickar svar |
 | amne | vardreferens | svarText | vardenhet | resultat? |
 | OVRIGT | $internReferens | Ett svar | SE4815162344-1A02 | OK |
-
 
 !3 Verifiera notifiering HAN7
 | verifiera notifiering | 
@@ -63,7 +63,6 @@
 | skickade notifieringar |
 | id        | kod |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
 | $utkastId | HAN7|   0                  | 1          | 0                     | 0            |
-
 
 !3 Hantera svar från FK och sätt svar som hanterat
 | markera svar som hanterat |
@@ -80,9 +79,7 @@
 | id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
 | $utkastId | HAN10 |   1                  | 1          |  0                    | 0            |
 
-
 !3 Rensa notifieringar så att vi kan verifiera de relevanta
-
 |webcert rest utils|
 |reset?|
 |true|
@@ -102,13 +99,12 @@
 | id        | kod   |  antalHanteradeSvar? | antalSvar? | antalHanteradeFragor? | antalFragor? | 
 | $utkastId | HAN7  |   0                  | 1          |  0                    | 0            |
 
-
 !3 Ta bort utkastet
 | ta bort utkast |
 | utkastId |
 | $utkastId |
 
 !3 Rensa notifieringar
-#| webcert rest utils |
-#| reset? | 
-#| true | 
+| webcert rest utils |
+| reset? | 
+| true   | 

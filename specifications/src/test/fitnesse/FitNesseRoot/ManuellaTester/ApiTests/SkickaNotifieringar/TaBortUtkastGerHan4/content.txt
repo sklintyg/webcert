@@ -1,30 +1,20 @@
-!3 Börja med att rensa eventuella gamla notifieringar
+!3 Rensa eventuella gamla notifieringar
 | webcert rest utils | 
 | reset? |
 | true |
 
 !3 Logga in och skapa ett nytt intygsutkast
 | skapa utkast med fake inloggning |
-| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? |
-| 19000101-9801       | Test           | Testorsson       |           true | $utkastId=|
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId?  | version?  |
+| 19000101-9801       | Test           | Testorsson       |           true | $utkastId= | $version= |
 
 !3 Radera utkastet
 | radera utkast |
-| intygId   | intygTyp | utkastRaderat? | 
-| $utkastId | fk7263   | true  |
-
+| intygId   | intygTyp | version  | utkastRaderat? | 
+| $utkastId | fk7263   | $version | true           |
 
 !3 Verifiera att notifieringar mottogs av notifierings-stubben
 | verifiera notifiering | 
 | id         | kod  | handelseSkapad? |
-| $utkastId  | HAN1 | true              |
-| $utkastId  | HAN4 | true              |
-
-
-!3 Rensa notifieringar
-| webcert rest utils | 
-| reset? |
-| true |
-
-
-
+| $utkastId  | HAN1 | true            |
+| $utkastId  | HAN4 | true            |
