@@ -9,7 +9,7 @@ class UnhandledQAPage extends AbstractPage {
     static content = {
         unitstatUnhandledQuestionsBadgde(required: false) { $("#stat-unitstat-unhandled-question-count") }
         careUnitSelector(required: false) { $("div#wc-care-unit-clinic-selector") }
-        careUnitModal(required: false) { $("a#wc-care-unit-clinic-selector") }
+        careUnitModal(required: false) { $("a#wc-care-unit-clinic-selector-link") }
         careUnitModalBody(required: false) { $(".modal-body") }
         unhandledQATable(required: false) { $("#qaTable") }
 
