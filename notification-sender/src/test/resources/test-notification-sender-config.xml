@@ -5,7 +5,6 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <import resource="spring/beans-context.xml" />
-  <import resource="spring/service-context.xml"/>
   <import resource="spring/camel-context.xml" />
   <import resource="spring/test-broker-context.xml" />
   <import resource="spring/test-service-context.xml" />

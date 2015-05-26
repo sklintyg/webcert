@@ -6,7 +6,6 @@
   
   <import resource="spring/ws-context.xml"/>
   <import resource="spring/beans-context.xml"/>
-  <import resource="spring/service-context.xml"/>
   <import resource="spring/camel-jms-context.xml"/>
   <import resource="spring/camel-context.xml"/>
 

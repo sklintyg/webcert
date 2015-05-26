@@ -5,4 +5,6 @@
    
   <bean id="createAndInitCertificateStatusRequestProcessor" class="se.inera.webcert.notifications.process.NotificationTransformer"/>
 
+  <bean id="certificateStatusUpdateService" class="se.inera.webcert.notifications.service.CertificateStatusUpdateServiceImpl"></bean>
+
 </beans>
