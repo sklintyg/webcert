@@ -8,12 +8,7 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.EndpointInject;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.apache.camel.test.spring.MockEndpoints;
@@ -36,7 +31,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/test-notification-sender-config.xml", "/spring/unit-test-properties-context.xml" })
-@MockEndpointsAndSkip("bean:createAndInitCertificateStatusRequestProcessor")
+@MockEndpointsAndSkip("bean:createAndInitCertificateStatusRequestProcessor|bean:certificateStatusUpdateService")
 @MockEndpoints("(direct:errorHandlerEndpoint|direct:redeliveryExhaustedEndpoint)")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class RouteTest {
@@ -54,7 +49,7 @@ public class RouteTest {
     @Produce(uri = "direct:receiveNotificationRequestEndpoint")
     private ProducerTemplate processNotificationRequestEndpoint;
 
-    @EndpointInject(uri = "mock:certificateStatusUpdateEndpoint")
+    @EndpointInject(uri = "mock:bean:certificateStatusUpdateService")
     private MockEndpoint mockCertificateStatusUpdateEndpoint;
 
     @EndpointInject(uri = "mock:bean:createAndInitCertificateStatusRequestProcessor")
@@ -64,7 +59,7 @@ public class RouteTest {
     private MockEndpoint mockErrorHandlerEndpoint;
 
     @EndpointInject(uri = "mock:direct:redeliveryExhaustedEndpoint")
-    private MockEndpoint mockRedeliveryEndpoint;
+    private MockEndpoint mockExhaustedRedeliveryEnpoint;
 
     @Value("${errorhandling.maxRedeliveryDelay}")
     private long maxRedeliveryDelay;
@@ -86,7 +81,7 @@ public class RouteTest {
         // Given
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
         mockErrorHandlerEndpoint.expectedMessageCount(0);
-        mockRedeliveryEndpoint.expectedMessageCount(0);
+        mockExhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
         processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
@@ -94,7 +89,7 @@ public class RouteTest {
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
         assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockRedeliveryEndpoint);
+        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
     }
 
     @Test
@@ -110,7 +105,7 @@ public class RouteTest {
 
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(0);
         mockErrorHandlerEndpoint.expectedMessageCount(1);
-        mockRedeliveryEndpoint.expectedMessageCount(0);
+        mockExhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
         processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
@@ -118,7 +113,7 @@ public class RouteTest {
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
         assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockRedeliveryEndpoint);
+        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
     }
 
     @Test
@@ -134,7 +129,7 @@ public class RouteTest {
 
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(0);
         mockErrorHandlerEndpoint.expectedMessageCount(1);
-        mockRedeliveryEndpoint.expectedMessageCount(0);
+        mockExhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
         processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
@@ -142,7 +137,7 @@ public class RouteTest {
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
         assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockRedeliveryEndpoint);
+        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
     }
 
     @Test
@@ -169,7 +164,7 @@ public class RouteTest {
 
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(4);
         mockErrorHandlerEndpoint.expectedMessageCount(0);
-        mockRedeliveryEndpoint.expectedMessageCount(1);
+        mockExhaustedRedeliveryEnpoint.expectedMessageCount(1);
 
         // When
         processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
@@ -177,7 +172,7 @@ public class RouteTest {
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
         assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockRedeliveryEndpoint);
+        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
     }
 
     @Test
@@ -193,7 +188,7 @@ public class RouteTest {
 
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
         mockErrorHandlerEndpoint.expectedMessageCount(1);
-        mockRedeliveryEndpoint.expectedMessageCount(0);
+        mockExhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
         processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
@@ -201,7 +196,7 @@ public class RouteTest {
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
         assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockRedeliveryEndpoint);
+        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
     }
     
     @Test
@@ -219,7 +214,7 @@ public class RouteTest {
 
         mockCertificateStatusUpdateEndpoint.expectedMessageCount(4);
         mockErrorHandlerEndpoint.expectedMessageCount(0);
-        mockRedeliveryEndpoint.expectedMessageCount(1);
+        mockExhaustedRedeliveryEnpoint.expectedMessageCount(1);
 
         // When
         processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
@@ -227,7 +222,7 @@ public class RouteTest {
         // Then
         assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
         assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockRedeliveryEndpoint);
+        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
     }
 
 }

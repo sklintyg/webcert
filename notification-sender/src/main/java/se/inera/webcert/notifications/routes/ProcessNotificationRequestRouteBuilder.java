@@ -48,7 +48,7 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
         from("direct:sendWSMessage")
                 .errorHandler(noErrorHandler())
                 .unmarshal("jaxbMessageDataFormat")
-                .to("sendCertificateStatusUpdateEndpoint");
+                .to("bean:certificateStatusUpdateService");
 
         from("direct:errorHandlerEndpoint").routeId("errorLogging")
                 .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())

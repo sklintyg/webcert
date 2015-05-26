@@ -32,9 +32,6 @@
     <!-- Endpoint connected to AMQ to recieve messages on -->
     <camel:endpoint id="receiveNotificationRequestEndpoint" uri="${receiveNotificationRequestEndpointUri}"/>
 
-    <!-- Outgoing endpoint to CertificateStatusUpdateForCare service -->
-    <camel:endpoint id="sendCertificateStatusUpdateEndpoint" uri="${sendCertificateStatusUpdateEndpointUri}"/>
-
     <!-- Endpoint for transformed messages, ready to be sent to WS  -->
     <camel:endpoint id="sendNotificationWSEndpoint" uri="${sendNotificationWSEndpointUri}"/>
 
