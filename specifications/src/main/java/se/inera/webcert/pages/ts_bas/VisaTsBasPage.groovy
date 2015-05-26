@@ -18,9 +18,11 @@ class VisaTsBasPage extends VisaPage {
 
         skickaDialogBodyTsBas { $("span[key=\"ts-bas.label.send.body\"]") }
 
+        // TODO move these four to the base class?
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
         certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+        certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
 
         patientpostadress { $("#patientpostadress") }
         patientpostnummer { $("#patientpostnummer") }

@@ -10,13 +10,17 @@ class VisaFk7263Page extends VisaPage {
         intygSaknas { $("#cert-load-error") }
         intygLaddat { $('#intyg-vy-laddad') }
         intygFel { $("#cert-inline-error") }
+
+        // TODO move these four to the base class?
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
         certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+        certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
+
         visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
 
         // copy dialog
-        annanEnhetText { $("#annanVardenhet")}
+        annanEnhetText { $("#annanVardenhet") }
 
         // header
         webcertLogoLink(required: false) { $("#webcertLogoLink") }

@@ -303,9 +303,8 @@ public class IntygServiceImpl implements IntygService {
     private IntygContentHolder getIntygData(String intygId, String typ) {
         try {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
-            List<Status> status = resolveStatus(intygId, certificate.getMetaData()); //.getStatus();
             String internalIntygJsonModel = certificate.getInternalModel();
-            return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), status, certificate.isRevoked());
+            return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), certificate.getMetaData().getStatus(), certificate.isRevoked());
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing exception
             Utkast utkast = utkastRepository.findOne(intygId);
@@ -324,38 +323,6 @@ public class IntygServiceImpl implements IntygService {
             return buildIntygContentHolder(typ, utkast);
         }
     }
-
-    /**
-     * This hack may need a bit of explaining. If intygstjänsten has a SIGNED intyg, but the utkast has been marked
-     * with a SENT date, it may very well be that the async operation to send it to FK/TS hasn't completed yet. In that
-     * case, change the status here to SENT since that is how we should show this intyg.
-     *
-     * This method adds an "artifical" CertificateStatus.SENT if the above criteria applies.
-     *
-     * @param metaData
-     * @return
-     */
-    private List<Status> resolveStatus(String intygId, CertificateMetaData metaData) {
-        boolean isRecieved = false;
-        boolean isSent = false;
-        for (Status status : metaData.getStatus()) {
-            if (status.getType() == CertificateState.RECEIVED) {
-                isRecieved = true;
-            }
-            if (status.getType() == CertificateState.SENT) {
-                isSent = true;
-            }
-        }
-        if (isRecieved && !isSent) {
-            Utkast utkast = utkastRepository.findOne(intygId);
-            if (utkast != null && utkast.getStatus() == UtkastStatus.SIGNED && utkast.getSkickadTillMottagareDatum() != null) {
-                Status status = new Status(CertificateState.SENT, utkast.getSkickadTillMottagare(), utkast.getSkickadTillMottagareDatum());
-                metaData.getStatus().add(status);
-            }
-        }
-        return metaData.getStatus();
-    }
-
 
     /**
      * As the name of the method implies, this method builds a IntygContentHolder instance

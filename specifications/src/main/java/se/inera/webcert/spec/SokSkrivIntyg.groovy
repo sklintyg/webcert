@@ -187,7 +187,8 @@ class SokSkrivIntyg {
     boolean skickaStatusVisas() {
         Browser.drive {
             waitFor {
-                page.certificateIsSentToRecipientMessage.isDisplayed()
+                //page.certificateIsSentToRecipientMessage.isDisplayed()
+                page.certificateIsOnQueueToITMessage.isDisplayed()
             }
         }
         true
@@ -198,7 +199,8 @@ class SokSkrivIntyg {
         Browser.drive {
 
             waitFor {
-                expected = page.certificateIsSentToRecipientMessage.text().contains(containsText)
+                // expected = page.certificateIsSentToRecipientMessage.text().contains(containsText)
+                expected = page.certificateIsOnQueueToITMessage.text().contains(containsText)
             }
         }
         expected
