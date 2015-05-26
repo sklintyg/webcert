@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.stub;
+package se.inera.webcert.notifications.service;
 
 import java.util.ArrayList;
 import java.util.List;

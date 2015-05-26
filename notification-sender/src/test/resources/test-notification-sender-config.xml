@@ -13,6 +13,6 @@
 
   <context:component-scan base-package="se.inera.webcert.notifications" />
   
-  <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.notifications.stub.CertificateStatusUpdateForCareResponderStub"/>
+  <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.notifications.service.CertificateStatusUpdateForCareResponderStub"/>
   
 </beans>
