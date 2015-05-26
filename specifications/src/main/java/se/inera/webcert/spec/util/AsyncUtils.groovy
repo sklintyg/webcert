@@ -13,6 +13,8 @@ import static com.jayway.awaitility.Awaitility.await
  * Created by eriklupander on 2015-05-26.
  *
  * Use this to perform asynchronous assertions vs external message receivers.
+ *
+ * Currently used only for async assertions vs Intygstjänsten but should be general-purpose.
  */
 class AsyncUtils extends RestClientFixture {
     private static final Logger LOG = LoggerFactory.getLogger(AsyncUtils.class)
@@ -24,7 +26,6 @@ class AsyncUtils extends RestClientFixture {
 
     boolean intygFinnsIIntygstjansten(String intygsId, long timeout = 4000L) {
         result = false
-
         awaitResult(buildIntygExistsConditionCallable(intygsId), timeout)
         result
     }
@@ -37,11 +38,22 @@ class AsyncUtils extends RestClientFixture {
 
     boolean makuleratIntygFinnsIIntygstjansten(String intygsId, long timeout = 4000L) {
         result = false
-
         awaitResult(buildMakuleratIntygExistsConditionCallable(intygsId), timeout)
         result
     }
 
+    /** Private scope */
+    private Callable<Boolean> buildIntygExistsConditionCallable(String intygsId) {
+
+        return {
+            try {
+                HttpResponseDecorator response = intygstjanst.get(path : "resources/certificate/${intygsId}")
+                result = response.status == 200
+            } catch (Exception e) {
+                result = false
+            }
+        }
+    }
 
     private Callable<Boolean> buildMakuleratIntygExistsConditionCallable(String intygsId) {
 
@@ -53,13 +65,6 @@ class AsyncUtils extends RestClientFixture {
                 result = false
             }
         }
-
-    }
-
-
-
-    private void awaitResult(Callable<Boolean> callable, long timeout) {
-        await().atMost(timeout, TimeUnit.MILLISECONDS).until(callable)
     }
 
     private Callable<Boolean> buildIntygExistsAsSentConditionCallable(String intygsId, String recipient) {
@@ -74,6 +79,11 @@ class AsyncUtils extends RestClientFixture {
         }
     }
 
+    private void awaitResult(Callable<Boolean> callable, long timeout) {
+        await().atMost(timeout, TimeUnit.MILLISECONDS).until(callable)
+    }
+
+
     private boolean isSentToRecipient(recipient, states) {
         boolean sent = false
         for(state in states) {
@@ -86,16 +96,5 @@ class AsyncUtils extends RestClientFixture {
     }
 
 
-    private Callable<Boolean> buildIntygExistsConditionCallable(String intygsId) {
 
-        return {
-            try {
-                HttpResponseDecorator response = intygstjanst.get(path : "resources/certificate/${intygsId}")
-                result = response.status == 200
-            } catch (Exception e) {
-                result = false
-            }
-        }
-
-    }
 }
