@@ -63,10 +63,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>notification-sender</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>certificate-sender</artifactId>
-    </dependency>
 
     <!-- Common -->
     <dependency>
