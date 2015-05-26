@@ -24,6 +24,11 @@ Detta test visar att man kan makulera ett signerat ts-bas intyg från visa-vyn o
 | visa intyg sidan visas |
 | makulerad status visas |
 
+!3 Verifiera att Intygstjänsten makulerat intyget (asynkron sändning, webcert-1314)
+| script | !-IntygstjanstAsynk-! |
+| finns makulerat intyg i intygstjansten med | intyg-fit-106 | vantetid | 5000 |
+
+
 !3 Ta bort intyg
 
 | ta bort intyg |

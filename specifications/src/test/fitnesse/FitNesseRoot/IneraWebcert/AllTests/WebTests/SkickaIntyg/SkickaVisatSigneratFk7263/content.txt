@@ -16,3 +16,8 @@ Detta test ska visa på att man kan skicka ett signerat fk-intyg.
 | skicka det visade intyget av typ | fk7263 |
 | skicka status visas |
 | skicka status visas | true | med ratt meddelande | Försäkringskassans system |
+
+!3 Kontrollera att Intygstjänsten (asynkront) tagit emot och skickat intyget (webcert-1314)
+
+| script | !-IntygstjanstAsynk-! |
+| finns intyg i intygstjansten skickad till | intyg-fit-6 | skickad till | FK | med vantetid | 5000 |
