@@ -127,7 +127,7 @@ angular.module('webcert').controller('webcert.ChooseCertTypeCtrl',
                 };
                 UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
                     $scope.viewState.createErrorMessageKey = undefined;
-                    $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data, true);
+                    $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId, true);
                 }, function(error) {
                     $log.debug('Create draft failed: ' + error.message);
                     $scope.viewState.createErrorMessageKey = 'error.failedtocreateintyg';
