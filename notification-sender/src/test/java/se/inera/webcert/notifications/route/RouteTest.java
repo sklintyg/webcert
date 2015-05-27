@@ -29,7 +29,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration({ "/test-notification-sender-config.xml", "/spring/unit-test-properties-context.xml" })
+@ContextConfiguration({ "/test-notification-sender-config.xml", "/notifications/unit-test-properties-context.xml" })
 @MockEndpointsAndSkip("bean:createAndInitCertificateStatusRequestProcessor|bean:certificateStatusUpdateService")
 @MockEndpoints("(direct:errorHandlerEndpoint|direct:redeliveryExhaustedEndpoint)")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)

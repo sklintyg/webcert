@@ -4,10 +4,10 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd  ">
   
-  <import resource="spring/ws-context.xml"/>
-  <import resource="spring/beans-context.xml"/>
-  <import resource="spring/camel-jms-context.xml"/>
-  <import resource="spring/camel-context.xml"/>
+  <import resource="notifications/ws-context.xml"/>
+  <import resource="notifications/beans-context.xml"/>
+  <import resource="notifications/camel-jms-context.xml"/>
+  <import resource="notifications/camel-context.xml"/>
 
   <context:annotation-config />
   
