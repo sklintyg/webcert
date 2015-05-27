@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
@@ -47,27 +46,24 @@ public class RouteTest {
     private CamelContext camelContext;
 
     @Produce(uri = "direct:receiveNotificationRequestEndpoint")
-    private ProducerTemplate processNotificationRequestEndpoint;
+    private ProducerTemplate producerTemplate;
 
     @EndpointInject(uri = "mock:bean:certificateStatusUpdateService")
-    private MockEndpoint mockCertificateStatusUpdateEndpoint;
+    private MockEndpoint certificateStatusUpdateService;
 
     @EndpointInject(uri = "mock:bean:createAndInitCertificateStatusRequestProcessor")
-    private MockEndpoint mockRequestProcessorEndpoint;
+    private MockEndpoint createAndInitCertificateStatusRequestProcessor;
 
     @EndpointInject(uri = "mock:direct:errorHandlerEndpoint")
-    private MockEndpoint mockErrorHandlerEndpoint;
+    private MockEndpoint errorHandlerEndpoint;
 
     @EndpointInject(uri = "mock:direct:redeliveryExhaustedEndpoint")
-    private MockEndpoint mockExhaustedRedeliveryEnpoint;
-
-    @Value("${errorhandling.maxRedeliveryDelay}")
-    private long maxRedeliveryDelay;
+    private MockEndpoint exhaustedRedeliveryEnpoint;
 
     @Before
     public void setup() {
         camelContext.setTracing(true);
-        mockRequestProcessorEndpoint.whenAnyExchangeReceived(new Processor() {
+        createAndInitCertificateStatusRequestProcessor.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.info("Receiving");
@@ -79,23 +75,23 @@ public class RouteTest {
     @Test
     public void testNormalRoute() throws InterruptedException {
         // Given
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
-        mockErrorHandlerEndpoint.expectedMessageCount(0);
-        mockExhaustedRedeliveryEnpoint.expectedMessageCount(0);
+        certificateStatusUpdateService.expectedMessageCount(1);
+        errorHandlerEndpoint.expectedMessageCount(0);
+        exhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
-        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
-        assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
+        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(errorHandlerEndpoint);
+        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
     @Test
     public void testTransformationException() throws InterruptedException {
         // Given
-        mockRequestProcessorEndpoint.whenAnyExchangeReceived(new Processor() {
+        createAndInitCertificateStatusRequestProcessor.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.info("Receiving");
@@ -103,23 +99,23 @@ public class RouteTest {
             }
         });
 
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(0);
-        mockErrorHandlerEndpoint.expectedMessageCount(1);
-        mockExhaustedRedeliveryEnpoint.expectedMessageCount(0);
+        certificateStatusUpdateService.expectedMessageCount(0);
+        errorHandlerEndpoint.expectedMessageCount(1);
+        exhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
-        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
-        assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
+        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(errorHandlerEndpoint);
+        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
     @Test
     public void testRuntimeException() throws InterruptedException {
         // Given
-        mockRequestProcessorEndpoint.whenAnyExchangeReceived(new Processor() {
+        createAndInitCertificateStatusRequestProcessor.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.info("Receiving {}");
@@ -127,17 +123,17 @@ public class RouteTest {
             }
         });
 
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(0);
-        mockErrorHandlerEndpoint.expectedMessageCount(1);
-        mockExhaustedRedeliveryEnpoint.expectedMessageCount(0);
+        certificateStatusUpdateService.expectedMessageCount(0);
+        errorHandlerEndpoint.expectedMessageCount(1);
+        exhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
-        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
-        assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
+        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(errorHandlerEndpoint);
+        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
     @Test
@@ -146,7 +142,7 @@ public class RouteTest {
         final List<Long> redeliveryDelays = new ArrayList<Long>();
 
         // Given
-        mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
+        certificateStatusUpdateService.whenAnyExchangeReceived(new Processor() {
             int attempts = 1;
             long start = System.currentTimeMillis();
 
@@ -162,23 +158,23 @@ public class RouteTest {
             }
         });
 
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(4);
-        mockErrorHandlerEndpoint.expectedMessageCount(0);
-        mockExhaustedRedeliveryEnpoint.expectedMessageCount(1);
+        certificateStatusUpdateService.expectedMessageCount(4);
+        errorHandlerEndpoint.expectedMessageCount(0);
+        exhaustedRedeliveryEnpoint.expectedMessageCount(1);
 
         // When
-        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
-        assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
+        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(errorHandlerEndpoint);
+        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
     @Test
     public void testTechnicalException() throws InterruptedException {
         // Given
-        mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
+        certificateStatusUpdateService.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.debug("Recieving.");
@@ -186,24 +182,25 @@ public class RouteTest {
             }
         });
 
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(1);
-        mockErrorHandlerEndpoint.expectedMessageCount(1);
-        mockExhaustedRedeliveryEnpoint.expectedMessageCount(0);
+        certificateStatusUpdateService.expectedMessageCount(1);
+        errorHandlerEndpoint.expectedMessageCount(1);
+        exhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
-        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
-        assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
+        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(errorHandlerEndpoint);
+        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
     
     @Test
     public void testWithWrappedIOExceptionShouldCauseResend() throws InterruptedException {
         // Given
-        mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
+        certificateStatusUpdateService.whenAnyExchangeReceived(new Processor() {
             private int attempts = 1;
+
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.debug("Recieving {}", attempts++);
@@ -212,17 +209,17 @@ public class RouteTest {
             }
         });
 
-        mockCertificateStatusUpdateEndpoint.expectedMessageCount(4);
-        mockErrorHandlerEndpoint.expectedMessageCount(0);
-        mockExhaustedRedeliveryEnpoint.expectedMessageCount(1);
+        certificateStatusUpdateService.expectedMessageCount(4);
+        errorHandlerEndpoint.expectedMessageCount(0);
+        exhaustedRedeliveryEnpoint.expectedMessageCount(1);
 
         // When
-        processNotificationRequestEndpoint.sendBody(NOTIFICATION_MESSAGE);
+        producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(mockCertificateStatusUpdateEndpoint);
-        assertIsSatisfied(mockErrorHandlerEndpoint);
-        assertIsSatisfied(mockExhaustedRedeliveryEnpoint);
+        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(errorHandlerEndpoint);
+        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
 }
