@@ -48,7 +48,9 @@ class ValideringTsBas {
                 !page.valideringSjukhusVard.isDisplayed() &&
                 !page.valideringMedicinering.isDisplayed() &&
                 !page.valideringBedomning.isDisplayed() &&
-                !page.valideringVardEnhet.isDisplayed()
+                !page.valideringVardEnhet.isDisplayed() &&
+                !page.valideringDiabetes.isDisplayed()
+                
         }
         result
     }
@@ -201,6 +203,14 @@ class ValideringTsBas {
         boolean result
         Browser.drive{
             result = page.valideringVardEnhet.isDisplayed()
+        }
+        result
+    }
+
+        boolean valideringDiabetesVisas() {
+        boolean result
+        Browser.drive{
+            result = page.valideringDiabetes.isDisplayed()
         }
         result
     }

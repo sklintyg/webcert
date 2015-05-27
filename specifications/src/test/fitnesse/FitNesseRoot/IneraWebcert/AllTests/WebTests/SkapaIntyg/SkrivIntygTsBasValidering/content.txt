@@ -102,6 +102,39 @@ Kontrollera valideringsmeddelanden.
 | valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringSynVisas? | valideringHorselBalansVisas? | valideringFunktionsNedsattningVisas? | valideringHjartkarlVisas? | valideringNeurologiVisas? | valideringMedvetandestorningVisas? | valideringNjurarVisas? | valideringKognitivtVisas? | valideringSomnVakenhetVisas? | valideringNarkotikaLakemedelVisas? | valideringPsykisktVisas? | valideringUtvecklingsStorningVisas? | valideringSjukhusVardVisas? | valideringMedicineringVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
 | false| false | false| true | true | true | true | true | true | true | true | true | true | true | true | true | true | true | false | 
 
+
+!3 Testa att validering för diabetesbehandling fungerar
+| Populera Ts Bas |
+| diabetesA | diabetestyp    | diabetesBehandlingKost |
+| true      | typ2           | true |
+
+| script | !-ValideringTsBas-! |
+| spara utkast |
+| intyg ej komplett visas |
+
+!3 Kontrollera valideringsmeddelande för diabetes.
+
+| Validering Ts Bas |
+| valideringDiabetesVisas? | 
+| false | 
+
+!3 Testa att klicka ur behandling och verifiera att valideringsfel dyker upp
+| Populera Ts Bas |
+| diabetesBehandlingKost |
+| false |
+
+| script | !-ValideringTsBas-! |
+| spara utkast |
+| intyg ej komplett visas |
+
+!3 Kontrollera valideringsmeddelande för diabetes.
+
+| Validering Ts Bas |
+| valideringDiabetesVisas? | 
+| true | 
+
+!3 Ta bort utkast
+
 | ta bort utkast |
 | utkastId |
 | $intygsid |
