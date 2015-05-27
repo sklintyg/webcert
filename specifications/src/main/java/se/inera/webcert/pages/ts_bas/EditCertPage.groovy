@@ -66,6 +66,7 @@ class EditCertPage extends AbstractEditCertPage {
         valideringMedicinering(required: false)         { $("#validationMessages_medicinering") }
         valideringBedomning(required: false)            { $("#validationMessages_bedomning") }
         valideringVardEnhet(required: false)            { $("#validationMessages_vardenhet") }
+        valideringDiabetes(required: false)             { $("#validationMessages_diabetes") }
     }
 }
 
