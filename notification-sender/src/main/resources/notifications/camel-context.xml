@@ -35,14 +35,7 @@
     <!-- Endpoint for transformed messages, ready to be sent to WS  -->
     <camel:endpoint id="sendNotificationWSEndpoint" uri="${sendNotificationWSEndpointUri}"/>
 
-    <!-- Endpoint for messages that have failed once, ready to be sent to WS again -->
-    <camel:endpoint id="failedMessagesEndpoint" uri="${failedMessagesEndpointUri}"/>
-
     <camel:endpoint id="deadLetterEndpoint" uri="${deadLetterEndpointUri}"/>
-
-    <camel:dataFormats>
-      <camel:jaxb id="notificationRequestJaxb" contextPath="se.inera.webcert.notifications.message.v1"/>
-    </camel:dataFormats>
 
   </camel:camelContext>
 

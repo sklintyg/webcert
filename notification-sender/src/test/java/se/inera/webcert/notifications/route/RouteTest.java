@@ -30,8 +30,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/test-notification-sender-config.xml", "/notifications/unit-test-properties-context.xml" })
-@MockEndpointsAndSkip("bean:createAndInitCertificateStatusRequestProcessor|bean:certificateStatusUpdateService")
-@MockEndpoints("(direct:errorHandlerEndpoint|direct:redeliveryExhaustedEndpoint)")
+@MockEndpointsAndSkip("bean:createAndInitCertificateStatusRequestProcessor|bean:certificateStatusUpdateService|direct:errorHandlerEndpoint")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class RouteTest {
     
@@ -57,9 +56,6 @@ public class RouteTest {
     @EndpointInject(uri = "mock:direct:errorHandlerEndpoint")
     private MockEndpoint errorHandlerEndpoint;
 
-    @EndpointInject(uri = "mock:direct:redeliveryExhaustedEndpoint")
-    private MockEndpoint exhaustedRedeliveryEnpoint;
-
     @Before
     public void setup() {
         camelContext.setTracing(true);
@@ -77,7 +73,6 @@ public class RouteTest {
         // Given
         certificateStatusUpdateService.expectedMessageCount(1);
         errorHandlerEndpoint.expectedMessageCount(0);
-        exhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
@@ -85,7 +80,6 @@ public class RouteTest {
         // Then
         assertIsSatisfied(certificateStatusUpdateService);
         assertIsSatisfied(errorHandlerEndpoint);
-        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
     @Test
@@ -101,7 +95,6 @@ public class RouteTest {
 
         certificateStatusUpdateService.expectedMessageCount(0);
         errorHandlerEndpoint.expectedMessageCount(1);
-        exhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
@@ -109,7 +102,6 @@ public class RouteTest {
         // Then
         assertIsSatisfied(certificateStatusUpdateService);
         assertIsSatisfied(errorHandlerEndpoint);
-        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
     @Test
@@ -125,7 +117,6 @@ public class RouteTest {
 
         certificateStatusUpdateService.expectedMessageCount(0);
         errorHandlerEndpoint.expectedMessageCount(1);
-        exhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
@@ -133,7 +124,6 @@ public class RouteTest {
         // Then
         assertIsSatisfied(certificateStatusUpdateService);
         assertIsSatisfied(errorHandlerEndpoint);
-        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
     @Test
@@ -158,9 +148,8 @@ public class RouteTest {
             }
         });
 
-        certificateStatusUpdateService.expectedMessageCount(4);
+        certificateStatusUpdateService.expectedMessageCount(1);
         errorHandlerEndpoint.expectedMessageCount(0);
-        exhaustedRedeliveryEnpoint.expectedMessageCount(1);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
@@ -168,7 +157,6 @@ public class RouteTest {
         // Then
         assertIsSatisfied(certificateStatusUpdateService);
         assertIsSatisfied(errorHandlerEndpoint);
-        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
     @Test
@@ -184,7 +172,6 @@ public class RouteTest {
 
         certificateStatusUpdateService.expectedMessageCount(1);
         errorHandlerEndpoint.expectedMessageCount(1);
-        exhaustedRedeliveryEnpoint.expectedMessageCount(0);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
@@ -192,7 +179,6 @@ public class RouteTest {
         // Then
         assertIsSatisfied(certificateStatusUpdateService);
         assertIsSatisfied(errorHandlerEndpoint);
-        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
     
     @Test
@@ -209,9 +195,8 @@ public class RouteTest {
             }
         });
 
-        certificateStatusUpdateService.expectedMessageCount(4);
+        certificateStatusUpdateService.expectedMessageCount(1);
         errorHandlerEndpoint.expectedMessageCount(0);
-        exhaustedRedeliveryEnpoint.expectedMessageCount(1);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
@@ -219,7 +204,6 @@ public class RouteTest {
         // Then
         assertIsSatisfied(certificateStatusUpdateService);
         assertIsSatisfied(errorHandlerEndpoint);
-        assertIsSatisfied(exhaustedRedeliveryEnpoint);
     }
 
 }
