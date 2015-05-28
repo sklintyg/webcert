@@ -206,7 +206,6 @@ public class NotificationServiceImpl implements NotificationService {
             LOGGER.debug("Will not send notification message for event {}", handelse);
             return;
         }
-        
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
         send(notificationMessage, utkast.getVardgivarId());
     }
@@ -219,7 +218,7 @@ public class NotificationServiceImpl implements NotificationService {
             LOGGER.debug("Will not send notification message for event {}", handelse);
             return;
         }
-        
+
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
         send(notificationMessage, utkast.getVardgivarId());
     }
@@ -232,11 +231,11 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        LOGGER.debug("Sending notification {}", notificationMessage);
-
         String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
 
         jmsTemplate.send(new NotificationMessageCreator(notificationMessageAsJson, vardgivarId));
+
+        LOGGER.debug("Notification sent: {}", notificationMessage);
     }
 
     String notificationMessageToJson(NotificationMessage notificationMessage) {
