@@ -85,7 +85,7 @@ var wcMessages = {
         'error.failedtocopyintyg': 'Kunde inte kopiera intyget. Försök igen senare.',
         'error.failedtocopyintyg.personidnotfound': 'Kunde inte kopiera intyget. Det nya person-id:t kunde inte hittas.',
         'error.failedtosendintyg': 'Kunde inte skicka intyget. Försök igen senare.',
-        'error.pu.namenotfound': 'Personnumret är inte registrerat i Personuppgiftstjänsten. Intyg kan inte skrivas på felaktiga personnummer.'
+        'error.pu.namenotfound': 'Personnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt.<br>Observera att det inte går att ange reservnummer. Webcert hanterar enbart person- och samordningsnummer.'
     },
     'en': {
         'webcert.header': 'Webcert Application (en)'
