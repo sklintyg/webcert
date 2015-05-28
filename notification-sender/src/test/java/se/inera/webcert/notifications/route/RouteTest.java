@@ -11,7 +11,6 @@ import javax.xml.bind.JAXBException;
 import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
-import org.apache.camel.test.spring.MockEndpoints;
 import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +29,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({ "/test-notification-sender-config.xml", "/notifications/unit-test-properties-context.xml" })
-@MockEndpointsAndSkip("bean:createAndInitCertificateStatusRequestProcessor|bean:certificateStatusUpdateService|direct:errorHandlerEndpoint")
+@MockEndpointsAndSkip("bean:notificationTransformer|bean:notificationWSClient|direct:errorHandlerEndpoint")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class RouteTest {
     
@@ -47,11 +46,11 @@ public class RouteTest {
     @Produce(uri = "direct:receiveNotificationRequestEndpoint")
     private ProducerTemplate producerTemplate;
 
-    @EndpointInject(uri = "mock:bean:certificateStatusUpdateService")
-    private MockEndpoint certificateStatusUpdateService;
+    @EndpointInject(uri = "mock:bean:notificationWSClient")
+    private MockEndpoint notificationWSClient;
 
-    @EndpointInject(uri = "mock:bean:createAndInitCertificateStatusRequestProcessor")
-    private MockEndpoint createAndInitCertificateStatusRequestProcessor;
+    @EndpointInject(uri = "mock:bean:notificationTransformer")
+    private MockEndpoint notificationTransformer;
 
     @EndpointInject(uri = "mock:direct:errorHandlerEndpoint")
     private MockEndpoint errorHandlerEndpoint;
@@ -59,7 +58,7 @@ public class RouteTest {
     @Before
     public void setup() {
         camelContext.setTracing(true);
-        createAndInitCertificateStatusRequestProcessor.whenAnyExchangeReceived(new Processor() {
+        notificationTransformer.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.info("Receiving");
@@ -71,21 +70,21 @@ public class RouteTest {
     @Test
     public void testNormalRoute() throws InterruptedException {
         // Given
-        certificateStatusUpdateService.expectedMessageCount(1);
+        notificationWSClient.expectedMessageCount(1);
         errorHandlerEndpoint.expectedMessageCount(0);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(errorHandlerEndpoint);
     }
 
     @Test
     public void testTransformationException() throws InterruptedException {
         // Given
-        createAndInitCertificateStatusRequestProcessor.whenAnyExchangeReceived(new Processor() {
+        notificationTransformer.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.info("Receiving");
@@ -93,21 +92,21 @@ public class RouteTest {
             }
         });
 
-        certificateStatusUpdateService.expectedMessageCount(0);
+        notificationWSClient.expectedMessageCount(0);
         errorHandlerEndpoint.expectedMessageCount(1);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(errorHandlerEndpoint);
     }
 
     @Test
     public void testRuntimeException() throws InterruptedException {
         // Given
-        createAndInitCertificateStatusRequestProcessor.whenAnyExchangeReceived(new Processor() {
+        notificationTransformer.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.info("Receiving {}");
@@ -115,14 +114,14 @@ public class RouteTest {
             }
         });
 
-        certificateStatusUpdateService.expectedMessageCount(0);
+        notificationWSClient.expectedMessageCount(0);
         errorHandlerEndpoint.expectedMessageCount(1);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(errorHandlerEndpoint);
     }
 
@@ -132,7 +131,7 @@ public class RouteTest {
         final List<Long> redeliveryDelays = new ArrayList<Long>();
 
         // Given
-        certificateStatusUpdateService.whenAnyExchangeReceived(new Processor() {
+        notificationWSClient.whenAnyExchangeReceived(new Processor() {
             int attempts = 1;
             long start = System.currentTimeMillis();
 
@@ -148,21 +147,21 @@ public class RouteTest {
             }
         });
 
-        certificateStatusUpdateService.expectedMessageCount(1);
+        notificationWSClient.expectedMessageCount(1);
         errorHandlerEndpoint.expectedMessageCount(0);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(errorHandlerEndpoint);
     }
 
     @Test
     public void testTechnicalException() throws InterruptedException {
         // Given
-        certificateStatusUpdateService.whenAnyExchangeReceived(new Processor() {
+        notificationWSClient.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.debug("Recieving.");
@@ -170,21 +169,21 @@ public class RouteTest {
             }
         });
 
-        certificateStatusUpdateService.expectedMessageCount(1);
+        notificationWSClient.expectedMessageCount(1);
         errorHandlerEndpoint.expectedMessageCount(1);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(errorHandlerEndpoint);
     }
     
     @Test
     public void testWithWrappedIOExceptionShouldCauseResend() throws InterruptedException {
         // Given
-        certificateStatusUpdateService.whenAnyExchangeReceived(new Processor() {
+        notificationWSClient.whenAnyExchangeReceived(new Processor() {
             private int attempts = 1;
 
             @Override
@@ -195,14 +194,14 @@ public class RouteTest {
             }
         });
 
-        certificateStatusUpdateService.expectedMessageCount(1);
+        notificationWSClient.expectedMessageCount(1);
         errorHandlerEndpoint.expectedMessageCount(0);
 
         // When
         producerTemplate.sendBody(NOTIFICATION_MESSAGE);
 
         // Then
-        assertIsSatisfied(certificateStatusUpdateService);
+        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(errorHandlerEndpoint);
     }
 

@@ -3,9 +3,9 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="createAndInitCertificateStatusRequestProcessor" class="se.inera.webcert.notifications.process.NotificationTransformer"/>
+  <bean id="notificationTransformer" class="se.inera.webcert.notifications.process.NotificationTransformer"/>
 
-  <bean id="certificateStatusUpdateService" class="se.inera.webcert.notifications.service.CertificateStatusUpdateServiceImpl"></bean>
+  <bean id="notificationWSClient" class="se.inera.webcert.notifications.service.NotificationWSClient"></bean>
 
   <bean id="processNotificationRequestRouteBuilder" class="se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteBuilder"/>
 

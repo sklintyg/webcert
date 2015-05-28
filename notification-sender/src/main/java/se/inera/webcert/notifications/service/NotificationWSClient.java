@@ -15,9 +15,9 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
 
-public class CertificateStatusUpdateServiceImpl {
+public class NotificationWSClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationWSClient.class);
 
     @Autowired
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
@@ -41,13 +41,13 @@ public class CertificateStatusUpdateServiceImpl {
         case ERROR:
             if (result.getErrorId().equals(ErrorIdType.TECHNICAL_ERROR)) {
                 throw new CertificateStatusUpdateServiceException(String.format(
-                        "CertificateStatusUpdateServiceImpl failed with error code: %s and message %s", result.getErrorId(), result.getResultText()));
+                        "NotificationWSClient failed with error code: %s and message %s", result.getErrorId(), result.getResultText()));
             } else {
                 throw new NonRecoverableCertificateStatusUpdateServiceException(String.format(
-                        "CertificateStatusUpdateServiceImpl failed with non-recoverable error code: %s and message %s", result.getErrorId(), result.getResultText()));
+                        "NotificationWSClient failed with non-recoverable error code: %s and message %s", result.getErrorId(), result.getResultText()));
             }
         case INFO:
-            LOG.info("CertificateStatusUpdateServiceImpl got message:" + result.getResultText());
+            LOG.info("NotificationWSClient got message:" + result.getResultText());
             break;
         case OK:
             break;

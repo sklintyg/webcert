@@ -15,22 +15,17 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
                 .onException(Exception.class).handled(true).to("direct:errorHandlerEndpoint").end()
                 .transacted()
-
                 .unmarshal("notificationMessageDataFormat")
-                .to("bean:createAndInitCertificateStatusRequestProcessor")
-                .log(LoggingLevel.INFO, LOG, simple("Notification is transformed for intygs-id: ${in.headers.intygsId}, with notification type: ${in.headers.handelse}").getText())
+                .to("bean:notificationTransformer")
                 .marshal("jaxbMessageDataFormat")
                 .to("sendNotificationWSEndpoint");
-
 
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
                 .errorHandler(noErrorHandler())
                 .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
                 .transacted()
-
                 .unmarshal("jaxbMessageDataFormat")
-                .to("bean:certificateStatusUpdateService");
-
+                .to("bean:notificationWSClient");
 
         from("direct:errorHandlerEndpoint").routeId("errorLogging")
                 .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
