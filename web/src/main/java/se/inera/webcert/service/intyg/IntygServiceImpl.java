@@ -338,7 +338,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
                 }
                 // Notify stakeholders when a certificate is sent
                 notificationService.sendNotificationForIntygSent(intygsId);
-                LOG.debug("Notification sent: certificate with id '{}' has been sent to '{}'", intygsId, recipient);
 
                 omsandningRepository.delete(omsandning);
 
@@ -417,7 +416,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         String intygsId = intyg.getId();
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);
-        LOG.debug("Notification sent: certificate with id '{}' was revoked", intygsId);
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.

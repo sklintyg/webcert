@@ -527,15 +527,12 @@ public class UtkastServiceImpl implements UtkastService {
         switch (event) {
         case CHANGED:
             notificationService.sendNotificationForDraftChanged(utkast);
-            LOG.debug("Notification sent: certificate draft with id '{}' was changed/updated.", utkast.getIntygsId());
             break;
         case CREATED:
             notificationService.sendNotificationForDraftCreated(utkast);
-            LOG.debug("Notification sent: certificate draft with id '{}' was created.", utkast.getIntygsId());
             break;
         case DELETED:
             notificationService.sendNotificationForDraftDeleted(utkast);
-            LOG.debug("Notification sent: certificate draft with id '{}' was deleted.", utkast.getIntygsId());
             break;
         default:
             LOG.debug("IntygDraftServiceImpl.sendNotification(Intyg, Event) was called but with an unhandled event. No notification was sent.",
