@@ -1,12 +1,21 @@
 package se.inera.webcert.certificatesender.services;
 
-import org.apache.camel.Message;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+
+import javax.xml.ws.WebServiceException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
@@ -15,16 +24,6 @@ import se.inera.certificate.modules.support.api.exception.ExternalServiceCallExc
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
-import se.inera.webcert.certificatesender.services.validator.CertificateMessageValidator;
-import se.inera.webcert.common.Constants;
-
-import javax.xml.ws.WebServiceException;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-05-22.
@@ -32,54 +31,37 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateStoreProcessorTest {
 
+    private static String LOGICAL_ADDRESS1 = "address-1";
+    private static String BODY = "body";
+
+    ExternalServiceCallException technicalErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.TECHNICAL_ERROR);
+    ExternalServiceCallException applicationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.APPLICATION_ERROR);
+    ExternalServiceCallException validationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.VALIDATION_ERROR);
+    ExternalServiceCallException transformationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.TRANSFORMATION_ERROR);
+
     @Mock
     IntygModuleRegistry moduleRegistry;
 
     @Mock
     ModuleApi moduleApi;
 
-    @Mock
-    CertificateMessageValidator certificateStoreMessageValidator;
-
-    @Mock
-    Message message;
-
     @InjectMocks
     CertificateStoreProcessor certificateStoreProcessor = new CertificateStoreProcessor();
-
-    Throwable technicalErrorException;
-    Throwable applicationErrorException;
-    Throwable validationErrorException;
-    Throwable transformationErrorException;
 
     @Before
     public void setup() throws ModuleNotFoundException {
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
     }
 
-    @Before
-    public void setupFkMessage() {
-        when(message.getHeader(Constants.INTYGS_ID)).thenReturn("test-message-1");
-        when(message.getHeader(Constants.MESSAGE_TYPE)).thenReturn(Constants.STORE_MESSAGE);
-        when(message.getBody()).thenReturn("body");
-    }
-
-    @Before
-    public void setupExceptions() {
-        technicalErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.TECHNICAL_ERROR);
-        applicationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.APPLICATION_ERROR);
-        validationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.VALIDATION_ERROR);
-        transformationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.TRANSFORMATION_ERROR);
-    }
-
     @Test
     public void testStoreCertificate() throws Exception {
-
         // When
-        certificateStoreProcessor.process(message);
+        certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
         // Then
-        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
+        ArgumentCaptor<InternalModelHolder> internalModelHolder = ArgumentCaptor.forClass(InternalModelHolder.class);
+        verify(moduleApi).registerCertificate(internalModelHolder.capture(), eq(LOGICAL_ADDRESS1));
+        assertEquals(BODY, internalModelHolder.getValue().getInternalModel());
     }
 
     @Test(expected = TemporaryException.class)
@@ -88,10 +70,10 @@ public class CertificateStoreProcessorTest {
         doThrow(technicalErrorException).when(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
 
         // When
-        certificateStoreProcessor.process(message);
+        certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
         // Then
-        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
+        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = TemporaryException.class)
@@ -100,10 +82,10 @@ public class CertificateStoreProcessorTest {
         doThrow(applicationErrorException).when(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
 
         // When
-        certificateStoreProcessor.process(message);
+        certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
         // Then
-        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
+        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = PermanentException.class)
@@ -112,10 +94,10 @@ public class CertificateStoreProcessorTest {
         doThrow(validationErrorException).when(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
 
         // When
-        certificateStoreProcessor.process(message);
+        certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
         // Then
-        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
+        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = PermanentException.class)
@@ -124,10 +106,10 @@ public class CertificateStoreProcessorTest {
         doThrow(transformationErrorException).when(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
 
         // When
-        certificateStoreProcessor.process(message);
+        certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
         // Then
-        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
+        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = PermanentException.class)
@@ -136,10 +118,10 @@ public class CertificateStoreProcessorTest {
         doThrow(new ModuleException()).when(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
 
         // When
-        certificateStoreProcessor.process(message);
+        certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
         // Then
-        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
+        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = TemporaryException.class)
@@ -148,10 +130,10 @@ public class CertificateStoreProcessorTest {
         doThrow(new WebServiceException()).when(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
 
         // When
-        certificateStoreProcessor.process(message);
+        certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
         // Then
-        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
+        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = PermanentException.class)
@@ -160,9 +142,9 @@ public class CertificateStoreProcessorTest {
         doThrow(new RuntimeException()).when(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
 
         // When
-        certificateStoreProcessor.process(message);
+        certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
 
         // Then
-        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), anyString());
+        verify(moduleApi).registerCertificate(any(InternalModelHolder.class), eq(LOGICAL_ADDRESS1));
     }
 }

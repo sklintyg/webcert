@@ -2,12 +2,13 @@ package se.inera.webcert.certificatesender.services;
 
 import javax.xml.ws.WebServiceException;
 
-import org.apache.camel.Message;
+import org.apache.camel.Body;
+import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.beans.factory.annotation.Qualifier;
+
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
@@ -28,27 +29,22 @@ public class CertificateStoreProcessor {
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
-    @Autowired
-    @Qualifier("certificateStoreMessageValidator")
-    private CertificateMessageValidator certificateStoreMessageValidator;
+    public void process(@Body String utkastAsJson,
+            @Header(Constants.INTYGS_TYP) String intygsTyp,
+            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws Exception {
 
-    public void process(Message message) throws Exception {
-        LOG.debug("Receiving message: {}", message.getMessageId());
-
-        certificateStoreMessageValidator.validate(message);
-
-        ModuleApi moduleApi = moduleRegistry.getModuleApi((String) message.getHeader(Constants.INTYGS_TYP));
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
 
         try {
-            moduleApi.registerCertificate(new InternalModelHolder((String) message.getBody()), (String) message.getHeader(Constants.LOGICAL_ADDRESS));
+            moduleApi.registerCertificate(new InternalModelHolder(utkastAsJson), logicalAddress);
         } catch (ExternalServiceCallException e) {
             switch (e.getErroIdEnum()) {
-                case TECHNICAL_ERROR:
-                    // TODO: is this temporary?
-                case APPLICATION_ERROR:
-                    throw new TemporaryException(e.getMessage());
-                default:
-                    throw new PermanentException(e.getMessage());
+            case TECHNICAL_ERROR:
+                // TODO: is this temporary?
+            case APPLICATION_ERROR:
+                throw new TemporaryException(e.getMessage());
+            default:
+                throw new PermanentException(e.getMessage());
             }
         } catch (ModuleException e) {
             throw new PermanentException(e.getMessage());
