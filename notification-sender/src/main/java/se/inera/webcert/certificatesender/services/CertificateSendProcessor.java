@@ -16,6 +16,8 @@ import se.inera.webcert.certificatesender.exception.TemporaryException;
 import se.inera.webcert.common.Constants;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * Created by eriklupander on 2015-05-21.
  */
@@ -31,10 +33,10 @@ public class CertificateSendProcessor {
             @Header(Constants.RECIPIENT) String recipient,
             @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws Exception {
 
-        Preconditions.checkArgument(!nullOrEmpty(intygsId));
-        Preconditions.checkArgument(!nullOrEmpty(personId));
-        Preconditions.checkArgument(!nullOrEmpty(recipient));
-        Preconditions.checkArgument(!nullOrEmpty(logicalAddress));
+        checkArgument(!nullOrEmpty(intygsId));
+        checkArgument(!nullOrEmpty(personId));
+        checkArgument(!nullOrEmpty(recipient));
+        checkArgument(!nullOrEmpty(logicalAddress));
 
         SendCertificateToRecipientType request = new SendCertificateToRecipientType();
         request.setUtlatandeId(intygsId);
@@ -44,7 +46,6 @@ public class CertificateSendProcessor {
         SendCertificateToRecipientResponseType response;
         try {
             response = sendService.sendCertificateToRecipient(logicalAddress, request);
-
         } catch (WebServiceException e) {
             LOG.warn("Call to revoke intyg {} caused an error: {}. Will retry", intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
