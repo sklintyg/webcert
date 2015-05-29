@@ -1,5 +1,6 @@
 package se.inera.webcert.certificatesender.services;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
@@ -32,53 +33,26 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateSendProcessorTest {
 
-    @Mock
-    Message message;
+    private static final String INTYGS_ID1 = "intygs-id-1";
+    private static final String PERSON_ID1 = "19121212-1212";
+    private static final String RECIPIENT1 = "recipient1";
+    private static final String LOGICAL_ADDRESS1 = "logicalAddress1";
 
     @Mock
     SendCertificateToRecipientResponderInterface sendService;
 
-    @Mock
-    CertificateMessageValidator certificateSendMessageValidator;
-
     @InjectMocks
     CertificateSendProcessor certificateSendProcessor = new CertificateSendProcessor();
-
-    Throwable technicalErrorException;
-    Throwable applicationErrorException;
-    Throwable validationErrorException;
-    Throwable transformationErrorException;
-
-    @Mock
-    SendCertificateToRecipientResponseType response;
-
-    @Mock
-    ResultType resultType;
-
-    @Before
-    public void setupSendMessage() {
-        when(message.getHeader(Constants.INTYGS_ID)).thenReturn("test-message-1");
-        when(message.getHeader(Constants.MESSAGE_TYPE)).thenReturn(Constants.SEND_MESSAGE);
-    }
-
-    @Before
-    public void setupExceptions() {
-        technicalErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.TECHNICAL_ERROR);
-        applicationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.APPLICATION_ERROR);
-        validationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.VALIDATION_ERROR);
-        transformationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.TRANSFORMATION_ERROR);
-    }
 
     @Test
     public void testStoreCertificate() throws Exception {
         // Given
-        when(resultType.getResultCode()).thenReturn(ResultCodeType.OK);
-        when(response.getResult()).thenReturn(resultType);
+        SendCertificateToRecipientResponseType response = createResponse(ResultCodeType.OK, null);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
 
         // When
-        certificateSendProcessor.process(message);
-
+        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
+        
         // Then
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
@@ -86,13 +60,11 @@ public class CertificateSendProcessorTest {
     @Test(expected = TemporaryException.class)
     public void testStoreCertificateThrowsTemporaryOnApplicationError() throws Exception {
         // Given
-        when(resultType.getResultCode()).thenReturn(ResultCodeType.ERROR);
-        when(resultType.getErrorId()).thenReturn(ErrorIdType.APPLICATION_ERROR);
-        when(response.getResult()).thenReturn(resultType);
+        SendCertificateToRecipientResponseType response = createResponse(ResultCodeType.ERROR, ErrorIdType.APPLICATION_ERROR);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
 
         // When
-        certificateSendProcessor.process(message);
+        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
         // Then
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
@@ -101,13 +73,11 @@ public class CertificateSendProcessorTest {
     @Test(expected = TemporaryException.class)
     public void testStoreCertificateThrowsTemporaryOnTechnicalError() throws Exception {
         // Given
-        when(resultType.getResultCode()).thenReturn(ResultCodeType.ERROR);
-        when(resultType.getErrorId()).thenReturn(ErrorIdType.TECHNICAL_ERROR);
-        when(response.getResult()).thenReturn(resultType);
+        SendCertificateToRecipientResponseType response = createResponse(ResultCodeType.ERROR, ErrorIdType.TECHNICAL_ERROR);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
 
         // When
-        certificateSendProcessor.process(message);
+        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
         // Then
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
@@ -116,13 +86,11 @@ public class CertificateSendProcessorTest {
     @Test(expected = PermanentException.class)
     public void testStoreCertificateThrowsPermanentOnRevokedError() throws Exception {
         // Given
-        when(resultType.getResultCode()).thenReturn(ResultCodeType.ERROR);
-        when(resultType.getErrorId()).thenReturn(ErrorIdType.REVOKED);
-        when(response.getResult()).thenReturn(resultType);
+        SendCertificateToRecipientResponseType response = createResponse(ResultCodeType.ERROR, ErrorIdType.REVOKED);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
 
         // When
-        certificateSendProcessor.process(message);
+        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
         // Then
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
@@ -131,13 +99,11 @@ public class CertificateSendProcessorTest {
     @Test(expected = PermanentException.class)
     public void testStoreCertificateThrowsPermanentOnValidationError() throws Exception {
         // Given
-        when(resultType.getResultCode()).thenReturn(ResultCodeType.ERROR);
-        when(resultType.getErrorId()).thenReturn(ErrorIdType.VALIDATION_ERROR);
-        when(response.getResult()).thenReturn(resultType);
+        SendCertificateToRecipientResponseType response = createResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
 
         // When
-        certificateSendProcessor.process(message);
+        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
         // Then
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
@@ -149,7 +115,7 @@ public class CertificateSendProcessorTest {
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenThrow(new WebServiceException());
 
         // When
-        certificateSendProcessor.process(message);
+        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
         // Then
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
@@ -158,14 +124,50 @@ public class CertificateSendProcessorTest {
     @Test
     public void testStoreCertificateOnInfoMessage() throws Exception {
         // Given
-        when(resultType.getResultCode()).thenReturn(ResultCodeType.INFO);
-        when(response.getResult()).thenReturn(resultType);
+        SendCertificateToRecipientResponseType response = createResponse(ResultCodeType.INFO, null);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
 
         // When
-        certificateSendProcessor.process(message);
+        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
 
         // Then
         verify(sendService).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIntygsIdIsMissing() throws Exception {
+        certificateSendProcessor.process(null, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);
+        fail();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPersonIdIsMissing() throws Exception {
+        certificateSendProcessor.process(INTYGS_ID1, null, RECIPIENT1, LOGICAL_ADDRESS1);
+        fail();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRecipientIsMissing() throws Exception {
+        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, null, LOGICAL_ADDRESS1);
+        fail();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLogicalAddressIsMissing() throws Exception {
+        certificateSendProcessor.process(INTYGS_ID1, PERSON_ID1, RECIPIENT1, null);
+        fail();
+    }
+
+    private SendCertificateToRecipientResponseType createResponse(ResultCodeType resultCodeType, ErrorIdType errorType) {
+        ResultType resultType = new ResultType();
+        resultType.setResultCode(resultCodeType);
+        if (errorType != null) {
+            resultType.setErrorId(errorType);
+        }
+        SendCertificateToRecipientResponseType responseType = new SendCertificateToRecipientResponseType();
+
+        responseType.setResult(resultType);
+        return responseType;
+    }
+
 }
