@@ -9,6 +9,10 @@
 | skapa nytt intygsutkast for patient | 19000101-9801 | av typ | ts-diabetes |
 | $intygsid= | intygsid |
 
+!3 Verifiera att default värde till bedomning är Någon av följande behörigheter
+| script | !-VerifieraUtkastTsDiabetes-! |
+| check not | bedomning |
+
 !3 Populera intyget
 
 Populera intyget med information i samtliga fält så det blir komplett
