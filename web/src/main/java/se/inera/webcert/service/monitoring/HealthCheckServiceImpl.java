@@ -136,6 +136,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return new HealthStatus(uptime, true);
     }
 
+    @Override
     public String checkUptimeAsString() {
         HealthStatus uptime = checkUptime();
         return DurationFormatUtils.formatDurationWords(uptime.getMeasurement(), true, true);

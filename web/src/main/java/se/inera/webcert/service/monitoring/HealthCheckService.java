@@ -40,12 +40,19 @@ public interface HealthCheckService {
     HealthStatus checkHSA();
 
     /**
-     * Returns the applications uptime in human readable format.
+     * Returns the applications uptime.
      *
      * @return
      */
     HealthStatus checkUptime();
 
+    /**
+     * Returns the applications uptime in human readable format.
+     *
+     * @return
+     */
+    String checkUptimeAsString();
+    
     /**
      * Check if the connection to Intygstjansten is up.
      *
