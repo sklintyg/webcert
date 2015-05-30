@@ -2,7 +2,7 @@ package se.inera.webcert.spec
 
 import se.inera.webcert.spec.util.RestClientFixture
 
-class HealthCheck extends RestClientFixture {
+class HealthCheckService extends RestClientFixture {
 
     def healthCheck
 
