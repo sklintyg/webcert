@@ -38,31 +38,31 @@
 				<tbody>
 					<tr>
 						<td>Koppling databas</td>
-						<td>${dbStatus.measurement}ms</td>
-						<td class="${dbStatus.ok ? "text-success" : "text-danger"}">${dbStatus.ok ? "OK" : "FAIL"}</td>
+						<td id="dbMeasurement">${dbStatus.measurement}ms</td>
+						<td id="dbStatus" class="${dbStatus.ok ? "text-success" : "text-danger"}">${dbStatus.ok ? "OK" : "FAIL"}</td>
 					</tr>
 					<tr>
 						<td>Koppling ActiveMQ</td>
-						<td>${jmsStatus.measurement}ms</td>
-						<td class="${jmsStatus.ok ? "text-success" : "text-danger"}">${jmsStatus.ok ? "OK" : "FAIL"}</td>
+						<td id="jmsMeasurement">${jmsStatus.measurement}ms</td>
+						<td id="jmsStatus" class="${jmsStatus.ok ? "text-success" : "text-danger"}">${jmsStatus.ok ? "OK" : "FAIL"}</td>
 					</tr>
 					<tr>
 						<td>Koppling HSA</td>
-						<td>${hsaStatus.measurement}ms</td>
-						<td class="${hsaStatus.ok ? "text-success" : "text-danger"}">${hsaStatus.ok ? "OK" : "FAIL"}</td>
+						<td id="hsaMeasurement">${hsaStatus.measurement}ms</td>
+						<td id="hsaStatus" class="${hsaStatus.ok ? "text-success" : "text-danger"}">${hsaStatus.ok ? "OK" : "FAIL"}</td>
 					</tr>
 					<tr>
 						<td>Koppling till Intygstjänst</td>
-						<td>${intygstjanstStatus.measurement}ms</td>
-						<td class="${intygstjanstStatus.ok ? "text-success" : "text-danger"}">${intygstjanstStatus.ok ? "OK" : "FAIL"}</td>
+						<td id="intygstjanstMeasurement">${intygstjanstStatus.measurement}ms</td>
+						<td id="intygstjanstStatus" class="${intygstjanstStatus.ok ? "text-success" : "text-danger"}">${intygstjanstStatus.ok ? "OK" : "FAIL"}</td>
 					</tr>
 					<tr>
 						<td>Antal signerade intyg som ska skickas till Intygstjänst</td>
-						<td colspan="2">${signatureQueueStatus.measurement} st</td>
+						<td id="signatureQueueMeasurement" colspan="2">${signatureQueueStatus.measurement} st</td>
 					</tr>
 					<tr>
 						<td>Applikationens upptid</td>
-						<td colspan="2">${uptime}</td>
+						<td id="uptime" colspan="2">${uptime}</td>
 					</tr>
 				</tbody>
 			</table>
