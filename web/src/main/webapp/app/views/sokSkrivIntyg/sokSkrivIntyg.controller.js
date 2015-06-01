@@ -1,6 +1,6 @@
 angular.module('webcert').controller('webcert.ChoosePatientCtrl',
-    ['$location', '$scope', 'webcert.PatientModel', 'webcert.PatientProxy',
-        function($location, $scope, PatientModel, PatientProxy) {
+    ['$location', '$scope', 'webcert.PatientModel', 'webcert.PatientProxy', 'common.PersonIdValidatorService',
+        function($location, $scope, PatientModel, PatientProxy, personIdValidator) {
             'use strict';
 
             $scope.widgetState = {
@@ -21,7 +21,12 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
 
                 var onNotFound = function() {
                     $scope.widgetState.waiting = false;
-                    $scope.widgetState.errorid = 'error.pu.namenotfound';
+
+                    if(personIdValidator.validResult(personIdValidator.validateSamordningsnummer($scope.personnummer))) {
+                        $scope.widgetState.errorid = 'error.pu.samordningsnummernotfound';
+                    } else {
+                        $scope.widgetState.errorid = 'error.pu.namenotfound';
+                    }
                 };
 
                 var onError = function() {
@@ -32,7 +37,6 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
 
                 $scope.widgetState.waiting = true;
 
-                PatientProxy.getPatient($scope.personnummer,
-                    onSuccess, onNotFound, onError);
+                PatientProxy.getPatient($scope.personnummer, onSuccess, onNotFound, onError);
             };
         }]);
