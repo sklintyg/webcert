@@ -31,6 +31,7 @@
     <rivta-insuranceprocess.version>3.1.0.0</rivta-insuranceprocess.version>
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
+    <rivta-hsa-employee.version>1.0.0</rivta-hsa-employee.version>
 
     <intyg-clinicalprocess.version>0-SNAPSHOT</intyg-clinicalprocess.version>
     <intyg-clinicalprocess.version.range>(,1.0.0]</intyg-clinicalprocess.version.range>
@@ -181,6 +182,13 @@
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>ts-diabetes</artifactId>
         <version>${intygstyper.version}</version>
+      </dependency>
+
+      <!-- HSA Schemas -->
+      <dependency>
+        <groupId>se.rivta.tools</groupId>
+        <artifactId>infrastructure-directory-employee-schemas</artifactId>
+        <version>${rivta-hsa-employee.version}</version>
       </dependency>
 
       <!-- RIVTA Schemas -->
