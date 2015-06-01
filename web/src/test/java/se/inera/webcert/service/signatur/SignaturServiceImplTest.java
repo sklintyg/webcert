@@ -2,12 +2,13 @@ package se.inera.webcert.service.signatur;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 import javax.persistence.OptimisticLockException;
 
@@ -47,6 +48,8 @@ import se.inera.webcert.web.service.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignaturServiceImplTest {
+
+    private static final String ENHET_ID = "testID";
 
     private static final String INTYG_ID = "abc123";
 
@@ -95,6 +98,8 @@ public class SignaturServiceImplTest {
 
     private InternalModelResponse internalModelResponse;
 
+    private WebCertUser user;
+
     @Before
     public void setup() throws ModuleException, ModuleNotFoundException {
         hoSPerson = new HoSPerson();
@@ -105,17 +110,20 @@ public class SignaturServiceImplTest {
         vardperson.setHsaId(hoSPerson.getHsaId());
         vardperson.setNamn(hoSPerson.getNamn());
 
-        utkast = createUtkast(INTYG_ID, 1, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
-        completedUtkast = createUtkast(INTYG_ID, 2, INTYG_TYPE, UtkastStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson);
-        signedUtkast = createUtkast(INTYG_ID, 3, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+        utkast = createUtkast(INTYG_ID, 1, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson, ENHET_ID);
+        completedUtkast = createUtkast(INTYG_ID, 2, INTYG_TYPE, UtkastStatus.DRAFT_COMPLETE, INTYG_JSON, vardperson, ENHET_ID);
+        signedUtkast = createUtkast(INTYG_ID, 3, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson, ENHET_ID);
 
         internalModelResponse = new InternalModelResponse(INTYG_JSON);
-        vardenhet = new Vardenhet("testID", "testNamn");
+        vardenhet = new Vardenhet(ENHET_ID, "testNamn");
         vardgivare = new Vardgivare("123", "vardgivare");
+        vardgivare.setVardenheter(Arrays.asList(vardenhet));
 
-        WebCertUser user = new WebCertUser();
+        user = new WebCertUser();
         user.setNamn(hoSPerson.getNamn());
         user.setHsaId(hoSPerson.getHsaId());
+        user.setLakare(true);
+        user.setVardgivare(Arrays.asList(vardgivare));
 
         user.setValdVardenhet(vardenhet);
         user.setValdVardgivare(vardgivare);
@@ -129,7 +137,8 @@ public class SignaturServiceImplTest {
         ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson,
+            String enhetsId) {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);
@@ -138,6 +147,7 @@ public class SignaturServiceImplTest {
         utkast.setModel(model);
         utkast.setSkapadAv(vardperson);
         utkast.setSenastSparadAv(vardperson);
+        utkast.setEnhetsId(enhetsId);
         return utkast;
     }
 
@@ -156,7 +166,7 @@ public class SignaturServiceImplTest {
     @Test(expected = OptimisticLockException.class)
     public void getSignatureHashReturnsErrorIfWrongVersion() {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        intygSignatureService.createDraftHash(INTYG_ID, signedUtkast.getVersion()-1);
+        intygSignatureService.createDraftHash(INTYG_ID, signedUtkast.getVersion() - 1);
     }
 
     @Test
@@ -238,5 +248,59 @@ public class SignaturServiceImplTest {
 
         assertNotNull(completedUtkast.getSignatur());
         assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void userNotAuthorizedDraft() throws IOException {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        user.setVardgivare(Collections.<Vardgivare> emptyList());
+
+        intygSignatureService.createDraftHash(INTYG_ID, 1);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void userIsNotDoctorDraft() throws IOException {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        user.setLakare(false);
+
+        intygSignatureService.createDraftHash(INTYG_ID, 1);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void userNotAuthorizedClientSignature() throws IOException {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
+        user.setVardgivare(Collections.<Vardgivare> emptyList());
+
+        intygSignatureService.clientSignature(ticket.getId(), "test");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void userIsNotDoctorClientSignature() throws IOException {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+        SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
+        user.setLakare(false);
+
+        intygSignatureService.clientSignature(ticket.getId(), "test");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void userNotAuthorizedServerSignature() throws IOException {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+        user.setVardgivare(Collections.<Vardgivare> emptyList());
+
+        intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void userIsNotDoctorServerSignature() throws IOException {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+        user.setLakare(false);
+
+        intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
     }
 }
