@@ -10,14 +10,21 @@ describe('ChoosePatientCtrl', function() {
     beforeEach(function(){
 
         module('webcert', function($provide) {
-/*            var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
-            $provide.value('common.statService', statService);
+            var personIdValidator = {};// jasmine.createSpyObj('common.PersonIdValidatorService', ['validateSamordningsnummer']);
 
-            ManageCertificate = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getUtkastTypes', 'getIntygForPatient', 'initCopyDialog' ]);
-            $provide.value('webcert.ManageCertificate', ManageCertificate);
+            personIdValidator.validateSamordningsnummer = function(number) {
+                if (number === '195401875760') {
+                    return number;
+                }
 
-            $provide.value('common.IntygCopyRequestModel', {});*/
+                return null;
+            };
 
+            personIdValidator.validResult = function(result) {
+                return result !== undefined && result !== null;
+            };
+
+            $provide.value('common.PersonIdValidatorService', personIdValidator);
 
             PatientProxy = {
                 getPatient: function(personnummer, onSuccess, onNotFound, onError) {
@@ -35,10 +42,33 @@ describe('ChoosePatientCtrl', function() {
                                 postort: 'Staden'
                             }
                         });
+                    } else if(personnummer === '195401875769') {
+                        onSuccess({
+                            status: 'FOUND',
+                            person: {
+                                personnummer: personnummer,
+                                sekretessmarkering: false,
+                                fornamn: 'Test',
+                                mellannamn: 'Svensson',
+                                efternamn: 'Testsson',
+                                postadress: 'Storgatan 23',
+                                postnummer: '12345',
+                                postort: 'Staden'
+                            }
+                        });
                     } else {
                         onNotFound({
                             status: 'NOT_FOUND',
-                                person: null
+                            person: {
+                                personnummer: personnummer,
+                                sekretessmarkering: false,
+                                fornamn: 'Test',
+                                mellannamn: 'Svensson',
+                                efternamn: 'Testsson',
+                                postadress: 'Storgatan 23',
+                                postnummer: '12345',
+                                postort: 'Staden'
+                            }
                         });
                     }
                 }
@@ -68,6 +98,36 @@ describe('ChoosePatientCtrl', function() {
             expect(PatientProxy.getPatient).toHaveBeenCalled();
             expect($scope.widgetState.waiting).toBe(false);
             expect($scope.widgetState.errorid).toBe(undefined);
+        });
+
+        it('should call onSuccess on a correct samordningsnummer accepted by the PU-tjanst', function() {
+
+            $scope.personnummer = '195401875769';
+            $scope.lookupPatient();
+
+            expect(PatientProxy.getPatient).toHaveBeenCalled();
+            expect($scope.widgetState.waiting).toBe(false);
+            expect($scope.widgetState.errorid).toBe(undefined);
+        });
+
+        it('should call onNotFound on an invalid personnummer', function() {
+
+            $scope.personnummer = '191212121213';
+            $scope.lookupPatient();
+
+            expect(PatientProxy.getPatient).toHaveBeenCalled();
+            expect($scope.widgetState.waiting).toBe(false);
+            expect($scope.widgetState.errorid).toBe('error.pu.namenotfound');
+        });
+
+        it('should call onNotFound on an invalid samordningsnummer', function() {
+
+            $scope.personnummer = '195401875760';
+            $scope.lookupPatient();
+
+            expect(PatientProxy.getPatient).toHaveBeenCalled();
+            expect($scope.widgetState.waiting).toBe(false);
+            expect($scope.widgetState.errorid).toBe('error.pu.samordningsnummernotfound');
         });
 
         it('should set signed path', function() {
