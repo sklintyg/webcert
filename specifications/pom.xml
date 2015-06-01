@@ -221,7 +221,7 @@
         <webcert.web.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/</webcert.web.baseUrl>
         <webcert.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/</webcert.baseUrl>
         <logsender.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/log-sender/</logsender.baseUrl>
-        <certificate.baseUrl>http://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate/</certificate.baseUrl>
+        <certificate.baseUrl>https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
@@ -230,7 +230,7 @@
         <webcert.web.baseUrl>https://webcert.ip40.nordicmedtest.sjunet.org/</webcert.web.baseUrl>
         <webcert.baseUrl>https://webcert.ip40.nordicmedtest.sjunet.org/</webcert.baseUrl>
         <logsender.baseUrl>https://webcert.ip40.nordicmedtest.sjunet.org/log-sender/</logsender.baseUrl>
-        <certificate.baseUrl>http://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate/</certificate.baseUrl>
+        <certificate.baseUrl>https://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>
