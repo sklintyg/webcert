@@ -22,8 +22,8 @@
             <strong>Inget resultat!</strong> Slagningen mot personuppgiftstjänsten returnerade inget resultat för {{personnummer}}. Manuell inmatning av namn är möjlig. Tänk på att basera inmatade uppgifter på patientens legitimationsuppgifter.
           </div>
 
-          <div class="alert alert-danger" ng-show="errorOccured">
-            <strong>Tekniskt fel!</strong> Ett teknisk fel inträffade vid slagning mot personuppgiftstjänsten. Manuell inmatning av namn är möjlig. Tänk på att basera inmatade uppgifter på patientens legitimationsuppgifter.
+          <div class="alert alert-warning" ng-show="errorOccured">
+            Namnuppgifterna kunde inte hämtas och behöver därför fyllas i manuellt. Observera att patienten kan ha sekretessmarkerade folkbokföringsuppgifter. Var vänlig handskas varsamt med uppgifterna.
           </div>
 
           <div class="form-group">

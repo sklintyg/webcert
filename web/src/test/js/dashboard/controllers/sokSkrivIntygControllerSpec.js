@@ -73,7 +73,7 @@ describe('ChoosePatientCtrl', function() {
                     }
                 }
             };
-            $provide.value('webcert.PatientProxy', PatientProxy);
+            $provide.value('common.PatientProxy', PatientProxy);
         });
 
         inject(function($rootScope, _$location_, _$controller_) {

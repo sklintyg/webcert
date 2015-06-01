@@ -1,5 +1,5 @@
 angular.module('webcert').controller('webcert.ChoosePatientCtrl',
-    ['$location', '$scope', 'webcert.PatientModel', 'webcert.PatientProxy', 'common.PersonIdValidatorService',
+    ['$location', '$scope', 'common.PatientModel', 'common.PatientProxy', 'common.PersonIdValidatorService',
         function($location, $scope, PatientModel, PatientProxy, personIdValidator) {
             'use strict';
 
