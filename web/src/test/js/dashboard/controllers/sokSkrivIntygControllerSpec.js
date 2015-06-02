@@ -74,6 +74,7 @@ describe('ChoosePatientCtrl', function() {
                 }
             };
             $provide.value('common.PatientProxy', PatientProxy);
+            $provide.value('common.PatientModel', {});
         });
 
         inject(function($rootScope, _$location_, _$controller_) {
@@ -137,5 +138,5 @@ describe('ChoosePatientCtrl', function() {
             expect($scope.widgetState.waiting).toBe(false);
             expect($scope.widgetState.errorid).toBe('error.pu.namenotfound');
         });
-    }) ;
+    });
 });
