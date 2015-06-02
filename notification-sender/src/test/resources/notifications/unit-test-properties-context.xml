@@ -6,7 +6,7 @@
 
     <beans>
       <context:property-placeholder
-        location="classpath:unittest-route-params.properties" order="1" ignore-resource-not-found="false" />
+        location="classpath:notifications/unittest-route-params.properties" order="1" ignore-resource-not-found="false" />
     </beans>
 
 </beans>

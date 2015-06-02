@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration({ "/test-notification-sender-config.xml", "/notifications/integration-test-properties-context.xml" })
+@ContextConfiguration({"/notifications/test-notification-sender-config.xml", "/notifications/integration-test-properties-context.xml" })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestNotifications {
     private static final Logger LOG = LoggerFactory.getLogger(TestNotifications.class);
