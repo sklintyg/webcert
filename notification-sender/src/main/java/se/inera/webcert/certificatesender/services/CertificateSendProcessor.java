@@ -32,10 +32,10 @@ public class CertificateSendProcessor {
             @Header(Constants.RECIPIENT) String recipient,
             @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws Exception {
 
-        checkArgument(!nullOrEmpty(intygsId));
-        checkArgument(!nullOrEmpty(personId));
-        checkArgument(!nullOrEmpty(recipient));
-        checkArgument(!nullOrEmpty(logicalAddress));
+        checkArgument(!nullOrEmpty(intygsId), "Message of type %s does not have a %s header.", Constants.SEND_MESSAGE, Constants.INTYGS_ID);
+        checkArgument(!nullOrEmpty(personId), "Message of type %s with intygsId %s has no %s header.", Constants.SEND_MESSAGE, intygsId, Constants.PERSON_ID);
+        checkArgument(!nullOrEmpty(recipient), "Message of type %s with intygsId %s has no %s header.", Constants.SEND_MESSAGE, intygsId, Constants.RECIPIENT);
+        checkArgument(!nullOrEmpty(logicalAddress), "Message of type %s with intygsId %s has no %s header.", Constants.SEND_MESSAGE, intygsId, Constants.LOGICAL_ADDRESS);
 
         SendCertificateToRecipientType request = new SendCertificateToRecipientType();
         request.setUtlatandeId(intygsId);

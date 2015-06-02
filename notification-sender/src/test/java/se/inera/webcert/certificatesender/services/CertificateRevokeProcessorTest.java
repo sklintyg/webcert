@@ -1,6 +1,7 @@
 package se.inera.webcert.certificatesender.services;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -136,6 +137,7 @@ public class CertificateRevokeProcessorTest {
             assertTrue(e.getMessage().contains(Constants.INTYGS_ID));
             throw e;
         }
+        fail();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -146,6 +148,7 @@ public class CertificateRevokeProcessorTest {
             assertTrue(e.getMessage().contains(Constants.LOGICAL_ADDRESS));
             throw e;
         }
+        fail();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -156,6 +159,7 @@ public class CertificateRevokeProcessorTest {
             assertTrue(e.getMessage().contains(Constants.REVOKE_MESSAGE));
             throw e;
         }
+        fail();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -166,6 +170,7 @@ public class CertificateRevokeProcessorTest {
             assertTrue(e.getMessage().contains(Constants.REVOKE_MESSAGE));
             throw e;
         }
+        fail();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -176,6 +181,7 @@ public class CertificateRevokeProcessorTest {
             assertTrue(e.getMessage().contains(Constants.REVOKE_MESSAGE));
             throw e;
         }
+        fail();
     }
 
     private RevokeMedicalCertificateResponseType createResponse(ResultCodeEnum resultCodeType, ErrorIdEnum errorType) {
