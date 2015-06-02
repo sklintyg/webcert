@@ -7,10 +7,10 @@
   <import resource="beans-context.xml"/>
   <import resource="camel-context.xml"/>
   <import resource="test-service-context.xml"/>
-  <import resource="test-broker-context.xml" />
+  <import resource="test-broker-context.xml"/>
 
   <context:annotation-config/>
 
-  <context:component-scan base-package="se.inera.webcert.certificatesender" />
+  <context:component-scan base-package="se.inera.webcert.certificatesender"/>
 
 </beans>
