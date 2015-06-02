@@ -1,8 +1,9 @@
 package se.inera.webcert.certificatesender.services;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import javax.xml.ws.WebServiceException;
 
-import com.google.common.base.Preconditions;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,6 @@ import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
 import se.inera.webcert.common.Constants;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Created by eriklupander on 2015-05-21.

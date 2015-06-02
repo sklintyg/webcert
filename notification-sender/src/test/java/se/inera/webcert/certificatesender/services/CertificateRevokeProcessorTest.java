@@ -1,11 +1,12 @@
 package se.inera.webcert.certificatesender.services;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.apache.camel.Message;
-import org.junit.Before;
+import javax.xml.ws.WebServiceException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -22,10 +23,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
 import se.inera.webcert.certificatesender.services.converter.RevokeRequestConverter;
-import se.inera.webcert.certificatesender.services.validator.CertificateMessageValidator;
 import se.inera.webcert.common.Constants;
-
-import javax.xml.ws.WebServiceException;
 
 /**
  * Created by eriklupander on 2015-05-22.
@@ -33,8 +31,9 @@ import javax.xml.ws.WebServiceException;
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateRevokeProcessorTest {
 
-    @Mock
-    Message message;
+    private static final String BODY = "body";
+    private static final String INTYGS_ID1 = "intygs-id-1";
+    private static final String LOGICAL_ADDRESS1 = "logicalAddress1";
 
     @Mock
     RevokeMedicalCertificateResponderInterface revokeService;
@@ -42,36 +41,18 @@ public class CertificateRevokeProcessorTest {
     @Mock
     RevokeRequestConverter revokeRequestConverter;
 
-    @Mock
-    CertificateMessageValidator certificateRevokeMessageValidator;
-
     @InjectMocks
     CertificateRevokeProcessor certificateRevokeProcessor = new CertificateRevokeProcessor();
-
-
-
-    @Mock
-    RevokeMedicalCertificateResponseType response;
-
-    @Mock
-    ResultOfCall resultOfCall;
-
-    @Before
-    public void setupSendMessage() {
-        when(message.getHeader(Constants.INTYGS_ID)).thenReturn("test-message-1");
-        when(message.getHeader(Constants.MESSAGE_TYPE)).thenReturn(Constants.SEND_MESSAGE);
-    }
 
     @Test
     public void testRevokeCertificate() throws Exception {
         // Given
-        when(resultOfCall.getResultCode()).thenReturn(ResultCodeEnum.OK);
-        when(response.getResult()).thenReturn(resultOfCall);
+        RevokeMedicalCertificateResponseType response = createResponse(ResultCodeEnum.OK, null);
         when(revokeService.revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class)))
                 .thenReturn(response);
 
         // When
-        certificateRevokeProcessor.process(message);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1);
 
         // Then
         verify(revokeService).revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class));
@@ -79,63 +60,54 @@ public class CertificateRevokeProcessorTest {
 
     @Test(expected = TemporaryException.class)
     public void testRevokeCertificateWhenWebServiceExceptionIsThrown() throws Exception {
-        // GIVEN
+        // Given
         when(revokeService.revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class)))
                 .thenThrow(new WebServiceException());
 
         // When
-        certificateRevokeProcessor.process(message);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1);
 
         // Then
         verify(revokeService).revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class));
-
     }
 
     @Test(expected = TemporaryException.class)
     public void testRevokeCertificateOnApplicationErrorResponse() throws Exception {
-        // GIVEN
-        when(resultOfCall.getErrorId()).thenReturn(ErrorIdEnum.APPLICATION_ERROR);
-        when(resultOfCall.getResultCode()).thenReturn(ResultCodeEnum.ERROR);
-        when(response.getResult()).thenReturn(resultOfCall);
-        when(revokeService.revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class)))
-                .thenReturn(response);
+        // Given
+        RevokeMedicalCertificateResponseType response = createResponse(ResultCodeEnum.ERROR, ErrorIdEnum.APPLICATION_ERROR);
+        when(revokeService.revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class))).
+                thenReturn(response);
 
         // When
-        certificateRevokeProcessor.process(message);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1);
 
         // Then
         verify(revokeService).revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class));
-
     }
 
     @Test(expected = TemporaryException.class)
     public void testRevokeCertificateOnTechnicalErrorResponse() throws Exception {
-        // GIVEN
-        when(resultOfCall.getErrorId()).thenReturn(ErrorIdEnum.TECHNICAL_ERROR);
-        when(resultOfCall.getResultCode()).thenReturn(ResultCodeEnum.ERROR);
-        when(response.getResult()).thenReturn(resultOfCall);
+        // Given
+        RevokeMedicalCertificateResponseType response = createResponse(ResultCodeEnum.ERROR, ErrorIdEnum.TECHNICAL_ERROR);
         when(revokeService.revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class)))
                 .thenReturn(response);
 
         // When
-        certificateRevokeProcessor.process(message);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1);
 
         // Then
         verify(revokeService).revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class));
-
     }
 
     @Test(expected = PermanentException.class)
     public void testRevokeCertificateOnValidationErrorResponse() throws Exception {
-        // GIVEN
-        when(resultOfCall.getErrorId()).thenReturn(ErrorIdEnum.VALIDATION_ERROR);
-        when(resultOfCall.getResultCode()).thenReturn(ResultCodeEnum.ERROR);
-        when(response.getResult()).thenReturn(resultOfCall);
+        // Given
+        RevokeMedicalCertificateResponseType response = createResponse(ResultCodeEnum.ERROR, ErrorIdEnum.VALIDATION_ERROR);
         when(revokeService.revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class)))
                 .thenReturn(response);
 
         // When
-        certificateRevokeProcessor.process(message);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1);
 
         // Then
         verify(revokeService).revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class));
@@ -144,19 +116,78 @@ public class CertificateRevokeProcessorTest {
 
     @Test(expected = PermanentException.class)
     public void testRevokeCertificateOnTransformationErrorResponse() throws Exception {
-        // GIVEN
-        when(resultOfCall.getErrorId()).thenReturn(ErrorIdEnum.TRANSFORMATION_ERROR);
-        when(resultOfCall.getResultCode()).thenReturn(ResultCodeEnum.ERROR);
-        when(response.getResult()).thenReturn(resultOfCall);
+        // Given
+        RevokeMedicalCertificateResponseType response = createResponse(ResultCodeEnum.ERROR, ErrorIdEnum.TRANSFORMATION_ERROR);
         when(revokeService.revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class)))
                 .thenReturn(response);
 
         // When
-        certificateRevokeProcessor.process(message);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1);
 
         // Then
         verify(revokeService).revokeMedicalCertificate(any(AttributedURIType.class), any(RevokeMedicalCertificateRequestType.class));
+    }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testIntygsIdIsMissing() throws Exception {
+        try {
+            certificateRevokeProcessor.process(BODY, null, LOGICAL_ADDRESS1);
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains(Constants.INTYGS_ID));
+            throw e;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLogicalAddressIsMissing() throws Exception {
+        try {
+            certificateRevokeProcessor.process(BODY, INTYGS_ID1, null);
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains(Constants.LOGICAL_ADDRESS));
+            throw e;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBodyIsMissing() throws Exception {
+        try {
+            certificateRevokeProcessor.process(null, INTYGS_ID1, LOGICAL_ADDRESS1);
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains(Constants.REVOKE_MESSAGE));
+            throw e;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBodyIsEmpty() throws Exception {
+        try {
+            certificateRevokeProcessor.process("", INTYGS_ID1, LOGICAL_ADDRESS1);
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains(Constants.REVOKE_MESSAGE));
+            throw e;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBodyIsEmptyButWithWhitespace() throws Exception {
+        try {
+            certificateRevokeProcessor.process(" ", INTYGS_ID1, LOGICAL_ADDRESS1);
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains(Constants.REVOKE_MESSAGE));
+            throw e;
+        }
+    }
+
+    private RevokeMedicalCertificateResponseType createResponse(ResultCodeEnum resultCodeType, ErrorIdEnum errorType) {
+        ResultOfCall resultType = new ResultOfCall();
+        resultType.setResultCode(resultCodeType);
+        if (errorType != null) {
+            resultType.setErrorId(errorType);
+        }
+        RevokeMedicalCertificateResponseType responseType = new RevokeMedicalCertificateResponseType();
+
+        responseType.setResult(resultType);
+        return responseType;
     }
 
 }
