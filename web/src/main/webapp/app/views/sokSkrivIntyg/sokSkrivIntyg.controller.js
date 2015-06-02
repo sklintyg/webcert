@@ -13,7 +13,8 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
 
             $scope.lookupPatient = function() {
 
-                var onSuccess = function() {
+                var onSuccess = function(patientResult) {
+                    PatientModel = patientResult;
                     $scope.widgetState.waiting = false;
                     $scope.widgetState.errorid = undefined;
                     $location.path('/create/choose-cert-type/index');
