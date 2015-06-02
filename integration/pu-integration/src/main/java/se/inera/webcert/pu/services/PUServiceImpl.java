@@ -1,9 +1,12 @@
 package se.inera.webcert.pu.services;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import se.inera.population.residentmaster.v1.*;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookUpSpecificationType;
 import se.inera.population.residentmaster.v1.lookupresidentforfullprofile.LookupResidentForFullProfileResponseType;
@@ -24,6 +27,9 @@ public class PUServiceImpl implements PUService {
     private String logicaladdress;
 
     @Override
+    @Cacheable(value = "personCache",
+               key = "#personId",
+               unless = "#result.status == T(se.inera.webcert.pu.model.PersonSvar$Status).ERROR")
     public PersonSvar getPerson(String personId) {
         String normalizedId = normalizeId(personId);
 
@@ -54,6 +60,12 @@ public class PUServiceImpl implements PUService {
             LOG.warn("Error occured, no person '{}'({}) found", normalizedId, personId);
             return new PersonSvar(null, PersonSvar.Status.ERROR);
         }
+    }
+
+    @VisibleForTesting
+    @CacheEvict(value = "personCache", allEntries = true)
+    public void clearCache() {
+        LOG.debug("personCache cleared");
     }
 
     private String normalizeId(String personId) {
