@@ -61,12 +61,10 @@ public class MockIntygModuleRegistry implements IntygModuleRegistry {
 
             @Override
             public void registerCertificate(InternalModelHolder internalModel, String logicalAddress) throws ModuleException {
-
             }
 
             @Override
             public void sendCertificateToRecipient(InternalModelHolder internalModel, String logicalAddress, String recipientId) throws ModuleException {
-
             }
 
             @Override

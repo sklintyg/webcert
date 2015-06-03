@@ -49,9 +49,6 @@ public class RouteIntegrationTest {
     private JmsTemplate jmsTemplate;
 
     @Autowired
-    private CamelContext camelContext;
-
-    @Autowired
     private Queue queue;
 
     @Autowired
