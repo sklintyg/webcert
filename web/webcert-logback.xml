@@ -49,7 +49,7 @@
     </rollingPolicy>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
-        <param name="Pattern" value="%date{ISO8601} [%thread] %-5level %logger{10} [%user %session] - %msg%n" />
+        <param name="Pattern" value="%date{ISO8601} %-5level %logger{10} %session - %msg%n" />
       </layout>
     </encoder>
   </appender>
