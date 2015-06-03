@@ -27,7 +27,7 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration({"/notifications/test-notification-sender-config.xml", "/notifications/unit-test-properties-context.xml" })
+@ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 @MockEndpointsAndSkip("bean:notificationTransformer|bean:notificationWSClient|direct:errorHandlerEndpoint")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class RouteTest {

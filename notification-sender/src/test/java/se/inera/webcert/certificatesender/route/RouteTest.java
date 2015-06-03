@@ -22,7 +22,7 @@ import com.google.common.collect.ImmutableMap;
 
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration({"/certificates/test-certificate-sender-config.xml", "/certificates/unit-test-properties-context.xml" })
+@ContextConfiguration("/certificates/unit-test-certificate-sender-config.xml")
 @MockEndpointsAndSkip("bean:certificateStoreProcessor|bean:certificateSendProcessor|bean:certificateRevokeProcessor|direct:certPermanentErrorHandlerEndpoint|direct:certTemporaryErrorHandlerEndpoint")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class RouteTest {

@@ -6,8 +6,11 @@
 
   <import resource="beans-context.xml"/>
   <import resource="camel-context.xml"/>
-  <import resource="test-service-context.xml"/>
-  <import resource="test-broker-context.xml"/>
+  <import resource="mock-service-context.xml"/>
+  <import resource="integration-test-broker-context.xml"/>
+
+  <context:property-placeholder
+      location="classpath:certificates/integration-test.properties" order="1" ignore-resource-not-found="false" />
 
   <context:annotation-config/>
 
