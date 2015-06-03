@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -416,6 +416,13 @@
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <!-- ehcache -->
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>${ehcache.version}</version>
       </dependency>
 
       <!-- Test dependencies -->
