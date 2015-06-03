@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.services.converter;
+package se.inera.webcert.client.converter;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 

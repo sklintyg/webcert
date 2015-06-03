@@ -1,12 +1,12 @@
 package se.inera.webcert.certificatesender.services.converter;
 
-import iso.v21090.dt.v1.II;
+import javax.xml.bind.JAXBException;
+
 import org.joda.time.LocalDateTime;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
@@ -15,11 +15,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
-
-import javax.xml.bind.JAXBException;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import se.inera.webcert.client.converter.RevokeRequestConverterImpl;
+import iso.v21090.dt.v1.II;
 
 /**
  * Created by eriklupander on 2015-05-22.
@@ -38,7 +35,7 @@ public class RevokeRequestConverterTest {
 
         RevokeMedicalCertificateRequestType request = buildRequest();
         String xml = testee.toXml(request);
-        assertNotNull(xml);
+        Assert.assertNotNull(xml);
     }
 
     @Test
@@ -48,8 +45,8 @@ public class RevokeRequestConverterTest {
         RevokeMedicalCertificateRequestType request = buildRequest();
         String xml = testee.toXml(request);
         RevokeMedicalCertificateRequestType rebuilt = testee.fromXml(xml);
-        assertNotNull(rebuilt);
-        assertTrue(request.equals(rebuilt));
+        Assert.assertNotNull(rebuilt);
+        Assert.assertTrue(request.equals(rebuilt));
     }
 
     private RevokeMedicalCertificateRequestType buildRequest() {

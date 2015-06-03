@@ -26,6 +26,18 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+
+    <!-- Common -->
+    <dependency>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>common-schemas</artifactId>
+    </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>

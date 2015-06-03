@@ -7,8 +7,8 @@
 
   <bean id="mockIntygModuleRegistry" class="se.inera.webcert.notifications.service.MockIntygModuleRegistry" />
 
-  <bean id="mockSendCertificateToRecipientResponder" class="se.inera.webcert.notifications.service.MockSendCertificateToRecipientResponder" />
 
-  <bean id="mockRevokeMedicalCertificateResponder" class="se.inera.webcert.notifications.service.MockRevokeMedicalCertificateResponder" />
+  <bean id="mockSendCertificateServiceClient" class="se.inera.webcert.certificatesender.services.mock.MockSendCertificateServiceClientImpl" />
+  <bean id="mockRevokeCertificateServiceClient" class="se.inera.webcert.certificatesender.services.mock.MockRevokeCertificateServiceClientImpl" />
 
 </beans>
