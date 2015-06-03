@@ -22,5 +22,6 @@ class EditeraIntygPage extends AbstractEditCertPage {
         errorPanel { $("#error-panel") }
         visaVadSomSaknasKnapp { $("#showCompleteButton") }
         visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
+        sekretessmarkering { $("#sekretessmarkering") }
     }
 }

@@ -14,8 +14,10 @@ class VisaPage extends AbstractPage {
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
 
         skrivUtKnapp {$("#downloadprint") }
-        kopieraKnapp { $("#copyBtn") }
+        kopieraKnapp(required: false) { $("#copyBtn") }
         makuleraKnapp { $("#makuleraBtn") }
+
+        sekretessmarkering { $("#sekretessmarkering") }
 
         kopieraDialogMsgForlangningSjukskrivning(required:false) { $("#msgForlangningSjukskrivning") }
 

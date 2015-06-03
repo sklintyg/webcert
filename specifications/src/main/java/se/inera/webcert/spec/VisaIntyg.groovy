@@ -57,4 +57,13 @@ class VisaIntyg {
             }
         }
     }
+
+    boolean sekretessmarkeringVisas() {
+        def result
+        Browser.drive {
+            result = page.sekretessmarkering.isDisplayed()
+        }
+        result
+    }
+
 }
