@@ -192,7 +192,7 @@ public class IntygApiController extends AbstractApiController {
         Utkast updatedIntyg;
         try {
             updatedIntyg = utkastService.setNotifiedOnDraft(intygsId, version, notified);
-        } catch (OptimisticLockException e) {
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
