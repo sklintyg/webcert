@@ -179,7 +179,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     @Override
-    @Transactional
     public IntygServiceResult storeIntyg(Utkast utkast) {
         Omsandning omsandning = createOmsandning(OmsandningOperation.STORE_INTYG, utkast.getIntygsId(), utkast.getIntygsTyp(), null);
         
@@ -190,7 +189,8 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         return storeIntyg(utkast, omsandning);
     }
 
-    private Omsandning createOmsandning(OmsandningOperation operation, String intygId, String typ, String configuration) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Omsandning createOmsandning(OmsandningOperation operation, String intygId, String typ, String configuration) {
         Omsandning omsandning = new Omsandning(operation, intygId, typ);
         omsandning.setAntalForsok(0);
         omsandning.setGallringsdatum(new LocalDateTime().plusHours(24 * 7));
@@ -205,8 +205,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
         return omsandningRepository.save(omsandning);
     }
 
-    @Override
-    @Transactional
     public IntygServiceResult storeIntyg(Omsandning omsandning) {
         Utkast utkast = utkastRepository.findOne(omsandning.getIntygId());
         if (utkast == null) {
@@ -233,7 +231,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     @Override
-    @Transactional
     public IntygServiceResult sendIntyg(Omsandning omsandning) {
         SendIntygConfiguration sendConfig = configurationManager.unmarshallConfig(omsandning.getConfiguration(), SendIntygConfiguration.class);
         Utlatande intyg = getUtlatandeForIntyg(omsandning.getIntygId(), omsandning.getIntygTyp());
@@ -241,7 +238,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     @Override
-    @Transactional
     public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean hasPatientConsent) {
 
         Utlatande intyg = getUtlatandeForIntyg(intygsId, typ);
@@ -403,7 +399,6 @@ public class IntygServiceImpl implements IntygService, IntygOmsandningService {
     }
 
     private void scheduleResend(Omsandning omsandning) {
-        omsandning.setBearbetas(false);
         omsandning.setNastaForsok(new LocalDateTime().plusHours(1));
         omsandning.setAntalForsok(omsandning.getAntalForsok() + 1);
         omsandningRepository.save(omsandning);
