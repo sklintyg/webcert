@@ -19,8 +19,8 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 
-import se.inera.certificate.model.common.internal.Vardenhet;
 import se.inera.webcert.converter.IntygDraftsConverter;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -193,7 +193,7 @@ public class IntygApiController extends AbstractApiController {
         Utkast updatedIntyg;
         try {
             updatedIntyg = utkastService.setNotifiedOnDraft(intygsId, version, notified);
-        } catch (OptimisticLockException e) {
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
