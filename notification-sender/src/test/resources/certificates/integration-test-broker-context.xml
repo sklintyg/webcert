@@ -6,7 +6,7 @@
 
   <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory" ref="jmsFactory"/>
-    <property name="defaultDestination" ref="queue"/>
+    <property name="defaultDestination" ref="sendQueue"/>
   </bean>
 
   <bean id="jmsFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
@@ -39,12 +39,25 @@
     <property name="propagationBehaviorName" value="PROPAGATION_REQUIRED"/>
   </bean>
 
-  <amq:broker persistent="false">
-    <amq:transportConnectors>
-      <amq:transportConnector uri="tcp://localhost:61618"/>
-    </amq:transportConnectors>
-  </amq:broker>
+  <broker persistent="false" xmlns="http://activemq.apache.org/schema/core">
+    <destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry queue=">">
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy queuePrefix="DLQ." useQueueForQueueMessages="true"/>
+            </deadLetterStrategy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+    </destinationPolicy>
+    <transportConnectors>
+      <transportConnector uri="tcp://localhost:61618"/>
+    </transportConnectors>
+  </broker>
 
-  <amq:queue id="queue" physicalName="certificateQueue"/>
+  <amq:queue id="sendQueue" physicalName="certificateQueue"/>
+
+  <amq:queue id="dlq" physicalName="DLQ.certificateQueue"/>
 
 </beans>

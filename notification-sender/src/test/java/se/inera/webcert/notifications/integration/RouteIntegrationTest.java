@@ -83,7 +83,7 @@ public class RouteIntegrationTest {
 
     @Test
     public void ensureMessagesAreResentAndDoNotBlockEachOtherWithSameGroupId() throws Exception {
-        final String intygsId1 = FALLERAT_MEDDELANDE + "-2";
+        final String intygsId1 = FALLERAT_MEDDELANDE + "2";
         final String intygsId2 = "korrekt-meddelande-1";
         NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, HandelseType.INTYGSUTKAST_SKAPAT);
         NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, HandelseType.INTYGSUTKAST_ANDRAT);
@@ -114,7 +114,7 @@ public class RouteIntegrationTest {
 
     @Test
     public void ensureMessagesAreResentAndDoNotBlockEachOtherWithDifferentGroupIds() throws Exception {
-        final String intygsId1 = FALLERAT_MEDDELANDE + "-2";
+        final String intygsId1 = FALLERAT_MEDDELANDE + "2";
         final String intygsId2 = "korrekt-meddelande-1";
         NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, HandelseType.INTYGSUTKAST_SKAPAT);
         NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, HandelseType.INTYGSUTKAST_ANDRAT);

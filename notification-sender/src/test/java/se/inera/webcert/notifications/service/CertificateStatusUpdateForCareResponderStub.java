@@ -19,7 +19,7 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
 
-    public static final String FALLERAT_MEDDELANDE = "fallerat-meddelande";
+    public static final String FALLERAT_MEDDELANDE = "fallerat-meddelande-";
 
     private ConcurrentHashMap<String, AtomicInteger> attemptsPerMessage = new ConcurrentHashMap<>();
     private List<CertificateStatusUpdateForCareType> store = new CopyOnWriteArrayList<>();

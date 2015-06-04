@@ -1,9 +1,8 @@
 package se.inera.webcert.certificatesender.integration;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static se.inera.webcert.notifications.service.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
 
-import java.util.List;
+import java.util.Enumeration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -11,28 +10,21 @@ import javax.jms.*;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
-import org.joda.time.LocalDateTime;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
-import se.inera.certificate.modules.support.api.notification.HandelseType;
-import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
 import se.inera.webcert.common.Constants;
-import se.inera.webcert.notifications.service.CertificateStatusUpdateForCareResponderStub;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
@@ -49,19 +41,19 @@ public class RouteIntegrationTest {
     private JmsTemplate jmsTemplate;
 
     @Autowired
-    private CamelContext camelContext;
+    private Queue sendQueue;
 
     @Autowired
-    private Queue queue;
+    private Queue dlq;
 
     @Autowired
     MockSendCertificateServiceClientImpl sendCertificateServiceClient;
 
     @Test
-    public void ensureStubReceivedAllMessages() throws Exception {
-        sendMessage("notificationMessage1", INTYGS_ID_1, Constants.SEND_MESSAGE);
-        sendMessage("notificationMessage2", INTYGS_ID_1, Constants.SEND_MESSAGE);
-        sendMessage("notificationMessage3", INTYGS_ID_1, Constants.SEND_MESSAGE);
+    public void ensureStubReceivesAllMessages() throws Exception {
+        sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
+        sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
+        sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(new Callable<Boolean>() {
             @Override
@@ -74,27 +66,39 @@ public class RouteIntegrationTest {
     }
 
     @Test
-    public void ensureStubReceivedAllMessages() throws Exception {
-        sendMessage("notificationMessage1", INTYGS_ID_1, Constants.SEND_MESSAGE);
-        sendMessage("notificationMessage2", INTYGS_ID_1, Constants.SEND_MESSAGE);
-        sendMessage("notificationMessage3", INTYGS_ID_1, Constants.SEND_MESSAGE);
+    public void ensureStubReceivesAllMessagesAfterResend() throws Exception {
+        sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "2", Constants.SEND_MESSAGE);
+        sendMessage(INTYGS_ID_1, Constants.SEND_MESSAGE);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                int numberOfReceivedMessages = sendCertificateServiceClient.getNumberOfReceivedMessages();
-                System.out.println("numberOfReceivedMessages: " + numberOfReceivedMessages);
-                return (numberOfReceivedMessages == 3);
+                int numberOfSentMessages = sendCertificateServiceClient.getNumberOfSentMessages();
+                System.out.println("numberOfReceivedMessages: " + numberOfSentMessages);
+                return (numberOfSentMessages == 2);
             }
         });
     }
 
-    private void sendMessage(final String message, final String groupId, final String messageType) throws Exception {
-        jmsTemplate.send(queue, new MessageCreator() {
+    @Test
+    public void ensureMessageEndsUpInDLQ() throws Exception {
+        sendMessage(MockSendCertificateServiceClientImpl.FALLERAT_MEDDELANDE + "5", Constants.SEND_MESSAGE);
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                int numberOfDLQMessages = numberOfDLQMessages();
+                return (numberOfDLQMessages == 1);
+            }
+        });
+    }
+
+    private void sendMessage(final String intygsId, final String messageType) throws Exception {
+        jmsTemplate.send(sendQueue, new MessageCreator() {
             public Message createMessage(Session session) throws JMSException {
                 try {
-                    TextMessage textMessage = session.createTextMessage(message);
-                    textMessage.setStringProperty("JMSXGroupID", groupId);
+                    TextMessage textMessage = session.createTextMessage("body");
+                    textMessage.setStringProperty(Constants.INTYGS_ID, intygsId);
                     textMessage.setStringProperty(Constants.MESSAGE_TYPE, messageType);
                     return textMessage;
                 } catch (Exception e) {
@@ -102,6 +106,23 @@ public class RouteIntegrationTest {
                 }
             }
         });
+    }
+
+    private int numberOfDLQMessages() throws Exception {
+        Integer count = (Integer) jmsTemplate.browse(dlq, new BrowserCallback<Object>() {
+
+            @Override
+            public Object doInJms(Session session, QueueBrowser browser) throws JMSException {
+                int counter = 0;
+                Enumeration msgs = browser.getEnumeration();
+                while (msgs.hasMoreElements()) {
+                    msgs.nextElement();
+                    counter++;
+                }
+                return counter;
+            }
+        });
+        return count;
     }
 
 }

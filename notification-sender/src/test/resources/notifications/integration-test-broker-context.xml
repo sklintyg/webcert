@@ -13,9 +13,9 @@
     <property name="brokerURL" value="tcp://localhost:61618"/>
     <property name="redeliveryPolicy">
       <bean class="org.apache.activemq.RedeliveryPolicy">
-        <property name="maximumRedeliveries" value="10"/>
-        <property name="maximumRedeliveryDelay" value="300000"/>
-        <property name="initialRedeliveryDelay" value="1000"/>
+        <property name="maximumRedeliveries" value="${errorhandling.maxRedeliveries}"/>
+        <property name="maximumRedeliveryDelay" value="${errorhandling.maxRedeliveryDelay}"/>
+        <property name="initialRedeliveryDelay" value="${errorhandling.redeliveryDelay}"/>
         <property name="useExponentialBackOff" value="true"/>
         <property name="backOffMultiplier" value="2"/>
       </bean>
