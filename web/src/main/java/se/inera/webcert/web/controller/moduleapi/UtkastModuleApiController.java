@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.dto.HoSPerson;
@@ -132,7 +133,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             SaveDraftResponse responseEntity = buildSaveDraftResponse(validateResponse.getVersion(), validateResponse.getDraftValidation());
 
             return Response.ok().entity(responseEntity).build();
-        } catch (OptimisticLockException e) {
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
@@ -194,7 +195,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         try {
             utkastService.deleteUnsignedDraft(intygsId, version);
-        } catch (OptimisticLockException e) {
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
@@ -240,7 +241,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         SignaturTicket ticket;
         try {
             ticket = signaturService.serverSignature(intygsId, version);
-        } catch (OptimisticLockException e) {
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
@@ -274,7 +275,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         SignaturTicket ticket;
         try {
             ticket = signaturService.clientSignature(biljettId, rawSignaturString);
-        } catch (OptimisticLockException e) {
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             ticket = signaturService.ticketStatus(biljettId);
             monitoringLogService.logUtkastConcurrentlyEdited(ticket.getIntygsId(), intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
@@ -300,7 +301,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         SignaturTicket ticket;
         try {
             ticket = signaturService.createDraftHash(intygsId, version);
-        } catch (OptimisticLockException e) {
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
