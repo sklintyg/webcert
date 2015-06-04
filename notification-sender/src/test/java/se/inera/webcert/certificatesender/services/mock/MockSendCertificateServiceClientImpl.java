@@ -6,20 +6,22 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by eriklupander on 2015-06-03.
  */
 public class MockSendCertificateServiceClientImpl implements SendCertificateServiceClient {
-    private int count = 0;
+    private AtomicInteger count = new AtomicInteger(0);
 
     @Override
-    public SendCertificateToRecipientResponseType sendCertificate(String s, String s1, String s2, String s3) {
-        count++;
+    public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String recipient, String logicalAddress) {
+        count.incrementAndGet();
         return createResponse(ResultCodeType.OK, null);
     }
 
     public int getNumberOfReceivedMessages() {
-        return count;
+        return count.get();
     }
 
     private SendCertificateToRecipientResponseType createResponse(ResultCodeType resultCodeType, ErrorIdType errorType) {
@@ -33,6 +35,5 @@ public class MockSendCertificateServiceClientImpl implements SendCertificateServ
         responseType.setResult(resultType);
         return responseType;
     }
-
 
 }

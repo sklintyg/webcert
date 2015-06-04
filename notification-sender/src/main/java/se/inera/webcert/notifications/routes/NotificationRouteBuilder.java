@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
 
-public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
-    private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilder.class);
+public class NotificationRouteBuilder extends RouteBuilder {
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
 
     @Override
     public void configure() throws Exception {

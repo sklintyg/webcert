@@ -7,7 +7,7 @@
 
   <bean id="notificationWSClient" class="se.inera.webcert.notifications.service.NotificationWSClient"></bean>
 
-  <bean id="processNotificationRequestRouteBuilder" class="se.inera.webcert.notifications.routes.ProcessNotificationRequestRouteBuilder"/>
+  <bean id="processNotificationRequestRouteBuilder" class="se.inera.webcert.notifications.routes.NotificationRouteBuilder"/>
 
   <bean id="customObjectMapper" class="se.inera.certificate.integration.json.CustomObjectMapper"/>
 

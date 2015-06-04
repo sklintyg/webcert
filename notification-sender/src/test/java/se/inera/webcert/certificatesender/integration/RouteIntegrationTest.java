@@ -73,6 +73,22 @@ public class RouteIntegrationTest {
         });
     }
 
+    @Test
+    public void ensureStubReceivedAllMessages() throws Exception {
+        sendMessage("notificationMessage1", INTYGS_ID_1, Constants.SEND_MESSAGE);
+        sendMessage("notificationMessage2", INTYGS_ID_1, Constants.SEND_MESSAGE);
+        sendMessage("notificationMessage3", INTYGS_ID_1, Constants.SEND_MESSAGE);
+
+        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                int numberOfReceivedMessages = sendCertificateServiceClient.getNumberOfReceivedMessages();
+                System.out.println("numberOfReceivedMessages: " + numberOfReceivedMessages);
+                return (numberOfReceivedMessages == 3);
+            }
+        });
+    }
+
     private void sendMessage(final String message, final String groupId, final String messageType) throws Exception {
         jmsTemplate.send(queue, new MessageCreator() {
             public Message createMessage(Session session) throws JMSException {
