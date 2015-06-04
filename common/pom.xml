@@ -10,7 +10,7 @@
     <version>0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>common</artifactId>
+  <artifactId>webcert-common</artifactId>
   <packaging>jar</packaging>
 
   <name>Webcert (Common)</name>
