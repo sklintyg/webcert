@@ -1,0 +1,36 @@
+Detta test verifierar att sekretessmarkering visas på både utkast och intygsvyer. På intygsvyn ska även kopieraknappen vara borta.
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk |
+| webcert-fitnesse-sekretess-1 | fk7263 | 19540123-2540 | Test | Testorsson | IFV1239877878-104B | Åsa Andersson | IFV1239877878-1042 | nej | ICD_10_SE |
+
+|Intyg|
+|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
+|19540123-2540|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fitnesse-sekretess-2|!-SmL-!|nej|nej|
+
+!3 Verifiera sekretessmarkering på utkast
+
+| script | !-HanteraUtkast-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+| sok skriv intyg sidan visas |
+| ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-sekretess-1 |
+| editera sidan visas |
+| sekretessmarkering visas |
+
+!3 Verifiera sekretessmarkering på intyg
+
+| script | !-VisaIntyg-! |
+| visa intyg med id | webcert-fitnesse-sekretess-2 | och typ | fk7263 |
+| intyg laddat | true |
+| sekretessmarkering visas |
+| kopiera knapp visas | false |
+
+!3 Ta bort intyg
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-sekretess-1 |
+
+| ta bort intyg |
+| id |
+| webcert-fitnesse-sekretess-2 |
