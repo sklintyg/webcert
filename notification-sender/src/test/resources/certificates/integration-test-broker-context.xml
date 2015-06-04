@@ -43,7 +43,7 @@
     <destinationPolicy>
       <policyMap>
         <policyEntries>
-          <policyEntry queue=">">
+          <policyEntry queue="certificateQueue">
             <deadLetterStrategy>
               <individualDeadLetterStrategy queuePrefix="DLQ." useQueueForQueueMessages="true"/>
             </deadLetterStrategy>
