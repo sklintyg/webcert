@@ -28,9 +28,8 @@ public class RevokeCertificateServiceClientImpl implements RevokeCertificateServ
     @Override
     public RevokeMedicalCertificateResponseType revokeCertificate(String xml, String logicalAddress) {
 
-        if (logicalAddress == null || logicalAddress.trim().length() == 0) {
-            throw new IllegalArgumentException("Logical address missing, cannot invoke revokeMedicalCertificate service");
-        }
+        validateArgument(xml, "xml missing, cannot invoke revokeMedicalCertificate service");
+        validateArgument(logicalAddress, "Logical address missing, cannot invoke revokeMedicalCertificate service");
 
         try {
             RevokeMedicalCertificateRequestType request = revokeRequestConverter.fromXml(xml);
