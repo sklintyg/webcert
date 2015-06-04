@@ -14,7 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 @Entity
 @Table(name = "OMSANDNING")
@@ -24,13 +23,6 @@ public class Omsandning {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "OMSANDNING_ID")
     private Long id;
-
-    @Version
-    @Column(name = "VERSION")
-    private long version;
-    
-    @Column(name = "BEARBETAS")
-    private boolean bearbetas;
 
     @Column(name = "INTYG_ID")
     private String intygId;
@@ -81,22 +73,6 @@ public class Omsandning {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public long getVersion() {
-        return version;
-    }
-
-    public void setVersion(long version) {
-        this.version = version;
-    }
-
-    public boolean isBearbetas() {
-        return bearbetas;
-    }
-
-    public void setBearbetas(boolean bearbetas) {
-        this.bearbetas = bearbetas;
     }
 
     public String getIntygId() {

@@ -395,15 +395,4 @@
     <renameColumn tableName="FRAGASVAR" columnDataType="varchar(255)" oldColumnName="PATIENT_ID_EXTENSION" newColumnName="PATIENT_ID"/>
   </changeSet>
 
-  <changeSet id="13" author="bb">
-     <addColumn tableName="OMSANDNING">
-      <column name="VERSION" type="bigint" defaultValue="0">
-        <constraints nullable="false"/>
-      </column>
-      <column name="BEARBETAS" type="boolean">
-        <constraints nullable="false"/>
-      </column>
-    </addColumn>
- </changeSet>
-
 </databaseChangeLog>
