@@ -72,6 +72,18 @@ class VisaIntyg {
         return result
     }
 
+    boolean kopieraKnappEjVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at VisaPage
+            }
+            result = !page.kopieraKnappNoWait?.present || !page.kopieraKnappNoWait?.isDisplayed()
+
+        }
+        return result
+    }
+
     boolean makuleraKnappVisas() {
         boolean result
         Browser.drive {

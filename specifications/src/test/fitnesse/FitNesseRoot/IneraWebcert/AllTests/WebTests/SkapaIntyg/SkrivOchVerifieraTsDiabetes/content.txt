@@ -20,7 +20,7 @@ Populera intyget med information i samtliga fält utom 2 c-e som ska vara dolda 
 !3 Spara och signera
 
 | script | !-HanteraUtkast-! |
-| ensure | ar sparat |
+| ensure | har sparat |
 
 | script | !-SkrivIntyg-! |
 | intyg sparat visas |

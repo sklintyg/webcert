@@ -25,7 +25,7 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | andra postnummer | 12344 |
 | andra postort | Bankeborg |
 | andra telefonnummer | 223456789 |
-| ensure | ar sparat |
+| ensure | har sparat |
 
 !3 Verifiera ändringar i adressfälten
 !| script | HanteraUtkast |

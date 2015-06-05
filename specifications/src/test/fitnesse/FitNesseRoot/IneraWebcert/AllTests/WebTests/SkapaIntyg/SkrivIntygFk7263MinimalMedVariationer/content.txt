@@ -20,7 +20,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 !3 Spara
 
 | script | !-HanteraUtkast-! |
-| ensure | ar sparat |
+| ensure | har sparat |
 
 | script | !-SkrivIntyg-! |
 | intyg sparat visas |
@@ -34,7 +34,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | 0 | +40 |
 
 | script | !-HanteraUtkast-! |
-| ensure | ar sparat |
+| ensure | har sparat |
 
 | script | Browser |
 | ladda om |
@@ -54,7 +54,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | check | arbetstid 75 | 10 |
 
 | script | !-HanteraUtkast-! |
-| ensure | ar sparat |
+| ensure | har sparat |
 
 | script | Browser |
 | ladda om |
@@ -75,7 +75,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 !4 Spara utkastet för att inte få varningsrutan om att utkastet ej är sparat vid stängning av sidan
 
 | script | !-HanteraUtkast-! |
-| ensure | ar sparat |
+| ensure | har sparat |
 
 !3 Ta bort utkastet
 

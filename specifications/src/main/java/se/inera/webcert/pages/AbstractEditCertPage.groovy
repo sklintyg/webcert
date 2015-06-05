@@ -21,7 +21,7 @@ abstract class AbstractEditCertPage extends AbstractPage {
         }
     }
 
-    boolean arSparat(){
+    boolean harSparat(){
         Browser.drive{
             return intygetSparatOchKomplettMeddelande.isDisplayed();
         }

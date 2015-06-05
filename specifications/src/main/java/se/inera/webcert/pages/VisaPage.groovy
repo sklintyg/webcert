@@ -21,7 +21,7 @@ class VisaPage extends AbstractPage {
 
         skickaKnappNoWait{$("#sendBtn") }
         skrivUtKnappNoWait{$("#downloadprint") }
-        kopieraKnappNoWait{$("#copyBtn") }
+        kopieraKnappNoWait(required: false){$("#copyBtn") }
         makuleraKnappNoWait{$("#makuleraBtn") }
 
         kopieraDialogMsgForlangningSjukskrivning(required:false,wait: true) { displayed($("#msgForlangningSjukskrivning")) }

@@ -11,7 +11,8 @@ class EditeraIntygPage extends AbstractEditCertPage {
         radera { $("#ta-bort-utkast") }
         skrivUtBtn { $("#skriv-ut-utkast") }
         konfirmeraRadera { $("#confirm-draft-delete-button") }
-        signeraBtn(required: false) { $("#signera-utkast-button") }
+        signeraBtn(required: false,wait:true){ displayed($("#signera-utkast-button")) }
+        signeraBtnNoWait(required: false) { $("#signera-utkast-button") }
         signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         enhetsPostadress(required: false) { $("#clinicInfoPostalAddress") }
@@ -19,11 +20,12 @@ class EditeraIntygPage extends AbstractEditCertPage {
         enhetsPostort(required: false) { $("#clinicInfoPostalCity") }
         enhetsTelefonnummer(required: false) { $("#clinicInfoPhone") }
         enhetsEpost(required: false) { $("#clinicInfoEmail") }
-        intygetSparatOchKomplettMeddelande { $("#intyget-sparat-och-komplett-meddelande") }
-        intygetSparatOchEjKomplettMeddelande { $("#intyget-sparat-och-ej-komplett-meddelande") }
+        intygetSparatOchKomplettMeddelande(wait:true){ displayed($("#intyget-sparat-och-komplett-meddelande")) }
+        intygetSparatOchEjKomplettMeddelande(wait:true){ displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
         errorPanel { $("#error-panel") }
         visaVadSomSaknasKnapp { $("#showCompleteButton") }
-        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
+        visaVadSomSaknasLista(required: false, wait:true) { displayed($("#visa-vad-som-saknas-lista")) }
+        visaVadSomSaknasListaNoWait(required: false) { $("#visa-vad-som-saknas-lista") }
         sekretessmarkering { $("#sekretessmarkering") }
     }
 

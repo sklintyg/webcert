@@ -98,12 +98,12 @@ class HanteraUtkast {
         }
     }
 
-    boolean arSparat() {
+    boolean harSparat() {
         Browser.drive {
             waitFor {
                 at EditeraIntygPage
             }
-            page.arSparat()
+            page.harSparat()
         }
     }
 

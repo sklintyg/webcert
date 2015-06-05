@@ -28,7 +28,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 !3 Spara och signera
 
 | script | !-HanteraUtkast-! |
-| ensure | ar sparat |
+| ensure | har sparat |
 
 | script | !-SkrivIntyg-! |
 | intyg sparat visas |

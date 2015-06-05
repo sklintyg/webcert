@@ -21,9 +21,9 @@ Detta test verifierar att sekretessmarkering visas på både utkast och intygsvy
 
 | script | !-VisaIntyg-! |
 | visa intyg med id | webcert-fitnesse-sekretess-2 | och typ | fk7263 |
-| intyg laddat | true |
+| ensure | intyg laddat |
 | sekretessmarkering visas |
-| kopiera knapp visas | false |
+| ensure | kopiera knapp ej visas |
 
 !3 Ta bort intyg
 
