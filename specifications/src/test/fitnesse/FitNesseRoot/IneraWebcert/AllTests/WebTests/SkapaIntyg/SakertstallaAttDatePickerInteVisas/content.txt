@@ -12,7 +12,7 @@
 !3 Välja input fielt och trycka på enter knappen, datum skulle inte visas
 | script | !-SkrivIntyg-! |
 | enter pa diagnos kod |
-| reject | date picker visas |
+| ensure | date picker ej visas |
 | oppna date picker |
 | ensure | date picker visas |
 

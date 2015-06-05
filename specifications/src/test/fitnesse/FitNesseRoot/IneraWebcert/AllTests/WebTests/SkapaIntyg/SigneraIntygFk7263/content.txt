@@ -14,11 +14,11 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
-| signera knapp visas |
-| signera knapp aktiverad |
+| ensure | signera knapp visas |
+| ensure | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| intyget signerat meddelande visas |
+| ensure | intyget signerat meddelande visas |
 
 
 !3 Givet att det finns ett komplett utkast som använder primärvårdskodverk för diagnoser, verifiera att det går att signera det
@@ -28,11 +28,11 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-2 |
 | editera sidan visas |
-| signera knapp visas |
-| signera knapp aktiverad |
+| ensure | signera knapp visas |
+| ensure | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| intyget signerat meddelande visas |
+| ensure | intyget signerat meddelande visas |
 
 
 !3 Ta bort utkast

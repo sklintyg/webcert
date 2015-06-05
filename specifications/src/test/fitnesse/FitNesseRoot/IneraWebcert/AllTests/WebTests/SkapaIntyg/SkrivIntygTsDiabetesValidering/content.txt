@@ -17,7 +17,6 @@ Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fälte
 | 3000 | D | false | 77 | 66 | 55 | 44 | 33 | 22 | true | 3000-13-30 |
 
 | script | !-ValideringTsDiabetes-! |
-| spara utkast |
 | intyg ej komplett visas |
 | validering diabetes visas |
 | validering syn visas |
@@ -30,7 +29,6 @@ Ogiltiga värden för diabetes år och syn ska ge valideringsfel för det fälte
 | 2002 | 1,0| 1,0 | 1,0 | 1,0 | 1,0 | 1,0 | false |
 
 | script | !-ValideringTsDiabetes-! |
-| spara utkast |
 | intyg ej komplett visas |
 | inga valideringsfel visas |
 
@@ -76,7 +74,6 @@ Kontrollera valideringsmeddelanden.
 | C | korkort |
 
 | script | !-ValideringTsDiabetes-! |
-| spara utkast |
 | intyg ej komplett visas |
 
 !3 Kontrollera valideringsmeddelanden.

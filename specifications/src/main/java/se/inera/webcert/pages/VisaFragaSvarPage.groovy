@@ -1,6 +1,7 @@
 package se.inera.webcert.pages
 
 import se.inera.certificate.page.AbstractPage
+import se.inera.certificate.spec.Browser
 
 class VisaFragaSvarPage extends AbstractPage {
 
@@ -9,47 +10,58 @@ class VisaFragaSvarPage extends AbstractPage {
     static content = {
 
         intygSaknas { $("#cert-load-error") }
-        intygVy { $('#intyg-vy-laddad') }
+        intygVy(wait: true) { displayed($('#intyg-vy-laddad')) }
 
-        newQuestionBtn(required: false) { $("#askQuestionBtn") }
-        newQuestionForm { $("#newQuestionForm") }
+        newQuestionBtn(required: false, wait: true) { displayed($("#askQuestionBtn")) }
+        newQuestionBtnNoWait(required: false) { $("#askQuestionBtn") }
+        newQuestionForm(required: false, wait: true) { displayed($("#newQuestionForm")) }
+        newQuestionFormNoWait(required: false) {$("#newQuestionForm") }
         newQuestionText { $("#newQuestionText") }
         newQuestionTopic { $("#new-question-topic") }
-        sendQuestionBtn { $("#sendQuestionBtn") }
+        sendQuestionBtn(required: false, wait: true) { displayed($("#sendQuestionBtn")) }
         cancelQuestionBtn { $("#cancelQuestionBtn") }
-        skrivUtBtn(required: false) { $("#downloadprint") }
-        kopieraBtn(required: false){ $("#copyBtn") }
-        makuleraBtn(required: false){ $("#makuleraBtn") }
-        skickaTillFkBtn(required: false){ $("#sendBtn") }
+        skrivUtBtn(required: false, wait: true) { displayed($("#downloadprint")) }
+        kopieraBtn(required: false, wait: true) { displayed($("#copyBtn")) }
+        kopieraBtnNoWait(required: false) { $("#copyBtn") }
+        makuleraBtn(required: false, wait: true) { displayed($("#makuleraBtn")) }
+        makuleraBtnNoWait(required: false) { $("#makuleraBtn") }
+        skickaTillFkBtn(required: false, wait: true) { displayed($("#sendBtn")) }
+        skickaTillFkBtnNoWait(required: false) { $("#sendBtn") }
 
-        qaOnlyDialog(required: false) { $("#qa-only-warning-dialog") }
-        qaOnlyDialogFortsatt(required: false) { $("#button1continue-dialog") }
+        qaOnlyDialog(required: false, wait: true) { displayed($("#qa-only-warning-dialog")) }
+        qaOnlyDialogFortsatt(required: false, wait: true) { displayed($("#button1continue-dialog")) }
         qaOnlyDialogCancel(required: false) { $("#button2qa-only-warning-dialog") }
 
-        unhandledQAList { $("#unhandledQACol") }
+        unhandledQAList(wait: true) { displayed($("#unhandledQACol")) }
 
-        questionIsSentToFkMessage(required: false) { $("#question-is-sent-to-fk-message-text") }
-        closeSentMessage { $("#question-is-sent-to-fk-message-text > button") }
+        questionIsSentToFkMessage(required: false, wait: true) { displayed($("#question-is-sent-to-fk-message-text")) }
+        questionIsSentToFkMessageNoWait(required: false) { $("#question-is-sent-to-fk-message-text") }
+        closeSentMessage(wait: true) { displayed($("#question-is-sent-to-fk-message-text > button")) }
 
-        certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
-        certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
+        certificateRevokedMessage(required: false, wait: true) { displayed($("#certificate-is-revoked-message-text")) }
+        certificateIsSentToFKMessage(required: false, wait: true) {
+            displayed($("#certificate-is-sent-to-fk-message-text"))
+        }
+        certificateIsSentToFKMessageNoWait(required: false) {
+            $("#certificate-is-sent-to-fk-message-text")
+        }
         certificateIsNotSentToFkMessage(required: false) { $("#certificate-is-not-sent-to-fk-message-text") }
 
-        copyButton { $("#copyBtn") }
+        copyButton(wait: true) { displayed($("#copyBtn")) }
         makuleraButton { $("#makuleraBtn") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
-        makuleraConfirmationOkButton { $("#confirmationOkButton") }
+        makuleraConfirmationOkButton(wait: true) { displayed($("#confirmationOkButton")) }
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
 
-        tillbakaButton { $("#tillbakaButton") }
+        tillbakaButton(wait: true) { displayed($("#tillbakaButton")) }
 
-        hanteraButton { $("#button1checkhanterad-dialog-hantera") }
-        ejHanteraButton { $("#button1checkhanterad-dialog-ejhantera") }
-        hanteraTillbakaButton { $("#button1checkhanterad-dialog-tillbaka") }
+        hanteraButton(wait: true) { displayed($("#button1checkhanterad-dialog-hantera")) }
+        ejHanteraButton(wait: true) { displayed($("#button1checkhanterad-dialog-ejhantera")) }
+        hanteraTillbakaButton(wait: true) { displayed($("#button1checkhanterad-dialog-tillbaka")) }
 
-        qaCheckEjHanteradDialog {$("#qa-check-hanterad-dialog")}
+        qaCheckEjHanteradDialog(wait: true) { displayed($("#qa-check-hanterad-dialog")) }
 
     }
 
@@ -94,79 +106,168 @@ class VisaFragaSvarPage extends AbstractPage {
     }
 
     def addAnswerText(String internid, String answer) {
-        $("#answerText-${internid}") << answer
+        Browser.drive {
+            waitFor {
+                $("#answerText-${internid}") << answer
+            }
+        }
     }
 
     def answerBtn(String internid) {
-        $("#sendAnswerBtn-${internid}")
+        Browser.drive {
+            waitFor {
+                $("#sendAnswerBtn-${internid}")
+            }
+        }
     }
 
     def forwardBtn(String internid) {
-        $("#forwardBtn-${internid}")
+        Browser.drive {
+            waitFor {
+                $("#forwardBtn-${internid}")
+            }
+        }
     }
 
     def frageStallarNamn(String internid) {
-        $("#fraga-vard-aktor-namn-${internid}")
+
+        Browser.drive {
+            waitFor {
+                $("#fraga-vard-aktor-namn-${internid}")
+            }
+        }
     }
 
     def besvarareNamn(String internid) {
-        $("#svar-vard-aktor-namn-${internid}")
+        Browser.drive {
+            waitFor {
+                $("#svar-vard-aktor-namn-${internid}")
+            }
+        }
     }
 
     def markAsHandledFkOriginBtn(String internid) {
-        $("#markAsHandledFkOriginBtn-${internid}")
+        Browser.drive {
+            waitFor {
+                $("#markAsHandledFkOriginBtn-${internid}")
+            }
+        }
     }
 
-    def markAsHandledWcOriginBtn(String id) {
-        $("#markAsHandledWcOriginBtn-${id}")
+    def markAsHandledWcOriginBtnClick(String id) {
+        Browser.drive {
+            waitFor {
+                $("#markAsHandledWcOriginBtn-${id}").click()
+            }
+        }
     }
 
-    def qaHandledPanel(String internid) {
-        $("#qahandled-${internid}")
+    boolean qaHandledPanel(String internid, boolean expected) {
+        Browser.drive {
+            def ref = "#qahandled-${internid}";
+            if (expected) {
+                waitFor {
+                    $(ref).isDisplayed()
+                }
+            } else {
+                !$(ref).isDisplayed()
+            }
+        }
     }
 
-    def qaUnhandledPanel(String id) {
-        $("#qaunhandled-${id}")
+    boolean qaUnhandledPanel(String id, boolean expected) {
+        Browser.drive {
+            def ref = "#qaunhandled-${id}";
+            if (expected) {
+                waitFor {
+                    $(ref).isDisplayed()
+                }
+            } else {
+                !$(ref).isDisplayed()
+            }
+        }
     }
 
     def qaUnhandledPanelWithText(String text) {
-        $("#unhandledQACol div", text: text)
+        Browser.drive {
+            waitFor {
+                $("#unhandledQACol div", text: text)
+            }
+        }
     }
 
-    def markAsUnhandledBtn(String internid) {
-        $("#markAsUnhandledBtn-${internid}")
+    def markAsUnhandledBtnClick(String internid, boolean expected) {
+        Browser.drive {
+            if (expected){
+                waitFor {
+                    $("#markAsUnhandledBtn-${internid}").click()
+                }
+            }
+        }
     }
 
     def sendAnswer(String internid) {
-        $("#sendAnswerBtn-${internid}").click()
+        Browser.drive {
+            waitFor {
+                $("#sendAnswerBtn-${internid}").click()
+            }
+        }
     }
 
     def fkMeddelandeRubrik(String internid) {
-        $("#fkMeddelandeRubrik-${internid}").click()
+        Browser.drive {
+            waitFor {
+                $("#fkMeddelandeRubrik-${internid}").isDisplayed()
+            }
+        }
     }
 
     def fkKompletteringar(String internid) {
-        $("#unhandled-fkKompletteringar-${internid}").click()
+        Browser.drive {
+            waitFor {
+                $("#unhandled-fkKompletteringar-${internid}").isDisplayed()
+            }
+        }
     }
 
     def fkKontakter(String internid) {
-        $("#unhandled-fkKontakter-${internid}").click()
+        Browser.drive {
+            waitFor {
+                $("#unhandled-fkKontakter-${internid}").isDisplayed()
+            }
+        }
     }
 
     def qaFragaSkickadDatum(String internid) {
-        $("#qa-skickaddatum-${internid}")
+        Browser.drive {
+            waitFor {
+                $("#qa-skickaddatum-${internid}")
+            }
+        }
     }
 
     def qaFragetext(String internid) {
-        $("#qa-fragetext-${internid}")
+        Browser.drive {
+            waitFor {
+                $("#qa-fragetext-${internid}")
+            }
+        }
     }
 
     def qaSvarstext(String internid) {
-        $("#answerText-${internid}")
+        Browser.drive {
+            waitFor {
+                $("#answerText-${internid}")
+            }
+        }
     }
 
     def tillbakaButtonClick() {
-        $("#tillbakaButton").click()
+        Browser.drive {
+            waitFor {
+                $("#tillbakaButton").click()
+            }
+        }
     }
 
     def hanteraButtonClick() {
@@ -181,7 +282,12 @@ class VisaFragaSvarPage extends AbstractPage {
         hanteraTillbakaButton.click()
     }
 
-    def preferenceSkipShowUnhandledCheck(){
-        $("#preferenceSkipShowUnhandledDialog").click()
+    def preferenceSkipShowUnhandledCheck() {
+        Browser.drive {
+            waitFor {
+                $("#preferenceSkipShowUnhandledDialog").click()
+            }
+        }
     }
 }
+

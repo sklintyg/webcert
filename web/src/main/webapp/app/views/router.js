@@ -3,6 +3,7 @@
  */
 angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
     'use strict';
+
     $stateProvider.
 
         state('webcert', {
@@ -76,11 +77,26 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
                     templateUrl: '/app/views/visaIntygFragasvar/intyg.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
+                'intyg@webcert.intyg' : {
+                    templateUrl: function($stateParams){
+                        return '/web/webjars/' + $stateParams.certificateType + '/webcert/views/intyg/intyg.html';
+                    }
+                },
+                'fragaSvar@webcert.intyg' : {
+                    templateUrl: function($stateParams){
+                        if($stateParams.certificateType.indexOf('ts') === 0){
+                            return '';
+                        } else {
+                            return '/web/webjars/' + $stateParams.certificateType + '/webcert/views/intyg/fragasvar/fragasvar.html';
+                        }
+                    }
+                },
                 'header@webcert.intyg' : {
                     templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
+
         }).
         state('webcert.fragasvar', {
             data: { defaultActive : 'unhandled-qa' },

@@ -7,5 +7,5 @@
 
 | script | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-4 | och typ | ts-bas|
-| intyg laddat | true |
+| ensure | intyg laddat |
 | skriv ut knapp visas |

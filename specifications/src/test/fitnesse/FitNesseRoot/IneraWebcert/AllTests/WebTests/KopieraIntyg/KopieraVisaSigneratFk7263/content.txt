@@ -26,13 +26,13 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 | Måste fyllas i |
 
 | script | !-HanteraUtkast-! |
-| intyget komplett meddelande visas | true |
+| ensure | intyget komplett meddelande visas |
 | radera utkast |
 
 | script | !-SokSkrivIntyg-! |
 | visa intyg sidan visas |
 
 | script | !-HanteraUtkast-! |
-| inga ej signerade intyg visas |
+| ensure | inga ej signerade intyg visas |
 
 

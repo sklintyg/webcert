@@ -16,12 +16,11 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Signera intyget
 | script | !-HanteraUtkast-! |
-| spara utkast |
-| intyget komplett meddelande visas |
-| signera knapp aktiverad |
+| ensure | intyget komplett meddelande visas |
+| ensure | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| intyget signerat meddelande visas |
+| ensure | intyget signerat meddelande visas |
 
 !3 Gå till intyget via djupintegration
 | script | !-IntegrationMedJournalsystem-! |
@@ -39,9 +38,8 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Intyget ska nu EJ gå att signera
 | script | !-HanteraUtkast-! |
-| spara utkast |
-| intyget ej komplett meddelande visas |
-| signera knapp ej aktiverad |
+| ensure | intyget ej komplett meddelande visas |
+| ensure | signera knapp ej aktiverad |
 
 !3 Populera intyget
 | Populera Fk7263 |
@@ -50,12 +48,11 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Intyget ska nu gå att signera
 | script | !-HanteraUtkast-! |
-| spara utkast |
-| intyget komplett meddelande visas |
-| signera knapp aktiverad |
+| ensure | intyget komplett meddelande visas |
+| ensure | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| intyget signerat meddelande visas |
+| ensure | intyget signerat meddelande visas |
 
 !3 Ta bort intyg
 | ta bort utkast |

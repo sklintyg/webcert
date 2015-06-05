@@ -70,15 +70,11 @@
 
 !3 Spara och signera
 
-| script | !-SkrivIntyg-! |
-| sparaUtkast |
-
 | Populera Fk7263 |
 | smittskydd |
 | true |
 
 | script | !-SkrivIntyg-! |
-| spara utkast |
 |reject | diagnosArSynligt |
 
 | Populera Fk7263 |
@@ -86,8 +82,10 @@
 | false |
 
 | script | !-SkrivIntyg-! |
-| spara utkast |
 | ensure | diagnosArSynligt |
+
+| script | !-SkrivIntyg-! |
+| ensure | intyg ej komplett visas |
 
 !2 Verifiera
 

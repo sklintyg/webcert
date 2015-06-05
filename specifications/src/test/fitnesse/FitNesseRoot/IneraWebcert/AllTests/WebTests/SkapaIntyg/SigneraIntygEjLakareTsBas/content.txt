@@ -12,8 +12,8 @@ Testet beskriver fallet när en administratör går in på ett komplett ts-bas i
 | logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 | ga till editera intyg med typ | ts-bas | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
-| signera knapp visas | false |
-| signering kraver lakare visas |
+| ensure | signera knapp ej visas |
+| ensure | signering kraver lakare visas |
 
 !3 Ta bort utkast
 

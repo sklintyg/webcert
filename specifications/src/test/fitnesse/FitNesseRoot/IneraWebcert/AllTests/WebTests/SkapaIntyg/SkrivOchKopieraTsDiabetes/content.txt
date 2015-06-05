@@ -19,17 +19,19 @@ Populera intyget med information i samtliga fält så det blir komplett
 
 !3 Kontrollera att kan inte ta ställning är satt.
 !| script | HanteraUtkast |
-| check | kan inte ta stallning ts diabetes | true |
+| ensure | kan inte ta stallning ts diabetes |
 
 !3 Spara och signera
 
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
+
 | script | !-SkrivIntyg-! |
-| sparaUtkast |
 | intyg sparat visas |
 
 | script | !-HanteraUtkast-! |
-| signera knapp visas |
-| signera knapp aktiverad |
+| ensure | signera knapp visas |
+| ensure | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
 
@@ -41,7 +43,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 
 !3 Kontrollera att kan inte ta ställning fortfarande är satt.
 !| script | HanteraUtkast |
-| check | kan inte ta stallning ts diabetes | true |
+| ensure | kan inte ta stallning ts diabetes |
 
 !3 Ta bort utkastet
 

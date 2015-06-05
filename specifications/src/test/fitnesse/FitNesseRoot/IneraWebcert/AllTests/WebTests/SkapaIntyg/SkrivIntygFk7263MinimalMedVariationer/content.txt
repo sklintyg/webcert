@@ -19,8 +19,10 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 
 !3 Spara
 
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
+
 | script | !-SkrivIntyg-! |
-| sparaUtkast |
 | intyg sparat visas |
 
 !3 Testa variationer
@@ -31,9 +33,8 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | nedsattMed100start | nedsattMed100slut |
 | 0 | +40 |
 
-| script | !-SkrivIntyg-! |
-| sparaUtkast |
-#| verifiera att sjukskrivningsperioden ar | 41 |
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
 
 | script | Browser |
 | ladda om |
@@ -51,7 +52,9 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | check | arbetstid 25 | 30 |
 | check | arbetstid 50 | 20 |
 | check | arbetstid 75 | 10 |
-| sparaUtkast |
+
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
 
 | script | Browser |
 | ladda om |
@@ -70,8 +73,9 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | check | sjukskrivningsperiod | 28 |
 
 !4 Spara utkastet för att inte få varningsrutan om att utkastet ej är sparat vid stängning av sidan
-| script | !-SkrivIntyg-! |
-| sparaUtkast |
+
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
 
 !3 Ta bort utkastet
 

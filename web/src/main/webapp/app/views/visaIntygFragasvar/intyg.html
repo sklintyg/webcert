@@ -10,7 +10,7 @@
           <span message key="{{widgetState.certificateType}}.label.certtitle"></span>
         </h1>
       </div>
-      <div wc-insert-certificate certificate-type="{{widgetState.certificateType}}"></div>
+      <div ui-view="intyg"/>
     </div>
     <!-- Certificate Left side end -->
 
@@ -19,7 +19,7 @@
          wc-feature-active feature="hanteraFragor" intygstyp="{{widgetState.certificateType}}">
       <div class="webcert-col-shadow"></div>
       <h2 class="col-head">Fråga &amp; Svar</h2>
-      <div wc-insert-qa certificate-type="{{widgetState.certificateType}}"></div>
+      <div ui-view="fragaSvar"/>
     </div>
 
   </div>

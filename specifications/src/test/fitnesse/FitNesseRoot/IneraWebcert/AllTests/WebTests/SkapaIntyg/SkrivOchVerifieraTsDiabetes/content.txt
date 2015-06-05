@@ -19,16 +19,18 @@ Populera intyget med information i samtliga fält utom 2 c-e som ska vara dolda 
 
 !3 Spara och signera
 
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
+
 | script | !-SkrivIntyg-! |
-| sparaUtkast |
 | intyg sparat visas |
 
 | script | !-HanteraUtkast-! |
-| signera knapp visas |
-| signera knapp aktiverad |
+| ensure | signera knapp visas |
+| ensure | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas med typ | ts-diabetes |
-| intyget signerat meddelande visas |
+| ensure | intyget signerat meddelande visas |
 
 !3 Verifiera att fälten i intyget syns och innehåller korrekt data
 

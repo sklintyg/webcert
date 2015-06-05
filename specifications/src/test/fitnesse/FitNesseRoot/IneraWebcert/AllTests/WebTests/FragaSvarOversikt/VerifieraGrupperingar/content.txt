@@ -47,7 +47,7 @@
 | for enheten | vardavdelning-F | i modalen ar siffran | 1 |
 | valj enhet | vardavdelning-D | i modal |
 | visas fraga | $internReferens5 |
-| check | visas fraga | $internReferens1 | false |
+| ensure | visas ej fraga | $internReferens1 |
 
 !3 Ta bort fråga
 | ta bort fraga |

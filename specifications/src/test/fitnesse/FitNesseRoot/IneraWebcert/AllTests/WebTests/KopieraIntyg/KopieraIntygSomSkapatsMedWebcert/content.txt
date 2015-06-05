@@ -12,11 +12,11 @@ Detta test ska visa att struktur inte går förlorad vid kopiering när förlaga
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-kopiera-och-signera |
 | editera sidan visas |
-| signera knapp visas |
-| signera knapp aktiverad |
+| ensure | signera knapp visas |
+| ensure | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| intyget signerat meddelande visas |
+| ensure | intyget signerat meddelande visas |
 
 
 !3 Välj patient

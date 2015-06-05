@@ -8,14 +8,14 @@
       <!-- load animation for entire page -->
       <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading"
            show-content="widgetState.doneLoading">
-        <div ng-show="units.length > 2 && units[0].fragaSvar > 0">
+        <div wc-show="units.length > 2 && units[0].fragaSvar > 0">
           <h2 class="less-top-padding">
             Välj vårdenhet eller mottagning</h2>
 
           <div id="wc-care-unit-clinic-selector" wc-care-unit-clinic-selector></div>
 
         </div>
-        <div ng-show="units[0].fragaSvar == 0">
+        <div wc-show="units[0].fragaSvar == 0">
           <span message key="info.nounanswered.qa.for.unit"></span>
         </div>
 
@@ -24,8 +24,8 @@
 
           <!-- search filter -->
           <div class="webcert-bottom-padding-section">
-              <span ng-show="!widgetState.filteredYet && units[0].fragaSvar">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
-              <span id="current-list-noResults-unit" ng-show="!widgetState.filteredYet && units[0].fragaSvar == 0">Du kan filtrera fram tidigare hanterade frågor och svar här nedan<br></span>
+              <span wc-show="!widgetState.filteredYet && units[0].fragaSvar">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
+              <span id="current-list-noResults-unit" wc-show="!widgetState.filteredYet && units[0].fragaSvar == 0">Du kan filtrera fram tidigare hanterade frågor och svar här nedan<br></span>
             <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
                     ng-click="widgetState.filterFormCollapsed = !widgetState.filterFormCollapsed"
                     ng-switch="widgetState.filterFormCollapsed">
@@ -34,7 +34,7 @@
 
             <!-- Filter form -->
             <div id="advanced-filter-form"
-                 ng-show="!widgetState.filterFormCollapsed"
+                 wc-show="!widgetState.filterFormCollapsed"
                  class="qa-filter-panel form-horizontal">
 
               <!-- frågor och svar som är -->
@@ -123,24 +123,24 @@
 
               <!-- No results message for query -->
               <div id="current-list-noResults-query"
-                   ng-show="widgetState.doneLoading && widgetState.totalCount < 1 && !widgetState.activeErrorMessageKey && widgetState.filteredYet"
+                   wc-show="widgetState.doneLoading && widgetState.totalCount < 1 && !widgetState.activeErrorMessageKey && widgetState.filteredYet"
                    class="alert alert-info">
                 <span message key="info.query.noresults"></span>
               </div>
 
               <!-- error message -->
-              <div id="current-list-noResults-error" ng-show="widgetState.activeErrorMessageKey"
+              <div id="current-list-noResults-error" wc-show="widgetState.activeErrorMessageKey"
                    class="alert alert-danger">
                 <span message key="{{widgetState.activeErrorMessageKey}}"></span>
               </div>
 
               <!-- Search hits -->
-              <div id="query-count" ng-show="widgetState.totalCount > 0">
+              <div id="query-count" wc-show="widgetState.totalCount > 0">
                 Sökresultat - {{widgetState.totalCount}} träffar
               </div>
 
               <!-- qa table - Frågor och svar-tabell -->
-              <div class="row" ng-show="widgetState.currentList.length > 0" id="qaTable">
+              <div class="row" wc-show="widgetState.currentList.length > 0" id="qaTable">
                 <table class="col-md-12 table table-striped table-qa">
                   <tr>
                     <th></th>
@@ -187,14 +187,14 @@
                     <!--td class="unbreakable table-qa-last">{{qa.sistaDatumForSvar}}</td-->
                 </table>
               </div>
-              <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
+              <div id="showing-nr-hits" wc-show="widgetState.totalCount>0">Visar
                 träff 1 - {{widgetState.currentList.length}} av
                 {{widgetState.totalCount}}
               </div>
-              <div ng-show="widgetState.currentList.length < widgetState.totalCount">
+              <div wc-show="widgetState.currentList.length < widgetState.totalCount">
                 <button id="hamtaFler" class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
                         ng-disabled="widgetState.fetchingMoreInProgress">
-                  <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
+                  <img src="/img/loader-small.gif" wc-show="widgetState.fetchingMoreInProgress"> Hämta
                   fler träffar
                 </button>
               </div>

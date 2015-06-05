@@ -12,8 +12,8 @@ Testet beskriver fallet när en läkare går in på ett ts-diabetes intyg som in
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | ga till editera intyg med typ | ts-diabetes | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
-| signera knapp visas |
-| signera knapp aktiverad | false |
+| ensure | signera knapp visas |
+| signera knapp ej aktiverad |
 
 !3 Ta bort utkast
 

@@ -15,5 +15,5 @@
 
 !| script | HanteraUtkast |
 | radera utkast |
-| inga ej signerade intyg visas |
+| ensure | inga ej signerade intyg visas |
 

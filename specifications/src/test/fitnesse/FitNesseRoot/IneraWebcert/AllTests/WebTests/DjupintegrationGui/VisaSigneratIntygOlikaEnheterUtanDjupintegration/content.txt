@@ -18,17 +18,17 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 
 | script | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-101 | och typ | fk7263 |
-| intyg laddat | true |
-| skicka knapp visas | true |
-| skriv ut knapp visas | true |
-| kopiera knapp visas | true |
-| makulera knapp visas | true |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
 | visa intyg med id | intyg-fit-102 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 | visa intyg med id | intyg-fit-103 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 | visa intyg med id | intyg-fit-104 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 
 !3 Logga in
 
@@ -39,25 +39,25 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 
 | script | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-101 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 | visa intyg med id | intyg-fit-102 | och typ | fk7263 |
-| intyg laddat | true |
-| skicka knapp visas | true |
-| skriv ut knapp visas | true |
-| kopiera knapp visas | true |
-| makulera knapp visas | true |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
 | visa intyg med id | intyg-fit-103 | och typ | fk7263 |
-| intyg laddat | true |
-| skicka knapp visas | true |
-| skriv ut knapp visas | true |
-| kopiera knapp visas | true |
-| makulera knapp visas | true |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
 | visa intyg med id | intyg-fit-104 | och typ | fk7263 |
-| intyg laddat | true |
-| skicka knapp visas | true |
-| skriv ut knapp visas | true |
-| kopiera knapp visas | true |
-| makulera knapp visas | true |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
 
 !3 Logga in
 
@@ -68,17 +68,17 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 
 | script | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-101 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 | visa intyg med id | intyg-fit-102 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 | visa intyg med id | intyg-fit-103 | och typ | fk7263 |
-| intyg laddat | true |
-| skicka knapp visas | true |
-| skriv ut knapp visas | true |
-| kopiera knapp visas | true |
-| makulera knapp visas | true |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
 | visa intyg med id | intyg-fit-104 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 
 !3 Logga in
 
@@ -89,17 +89,17 @@ Testet beskriver fallet när det finns intyg på olika vårdenheter och använda
 
 | script | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-101 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 | visa intyg med id | intyg-fit-102 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 | visa intyg med id | intyg-fit-103 | och typ | fk7263 |
-| intyg laddat | false |
+| ensure | intyg inte laddat |
 | visa intyg med id | intyg-fit-104 | och typ | fk7263 |
-| intyg laddat | true |
-| skicka knapp visas | true |
-| skriv ut knapp visas | true |
-| kopiera knapp visas | true |
-| makulera knapp visas | true |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
 
 !3 Ta bort intyg
 

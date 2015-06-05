@@ -13,11 +13,11 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-bas intyg oc
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | ts-bas | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
-| signera knapp visas |
-| signera knapp aktiverad |
+| ensure | signera knapp visas |
+| ensure | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| intyget signerat meddelande visas |
+| ensure | intyget signerat meddelande visas |
 
 !3 Ta bort utkast
 

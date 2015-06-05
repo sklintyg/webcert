@@ -18,9 +18,9 @@ Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte ä
 | editera sidan visas |
 
 | script | !-SkrivIntyg-! |
-| visa vad som saknas lista visas | false |
+| ensure | visa vad som saknas lista ej visas |
 | visa vad som saknas |
-| visa vad som saknas lista visas | true |
+| ensure | visa vad som saknas lista visas |
 
 | script | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
@@ -28,9 +28,9 @@ Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte ä
 | editera sidan visas |
 
 | script | !-SkrivIntyg-! |
-| visa vad som saknas lista visas | false |
+| ensure | visa vad som saknas lista ej visas |
 | visa vad som saknas |
-| visa vad som saknas lista visas | true |
+| ensure | visa vad som saknas lista visas |
 
 | script | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
@@ -38,9 +38,9 @@ Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte ä
 | editera sidan visas |
 
 | script | !-SkrivIntyg-! |
-| visa vad som saknas lista visas | false |
+| ensure | visa vad som saknas lista ej visas |
 | visa vad som saknas |
-| visa vad som saknas lista visas | true |
+| ensure | visa vad som saknas lista visas |
 
 | script | !-HanteraUtkast-! |
 | ga till ej signerade intyg |
@@ -48,7 +48,7 @@ Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte ä
 | editera sidan visas |
 
 | script | !-SkrivIntyg-! |
-| visa vad som saknas lista visas | false |
+| visa vad som saknas lista ej visas |
 
 !3 Ta bort utkast
 
