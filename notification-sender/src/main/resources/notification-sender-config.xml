@@ -6,8 +6,8 @@
   
   <import resource="notifications/ws-context.xml"/>
   <import resource="notifications/beans-context.xml"/>
-  <import resource="notifications/jms-context.xml"/>
   <import resource="notifications/camel-context.xml"/>
+  <import resource="jms-context.xml"/>
 
   <context:annotation-config />
   

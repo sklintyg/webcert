@@ -8,7 +8,7 @@
     <property name="connectionFactory" ref="connectionFactory"/>
   </bean>
 
-  <bean id="jms" class="org.apache.activemq.camel.component.ActiveMQComponent">
+  <bean id="activeMQComponent" class="org.apache.activemq.camel.component.ActiveMQComponent">
     <property name="connectionFactory" ref="connectionFactory"/>
     <property name="transactionManager" ref="jmsTransactionManager"/>
     <property name="transacted" value="true"/>
