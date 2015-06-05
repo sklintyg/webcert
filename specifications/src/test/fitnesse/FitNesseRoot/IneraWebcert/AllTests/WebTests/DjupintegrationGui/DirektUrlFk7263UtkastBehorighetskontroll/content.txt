@@ -18,7 +18,7 @@ Detta ska gå utan problem
 !3 Visa utkastet via integrationslänken
 Detta ska gå utan problem
 | script | !-IntegrationMedJournalsystem-! |
-| utkast visas via integration | webcert-fitnesse-behorighet-1 | med behorighetsfel | false |
+| ensure | utkast visas via integration | webcert-fitnesse-behorighet-1 | utan behorighetsfel |
 
 !3 Logga in med uppdrag på en annan vårdenhet och vårdgivare
 
@@ -30,12 +30,12 @@ Nu ska utkastet ej vara tillgängligt och ett felmeddelande visas
 
 | script | !-HanteraUtkast-! |
 | ga till editera intyg med typ och | fk7263 | intygid | webcert-fitnesse-behorighet-1 |
-| felmeddelande visas | true |
+| ensure | felmeddelande visas |
 
 !3 Visa utkastet via integrationslänken
 Nu ska utkastet ej vara tillgängligt och ett felmeddelande visas
 | script | !-IntegrationMedJournalsystem-! |
-| utkast visas via integration | webcert-fitnesse-behorighet-1 | med behorighetsfel | true |
+| ensure | utkast visas via integration | webcert-fitnesse-behorighet-1 | med behorighetsfel |
 
 !3 Ta bort utkastet
 

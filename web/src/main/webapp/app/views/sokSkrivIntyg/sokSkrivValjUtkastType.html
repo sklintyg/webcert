@@ -19,10 +19,13 @@
             <div class="webcert-col-section qa-table-section">
               <div class="form-group">
                 <label for="intygType" class="control-label">Skriv nytt intyg</label>
-                <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType" ng-show="!sekretessmarkering"
+                <div wc-show="!sekretessmarkering">
+                <select id="intygType" class="form-control" name="intygType" data-ng-model="intygType"
                         data-ng-options="type.id as type.label for type in certTypes" wc-focus-me="focusFirstInput"></select>
+
+                </div>
               </div>
-              <div ng-show="!sekretessmarkering" class="form-group">
+              <div wc-show="!sekretessmarkering" class="form-group" id="fortsattBtn">
                 <button id="intygTypeFortsatt" class="btn btn-success" type="submit"
                         ng-disabled="intygType == 'default'">Fortsätt
                 </button>
@@ -35,11 +38,11 @@
               </div>
 
               <!-- error message -->
-              <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
+              <div id="create-error" wc-show="viewState.createErrorMessageKey" class="alert alert-danger">
                 <span message key="{{viewState.createErrorMessageKey}}"></span>
               </div>
 
-              <div class="alert alert-warning col-lg-7" ng-show="intygType != 'default' && intygType != undefined">
+              <div class="alert alert-warning col-lg-7" wc-show="intygType != 'default' && intygType != undefined" id="intygTypeWarning">
                 <span message key='{{"certificatetypes."+ intygType +".helptext"}}'></span>
               </div>
             </div>
@@ -78,22 +81,22 @@
 
             <!-- No certs for person -->
             <div id="current-list-noResults-unit"
-                 ng-show="!viewState.activeErrorMessageKey && viewState.currentList.length<1"
+                 wc-show="!viewState.activeErrorMessageKey && viewState.currentList.length<1"
                  class="alert alert-info">
               <span message key="info.nocertsfound"></span>
             </div>
 
             <!-- error message -->
-            <div id="current-list-noResults-error" ng-show="viewState.activeErrorMessageKey"
+            <div id="current-list-noResults-error" wc-show="viewState.activeErrorMessageKey"
                  class="alert alert-danger">
               <span message key="{{viewState.activeErrorMessageKey}}"></span>
             </div>
-            <div ng-show="viewState.inlineErrorMessageKey" class="alert alert-danger">
+            <div wc-show="viewState.inlineErrorMessageKey" class="alert alert-danger">
               <span message key="{{viewState.inlineErrorMessageKey}}"></span>
             </div>
 
             <!-- Previous certs table -->
-            <div class="row" ng-show="viewState.currentList.length>0" id="prevCertTable">
+            <div class="row" wc-show="viewState.currentList.length>0" id="prevCertTable">
               <table class="col-md-12 table table-striped table-qa">
                 <tr>
                   <th></th>
@@ -110,7 +113,7 @@
                     </button>
                   </td>
                   <td>
-                    <button ng-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
+                    <button wc-show="!sekretessmarkering && cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'"
                             class="btn btn-info" wc-feature-active feature="kopieraIntyg" intygstyp="{{cert.intygType}}"
                             title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras."
                             ng-click="copyIntyg(cert)" id="copyBtn-{{cert.intygId}}">

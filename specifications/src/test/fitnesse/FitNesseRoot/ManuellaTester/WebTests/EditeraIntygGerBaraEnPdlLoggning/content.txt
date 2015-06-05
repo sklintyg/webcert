@@ -24,7 +24,7 @@
 !3 Utkastet sparas
 
 | script | !-SkrivIntyg-! |
-| spara utkast |
+
 
 !3 Verifiera att en PDL-loggning gjorts
 
@@ -53,7 +53,7 @@
 !3 Utkastet sparas igen
 
 | script | !-SkrivIntyg-! |
-| spara utkast |
+
 
 !3 Verifiera att ingen ytterligare PDL-loggning gjorts
 

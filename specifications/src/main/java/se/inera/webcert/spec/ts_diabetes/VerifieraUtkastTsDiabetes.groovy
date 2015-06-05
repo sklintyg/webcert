@@ -108,8 +108,10 @@ class VerifieraUtkastTsDiabetes {
             waitFor {
                 at EditCertPage
             }
-            result = page.bedomning.behorighetBedomning.value()
+            result = page.bedomning.behorighetBedomning.value().toBoolean()
         }
         result
     }
+
+
 }

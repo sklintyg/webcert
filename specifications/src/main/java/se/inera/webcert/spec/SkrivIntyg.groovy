@@ -5,6 +5,7 @@ import org.openqa.selenium.Keys
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.SokSkrivValjIntygTypPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
+import se.inera.webcert.pages.fk7263.EditCertPage
 
 class SkrivIntyg {
 
@@ -24,7 +25,7 @@ class SkrivIntyg {
             }
 
             page.valjIntygsTyp(typ)
-            
+
             waitFor {
                 if (typ == "FK7263") {
                     at se.inera.webcert.pages.fk7263.EditCertPage
@@ -34,7 +35,7 @@ class SkrivIntyg {
                     at se.inera.webcert.pages.ts_diabetes.EditCertPage
                 }
             }
-    
+
             intygsid = currentUrl.substring(currentUrl.lastIndexOf("/") + 1)
         }
     }
@@ -43,22 +44,30 @@ class SkrivIntyg {
         intygsid
     }
 
-    void visaVadSomSaknas(){
+    void visaVadSomSaknas() {
         Browser.drive {
             page.visaVadSomSaknas()
         }
     }
 
-    void doljVadSomSaknas(){
+    void doljVadSomSaknas() {
         Browser.drive {
             page.doljVadSomSaknas()
         }
     }
 
-    boolean visaVadSomSaknasListaVisas(boolean expected = false) {
+    boolean visaVadSomSaknasListaVisas() {
         boolean result
         Browser.drive {
-            result = page.visaVadSomSaknasLista.isDisplayed() == expected
+            result = page.visaVadSomSaknasLista.isDisplayed()
+        }
+        return result
+    }
+
+    boolean visaVadSomSaknasListaEjVisas() {
+        boolean result
+        Browser.drive {
+            result = !page.visaVadSomSaknasListaNoWait.isDisplayed()
         }
         result
     }
@@ -67,14 +76,14 @@ class SkrivIntyg {
         def result
         Browser.drive {
             result = !page.valideringIntygBaseratPa.isDisplayed() &&
-                !page.valideringDiagnos.isDisplayed() &&
-                !page.valideringFunktionsnedsattning.isDisplayed() &&
-                !page.valideringAktivitetsbegransning.isDisplayed() &&
-                !page.valideringSysselsattning.isDisplayed() &&
-                !page.valideringArbetsformaga.isDisplayed() &&
-                !page.valideringPrognos.isDisplayed() &&
-                !page.valideringRekommendationer.isDisplayed() &&
-                !page.valideringVardperson.isDisplayed()
+                    !page.valideringDiagnos.isDisplayed() &&
+                    !page.valideringFunktionsnedsattning.isDisplayed() &&
+                    !page.valideringAktivitetsbegransning.isDisplayed() &&
+                    !page.valideringSysselsattning.isDisplayed() &&
+                    !page.valideringArbetsformaga.isDisplayed() &&
+                    !page.valideringPrognos.isDisplayed() &&
+                    !page.valideringRekommendationer.isDisplayed() &&
+                    !page.valideringVardperson.isDisplayed()
         }
         result
     }
@@ -82,143 +91,119 @@ class SkrivIntyg {
     // --- validering
 
     boolean valideringsfelIntygBaseratPaVisas() {
-        Browser.drive{
-            waitFor{
-                page.valideringIntygBaseratPa.isDisplayed()
-            }
+        Browser.drive {
+            page.valideringIntygBaseratPa.isDisplayed()
         }
     }
+
     boolean valideringsfelDiagnosVisas() {
         Browser.drive {
-            waitFor {
-                page.valideringDiagnos.isDisplayed()
-            }
-        }
-    }
-    boolean valideringsfelFunktionsnedsattningVisas() {
-        Browser.drive{
-            waitFor {
-                page.valideringFunktionsnedsattning.isDisplayed()
-            }
-        }
-    }
-    boolean valideringsfelAktivitetsbegransningVisas() {
-        Browser.drive{
-            waitFor {
-                page.valideringAktivitetsbegransning.isDisplayed()
-            }
-        }
-    }
-    boolean valideringsfelSysselsattningVisas() {
-        Browser.drive{
-            waitFor{
-                page.valideringSysselsattning.isDisplayed();
-            }
-        }
-    }
-    boolean valideringsfelArbetsformagaVisas() {
-        Browser.drive{
-            waitFor{
-                page.valideringArbetsformaga.isDisplayed()
-            }
-        }
-    }
-    boolean valideringsfelPrognosVisas() {
-        Browser.drive{
-            waitFor{
-                page.valideringPrognos.isDisplayed()
-            }
-        }
-    }
-    boolean valideringsfelRekommendationerVisas() {
-        Browser.drive{
-            waitFor{
-                page.valideringRekommendationer.isDisplayed()
-            }
-        }
-    }
-    boolean valideringsfelVardpersonVisas() {
-        Browser.drive{
-            waitFor {
-             page.valideringVardperson.isDisplayed()
-            }
+            page.valideringDiagnos.isDisplayed()
         }
     }
 
-    // ---
+    boolean valideringsfelFunktionsnedsattningVisas() {
+        Browser.drive {
+            page.valideringFunktionsnedsattning.isDisplayed()
+        }
+    }
+
+    boolean valideringsfelAktivitetsbegransningVisas() {
+        Browser.drive {
+            page.valideringAktivitetsbegransning.isDisplayed()
+        }
+    }
+
+    boolean valideringsfelSysselsattningVisas() {
+        Browser.drive {
+            page.valideringSysselsattning.isDisplayed();
+        }
+    }
+
+    boolean valideringsfelArbetsformagaVisas() {
+        Browser.drive {
+            page.valideringArbetsformaga.isDisplayed()
+        }
+    }
+
+    boolean valideringsfelPrognosVisas() {
+        Browser.drive {
+            page.valideringPrognos.isDisplayed()
+        }
+    }
+
+    boolean valideringsfelRekommendationerVisas() {
+        Browser.drive {
+            page.valideringRekommendationer.isDisplayed()
+        }
+    }
+
+    boolean valideringsfelVardpersonVisas() {
+        Browser.drive {
+            page.valideringVardperson.isDisplayed()
+        }
+    }
+
     boolean valideringsfelIntygBaseratPaEjVisas() {
 
-        Browser.drive{
-            waitFor{
-                !page.valideringIntygBaseratPa.isDisplayed()
-            }
+        Browser.drive {
+            !page.valideringIntygBaseratPa.isDisplayed()
         }
 
     }
+
     boolean valideringsfelDiagnosEjVisas() {
 
-        Browser.drive{
-            waitFor{
-                !page.valideringDiagnos.isDisplayed()
-            }
+        Browser.drive {
+            !page.valideringDiagnos.isDisplayed()
         }
     }
+
     boolean valideringsfelFunktionsnedsattningEjVisas() {
-        Browser.drive{
-            waitFor{
-                !page.valideringFunktionsnedsattning.isDisplayed()
-            }
+        Browser.drive {
+            !page.valideringFunktionsnedsattning.isDisplayed()
         }
     }
+
     boolean valideringsfelAktivitetsbegransningEjVisas() {
-        Browser.drive{
-            waitFor{
-                !page.valideringAktivitetsbegransning.isDisplayed()
-            }
+        Browser.drive {
+            !page.valideringAktivitetsbegransning.isDisplayed()
         }
     }
+
     boolean valideringsfelSysselsattningEjVisas() {
-        Browser.drive{
-            waitFor{
-                !page.valideringSysselsattning.isDisplayed()
-            }
+        Browser.drive {
+            !page.valideringSysselsattning.isDisplayed()
+
         }
     }
+
     boolean valideringsfelArbetsformagaEjVisas() {
-        Browser.drive{
-            waitFor{
-                !page.valideringArbetsformaga.isDisplayed()
-            }
+        Browser.drive {
+            !page.valideringArbetsformaga.isDisplayed()
+
         }
     }
+
     boolean valideringsfelPrognosEjVisas() {
-        Browser.drive{
-            waitFor{
-                !page.valideringPrognos.isDisplayed()
-            }
+        Browser.drive {
+            !page.valideringPrognos.isDisplayed()
+
         }
     }
+
     boolean valideringsfelRekommendationerEjVisas() {
-        Browser.drive{
-            waitFor{
-                !page.valideringRekommendationer.isDisplayed()
-            }
+        Browser.drive {
+            !page.valideringRekommendationer.isDisplayed()
         }
     }
+
     boolean valideringsfelVardpersonEjVisas() {
-        Browser.drive{
-            waitFor{
-                !page.valideringVardperson.isDisplayed()
-            }
+        Browser.drive {
+            !page.valideringVardperson.isDisplayed()
         }
     }
     // ------- validering end
-
-    void sparaUtkast() {
-        Browser.drive {
-            page.spara()
-        }
-    }
 
     def vanta(int sekunder) {
         Browser.drive {
@@ -228,32 +213,38 @@ class SkrivIntyg {
     }
 
     boolean intygSparatVisas() {
+        boolean result
         Browser.drive {
-            waitFor {
-                page.intygetSparatOchKomplettMeddelande.isDisplayed()
-            }
+            result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
         }
-        true
+        result
     }
 
     boolean intygEjKomplettVisas() {
+        boolean result
         Browser.drive {
-            assert page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
-        true
+        result
     }
 
     int sjukskrivningsperiod() {
-        int result
+        def result
         Browser.drive {
+            waitFor {
+                at EditCertPage
+            }
             result = page.arbetsformaga.period.text().toInteger()
         }
-        result
+        return result
     }
 
     String arbetstid25() {
         String result
         Browser.drive {
+            waitFor {
+                at EditCertPage
+            }
             result = page.arbetsformaga.arbetstid25.text()
         }
         result
@@ -262,6 +253,9 @@ class SkrivIntyg {
     String arbetstid50() {
         String result
         Browser.drive {
+            waitFor {
+                at EditCertPage
+            }
             result = page.arbetsformaga.arbetstid50.text()
         }
         result
@@ -270,6 +264,9 @@ class SkrivIntyg {
     String arbetstid75() {
         String result
         Browser.drive {
+            waitFor {
+                at EditCertPage
+            }
             result = page.arbetsformaga.arbetstid75.text()
         }
         result
@@ -323,13 +320,13 @@ class SkrivIntyg {
         result
     }
 
-    def enterPaDiagnosKod(){
+    def enterPaDiagnosKod() {
         Browser.drive {
             page.diagnos.diagnos1 << Keys.ENTER
         }
     }
 
-    def oppnaDatePicker(){
+    def oppnaDatePicker() {
         Browser.drive {
             baserasPa.undersokningDatumToggle();
             waitFor {
@@ -347,6 +344,17 @@ class SkrivIntyg {
             result = page.datepicker.isDisplayed()
         }
         result
+    }
+
+    boolean datePickerEjVisas() {
+        def result
+        Browser.drive {
+            waitFor {
+                page.doneLoading()
+            }
+            result = page.datepickerNoWait.isDisplayed()
+        }
+        !result
     }
 
     String prognos() {
@@ -421,6 +429,14 @@ class SkrivIntyg {
         result
     }
 
+    boolean rehabNejEjVisas() {
+        def result
+        Browser.drive {
+            result = page.rekommendationer.rehabNoNoWait.isDisplayed();
+        }
+        !result
+    }
+
     def klickaPaTillbakaKnappen() {
         Browser.drive {
             page.tillbaka()
@@ -436,16 +452,16 @@ class SkrivIntyg {
         result
     }
 
-    boolean containText(element, expectedText){
+    boolean containText(element, expectedText) {
         println(element);
-        if(element != null && element instanceof ArrayList){
+        if (element != null && element instanceof ArrayList) {
             element = element.get(0);
         }
         def text = '';
-        if(element){
-            if(element.value()){
+        if (element) {
+            if (element.value()) {
                 text = element.value();
-            } else if(element.text()){
+            } else if (element.text()) {
                 text = element.text();
             }
         }
@@ -480,7 +496,7 @@ class SkrivIntyg {
         }
     }
 
-    boolean diagnosArSynligt(){
+    boolean diagnosArSynligt() {
         def result
         Browser.drive {
             result = page.diagnos.isDisplayed()

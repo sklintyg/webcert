@@ -18,7 +18,7 @@
                     ng-switch="widgetState.queryFormCollapsed">
               <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
             </button>
-            <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed"
+            <div id="advanced-filter-form" wc-show="!widgetState.queryFormCollapsed"
                  class="qa-filter-panel form-horizontal">
 
               <!-- utkast som är -->
@@ -70,14 +70,14 @@
                 </div>
               </div>
 
-              <div class="form-group" ng-show="widgetState.invalidFromDate || widgetState.invalidToDate || widgetState.invalidToBeforeFromDate">
+              <div class="form-group" wc-show="widgetState.invalidFromDate || widgetState.invalidToDate || widgetState.invalidToBeforeFromDate">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-10">
                   <div class=" alert alert-danger">
                     <ul>
-                      <li ng-show="widgetState.invalidFromDate"><span message key="validation.invalidfromdate"></span></li>
-                      <li ng-show="widgetState.invalidToDate"><span message key="validation.invalidtodate"></span></li>
-                      <li ng-show="widgetState.invalidToBeforeFromDate"><span message key="validation.invalidtobeforefromdate"></span></li>
+                      <li wc-show="widgetState.invalidFromDate"><span message key="validation.invalidfromdate"></span></li>
+                      <li wc-show="widgetState.invalidToDate"><span message key="validation.invalidtodate"></span></li>
+                      <li wc-show="widgetState.invalidToBeforeFromDate"><span message key="validation.invalidtobeforefromdate"></span></li>
                     </ul>
                   </div>
                 </div>
@@ -110,28 +110,28 @@
 
               <!-- No results message for unhandled -->
               <div id="current-list-noResults-unit"
-                   ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1 && !widgetState.filteredYet"
+                   wc-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1 && !widgetState.filteredYet"
                    class="alert alert-info">
                 <span message key="info.nounsigned.certs.for.unit"></span>
               </div>
 
               <!-- No results message for query -->
-              <div id="current-list-noResults-query" ng-show="widgetState.doneLoading && widgetState.totalCount < 1  && widgetState.filteredYet" class="alert alert-info">
+              <div id="current-list-noResults-query" wc-show="widgetState.doneLoading && widgetState.totalCount < 1  && widgetState.filteredYet" class="alert alert-info">
                 <span message key="info.query.noresults"></span>
               </div>
 
               <!-- error message -->
               <div id="current-list-noResults-error"
-                   ng-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" class="alert alert-danger">
+                   wc-show="widgetState.doneLoading && widgetState.activeErrorMessageKey" class="alert alert-danger">
                 <span message key="{{widgetState.activeErrorMessageKey}}"></span>
               </div>
 
-              <div id="query-count" ng-show="widgetState.totalCount>0">
+              <div id="query-count" wc-show="widgetState.totalCount>0">
                 Sökresultat - {{widgetState.totalCount}} träffar
               </div>
 
               <!-- unsigned cert table -->
-              <div class="row" ng-show="widgetState.currentList.length>0" id="unsignedCertTable">
+              <div class="row" wc-show="widgetState.currentList.length>0" id="unsignedCertTable">
                 <table class="col-md-12 table table-striped table-qa">
                   <tr>
                     <th></th>
@@ -182,15 +182,15 @@
                     <td class="table-qa-last">{{cert.updatedSignedBy}}</td>
                 </table>
               </div>
-              <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
+              <div id="showing-nr-hits" wc-show="widgetState.totalCount>0">Visar
                 träff {{widgetState.queryStartFrom+1}} - {{widgetState.currentList.length}} av
                 {{widgetState.totalCount}}
               </div>
               <div
-                  ng-show="((filterForm.lastFilterQuery.startFrom + filterForm.lastFilterQuery.pageSize) < widgetState.totalCount)">
+                  wc-show="((filterForm.lastFilterQuery.startFrom + filterForm.lastFilterQuery.pageSize) < widgetState.totalCount)">
                 <button class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
                         ng-disabled="widgetState.fetchingMoreInProgress">
-                  <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
+                  <img src="/img/loader-small.gif" wc-show="widgetState.fetchingMoreInProgress"> Hämta
                   fler träffar
                 </button>
               </div>

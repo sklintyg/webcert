@@ -8,6 +8,6 @@ Testet beskriver fallet när en läkare söker efter en patient som finns i PU-t
 | valj patient | 19540123-2540 |
 | valj intygstyp sidan visas |
 | check | patientens namn ar | Maj Pärsson |
-| check | valj intygstyp synlig | false |
-| check | sekretessmarkering text synlig | true |
+| ensure | valj intygstyp ej synlig |
+| ensure | sekretessmarkering text synlig |
 | kopiera knapp visas| false | for intyg | intyg-fit-9 |

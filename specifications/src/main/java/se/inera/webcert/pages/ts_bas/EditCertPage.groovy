@@ -13,12 +13,12 @@ class EditCertPage extends AbstractEditCertPage {
 
         // Knappar
         sparaKnapp { $("#spara-utkast") }
-        visaVadSomSaknasKnapp { $("#showCompleteButton") }
+        visaVadSomSaknasKnapp(wait: true) { displayed($("#showCompleteButton")) }
         doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
-        intygetSparatOchKomplettMeddelande { $("#intyget-sparat-och-komplett-meddelande") }
-        intygetSparatOchEjKomplettMeddelande { $("#intyget-sparat-och-ej-komplett-meddelande") }
+        intygetSparatOchKomplettMeddelande(wait: true) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
+        intygetSparatOchEjKomplettMeddelande(wait: 20) { displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
 
         // Formulärfält
         form { $("form") }
@@ -47,26 +47,26 @@ class EditCertPage extends AbstractEditCertPage {
         vardenhet { module VardenhetModule }
 
         // Intygsvalidering
-        valideringPatient(required: false)              { $("#validationMessages_patientadress") }
-        valideringIntygAvser(required: false)           { $("#validationMessages_intygavser") }
-        valideringIdentitet(required: false)            { $("#validationMessages_identitet") }
-        valideringSyn(required: false)                  { $("#validationMessages_syn") }
-        valideringHorselBalans(required: false)         { $("#validationMessages_horselbalans") }
-        valideringFunktionsNedsattning(required: false) { $("#validationMessages_funktionsnedsattning") }
-        valideringHjartkarl(required: false)            { $("#validationMessages_hjartkarl") }
-        valideringNeurologi(required: false)            { $("#validationMessages_neurologi") }
-        valideringMedvetandestorning(required: false)   { $("#validationMessages_medvetandestorning") }
-        valideringNjurar(required: false)               { $("#validationMessages_njurar") }
-        valideringKognitivt(required: false)            { $("#validationMessages_kognitivt") }
-        valideringSomnVakenhet(required: false)         { $("#validationMessages_somnvakenhet") }
-        valideringNarkotikaLakemedel(required: false)   { $("#validationMessages_narkotikalakemedel") }
-        valideringPsykiskt(required: false)             { $("#validationMessages_psykiskt") }
-        valideringUtvecklingsStorning(required: false)  { $("#validationMessages_utvecklingsstorning") }
-        valideringSjukhusVard(required: false)          { $("#validationMessages_sjukhusvard") }
-        valideringMedicinering(required: false)         { $("#validationMessages_medicinering") }
-        valideringBedomning(required: false)            { $("#validationMessages_bedomning") }
-        valideringVardEnhet(required: false)            { $("#validationMessages_vardenhet") }
-        valideringDiabetes(required: false)             { $("#validationMessages_diabetes") }
+        valideringPatient(required: false){$("#validationMessages_patientadress") }
+        valideringIntygAvser(required: false){$("#validationMessages_intygavser") }
+        valideringIdentitet(required: false){$("#validationMessages_identitet") }
+        valideringSyn(required: false){$("#validationMessages_syn") }
+        valideringHorselBalans(required: false){$("#validationMessages_horselbalans") }
+        valideringFunktionsNedsattning(required: false){$("#validationMessages_funktionsnedsattning") }
+        valideringHjartkarl(required: false){$("#validationMessages_hjartkarl") }
+        valideringNeurologi(required: false){$("#validationMessages_neurologi") }
+        valideringMedvetandestorning(required: false){$("#validationMessages_medvetandestorning") }
+        valideringNjurar(required: false){$("#validationMessages_njurar") }
+        valideringKognitivt(required: false){$("#validationMessages_kognitivt") }
+        valideringSomnVakenhet(required: false){$("#validationMessages_somnvakenhet") }
+        valideringNarkotikaLakemedel(required: false){$("#validationMessages_narkotikalakemedel") }
+        valideringPsykiskt(required: false){$("#validationMessages_psykiskt") }
+        valideringUtvecklingsStorning(required: false){$("#validationMessages_utvecklingsstorning") }
+        valideringSjukhusVard(required: false){$("#validationMessages_sjukhusvard") }
+        valideringMedicinering(required: false){$("#validationMessages_medicinering") }
+        valideringBedomning(required: false){$("#validationMessages_bedomning") }
+        valideringVardEnhet(required: false){$("#validationMessages_vardenhet") }
+        valideringDiabetes(required: false){$("#validationMessages_diabetes") }
     }
 }
 

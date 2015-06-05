@@ -9,7 +9,7 @@
 | 19000101-9801       | Test           | Testorsson       |           true | $utkastId= | $version= |
 
 !3 Populera och spara utkastet
-| spara utkast |
+
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | diagnosKod | diagnosBeskrivning1  | nedsattMed100                                            | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
 | 19000101-9801       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId  | fk7263   | $version | true     | true          | $version= |
 

@@ -14,30 +14,30 @@ Testet beskriver fallet när en användare kommer till fråga/svar från journal
 !4 Verifiera att rätt knappar visas
 
 | script | !-SvaraOchFraga-! |
-| skriv ut knapp visas | true |
-| kopiera knapp visas | false |
-| makulera knapp visas | false |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp ej visas |
+| ensure | makulera knapp visas ej |
 | skicka till fk knapp visas | false |
 
 !4 Verifiera att man får en varningsdialog om man försöker lämna sidan
 
 | script | !-SvaraOchFraga-! |
 | ga till sok skriva intyg |
-| intyg med fraga svar sidan visas |
-| lamna fraga svar varning visas | true |
+| ensure | intyg med fraga svar sidan visas |
+| ensure | lamna fraga svar varning visas |
 | lamna fraga svar avbryt |
-| intyg med fraga svar sidan visas |
+| ensure | intyg med fraga svar sidan visas |
 | ga till sok skriva intyg |
-| lamna fraga svar varning visas | true |
+| ensure | lamna fraga svar varning visas |
 | lamna fraga svar fortsatt |
-| sok skriva intyg sidan visas |
+| ensure | sok skriva intyg sidan visas |
 
 !4 Verifiera att man inte får en varningsdialog om man går tillbaka och lämnar sidan igen
 
 | script | !-SvaraOchFraga-! |
 | ga till svara och fraga | true |
 | ga till sok skriva intyg |
-| sok skriva intyg sidan visas |
+| ensure | sok skriva intyg sidan visas |
 
 !3 Givet att man går in på samma intyg utan att gå via uthoppslänken
 
@@ -49,9 +49,9 @@ Testet beskriver fallet när en användare kommer till fråga/svar från journal
 !4 Verifiera att alla knappar visas
 
 | script | !-SvaraOchFraga-! |
-| kopiera knapp visas | true |
-| makulera knapp visas | true |
-| skicka till fk knapp visas | true |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
+| ensure |  skicka till fk knapp visas |
 
 !4 Verifiera att man inte får en varningsdialog om man försöker lämna sidan
 

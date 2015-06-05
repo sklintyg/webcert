@@ -12,8 +12,8 @@ Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte ä
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
-| signera knapp visas |
-| signera knapp aktiverad | false |
+| ensure | signera knapp visas |
+| ensure | signera knapp ej aktiverad |
 
 !3 Ta bort utkast
 
@@ -38,14 +38,13 @@ Det ska inte gå att signera ett utkast som angett Prognos "Går ej att bedöma"
 | ? ||
 
 | script | !-SkrivIntyg-! |
-| sparaUtkast |
 | intyg ej komplett visas |
 
 !3 Detta intyg ska inte gå att signera eftersom prognosBeskrivning saknas
 
 | script | !-HanteraUtkast-! |
-| signera knapp visas |
-| signera knapp aktiverad | false |
+| ensure | signera knapp visas |
+| ensure | signera knapp ej aktiverad |
 
 
 !3 Ta bort utkast

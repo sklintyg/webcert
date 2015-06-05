@@ -15,7 +15,7 @@
 | 19000101-9801       | Test           | Testorsson       |           true | $utkastId=| $version= |
 
 !4 Populera och spara utkastet
-| spara utkast |
+
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId     | intygTyp | version  |  komplett | utkastSparat? | version?  |
 | 19000101-9801       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263   | $version |  true     | true          | $version= |
 
@@ -47,7 +47,7 @@
 | intygsId  | intygsTyp | utkastHamtat? | version?  | 
 | $utkastId | fk7263    | true          | $version= |
 
-| spara utkast |
+
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
 | 19000101-9801       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | false    | true          | $version= |
 
@@ -79,7 +79,7 @@
 | intygsId   | intygsTyp | utkastHamtat? | version?  | 
 | $utkastId  | fk7263    | true          | $version= |
 
-| spara utkast |
+
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | diagnosKod| diagnosBeskrivning1 | intygTyp | version  | komplett | utkastSparat? | 
 | 19000101-9801       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | A         |                     | fk7263   | $version | true     | true          | 
 
@@ -107,7 +107,7 @@
 | 19000101-9801       | Test           | Testorsson       |           true | $utkastId= | $version= |
 
 !4 Populera och spara utkastet
-| spara utkast |
+
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | diagnosKod| diagnosBeskrivning1 | intygTyp | version  | komplett | utkastSparat? | version?  |
 | 19000101-9801       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | A         | en beskrivning      | fk7263   | $version | true     | true          | $version= |
 
@@ -135,7 +135,7 @@
 | 19000101-9801       | Test           | Testorsson       |           true | $utkastId= | $version= |
 
 !4 Populera och spara utkastet
-| spara utkast |
+
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
 | 19000101-9801       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | true     | true          | $version= |
 
@@ -145,7 +145,7 @@
 | true |
 
 !4 Spara utkastet med invalid period
-| spara utkast |
+
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | nedsattMed100                                         | komplett | utkastSparat? | version?  |
 | 19000101-9801       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05"} | true     | true          | $version= |
 
@@ -176,7 +176,7 @@
 | intygsId   | intygsTyp | utkastHamtat? | version?  | 
 | $utkastId  | fk7263    | true          | $version= |
 
-| spara utkast |
+
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
 | 19000101-9801       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | true     | true          | $version= |
 
@@ -186,7 +186,7 @@
 | true |
 
 !4 Spara utkastet med valid sjukskrivningsperiod
-| spara utkast |
+
 | patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | nedsattMed100                                            | komplett | utkastSparat?  | version?  |
 | 19000101-9801       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | true     | true           | $version= | 
 
@@ -198,7 +198,7 @@
 !3 Ändra tillbaka till en invalid sjukskrivningsperiod, vilket ska ge notifiering HAN11
 
 !4 Spara utkastet med invalid period
-| spara utkast |
+
 | patientPersonnummer | patientFornamn    | patientEfternamn  | hsaId             | namn             | enhetId           | kodverk   | intygId   | intygTyp | version  | nedsattMed100                                         | komplett | utkastSparat? | version?  |
 | 19000101-9801       | Test              | Testorsson        | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId | fk7263   | $version | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05"} | true     | true          | $version= |
 

@@ -11,7 +11,7 @@
 | check | antal logg meddelanden | 0 |
 
 !3 Spara utkastet
-| spara utkast |
+
 | patientPersonnummer | hsaId | enhetId             | intygId    | intygTyp | komplett | utkastSparat? |
 | 19000101-9801 | IFV1239877878-104N | IFV1239877878-1045 | webcert-fitnesse-signera-1 | fk7263    | nej | true | 
 

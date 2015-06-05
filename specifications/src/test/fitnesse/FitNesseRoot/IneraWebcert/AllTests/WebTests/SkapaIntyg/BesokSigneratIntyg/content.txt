@@ -16,11 +16,11 @@
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
-| signera knapp visas |
-| signera knapp aktiverad |
+| ensure | signera knapp visas |
+| ensure | signera knapp aktiverad |
 | signera utkast |
 | visa intyg sidan visas |
-| intyget signerat meddelande visas |
+| ensure | intyget signerat meddelande visas |
 !3 Nar man forsoka att ga direkt till edit intyg man skulle vara omdirigerat till visa intyg sidan om intyget ar signerat
 
 | script | !-HanteraUtkast-! |

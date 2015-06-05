@@ -7,18 +7,18 @@
 <div class="modal-body">
   <p>
     Kopiera intyg innebär att en kopia skapas av det befintliga intyget och med samma information.
-    <span ng-show="model.otherCareUnit != undefined" id="annanVardenhet">
+    <span wc-show="model.otherCareUnit != undefined" id="annanVardenhet">
       Om intyget är utfärdat på en annan vårdenhet kommer adressuppgifterna att ersättas med de för den vårdenhet du är inloggad på.
     </span>
-    <span ng-show="model.patientId != undefined && model.patientId.length > 0" id="msgNyttPersonId">
+    <span wc-show="model.patientId != undefined && model.patientId.length > 0" id="msgNyttPersonId">
       <br>För denna patient finns nytt person-id och informationen kommer därför uppdateras i det nya intyget.
     </span>
-    <span ng-show="!model.deepIntegration" id="msgInteFranJournalSystem">
+    <span wc-show="!model.deepIntegration" id="msgInteFranJournalSystem">
       I de fall patienten har ändrat namn eller adress så uppdateras den informationen.
     </span>
   </p>
   <p>Uppgifterna i intygsutkastet går att ändra innan det signeras.</p>
-  <span ng-show="model.intygTyp == 'fk7263'" id="msgForlangningSjukskrivning">Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.</span>
+  <span wc-show="model.intygTyp == 'fk7263'" id="msgForlangningSjukskrivning">Kopiera intyg kan användas exempelvis vid förlängning av en sjukskrivning.</span>
 </div>
 <div class="modal-footer">
   <div class="webcert-top-padding-section form-inline">
@@ -32,7 +32,7 @@
     <button id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
       <span message key="{{button2text}}"></span>
     </button>
-    <div class="webcert-top-padding-section" data-ng-show="model.showerror">
+    <div class="webcert-top-padding-section" wc-show="model.showerror">
       <div class="alert alert-danger alert-dialog-error">
         <span message key="{{model.errormessageid}}"></span>
       </div>

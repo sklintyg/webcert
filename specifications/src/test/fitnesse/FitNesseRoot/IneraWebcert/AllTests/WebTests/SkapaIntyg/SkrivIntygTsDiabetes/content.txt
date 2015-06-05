@@ -11,7 +11,7 @@
 
 !3 Verifiera att default värde till bedomning är Någon av följande behörigheter
 | script | !-VerifieraUtkastTsDiabetes-! |
-| check not | bedomning |
+| reject | bedomning |
 
 !3 Populera intyget
 
@@ -27,8 +27,10 @@ Populera intyget med information i samtliga fält så det blir komplett
 
 !3 Spara och signera
 
+| script | !-HanteraUtkast-! |
+| ensure | ar sparat |
+
 | script | !-SkrivIntyg-! |
-| sparaUtkast |
 | intyg sparat visas |
 
 !3 Ta bort utkastet

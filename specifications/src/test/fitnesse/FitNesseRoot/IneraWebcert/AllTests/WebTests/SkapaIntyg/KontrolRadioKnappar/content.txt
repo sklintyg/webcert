@@ -25,9 +25,10 @@ Populera intyget med information i samtliga fält så det blir komplett
 | true |
 
 | script | !-SkrivIntyg-! |
-| spara utkast |
+| ensure | intyg ej komplett visas |
+
 | prognos ar inte vald |
-| reject | rehab nej visas|
+| ensure | rehab nej ej visas|
 
 !3 Ta bort utkastet
 

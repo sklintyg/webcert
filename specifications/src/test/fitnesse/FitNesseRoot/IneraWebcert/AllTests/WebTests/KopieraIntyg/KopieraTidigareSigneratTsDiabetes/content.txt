@@ -30,4 +30,4 @@ Tillse att synskärpa med värde 0 visas som 0,0. WEBCERT-1812
 | valj intygstyp sidan visas |
 
 | script | !-HanteraUtkast-! |
-| inga ej signerade intyg visas |
+| ensure | inga ej signerade intyg visas |

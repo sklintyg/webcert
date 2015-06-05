@@ -8,40 +8,43 @@ class VisaFk7263Page extends VisaPage {
 
         // messages
         intygSaknas { $("#cert-load-error") }
-        intygLaddat { $('#intyg-vy-laddad') }
+        intygLaddat(wait: true) { displayed($('#intyg-vy-laddad')) }
         intygFel { $("#cert-inline-error") }
-        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
-        certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
-        certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
-        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
+        certificateIsSentToITMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-it-message-text")) }
+        certificateIsSentToRecipientMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-recipient-message-text")) }
+        certificateIsRevokedMessage(required: false,wait: true) { displayed($("#certificate-is-revoked-message-text")) }
+        visaVadSomSaknasLista(required: false,wait: true) { displayed($("#visa-vad-som-saknas-lista")) }
+        visaVadSomSaknasListaNoWait{$("#visa-vad-som-saknas-lista")}
 
         // copy dialog
-        annanEnhetText { $("#annanVardenhet")}
+        annanEnhetText(wait: true) { displayed($("#annanVardenhet"))}
 
         // header
         webcertLogoLink(required: false) { $("#webcertLogoLink") }
         bytVardenhetLink(required: false) { $("#wc-care-unit-clinic-selector") }
         loggaUtLink(required: false) { $("#logoutLink") }
         omWebcertLink { $("#aboutLink") }
-        omWebcertDialog(required: false) { $("#omWebcertDialog") }
+        omWebcertDialog(required: false,wait: true) { displayed($("#omWebcertDialog")) }
         huvudmeny(required: false) { $("#huvudmeny")}
 
         // intyg top panel
         tillbakaButton(required: false) { $("#tillbakaButton")}
-        copyButton { $("#copyBtn") }
-        makuleraButton(required: false) { $("#makuleraBtn") }
+        copyButton(wait: true) { displayed($("#copyBtn")) }
+        makuleraButton(required: false,wait: true) { displayed($("#makuleraBtn")) }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         kopieraDialogAvbrytKnapp { $("#button2copy-dialog") }
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
-        makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
-        makuleraConfirmationOkButton { $("#confirmationOkButton") }
+        makuleraDialogKopieraKnapp(wait: true) { displayed($("#button1makulera-dialog")) }
+        makuleraConfirmationOkButton(wait: true) { displayed($("#confirmationOkButton")) }
 
         skickaDialogBody { $("span[key=\"fk7263.label.send.body\"]") }
 
         // kopiera dialog text webcert-1449
-        copyDialog(required:false, toWait: true){ $("#copy-dialog") }
-        kopieraDialogMsgInteFranJournalSystem(required:false){ $("#msgInteFranJournalSystem") }
-        kopieraDialogMsgNyttPersonId(required:false){ $("#msgNyttPersonId") }
+        copyDialog(wait: true){ displayed($("#copy-dialog")) }
+        kopieraDialogMsgInteFranJournalSystemNoWait{ $("#msgInteFranJournalSystem") }
+        kopieraDialogMsgInteFranJournalSystem(required:false, wait: true){ displayed($("#msgInteFranJournalSystem")) }
+        kopieraDialogMsgNyttPersonIdNoWait{$("#msgNyttPersonId")}
+        kopieraDialogMsgNyttPersonId(required:false, wait: true){ displayed($("#msgNyttPersonId")) }
 
         // fraga svar
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
@@ -87,9 +90,9 @@ class VisaFk7263Page extends VisaPage {
         annanAtgard { $("#annanAtgard") }
 
         // 7
-        rehabiliteringAktuell { $("#rehabiliteringAktuell") }
-        rehabiliteringEjAktuell { $("#rehabiliteringEjAktuell") }
-        rehabiliteringGarInteAttBedoma { $("#rehabiliteringGarInteAttBedoma") }
+        rehabiliteringAktuell{$("#rehabiliteringAktuell") }
+        rehabiliteringEjAktuell{$("#rehabiliteringEjAktuell") }
+        rehabiliteringGarInteAttBedoma{$("#rehabiliteringGarInteAttBedoma") }
 
         // 8
         nuvarandeArbetsuppgifter { $("#nuvarandeArbetsuppgifter") }
@@ -111,15 +114,15 @@ class VisaFk7263Page extends VisaPage {
         arbetsformagaPrognos { $("#arbetsformagaPrognos") }
 
         // 10
-        arbetsformagaPrognosJa { $("#arbetsformataPrognosJa") }
-        arbetsformagaPrognosJaDelvis { $("#arbetsformataPrognosJaDelvis") }
-        arbetsformagaPrognosNej { $("#arbetsformataPrognosNej") }
-        arbetsformagaPrognosGarInteAttBedoma { $("#arbetsformataPrognosGarInteAttBedoma") }
-        arbetsformagaPrognosGarInteAttBedomaBeskrivning { $("#arbetsformagaPrognosGarInteAttBedomaBeskrivning") }
+        arbetsformagaPrognosJa{$("#arbetsformataPrognosJa") }
+        arbetsformagaPrognosJaDelvis{$("#arbetsformataPrognosJaDelvis") }
+        arbetsformagaPrognosNej{$("#arbetsformataPrognosNej") }
+        arbetsformagaPrognosGarInteAttBedoma{$("#arbetsformataPrognosGarInteAttBedoma") }
+        arbetsformagaPrognosGarInteAttBedomaBeskrivning{$("#arbetsformagaPrognosGarInteAttBedomaBeskrivning") }
 
         // 11
-        ressattTillArbeteAktuellt { $("#ressattTillArbeteAktuellt")}
-        ressattTillArbeteEjAktuellt { $("#ressattTillArbeteEjAktuellt")}
+        ressattTillArbeteAktuellt{$("#ressattTillArbeteAktuellt")}
+        ressattTillArbeteEjAktuellt{$("#ressattTillArbeteEjAktuellt")}
 
         // 12
         kontaktMedFk { $("#kontaktMedFk") }

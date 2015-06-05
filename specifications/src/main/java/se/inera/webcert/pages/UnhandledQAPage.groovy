@@ -1,33 +1,40 @@
 package se.inera.webcert.pages
 
 import se.inera.certificate.page.AbstractPage
+import se.inera.certificate.spec.Browser
 
 class UnhandledQAPage extends AbstractPage {
 
     static at = { doneLoading() && $("#unhandled-qa").isDisplayed() }
 
     static content = {
-        unitstatUnhandledQuestionsBadgde(required: false) { $("#stat-unitstat-unhandled-question-count") }
-        careUnitSelector(required: false) { $("div#wc-care-unit-clinic-selector") }
-        careUnitModal(required: false) { $("a#wc-care-unit-clinic-selector-link") }
-        careUnitModalBody(required: false) { $(".modal-body") }
-        unhandledQATable(required: false) { $("#qaTable") }
+        unitstatUnhandledQuestionsBadgde(required: false, wait: true) {
+            displayed($("#stat-unitstat-unhandled-question-count"))
+        }
+        careUnitSelector(required: false, wait: true) { displayed($("div#wc-care-unit-clinic-selector")) }
+        careUnitSelectorNoWait(required: false) { $("div#wc-care-unit-clinic-selector")}
+        careUnitModal(required: false, wait: true) { displayed($("a#wc-care-unit-clinic-selector-link")) }
+        careUnitModalBody(required: false, wait: true) { displayed($(".modal-body")) }
+        unhandledQATable(required: false, wait: true) { displayed($("#qaTable")) }
+        unhandledQATableNoWait(required: false) { $("#qaTable") }
 
-        noResultsOnUnitInfo { $("#current-list-noResults-unit") }
-        noResultsForQueryInfo { $("#current-list-noResults-query") }
+        noResultsOnUnitInfo(wait: true) { displayed($("#current-list-noResults-unit")) }
+        noResultsOnUnitInfoNoWait{ $("#current-list-noResults-unit") }
+        noResultsForQueryInfo(wait: true) { displayed($("#current-list-noResults-query")) }
+        noResultsForQueryInfoNoWait{ $("#current-list-noResults-query") }
 
-        advancedFilterBtn { $("#show-advanced-filter-btn") }
-        advancedFilterForm { $("#advanced-filter-form") }
-        advandecFilterFormFragestallare { $("input", name: "frageStallare") }
-        advancedFilterSelectDoctor { $("#qp-lakareSelector") }
-        advancedFilterVidarebefordrad { $("input", name: "vidarebefordrad") }
-        advancedFilterChangeDateFrom { $("#filter-changedate-from") }
-        advancedFilterChangeDateTo { $("#filter-changedate-to") }
-        advancedFilterStatus { $("#qp-showStatus") }
-        advancedFilterSearchBtn { $("#filter-qa-btn") }
-        advancedFilterResetBtn { $("#reset-search-form") }
-        visaAllaFragaBtn(required: false){$("#select-active-unit-wc-all")}
-        vcCentrumVastBtn(required: false){$("select-active-unit-centrum-vast")}
+        advancedFilterBtn(wait: true) { displayed($("#show-advanced-filter-btn")) }
+        advancedFilterForm(wait: true) { displayed($("#advanced-filter-form")) }
+        advandecFilterFormFragestallare(wait: true) { displayed($("input", name: "frageStallare")) }
+        advancedFilterSelectDoctor(required: false, wait: true) { displayed($("#qp-lakareSelector")) }
+        advancedFilterVidarebefordrad(wait: true) { displayed($("input", name: "vidarebefordrad")) }
+        advancedFilterChangeDateFrom(required: false, wait: true) { displayed($("#filter-changedate-from")) }
+        advancedFilterChangeDateTo(required: false, wait: true) { displayed($("#filter-changedate-to")) }
+        advancedFilterStatus(wait: true) { displayed($("#qp-showStatus")) }
+        advancedFilterSearchBtn(wait: true) { displayed($("#filter-qa-btn")) }
+        advancedFilterResetBtn(wait: true) { displayed($("#reset-search-form")) }
+        visaAllaFragaBtn(required: false, wait: true) { displayed($("#select-active-unit-wc-all")) }
+        vcCentrumVastBtn(required: false) { $("select-active-unit-centrum-vast") }
         fetchMoreBtn { $("#hamtaFler") }
 
         logoutLink { $("#logoutLink") }
@@ -38,11 +45,24 @@ class UnhandledQAPage extends AbstractPage {
     }
 
     def selectCareUnit(String careUnit) {
-        $("#select-active-unit-${careUnit}").click()
+        Browser.drive {
+            waitFor {
+                $("#select-active-unit-${careUnit}").click()
+            }
+        }
     }
 
-    def isCareUnitVisible(String careUnit) {
-        $("#select-active-unit-${careUnit}").isDisplayed()
+    boolean isCareUnitVisible(String careUnit, boolean expected) {
+        Browser.drive {
+            def ref = "#select-active-unit-${careUnit}";
+            if (expected) {
+                waitFor {
+                    return $(ref).isDisplayed()
+                }
+            } else {
+                return !$(ref).isDisplayed()
+            }
+        }
     }
 
     def clickCareUnitModal() {
@@ -50,35 +70,79 @@ class UnhandledQAPage extends AbstractPage {
     }
 
     def expandEnhetModal(String id) {
-        $("#expand-enhet-${id}").click()
+        Browser.drive {
+            waitFor {
+                $("#expand-enhet-${id}").click()
+            }
+        }
     }
 
     def modalIsDisplayed() {
         careUnitModalBody.isDisplayed();
     }
 
-    def isCareUnitModalVisible(String careUnit) {
-        $("#select-active-unit-${careUnit}-modal").isDisplayed()
+    def isCareUnitModalVisible(String careUnit, boolean expected) {
+        Browser.drive {
+            def ref = "#select-active-unit-${careUnit}-modal"
+            if (expected) {
+                waitFor {
+                    $(ref).isDisplayed()
+                }
+            } else {
+                !$(ref).isDisplayed()
+            }
+        }
     }
 
     def selectCareUnitModal(String careUnit) {
-        $("#select-active-unit-${careUnit}-modal").click()
+        Browser.drive {
+            waitFor {
+                $("#select-active-unit-${careUnit}-modal").click()
+            }
+        }
     }
 
     boolean isNumberPresent(String careUnit, String expected) {
-        expected == $("#select-active-unit-${careUnit}").find(".qa-circle").text()
+        Browser.drive {
+            waitFor {
+                expected == $("#select-active-unit-${careUnit}").find(".qa-circle").text()
+            }
+        }
     }
 
     boolean isNumberPresentInModal(String careUnit, String expected) {
-        expected == $("#fraga-svar-stat-${careUnit}").text()
+        Browser.drive {
+            waitFor {
+                expected == $("#fraga-svar-stat-${careUnit}").text()
+            }
+        }
     }
 
     def showQA(String internReferens) {
-        $("#showqaBtn-${internReferens}").click()
+        Browser.drive {
+            waitFor {
+                $("#showqaBtn-${internReferens}").click()
+            }
+        }
     }
 
-    def isQAVisible(String internid) {
-        $("#showqaBtn-${internid}").isDisplayed()
+    def showQANoWait(String internReferens) {
+        Browser.drive {
+            $("#showqaBtn-${internReferens}")
+        }
+    }
+
+    def isQAVisible(String internid, boolean expected) {
+        Browser.drive {
+            def ref = "#showqaBtn-${internid}"
+            if (expected) {
+                waitFor {
+                    $(ref).isDisplayed()
+                }
+            } else {
+                !$(ref).isDisplayed()
+            }
+        }
     }
 
     def showAdvancedFilter() {
@@ -90,14 +154,18 @@ class UnhandledQAPage extends AbstractPage {
     }
 
     def patientIdSyns(String internReferens) {
-        def patientId = $("#patientId-${internReferens}")
-        patientId.text() != ""
+        Browser.drive {
+            waitFor {
+                def patientId = $("#patientId-${internReferens}")
+                patientId.text() != ""
+            }
+
+        }
     }
 
     boolean hamtaFler() {
         if (fetchMoreBtn.isDisplayed()) {
             fetchMoreBtn.click()
-            sleep(1000)
         }
         return true
     }

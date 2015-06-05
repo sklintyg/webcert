@@ -19,12 +19,12 @@ Detta test ska visa på att man kan kopiera ett signerat ts-diabetes-intyg från
 
 | script | !-HanteraUtkast-! |
 | editera sidan visas |
-| intyget komplett meddelande visas | true |
+| ensure | intyget komplett meddelande visas |
 | radera utkast |
 
 | script | !-SokSkrivIntyg-! |
 | visa intyg sidan visas |
 
 | script | !-HanteraUtkast-! |
-| inga ej signerade intyg visas |
+| ensure | inga ej signerade intyg visas |
 
