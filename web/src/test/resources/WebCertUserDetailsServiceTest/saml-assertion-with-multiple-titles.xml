@@ -60,12 +60,8 @@
 
     <saml:Attribute FriendlyName="title" Name="urn:sambi:names:attribute:title"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-      <saml:AttributeValue>Läkare</saml:AttributeValue>
-    </saml:Attribute>
-
-        <saml:Attribute FriendlyName="title" Name="urn:sambi:names:attribute:title"
-                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
       <saml:AttributeValue>Barnmorska</saml:AttributeValue>
+      <saml:AttributeValue>Läkare</saml:AttributeValue>
     </saml:Attribute>
 
     <saml:Attribute FriendlyName="title" Name="urn:sambi:names:attribute:title"

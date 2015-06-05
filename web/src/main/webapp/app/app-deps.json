@@ -3,7 +3,6 @@
     "/app/views/router.js",
     "/app/views/messages.js",
     "/app/views/intyg.proxy.js",
-    "/app/views/patient.proxy.js",
     "/app/views/utkast.proxy.js",
     "/app/views/ejSigneradeUtkast/ejSigneradeUtkast.controller.js",
     "/app/views/fragorOchSvar/fragorOchSvar.controller.js",
@@ -18,7 +17,6 @@
     "/app/views/sokSkrivIntyg/sokSkrivIntygStart.controller.js",
     "/app/views/sokSkrivIntyg/wcVisited.directive.js",
     "/app/views/sokSkrivIntyg/tidigareIntyg.filter.js",
-    "/app/views/sokSkrivIntyg/patient.model.js",
     "/app/views/visaIntygFragasvar/visaIntygFragasvar.controller.js",
     "/app/views/visaIntygFragasvar/wcInsertIntyg.directive.js",
     "/app/views/visaIntygFragasvar/wcInsertFragasvar.directive.js"

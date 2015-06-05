@@ -58,15 +58,9 @@
       <saml:AttributeValue>urn:sambi:names:ac:classes:LoA3</saml:AttributeValue>
     </saml:Attribute>
 
-    <!-- This title does not authorize signing certs in webcert -->
     <saml:Attribute FriendlyName="titleCode" Name="urn:sambi:names:attribute:titleCode"
                     NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
       <saml:AttributeValue>101010</saml:AttributeValue>
-    </saml:Attribute>
-
-    <!-- This, however, does -->
-    <saml:Attribute FriendlyName="titleCode" Name="urn:sambi:names:attribute:titleCode"
-                    NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
       <saml:AttributeValue>204010</saml:AttributeValue>
     </saml:Attribute>
 

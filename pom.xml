@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -31,7 +31,7 @@
     <rivta-insuranceprocess.version>3.1.0.0</rivta-insuranceprocess.version>
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
-    <rivta-hsa-employee.version>1.0.0</rivta-hsa-employee.version>
+    <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
 
     <intyg-clinicalprocess.version>0-SNAPSHOT</intyg-clinicalprocess.version>
     <intyg-clinicalprocess.version.range>(,1.0.0]</intyg-clinicalprocess.version.range>
@@ -416,6 +416,13 @@
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <!-- ehcache -->
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>${ehcache.version}</version>
       </dependency>
 
       <!-- Test dependencies -->

@@ -14,23 +14,23 @@
 
         <div class="webcert-col-section webcert-top-padding-section">
 
-          <div class="alert alert-warning" wc-show="!personNotFound && !errorOccured">
+          <div class="alert alert-warning" ng-show="!personNotFound && !errorOccured">
             Observera att nedanstående uppgifter är inhämtade från personuppgiftstjänsten. Vill du ändra dem kan du göra det här, men dessa ändringar kommer endast gälla för detta intyg. Tänk på att basera inmatade uppgifter på patientens legitimationsuppgifter.
           </div>
 
-          <div class="alert alert-danger" wc-show="personNotFound">
+          <div class="alert alert-danger" ng-show="personNotFound">
             <strong>Inget resultat!</strong> Slagningen mot personuppgiftstjänsten returnerade inget resultat för {{personnummer}}. Manuell inmatning av namn är möjlig. Tänk på att basera inmatade uppgifter på patientens legitimationsuppgifter.
           </div>
 
-          <div class="alert alert-danger" wc-show="errorOccured">
-            <strong>Tekniskt fel!</strong> Ett teknisk fel inträffade vid slagning mot personuppgiftstjänsten. Manuell inmatning av namn är möjlig. Tänk på att basera inmatade uppgifter på patientens legitimationsuppgifter.
+          <div class="alert alert-warning" ng-show="errorOccured">
+            Namnuppgifterna kunde inte hämtas och behöver därför fyllas i manuellt. Observera att patienten kan ha sekretessmarkerade folkbokföringsuppgifter. Var vänlig handskas varsamt med uppgifterna.
           </div>
 
           <div class="form-group">
             <label for="fornamn" class="control-label">Förnamn</label>
             <input id="fornamn" class="form-control" name="fornamn" type="text" ng-model="fornamn" required
                    wc-visited />
-            <div wc-show="nameForm.fornamn.$invalid && (nameForm.fornamn.$visited || nameForm.submitted)">
+            <div ng-show="nameForm.fornamn.$invalid && (nameForm.fornamn.$visited || nameForm.submitted)">
               <span class="error">Du måste ange ett förnamn</span>
             </div>
           </div>
@@ -38,7 +38,7 @@
             <label for="efternamn" class="control-label">Efternamn</label>
             <input id="efternamn" class="form-control" name="efternamn" type="text" ng-model="efternamn" required
                    wc-visited />
-            <div wc-show="nameForm.efternamn.$invalid && (nameForm.efternamn.$visited || nameForm.submitted)">
+            <div ng-show="nameForm.efternamn.$invalid && (nameForm.efternamn.$visited || nameForm.submitted)">
               <span class="error">Du måste ange ett efternamn</span>
             </div>
           </div>

@@ -21,6 +21,8 @@ describe('ChooseCertTypeCtrl', function() {
 
             $provide.value('common.IntygCopyRequestModel', {});
             $provide.value('common.IntygService', {});
+            $provide.value('common.PatientModel', {});
+            $provide.value('common.PatientProxy', {});
         });
 
         inject(function($rootScope, _$location_, _$controller_) {

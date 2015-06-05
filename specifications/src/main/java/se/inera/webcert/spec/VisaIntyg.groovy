@@ -83,4 +83,13 @@ class VisaIntyg {
         }
         return result
     }
+
+    boolean sekretessmarkeringVisas() {
+        def result
+        Browser.drive {
+            result = page.sekretessmarkering.isDisplayed()
+        }
+        result
+    }
+
 }

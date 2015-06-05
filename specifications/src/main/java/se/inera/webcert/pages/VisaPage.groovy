@@ -17,6 +17,7 @@ class VisaPage extends AbstractPage {
         skrivUtKnapp(wait: true) { displayed($("#downloadprint")) }
         kopieraKnapp(wait: true) { displayed($("#copyBtn")) }
         makuleraKnapp(wait: true) { displayed($("#makuleraBtn")) }
+        sekretessmarkering { $("#sekretessmarkering") }
 
         skickaKnappNoWait{$("#sendBtn") }
         skrivUtKnappNoWait{$("#downloadprint") }

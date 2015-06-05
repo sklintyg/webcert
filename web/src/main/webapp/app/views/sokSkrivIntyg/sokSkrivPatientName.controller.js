@@ -1,5 +1,5 @@
 angular.module('webcert').controller('webcert.EditPatientNameCtrl',
-    [ '$location', '$stateParams' ,'$scope', 'webcert.PatientModel',
+    [ '$location', '$stateParams' ,'$scope', 'common.PatientModel',
         function($location, $stateParams, $scope, PatientModel) {
             'use strict';
 

@@ -465,4 +465,14 @@ class HanteraUtkast {
         Thread.sleep(5000)
         true
     }
+
+    boolean sekretessmarkeringVisas() {
+        def result
+        Browser.drive {
+            at EditeraIntygPage
+            result = page.sekretessmarkering.isDisplayed()
+        }
+        result
+    }
+
 }

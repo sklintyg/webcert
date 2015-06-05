@@ -6,8 +6,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.OptimisticLockException;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,16 +15,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import se.inera.webcert.persistence.utkast.model.Omsandning;
 import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
+import se.inera.webcert.persistence.utkast.model.ScheduleratJobb;
 import se.inera.webcert.persistence.utkast.repository.OmsandningRepositoryCustom;
+import se.inera.webcert.persistence.utkast.repository.ScheduleratJobbRepository;
 import se.inera.webcert.service.intyg.IntygOmsandningService;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 
+@SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
 public class OmsandningJobTest {
 
@@ -34,114 +35,122 @@ public class OmsandningJobTest {
     private OmsandningRepositoryCustom omsandningRepository;
 
     @Mock
+    private ScheduleratJobbRepository jobbRepository;
+    
+    @Mock
     private IntygOmsandningService intygService;
 
     @Mock
-    private PlatformTransactionManager txManager;
-
-    private int failureCount;
-    private int lockCount;
-    private int skipCount;
+    private TransactionTemplate transactionTemplate;
+    
+    private int logCount;
     
     @InjectMocks
     OmsandningJob job = new OmsandningJob() {
         @Override
         protected void logTooManyFailures() {
             super.logTooManyFailures();
-            failureCount++;
-        }
-        @Override
-        protected void logLockOmsandning(Omsandning omsandning, boolean success) {
-            super.logLockOmsandning(omsandning, success);
-            if (success) {
-                lockCount++;
-            } else {
-                skipCount++;
-            }
+            logCount++;
         }
     };
 
     @Before
     public void setUp() {
-        job.setTxManager(txManager);
+        job.setTransactionTemplate(transactionTemplate);
+    }
+    
+    @Test
+    public void testScheduleratJobbPagar() {
+        ScheduleratJobb jobb = new ScheduleratJobb(OmsandningJob.JOBB_ID);
+        jobb.setBearbetas(true);
+        when(jobbRepository.findOne(OmsandningJob.JOBB_ID)).thenReturn(jobb);
+
+        List<Omsandning> list = new ArrayList<>();
+        list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1", "typ"));
+        
+        when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
+
+        job.sandOm();
+
+        Mockito.verifyNoMoreInteractions(intygService);
+        Mockito.verify(jobbRepository, Mockito.times(0)).save(any(ScheduleratJobb.class));
+    }
+    
+    
+    @Test
+    public void testScheduleratJobbPagarOptimistisktLas() {
+        ScheduleratJobb jobb = new ScheduleratJobb(OmsandningJob.JOBB_ID);
+        when(jobbRepository.findOne(OmsandningJob.JOBB_ID)).thenReturn(jobb);
+        when(transactionTemplate.execute(any(TransactionCallback.class))).thenThrow(new OptimisticLockingFailureException(""));
+
+        List<Omsandning> list = new ArrayList<>();
+        list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1", "typ"));
+        
+        when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
+
+        job.sandOm();
+
+        Mockito.verifyNoMoreInteractions(intygService);
+        
+        Mockito.verify(jobbRepository, Mockito.times(0)).save(any(ScheduleratJobb.class));
     }
     
     @Test
     public void testSandOm1Intyg() {
+        ScheduleratJobb jobb = new ScheduleratJobb(OmsandningJob.JOBB_ID);
+        when(jobbRepository.findOne(OmsandningJob.JOBB_ID)).thenReturn(jobb);
+        when(transactionTemplate.execute(any(TransactionCallback.class))).thenReturn(jobb);
+
         List<Omsandning> list = new ArrayList<>();
-        Omsandning omsandning1 = new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1", "typ");
-        list.add(omsandning1);
+        list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1", "typ"));
         when(intygService.storeIntyg(any(Omsandning.class))).thenReturn(IntygServiceResult.OK);
         
-        when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThanNotBearbetas(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
-        when(omsandningRepository.save(omsandning1)).thenReturn(omsandning1);
+        when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
+
         job.sandOm();
 
-        Assert.assertEquals(0, failureCount);
+        Assert.assertEquals(0, logCount);
+        
+        Mockito.verify(jobbRepository).save(any(ScheduleratJobb.class));
     }
     
     @Test
     public void testSandOm2Intyg() {
+        ScheduleratJobb jobb = new ScheduleratJobb(OmsandningJob.JOBB_ID);
+        when(jobbRepository.findOne(OmsandningJob.JOBB_ID)).thenReturn(jobb);
+        when(transactionTemplate.execute(any(TransactionCallback.class))).thenReturn(jobb);
         List<Omsandning> list = new ArrayList<>();
-        Omsandning omsandning1 = new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1", "typ");
-        Omsandning omsandning2 = new Omsandning(OmsandningOperation.SEND_INTYG, "intyg-2", "typ");
-        list.add(omsandning1);
-        list.add(omsandning2);
+        list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1", "typ1"));
+        list.add(new Omsandning(OmsandningOperation.SEND_INTYG, "intyg-2", "typ1"));
         when(intygService.storeIntyg(any(Omsandning.class))).thenReturn(IntygServiceResult.OK);
         when(intygService.sendIntyg(any(Omsandning.class))).thenReturn(IntygServiceResult.RESCHEDULED);
         
-        when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThanNotBearbetas(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
-        when(omsandningRepository.save(omsandning1)).thenReturn(omsandning1);
-        when(omsandningRepository.save(omsandning2)).thenReturn(omsandning2);
+        when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
 
         job.sandOm();
 
-        Assert.assertEquals(0, failureCount);
-    }
+        Assert.assertEquals(0, logCount);
 
-    @Test
-    public void testSandOm2IntygOneIsLocked() {
-        List<Omsandning> list = new ArrayList<>();
-        Omsandning omsandning1 = new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-1", "typ");
-        Omsandning omsandning2 = new Omsandning(OmsandningOperation.SEND_INTYG, "intyg-2", "typ");
-        list.add(omsandning1);
-        list.add(omsandning2);
-        when(intygService.sendIntyg(any(Omsandning.class))).thenReturn(IntygServiceResult.OK);
-        
-        when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThanNotBearbetas(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
-        when(omsandningRepository.save(omsandning2)).thenReturn(omsandning2);
-
-        TransactionStatus tx1 = Mockito.mock(TransactionStatus.class);
-        TransactionStatus tx2 = Mockito.mock(TransactionStatus.class);
-        
-        when(txManager.getTransaction(any(TransactionDefinition.class))).thenReturn(tx1, tx2);
-        
-        Mockito.doThrow(new OptimisticLockException()).when(txManager).commit(tx1);
-
-        job.sandOm();
-
-        Assert.assertEquals(1, lockCount);
-        Assert.assertEquals(1, skipCount);
-        
-        Mockito.verify(intygService, Mockito.never()).storeIntyg(omsandning1);
-        Mockito.verify(intygService).sendIntyg(omsandning2);
+        Mockito.verify(jobbRepository).save(any(ScheduleratJobb.class));
     }
 
     @Test
     public void testSandOmAndFailHard() {
+        ScheduleratJobb jobb = new ScheduleratJobb(OmsandningJob.JOBB_ID);
+        when(jobbRepository.findOne(OmsandningJob.JOBB_ID)).thenReturn(jobb);
+        when(transactionTemplate.execute(any(TransactionCallback.class))).thenReturn(jobb);
         List<Omsandning> list = new ArrayList<>();
-        Omsandning omsandning = new Omsandning(OmsandningOperation.STORE_INTYG, "intyg", "typ");
-        for (int i = 0; i < OmsandningJob.MAX_RESENDS_PER_CYCLE; i++) {
+        for (int i = 0; i < OmsandningJob.MAX_RESENDS_PER_CYCLE + 1; i++) {
             list.add(new Omsandning(OmsandningOperation.STORE_INTYG, "intyg-" + i, "typ" + i));
         }
-        list.add(omsandning);
         when(intygService.storeIntyg(any(Omsandning.class))).thenReturn(IntygServiceResult.RESCHEDULED);
-        when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThanNotBearbetas(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
-        when(omsandningRepository.save(any(Omsandning.class))).thenReturn(omsandning);
+        when(omsandningRepository.findByGallringsdatumGreaterThanAndNastaForsokLessThan(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(list);
 
         job.sandOm();
 
-        Assert.assertEquals(1, failureCount);
+        Assert.assertEquals(1, logCount);
+        
+        Mockito.verify(jobbRepository).save(any(ScheduleratJobb.class));
     }
 
 }

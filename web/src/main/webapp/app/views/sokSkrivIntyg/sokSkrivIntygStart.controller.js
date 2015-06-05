@@ -1,5 +1,5 @@
 angular.module('webcert').controller('webcert.InitCertCtrl',
-    [ '$location', 'webcert.PatientModel',
+    [ '$location', 'common.PatientModel',
         function($location, PatientModel) {
             'use strict';
 

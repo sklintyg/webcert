@@ -1,5 +1,5 @@
 angular.module('webcert').directive('wcInsertQa',
-    function($compile, $log) {
+    function($compile, $log, $http, $templateCache) {
         'use strict';
 
         return {
@@ -10,13 +10,14 @@ angular.module('webcert').directive('wcInsertQa',
             },
             link: function(scope, element) {
                 if(scope.certificateType === 'fk7263') {
-                    $.get('/web/webjars/' + scope.certificateType +
-                    '/webcert/views/intyg/fragasvar/fragasvar.html').then(function(file) {
-                        element.html(file);
-                        element.replaceWith($compile(element.html())(scope));
-                    }).fail(function(error) {
-                        $log.debug(error);
-                    });
+                    $http.get('/web/webjars/' + scope.certificateType + '/webcert/views/intyg/fragasvar/fragasvar.html', { cache: $templateCache }).
+                        success(function(file) {
+                            element.html(file);
+                            element.replaceWith($compile(element.html())(scope));
+                        }).
+                        error(function(error) {
+                            $log.debug(error);
+                        });
                 }
             }
         };

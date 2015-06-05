@@ -82,10 +82,10 @@ public class SakerhetstjanstAssertion {
         for (Attribute attribute : attributes) {
             switch (attribute.getName()) {
                 case TITEL_ATTRIBUTE:
-                    titel.add(getValue(attribute));
+                    titel.addAll(getValues(attribute));
                     break;
                 case TITEL_KOD_ATTRIBUTE:
-                    titelKod.add(getValue(attribute));
+                    titelKod.addAll(getValues(attribute));
                     break;
                 case FORSKRIVARKOD_ATTRIBUTE:
                     forskrivarkod = getValue(attribute);

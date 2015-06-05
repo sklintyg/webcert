@@ -1,5 +1,5 @@
 angular.module('webcert').controller('webcert.ChoosePatientCtrl',
-    ['$location', '$scope', 'webcert.PatientModel', 'webcert.PatientProxy', 'common.PersonIdValidatorService',
+    ['$location', '$scope', 'common.PatientModel', 'common.PatientProxy', 'common.PersonIdValidatorService',
         function($location, $scope, PatientModel, PatientProxy, personIdValidator) {
             'use strict';
 
@@ -13,7 +13,8 @@ angular.module('webcert').controller('webcert.ChoosePatientCtrl',
 
             $scope.lookupPatient = function() {
 
-                var onSuccess = function() {
+                var onSuccess = function(patientResult) {
+                    PatientModel = patientResult;
                     $scope.widgetState.waiting = false;
                     $scope.widgetState.errorid = undefined;
                     $location.path('/create/choose-cert-type/index');
