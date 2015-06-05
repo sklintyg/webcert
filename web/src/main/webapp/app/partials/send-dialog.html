@@ -19,10 +19,10 @@
     <button id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
       <span message key="{{button2text}}"></span>
     </button>
-    <button id="{{button3id}}" wc-show="button3visible" class="btn btn-info" ng-click="button3click()">
+    <button id="{{button3id}}" ng-show="button3visible" class="btn btn-info" ng-click="button3click()">
       <span message key="{{button3text}}"></span>
     </button>
-    <div class="webcert-top-padding-section" wc-show="model.showerror">
+    <div class="webcert-top-padding-section" ng-show="model.showerror">
       <div class="alert alert-danger alert-dialog-error">
         <span message key="{{model.errormessageid}}"></span>
       </div>
