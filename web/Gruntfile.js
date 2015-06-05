@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 
 //    grunt.log.write(JSON.stringify(webcert));
 
-    var COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common';
+    var COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
     var TSBAS_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
     var TSDIABETES_DIR = '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert';
     var FK7263_DIR = '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert';
@@ -122,12 +122,23 @@ module.exports = function(grunt) {
         ngtemplates : {
             webcert: {
                 cwd: __dirname + '/src/main/webapp',
-                src: ['app/views/**/*.html'],
+                src: ['app/views/**/*.html', 'app/partials/**/*.html'],
                 dest: __dirname + '/src/main/webapp/app/templates.js',
                 options: {
                     module: 'webcert',
                     url: function(url) {
-                        return url.replace('../', '/');
+                        return '/' + url.replace('../', '/');
+                    }
+                }
+            },
+            common: {
+                cwd: __dirname + COMMON_DIR,
+                src: ['**/*.html'],
+                dest: __dirname + COMMON_DIR + '/templates.js',
+                options:{
+                    module: 'common',
+                    url: function(url) {
+                        return '/web/webjars/common/webcert/' + url;
                     }
                 }
             },

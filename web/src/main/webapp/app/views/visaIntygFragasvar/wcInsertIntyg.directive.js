@@ -1,5 +1,5 @@
 angular.module('webcert').directive('wcInsertCertificate',
-    function($compile, $log) {
+    function($compile, $log, $http, $templateCache) {
         'use strict';
 
         return {
@@ -10,12 +10,14 @@ angular.module('webcert').directive('wcInsertCertificate',
             },
             link: function(scope, element) {
 
-                $.get('/web/webjars/' + scope.certificateType + '/webcert/views/intyg/intyg.html').then(function(file) {
-                    element.html(file);
-                    element.replaceWith($compile(element.html())(scope));
-                }).fail(function(error) {
-                    $log.debug(error);
-                });
+                $http.get('/web/webjars/' + scope.certificateType + '/webcert/views/intyg/intyg.html', { cache: $templateCache }).
+                    success(function(file) {
+                        element.html(file);
+                        element.replaceWith($compile(element.html())(scope));
+                    }).
+                    error(function(error) {
+                        $log.debug(error);
+                    });
 
                 /*require([ 'text!./' + scope.certificateType + '/webcert/views/intyg-view.html' ], function(file) {
                  element.html(file);
