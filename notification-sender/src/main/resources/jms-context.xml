@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <bean id="asyncJmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/jms/AsyncConnectionFactory" />
+  </bean>
 
   <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
-    <property name="connectionFactory" ref="connectionFactory"/>
+    <property name="connectionFactory" ref="asyncJmsFactory"/>
   </bean>
 
   <bean id="activeMQComponent" class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="connectionFactory" ref="connectionFactory"/>
+    <property name="connectionFactory" ref="asyncJmsFactory"/>
     <property name="transactionManager" ref="jmsTransactionManager"/>
     <property name="transacted" value="true"/>
     <property name="cacheLevelName" value="CACHE_CONSUMER"/>
@@ -21,7 +24,7 @@
   </bean>
 
   <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
-    <property name="connectionFactory" ref="connectionFactory" />
+    <property name="connectionFactory" ref="asyncJmsFactory" />
     <property name="destinationResolver" ref="jmsDestinationResolver" />
     <property name="concurrentConsumers" value="4" />
   </bean>
