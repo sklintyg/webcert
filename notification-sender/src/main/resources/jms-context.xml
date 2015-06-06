@@ -3,16 +3,20 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="asyncJmsFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
+  <bean id="asyncConnectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/jms/AsyncConnectionFactory" />
   </bean>
 
+  <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+    <constructor-arg ref="asyncConnectionFactory" />
+  </bean>
+
   <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
-    <property name="connectionFactory" ref="asyncJmsFactory"/>
+    <property name="connectionFactory" ref="cachingConnectionFactory"/>
   </bean>
 
   <bean id="activeMQComponent" class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="connectionFactory" ref="asyncJmsFactory"/>
+    <property name="connectionFactory" ref="cachingConnectionFactory"/>
     <property name="transactionManager" ref="jmsTransactionManager"/>
     <property name="transacted" value="true"/>
     <property name="cacheLevelName" value="CACHE_CONSUMER"/>
@@ -24,16 +28,16 @@
   </bean>
 
   <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
-    <property name="connectionFactory" ref="asyncJmsFactory" />
+    <property name="connectionFactory" ref="cachingConnectionFactory" />
     <property name="destinationResolver" ref="jmsDestinationResolver" />
     <property name="concurrentConsumers" value="4" />
   </bean>
-  
+
   <bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate" />
 
   <bean id="jmsDestinationResolver" class="org.springframework.jms.support.destination.JndiDestinationResolver">
     <property name="resourceRef" value="true" />
     <property name="jndiTemplate" ref="jndiTemplate" />
   </bean>
-  
+
 </beans>
