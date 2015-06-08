@@ -18,7 +18,7 @@ class EditCertPage extends AbstractEditCertPage {
         doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
-        intygetSparatOchKomplettMeddelande(wait: true) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
+        intygetSparatOchKomplettMeddelande(wait: 20) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
         intygetSparatOchEjKomplettMeddelande(wait: 20) { displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
         errorPanelBase { $("#error-panel") }
         errorPanel(wait: true) { displayed(errorPanelBase) }
@@ -122,7 +122,7 @@ class DiagnosModule extends Module {
     static content = {
         diagnoseKodverk_ICD_10_SE { $("#diagnoseKodverk_ICD_10_SE") }
         diagnoseKodverk_KSH_97_P { $("#diagnoseKodverk_KSH_97_P") }
-        diagnos1 { $("#diagnoseCode") }
+        diagnos1{$("#diagnoseCode") }
         diagnos1Text { $("#diagnoseDescription") }
         diagnos2 { $("#diagnoseCodeOpt1") }
         diagnos2Text { $("#diagnoseDescriptionOpt1") }
