@@ -227,7 +227,7 @@ module.exports = function(grunt) {
                             ));
                         middlewares.push(
                             connect().use(
-                                '/web/webjars/common',
+                                '/web/webjars/common/webcert',
                                 connect.static(__dirname + COMMON_DIR)
                             ));
                         middlewares.push(
