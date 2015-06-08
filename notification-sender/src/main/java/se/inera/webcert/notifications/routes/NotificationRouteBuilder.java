@@ -14,7 +14,7 @@ public class NotificationRouteBuilder extends RouteBuilder {
     public void configure() throws Exception {
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
                 .onException(Exception.class).handled(true).to("direct:errorHandlerEndpoint").end()
-                .transacted()
+                //.transacted()
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:notificationTransformer")
                 .marshal("jaxbMessageDataFormat")
@@ -23,7 +23,7 @@ public class NotificationRouteBuilder extends RouteBuilder {
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
                 .errorHandler(noErrorHandler())
                 .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
-                .transacted()
+                //.transacted()
                 .unmarshal("jaxbMessageDataFormat")
                 .to("bean:notificationWSClient");
 
