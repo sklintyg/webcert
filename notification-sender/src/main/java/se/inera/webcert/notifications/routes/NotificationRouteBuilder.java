@@ -10,6 +10,10 @@ import se.inera.webcert.notifications.service.exception.NonRecoverableCertificat
 public class NotificationRouteBuilder extends RouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
 
+    public NotificationRouteBuilder() {
+        LOG.debug("Starting up");
+    }
+
     @Override
     public void configure() throws Exception {
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")

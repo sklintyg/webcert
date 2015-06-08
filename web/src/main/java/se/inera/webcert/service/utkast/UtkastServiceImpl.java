@@ -91,7 +91,7 @@ public class UtkastServiceImpl implements UtkastService {
     private WebCertUserService webCertUserService;
 
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public String createNewDraft(CreateNewDraftRequest request) {
 
         populateRequestWithIntygId(request);
@@ -240,7 +240,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public Utkast getDraft(String intygId) {
         Utkast utkast = getIntygAsDraft(intygId);
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
@@ -256,7 +256,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public SaveAndValidateDraftResponse saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent) {
 
         String intygId = request.getIntygId();
@@ -378,7 +378,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public List<Lakare> getLakareWithDraftsByEnhet(String enhetsId) {
 
         List<Lakare> lakareList = new ArrayList<>();
@@ -393,7 +393,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified) {
 
         Utkast utkast = utkastRepository.findOne(intygsId);
@@ -415,7 +415,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public Map<String, Long> getNbrOfUnsignedDraftsByCareUnits(List<String> careUnitIds) {
 
         Map<String, Long> resultsMap = new HashMap<>();
@@ -435,7 +435,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public void deleteUnsignedDraft(String intygId, long version) {
 
         LOG.debug("Deleting utkast '{}'", intygId);
@@ -476,7 +476,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public void logPrintOfDraftToPDL(String intygId) {
         Utkast utkast = utkastRepository.findOne(intygId);
         
@@ -493,13 +493,13 @@ public class UtkastServiceImpl implements UtkastService {
     }
     
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(value = "jpaTransactionManager", readOnly=true)
     public List<Utkast> filterIntyg(UtkastFilter filter) {
         return utkastRepository.filterIntyg(filter);
     }
 
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(value = "jpaTransactionManager", readOnly=true)
     public int countFilterIntyg(UtkastFilter filter) {
         return utkastRepository.countFilterIntyg(filter);
     }

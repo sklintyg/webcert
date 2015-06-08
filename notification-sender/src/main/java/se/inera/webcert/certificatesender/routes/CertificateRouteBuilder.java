@@ -10,6 +10,10 @@ import se.inera.webcert.common.Constants;
 public class CertificateRouteBuilder extends org.apache.camel.builder.RouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(CertificateRouteBuilder.class);
 
+    public CertificateRouteBuilder() {
+        LOG.debug("Starting up");
+    }
+
     @Override
     public void configure() throws Exception {
         from("receiveCertificateTransferEndpoint").routeId("transferCertificate")
