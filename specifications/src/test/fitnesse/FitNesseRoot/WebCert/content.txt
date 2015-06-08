@@ -1,5 +1,19 @@
 !-FitNesse-! tester för Webcert.
 
+!*> ''Testdata''
+
+!define person1.personnummer {19000101-9801}
+
+!define person2.personnummer {19520617-2339}
+!define person2.namn {Björn Anders Daniel Annat Pärsson}
+
+!define person3.personnummer {19520614-2597}
+!define person4.personnummer {19121212-1212}
+!define person5.personnummer {19540123-2540}
+!define person6.personnummer {19101010-1010}
+!define person7.personnummer {19121212-0000}
+
+*!
 !contents -R4
 
 !*> '''Variables Defined'''

@@ -2,7 +2,7 @@
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-skrivut-1 | ts-diabetes| 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-skrivut-1 | ts-diabetes| ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 
 !3 Verifiera att skriv ut knapp är synlig
 

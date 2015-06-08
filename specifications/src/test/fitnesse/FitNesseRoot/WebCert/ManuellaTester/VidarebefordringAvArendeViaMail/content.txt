@@ -1,7 +1,7 @@
 !3 0. Förberedelser
 | Steg | Beskrivning | Förväntat resultat |
-| 1 | Säkerställ att testdata finns i Intygstjänsten (!-http://localhost:9123/IneraCertificate.ManuellaTester.TestData.InstalleraMinimalTestdata-!) | Intyg med id "test-19121212-1212-intyg-1" t.o.m. "test-19121212-1212-intyg-5" skall finnas |
-| 2 | Säkerställ att testdata finns i WebCert (.IneraWebCert.ManuellaTester.InstalleraFragorOchSvar-!) | Frågor för intyg "test-19121212-1212-intyg-1" och "test-19121212-1212-intyg-5" skall finnas |
+| 1 | Säkerställ att testdata finns i Intygstjänsten (!-http://localhost:9123/IneraCertificate.ManuellaTester.TestData.InstalleraMinimalTestdata-!) | Intyg med id "test-${person4.personnummer}-intyg-1" t.o.m. "test-${person4.personnummer}-intyg-5" skall finnas |
+| 2 | Säkerställ att testdata finns i WebCert (.IneraWebCert.ManuellaTester.InstalleraFragorOchSvar-!) | Frågor för intyg "test-${person4.personnummer}-intyg-1" och "test-${person4.personnummer}-intyg-5" skall finnas |
 
 !3 1. Vidare-befordring av ärende, markera som vidarebefordrad
 | Steg | Beskrivning | Förväntat resultat |

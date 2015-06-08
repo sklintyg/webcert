@@ -9,8 +9,8 @@ I det här fallet har frågan skickats till annan enhet än intygsutfärdaren.
 !3 Lägg till intyg och fråga
 
 | Intyg |
-| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat |
-| 19000101-9801 | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-104D | FK7263 | intyg-fit-annan-enhet | L | ja | nej |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat | respons? |
+| ${person1.personnummer} | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-104D | FK7263 | intyg-fit-annan-enhet | L | ja | nej | 200 |
 
 | Fraga Svar |
 | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |

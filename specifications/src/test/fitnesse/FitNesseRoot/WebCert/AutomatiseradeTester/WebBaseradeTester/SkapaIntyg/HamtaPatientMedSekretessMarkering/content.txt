@@ -5,7 +5,7 @@ Testet beskriver fallet när en läkare söker efter en patient som finns i PU-t
 | script | !-SokSkrivIntyg-! |
 | logga in som |IFV1239877878-104B_IFV1239877878-1042|
 | sok skriv intyg sidan visas sa smaningom |
-| valj patient | 19540123-2540 |
+| valj patient | ${person5.personnummer} |
 | valj intygstyp sidan visas |
 | check | patientens namn ar | Maj Pärsson |
 | ensure | valj intygstyp ej synlig |

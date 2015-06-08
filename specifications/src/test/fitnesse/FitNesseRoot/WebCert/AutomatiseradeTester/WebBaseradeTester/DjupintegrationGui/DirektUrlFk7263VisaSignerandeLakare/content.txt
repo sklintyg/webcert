@@ -7,12 +7,12 @@
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
-| webcert-fitnesse-signera-1 | fk7263 | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
 
 !3 Visa utkastet via integrationslänken
 
 | script | !-IntegrationMedJournalsystem-! |
-| visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | 19520614-2597 | signerande lakare | Per+Persson |
+| visa utkast via integration med | webcert-fitnesse-signera-1 | personnummer | ${person3.personnummer} | signerande lakare | Per+Persson |
 | signerande lakare meddelande visas | Per Persson |
 
 !3 Ta bort utkastet

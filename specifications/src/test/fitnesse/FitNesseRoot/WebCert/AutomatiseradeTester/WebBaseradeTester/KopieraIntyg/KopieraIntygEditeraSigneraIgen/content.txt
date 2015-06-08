@@ -6,7 +6,7 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Skapa ett nytt intygsutkast
 | script | !-SkrivIntyg-! |
-| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | FK7263 |
+| skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
 
 !3 Skapa minimalt intyg med smittskydd
@@ -24,7 +24,7 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Gå till intyget via djupintegration
 | script | !-IntegrationMedJournalsystem-! |
-| visa intyg via integration med | $intygsid | personnummer | 19520617-2339 |
+| visa intyg via integration med | $intygsid | personnummer | ${person2.personnummer} |
 
 !3 Kopiera intyget
 | script | !-SokSkrivIntyg-! |

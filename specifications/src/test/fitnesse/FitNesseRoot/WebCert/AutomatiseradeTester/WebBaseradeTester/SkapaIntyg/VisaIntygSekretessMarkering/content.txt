@@ -2,11 +2,11 @@ Detta test verifierar att sekretessmarkering visas på både utkast och intygsvy
 
 | skapa utkast |
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk |
-| webcert-fitnesse-sekretess-1 | fk7263 | 19540123-2540 | Test | Testorsson | IFV1239877878-104B | Åsa Andersson | IFV1239877878-1042 | nej | ICD_10_SE |
+| webcert-fitnesse-sekretess-1 | fk7263 | ${person5.personnummer} | Test | Testorsson | IFV1239877878-104B | Åsa Andersson | IFV1239877878-1042 | nej | ICD_10_SE |
 
 |Intyg|
 |personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
-|19540123-2540|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fitnesse-sekretess-2|!-SmL-!|nej|nej|
+|${person5.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fitnesse-sekretess-2|!-SmL-!|nej|nej|
 
 !3 Verifiera sekretessmarkering på utkast
 

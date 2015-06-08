@@ -7,7 +7,7 @@
 !3 Skapa ett utkast
 | skapa utkast med fake inloggning |
 | patientPersonnummer | utkastCreated? | utkastId? |
-| 19000101-9801       |           true | $utkastId=|
+| ${person1.personnummer}       |           true | $utkastId=|
 
 !3 Verifiera att en PDL-loggning gjorts
 
