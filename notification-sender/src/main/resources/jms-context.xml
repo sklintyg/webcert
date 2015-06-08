@@ -1,43 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="asyncConnectionFactory" class="org.springframework.jndi.JndiObjectFactoryBean">
-    <property name="jndiName" value="java:comp/env/jms/AsyncConnectionFactory" />
-  </bean>
-
-  <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-    <constructor-arg ref="asyncConnectionFactory" />
-  </bean>
-
-  <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
-    <property name="connectionFactory" ref="cachingConnectionFactory"/>
-  </bean>
-
   <bean id="activeMQComponent" class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="connectionFactory" ref="cachingConnectionFactory"/>
-    <property name="transactionManager" ref="jmsTransactionManager"/>
+    <property name="configuration">
+      <bean class="org.apache.camel.component.jms.JmsConfiguration">
+        <property name="connectionFactory" ref="cachingConnectionFactory"/>
+        <property name="destinationResolver" ref="jmsDestinationResolver"/>
+        <property name="concurrentConsumers" value="4"/>
+      </bean>
+    </property>
     <property name="transacted" value="true"/>
     <property name="cacheLevelName" value="CACHE_CONSUMER"/>
   </bean>
 
-  <bean id="PROPAGATION_REQUIRED" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
-    <property name="transactionManager" ref="jmsTransactionManager"/>
-    <property name="propagationBehaviorName" value="PROPAGATION_REQUIRED"/>
+  <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+    <constructor-arg>
+      <bean class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="java:comp/env/jms/AsyncConnectionFactory"/>
+      </bean>
+    </constructor-arg>
   </bean>
-
-  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
-    <property name="connectionFactory" ref="cachingConnectionFactory" />
-    <property name="destinationResolver" ref="jmsDestinationResolver" />
-    <property name="concurrentConsumers" value="4" />
-  </bean>
-
-  <bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate" />
 
   <bean id="jmsDestinationResolver" class="org.springframework.jms.support.destination.JndiDestinationResolver">
-    <property name="resourceRef" value="true" />
-    <property name="jndiTemplate" ref="jndiTemplate" />
+    <property name="resourceRef" value="true"/>
+    <property name="jndiTemplate">
+      <bean class="org.springframework.jndi.JndiTemplate"/>
+    </property>
   </bean>
 
 </beans>
