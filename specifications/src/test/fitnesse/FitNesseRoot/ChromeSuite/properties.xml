@@ -9,9 +9,9 @@
 	<Refactor/>
 	<Search/>
 	<Suite/>
-	<Suites></Suites>
+	<Suites/>
 	<SymbolicLinks>
-		<IneraWebcert>.IneraWebcert</IneraWebcert>
+		<WebBaseradeTester>.WebCert.AutomatiseradeTester.WebBaseradeTester</WebBaseradeTester>
 	</SymbolicLinks>
 	<Versions/>
 	<WhereUsed/>

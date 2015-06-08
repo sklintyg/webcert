@@ -10,7 +10,7 @@
 	<Search/>
 	<Suite/>
 	<SymbolicLinks>
-		<IneraWebcert>.IneraWebcert</IneraWebcert>
+		<WebBaseradeTester>.WebCert.AutomatiseradeTester.WebBaseradeTester</WebBaseradeTester>
 	</SymbolicLinks>
 	<Versions/>
 	<WhereUsed/>

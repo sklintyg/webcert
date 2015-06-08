@@ -3,37 +3,7 @@
 !3 Specifikationer
 Våra test specifikationer. Gör alla förändringar här.
 
- * IneraWebcert
- * ManuellaTester
-
-!3 Webcert Master
-Tester för Webcert Master.
-
- * [[Alla tester][AllBrowsers.AllTests]] (lokalt)
-  * [[Alla webbtester][AllBrowsers.AllTests.WebTests]]
-   * [[Chrome][AllBrowsers.AllTests.WebTests.ChromeWebTests]]
-   * [[Firefox][AllBrowsers.AllTests.WebTests.FirefoxWebTests]]
-   * [[Internet Explorer][AllBrowsers.AllTests.WebTests.InternetExplorerWebTests]]
-   * [[Safari][AllBrowsers.AllTests.WebTests.SafariWebTests]]
-  * [[External Tests][AllBrowsers.AllTests.ExternalTests]]
- * [[Alla tester][AllSauceLabsBrowsers.AllTests]] (!-SauceLabs-!)
-  * [[Alla webbtester][AllSauceLabsBrowsers.AllTests.WebTests]]
-   * [[Chrome][AllSauceLabsBrowsers.AllTests.WebTests.ChromeWebTests]]
-   * [[Firefox][AllSauceLabsBrowsers.AllTests.WebTests.FirefoxWebTests]]
-   * [[Internet Explorer][AllSauceLabsBrowsers.AllTests.WebTests.InternetExplorerWebTests]]
-   * [[Safari][AllSauceLabsBrowsers.AllTests.WebTests.SafariWebTests]]
-  * [[External Tests][AllSauceLabsBrowsers.AllTests.ExternalTests]]
-
-!3 Webcert 3.0
-Tester för Webcert 3.0.
-
- * Alla Tester
-  * Alla webbtester
-   * [[Chrome][ChromeSuite.IneraWebcert.WebcertReleases.WebcertV30.WebTests]]
-   * [[Firefox][FirefoxSuite.IneraWebcert.WebcertReleases.WebcertV30.WebTests]]
-   * [[Internet Explorer][InternetExplorerSuite.IneraWebcert.WebcertReleases.WebcertV30.WebTests]]
-   * [[Safari][SafariSuite.IneraWebcert.WebcertReleases.WebcertV30.WebTests]]
-  * [[External Tests][IneraWebcert.AllTests.ExternalTests]]
+ * WebCert
 
 !3 Hjälpspecifikationer
 Används för att köra våra specifikationer i olika lägen. Behöver normalt sett inte ändras.
@@ -43,8 +13,3 @@ Används för att köra våra specifikationer i olika lägen. Behöver normalt s
   * FirefoxSuite
   * InternetExplorerSuite
   * SafariSuite
- * AllSauceLabsBrowsers
-  * SauceLabsChromeSuite
-  * SauceLabsFirefoxSuite
-  * SauceLabsInternetExplorerSuite
-  * SauceLabsSafariSuite

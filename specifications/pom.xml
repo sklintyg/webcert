@@ -16,8 +16,6 @@
   <name>Webcert (FitNesse)</name>
 
   <properties>
-    <groovy.httpBuilder.version>0.7.1</groovy.httpBuilder.version>
-
     <geb.env>firefox</geb.env>
 
     <!-- URLs to services -->
@@ -29,7 +27,7 @@
     <fitnesse.port>9126</fitnesse.port>
     <fitnesse.working>${project.basedir}/src/test/fitnesse</fitnesse.working>
     <fitnesse.root>FitNesseRoot</fitnesse.root>
-    <fitnesse.project.root>IneraWebcert.AllTests.WebTests</fitnesse.project.root>
+    <fitnesse.project.root>WebCert.AutomatiseradeTester</fitnesse.project.root>
     <fitnesse.suite>${fitnesse.project.root}</fitnesse.suite>
 
     <!-- This example has no unit tests, just integration tests -->
