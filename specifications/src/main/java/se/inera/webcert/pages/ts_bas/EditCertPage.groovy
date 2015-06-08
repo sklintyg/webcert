@@ -17,8 +17,8 @@ class EditCertPage extends AbstractEditCertPage {
         doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
-        intygetSparatOchKomplettMeddelande(wait: 20) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
-        intygetSparatOchEjKomplettMeddelande(wait: 20) { displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
+        intygetSparatOchKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
+        intygetSparatOchEjKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
 
         // Formulärfält
         form { $("form") }

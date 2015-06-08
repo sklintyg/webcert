@@ -18,8 +18,8 @@ class EditCertPage extends AbstractEditCertPage {
         doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
-        intygetSparatOchKomplettMeddelande(wait: 20) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
-        intygetSparatOchEjKomplettMeddelande(wait: 20) { displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
+        intygetSparatOchKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
+        intygetSparatOchEjKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
         errorPanelBase { $("#error-panel") }
         errorPanel(wait: true) { displayed(errorPanelBase) }
         nyttPersonnummer(wait: true) { displayed($("#nyttPersonnummer")) }
