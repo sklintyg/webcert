@@ -11,19 +11,19 @@
     <constructor-arg ref="asyncConnectionFactory" />
   </bean>
 
-  <!-- bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
+  <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
     <property name="connectionFactory" ref="cachingConnectionFactory"/>
-  </bean-->
+  </bean>
 
   <bean id="activeMQComponent" class="org.apache.activemq.camel.component.ActiveMQComponent">
     <property name="connectionFactory" ref="cachingConnectionFactory"/>
-    <!--property name="transactionManager" ref="jmsTransactionManager"/ -->
+    <property name="transactionManager" ref="jmsTransactionManager"/>
     <property name="transacted" value="true"/>
     <property name="cacheLevelName" value="CACHE_CONSUMER"/>
   </bean>
 
   <bean id="PROPAGATION_REQUIRED" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
-    <!-- property name="transactionManager" ref="jmsTransactionManager"/ -->
+    <property name="transactionManager" ref="jmsTransactionManager"/>
     <property name="propagationBehaviorName" value="PROPAGATION_REQUIRED"/>
   </bean>
 

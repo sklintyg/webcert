@@ -15,7 +15,7 @@ public class CertificateRouteBuilder extends org.apache.camel.builder.RouteBuild
         from("receiveCertificateTransferEndpoint").routeId("transferCertificate")
                 .onException(TemporaryException.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:certPermanentErrorHandlerEndpoint").end()
-                //.transacted()
+                .transacted()
                 .choice()
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.STORE_MESSAGE)).to("bean:certificateStoreProcessor").stop()
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE)).to("bean:certificateSendProcessor").stop()
