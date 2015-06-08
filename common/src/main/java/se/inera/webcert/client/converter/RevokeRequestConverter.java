@@ -1,8 +1,8 @@
 package se.inera.webcert.client.converter;
 
-import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
-
 import javax.xml.bind.JAXBException;
+
+import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 
 /**
  * Defines toXml and fromXml methods for convenient conversion to/from {@RevokeMedicalCertificateRequestType} and XML.

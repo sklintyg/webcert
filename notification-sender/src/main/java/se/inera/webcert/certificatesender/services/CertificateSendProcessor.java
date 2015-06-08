@@ -56,13 +56,8 @@ public class CertificateSendProcessor {
             }
 
         } catch (WebServiceException e) {
-            LOG.warn("Call to revoke intyg {} caused an error: {}. Will retry", intygsId, e.getMessage());
+            LOG.warn("Call to send intyg {} caused an error: {}. Will retry", intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
         }
     }
-
-    private boolean nullOrEmpty(String str) {
-        return str == null || str.trim().length() == 0;
-    }
-
 }

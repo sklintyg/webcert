@@ -441,6 +441,17 @@ class SokSkrivIntyg {
         true
     }
 
+    boolean intygLagtPaSandKoVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                expected == page.certificateIsOnQueueToITMessage.isDisplayed()
+            }
+        }
+    }
+
     def stallNyFragaTillForsakringskassan() {
         Browser.drive {
             waitFor {

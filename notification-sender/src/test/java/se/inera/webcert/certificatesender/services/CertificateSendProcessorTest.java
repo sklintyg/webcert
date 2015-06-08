@@ -17,7 +17,6 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetore
 import se.inera.webcert.certificatesender.exception.PermanentException;
 import se.inera.webcert.certificatesender.exception.TemporaryException;
 import se.inera.webcert.client.SendCertificateServiceClient;
-import se.inera.webcert.common.Constants;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;

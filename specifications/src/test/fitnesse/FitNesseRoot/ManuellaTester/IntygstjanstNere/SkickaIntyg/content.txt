@@ -40,7 +40,7 @@
 
 !3 Verifiera att intyget har skickats enligt GUI
 | script | !-SokSkrivIntyg-!    |
-|intyg skickat till forsakringskassan|true|
+|intyg lagt pa sand ko visas|true|
 
 
 !3 Ta bort utkast

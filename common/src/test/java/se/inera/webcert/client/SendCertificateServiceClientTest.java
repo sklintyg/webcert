@@ -1,24 +1,24 @@
 package se.inera.webcert.client;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import javax.xml.ws.WebServiceException;
 
 /**
  * Created by eriklupander on 2015-06-04.
@@ -99,6 +99,19 @@ public class SendCertificateServiceClientTest {
             throw e;
         }
         fail();
+    }
+
+    /**
+     * It's important that the testee is not catching exceptions emitted by the WebService client code. It's up to the
+     * caller of the testee to handle exceptions.
+     */
+    @Test(expected = WebServiceException.class)
+    public void testExceptionsAreForwardedAsIs() {
+        when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
+                .thenThrow(new WebServiceException("FOO BAR"));
+        testee.sendCertificate(INTYGS_ID, PERSON_ID, RECIPIENT, LOGICAL_ADDRESS);
+
+        verify(sendService, times(1)).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
 
     private ResultType buildResultOfCall(ResultCodeType resultCodeType) {

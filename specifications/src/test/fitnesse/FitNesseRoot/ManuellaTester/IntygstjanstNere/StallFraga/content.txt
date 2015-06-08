@@ -41,7 +41,7 @@
 
 !3 Verifiera att intyget har skickats enligt GUI
 | script | !-SokSkrivIntyg-!    |
-|intyg skickat till forsakringskassan|true|
+|intyg lagt pa sand ko visas|true|
 
 
 !2 Nu, klicka på "Ställ fråga" för intyget
@@ -53,7 +53,7 @@
 
 
 !3 Ta bort frågan
-| script | !-RensaFragorOchSvar-! |
+| script | !-TaBortFraga-! |
 | ta bort alla fragor |
 
 !3 Ta bort utkast

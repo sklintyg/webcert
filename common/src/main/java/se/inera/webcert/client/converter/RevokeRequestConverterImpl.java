@@ -20,6 +20,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 @Component
 public class RevokeRequestConverterImpl implements RevokeRequestConverter {
 
+    private static final String UTF_8 = "UTF-8";
+
     private ObjectFactory objectFactory;
     private JAXBContext jaxbContext;
 
@@ -41,7 +43,7 @@ public class RevokeRequestConverterImpl implements RevokeRequestConverter {
     @Override
     public RevokeMedicalCertificateRequestType fromXml(String xml) throws JAXBException {
         JAXBElement<RevokeMedicalCertificateRequestType> unmarshalledObject = (JAXBElement<RevokeMedicalCertificateRequestType>)
-                jaxbContext.createUnmarshaller().unmarshal(new ByteArrayInputStream(xml.getBytes(Charset.forName("UTF-8"))));
+                jaxbContext.createUnmarshaller().unmarshal(new ByteArrayInputStream(xml.getBytes(Charset.forName(UTF_8))));
         return unmarshalledObject.getValue();
     }
 }

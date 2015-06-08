@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.services.converter;
+package se.inera.webcert.client.converter;
 
 import javax.xml.bind.JAXBException;
 
@@ -15,7 +15,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
-import se.inera.webcert.client.converter.RevokeRequestConverterImpl;
 import iso.v21090.dt.v1.II;
 
 /**
