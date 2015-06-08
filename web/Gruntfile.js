@@ -20,9 +20,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-protractor-runner');
+    grunt.loadNpmTasks('grunt-protractor-webdriver');
 
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
+    var TEST_RESOURCES_DIR = 'src/test/resources';
 
     var webcert = grunt.file.readJSON(SRC_DIR + 'app-deps.json').map(function(file) {
         return file.replace(/\/app\//g, SRC_DIR);
@@ -177,6 +180,32 @@ module.exports = function(grunt) {
             }
         },
 
+        protractor: {
+            options: {
+                configFile: "node_modules/grunt-protractor-runner/node_modules/protractor/example/conf.js", // Default config file
+                keepAlive: true, // If false, the grunt process stops when the test fails.
+                noColor: false, // If true, protractor will not use colors in its output.
+                args: {
+                    // Arguments passed to the command
+                }
+            },
+            your_target: {   // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
+                options: {
+                    configFile: "src/test/resources/protractor.conf.js", // Target-specific config file
+                    args: {} // Target-specific arguments
+                }
+            }
+        },
+
+        protractor_webdriver: {
+            options: {
+                // Task-specific options go here.
+            },
+            your_target: {
+                // Target-specific file lists and/or options go here.
+            },
+        },
+
         connect: {
             server: {
                 options: {
@@ -244,7 +273,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma']);
-
+    grunt.registerTask('e2e', ['protractor_webdriver','protractor']);
     // frontend only dev ===============================================================================================
     grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'watch' ]);
 };

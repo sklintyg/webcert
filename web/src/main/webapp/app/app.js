@@ -1,5 +1,5 @@
 /* global MODULE_CONFIG, wcMessages */
-window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
+//window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
 var app = angular.module('webcert', ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll']);
 
@@ -200,7 +200,9 @@ $.get('/api/modules/map').then(function(modules) {
 
         // Wait for all dependencies to load (for production dependencies are empty which is resolved immediately)
         $.when.apply(this, dependencyPromises).then(function() {
-            angular.element().ready(function() {
+            angular.element(document).ready(function() {
+
+                var allModules = [app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0));
 
                 // Cant use common.featureService to check for this since it needs to be done before angular bootstrap.
                 if (MODULE_CONFIG.USERCONTEXT &&
@@ -210,7 +212,10 @@ $.get('/api/modules/map').then(function(modules) {
                 }
 
                 // Everything is loaded, bootstrap the application with all dependencies.
-                angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
+                //angular.resumeBootstrap([app.name, 'common'].concat(Array.prototype.slice.call(modulesIds, 0)));
+                document.documentElement.setAttribute('ng-app', 'webcert');
+                angular.bootstrap(document, allModules);
+
             });
         }).fail(function(error) {
             if (window.console) {

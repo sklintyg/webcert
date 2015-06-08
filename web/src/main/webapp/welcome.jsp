@@ -24,7 +24,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="sv" id="ng-app" ng-app="WcWelcomeApp">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -36,6 +36,9 @@
 
     <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css"/>">
+
+    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
+
     <style type="text/css">
         textarea {
             font-family: Consolas, Lucida Console, monospace;
@@ -295,9 +298,29 @@
         window.doneLoading = true;
         window.dialogDoneLoading = true;
         window.rendered = true;
+
+        angular.module('WcWelcomeApp', [
+          'WcWelcomeApp.controllers'
+        ]);
+
+        angular.module('WcWelcomeApp.controllers', []).
+            controller('welcomeController', function($scope) {
+              $scope.loginModel = loginArr;
+              $scope.selectedIndex = 0;
+              $scope.$watch('selectedIndex', function(newSelected, oldVal) {
+                var jsonEl = angular.element( document.querySelector( '#userJson' ) );
+                var jsonElView = angular.element( document.querySelector( '#userJsonDisplay' ) );
+                var selector = angular.element( document.querySelector( '#jsonSelect' ) );
+                //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
+                var loginJson = JSON.stringify($scope.loginModel[newSelected], undefined, 1);
+                jsonElView.text( loginJson );
+                jsonEl.text( escape( loginJson ) );
+              });
+
+            });
     </script>
 </head>
-<body onLoad="updateJsonInput()">
+<body ng-controller="welcomeController">
 <form id="loginForm" action="/fake" method="POST" class="form-inline" accept-charset="UTF-8">
     <div class="container">
 
@@ -312,7 +335,7 @@
                 <div class="form-group col-xs-8">
 
                     <h4>Mallar</h4>
-                    <select id="jsonSelect" name="jsonSelect" onChange="updateJsonInput()" size="15" style="width: 100%" class="form-control">
+                    <select id="jsonSelect" name="jsonSelect" ng-model="selectedIndex" size="15" style="width: 100%" class="form-control">
                         <option value="0" id="IFV1239877878-1049_IFV1239877878-1042" selected>Jan Nilsson - WebCert Enhet 1 (Läkare)(Vård och Behandling + Admin)</option>
                         <option value="1" id="IFV1239877878-104B_IFV1239877878-1042">Åsa Andersson - WebCert Enhet 1 (Läkare)(Vård och Behandling)</option>
                         <option value="2" id="IFV1239877878-104B_IFV1239877878-1045">Åsa Andersson - WebCert Enhet 2 + 2UE (Läkare)(Vård och Behandling)</option>

@@ -4,7 +4,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
-<html lang="sv" id="ng-app" ng-app="webcert">
+<html lang="sv" id="ng-app">
 <head>
 
 <meta charset="utf-8">
