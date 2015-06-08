@@ -1,1 +1,1 @@
-!include -c .IneraWebcert.AllTests.SuiteSetUp
+!include -c .WebCert.AutomatiseradeTester.SuiteSetUp
