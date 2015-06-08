@@ -75,9 +75,7 @@
 
   <logger name="org.apache.camel" level="info" />
 
-  <logger name="org.springframework.transaction" level="debug" />
-
-  <logger name="org.springframework.jms" level="debug" />
+  <logger name="org.springframework.transaction" level="info" />
 
   <logger name="se.inera.webcert.notifications" level="debug" />
   

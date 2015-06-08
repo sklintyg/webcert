@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <bean id="activeMQComponent" class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="configuration">
-      <bean class="org.apache.camel.component.jms.JmsConfiguration">
-        <property name="connectionFactory" ref="cachingConnectionFactory"/>
-        <property name="destinationResolver" ref="jmsDestinationResolver"/>
-        <property name="concurrentConsumers" value="4"/>
-      </bean>
-    </property>
+    <property name="configuration" ref="jmsConfig" />
     <property name="transacted" value="true"/>
     <property name="cacheLevelName" value="CACHE_CONSUMER"/>
+  </bean>
+
+  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+    <property name="connectionFactory" ref="cachingConnectionFactory" />
+    <property name="destinationResolver" ref="jmsDestinationResolver" />
+    <property name="concurrentConsumers" value="4" />
   </bean>
 
   <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
