@@ -1,5 +1,15 @@
 // conf.js
 
+/**
+ * Setup :
+ * npm install
+ * <webcert/web/> : ./node_modules/protractor/bin/webdriver-manager update
+ *
+ * To run tests :
+ * <webcert/web/> : grunt e2e
+ *
+ **/
+
 exports.config = {
     seleniumAddress: 'http://localhost:4444/wd/hub',
     specs: ['../e2e/**/*.spec.js'],
@@ -12,6 +22,7 @@ exports.config = {
     // Capabilities to be passed to the webdriver instance.
     capabilities: {
         'browserName': 'chrome' //'firefox'
+        //'browserName': 'phantomjs'
     },
     rootElement:'html',
     onPrepare: function() {
