@@ -182,6 +182,7 @@
               <excludes>
                 <exclude>${fitnesse.root}/files/validering/**</exclude>
                 <exclude>${fitnesse.root}/files/.gitignore</exclude>
+                <exclude>${fitnesse.root}/files/*.properties</exclude>
               </excludes>
             </fileset>
           </filesets>
