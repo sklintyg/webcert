@@ -10,7 +10,7 @@
 	<Search/>
 	<Suite/>
 	<SymbolicLinks>
-		<WebBaseradeTester>.WebCert.AutomatiseradeTester.WebBaseradeTester</WebBaseradeTester>
+		<WebCert>.WebCert</WebCert>
 	</SymbolicLinks>
 	<Versions/>
 	<WhereUsed/>
