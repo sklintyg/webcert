@@ -16,7 +16,7 @@ angular.module('webcert').directive('wcCareUnitClinicSelector',
                                     function(a, b) {
                                         return (a.namn > b.namn) - (a.namn < b.namn);
                     }));
-                    $scope.units.unshift({id: 'wc-all', namn: 'Alla frågor och svar på denna vårdenhet'});
+                    $scope.units.unshift({id: 'wc-all', namn: 'Alla frågor och svar'});
                     $scope.selectedUnit = null;
 
                     /**

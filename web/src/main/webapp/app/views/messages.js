@@ -72,7 +72,7 @@ var wcMessages = {
         'info.nounansweredcertsfound': '<strong>Inga intyg med ohanterade frågor hittades.</strong>',
         'info.noreadytosigncertsfound': '<strong>Inga klarmarkerade intyg hittades.</strong>',
         'info.loadingdata': '<strong>Uppdaterar lista...</strong>',
-        'info.nounanswered.qa.for.unit': '<strong>Inga ej hanterade frågor och svar för enheten.</strong>',
+        'info.nounanswered.qa.for.unit': '<strong>Samtliga frågor och svar är hanterade. Det finns inget att åtgärda.</strong>',
         'info.nocertsfound': '<strong>Inga intyg hittades.</strong>',
         'info.query.noresults': '<strong>Sökningen gav inga resultat.</strong>',
         'info.query.error': '<strong>Sökningen kunde inte utföras.</strong>',
