@@ -12,7 +12,7 @@
 
 exports.config = {
     seleniumAddress: 'http://localhost:4444/wd/hub',
-    specs: ['../e2e/**/*.spec.js'],
+    specs: ['../e2e/**/*.page.js', '../e2e/**/*.spec.js'],
     baseUrl: 'http://localhost:9088/',
     //rootElement:'html',
     // If chromeOnly is true, we dont need to stand the selenium server.

@@ -14,7 +14,7 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 | visa intyg via integration med | intyg-fit-1 | personnummer | ${person2.personnummer} |
 | nytt personnummer meddelande visas|
 | kopiera intyg | intyg-fit-1 |
-| verifiera namn och personnummer | ${person1.namn} - ${person2.personnummer} |
+| verifiera namn och personnummer | ${person2.namn} - ${person2.personnummer} |
 
 | script | !-HanteraUtkast-! |
 | radera utkast |

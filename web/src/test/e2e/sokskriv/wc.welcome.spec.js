@@ -1,14 +1,23 @@
-describe('Sign Utkast', function() {
+var WelcomePage = require('../welcome/welcome.page'),
+    SokSkrivPage = require('../sokskriv/sokskriv.page'),
+    UtkastPage = require('../utkast/utkast.page'),
+    IntygPage = require('../intyg/intyg.page'),
 
+    welcomePage = new WelcomePage(),
+    sokSkrivPage = new SokSkrivPage(),
+    utakstPage = new UtkastPage(),
+    intygPage = new IntygPage();
+
+
+describe('Sign Utkast', function() {
 
     describe('Login through the welcome page', function() {
         it('can select user IFV1239877878-104B_IFV1239877878-1042', function() {
-            browser.get('welcome.jsp');
+            welcomePage.get();
 
             // login id IFV1239877878-104B_IFV1239877878-1042
             var id = 'IFV1239877878-104B_IFV1239877878-1042';
-            element(by.id(id)).click();
-            element(by.id('loginBtn')).click();
+            welcomePage.login(id);
 
         });
 
@@ -17,68 +26,52 @@ describe('Sign Utkast', function() {
         });
 
         it('and make sure the correct doctor is logged in', function() {
-            var doctor = element(by.css('.logged-in'));
-            expect(doctor.getText()).toContain("Åsa Andersson");
+            expect(sokSkrivPage.getDoctorText()).toContain("Åsa Andersson");
         });
     });
 
     describe('create fk', function(){
-        it('fill in person number and select', function() {
-            var pnr = element(by.id('pnr'));
-            pnr.sendKeys('191212121212');
-            pnrButton = element(by.id('skapapersonnummerfortsatt'));
-            pnrButton.click();
 
+        it('fill in person number and select', function() {
+            sokSkrivPage.selectPersonnummer('191212121212');
         });
 
         it('select fk intyg', function() {
-            var value = 1;
-            element(by.id('intygType')).all(by.css('option[value="' + value + '"]')).click();
-
-            // click förtsätta
-            element(by.id('intygTypeFortsatt')).click();
-
-            var smittskydd = element(by.css('[key="fk7263.label.smittskydd"]'));
-
-            browser.wait(smittskydd.isDisplayed()).then(function(){
-                expect(smittskydd.getText()).toContain("Avstängning enligt smittskyddslagen på grund av smitta");
-            });
-
+            sokSkrivPage.selectIntygType(1);
+            sokSkrivPage.continue();
         });
 
-        describe('fill in fk intyg', function(){
-            it('nedsatt form8b', function(){
-                var smittskydd = element(by.id('smittskydd'));
-                browser.wait(smittskydd.isDisplayed()).then(function(){
-                    smittskydd.click();
-                    var nedsattMed25 = element(by.id('nedsattMed25'));
-                    nedsattMed25.click();
-                    //var nedsattMed50 = element(by.id('nedsattMed50'));
-                    //nedsattMed50.click();
-                    //var nedsattMed75 = element(by.id('nedsattMed75'));
-                    //nedsattMed75.click();
-                    //var nedsattMed100 = element(by.id('nedsattMed100'));
-                    //nedsattMed100.click();
+        describe('interact with utkast', function() {
+
+            it('check that smittskydd is displayed', function() {
+
+                utakstPage.whenSmittskyddIsDisplayed().then(function() {
+                    expect(utakstPage.getSmittskyddLabelText()).toContain("Avstängning enligt smittskyddslagen på grund av smitta");
                 });
 
             });
 
-            it('resor form 6a', function(){
-                var travelRadioJa = element(by.id('rekommendationRessatt'));
-                travelRadioJa.click();
-                expect(element(by.css('input[name="recommendationsToFkTravel"]:checked')).getAttribute('value')).toBe('JA');
-            })
+            describe('fill in fk intyg', function() {
 
-            it('can sign', function(){
-                var signeraButton = element(by.id('signera-utkast-button'));
-
-                browser.wait(signeraButton.isEnabled()).then( function(){
-                    signeraButton.click();
-                    element(by.id('viewCertAndQA')).isDisplayed();
+                it('nedsatt form8b', function() {
+                    utakstPage.smittskyddCheckboxClick();
+                    utakstPage.nedsattMed25CheckboxClick();
                 });
 
-            });
+                it('resor form 6a', function() {
+                    utakstPage.travelRadioButtonJaClick();
+                    var val = utakstPage.getCheckedTravelRadioButtonValue();
+                    expect(val).toBe('JA');
+                })
 
+                it('can sign', function() {
+                    utakstPage.whenSigneraButtonIsEnabled().then(function() {
+                        utakstPage.signeraButtonClick();
+                        expect(intygPage.viewCertAndQaIsDisplayed()).toBeTruthy();
+                    });
+
+                });
+            });
         });
     });
 
