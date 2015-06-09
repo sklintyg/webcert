@@ -3,6 +3,7 @@
 !*> ''Testdata''
 
 !define person1.personnummer {19000101-9801}
+!define person1.namn {Test Testorsson}
 
 !define person2.personnummer {19520617-2339}
 !define person2.namn {Björn Anders Daniel Annat Pärsson}
