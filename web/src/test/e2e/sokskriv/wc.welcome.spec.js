@@ -1,5 +1,6 @@
 describe('Sign Utkast', function() {
 
+
     describe('Login through the welcome page', function() {
         it('can select user IFV1239877878-104B_IFV1239877878-1042', function() {
             browser.get('welcome.jsp');
