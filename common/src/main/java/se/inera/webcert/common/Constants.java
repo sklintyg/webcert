@@ -16,4 +16,7 @@ public interface Constants {
     String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
     String PERSON_ID = "PERSON_ID";
     String RECIPIENT = "RECIPIENT";
+
+    String JMSX_GROUP_ID = "JMSXGroupID";
+
 }

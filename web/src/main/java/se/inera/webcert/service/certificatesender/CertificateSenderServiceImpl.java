@@ -24,8 +24,6 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CertificateSenderServiceImpl.class);
 
-    private static final String JMSX_GROUP_ID = "JMSXGroupID";
-
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
@@ -72,7 +70,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(this.body);
-            message.setStringProperty(JMSX_GROUP_ID, intygsId);
+            message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE);
             message.setStringProperty(Constants.INTYGS_TYP, intygsTyp);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
@@ -96,7 +94,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage();
-            message.setStringProperty(JMSX_GROUP_ID, intygsId);
+            message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
@@ -121,7 +119,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         @Override
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(xmlBody);
-            message.setStringProperty(JMSX_GROUP_ID, intygsId);
+            message.setStringProperty(Constants.JMSX_GROUP_ID, intygsId);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
