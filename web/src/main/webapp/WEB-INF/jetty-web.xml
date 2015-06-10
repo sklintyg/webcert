@@ -46,7 +46,7 @@
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
           <!-- <Arg>vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=5&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=1000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=1000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg> -->
-          <Arg>tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=3&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=20000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=10000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>
+          <Arg>tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=2&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=10000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=5000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>
           <!--Arg>tcp://localhost:61616</Arg -->
       </New>
     </Arg>

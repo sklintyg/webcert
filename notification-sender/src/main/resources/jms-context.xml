@@ -10,6 +10,8 @@
   </bean>
 
   <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+    <property name="errorHandlerLoggingLevel" value="OFF"/>
+    <property name="errorHandlerLogStackTrace" value="false"/>
     <property name="connectionFactory" ref="cachingConnectionFactory" />
     <property name="destinationResolver" ref="jmsDestinationResolver" />
     <property name="concurrentConsumers" value="4" />

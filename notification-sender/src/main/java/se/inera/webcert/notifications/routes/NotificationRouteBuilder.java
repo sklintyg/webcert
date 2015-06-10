@@ -28,7 +28,7 @@ public class NotificationRouteBuilder extends RouteBuilder {
                 .to("bean:notificationWSClient");
 
         from("direct:errorHandlerEndpoint").routeId("errorLogging")
-                .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG, simple("Un-recoverable exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
                 .stop();
     }
 

@@ -26,11 +26,11 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
                 .otherwise().log(LoggingLevel.ERROR, LOG, simple("Unknown message type: ${in.headers.MESSAGE_TYPE}").getText()).stop();
 
         from("direct:certPermanentErrorHandlerEndpoint").routeId("permanentErrorLogging")
-                .log(LoggingLevel.ERROR, LOG, simple("Permanent exception for intygs-id: ${in.headers.JMSXGroupID}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG, simple("Permanent exception for intygs-id: ${header[JMSXGroupID]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
                 .stop();
 
         from("direct:certTemporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
-                .log(LoggingLevel.WARN, LOG, simple("Temporary exception for intygs-id: ${in.headers.JMSXGroupID}, with message: ${exception.message}").getText())
+                .log(LoggingLevel.WARN, LOG, simple("Temporary exception for intygs-id: ${header[JMSXGroupID]}, with message: ${exception.message}").getText())
                 .stop();
     }
 
