@@ -91,7 +91,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
         webcertUser.setHsaId(assertion.getHsaId());
         webcertUser.setNamn(compileName(assertion));
-        webcertUser.setForskrivarkod(assertion.getForskrivarkod());
+        webcertUser.setForskrivarkod("0000000");
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
 
         // lakare flag is calculated by checking for lakare profession in title and title code
