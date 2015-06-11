@@ -30,6 +30,10 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
                 .stop();
 
         from("direct:certTemporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
+                .choice()
+                .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
+                .log(LoggingLevel.ERROR, LOG, simple("Temporary exception for intygs-id: ${header[JMSXGroupID]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .otherwise()
                 .log(LoggingLevel.WARN, LOG, simple("Temporary exception for intygs-id: ${header[JMSXGroupID]}, with message: ${exception.message}").getText())
                 .stop();
     }

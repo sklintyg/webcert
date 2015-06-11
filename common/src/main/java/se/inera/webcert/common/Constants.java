@@ -18,5 +18,6 @@ public interface Constants {
     String RECIPIENT = "RECIPIENT";
 
     String JMSX_GROUP_ID = "JMSXGroupID";
+    String JMS_REDELIVERED = "JMSRedelivered";
 
 }

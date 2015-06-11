@@ -5,6 +5,7 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.inera.webcert.common.Constants;
 import se.inera.webcert.exception.TemporaryException;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
@@ -29,13 +30,15 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .to("bean:notificationWSClient");
 
         from("direct:permanentErrorHandlerEndpoint").routeId("errorLogging")
-                .log(LoggingLevel.ERROR, LOG,
-                        simple("Permanexception for intygs-id: ${header[intygsId]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .log(LoggingLevel.ERROR, LOG, simple("Permanent exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
                 .stop();
 
         from("direct:temporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
-                .log(LoggingLevel.WARN, LOG,
-                        simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}").getText())
+                .choice()
+                .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
+                .log(LoggingLevel.ERROR, LOG, simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
+                .otherwise()
+                .log(LoggingLevel.WARN, LOG, simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: ${exception.message}").getText())
                 .stop();
     }
 
