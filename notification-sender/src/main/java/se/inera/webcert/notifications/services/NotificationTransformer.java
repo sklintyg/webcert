@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.service;
+package se.inera.webcert.notifications.services;
 
 import org.apache.camel.Message;
 import org.slf4j.Logger;

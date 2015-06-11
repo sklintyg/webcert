@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.service;
+package se.inera.webcert.notifications.services;
 
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;

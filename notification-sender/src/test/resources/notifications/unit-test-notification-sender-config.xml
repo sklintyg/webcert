@@ -15,8 +15,8 @@
   <import resource="camel-context.xml"/>
   <import resource="mock-test-service-context.xml"/>
 
-  <bean id="transactionManager" class="se.inera.webcert.notifications.service.MockTransactionManager"/>
+  <bean id="transactionManager" class="se.inera.webcert.notifications.services.MockTransactionManager"/>
 
-  <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.notifications.service.CertificateStatusUpdateForCareResponderStub"/>
+  <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.notifications.services.CertificateStatusUpdateForCareResponderStub"/>
 
 </beans>

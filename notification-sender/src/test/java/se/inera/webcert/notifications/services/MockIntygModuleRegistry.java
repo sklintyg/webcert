@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.service;
+package se.inera.webcert.notifications.services;
 
 import org.joda.time.LocalDateTime;
 import se.inera.certificate.model.Status;
