@@ -14,7 +14,6 @@
     <property name="errorHandlerLogStackTrace" value="false"/>
     <property name="connectionFactory" ref="cachingConnectionFactory" />
     <property name="destinationResolver" ref="jmsDestinationResolver" />
-    <property name="concurrentConsumers" value="4" />
   </bean>
 
   <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
