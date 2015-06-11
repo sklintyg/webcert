@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 
 import org.apache.cxf.helpers.FileUtils;
+import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,6 +14,7 @@ import org.mockito.Spy;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.certificate.integration.json.CustomObjectMapper;
+import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
@@ -104,11 +106,18 @@ public abstract class AbstractIntygServiceTest {
 
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         utlatande = new CustomObjectMapper().readValue(json, Utlatande.class);
-        CertificateMetaData metaData = new CertificateMetaData();
-        metaData.setStatus(new ArrayList<Status>());
+        CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, true);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
+    }
+
+    private CertificateMetaData buildCertificateMetaData() {
+        CertificateMetaData metaData = new CertificateMetaData();
+        metaData.setStatus(new ArrayList<Status>());
+        Status statusSigned = new Status(CertificateState.RECEIVED, "FK", LocalDateTime.now());
+        metaData.getStatus().add(statusSigned);
+        return metaData;
     }
 
     @Before

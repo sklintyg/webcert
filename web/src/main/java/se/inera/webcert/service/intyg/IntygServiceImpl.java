@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.model.common.internal.Vardenhet;
@@ -224,6 +225,7 @@ public class IntygServiceImpl implements IntygService {
         LOG.debug("Attempting to revoke intyg {}", intygsId);
         IntygContentHolder intyg = getIntygData(intygsId, intygsTyp);
         verifyEnhetsAuth(intyg.getUtlatande(), true);
+        verifyIsSigned(intyg.getStatuses());
 
         if (intyg.isRevoked()) {
             LOG.debug("Certificate with id '{}' is already revoked", intygsId);
@@ -246,6 +248,20 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
+    private void verifyIsSigned(List<Status> statuses) {
+
+        boolean isSigned = false;
+        for (Status status : statuses) {
+            if (status.getType() == CertificateState.RECEIVED && status.getTimestamp() != null) {
+                isSigned = true;
+                break;
+            }
+        }
+
+        if (!isSigned) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is not signed, cannot revoke an unsigned certificate");
+        }
+    }
 
 
     public void setLogicalAddress(String logicalAddress) {

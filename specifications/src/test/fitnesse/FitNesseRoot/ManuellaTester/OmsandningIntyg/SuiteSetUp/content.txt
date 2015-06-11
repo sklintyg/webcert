@@ -1,0 +1,10 @@
+!include -c .ManuellaTester.SuiteSetUp
+
+!| Config       |
+|property|value |
+|geb.env |chrome|
+
+!2 Starta browser
+
+!|script|Browser|
+|öppna          |

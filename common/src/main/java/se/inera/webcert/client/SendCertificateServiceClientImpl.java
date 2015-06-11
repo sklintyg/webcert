@@ -8,6 +8,8 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetore
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 
 /**
+ * Exposes the SendCertificateToRecipient SOAP service.
+ *
  * Created by eriklupander on 2015-06-03.
  */
 @Component

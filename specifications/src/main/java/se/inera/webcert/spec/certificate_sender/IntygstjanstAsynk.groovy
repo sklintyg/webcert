@@ -1,6 +1,8 @@
 package se.inera.webcert.spec.certificate_sender
 
 import se.inera.webcert.spec.util.AsyncUtils
+import se.inera.webcert.spec.util.AsyncUtilsITStub
+import se.inera.webcert.spec.util.WebcertRestUtils
 
 /**
  * Specifically used for asserting that messages sent asynchronously from Webcert has (or has not) been processed
@@ -31,6 +33,32 @@ class IntygstjanstAsynk {
      */
     boolean finnsMakuleratIntygIIntygstjanstenMedVantetid(String intygsId, long vantetid = 4000L) {
         def result = false
-        result = new AsyncUtils().makuleratIntygFinnsIIntygstjansten(intygsId, vantetid)
+        result = new AsyncUtilsITStub().makuleratIntygFinnsIStub(intygsId, vantetid)
+    }
+
+
+
+    boolean finnsIntygIStubMedVantetid(String intygsId, long vantetid = 4000L) {
+        def result = false
+        result = new AsyncUtilsITStub().intygFinnsIStub(intygsId, vantetid)
+    }
+
+
+    boolean finnsIntygIStubSkickadTillSkickadTillMedVantetid(String intygsId, String mottagare, long vantetid = 4000) {
+        def result = false
+        result = new AsyncUtilsITStub().intygFinnsMarkeratSomSkickatIStub(intygsId, mottagare, vantetid)
+    }
+
+
+    boolean finnsMakuleratIntygIStubMedVantetid(String intygsId, long vantetid = 4000L) {
+        def result = false
+        result = new AsyncUtilsITStub().makuleratIntygFinnsIStub(intygsId, vantetid)
+    }
+
+
+
+    boolean resetIntygtjanstStub() {
+        def result = false
+        result = WebcertRestUtils.resetIntygtjanstStub()
     }
 }

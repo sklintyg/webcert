@@ -8,6 +8,11 @@
   <beans profile="dev,wc-all-stubs,wc-it-stub">
     <jaxws:endpoint address="/get-certificate-for-care-stub" implementor="se.inera.webcert.intygstjanststub.GetCertificateForCareResponderStub"/>
     <jaxws:endpoint address="/list-certificates-for-care-stub" implementor="se.inera.webcert.intygstjanststub.ListCertificatesForCareResponderStub"/>
+    <jaxws:endpoint address="/revoke-medical-certificate-stub" implementor="se.inera.webcert.intygstjanststub.RevokeMedicalCertificateResponderStub"/>
+    <jaxws:endpoint address="/send-certificate-to-recipient-stub" implementor="se.inera.webcert.intygstjanststub.SendCertificateToRecipientResponderStub"/>
+    <jaxws:endpoint address="/register-medical-certificate-stub" implementor="se.inera.webcert.intygstjanststub.RegisterMedicalCertificateResponderStub"/>
+    <jaxws:endpoint address="/register-ts-bas-certificate-stub" implementor="se.inera.webcert.intygstjanststub.RegisterTSBasResponderStub"/>
+    <jaxws:endpoint address="/register-ts-diabetes-certificate-stub" implementor="se.inera.webcert.intygstjanststub.RegisterTSDiabetesResponderStub"/>
 
     <bean id="intygstjanstStubBootstrapBean" class="se.inera.webcert.intygstjanststub.BootstrapBean"/>
 

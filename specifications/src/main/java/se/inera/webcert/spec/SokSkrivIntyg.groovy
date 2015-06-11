@@ -404,6 +404,10 @@ class SokSkrivIntyg {
         WebcertRestUtils.setIntygTjanstStubInMode("OFFLINE")
     }
 
+    def intygstjanstStubLatency(Long latency = 0L) {
+        WebcertRestUtils.setIntygTjanstStubLatency(latency)
+    }
+
     def valjVardenhet(String careUnit) {
         Browser.drive {
             waitFor {

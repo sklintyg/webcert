@@ -8,6 +8,7 @@ package se.inera.webcert.intygstjanststub.mode;
 public class StubModeSingleton {
 
     private static StubMode stubMode = StubMode.ONLINE;
+    private static long latency = 0L;
 
     private volatile static StubModeSingleton stubModeSingleton;
 
@@ -29,5 +30,13 @@ public class StubModeSingleton {
 
     public StubMode getStubMode() {
         return stubMode;
+    }
+
+    public long getLatency() {
+        return latency;
+    }
+
+    public void setLatency(long requestedLatency) {
+        latency = requestedLatency;
     }
 }

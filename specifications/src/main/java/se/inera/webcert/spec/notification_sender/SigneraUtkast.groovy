@@ -13,12 +13,13 @@ class SigneraUtkast {
 
     String intygId
     String intygTyp
+    Long version
 
     def response
 
     public void execute() {
-        WebcertRestUtils.login()
-        response = WebcertRestUtils.signUtkast(intygTyp, intygId)
+        //WebcertRestUtils.login(WebcertRestUtils.restClient)
+        response = WebcertRestUtils.signUtkastUsingBrowserSesssion(intygTyp, intygId, version)
     }
 
     public boolean utkastSignerat() {

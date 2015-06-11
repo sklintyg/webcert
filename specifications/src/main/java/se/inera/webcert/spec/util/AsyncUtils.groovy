@@ -24,6 +24,7 @@ class AsyncUtils extends RestClientFixture {
 
     boolean result
 
+    // INTYGSTJANST
     boolean intygFinnsIIntygstjansten(String intygsId, long timeout = 4000L) {
         result = false
         awaitResult(buildIntygExistsConditionCallable(intygsId), timeout)
@@ -41,6 +42,8 @@ class AsyncUtils extends RestClientFixture {
         awaitResult(buildMakuleratIntygExistsConditionCallable(intygsId), timeout)
         result
     }
+
+
 
     /** Private scope */
     private Callable<Boolean> buildIntygExistsConditionCallable(String intygsId) {
@@ -79,11 +82,6 @@ class AsyncUtils extends RestClientFixture {
         }
     }
 
-    private void awaitResult(Callable<Boolean> callable, long timeout) {
-        await().atMost(timeout, TimeUnit.MILLISECONDS).until(callable)
-    }
-
-
     private boolean isSentToRecipient(recipient, states) {
         boolean sent = false
         for(state in states) {
@@ -94,7 +92,5 @@ class AsyncUtils extends RestClientFixture {
         }
         sent
     }
-
-
 
 }

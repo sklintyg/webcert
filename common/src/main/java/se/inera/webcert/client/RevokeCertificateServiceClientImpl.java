@@ -14,6 +14,8 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 
 /**
+ * Exposes the RevokeMedicalCertificate SOAP service.
+ *
  * Created by eriklupander on 2015-06-03.
  */
 @Component
