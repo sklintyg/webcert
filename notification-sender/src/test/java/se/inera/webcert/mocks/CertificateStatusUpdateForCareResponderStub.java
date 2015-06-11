@@ -87,8 +87,9 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
     }
 
     public void reset() {
-        this.store.clear();
-        this.counter.set(0);
+        counter = new AtomicInteger(0);
+        attemptsPerMessage = new ConcurrentHashMap<>();
+        store = new CopyOnWriteArrayList<>();
     }
 
 }

@@ -14,7 +14,6 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
-
 public class NotificationWSClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationWSClient.class);
@@ -33,27 +32,26 @@ public class NotificationWSClient {
             response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
         } catch (Exception e) {
             LOG.warn("Exception occured when sending status update: {}", e.getMessage());
-            throw e;
+            throw new TemporaryException(e);
         }
 
         ResultType result = response.getResult();
         switch (result.getResultCode()) {
         case ERROR:
             if (result.getErrorId().equals(ErrorIdType.TECHNICAL_ERROR)) {
-                throw new TemporaryException(String.format(
-                        "NotificationWSClient failed with error code: %s and message %s", result.getErrorId(), result.getResultText()));
+                throw new TemporaryException(String.format("NotificationWSClient failed with error code: %s and message %s",
+                        result.getErrorId(),
+                        result.getResultText()));
             } else {
-                throw new PermanentException(String.format(
-                        "NotificationWSClient failed with non-recoverable error code: %s and message %s", result.getErrorId(), result.getResultText()));
+                throw new PermanentException(String.format("NotificationWSClient failed with non-recoverable error code: %s and message %s",
+                        result.getErrorId(),
+                        result.getResultText()));
             }
         case INFO:
             LOG.info("NotificationWSClient got message:" + result.getResultText());
             break;
         case OK:
             break;
-        default:
-            //This should never happen.
-            throw new PermanentException();
         }
 
     }

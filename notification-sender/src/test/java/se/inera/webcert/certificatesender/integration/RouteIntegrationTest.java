@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.jms.*;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,7 +19,6 @@ import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.webcert.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
@@ -29,7 +28,7 @@ import com.google.common.base.Throwables;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/certificates/integration-test-certificate-sender-config.xml")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class RouteIntegrationTest {
     private static final Logger LOG = LoggerFactory.getLogger(RouteIntegrationTest.class);
 
@@ -48,6 +47,11 @@ public class RouteIntegrationTest {
 
     @Autowired
     MockSendCertificateServiceClientImpl sendCertificateServiceClient;
+
+    @Before
+    public void resetStub() {
+        sendCertificateServiceClient.reset();
+    }
 
     @Test
     public void ensureStubReceivesAllMessages() throws Exception {

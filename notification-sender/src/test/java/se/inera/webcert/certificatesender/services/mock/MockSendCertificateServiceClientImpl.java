@@ -81,4 +81,10 @@ public class MockSendCertificateServiceClientImpl implements SendCertificateServ
         return responseType;
     }
 
+    public void reset() {
+        count = new AtomicInteger(0);
+        attemptsPerMessage = new ConcurrentHashMap<>();
+        store = new CopyOnWriteArrayList<>();
+    }
+
 }
