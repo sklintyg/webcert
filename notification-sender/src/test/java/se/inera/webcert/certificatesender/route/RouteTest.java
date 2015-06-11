@@ -14,8 +14,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.webcert.certificatesender.exception.PermanentException;
-import se.inera.webcert.certificatesender.exception.TemporaryException;
+import se.inera.webcert.exception.PermanentException;
+import se.inera.webcert.exception.TemporaryException;
 import se.inera.webcert.common.Constants;
 
 import com.google.common.collect.ImmutableMap;

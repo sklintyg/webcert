@@ -17,8 +17,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
-import se.inera.webcert.certificatesender.exception.PermanentException;
-import se.inera.webcert.certificatesender.exception.TemporaryException;
+import se.inera.webcert.exception.PermanentException;
+import se.inera.webcert.exception.TemporaryException;
 import se.inera.webcert.client.RevokeCertificateServiceClient;
 import se.inera.webcert.common.Constants;
 

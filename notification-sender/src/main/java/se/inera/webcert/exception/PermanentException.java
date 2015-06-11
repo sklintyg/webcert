@@ -1,4 +1,4 @@
-package se.inera.webcert.certificatesender.exception;
+package se.inera.webcert.exception;
 
 public class PermanentException extends Exception {
     private static final long serialVersionUID = -8184379033317261358L;

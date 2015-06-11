@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
-import se.inera.webcert.certificatesender.exception.PermanentException;
-import se.inera.webcert.certificatesender.exception.TemporaryException;
+import se.inera.webcert.exception.PermanentException;
+import se.inera.webcert.exception.TemporaryException;
 import se.inera.webcert.common.Constants;
 import se.inera.webcert.client.RevokeCertificateServiceClient;
 

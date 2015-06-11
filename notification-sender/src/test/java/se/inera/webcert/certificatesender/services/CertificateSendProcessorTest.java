@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
-import se.inera.webcert.certificatesender.exception.PermanentException;
-import se.inera.webcert.certificatesender.exception.TemporaryException;
+import se.inera.webcert.exception.PermanentException;
+import se.inera.webcert.exception.TemporaryException;
 import se.inera.webcert.client.SendCertificateServiceClient;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
