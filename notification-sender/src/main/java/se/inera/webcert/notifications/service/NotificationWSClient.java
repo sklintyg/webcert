@@ -5,9 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.webcert.exception.PermanentException;
+import se.inera.webcert.exception.TemporaryException;
 import se.inera.webcert.notifications.routes.RouteHeaders;
-import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
-import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
@@ -40,10 +40,10 @@ public class NotificationWSClient {
         switch (result.getResultCode()) {
         case ERROR:
             if (result.getErrorId().equals(ErrorIdType.TECHNICAL_ERROR)) {
-                throw new CertificateStatusUpdateServiceException(String.format(
+                throw new TemporaryException(String.format(
                         "NotificationWSClient failed with error code: %s and message %s", result.getErrorId(), result.getResultText()));
             } else {
-                throw new NonRecoverableCertificateStatusUpdateServiceException(String.format(
+                throw new PermanentException(String.format(
                         "NotificationWSClient failed with non-recoverable error code: %s and message %s", result.getErrorId(), result.getResultText()));
             }
         case INFO:
@@ -53,7 +53,7 @@ public class NotificationWSClient {
             break;
         default:
             //This should never happen.
-            throw new CertificateStatusUpdateServiceException();
+            throw new PermanentException();
         }
 
     }

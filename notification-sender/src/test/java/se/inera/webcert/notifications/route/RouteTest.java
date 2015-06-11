@@ -21,8 +21,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
-import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
+import se.inera.webcert.exception.PermanentException;
+import se.inera.webcert.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
 
@@ -138,7 +138,7 @@ public class RouteTest {
                 redeliveryDelays.add(end - start);
                 start = end;
 
-                throw new CertificateStatusUpdateServiceException("Testing application error, with exhausted retries");
+                throw new TemporaryException("Testing application error, with exhausted retries");
             }
         });
 
@@ -160,7 +160,7 @@ public class RouteTest {
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.debug("Recieving.");
-                throw new NonRecoverableCertificateStatusUpdateServiceException("Testing technical error");
+                throw new PermanentException("Testing technical error");
             }
         });
 

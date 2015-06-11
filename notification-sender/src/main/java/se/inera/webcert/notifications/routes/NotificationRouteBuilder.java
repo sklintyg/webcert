@@ -5,7 +5,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
+import se.inera.webcert.exception.PermanentException;
 
 public class NotificationRouteBuilder extends RouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
@@ -22,7 +22,7 @@ public class NotificationRouteBuilder extends RouteBuilder {
 
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
                 .errorHandler(noErrorHandler())
-                .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .onException(PermanentException.class).handled(true).to("direct:errorHandlerEndpoint").end()
                 .transacted()
                 .unmarshal("jaxbMessageDataFormat")
                 .to("bean:notificationWSClient");
