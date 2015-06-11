@@ -1,4 +1,4 @@
-package se.inera.webcert.notifications.process;
+package se.inera.webcert.notifications.service;
 
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
@@ -12,6 +12,7 @@ import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
 import se.inera.webcert.notifications.routes.RouteHeaders;
+import se.inera.webcert.notifications.service.NotificationTransformer;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
