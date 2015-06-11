@@ -1,7 +1,7 @@
 package se.inera.webcert.notifications.integration;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static se.inera.webcert.notifications.services.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
+import static se.inera.webcert.mocks.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -27,7 +27,7 @@ import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.modules.support.api.notification.FragorOchSvar;
 import se.inera.certificate.modules.support.api.notification.HandelseType;
 import se.inera.certificate.modules.support.api.notification.NotificationMessage;
-import se.inera.webcert.notifications.services.CertificateStatusUpdateForCareResponderStub;
+import se.inera.webcert.mocks.CertificateStatusUpdateForCareResponderStub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
