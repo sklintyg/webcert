@@ -43,16 +43,21 @@
     insertbefore="</Context>"
     line="    <Resource name='jms/NotificationWSQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Notification Web Service Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.notification.ws.queue' />"
 
-- name: configure secondary notification web service queue
+- name: configure certificate sender queue
   lineinfile:
     dest="{{ tomcat_conf }}/context.xml"
-    regexp="    <Resource name='jms/NotificationWSQueueSecondary'"
+    regexp=".*<Resource name='jms/CertificateSenderQueue'"
     insertbefore="</Context>"
-    line="    <Resource name='jms/NotificationWSQueueSecondary' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Secondary Notification Web Service Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.notification.ws.secondary.queue' />"
+    line="    <Resource name='jms/CertificateSenderQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Certificate Sender Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.certificate.queue' />"
 
-- name: configure notification dead letter queue
+- name: remove secondary notification web service queue (no longer used)
   lineinfile:
     dest="{{ tomcat_conf }}/context.xml"
-    regexp="    <Resource name='jms/NotificationDLQ'"
-    insertbefore="</Context>"
-    line="    <Resource name='jms/NotificationDLQ' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Notification Dead Letter Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.notification.dlq.queue' />"
+    regexp=".*<Resource name='jms/NotificationWSQueueSecondary'"
+    state=absent
+
+- name: remove notification dead letter queue (no longer used)
+  lineinfile:
+    dest="{{ tomcat_conf }}/context.xml"
+    regexp=".*<Resource name='jms/NotificationDLQ'"
+    state=absent

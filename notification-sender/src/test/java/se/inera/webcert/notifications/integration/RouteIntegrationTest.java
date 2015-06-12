@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
@@ -47,7 +48,8 @@ public class RouteIntegrationTest {
     private JmsTemplate jmsTemplate;
 
     @Autowired
-    private Queue queue;
+    @Qualifier("notificationQueue")
+    private Queue sendQueue;
 
     @Autowired
     private CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderStub;
@@ -151,7 +153,7 @@ public class RouteIntegrationTest {
     }
 
     private void sendMessage(final NotificationMessage message, final String groupId) throws Exception {
-        jmsTemplate.send(queue, new MessageCreator() {
+        jmsTemplate.send(sendQueue, new MessageCreator() {
             public Message createMessage(Session session) throws JMSException {
                 try {
                     TextMessage textMessage = session.createTextMessage(notificationMessageToJson(message));

@@ -13,8 +13,8 @@
 
   <import resource="beans-context.xml"/>
   <import resource="camel-context.xml"/>
-  <import resource="integration-test-broker-context.xml"/>
   <import resource="mock-test-service-context.xml"/>
+  <import resource="../integration-test-broker-context.xml"/>
 
   <bean id="certificateStatusUpdateForCareResponder" class="se.inera.webcert.mocks.CertificateStatusUpdateForCareResponderStub"/>
 

@@ -45,6 +45,10 @@ database_pool_initialSize: 10
 
 # ActiveMQ configuration
 activemq_broker_url:       "tcp://localhost:61616"
-async_activemq_broker_url: "tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=5&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=1000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=1000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2"
 activemq_username: ""
 activemq_password: ""
+async_maximumRedeliveries: 30
+async_maximumRedeliveryDelay: 300000
+async_initialRedeliveryDelay: 60000
+async_activemq_broker_url: "tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2&amp;jms.redeliveryPolicy.maximumRedeliveries={{ async_maximumRedeliveries }}&amp;jms.redeliveryPolicy.maximumRedeliveryDelay={{ async_maximumRedeliveryDelay }}&amp;jms.redeliveryPolicy.initialRedeliveryDelay={{ async_initialRedeliveryDelay }}"
+activemq_conf: "{{ inera_root }}/activemq/conf"

@@ -33,7 +33,7 @@
     <Arg>jms/ConnectionFactory</Arg>
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
-          <!--Arg>vm://localhost?broker.persistent=false</Arg -->
+          <!--Arg>vm://localhost?broker.persistent=false</Arg-->
           <Arg>tcp://localhost:61616</Arg>
       </New>
     </Arg>
@@ -45,9 +45,8 @@
     <Arg>jms/AsyncConnectionFactory</Arg>
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
-          <!-- <Arg>vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=5&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=1000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=1000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg> -->
+          <!--Arg>vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=5&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=1000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=1000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg -->
           <Arg>tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=2&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=10000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=5000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>
-          <!--Arg>tcp://localhost:61616</Arg -->
       </New>
     </Arg>
   </New>
@@ -81,28 +80,6 @@
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
         <Arg>NOTIFICATIONSENDER.WS.QUEUE</Arg>
-      </New>
-    </Arg>
-  </New>
-  <New id="NotificationWSQueueSecondary" class="org.eclipse.jetty.plus.jndi.Resource">
-    <Arg>
-      <Ref refid="webAppContext" />
-    </Arg>
-    <Arg>jms/NotificationWSQueueSecondary</Arg>
-    <Arg>
-      <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>NOTIFICATIONSENDER.SECONDARY.WS.QUEUE</Arg>
-      </New>
-    </Arg>
-  </New>
-  <New id="NotificationDLQ" class="org.eclipse.jetty.plus.jndi.Resource">
-    <Arg>
-      <Ref refid="webAppContext" />
-    </Arg>
-    <Arg>jms/NotificationDLQ</Arg>
-    <Arg>
-      <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>NOTIFICATIONSENDER.DLQ.QUEUE</Arg>
       </New>
     </Arg>
   </New>
