@@ -46,7 +46,7 @@ public class Intyg extends RestClientFixture {
         deletedByCareGiver = value?.equalsIgnoreCase("ja")
     }
 	
-	public String respons(){
+	public String respons() {
 		return responseStatus;
 	}
 
