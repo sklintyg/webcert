@@ -1,7 +1,7 @@
 ---
 # This playbook provisions Tomcat resources for WebCert 
 
-- hosts: tomcat
+- hosts: webcert-tomcat
   sudo: yes 
 
   roles:

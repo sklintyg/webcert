@@ -33,7 +33,7 @@ class IntygstjanstAsynk {
      */
     boolean finnsMakuleratIntygIIntygstjanstenMedVantetid(String intygsId, long vantetid = 4000L) {
         def result = false
-        result = new AsyncUtilsITStub().makuleratIntygFinnsIStub(intygsId, vantetid)
+        result = new AsyncUtils().makuleratIntygFinnsIIntygstjansten(intygsId, vantetid)
     }
 
 

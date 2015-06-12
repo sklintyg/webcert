@@ -4,7 +4,7 @@ import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import org.openqa.selenium.Keys
-
+import se.inera.certificate.page.AbstractPage
 import se.inera.webcert.pages.fk7263.EditCertPage
 import se.inera.certificate.spec.Browser
 
@@ -118,8 +118,15 @@ class PopuleraFk7263 {
                 page.diagnos.diagnoseKodverk_KSH_97_P = true
             }
             if (diagnos1 != null) {
+                waitFor{
+                    page.diagnos.diagnos1.isDisplayed()
+                }
+
+                AbstractPage.scrollIntoView("diagnoseCode");
                 page.diagnos.diagnos1 = diagnos1
+
                 waitFor {
+
                     page.$('#diagnoseCode + UL').isDisplayed()
                 }
                 // diagnos1Text kommer sättas med enter i detta fält

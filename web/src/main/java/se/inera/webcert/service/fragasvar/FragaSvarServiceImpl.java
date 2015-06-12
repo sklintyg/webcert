@@ -640,30 +640,21 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         switch (event) {
         case ANSWER_FROM_FK_HANDLED:
             notificationService.sendNotificationForAnswerHandled(fragaSvar);
-            LOGGER.debug("Notification sent: a closed answer with id '{}' (related to certificate '{}') was received from FK", fragaSvarId, intygsId);
             break;
         case ANSWER_FROM_FK_UNHANDLED:
             notificationService.sendNotificationForAnswerRecieved(fragaSvar);
-            LOGGER.debug("Notification sent: reopened a closed answer with id '{}' (related to certificate '{}') from FK", fragaSvarId,
-                    intygsId);
             break;
         case ANSWER_SENT_TO_FK:
             notificationService.sendNotificationForQuestionHandled(fragaSvar);
-            LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate '{}') was sent to FK", fragaSvarId, intygsId);
             break;
         case QUESTION_FROM_FK_HANDLED:
             notificationService.sendNotificationForQuestionHandled(fragaSvar);
-            LOGGER.debug("Notification sent: a closed question with id '{}' (related to certificate '{}') was received from FK", fragaSvarId,
-                    intygsId);
             break;
         case QUESTION_FROM_FK_UNHANDLED:
             notificationService.sendNotificationForQuestionReceived(fragaSvar);
-            LOGGER.debug("Notification sent: reopened a closed question with id '{}' (related to certificate '{}') from FK", fragaSvarId,
-                    intygsId);
             break;
         case QUESTION_SENT_TO_FK:
             notificationService.sendNotificationForQuestionSent(fragaSvar);
-            LOGGER.debug("Notification sent: a question with id '{}' (related to certificate '{}') was sent to FK", fragaSvarId, intygsId);
             break;
         default:
             LOGGER.warn("FragaSvarServiceImpl.sendNotification(FragaSvar, NotificationEvent) - cannot send notification. Incoming event not handled!");

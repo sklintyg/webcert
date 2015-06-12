@@ -1,0 +1,209 @@
+<div class="container-fluid" wc-feature-active feature="hanteraFragor">
+  <div class="row" id="unhandled-qa">
+    <div class="col-md-12 webcert-col webcert-col-single">
+      <h1>
+        <span message key="dashboard.unanswered.title"></span>
+      </h1>
+
+      <!-- load animation for entire page -->
+      <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading"
+           show-content="widgetState.doneLoading">
+        <div ng-show="units.length > 2 && units[0].fragaSvar > 0">
+          <h2 class="less-top-padding">
+            Välj vårdenhet eller arbetsplats</h2>
+
+          <div id="wc-care-unit-clinic-selector" wc-care-unit-clinic-selector></div>
+
+        </div>
+        <div ng-show="units[0].fragaSvar == 0">
+          <span message key="info.nounanswered.qa.for.unit"></span>
+        </div>
+
+        <div ng-if="isActiveUnitChosen()">
+          <h2 class="col-head" ng-class="{'less-top-padding' : units.length < 3}">{{selectedUnit.namn}}</h2>
+
+          <!-- search filter -->
+          <div class="webcert-bottom-padding-section">
+              <span ng-show="!widgetState.filteredYet && units[0].fragaSvar">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
+              <span id="current-list-noResults-unit" ng-show="!widgetState.filteredYet && units[0].fragaSvar == 0">Du kan filtrera fram tidigare hanterade frågor och svar här nedan<br></span>
+            <button id="show-advanced-filter-btn" class="btn btn-link btn-link-minimal"
+                    ng-click="widgetState.filterFormCollapsed = !widgetState.filterFormCollapsed"
+                    ng-switch="widgetState.filterFormCollapsed">
+              <span ng-switch-when="true">Visa sökfilter</span><span ng-switch-when="false">Dölj sökfilter</span>
+            </button>
+
+            <!-- Filter form -->
+            <div id="advanced-filter-form"
+                 ng-show="!widgetState.filterFormCollapsed"
+                 class="qa-filter-panel form-horizontal">
+
+              <!-- frågor och svar som är -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Frågor och svar som är</label>
+                <div class="col-sm-10">
+                  <label class="radio-inline">
+                    <input id="vidarebefordradAlla" name="vidarebefordrad" type="radio" value="default"
+                           ng-model="filterForm.vidarebefordrad" checked="checked"> Alla frågor och svar
+                  </label>
+                  <label class="radio-inline">
+                    <input id="vidarebefordradJa" name="vidarebefordrad" type="radio" value="true"
+                           ng-model="filterForm.vidarebefordrad"> Vidarebefordrade
+                  </label>
+                  <label class="radio-inline">
+                    <input id="vidarebefordradNej" name="vidarebefordrad" type="radio" value="false"
+                           ng-model="filterForm.vidarebefordrad"> Ej vidarebefordrade
+                  </label>
+                </div>
+              </div>
+
+              <!-- åtgärd -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Åtgärd</label>
+                <div class="col-sm-10">
+                  <select id="qp-showStatus" class="form-control" ng-model="filterForm.vantarPaSelector"
+                          ng-options="s.label for s in statusList"></select>
+                </div>
+              </div>
+
+              <!-- Avsändare -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Avsändare</label>
+                <div class="col-sm-10">
+                  <label class="radio-inline">
+                    <input id="frageStallareAlla" name="frageStallare" type="radio" value="default"
+                           ng-model="filterForm.questionFrom" checked="checked"> Alla avsändare
+                  </label>
+                  <label class="radio-inline">
+                    <input id="frageStallareFK" name="frageStallare" type="radio" value="FK"
+                           ng-model="filterForm.questionFrom"> Försäkringskassan
+                  </label>
+                  <label class="radio-inline">
+                    <input id="frageStallareWC" name="frageStallare" type="radio" value="WC"
+                           ng-model="filterForm.questionFrom"> Vårdenheten</label>
+                </div>
+              </div>
+
+              <!-- signerat av -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Signerat av</label>
+                <div class="col-sm-10">
+                  <select id="qp-lakareSelector" class="form-control" ng-model="filterForm.lakareSelector"
+                          ng-options="s.name for s in lakareList" ng-disabled="widgetState.loadingLakares"></select>
+                </div>
+              </div>
+
+              <!-- Skickat/mottaget -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Skickat/mottaget</label>
+                <div class="col-sm-10 form-inline">
+                  Från
+                  <span dom-id="filter-changedate-from" target-model="filterQuery.changedFrom" wc-date-picker-field></span>
+                  till
+                  <span dom-id="filter-changedate-to" target-model="filterQuery.changedTo" wc-date-picker-field></span>
+                </div>
+              </div>
+
+              <!-- buttons -->
+              <div class="form-group" style="margin-top:10px;">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button id="filter-qa-btn" class="btn btn-default" ng-click="filterList()">Sök</button>
+                  <button class="btn btn-default" ng-click="resetFilterForm()" id="reset-search-form">
+                    Återställ sökformuläret
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- loading animation table result -->
+          <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery"
+               show-content="!widgetState.runningQuery">
+
+            <div class="webcert-col-section qa-table-section">
+
+              <!-- No results message for query -->
+              <div id="current-list-noResults-query"
+                   ng-show="widgetState.doneLoading && widgetState.totalCount < 1 && !widgetState.activeErrorMessageKey && widgetState.filteredYet"
+                   class="alert alert-info">
+                <span message key="info.query.noresults"></span>
+              </div>
+
+              <!-- error message -->
+              <div id="current-list-noResults-error" ng-show="widgetState.activeErrorMessageKey"
+                   class="alert alert-danger">
+                <span message key="{{widgetState.activeErrorMessageKey}}"></span>
+              </div>
+
+              <!-- Search hits -->
+              <div id="query-count" ng-show="widgetState.totalCount > 0">
+                Sökresultat - {{widgetState.totalCount}} träffar
+              </div>
+
+              <!-- qa table - Frågor och svar-tabell -->
+              <div class="row" ng-show="widgetState.currentList.length > 0" id="qaTable">
+                <table class="col-md-12 table table-striped table-qa">
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th class="center" title="Markera om fråga-svar är vidarebefordrat till den som ska hantera det.">
+                      Vidarebefordrad
+                    </th>
+                    <th title="Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.">Åtgärd</th>
+                    <th title="Vem som initierade frågan.">Avsändare</th>
+                    <th title="Berörd patients personnummer.">Patient</th>
+                    <th title="Läkare som har signerat intyget.">Signerat av</th>
+                    <th title="Datum för senaste händelse. Exempelvis när fråga skickades eller när ett svar inkom.">
+                      Skickat/mottaget
+                    </th>
+                  </tr>
+                  <tr ng-repeat="qa in widgetState.currentList">
+                    <td>
+                      <button class="btn btn-info" title="Visar intyget och fråga-svar."
+                              ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa
+                      </button>
+                    </td>
+                    <td>
+                      <button class="btn btn-default"
+                              ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-default btn-secondary' : qa.vidarebefordrad}"
+                              title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
+                              ng-click="openMailDialog(qa)">
+                        <img ng-if="!qa.vidarebefordrad" src="/img/mail.png">
+                        <img ng-if="qa.vidarebefordrad" src="/img/mail_dark.png">
+                      </button>
+                    </td>
+                    <td class="center">
+                      <input id="selected" type="checkbox" ng-disabled="qa.updateInProgress"
+                             ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" />
+                                            <span ng-if="qa.updateInProgress"> <img
+                                                src="/img/ajax-loader-kit-16x16.gif"></span>
+                    </td>
+                    <td><span message key="qa.measure.{{qa.measureResKey}}"></span></td>
+                    <td><span message key="qa.fragestallare.{{qa.frageStallare}}"></span></td>
+                    <td id="patientId-{{qa.internReferens}}" class="unbreakable">{{qa.intygsReferens.patientId}}</td>
+                    <td>{{qa.vardperson.namn}}</td>
+                    <td class="unbreakable table-qa-last">{{qa.senasteHandelseDatum |
+                      date:'shortDate'}}
+                    </td>
+                    <!--td class="unbreakable table-qa-last">{{qa.sistaDatumForSvar}}</td-->
+                </table>
+              </div>
+              <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
+                träff 1 - {{widgetState.currentList.length}} av
+                {{widgetState.totalCount}}
+              </div>
+              <div ng-show="widgetState.currentList.length < widgetState.totalCount">
+                <button id="hamtaFler" class="btn btn-default" title="Hämta fler träffar" ng-click="fetchMore()"
+                        ng-disabled="widgetState.fetchingMoreInProgress">
+                  <img src="/img/loader-small.gif" ng-show="widgetState.fetchingMoreInProgress"> Hämta
+                  fler träffar
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- spinner end -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

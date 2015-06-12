@@ -1,0 +1,79 @@
+!3 Ta bort eventuella kvarlämnade frågor
+
+|Ta bort fraga|
+|externReferens|
+|fitnesse|
+|fitnesse-saknat-intyg|
+|fitnesse-fel-enhet|
+
+!3 Givet ett intyg
+
+|Intyg|
+|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdarId|enhetsId|typ|id|mall|
+|${person1.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|fitnesse-intyg-1|M|
+
+!3 Och det finns inga frågor med följande extern referenser
+|Fragor och svar|
+|externReferens|finns?|
+|fitnesse|false|
+|fitnesse-saknat-intyg|false|
+|fitnesse-fel-enhet|false|
+
+!2 Normalflöden
+
+!3 Om Försäkringskassan skickar en ny fråga
+
+|Fk skickar fraga|
+|amne|externReferens|frageText|intygsId|vardpersonal|vardenhet|resultat?|
+|OVRIGT|fitnesse|En fråga|fitnesse-intyg-1|IFV1239877878-104B|IFV1239877878-1042|OK|
+
+!3 så ska det finnas en fråga med extern referens 'FK-1234' från Försäkringskassan som behöver svaras på
+|Fragor och svar|
+|externReferens|finns?|fraga?|
+|fitnesse|true|En fråga|
+
+!3 Fråga med komplettering
+
+|Fk skickar fraga|
+|amne|externReferens|frageText|intygsId|vardpersonal|vardenhet|falt|komplettering|resultat?|
+|OVRIGT|fitnesse-komplettering|En fråga|fitnesse-intyg-1|IFV1239877878-104B|IFV1239877878-1042|falt5|Text längre än 255 tecken: .......010.......020.......030.......040.......050.......060.......070.......080.......090.......100.......110.......120.......130.......140.......150.......160.......170.......180.......190.......200.......210.......220.......230.......240.......250.......260.......270.......280.......290.......300|OK|
+
+|Fragor och svar|
+|externReferens|finns?|fraga?|amne?|
+|fitnesse-komplettering|true|En fråga|OVRIGT|
+
+!2 Undantagsflöden
+
+!3 Frågor kan skickas på intygsidn som inte finns i intygstjänsten
+|Fk skickar fraga|
+|amne|externReferens|frageText|intygsId|vardpersonal|vardenhet|resultat?|
+|OVRIGT|fitnesse-saknat-intyg|Detta intyg saknas|saknat-intyg|IFV1239877878-104B|IFV1239877878-1042|OK|
+
+|Fragor och svar|
+|externReferens|finns?|fraga?|
+|fitnesse-saknat-intyg|true|Detta intyg saknas|
+
+!3 Frågor kan skickas på till annan enhet än intyget är registrerat på
+|Fk skickar fraga|
+|amne|externReferens|frageText|intygsId|vardpersonal|vardenhet|resultat?|
+|OVRIGT|fitnesse-fel-enhet|Fel enhet|fitnesse-intyg-1|annan-person|annan-enhet|OK|
+
+|Fragor och svar|
+|externReferens|finns?|fraga?|
+|fitnesse-fel-enhet|true|Fel enhet|
+
+!3 Ta bort test-intyg, frågor och mail
+
+|ta bort Intyg|
+|id|
+|fitnesse-intyg-1|
+
+|Ta bort fraga|
+|externReferens|
+|fitnesse|
+|fitnesse-komplettering|
+|fitnesse-saknat-intyg|
+|fitnesse-fel-enhet|
+
+|script|Mailbox|
+|rensa|

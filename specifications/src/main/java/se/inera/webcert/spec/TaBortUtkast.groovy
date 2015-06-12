@@ -15,6 +15,10 @@ class TaBortUtkast extends RestClientFixture {
         if (enhetsId) taBortUtkastForEnhet(enhetsId)
     }
 
+    def taBortAllaUtkast() {
+        restClient.delete(path: "intyg/")
+    }
+    
     def taBortUtkast(String utkastId) {
         restClient.delete(path: "intyg/${utkastId}")
     }

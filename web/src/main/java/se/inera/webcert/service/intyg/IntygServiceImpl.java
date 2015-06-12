@@ -386,7 +386,6 @@ public class IntygServiceImpl implements IntygService {
 
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);
-        LOG.debug("Notification sent: certificate with id '{}' was revoked", intygsId);
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.

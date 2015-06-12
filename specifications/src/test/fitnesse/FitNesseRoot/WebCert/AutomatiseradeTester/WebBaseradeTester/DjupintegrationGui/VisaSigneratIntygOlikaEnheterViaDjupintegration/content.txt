@@ -1,0 +1,174 @@
+Testet beskriver fallet när det finns intyg på olika vårdenheter och användaren loggar in via djupintegration på olika vårdenheter och tittar på intygen.
+
+!3 Skapa intyg på olika vårdenheter
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | mall | skickat | rättat |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-1042 | IFV1239877878-1041 | FK7263 | intyg-fit-101 | L | nej | nej |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-1045 | IFV1239877878-1043 | FK7263 | intyg-fit-102 | L | nej | nej |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-1046 | IFV1239877878-1043 | FK7263 | intyg-fit-103 | L | nej | nej |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-104C | IFV1239877878-1043 | FK7263 | intyg-fit-104 | L | nej | nej |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-104D | IFV1239877878-1043 | FK7263 | intyg-fit-105 | L | nej | nej |
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Verifiera att det går att visa alla intyg som ligger på samma vårdenhet, men inte på andra vårdgivare
+
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration | intyg-fit-101 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
+| note | nedanstående intyg från annan vårdgivare skall inte kunna visas |
+| visa intyg via integration | intyg-fit-102 |
+| ensure | intyg inte laddat |
+| visa intyg via integration | intyg-fit-103 |
+| ensure | intyg inte laddat |
+| visa intyg via integration | intyg-fit-104 |
+| ensure | intyg inte laddat |
+| visa intyg via integration | intyg-fit-105 |
+| ensure | intyg inte laddat |
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+!3 Verifiera att det går att visa alla intyg som ligger på samma vårdenheter eller dess mottagningar, men bara går att skicka och makulera intyg för den inloggade enheten/mottagningen
+
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration | intyg-fit-101 |
+| ensure | intyg inte laddat |
+| visa intyg via integration | intyg-fit-102 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
+| visa intyg via integration | intyg-fit-103 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
+| visa intyg via integration | intyg-fit-104 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
+| note | nedanstående intyg från annan vårdenhet skall kunna visas, skrivas ut och kopieras, men inte skickas eller makuleras |
+| visa intyg via integration | intyg-fit-105 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas ej |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas ej |
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1046 |
+
+!3 Verifiera att det går att visa alla intyg som ligger på samma vårdenheter eller dess mottagningar, men bara går att skicka och makulera intyg för den inloggade enheten/mottagningen
+
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration | intyg-fit-101 |
+| ensure | intyg inte laddat |
+| visa intyg via integration | intyg-fit-102 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas ej |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas ej |
+| visa intyg via integration | intyg-fit-103 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
+| visa intyg via integration | intyg-fit-104 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas ej |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas ej |
+| note | nedanstående intyg från annan vårdenhet skall kunna visas, skrivas ut och kopieras, men inte skickas eller makuleras |
+| visa intyg via integration | intyg-fit-105 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas ej |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas ej |
+
+!3 Ta bort intyg
+
+| ta bort intyg |
+| id |
+| intyg-fit-101 |
+| intyg-fit-102 |
+| intyg-fit-103 |
+| intyg-fit-104 |
+| intyg-fit-105 |
+
+!3 Skapa intyg på olika vårdenheter
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | mall | skickat | rättat |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-1042 | IFV1239877878-1043 | FK7263 | intyg-fit-101 | L | nej | nej |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-1045 | IFV1239877878-1043 | FK7263 | intyg-fit-102 | L | nej | nej |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-1046 | IFV1239877878-1043 | FK7263 | intyg-fit-103 | L | nej | nej |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-104C | IFV1239877878-1043 | FK7263 | intyg-fit-104 | L | nej | nej |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | IFV1239877878-104B | IFV1239877878-104D | IFV1239877878-1043 | FK7263 | intyg-fit-105 | L | nej | nej |
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-104C |
+
+!3 Verifiera att det går att visa alla intyg som ligger på samma vårdenheter eller dess mottagningar
+
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration | intyg-fit-101 |
+| ensure | intyg inte laddat |
+| visa intyg via integration | intyg-fit-102 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas ej |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas ej |
+| visa intyg via integration | intyg-fit-103 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas ej |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas ej |
+| visa intyg via integration | intyg-fit-104 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas |
+| note | nedanstående intyg från annan vårdenhet skall kunna visas, skrivas ut och kopieras, men inte skickas eller makuleras |
+| visa intyg via integration | intyg-fit-105 |
+| ensure | intyg laddat |
+| ensure | skicka knapp visas ej |
+| ensure | skriv ut knapp visas |
+| ensure | kopiera knapp visas |
+| ensure | makulera knapp visas ej |
+
+!3 Ta bort intyg
+
+| ta bort intyg |
+| id |
+| intyg-fit-101 |
+| intyg-fit-102 |
+| intyg-fit-103 |
+| intyg-fit-104 |
+| intyg-fit-105 |
+

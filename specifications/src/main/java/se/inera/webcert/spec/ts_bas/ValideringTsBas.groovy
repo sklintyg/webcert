@@ -1,11 +1,11 @@
 package se.inera.webcert.spec.ts_bas
 
+import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
-
 
 class ValideringTsBas {
 
-    void sparaUtkast() {
+    boolean sparaUtkast() {
         Browser.drive {
             page.spara()
         }
@@ -14,7 +14,7 @@ class ValideringTsBas {
     boolean intygSparatVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetSparatMeddelande.isDisplayed()
+            result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
         }
         result
     }
@@ -22,7 +22,7 @@ class ValideringTsBas {
     boolean intygEjKomplettVisas() {
         boolean result
         Browser.drive {
-            result = page.intygetEjKomplettMeddelande.isDisplayed()
+            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
         result
     }
@@ -48,7 +48,9 @@ class ValideringTsBas {
                 !page.valideringSjukhusVard.isDisplayed() &&
                 !page.valideringMedicinering.isDisplayed() &&
                 !page.valideringBedomning.isDisplayed() &&
-                !page.valideringVardEnhet.isDisplayed()
+                !page.valideringVardEnhet.isDisplayed() &&
+                !page.valideringDiabetes.isDisplayed()
+                
         }
         result
     }
@@ -201,6 +203,14 @@ class ValideringTsBas {
         boolean result
         Browser.drive{
             result = page.valideringVardEnhet.isDisplayed()
+        }
+        result
+    }
+
+        boolean valideringDiabetesVisas() {
+        boolean result
+        Browser.drive{
+            result = page.valideringDiabetes.isDisplayed()
         }
         result
     }

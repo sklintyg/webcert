@@ -1,0 +1,49 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | ${person4.personnummer} | av typ | ts-bas |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med information i samtliga fält så det blir komplett
+
+| Populera Ts Bas |
+| postadress | postnummer | postort | intygetAvser | identifieringstyp | synA | synB | synC | synD | synE | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synHogerOgaKontaktlins | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synVansterOgaKontaktlins | synBinokulartUtanKorrektion | synBinokulartMedKorrektion | glasOverskrider8Dioptrier | horselA | horselB | funktionsnedsattningA | funktionsnedsattningBeskrivning | funktionsnedsattningB | hjartkarlA | hjartkarlB | hjartkarlC | hjartkarlBeskrivning | diabetesA | diabetestyp | diabetesBehandlingKost | diabetesBehandlingTabletter | diabetesBehandlingInsulin | neurologiA | medvetandestorningA | medvetandestorningBeskrivning | njurarA | kognitivtA | somnvakenhetA | narkotikalakemedelA | narkotikalakemedelB | narkotikalakemedelB2 | narkotikalakemedelC | narkotikalakemedelBeskrivning | psykisktA | utvecklingsstorningA | utvecklingsstorningB | sjukhusvardA | sjukhusvardTidpunkt | sjukhusvardVardinrattning | sjukhusvardAnledning | medicineringA | medicineringBeskrivning | kommentar | behorighet | bedomdBehorighet | specialist | vardenhetPostadress | vardenhetPostnummer | vardenhetPostort | vardenhetTelefonnummer |
+| Storgatan 1 | 12345 | Göteborg | C,CE,D1 | korkort | true | true | true | true | true | 1,1 | 1,2 | true | 0,2 | 0,8 | true | 0,6 | 0,9 | true | true | true | true | Benprotes | true | true | true | true | Förmaksflimmer | true | typ2 | true | true | true | true | true | Januari, 2014, Rockkonsert | true | true | true | true | true | true | true | Alvedon, 3 tabletter | true | true | true | true | 2014-01-01 - 07 | Varberg | ADHD | true | Alvedon | Här kommer en övrig kommentar | true | | Sjukdomar | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+
+!3 Spara och signera
+
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
+
+| script | !-SkrivIntyg-! |
+| intyg sparat visas |
+
+| script | !-HanteraUtkast-! |
+| ensure | signera knapp visas |
+| ensure | signera knapp aktiverad |
+| signera utkast |
+| visa intyg sidan visas med typ | ts-bas |
+| ensure | intyget signerat meddelande visas |
+
+!3 Verifiera att fälten i intyget syns och innehåller korrekt data
+
+| Verifiera Signerat Ts Bas |
+| patientpostadress? | patientpostnummer? | patientpostort? | intygAvser? | identitet? | synfaltsdefekter? | nattblindhet? | diplopi? | nystagmus? | hogerOgautanKorrektion? | hogerOgamedKorrektion? | hogerOgakontaktlins? | vansterOgautanKorrektion? | vansterOgamedKorrektion? | vansterOgakontaktlins? | binokulartutanKorrektion? | binokulartmedKorrektion? | korrektionsglasensStyrka? | horselBalansbalansrubbningar? | horselBalanssvartUppfattaSamtal4Meter? | funktionsnedsattning? | funktionsnedsattningbeskrivning? | funktionsnedsattningotillrackligRorelseformaga? | hjartKarlSjukdom? | hjarnskadaEfterTrauma? | riskfaktorerStroke? | beskrivningRiskfaktorer? | harDiabetes? | diabetesTyp? | kost? | tabletter? | insulin? | neurologiskSjukdom? | medvetandestorning? | medvetandestorningbeskrivning? | nedsattNjurfunktion? | sviktandeKognitivFunktion? | teckenSomnstorningar? | teckenMissbruk? | foremalForVardinsats? | provtagningBehovs? | lakarordineratLakemedelsbruk? | lakemedelOchDos? | psykiskSjukdom? | psykiskUtvecklingsstorning? | harSyndrom? | stadigvarandeMedicinering? | medicineringbeskrivning? | kommentar? | kommentarEjAngivet? | bedomning? | bedomningKanInteTaStallning? | lakareSpecialKompetens? | lakareSpecialKompetensEjAngivet? | vardperson_namn? | vardperson_enhetsnamn? | vardenhet_postadress? | vardenhet_postnummer? | vardenhet_postort? | vardenhet_telefonnummer? |
+| Storgatan 1 | 12345 | Göteborg | !-C, CE, D1-! | Svenskt körkort | Ja | Ja | Ja | Ja | 1,1 | 1,2 | Ja | 0,2 | 0,8 | Ja | 0,6 | 0,9 | Ja | Ja | Ja | Ja | Benprotes |Ja | Ja | Ja | Ja | Förmaksflimmer | Ja | Typ 2 | Kost | Tabletter | Insulin | Ja | Ja | Januari, 2014, Rockkonsert | Ja | Ja | Ja | Ja | Ja | Ja | Ja | Alvedon, 3 tabletter | Ja | Ja | Ja | Ja | Alvedon | Här kommer en övrig kommentar | | | Kan inte ta ställning | Sjukdomar | | Åsa Andersson |!-WebCert-Enhet1-!| Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+
+!3 Ta bort utkastet och intyget
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+
+| ta bort intyg |
+| id |
+| $intygsid |

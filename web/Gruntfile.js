@@ -20,17 +20,22 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-protractor-runner');
+    grunt.loadNpmTasks('grunt-protractor-webdriver');
 
-    var SRC_DIR = 'src/main/webapp/js/';
+    var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
+    var TEST_RESOURCES_DIR = 'src/test/resources';
 
     var webcert = grunt.file.readJSON(SRC_DIR + 'app-deps.json').map(function(file) {
-        return file.replace(/\/js\//g, SRC_DIR);
+        return file.replace(/\/app\//g, SRC_DIR);
     });
 
     webcert = [SRC_DIR + 'app.js'].concat(webcert);
 
-    var COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common';
+//    grunt.log.write(JSON.stringify(webcert));
+
+    var COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common/webcert';
     var TSBAS_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
     var TSDIABETES_DIR = '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert';
     var FK7263_DIR = '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert';
@@ -60,7 +65,7 @@ module.exports = function(grunt) {
                     jshintrc: '../target/build-tools/jshint/.jshintrc',
                     force: true
                 },
-                src: ['Gruntfile.js', SRC_DIR + '**/*.js', TEST_DIR + '**/*.js', '!' + SRC_DIR + '/app.min.js']
+                src: ['Gruntfile.js', !SRC_DIR + 'vendor/*.js', SRC_DIR + '**/*.js', TEST_DIR + '**/*.js', '!' + SRC_DIR + '/app.min.js']
             }
         },
 
@@ -119,20 +124,31 @@ module.exports = function(grunt) {
 
         ngtemplates : {
             webcert: {
-                cwd: __dirname + '/src/main/webapp/js/',
-                src: ['../views/**/*.html'],
-                dest: __dirname + '/src/main/webapp/js/templates.js',
+                cwd: __dirname + '/src/main/webapp',
+                src: ['app/views/**/*.html', 'app/partials/**/*.html'],
+                dest: __dirname + '/src/main/webapp/app/templates.js',
                 options: {
                     module: 'webcert',
                     url: function(url) {
-                        return url.replace('../', '/');
+                        return '/' + url.replace('../', '/');
+                    }
+                }
+            },
+            common: {
+                cwd: __dirname + COMMON_DIR,
+                src: ['**/*.html'],
+                dest: __dirname + COMMON_DIR + '/templates.js',
+                options:{
+                    module: 'common',
+                    url: function(url) {
+                        return '/web/webjars/common/webcert/' + url;
                     }
                 }
             },
             tsdiabetes: {
                 cwd: __dirname + TSDIABETES_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + TSDIABETES_DIR +'/js/templates.js',
+                dest: __dirname + TSDIABETES_DIR + '/templates.js',
                 options:{
                     module: 'ts-diabetes',
                     url: function(url) {
@@ -143,7 +159,7 @@ module.exports = function(grunt) {
             tsbas: {
                 cwd: __dirname + TSBAS_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + TSBAS_DIR + '/js/templates.js',
+                dest: __dirname + TSBAS_DIR + '/templates.js',
                 options:{
                     module: 'ts-bas',
                     url: function(url) {
@@ -154,7 +170,7 @@ module.exports = function(grunt) {
             fk7263: {
                 cwd: __dirname + FK7263_DIR,
                 src: ['**/*.html'],
-                dest: __dirname + FK7263_DIR + '/js/templates.js',
+                dest: __dirname + FK7263_DIR + '/templates.js',
                 options:{
                     module: 'fk7263',
                     url: function(url) {
@@ -162,6 +178,32 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+
+        protractor: {
+            options: {
+                configFile: "node_modules/grunt-protractor-runner/node_modules/protractor/example/conf.js", // Default config file
+                keepAlive: true, // If false, the grunt process stops when the test fails.
+                noColor: false, // If true, protractor will not use colors in its output.
+                args: {
+                    // Arguments passed to the command
+                }
+            },
+            your_target: {   // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
+                options: {
+                    configFile: "src/test/resources/protractor.conf.js", // Target-specific config file
+                    args: {} // Target-specific arguments
+                }
+            }
+        },
+
+        protractor_webdriver: {
+            options: {
+                // Task-specific options go here.
+            },
+            your_target: {
+                // Target-specific file lists and/or options go here.
+            },
         },
 
         connect: {
@@ -180,17 +222,12 @@ module.exports = function(grunt) {
                             ));
                         middlewares.push(
                             connect().use(
-                                '/views',
-                                connect.static(__dirname + '/src/main/webapp/views')
+                                '/app',
+                                connect.static(__dirname + '/src/main/webapp/app')
                             ));
                         middlewares.push(
                             connect().use(
-                                '/js',
-                                connect.static(__dirname + '/src/main/webapp/js')
-                            ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/common',
+                                '/web/webjars/common/webcert',
                                 connect.static(__dirname + COMMON_DIR)
                             ));
                         middlewares.push(
@@ -208,18 +245,6 @@ module.exports = function(grunt) {
                                 '/web/webjars/ts-diabetes/webcert',
                                 connect.static(__dirname + TSDIABETES_DIR)
                             ));
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-bas/webcert',
-                                connect.static(__dirname +
-                                '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert')
-                            ) );
-                        middlewares.push(
-                            connect().use(
-                                '/web/webjars/ts-diabetes/webcert',
-                                connect.static(__dirname +
-                                '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert')
-                            ) );
                         middlewares.push(proxy);
                         return middlewares;
                     }
@@ -248,7 +273,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma']);
-
+    grunt.registerTask('e2e', ['protractor_webdriver','protractor']);
     // frontend only dev ===============================================================================================
     grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'watch' ]);
 };

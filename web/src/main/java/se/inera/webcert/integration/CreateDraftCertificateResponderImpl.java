@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
@@ -73,12 +74,12 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
 
         // Create the draft
-        String nyttUtkastsId = createNewDraft(utkastsParams, unitMIU);
+        Utkast utkast = createNewDraft(utkastsParams, unitMIU);
 
-        return createSuccessResponse(nyttUtkastsId);
+        return createSuccessResponse(utkast.getIntygsId());
     }
 
-    private String createNewDraft(Utlatande utlatandeRequest, MiuInformationType unitMIU) {
+    private Utkast createNewDraft(Utlatande utlatandeRequest, MiuInformationType unitMIU) {
 
         String invokingUserHsaId = utlatandeRequest.getSkapadAv().getPersonalId().getExtension();
         String invokingUnitHsaId = utlatandeRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension();

@@ -32,6 +32,14 @@ public class IntygResource {
     private UtkastRepository utkastRepository;
 
     @DELETE
+    @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteAllDrafts() {
+        utkastRepository.deleteAllInBatch();
+        return Response.ok().build();
+    }
+
+    @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraft(@PathParam("id") String id) {

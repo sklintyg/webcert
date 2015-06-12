@@ -1,19 +1,11 @@
 package se.inera.webcert.spec.notification_sender
-
-import se.inera.webcert.spec.util.WebcertRestUtils;
-import se.inera.webcert.spec.util.RestClientFixture
-import static groovyx.net.http.ContentType.JSON
-import static groovyx.net.http.ContentType.TEXT
-import static groovyx.net.http.ContentType.URLENC
-import static se.inera.webcert.spec.util.WebcertRestUtils.*
-
-import org.apache.commons.io.IOUtils
+import se.inera.webcert.spec.util.WebcertRestUtils
 
 class SigneraUtkast {
 
     String intygId
     String intygTyp
-    Long version
+    long   version
 
     def response
 
@@ -25,4 +17,9 @@ class SigneraUtkast {
     public boolean utkastSignerat() {
         response.success
     }
+
+    public long version() {
+        response.data.version
+    }
+
 }

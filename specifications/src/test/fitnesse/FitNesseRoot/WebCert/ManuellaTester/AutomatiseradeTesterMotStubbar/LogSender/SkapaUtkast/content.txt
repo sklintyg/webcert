@@ -1,0 +1,13 @@
+|producera logg meddelande|
+|aktivitet|vardperson|enhet|vardgivare|personnummer|
+|Skapa|lakare1|enhet1|vg1|${person1.personnummer}|
+
+|script|Vanta|5|sekunder|
+
+|Logg post|
+|systemId?|activityType?|purpose?|userId?|careProvider?|careUnit?|resourceType?|
+|systemId|Skriva|Vård och behandling|lakare1|vg1|enhet1|Intyg|
+
+
+|script|Logg post|
+|rensa|

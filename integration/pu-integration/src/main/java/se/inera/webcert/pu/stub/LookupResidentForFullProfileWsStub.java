@@ -14,19 +14,17 @@ import java.util.List;
 public class LookupResidentForFullProfileWsStub implements LookupResidentForFullProfileResponderInterface {
 
     @Autowired
-    private PersonStore personer;
+    private ResidentStore personer;
 
     @Override
     public LookupResidentForFullProfileResponseType lookupResidentForFullProfile(String logicalAddress, LookupResidentForFullProfileType parameters) {
         validate(logicalAddress, parameters);
         LookupResidentForFullProfileResponseType response = new LookupResidentForFullProfileResponseType();
         for (String id : parameters.getPersonId()) {
-            PersonpostTYPE personPost = personer.get(id);
+            ResidentType residentPost = personer.get(id);
 
-            if (personPost != null) {
-                ResidentType resident = new ResidentType();
-                resident.setPersonpost(personPost);
-                response.getResident().add(resident);
+            if (residentPost != null) {
+                response.getResident().add(residentPost);
             }
         }
         return response;

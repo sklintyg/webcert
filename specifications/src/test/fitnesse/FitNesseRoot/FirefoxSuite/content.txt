@@ -1,4 +1,4 @@
 !define geb.env {firefox}
 
-!contents
+ * >WebCert.AutomatiseradeTester.WebBaseradeTester
 

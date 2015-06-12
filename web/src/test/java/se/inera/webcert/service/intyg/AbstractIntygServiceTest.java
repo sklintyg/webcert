@@ -20,8 +20,6 @@ import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getrecipientsforcertificate.v1.GetRecipientsForCertificateResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponderInterface;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.certificatesender.CertificateSenderService;
@@ -45,12 +43,6 @@ public abstract class AbstractIntygServiceTest {
     protected static final String INTYG_ID = "intyg-1";
 
     protected static final String INTYG_TYP_FK = "fk7263";
-
-    @Mock
-    protected GetRecipientsForCertificateResponderInterface getRecipientsForCertificateService;
-
-    @Mock
-    protected GetCertificateForCareResponderInterface getCertificateService;
 
     @Mock
     protected RegisterCertificateResponderInterface intygSender;

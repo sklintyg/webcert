@@ -1,7 +1,7 @@
 describe('ViewCertCtrl', function() {
     'use strict';
 
-    var manageCertificateSpy;
+    var UtkastProxy;
     var $stateParams;
     var $httpBackend;
     var dialogService;
@@ -64,8 +64,8 @@ describe('ViewCertCtrl', function() {
         $provide.value('common.fragaSvarCommonService', fragaSvarCommonService);
 
         $provide.value('$window', {location:{href:currentUrl}});
-        manageCertificateSpy = jasmine.createSpyObj('webcert.ManageCertificate', [ 'getCertType' ]);
-        $provide.value('webcert.ManageCertificate', manageCertificateSpy);
+        UtkastProxy = jasmine.createSpyObj('webcert.UtkastProxy', [ 'getUtkastType' ]);
+        $provide.value('webcert.UtkastProxy', UtkastProxy);
 
         UserPreferencesService = jasmine.createSpyObj('UserPreferencesService', [ 'isSkipShowUnhandledDialogSet' ]);
         $provide.value('common.UserPreferencesService', UserPreferencesService);
@@ -114,7 +114,7 @@ describe('ViewCertCtrl', function() {
                 { $rootScope: $rootScope, $scope: $scope });
 
             // ----- arrange
-            expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
+            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
 
             // kick off the window change event
             $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
@@ -130,7 +130,7 @@ describe('ViewCertCtrl', function() {
                 { $rootScope: $rootScope, $scope: $scope });
 
             // ----- arrange
-            expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
+            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
 
             // spy on the defferd
             var def = mockDeferreds.getDeferred();
@@ -157,7 +157,7 @@ describe('ViewCertCtrl', function() {
         it('should check that a dialog is not opened, if there are no unhandled messages, and go to then newUrl', function(){
 
             // ----- arrange
-            expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
+            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
 
             // spy on the defferd
             var def = mockDeferreds.getDeferred();
@@ -200,7 +200,7 @@ describe('ViewCertCtrl', function() {
 
 
             // ------ assert
-            expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
+            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
 
             expect($scope.$broadcast).not.toHaveBeenCalledWith('hasUnhandledQasEvent', mockDeferreds.popDeferred());
 
@@ -237,7 +237,7 @@ describe('ViewCertCtrl', function() {
 
 
             // ------ assert
-            expect(manageCertificateSpy.getCertType).toHaveBeenCalled();
+            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
             expect(UserPreferencesService.isSkipShowUnhandledDialogSet).toHaveBeenCalled();
             expect($scope.$broadcast).toHaveBeenCalledWith('hasUnhandledQasEvent', mockDeferreds.getLastPopped());
 

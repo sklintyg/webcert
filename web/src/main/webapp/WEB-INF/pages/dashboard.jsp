@@ -4,7 +4,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <!DOCTYPE html>
-<html lang="sv" id="ng-app" ng-app="webcert">
+<html lang="sv" id="ng-app">
 <head>
 
 <meta charset="utf-8">
@@ -37,9 +37,10 @@
 </head>
 <body>
 
+  <div ui-view="header" autoscroll="true" id="wcHeader" class="print-hide"></div>
+
   <%-- ui-view that holds dynamic content managed by angular app --%>
-  <div ui-view autoscroll="true" id="view">
-  </div>
+  <div ui-view="content" autoscroll="false" id="view"></div>
 
   <%-- No script to show at least something when javascript is off --%>
   <noscript>
@@ -65,7 +66,7 @@
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/min/moment.min.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>
-      <script type="text/javascript" src="/js/app.min.js?<spring:message code="buildNumber" />"></script>
+      <script type="text/javascript" src="/app/app.min.js?<spring:message code="buildNumber" />"></script>
     </c:when>
     <c:otherwise>
 	  <script type="text/javascript" src="/web/webjars/jquery/1.9.0/jquery.js"></script>
@@ -79,7 +80,7 @@
       <script type="text/javascript" src="/web/webjars/momentjs/2.7.0/moment.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.js"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>
-      <script type="text/javascript" src="/js/app.js"></script>
+      <script type="text/javascript" src="/app/app.js"></script>
     </c:otherwise>
   </c:choose>
   <script type="text/javascript" src="/vendor/netid-1.0.5.js"></script>

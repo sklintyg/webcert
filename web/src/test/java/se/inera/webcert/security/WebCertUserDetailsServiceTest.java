@@ -207,6 +207,22 @@ public class WebCertUserDetailsServiceTest {
         assertEquals("Gran", webCertUser.getNamn());
     }
 
+    @Test
+    public void testMultipleTitleCodes() throws Exception {
+        setupCallToAuthorizedEnheterForHosPerson();
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-multiple-title-codes.xml");
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+        assertTrue(webCertUser.isLakare());
+    }
+
+    @Test
+    public void testMultipleTitles() throws Exception {
+        setupCallToAuthorizedEnheterForHosPerson();
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-multiple-titles.xml");
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+        assertTrue(webCertUser.isLakare());
+    }
+
     @Test(expected = MissingMedarbetaruppdragException.class)
     public void testMissingMedarbetaruppdrag() throws Exception {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");

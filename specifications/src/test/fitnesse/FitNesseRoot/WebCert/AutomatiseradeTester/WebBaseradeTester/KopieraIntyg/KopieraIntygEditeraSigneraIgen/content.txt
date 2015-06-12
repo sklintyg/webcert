@@ -1,0 +1,72 @@
+Detta test ska säkerställa att buggen WEBCERT-1477 är löst
+
+!3 Logga in
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Skapa minimalt intyg med smittskydd
+| Populera Fk7263 |
+| smittskydd | nedsattMed100 |
+| true | true |
+
+!3 Signera intyget
+| script | !-HanteraUtkast-! |
+| ensure | intyget komplett meddelande visas |
+| ensure | signera knapp aktiverad |
+| signera utkast |
+| visa intyg sidan visas |
+| ensure | intyget signerat meddelande visas |
+
+!3 Gå till intyget via djupintegration
+| script | !-IntegrationMedJournalsystem-! |
+| visa intyg via integration med | $intygsid | personnummer | ${person2.personnummer} |
+
+!3 Kopiera intyget
+| script | !-SokSkrivIntyg-! |
+| kopiera visat intyg | FK7263 |
+| $kopiaintygsid= | kopiaintygsid |
+
+!3 Kryssa ur smittskydd
+| Populera Fk7263 |
+| smittskydd |
+| false |
+
+!3 Intyget ska nu EJ gå att signera
+| script | !-HanteraUtkast-! |
+| ensure | intyget ej komplett meddelande visas |
+| ensure | signera knapp ej aktiverad |
+
+!3 Populera intyget
+| Populera Fk7263 |
+| undersokning | undersokningDatum | diagnos1 | funktionsnedsattning | aktivitetsbegransning | nuvarandearbete | arbetsuppgifter | tjanstgoringstid | nedsattMed100 |
+| true | 2014-09-17 | !-B080B-! | Kliar konstant | Kan inte fokusera på arbetet | true | Polis | 40 | true  |
+
+!3 Intyget ska nu gå att signera
+| script | !-HanteraUtkast-! |
+| ensure | intyget komplett meddelande visas |
+| ensure | signera knapp aktiverad |
+| signera utkast |
+| visa intyg sidan visas |
+| ensure | intyget signerat meddelande visas |
+
+!3 Ta bort intyg
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+
+| ta bort intyg |
+| id |
+| $intygsid |
+
+| ta bort utkast |
+| utkastId |
+| $kopiaintygsid |
+
+| ta bort intyg |
+| id |
+| $kopiaintygsid |

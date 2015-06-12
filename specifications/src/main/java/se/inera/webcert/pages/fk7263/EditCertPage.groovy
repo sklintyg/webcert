@@ -14,16 +14,17 @@ class EditCertPage extends AbstractEditCertPage {
         // Knappar
         sparaKnapp { $("#spara-utkast") }
         tillbakaButton(required: false) { $("#tillbakaButton") }
-        visaVadSomSaknasKnapp { $("#showCompleteButton") }
+        visaVadSomSaknasKnapp(wait: true) { displayed($("#showCompleteButton")) }
         doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
-        intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
-        intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
-        errorPanel { $("#error-panel") }
-        nyttPersonnummer { $("#nyttPersonnummer") }
-        signerandeLakare { $("#signingDoctor") }
-        integrationBorttaget { $("#integration-deleted") }
+        intygetSparatOchKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
+        intygetSparatOchEjKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
+        errorPanelBase { $("#error-panel") }
+        errorPanel(wait: true) { displayed(errorPanelBase) }
+        nyttPersonnummer(wait: true) { displayed($("#nyttPersonnummer")) }
+        signerandeLakare(wait: true) { displayed($("#signingDoctor")) }
+        integrationBorttaget(wait: true) { displayed($("#integration-deleted")) }
 
         // Intyg
         form { $("form") }
@@ -46,18 +47,18 @@ class EditCertPage extends AbstractEditCertPage {
 
 
         // date picker
-        datepicker { $("div[ng-switch='datepickerMode']") }
-
+        datepicker(wait: true) { displayed($("div[ng-switch='datepickerMode']")) }
+        datepickerNoWait{ $("div[ng-switch='datepickerMode']") }
         // Intygsvalidering
-        valideringIntygBaseratPa(required: false)        { $("#validationMessages_intygbaseratpa") }
-        valideringDiagnos(required: false)               { $("#validationMessages_diagnos") }
-        valideringFunktionsnedsattning(required: false)  { $("#validationMessages_funktionsnedsattning") }
+        valideringIntygBaseratPa(required: false) { $("#validationMessages_intygbaseratpa") }
+        valideringDiagnos(required: false) { $("#validationMessages_diagnos") }
+        valideringFunktionsnedsattning(required: false) { $("#validationMessages_funktionsnedsattning") }
         valideringAktivitetsbegransning(required: false) { $("#validationMessages_aktivitetsbegransning") }
-        valideringSysselsattning(required: false)        { $("#validationMessages_sysselsattning") }
-        valideringArbetsformaga(required: false)         { $("#validationMessages_arbetsformaga") }
-        valideringPrognos(required: false)               { $("#validationMessages_prognos") }
-        valideringRekommendationer(required: false)      { $("#validationMessages_rekommendationer") }
-        valideringVardperson(required: false)            { $("#validationMessages_vardperson") }
+        valideringSysselsattning(required: false) { $("#validationMessages_sysselsattning") }
+        valideringArbetsformaga(required: false) { $("#validationMessages_arbetsformaga") }
+        valideringPrognos(required: false) { $("#validationMessages_prognos") }
+        valideringRekommendationer(required: false) { $("#validationMessages_rekommendationer") }
+        valideringVardperson(required: false) { $("#validationMessages_vardperson")}
 
     }
     
@@ -121,7 +122,7 @@ class DiagnosModule extends Module {
     static content = {
         diagnoseKodverk_ICD_10_SE { $("#diagnoseKodverk_ICD_10_SE") }
         diagnoseKodverk_KSH_97_P { $("#diagnoseKodverk_KSH_97_P") }
-        diagnos1 { $("#diagnoseCode") }
+        diagnos1{$("#diagnoseCode") }
         diagnos1Text { $("#diagnoseDescription") }
         diagnos2 { $("#diagnoseCodeOpt1") }
         diagnos2Text { $("#diagnoseDescriptionOpt1") }
@@ -162,7 +163,7 @@ class ArbetsformagaModule extends Module {
         nedsattMed100start { $("#nedsattMed100from") }
         nedsattMed100slut { $("#nedsattMed100tom") }
 
-        period { $("#totalCertDays") }
+        period{$("#totalCertDays")}
         arbetstid25 { $("#arbetstid25") }
         arbetstid50 { $("#arbetstid50") }
         arbetstid75 { $("#arbetstid75") }
@@ -231,7 +232,8 @@ class RekommendationerModule extends Module {
         ovrigt { $("#rekommendationOvrigt") }
         ovrigtBeskrivning { $("#rekommendationOvrigtBeskrivning") }
         rehabYes { $("#rehabYes") }
-        rehabNo { $("#rehabNo") }
+        rehabNo(wait: true) { displayed($("#rehabNo")) }
+        rehabNoNoWait{ $("#rehabNo") }
     }
 
     def valjArbetslivsinriktadRehabilitering(String arAktuell) {

@@ -1,6 +1,5 @@
 package se.inera.webcert.spec
 
-import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.EditCertPage
@@ -22,6 +21,8 @@ class HanteraUtkast {
         }
     }
 
+    // ------- navigation
+
     def gaTillEjSigneradeIntyg() {
         Browser.drive {
             go "/web/dashboard#/unsigned"
@@ -29,27 +30,6 @@ class HanteraUtkast {
                 at UnsignedIntygPage
             }
         }
-    }
-
-    def valjIntygFranEjSigneradeIntyg(intygsid) {
-        Browser.drive {
-            $("#showBtn-$intygsid").click()
-            waitFor {
-                at se.inera.webcert.pages.EditeraIntygPage
-            }
-        }
-    }
-
-    boolean ejSigneradeIntygSidanVisas() {
-        Browser.drive {
-            waitFor {
-                at UnsignedIntygPage
-            }
-        }
-    }
-
-    boolean ingaEjSigneradeIntygVisas() {
-        return WebcertRestUtils.getNumberOfUnsignedCertificates() == 0
     }
 
     def gaTillEditeraIntygMedTypOchIntygid(String typ, String intygid) {
@@ -63,6 +43,112 @@ class HanteraUtkast {
                 } else if (typ == "ts-diabetes") {
                     at se.inera.webcert.pages.ts_diabetes.EditCertPage
                 }
+            }
+        }
+    }
+
+    def gaTillEditIntygMedIntygsid(String id) {
+        Browser.drive {
+            go "/web/dashboard#/fk7263/edit/${id}"
+            waitFor {
+                at EditCertPage
+            }
+        }
+    }
+
+    def provaGaTillEditIntygMedIntygsid(String id) {
+        Browser.drive {
+            go "/web/dashboard#/fk7263/edit/${id}"
+        }
+    }
+
+    // ------- behaviour
+
+    boolean raderaUtkast() {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            waitFor {
+                page.radera.click()
+            }
+            Thread.sleep(300);
+            waitFor {
+                page.konfirmeraRadera.click()
+            }
+            Thread.sleep(300);
+        }
+    }
+
+    boolean signeraUtkast() {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.signeraBtn.click()
+        }
+    }
+
+    boolean sparaUtkast() {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.spara()
+        }
+    }
+
+    boolean harSparat() {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.harSparat()
+        }
+    }
+
+    boolean intygEjKomplettVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+        }
+        result
+    }
+
+    def klickaPaTillbakaKnappen() {
+        Browser.drive {
+            page.tillbakaButton.click();
+        }
+    }
+
+    def valjIntygFranEjSigneradeIntyg(intygsid) {
+        Browser.drive {
+            $("#showBtn-$intygsid").click()
+            waitFor {
+                at se.inera.webcert.pages.EditeraIntygPage
+            }
+        }
+    }
+
+    // ------- state
+
+    // ---------- pages
+
+    boolean visaSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+        }
+    }
+
+    boolean sokSkrivIntygSidanVisas() {
+        Browser.drive {
+            waitFor {
+                at SokSkrivaIntygPage
             }
         }
     }
@@ -88,148 +174,139 @@ class HanteraUtkast {
             waitFor {
                 at VisaFk7263Page
             }
-
-            waitFor {
-                page.intygLaddat.isDisplayed()
-            }
+            page.intygLaddat.isDisplayed()
         }
     }
 
     boolean visaIntygSidanVisasMedTyp(intygsTyp) {
         Browser.drive {
             waitFor {
-                if(intygsTyp == "fk7263")
+                if (intygsTyp == "fk7263")
                     at VisaFk7263Page
-                else if(intygsTyp == "ts-bas")
+                else if (intygsTyp == "ts-bas")
                     at VisaTsBasPage
-                else if(intygsTyp == "ts-diabetes")
+                else if (intygsTyp == "ts-diabetes")
                     at VisaTsDiabetesPage
             }
+            page.intygLaddat.isDisplayed()
+        }
+    }
 
+    boolean ejSigneradeIntygSidanVisas() {
+        Browser.drive {
             waitFor {
-                page.intygLaddat.isDisplayed()
+                at UnsignedIntygPage
             }
         }
     }
 
-    boolean raderaUtkast() {
+    // ---------- elements
+    boolean ingaEjSigneradeIntygVisas() {
+        return WebcertRestUtils.getNumberOfUnsignedCertificates() == 0
+    }
+
+    boolean signeraKnappAktiverad() {
+        boolean result
         Browser.drive {
             waitFor {
                 at EditeraIntygPage
             }
-            waitFor {
-                page.radera.click()
-            }
-            Thread.sleep(300);
-            waitFor {
-                page.konfirmeraRadera.click()
-            }
-            Thread.sleep(300);
+            result = page.signeraBtn.isEnabled()
         }
+        result
     }
 
-    boolean signeraKnappAktiverad(boolean expected = true) {
-        Browser.drive {
-            at EditeraIntygPage
-            waitFor {
-                expected == page.signeraBtn.isEnabled()
-            }
-        }
-        true
-    }
-
-    boolean signeraKnappEjAktiverad(boolean expected = true) {
-        Browser.drive {
-            at EditeraIntygPage
-            waitFor {
-                expected != page.signeraBtn.isEnabled()
-            }
-        }
-        true
-    }
-
-    boolean signeraKnappVisas(boolean expected = true) {
-        Browser.drive {
-            at EditeraIntygPage
-            waitFor {
-                expected == page.signeraBtn.isDisplayed()
-            }
-        }
-        true
-    }
-
-    boolean signeraUtkast() {
+    boolean signeraKnappEjAktiverad() {
+        boolean result
         Browser.drive {
             waitFor {
                 at EditeraIntygPage
             }
-            page.signeraBtn.click()
+            result = !page.signeraBtn.isEnabled()
         }
+        result
     }
 
-    boolean signeringKraverLakareVisas(boolean expected = true) {
-        Browser.drive {
-            at EditeraIntygPage
-            waitFor {
-                expected == page.signRequiresDoctorMessage.isDisplayed()
-            }
-        }
-        true
-    }
-
-    boolean intygetSigneratMeddelandeVisas(boolean expected = true) {
-        Browser.drive {
-            waitFor {
-                expected == page.certificateIsSentToITMessage.isDisplayed()
-            }
-        }
-        true
-    }
-
-    boolean intygetEjKomplettMeddelandeVisas(boolean expected = true) {
-        Browser.drive {
-            at EditeraIntygPage
-            waitFor {
-                expected == page.intygetEjKomplettMeddelande.isDisplayed()
-            }
-        }
-        true
-    }
-
-    boolean intygetKomplettMeddelandeVisas(boolean expected = true) {
-        Browser.drive {
-            at EditeraIntygPage
-            waitFor {
-                expected == page.intygetSparatMeddelande.isDisplayed()
-            }
-        }
-        true
-    }
-    
-    boolean felmeddelandeVisas(boolean expected = true) {
+    boolean signeraKnappVisas() {
         Browser.drive {
             waitFor {
                 at EditeraIntygPage
-                expected == page.errorPanel.isDisplayed()
             }
-        }
-        true
-    }
-
-    boolean visaSidanVisas() {
-        Browser.drive {
-            waitFor {
-                at VisaFragaSvarPage
-            }
+            return page.signeraBtn.isDisplayed()
         }
     }
 
-    boolean sokSkrivIntygSidanVisas() {
+    boolean signeraKnappEjVisas() {
         Browser.drive {
             waitFor {
-                at SokSkrivaIntygPage
+                at EditeraIntygPage
             }
+            return !page.signeraBtnNoWait.isDisplayed()
         }
+    }
+
+    boolean signeringKraverLakareVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.signRequiresDoctorMessage.isDisplayed()
+        }
+        result
+    }
+
+    boolean intygetSigneratMeddelandeVisas() {
+        boolean result
+        Browser.drive {
+            // this is kind of a special case as the page changes based on intyg's type
+            result = page.certificateIsSentToITMessage.isDisplayed()
+        }
+        result
+    }
+
+    boolean intygetEjKomplettMeddelandeVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+        }
+        result
+    }
+
+    boolean intygetKomplettMeddelandeVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.intygetSparatOchKomplettMeddelande.isDisplayed();
+        }
+        result
+    }
+
+    boolean felmeddelandeVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.errorPanel.isDisplayed()
+        }
+        result
+    }
+
+    boolean skrivUtKnappVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            result = page.skrivUtBtn.isDisplayed()
+        }
+        result
     }
 
     String kanInteTaStallningTsBas() {
@@ -243,6 +320,7 @@ class HanteraUtkast {
         result
     }
 
+    // --
     String kanInteTaStallningTsDiabetes() {
         def result
         Browser.drive {
@@ -254,6 +332,60 @@ class HanteraUtkast {
         result
     }
 
+    // ------ form elements
+    // -------- form edit
+    boolean andraPostadress(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsPostadress = value
+        }
+        true
+    }
+
+    boolean andraPostnummer(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsPostnummer = value
+        }
+        true
+    }
+
+    boolean andraPostort(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsPostort = value
+        }
+        true
+    }
+
+    boolean andraTelefonnummer(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsTelefonnummer = value
+        }
+        true
+    }
+
+    boolean andraEpost(String value) {
+        Browser.drive {
+            waitFor {
+                at EditeraIntygPage
+            }
+            page.enhetsEpost = value
+        }
+        true
+    }
+
+    // -------- form view
+
     String postadress() {
         def result
         Browser.drive {
@@ -262,7 +394,6 @@ class HanteraUtkast {
             }
             result = page.enhetsPostadress.value()
         }
-        sleep(300)
         result
     }
 
@@ -274,7 +405,6 @@ class HanteraUtkast {
             }
             result = page.enhetsPostnummer.value()
         }
-        sleep(300)
         result
     }
 
@@ -286,7 +416,6 @@ class HanteraUtkast {
             }
             result = page.enhetsPostort.value()
         }
-        sleep(300)
         result
     }
 
@@ -298,7 +427,6 @@ class HanteraUtkast {
             }
             result = page.enhetsTelefonnummer.value()
         }
-        sleep(300)
         result
     }
 
@@ -310,100 +438,10 @@ class HanteraUtkast {
             }
             result = page.enhetsEpost.value()
         }
-        sleep(300)
         result
     }
 
-    boolean andraPostadress(String value) {
-        Browser.drive {
-            waitFor {
-                at EditeraIntygPage
-            }
-            page.enhetsPostadress = value
-        }
-        sleep(300)
-        true
-    }
-
-    boolean andraPostnummer(String value) {
-        Browser.drive {
-            waitFor {
-                at EditeraIntygPage
-            }
-            page.enhetsPostnummer = value
-        }
-        sleep(300)
-        true
-    }
-
-    boolean andraPostort(String value) {
-        Browser.drive {
-            waitFor {
-                at EditeraIntygPage
-            }
-            page.enhetsPostort = value
-        }
-        sleep(300)
-        true
-    }
-
-    boolean andraTelefonnummer(String value) {
-        Browser.drive {
-            waitFor {
-                at EditeraIntygPage
-            }
-            page.enhetsTelefonnummer = value
-        }
-        sleep(300)
-        true
-    }
-
-    boolean andraEpost(String value) {
-        Browser.drive {
-            waitFor {
-                at EditeraIntygPage
-            }
-            page.enhetsEpost = value
-        }
-        sleep(300)
-        true
-    }
-
-    boolean sparaUtkast() {
-        Browser.drive {
-            waitFor {
-                at EditeraIntygPage
-            }
-            println("skrivUtBtn disabled : " + AbstractPage.isButtonDisabled(page.skrivUtBtn));
-            if(!AbstractPage.isButtonDisabled(page.sparaBtn)){
-                page.sparaBtn.click()
-            } else {
-                // utkast är redan sparat genom autospar
-            }
-        }
-    }
-
-    boolean wait4it() {
-        Thread.sleep(5000)
-        true
-    }
-
-    def gaTillEditIntygMedIntygsid(String id) {
-        Browser.drive {
-            go "/web/dashboard#/fk7263/edit/${id}"
-            waitFor {
-                at EditCertPage
-            }
-        }
-    }
-
-    def provaGaTillEditIntygMedIntygsid(String id) {
-        Browser.drive {
-            go "/web/dashboard#/fk7263/edit/${id}"
-        }
-    }
-
-    boolean kommentarInnehallarText( String text){
+    boolean kommentarInnehallarText(String text) {
         def result = false;
         Browser.drive {
             result = page.kommentar.text().contains(text);
@@ -411,31 +449,30 @@ class HanteraUtkast {
         return result;
     }
 
-    boolean feltMedNamnInnehallarText( String felt, String text ){
+    boolean feltMedNamnInnehallarText(String felt, String text) {
         def result = false;
         Browser.drive {
             waitFor {
                 result = page."$felt".text().contains(text)
-
                 //result = page.vardenhet.postadress.text().contains(text);
             }
         }
         return result;
     }
 
-    def klickaPaTillbakaKnappen() {
-        Browser.drive {
-            page.tillbakaButton.click();
-        }
-    }
-
-    boolean skrivUtKnappVisas(boolean expected = true) {
-        Browser.drive {
-            at EditeraIntygPage
-            waitFor {
-                expected == page.skrivUtBtn.isDisplayed()
-            }
-        }
+    // ------- utils
+    boolean wait4it() {
+        Thread.sleep(5000)
         true
     }
+
+    boolean sekretessmarkeringVisas() {
+        def result
+        Browser.drive {
+            at EditeraIntygPage
+            result = page.sekretessmarkering.isDisplayed()
+        }
+        result
+    }
+
 }

@@ -45,15 +45,9 @@ class SvaraOchFraga {
                 at UnhandledQAPage
             }
 
-            waitFor {
-                page.visaAllaFragaBtn().click()
-            }
+            page.visaAllaFragaBtn().click()
 
-            sleep(10L)
-
-            waitFor{
-                page.unhandledQATable.isDisplayed()
-            }
+            page.unhandledQATable.isDisplayed()
 
         }
     }
@@ -63,17 +57,15 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                page.resetAdvancedFilter()
-            }
+            page.resetAdvancedFilter()
         }
     }
 
     boolean doljsFraga(String id) {
         try {
-            return !visasFraga(id)
+            return visasFraga(id, false)
         } finally {
-            sleep(10L)
+//            sleep(10L)
         }
     }
 
@@ -82,38 +74,42 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                expected == page.careUnitSelector.isDisplayed()
+            if (expected) {
+                return page.careUnitSelector.isDisplayed()
+            } else {
+                return !page.careUnitSelectorNoWait.present || !page.careUnitSelectorNoWait.isDisplayed()
             }
         }
-        true
     }
 
-    def filtreraFragorOchSvar(boolean waitForTableToBeDisplayed = true) {
+    def filtreraFragorOchSvar(boolean expected = true) {
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
+            if(expected){
                 page.advancedFilterSearchBtn.click()
+                page.unhandledQATable.isDisplayed()
+            } else {
+                page.advancedFilterSearchBtn.click()
+                !page.unhandledQATableNoWait.isDisplayed()
             }
-            if (waitForTableToBeDisplayed) {
-                waitFor {
-                    page.unhandledQATable.isDisplayed()
-                }
-            }
+
         }
     }
 
     boolean fraganArSkickadTillFkMeddelandeVisas(boolean expected = true) {
-        def result = false
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            result = page.questionIsSentToFkMessage.isDisplayed()
+            if(expected){
+                return page.questionIsSentToFkMessage.isDisplayed()
+            } else {
+                return !page.questionIsSentToFkMessageNoWait.isDisplayed()
+            }
+
         }
-        result == expected
     }
 
     def stangFkMeddelande() {
@@ -121,9 +117,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.closeSentMessage.click()
-            }
+            page.closeSentMessage.click()
         }
     }
 
@@ -132,9 +126,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.qaUnhandledPanelWithText(text)
-            }
+            page.qaUnhandledPanelWithText(text)
         }
     }
 
@@ -143,11 +135,9 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-              expected == page.qaUnhandledPanel(id).isDisplayed()
-            }
+            return page.qaUnhandledPanel(id, expected)
+
         }
-        true
     }
 
 
@@ -156,11 +146,9 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.qaHandledPanel(id).isDisplayed()
-            }
+            return page.qaHandledPanel(id, expected)
+
         }
-        true
     }
 
     boolean intygMedFragaSvarSidanVisas() {
@@ -176,11 +164,9 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.certificateRevokedMessage.isDisplayed()
-            }
+            return page.certificateRevokedMessage.isDisplayed()
+
         }
-        true
     }
 
     boolean intygArSkickatTillFkMeddelandeVisas(boolean expected = true) {
@@ -188,11 +174,16 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.certificateIsSentToFKMessage.isDisplayed()
+            if(expected){
+
+                return page.certificateIsSentToFKMessage.isDisplayed()
+
+            } else {
+
+                return !page.certificateIsSentToFKMessageNoWait.isDisplayed()
+
             }
         }
-        true
     }
 
     def loggaInSom(String id) {
@@ -212,12 +203,8 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                page.hamtaFler()
-            }
-            waitFor {
-                result = page.unhandledQATable.isDisplayed()
-            }
+            page.hamtaFler()
+            result = page.unhandledQATable.isDisplayed()
         }
         result
     }
@@ -236,10 +223,8 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.unhandledQAList.isDisplayed();
-            }
-            page.markAsHandledWcOriginBtn(id).click()
+            page.unhandledQAList.isDisplayed();
+            page.markAsHandledWcOriginBtnClick(id);
         }
     }
 
@@ -257,11 +242,12 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.newQuestionForm.isDisplayed()
+            if(expected){
+                return page.newQuestionForm.isDisplayed()
+            } else {
+                return !page.newQuestionFormNoWait.isDisplayed()
             }
         }
-        true
     }
 
     boolean nyFragaKnappVisas(boolean expected = true) {
@@ -269,11 +255,15 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.newQuestionBtn.isDisplayed()
+            if(expected){
+
+                return page.newQuestionBtn.isDisplayed()
+
+            } else {
+                return !page.newQuestionBtnNoWait.isDisplayed()
+
             }
         }
-        true
     }
 
     boolean ohanteradeFragorSidanVisas() {
@@ -289,14 +279,16 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.sendQuestionBtn.isEnabled()
+            if(expected){
+                return !page.isButtonDisabled(page.sendQuestionBtn)
+            } else {
+                return page.isButtonDisabled(page.sendQuestionBtn)
             }
+
         }
-        true
     }
 
-    def skickaFragaMedAmne(String fraga, String amne) {
+    boolean skickaFragaMedAmne(String fraga, String amne) {
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
@@ -304,9 +296,7 @@ class SvaraOchFraga {
             page.newQuestionText = fraga
             page.newQuestionTopic = amne
             page.sendQuestion()
-            waitFor {
-                !page.newQuestionForm.isDisplayed()
-            }
+            !page.newQuestionFormNoWait.isDisplayed()
         }
     }
 
@@ -315,13 +305,9 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.unhandledQAList.isDisplayed();
-            }
+            page.unhandledQAList.isDisplayed();
             page.addAnswerText(id, svar)
-            waitFor {
-                page.sendAnswer(id)
-            }
+            page.sendAnswer(id)
         }
     }
 
@@ -330,12 +316,9 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                page.advancedFilterSelectDoctor.isDisplayed()
-            }
-            waitFor {
-                page.advancedFilterSelectDoctor = namn
-            }
+            page.advancedFilterSelectDoctor.isDisplayed()
+            page.advancedFilterSelectDoctor = namn
+
         }
     }
 
@@ -344,9 +327,7 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                page.advancedFilterChangeDateFrom.isDisplayed()
-            }
+            page.advancedFilterChangeDateFrom.isDisplayed()
             page.advancedFilterChangeDateFrom = datumText
         }
     }
@@ -356,9 +337,7 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                page.advancedFilterChangeDateTo.isDisplayed()
-            }
+            page.advancedFilterChangeDateTo.isDisplayed()
             page.advancedFilterChangeDateTo = datumText
         }
     }
@@ -368,9 +347,8 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                page.selectCareUnit(careUnit);
-            }
+            page.selectCareUnit(careUnit);
+
         }
     }
 
@@ -388,12 +366,9 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                page.showAdvancedFilter()
-            }
-            waitFor {
-                page.advancedFilterForm.isDisplayed()
-            }
+            page.showAdvancedFilter()
+            page.advancedFilterForm.isDisplayed()
+
         }
     }
 
@@ -406,28 +381,45 @@ class SvaraOchFraga {
         }
     }
 
+    def visaEjFraga(String id) {
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            !page.showQANoWait(id)
+        }
+    }
+
     def valjFragestallare(String fragestallare) {
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                page.advancedFilterForm.isDisplayed()
-            }
+            page.advancedFilterForm.isDisplayed()
+
             page.advandecFilterFormFragestallare = fragestallare;
         }
     }
 
-    boolean visasFraga(String id) {
+    boolean visasFraga(String id, boolean expected = true) {
         def result = false
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
+            page.unhandledQATable.isDisplayed()
+            result = page.isQAVisible(id, expected)
+        }
+        return result
+    }
+
+    boolean visasEjFraga(String id) {
+        def result = false
+        Browser.drive {
             waitFor {
-                page.unhandledQATable.isDisplayed()
+                at UnhandledQAPage
             }
-            result = page.isQAVisible(id)
+            result = page.isQAVisible(id, false)
         }
         return result
     }
@@ -464,11 +456,9 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.certificateIsSentToITMessage.isDisplayed()
-            }
+            return page.certificateIsSentToITMessage.isDisplayed()
+
         }
-        true
     }
 
     boolean skrivUtKnappVisas(boolean expected = true) {
@@ -476,35 +466,49 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.skrivUtBtn.isDisplayed()
-            }
+            return page.skrivUtBtn.isDisplayed()
+
         }
-        true
     }
 
-    boolean kopieraKnappVisas(boolean expected = true) {
+    boolean kopieraKnappVisas() {
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.kopieraBtn.isDisplayed()
-            }
+            return page.kopieraBtn.isDisplayed()
+
         }
-        true
     }
 
-    boolean makuleraKnappVisas(boolean expected = true) {
+    boolean kopieraKnappEjVisas() {
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.makuleraBtn.isDisplayed()
-            }
+            return !page.kopieraBtnNoWait.isDisplayed()
+
         }
-        true
+    }
+
+    boolean makuleraKnappVisas() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            return page.makuleraBtn.isDisplayed()
+
+        }
+    }
+
+    boolean makuleraKnappVisasEj() {
+        Browser.drive {
+            waitFor {
+                at VisaFragaSvarPage
+            }
+            return page.makuleraBtnNoWait.isDisplayed()
+
+        }
     }
 
     boolean skickaTillFkKnappVisas(boolean expected = true) {
@@ -512,51 +516,47 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.skickaTillFkBtn.isDisplayed()
+            if(expected){
+                return skickaTillFkBtn.isDisplayed()
+            } else {
+                return !skickaTillFkBtnNoWait.isDisplayed()
             }
+
         }
-        true
     }
 
-    public boolean arFragaHanterad(String internId) {
+    public boolean arFragaHanterad(String internId, boolean expected = true) {
         def result = false
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
-                page.unhandledQAList.isDisplayed();
             }
-            waitFor {
-                page.qaHandledPanel(internId)
-            }
-            result = page.qaHandledPanel(internId).isDisplayed()
+            page.unhandledQAList.isDisplayed();
+
+            result = page.qaHandledPanel(internId, expected)
         }
         return result
     }
 
-    public void markeraFragaSomOhanterad(String internId) {
+    public void markeraFragaSomOhanterad(String internId, boolean expected = true) {
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.qaHandledPanel(internId).isDisplayed()
-            }
+            page.qaHandledPanel(internId, expected)
 
-            page.markAsUnhandledBtn(internId).click()
+            page.markAsUnhandledBtnClick(internId, expected)
         }
     }
 
-    public boolean arFragaOhanterad(String internId) {
+    public boolean arFragaOhanterad(String internId, boolean expected = true) {
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.qaUnhandledPanel(internId).isDisplayed()
-            }
+            return page.qaUnhandledPanel(internId, expected)
+
         }
-        return true
     }
 
     boolean arFragaVidarebefordrad(String id, boolean expected = true) {
@@ -576,9 +576,8 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.qaHandledPanel(internId).isDisplayed()
-            }
+            page.qaHandledPanel(internId).isDisplayed()
+
             result = page.markAsUnhandledBtn(internId).isDisplayed()
         }
         return result == expectedVisibility
@@ -590,12 +589,10 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.qaUnhandledPanel(internId).isDisplayed()
-            }
-            waitFor {
-                page.frageStallarNamn(internId).isDisplayed()
-            }
+            page.qaUnhandledPanel(internId).isDisplayed()
+
+            page.frageStallarNamn(internId).isDisplayed()
+
             result = page.frageStallarNamn(internId).text().contains(namn)
         }
         return result
@@ -607,9 +604,8 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                page.unitstatUnhandledQuestionsBadgde.isDisplayed()
-            }
+            page.unitstatUnhandledQuestionsBadgde.isDisplayed()
+
             result = page.unitstatUnhandledQuestionsBadgde.text()
         }
         return result
@@ -621,9 +617,8 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.besvarareNamn(internId).isDisplayed()
-            }
+            page.besvarareNamn(internId).isDisplayed()
+
             result = page.besvarareNamn(internId).text().contains(namn)
         }
         return result
@@ -635,7 +630,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            result = page.fkMeddelandeRubrik(id).isDisplayed()
+            result = page.fkMeddelandeRubrik(id)
         }
         return result
     }
@@ -646,7 +641,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            result = page.fkKontakter(id).isDisplayed()
+            result = page.fkKontakter(id)
         }
         return result
     }
@@ -657,7 +652,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            result = page.fkKompletteringar(id).isDisplayed()
+            result = page.fkKompletteringar(id)
         }
         return result
     }
@@ -689,11 +684,9 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.intygSaknas.isDisplayed()
-            }
+            return page.intygSaknas.isDisplayed()
+
         }
-        return true
     }
 
     boolean sokSkrivIntygSidanVisas() {
@@ -709,11 +702,9 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.qaOnlyDialog.isDisplayed()
-            }
+            return page.qaOnlyDialog.isDisplayed()
+
         }
-        true
     }
 
     def lamnaFragaSvarFortsatt() {
@@ -721,9 +712,8 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.qaOnlyDialogFortsatt.click()
-            }
+            page.qaOnlyDialogFortsatt.click()
+
         }
     }
 
@@ -732,9 +722,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.qaOnlyDialogCancel.click()
-            }
+            page.qaOnlyDialogCancel.click()
         }
     }
 
@@ -743,10 +731,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.tillbakaButtonClick()
-            }
-            Thread.sleep(300);
+            page.tillbakaButtonClick()
         }
     }
 
@@ -755,11 +740,9 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                expected == page.qaCheckEjHanteradDialog.isDisplayed()
-            }
+            return page.qaCheckEjHanteradDialog.isDisplayed()
+
         }
-        true
     }
 
     def klickaPaHanteraKnappen() {
@@ -767,28 +750,20 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.hanteraButtonClick()
-            }
+            page.hanteraButtonClick()
+
         }
     }
 
     boolean svarArBorta(String id) {
         def result = false;
         Browser.drive {
-
-            waitFor {
-                // setting the questions requires an ajax call, we need to wait for a return before moving on.
-                doneLoading()
-            }
-
             waitFor {
                 at UnhandledQAPage
             }
-
-            result = page.isQAVisible(id)
+            result = page.isQAVisible(id, false)
         }
-        return !result;
+        return result;
     }
 
     def klickaPaEjhanteradKnappen() {
@@ -796,9 +771,8 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.ejHanteraButtonClick()
-            }
+            page.ejHanteraButtonClick()
+
         }
     }
 
@@ -808,7 +782,7 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            result = page.isQAVisible(id)
+            result = page.isQAVisible(id, true)
         }
         return result;
     }
@@ -818,20 +792,18 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.tillbakaButtonClick()
-            }
+            page.tillbakaButtonClick()
+
         }
     }
 
-    def kryssaIVisaInteIgen(){
+    def kryssaIVisaInteIgen() {
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.preferenceSkipShowUnhandledCheck()
-            }
+            page.preferenceSkipShowUnhandledCheck()
+
         }
     }
 
@@ -840,9 +812,8 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            waitFor {
-                page.hanteraTillbakaButtonClick()
-            }
+            page.hanteraTillbakaButtonClick()
+
         }
     }
 
@@ -853,14 +824,13 @@ class SvaraOchFraga {
                 at UnhandledQAPage
             }
             if (expected) {
-                waitFor {
-                    result = page.noResultsOnUnitInfo.isDisplayed()
-                }
-            } else {
                 result = page.noResultsOnUnitInfo.isDisplayed()
+
+            } else {
+                result = !page.noResultsOnUnitInfoNoWait.isDisplayed()
             }
         }
-        return result == expected
+        return result
     }
 
     boolean infotextIngetSokresultatVisas(boolean expected = true) {
@@ -870,15 +840,93 @@ class SvaraOchFraga {
                 at UnhandledQAPage
             }
             if (expected) {
-                waitFor {
-                    result = page.noResultsForQueryInfo.isDisplayed()
-                }
-            } else {
                 result = page.noResultsForQueryInfo.isDisplayed()
+
+            } else {
+                result = !page.noResultsForQueryInfoNoWait.isDisplayed()
             }
         }
-        return result == expected
+        return result
     }
 
+    def visasAllaFragorKnappen(boolean expected = true) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = page.visaAllaFragaBtn.isDisplayed()
+        }
+        return result
+    }
+
+    boolean visasEnhetsknappen(String id, boolean expected = true) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = page.isCareUnitVisible(id, expected)
+        }
+        return result
+    }
+
+    boolean forEnhetenArSiffran(String id, String expected) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = page.isNumberPresent(id, expected)
+        }
+        return result
+    }
+
+    def klickaUppModal() {
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            page.clickCareUnitModal()
+            page.modalIsDisplayed()
+
+        }
+    }
+
+    boolean visasEnhetsvaletIModal(String id, boolean expected = true) {
+        def result = false
+        Browser.drive {
+            page.careUnitModalBody.isDisplayed();
+            result = page.isCareUnitModalVisible(id, expected)
+        }
+        return result
+    }
+
+    boolean forEnhetenIModalenArSiffran(String id, String expected) {
+        def result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = page.isNumberPresentInModal(id, expected)
+        }
+        return result
+    }
+
+    def expanderaIModal(String id) {
+        Browser.drive {
+            page.modalIsDisplayed()
+            page.expandEnhetModal(id)
+            page.modalIsDisplayed()
+        }
+    }
+
+    def valjEnhetIModal(String id) {
+        Browser.drive {
+            page.modalIsDisplayed()
+
+            page.selectCareUnitModal(id)
+        }
+    }
 
 }

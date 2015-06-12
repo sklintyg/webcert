@@ -1,18 +1,15 @@
 package se.inera.webcert.service.utkast;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
@@ -47,20 +43,22 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.webcert.web.service.WebCertUserService;
+
+import javax.persistence.OptimisticLockException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest {
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
-
     private static final String INTYG_JSON = "A bit of text representing json";
-
     private static final String INTYG_TYPE = "fk7263";
 
     private static final long UTKAST_VERSION = 1;
@@ -99,11 +97,8 @@ public class UtkastServiceImplTest {
     private UtkastService draftService = new UtkastServiceImpl();
 
     private Utkast utkast;
-
     private Utkast signedUtkast;
-
     private HoSPerson hoSPerson;
-
     private se.inera.webcert.service.dto.Vardenhet vardenhet;
 
     @Before
@@ -135,18 +130,6 @@ public class UtkastServiceImplTest {
 
         utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
         signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
-    }
-
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(intygId);
-        utkast.setVersion(version);
-        utkast.setIntygsTyp(type);
-        utkast.setStatus(status);
-        utkast.setModel(model);
-        utkast.setSkapadAv(vardperson);
-        utkast.setSenastSparadAv(vardperson);
-        return utkast;
     }
 
     @Test
@@ -200,9 +183,7 @@ public class UtkastServiceImplTest {
 
     @Test
     public void testLogPrintOfIntygAsDraft() {
-
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-
         draftService.logPrintOfDraftToPDL(INTYG_ID);
 
         // Assert pdl log
@@ -213,25 +194,19 @@ public class UtkastServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatIsSigned() {
-
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-
         draftService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatDoesNotExist() {
-
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
-
         draftService.deleteUnsignedDraft(INTYG_ID, 0);
     }
 
     @Test(expected = OptimisticLockException.class)
     public void testDeleteDraftThatIsSignedWrongVersion() {
-
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-
         draftService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion()-1);
     }
 
@@ -304,25 +279,6 @@ public class UtkastServiceImplTest {
         assertEquals("Validation should have 1 message", 1, res.getDraftValidation().getMessages().size());
     }
 
-    private WebCertUser createUser() {
-        WebCertUser user = new WebCertUser();
-        user.setHsaId("hsaId");
-        user.setNamn("namn");
-        List<String> tmp = new ArrayList<String>();
-        tmp.add("Ortoped");
-        user.setSpecialiseringar(tmp);
-        user.setTitel("Befattning");
-        Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setId("vardgivarid");
-        vardgivare.setNamn("vardgivarnamn");
-        user.setValdVardgivare(vardgivare);
-        Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setId("enhetid");
-        vardenhet.setNamn("enhetnamn");
-        user.setValdVardenhet(vardenhet);
-        return user;
-    }
-
     @Test(expected = WebCertServiceException.class)
     public void testSaveAndValidateDraftThatIsSigned() {
 
@@ -350,16 +306,6 @@ public class UtkastServiceImplTest {
         draftService.saveAndValidateDraft(request, false);
     }
 
-    private SaveAndValidateDraftRequest buildSaveAndValidateRequest(Utkast utkast) {
-        SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
-        request.setIntygId(utkast.getIntygsId());
-        request.setVersion(utkast.getVersion());
-        request.setDraftAsJson(utkast.getModel());
-        request.setSavedBy(hoSPerson);
-        request.setAutoSave(false);
-        return request;
-    }
-
     @Test
     public void testNotifyDraft() {
 
@@ -385,6 +331,47 @@ public class UtkastServiceImplTest {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
 
         draftService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
+    }
+
+    private SaveAndValidateDraftRequest buildSaveAndValidateRequest(Utkast utkast) {
+        SaveAndValidateDraftRequest request = new SaveAndValidateDraftRequest();
+        request.setIntygId(utkast.getIntygsId());
+        request.setVersion(utkast.getVersion());
+        request.setDraftAsJson(utkast.getModel());
+        request.setSavedBy(hoSPerson);
+        request.setAutoSave(false);
+        return request;
+    }
+
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygId);
+        utkast.setVersion(version);
+        utkast.setIntygsTyp(type);
+        utkast.setStatus(status);
+        utkast.setModel(model);
+        utkast.setSkapadAv(vardperson);
+        utkast.setSenastSparadAv(vardperson);
+        return utkast;
+    }
+
+    private WebCertUser createUser() {
+        WebCertUser user = new WebCertUser();
+        user.setHsaId("hsaId");
+        user.setNamn("namn");
+        List<String> tmp = new ArrayList<String>();
+        tmp.add("Ortoped");
+        user.setSpecialiseringar(tmp);
+        user.setTitel("Befattning");
+        Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setId("vardgivarid");
+        vardgivare.setNamn("vardgivarnamn");
+        user.setValdVardgivare(vardgivare);
+        Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setId("enhetid");
+        vardenhet.setNamn("enhetnamn");
+        user.setValdVardenhet(vardenhet);
+        return user;
     }
 
 }

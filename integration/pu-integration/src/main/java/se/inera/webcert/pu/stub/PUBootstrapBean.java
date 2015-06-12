@@ -12,15 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-import se.inera.population.residentmaster.v1.PersonpostTYPE;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import se.inera.population.residentmaster.v1.ResidentType;
 
 public class PUBootstrapBean {
     private static final Logger LOG = LoggerFactory.getLogger(PUBootstrapBean.class);
 
     @Autowired
-    private PersonStore personStore;
+    private ResidentStore residentStore;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -49,8 +48,8 @@ public class PUBootstrapBean {
 
     private void addPersoner(Resource res) throws IOException {
         LOG.debug("Loading personer from " + res.getFilename());
-        PersonpostTYPE person = objectMapper.readValue(res.getInputStream(), PersonpostTYPE.class);
-        personStore.addUser(person);
-        LOG.debug("Loaded person " + person.getPersonId());
+        ResidentType resident = objectMapper.readValue(res.getInputStream(), ResidentType.class);
+        residentStore.addUser(resident);
+        LOG.debug("Loaded person " + resident.getPersonpost().getPersonId());
     }
 }

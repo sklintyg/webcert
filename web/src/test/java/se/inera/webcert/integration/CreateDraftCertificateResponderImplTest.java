@@ -19,6 +19,9 @@ import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.webcert.integration.validator.CreateDraftCertificateValidator;
 import se.inera.webcert.integration.validator.ValidationResult;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.utkast.UtkastService;
@@ -41,10 +44,16 @@ import java.util.List;
 public class CreateDraftCertificateResponderImplTest {
 
     private static final String LOGICAL_ADDR = "1234567890";
-    private static final String USER_HSAID = "SE1234567890";
-    private static final String UNIT_HSAID = "SE0987654321";
+
+    private static final String USER_HSAID      = "SE1234567890";
+    private static final String UNIT_HSAID      = "SE0987654321";
     private static final String CAREGIVER_HSAID = "SE0000112233";
-    private static final String UTKAST_ID = "abc123";
+
+    private static final String UTKAST_ID      = "abc123";
+    private static final String UTKAST_VERSION = "1";
+    private static final String UTKAST_TYPE    = "fk7263";
+    private static final String UTKAST_JSON    = "A bit of text representing json";
+
 
     @Mock
     UtkastService mockUtkastService;
@@ -72,31 +81,29 @@ public class CreateDraftCertificateResponderImplTest {
     @Test
     public void whenNewCertificateDraftSuccessResponse() {
 
+        // Given
         ValidationResult validationResults = new ValidationResult();
-        when(mockValidator.validate(any(Utlatande.class))).thenReturn(validationResults);
-
         List<MiuInformationType> miuList = Arrays.asList(createMIU(USER_HSAID, UNIT_HSAID, LocalDateTime.now().plusYears(2)));
+        Vardgivare vardgivare = createVardgivare();
+        Vardenhet  vardenhet = createVardenhet(vardgivare);
+        CreateNewDraftRequest draftRequest = createCreateNewDraftRequest(vardenhet);
+        CreateDraftCertificateType certificateType = createCertificateType();
+
+        VardpersonReferens vardperson = createVardpersonReferens(
+                certificateType.getUtlatande().getSkapadAv().getPersonalId().getRoot(),
+                certificateType.getUtlatande().getSkapadAv().getFullstandigtNamn());
+
+        Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON, vardperson);
+
+        //When
+        when(mockValidator.validate(any(Utlatande.class))).thenReturn(validationResults);
         when(mockHsaPersonService.checkIfPersonHasMIUsOnUnit(USER_HSAID, UNIT_HSAID)).thenReturn(miuList);
-
-        Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setHsaId("SE1234567890-2B01");
-        vardgivare.setNamn("Vardgivaren");
-
-        Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setHsaId("SE1234567890-1A01");
-        vardenhet.setNamn("Vardenheten");
-        vardenhet.setVardgivare(vardgivare);
-
-        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest();
-        draftRequest.setIntygId(UTKAST_ID);
-        draftRequest.setVardenhet(vardenhet);
-
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Utlatande.class), any(MiuInformationType.class))).thenReturn(draftRequest);
-        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(UTKAST_ID);
+        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(mockIntegreradeEnheterService.addIfNotExistsIntegreradEnhet(any(IntegreradEnhetEntry.class))).thenReturn(Boolean.TRUE);
 
-        CreateDraftCertificateType parameters = createParams();
-        CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, parameters);
+        //Then
+        CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
 
@@ -106,32 +113,57 @@ public class CreateDraftCertificateResponderImplTest {
         assertEquals(response.getUtlatandeId().getExtension(), UTKAST_ID);
     }
 
-    private CreateDraftCertificateType createParams() {
+    private VardpersonReferens createVardpersonReferens(String hsaId, String name) {
+        VardpersonReferens vardperson = new VardpersonReferens();
+        vardperson.setHsaId(hsaId);
+        vardperson.setNamn(name);
+        return vardperson;
+    }
 
-        Utlatande utlatande = new Utlatande();
+    private CreateNewDraftRequest createCreateNewDraftRequest(Vardenhet vardenhet) {
+        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest();
+        draftRequest.setIntygId(UTKAST_ID);
+        draftRequest.setVardenhet(vardenhet);
+        return draftRequest;
+    }
+
+    private Vardenhet createVardenhet(Vardgivare vardgivare) {
+        Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setHsaId("SE1234567890-1A01");
+        vardenhet.setNamn("Vardenheten");
+        vardenhet.setVardgivare(vardgivare);
+        return vardenhet;
+    }
+
+    private Vardgivare createVardgivare() {
+        Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setHsaId("SE1234567890-2B01");
+        vardgivare.setNamn("Vardgivaren");
+        return vardgivare;
+    }
+
+    private CreateDraftCertificateType createCertificateType() {
 
         // Type
         TypAvUtlatande utlTyp = new TypAvUtlatande();
         utlTyp.setCode("fk7263");
-        utlatande.setTypAvUtlatande(utlTyp);
 
         // HoSPerson
-        HosPersonal hosPerson = new HosPersonal();
-        hosPerson.setFullstandigtNamn("Abel Baker");
-
         HsaId userHsaId = new HsaId();
         userHsaId.setExtension(USER_HSAID);
         userHsaId.setRoot("USERHSAID");
-        hosPerson.setPersonalId(userHsaId);
 
-        Enhet hosEnhet = new Enhet();
         HsaId unitHsaId = new HsaId();
         unitHsaId.setExtension(UNIT_HSAID);
         unitHsaId.setRoot("UNITHSAID");
-        hosEnhet.setEnhetsId(unitHsaId);
-        hosPerson.setEnhet(hosEnhet);
 
-        utlatande.setSkapadAv(hosPerson);
+        Enhet hosEnhet = new Enhet();
+        hosEnhet.setEnhetsId(unitHsaId);
+
+        HosPersonal hosPerson = new HosPersonal();
+        hosPerson.setFullstandigtNamn("Abel Baker");
+        hosPerson.setPersonalId(userHsaId);
+        hosPerson.setEnhet(hosEnhet);
 
         // Patient
         PersonId personId = new PersonId();
@@ -145,12 +177,16 @@ public class CreateDraftCertificateResponderImplTest {
         patType.getMellannamn().add("Cesarsson");
         patType.getMellannamn().add("Davidsson");
         patType.setEfternamn("Eriksson");
+
+        Utlatande utlatande = new Utlatande();
+        utlatande.setTypAvUtlatande(utlTyp);
+        utlatande.setSkapadAv(hosPerson);
         utlatande.setPatient(patType);
 
-        CreateDraftCertificateType parameters = new CreateDraftCertificateType();
-        parameters.setUtlatande(utlatande);
+        CreateDraftCertificateType certificateType = new CreateDraftCertificateType();
+        certificateType.setUtlatande(utlatande);
 
-        return parameters;
+        return certificateType;
     }
 
     private MiuInformationType createMIU(String personHsaId, String unitHsaId, LocalDateTime miuEndDate) {
@@ -165,4 +201,19 @@ public class CreateDraftCertificateResponderImplTest {
 
         return miu;
     }
+
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygId);
+        utkast.setVersion(version);
+        utkast.setIntygsTyp(type);
+        utkast.setStatus(status);
+        utkast.setModel(model);
+        utkast.setSkapadAv(vardperson);
+        utkast.setSenastSparadAv(vardperson);
+
+        return utkast;
+    }
+
 }
