@@ -3,3 +3,4 @@
 
 - include: provision_mysql.yml
 - include: provision_tomcat.yml
+- include: provision_activemq.yml

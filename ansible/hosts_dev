@@ -3,3 +3,6 @@ webcert-dev ansible_ssh_host={{webcertUrl}} ansible_ssh_user=vagrant ansible_ssh
 
 [mysql]
 webcert-dev ansible_ssh_host={{webcertUrl}} ansible_ssh_user=vagrant ansible_ssh_port=22 ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+[activemq]
+webcert-dev ansible_ssh_host={{webcertUrl}} ansible_ssh_user=vagrant ansible_ssh_port=22 ansible_ssh_private_key_file=~/.ssh/id_rsa
