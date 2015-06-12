@@ -142,8 +142,8 @@
 
   <repositories>
     <repository>
-      <id>callista-release</id>
-      <url>https://repository-callistasoftware.forge.cloudbees.com/release/</url>
+      <id>inera-release</id>
+      <url>https://jenkins.inera.nordicmedtest.se/nexus/content/repositories/releases/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
