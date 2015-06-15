@@ -15,6 +15,8 @@ class VisaFk7263Page extends VisaPage {
         certificateIsRevokedMessage(required: false,wait: true) { displayed($("#certificate-is-revoked-message-text")) }
         visaVadSomSaknasLista(required: false,wait: true) { displayed($("#visa-vad-som-saknas-lista")) }
         visaVadSomSaknasListaNoWait{$("#visa-vad-som-saknas-lista")}
+        certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
+
 
         // copy dialog
         annanEnhetText(wait: true) { displayed($("#annanVardenhet"))}
@@ -48,6 +50,11 @@ class VisaFk7263Page extends VisaPage {
 
         // fraga svar
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
+        nyFragaSvarKnapp { $("#askQuestionBtn") }
+        nyFragaFrageText { $("#newQuestionText") }
+        nyFragaFrageAmne { $("#new-question-topic") }
+        nyFragaSkickaFragaKnapp { $("#sendQuestionBtn") }
+        nyFragaSkickadTextruta { $("#question-is-sent-to-fk-message-text") }
 
         // INTYG
         nyttPersonnummer { $("#nyttPersonnummer") }
@@ -196,5 +203,39 @@ class VisaFk7263Page extends VisaPage {
             doneLoading()
         }
         skickaDialogSkickaKnapp.click()
+    }
+
+    def stallNyFragaTillForsakringskassan() {
+        nyFragaSvarKnapp.click()
+        waitFor {
+            doneLoading()
+        }
+    }
+
+    boolean nyFragaTillForsakringskassanFormularVisas(boolean expected = true) {
+        waitFor {
+            expected == nyFragaFrageText.isDisplayed()
+        }
+        true
+    }
+
+    def fillNyFragaFormular() {
+        waitFor {
+            nyFragaTillForsakringskassanFormularVisas(true)
+        }
+        nyFragaFrageText.value("Kan vi boka in ett möte med alla inblandade 15/5 15:00 på FK kontor?")
+        nyFragaFrageAmne.value("2")
+        nyFragaSkickaFragaKnapp.click()
+
+        waitFor {
+            nyFragaSkickadTextruta.isDisplayed()
+        }
+    }
+
+    boolean nyFragaSkickadTextVisas(boolean expected = true) {
+        waitFor {
+            expected == nyFragaSkickadTextruta.isDisplayed()
+        }
+        true
     }
 }

@@ -20,5 +20,8 @@ Detta test ska visa på att man kan skicka ett signerat ts-intyg.
 | id | exists? |
 | intyg-fit-8 | true |
 
+| script | !-IntygstjanstAsynk-! |
+| finns intyg i intygstjansten skickad till | intyg-fit-8 | skickad till | TS | med vantetid | 5000 |
+
 !3 Rensa intyg från ts stub
 | ta bort ts intyg stub |

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <bean id="activeMQComponent" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="configuration" ref="jmsConfig" />
+    <property name="transacted" value="true"/>
+    <property name="cacheLevelName" value="CACHE_CONSUMER"/>
+  </bean>
+
+  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+    <property name="errorHandlerLoggingLevel" value="OFF"/>
+    <property name="errorHandlerLogStackTrace" value="false"/>
+    <property name="connectionFactory" ref="cachingConnectionFactory" />
+    <property name="destinationResolver" ref="jmsDestinationResolver" />
+  </bean>
+
+  <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+    <constructor-arg>
+      <bean class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="java:comp/env/jms/AsyncConnectionFactory"/>
+      </bean>
+    </constructor-arg>
+  </bean>
+
+  <bean id="jmsDestinationResolver" class="org.springframework.jms.support.destination.JndiDestinationResolver">
+    <property name="resourceRef" value="true"/>
+    <property name="jndiTemplate">
+      <bean class="org.springframework.jndi.JndiTemplate"/>
+    </property>
+  </bean>
+
+</beans>

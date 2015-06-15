@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +195,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
         
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
-        send(notificationMessage);
+        send(notificationMessage, utkast.getEnhetsId());
     }
 
     public void createAndSendNotification(Utkast utkast, HandelseType handelse) {
@@ -206,7 +207,7 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
-        send(notificationMessage);
+        send(notificationMessage, utkast.getEnhetsId());
     }
 
     public void createAndSendNotification(FragaSvar fragaSvar, HandelseType handelse) {
@@ -219,11 +220,11 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse);
-        send(notificationMessage);
+        send(notificationMessage, utkast.getEnhetsId());
     }
 
     /* -- Package visibility -- */
-    void send(NotificationMessage notificationMessage) {
+    void send(NotificationMessage notificationMessage, String enhetsId) {
 
         if (jmsTemplate == null) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
@@ -232,7 +233,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
 
-        jmsTemplate.send(new NotificationMessageCreator(notificationMessageAsJson));
+        jmsTemplate.send(new NotificationMessageCreator(notificationMessageAsJson, enhetsId));
 
         LOGGER.debug("Notification sent: {}", notificationMessage);
     }
@@ -249,13 +250,19 @@ public class NotificationServiceImpl implements NotificationService {
     static final class NotificationMessageCreator implements MessageCreator {
 
         private String value;
+        private String enhetsId;
 
-        public NotificationMessageCreator(String notificationMessage) {
+        public NotificationMessageCreator(String notificationMessage, String enhetsId) {
             this.value = notificationMessage;
+            this.enhetsId = enhetsId;
         }
 
         public Message createMessage(Session session) throws JMSException {
-            return session.createTextMessage(this.value);
+            TextMessage textMessage = session.createTextMessage(this.value);
+            // Using JMSXGroupID makes sure that ActiveMQ sends messages destined to the same recipient
+            // to the same consumer thread.
+            textMessage.setStringProperty("JMSXGroupID", enhetsId);
+            return textMessage;
         }
     }
 

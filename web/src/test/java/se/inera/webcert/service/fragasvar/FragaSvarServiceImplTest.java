@@ -6,21 +6,18 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
@@ -47,6 +44,8 @@ import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeatureService;
@@ -57,12 +56,14 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
 
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,6 +109,8 @@ public class FragaSvarServiceImplTest {
 
     @Mock
     private MonitoringLogService monitoringServiceMock;
+    
+    @Spy  private ObjectMapper objectMapper = new CustomObjectMapper();
     
     @InjectMocks
     private FragaSvarServiceImpl service;
@@ -435,6 +438,56 @@ public class FragaSvarServiceImplTest {
         assertNotNull(result.getSvarSkickadDatum());
     }
 
+
+    @Test(expected = WebCertServiceException.class)
+    public void testExceptionThrownWhenIntygIsUnsentToFK() throws IOException {
+
+        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
+        String intygsId = fraga.getIntygsReferens().getIntygsId();
+        // Setup when - given -then
+
+        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp())).thenReturn(getUnsentIntygContentHolder());
+
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
+
+        // test call
+        try {
+            service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), fraga.getAmne(),
+                    fraga.getFrageText());
+        } catch (Exception e) {
+            verifyZeroInteractions(sendQuestionToFKClientMock);
+            verifyZeroInteractions(notificationServiceMock);
+            verify(fragasvarRepositoryMock, times(0)).save(any(FragaSvar.class));
+            throw e;
+        }
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testExceptionThrownWhenIntygIsRevoked() throws IOException {
+
+        FragaSvar fraga = buildFraga(1L, "frageText", Amne.OVRIGT, new LocalDateTime());
+        String intygsId = fraga.getIntygsReferens().getIntygsId();
+        // Setup when - given -then
+
+        when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp())).thenReturn(getRevokedIntygContentHolder());
+
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
+
+        // test call
+        try {
+            service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), fraga.getAmne(),
+                    fraga.getFrageText());
+        } catch (Exception e) {
+            verifyZeroInteractions(sendQuestionToFKClientMock);
+            verifyZeroInteractions(notificationServiceMock);
+            verify(fragasvarRepositoryMock, times(0)).save(any(FragaSvar.class));
+            throw e;
+        }
+    }
+
+
     private IntygContentHolder getIntygContentHolder() {
         List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
         status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
@@ -442,12 +495,20 @@ public class FragaSvarServiceImplTest {
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, false);
     }
 
+    private IntygContentHolder getUnsentIntygContentHolder() {
+        List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
+        status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        return new IntygContentHolder("<external-json/>", getUtlatande(), status, false);
+    }
+
     private IntygContentHolder getRevokedIntygContentHolder() {
         List<se.inera.certificate.model.Status> status = new ArrayList<se.inera.certificate.model.Status>();
         status.add(new se.inera.certificate.model.Status(CertificateState.RECEIVED, "MI", LocalDateTime.now()));
+        status.add(new se.inera.certificate.model.Status(CertificateState.SENT, "FK", LocalDateTime.now()));
         status.add(new se.inera.certificate.model.Status(CertificateState.CANCELLED, "MI", LocalDateTime.now()));
         return new IntygContentHolder("<external-json/>", getUtlatande(), status, true);
     }
+
 
     @Test(expected = WebCertServiceException.class)
     public void testSaveSvarWsError() {

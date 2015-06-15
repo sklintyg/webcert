@@ -19,6 +19,10 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-diabetes int
 | visa intyg sidan visas |
 | ensure | intyget signerat meddelande visas |
 
+!3 Verifiera att Intygstjänsten tagit emot intygen (asynkron sändning, webcert-1314)
+| script | !-IntygstjanstAsynk-! |
+| finns intyg i intygstjansten med | webcert-fitnesse-signera-1 | vantetid | 5000 |
+
 !3 Ta bort utkast
 
 | ta bort utkast |

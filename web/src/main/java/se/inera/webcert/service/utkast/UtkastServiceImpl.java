@@ -85,13 +85,12 @@ public class UtkastServiceImpl implements UtkastService {
     private WebCertUserService webCertUserService;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional("jpaTransactionManager") // , readOnly=true
     public int countFilterIntyg(UtkastFilter filter) {
         return utkastRepository.countFilterIntyg(filter);
     }
 
     @Override
-    @Transactional
     public Utkast createNewDraft(CreateNewDraftRequest request) {
 
         populateRequestWithIntygId(request);
@@ -219,7 +218,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public void logPrintOfDraftToPDL(String intygId) {
         Utkast utkast = utkastRepository.findOne(intygId);
 
@@ -236,7 +235,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public SaveAndValidateDraftResponse saveAndValidateDraft(SaveAndValidateDraftRequest request, boolean createPdlLogEvent) {
 
         String intygId = request.getIntygId();

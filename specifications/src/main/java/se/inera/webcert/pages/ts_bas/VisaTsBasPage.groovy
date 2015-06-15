@@ -22,6 +22,7 @@ class VisaTsBasPage extends VisaPage {
         certificateIsSentToITMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-it-message-text")) }
         certificateIsSentToRecipientMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-recipient-message-text")) }
         certificateIsRevokedMessage(required: false,wait: true) { displayed($("#certificate-is-revoked-message-text")) }
+        certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
 
         patientpostadress { $("#patientpostadress") }
         patientpostnummer { $("#patientpostnummer") }

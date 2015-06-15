@@ -124,10 +124,11 @@
       <artifactId>h2</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <scope>compile</scope>
+    
+      <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>1.4.0</version>
     </dependency>
 
   </dependencies>

@@ -15,7 +15,11 @@ Detta test ska visa på att man kan skicka ett signerat ts-intyg.
 | skicka status visas |
 | skicka status visas | true | med ratt meddelande | Transportstyrelsen |
 
-!3 Verififera att intyget finns i stubben
+!3 Verififera att intyget finns i intygstjänsten och stubben
+
+| script | !-IntygstjanstAsynk-! |
+| finns intyg i intygstjansten skickad till | intyg-fit-7 | skickad till | TS | med vantetid | 5000 |
+
 | ts intyg finns i stub |
 | id | exists? |
 | intyg-fit-7 | true |

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.webcert.intygstjanststub.mode.StubLatencyAware;
+import se.inera.webcert.intygstjanststub.mode.StubModeAware;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
@@ -22,6 +24,8 @@ public class ListCertificatesForCareResponderStub implements ListCertificatesFor
     private IntygStore intygStore;
 
     @Override
+    @StubLatencyAware
+    @StubModeAware
     public ListCertificatesForCareResponseType listCertificatesForCare(String s, ListCertificatesForCareType request) {
 
         ListCertificatesForCareResponseType response = new ListCertificatesForCareResponseType();

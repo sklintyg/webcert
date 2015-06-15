@@ -77,6 +77,7 @@ var wcMessages = {
         'info.query.noresults': '<strong>Sökningen gav inga resultat.</strong>',
         'info.query.error': '<strong>Sökningen kunde inte utföras.</strong>',
         'info.certload.error': '<strong>Kunde inte hämta intyg.</strong>',
+        'info.certload.offline': '<strong>Intygstjänsten ej tillgänglig, endast Intyg utfärdade av Webcert visas.</strong>',
         'info.running.query': '<strong>Söker...</strong>',
 
         //error messages

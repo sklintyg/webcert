@@ -1,5 +1,15 @@
 package se.inera.webcert.service.monitoring;
 
+import java.sql.Time;
+import java.util.List;
+
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -12,21 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls;
-import se.inera.webcert.persistence.utkast.repository.OmsandningRepository;
 import se.inera.webcert.service.monitoring.dto.HealthStatus;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
-import java.sql.Time;
-import java.util.List;
 
 /**
  * Service for getting the health status of the application.
@@ -55,9 +54,6 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     @Autowired
     @Qualifier("jmsFactory")
     private ConnectionFactory connectionFactory;
-
-    @Autowired
-    private OmsandningRepository omsandningRepository;
 
     @Autowired
     @Qualifier("pingIntygstjanstForConfigurationClient")
@@ -107,21 +103,13 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         return status;
     }
 
+    // TODO Replace this with something checking the AMQ???
     @Override
     public HealthStatus checkSignatureQueue() {
-        boolean ok;
-        long size = -1;
-        try {
-            size = omsandningRepository.count();
-            ok = true;
-        } catch (Exception e) {
-            ok = false;
-        }
 
-        String result = ok ? "OK" : "FAIL";
-        LOG.info("Operation checkSignatureQueue completed with result {}, queue size is {}", result, size);
+        LOG.info("Signature-queue check is deprecated, check AMQ state instead. This call will always return 0, true");
 
-        return new HealthStatus(size, ok);
+        return new HealthStatus(0, true);
     }
 
     @Override

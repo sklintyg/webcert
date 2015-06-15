@@ -90,7 +90,9 @@
 
   <logger name="se.inera.certificate.modules.ts_diabetes" level="info" />
 
-  <logger name="org.apache.camel" level="info" />
+  <logger name="org.apache.camel" level="error" />
+
+  <logger name="org.springframework.transaction" level="info" />
 
   <logger name="se.inera.webcert.notifications" level="debug" />
 

@@ -23,8 +23,7 @@
 | intyg-fit-9 |
 
 !3 Ta bort eventuella kvarvarande omsändningar
-| script | !-TaBortOmsandning-! |
-| ta bort omsandningar |
+TODO Rensa ActiveMQ?
 
 !3 Givet test-intyg i Intygstjänsten
 

@@ -1,0 +1,15 @@
+!include -c .ManuellaTester.SuiteSetUp
+
+!| Config       |
+|property|value |
+|geb.env |chrome|
+
+!2 Använd REST-api för att sätta Intygstjänst stub i OFFLINE
+
+!|script              |!-SokSkrivIntyg-!      |
+|intygstjanst stub offline|
+
+!2 Starta browser
+
+!|script|Browser|
+|öppna          |

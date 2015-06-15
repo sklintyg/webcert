@@ -1,0 +1,7 @@
+| script | Browser |
+| stäng |
+
+
+!3 Använd REST-api för att sätta Intygstjänst stub i ONLINE
+| script | !-SokSkrivIntyg-!   |
+|intygstjanst stub online|

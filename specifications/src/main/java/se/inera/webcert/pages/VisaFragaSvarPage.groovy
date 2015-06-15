@@ -176,16 +176,18 @@ class VisaFragaSvarPage extends AbstractPage {
     }
 
     boolean qaUnhandledPanel(String id, boolean expected) {
+        boolean result = false
         Browser.drive {
             def ref = "#qaunhandled-${id}";
             if (expected) {
                 waitFor {
-                    $(ref).isDisplayed()
+                    result = $(ref).isDisplayed()
                 }
             } else {
-                !$(ref).isDisplayed()
+                result = !$(ref).isDisplayed()
             }
         }
+        return result
     }
 
     def qaUnhandledPanelWithText(String text) {

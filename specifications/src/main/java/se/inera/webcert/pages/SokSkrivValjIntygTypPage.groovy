@@ -15,6 +15,7 @@ class SokSkrivValjIntygTypPage extends AbstractPage {
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         fortsattKnapp { $("#intygTypeFortsatt") }
+        felmeddelandeRuta { $("#current-list-noResults-error")}
         sekretessmarkering(wait: true) { displayed($("#sekretessmarkering")) }
     }
 

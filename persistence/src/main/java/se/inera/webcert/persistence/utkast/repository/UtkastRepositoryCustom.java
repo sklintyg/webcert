@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 
-@Transactional(readOnly = true)
+@Transactional(value = "jpaTransactionManager", readOnly = true)
 public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     /**
      * Should return a list of {@link Utkast} entities in the repository that has an enhetsId matching one of the

@@ -6,6 +6,7 @@ import se.inera.webcert.pages.fk7263.VisaFk7263Page
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 import se.inera.webcert.pages.ts_diabetes.EditCertPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
+import se.inera.webcert.spec.util.WebcertRestUtils
 
 class SokSkrivIntyg {
 
@@ -174,7 +175,8 @@ class SokSkrivIntyg {
     def makuleraBekraftelseVisas() {
         Browser.drive {
             page.makuleraConfirmationOkButton.isDisplayed()
-            page.makuleraConfirmationOkButton.click()
+                //page.certificateIsSentToRecipientMessage.isDisplayed()
+          //      page.certificateIsOnQueueToITMessage.isDisplayed()
         }
     }
 
@@ -189,6 +191,7 @@ class SokSkrivIntyg {
         Browser.drive {
             waitFor {
                 at IndexPage
+                expected = page.certificateIsOnQueueToITMessage.text().contains(containsText)
             }
             page.startLogin()
         }
@@ -258,21 +261,20 @@ class SokSkrivIntyg {
 
     boolean skickaStatusVisas() {
         Browser.drive {
-            return page.certificateIsSentToRecipientMessage.isDisplayed()
+            return page.certificateIsSentToRecipientMessage; //.isDisplayed()
         }
     }
 
     boolean skickaStatusVisasMedRattMeddelande(boolean expected = true, String containsText) {
-
         Browser.drive {
-            return page.certificateIsSentToRecipientMessage.text().contains(containsText)
-
+            return page.certificateIsOnQueueToITMessage.text().contains(containsText);
         }
     }
 
     boolean annanEnhetTextVisas() {
+
         Browser.drive {
-            return page.annanEnhetText.isDisplayed()
+            return page.annanEnhetText
         }
     }
 
@@ -292,12 +294,12 @@ class SokSkrivIntyg {
         Browser.drive {
             page.kanInteMakulera()
         }
-        true
     }
 
     boolean makuleradStatusVisas() {
         Browser.drive {
-            return page.certificateIsRevokedMessage.isDisplayed()
+            return page.certificateIsRevokedMessage; //.isDisplayed()
+            //return $("#certificate-is-revoked-message-text").isDisplayed()
         }
     }
 
@@ -358,6 +360,115 @@ class SokSkrivIntyg {
                 at UnhandledQAPage
             }
             return page.careUnitSelector.isDisplayed()
+        }
+    }
+
+    boolean felmeddelanderutaVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            waitFor {
+                expected == page.felmeddelandeRuta.isDisplayed()
+            }
+        }
+    }
+
+    def intygstjanstStubOnline() {
+        WebcertRestUtils.setIntygTjanstStubInMode("ONLINE")
+    }
+
+    def intygstjanstStubOffline() {
+        WebcertRestUtils.setIntygTjanstStubInMode("OFFLINE")
+    }
+
+    def intygstjanstStubLatency(Long latency = 0L) {
+        WebcertRestUtils.setIntygTjanstStubLatency(latency)
+    }
+//
+//        }
+//    }
+
+    def skickaVisatIntygTillForsakringskassan() {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                page.send()
+            }
+        }
+    }
+
+    boolean intygSkickatTillForsakringskassan(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                expected == page.certificateIsSentToRecipientMessage.isDisplayed()
+            }
+        }
+        true
+    }
+
+    boolean intygLagtPaSandKoVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                expected == page.certificateIsOnQueueToITMessage.isDisplayed()
+            }
+        }
+    }
+
+    def stallNyFragaTillForsakringskassan() {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                page.stallNyFragaTillForsakringskassan()
+            }
+            waitFor {
+                page.nyFragaTillForsakringskassanFormularVisas()
+            }
+        }
+    }
+
+    boolean nyFragaFormularVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                expected == page.nyFragaTillForsakringskassanFormularVisas()
+            }
+        }
+        true
+    }
+
+    def fyllOchSkickaFragaTillForsakringskassan() {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                page.fillNyFragaFormular()
+            }
+        }
+    }
+
+    boolean nyFragaSkickadBekraftelseVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                expected == page.nyFragaSkickadTextVisas()
+            }
+            true
         }
     }
 

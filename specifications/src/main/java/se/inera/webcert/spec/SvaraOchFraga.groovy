@@ -126,7 +126,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            page.qaUnhandledPanelWithText(text)
+            return page.qaUnhandledPanelWithText(text)
         }
     }
 

@@ -10,8 +10,8 @@ class SigneraUtkast {
     def response
 
     public void execute() {
-        WebcertRestUtils.login()
-        response = WebcertRestUtils.signUtkast(intygTyp, intygId, version)
+        //WebcertRestUtils.login(WebcertRestUtils.restClient)
+        response = WebcertRestUtils.signUtkastUsingBrowserSesssion(intygTyp, intygId, version)
     }
 
     public boolean utkastSignerat() {

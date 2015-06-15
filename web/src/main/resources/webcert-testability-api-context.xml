@@ -45,6 +45,7 @@
     </jaxrs:extensionMappings>
   </jaxrs:server>
 
+  <!--
   <jaxrs:server address="/omsandning">
     <jaxrs:serviceBeans>
       <bean class="se.inera.webcert.integration.test.OmsandningResource" />
@@ -56,5 +57,6 @@
       <entry key="json" value="application/json" />
     </jaxrs:extensionMappings>
   </jaxrs:server>
+  -->
 
 </beans>
