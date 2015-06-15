@@ -7,5 +7,8 @@ webcert-demo ansible_ssh_host=10.250.35.51 ansible_ssh_user=intygadmin ansible_s
 [activemq]
 webcert-demo ansible_ssh_host=10.250.35.51 ansible_ssh_user=intygadmin ansible_ssh_private_key_file=~/.ssh/inera_rsa
 
+[tomcat:children]
+webcert-tomcat
+
 [mysql:children]
 webcert-mysql
