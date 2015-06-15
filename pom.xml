@@ -536,6 +536,16 @@
       </snapshots>
     </repository>
     <repository>
+      <id>inera-nightly</id>
+      <url>https://jenkins.inera.nordicmedtest.se/nexus/content/repositories/nightly/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
       <id>inera-snapshot</id>
       <url>https://jenkins.inera.nordicmedtest.se/nexus/content/repositories/snapshots/</url>
       <releases>
