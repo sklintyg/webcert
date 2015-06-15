@@ -22,8 +22,8 @@ Populera intyget med information i samtliga fält så det blir komplett
 !3 Spara
 
 | script | !-SkrivIntyg-! |
-| sparaUtkast |
 | intyg sparat visas |
+#| sparaUtkast |
 
 !3 Ta bort utkastet
 

@@ -175,14 +175,11 @@ class SokSkrivIntyg {
     def makuleraBekraftelseVisas() {
         Browser.drive {
             page.makuleraConfirmationOkButton.isDisplayed()
-                //page.certificateIsSentToRecipientMessage.isDisplayed()
-          //      page.certificateIsOnQueueToITMessage.isDisplayed()
         }
     }
 
     def visaIntyg(String intygId) {
         Browser.drive {
-            page.intygLista.isDisplayed()
             page.show(intygId)
         }
     }

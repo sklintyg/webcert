@@ -1,4 +1,4 @@
-!include -c .ManuellaTester.SuiteSetUp
+!include -c .WebCert.ManuellaTester.SuiteSetUp
 
 !| Config       |
 |property|value |

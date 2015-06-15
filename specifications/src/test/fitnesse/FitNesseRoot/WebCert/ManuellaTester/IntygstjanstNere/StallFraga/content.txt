@@ -1,0 +1,100 @@
+!3 Lägg till komplett utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | ICD_10_SE |
+
+
+!3 Givet att det finns ett komplett utkast, verifiera att det går att signera det
+
+| script | !-HanteraUtkast-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+| sok skriv intyg sidan visas |
+| ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-1 |
+| editera sidan visas |
+| ensure | signera knapp visas |
+| ensure | signera knapp aktiverad |
+| signera utkast |
+| visa intyg sidan visas |
+| ensure | intyget signerat meddelande visas |
+
+!3 Skicka intyget och kontrollera att intyget skickats
+
+| script | !-SokSkrivIntyg-! |
+| skicka det visade intyget av typ | fk7263 |
+| skicka status visas |
+| skicka status visas | true | med ratt meddelande | Försäkringskassans system |
+
+
+!3 Lägg till fråga
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
+| OVRIGT | FIT-QA-1000 | FK | En fråga | webcert-fitnesse-signera-1 | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
+
+!3 Verifiera att det går att visa frågan från listan med ohanterade frågor
+
+| script | !-SvaraOchFraga-! |
+| ga till svara och fraga |
+| ohanterade fragor sidan visas |
+| lista med ohanterade fragor visas |
+| visa fraga | $internReferens1 |
+| intyg med fraga svar sidan visas |
+
+!3 Verifiera att det går att skicka en ny fråga till försäkringskassan
+
+| script | !-SvaraOchFraga-! |
+| ny fraga knapp visas |
+| valj ny fraga |
+| ny fraga formular visas |
+| skicka fraga knapp aktiverad | false |
+| skicka fraga | En fråga från Fitnesse 1 | med amne | 1 |
+| fragan ar skickad till fk meddelande visas |
+| ny fraga formular visas | false |
+| fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
+
+!3 Stäng blå info-ruta för skickat-meddelande
+
+| script | !-SvaraOchFraga-! |
+| stang fk meddelande |
+| fragan ar skickad till fk meddelande visas | false |
+
+!3 Verifiera att det även går att använda de övriga ämnena
+
+| script | !-SvaraOchFraga-! |
+| valj ny fraga |
+| skicka fraga | En fråga från Fitnesse 2 | med amne | 2 |
+| fraga med text | En fråga från Fitnesse 2 | visas  i listan med ohanterade fragor |
+| fragan ar skickad till fk meddelande visas |
+| valj ny fraga |
+| skicka fraga | En fråga från Fitnesse 3 | med amne | 3 |
+| fraga med text | En fråga från Fitnesse 3 | visas  i listan med ohanterade fragor |
+| fragan ar skickad till fk meddelande visas |
+| valj ny fraga |
+| skicka fraga | En fråga från Fitnesse 4 | med amne | 4 |
+| fraga med text | En fråga från Fitnesse 4 | visas  i listan med ohanterade fragor |
+| fragan ar skickad till fk meddelande visas |
+
+!3 Ta bort fråga från försäkringskassan (stub)
+
+| script | !-RensaFragorSvarTillFk-! |
+| rensa fragor |
+
+!3 Ta bort de frågor vi har skickat
+
+| ta bort fraga |
+| frageText |
+| En fråga från Fitnesse% |
+!3 Ta bort de frågor vi har skickat
+
+| ta bort fraga |
+| frageText |
+| En fråga från Fitnesse% |
+
+
+
+!3 Ta bort utkast
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-signera-1 |
