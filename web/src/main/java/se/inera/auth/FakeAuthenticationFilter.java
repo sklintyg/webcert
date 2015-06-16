@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import se.inera.auth.eleg.FakeElegAuthenticationToken;
+import se.inera.auth.eleg.FakeElegCredentials;
 
 /**
  * @author andreaskaltenbach
@@ -38,6 +41,28 @@ public class FakeAuthenticationFilter extends AbstractAuthenticationProcessingFi
         // we manually encode the json parameter
         String json = URLDecoder.decode(parameter, "UTF-8");
 
+        // Start of separate code paths for SakerhetsTjanst vs CGI (privatlakare) fakes
+        JsonNode jsonNode = new ObjectMapper().readTree(json);
+        if (jsonNode.has("privatLakare") && jsonNode.get("privatLakare").asBoolean()) {
+            return performFakeElegAuthentication(json);
+        } else {
+            return performFakeSithsAuthentication(json);
+        }
+    }
+
+    private Authentication performFakeElegAuthentication(String json) {
+        try {
+            FakeElegCredentials fakeElegCredentials = new ObjectMapper().readValue(json, FakeElegCredentials.class);
+            LOG.info("Detected fake credentials " + fakeElegCredentials);
+            return getAuthenticationManager().authenticate(new FakeElegAuthenticationToken(fakeElegCredentials));
+        } catch (IOException e) {
+            String message = "Failed to parse JSON for fake E-leg: " + json;
+            LOG.error(message, e);
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    private Authentication performFakeSithsAuthentication(String json) {
         try {
             FakeCredentials fakeCredentials = new ObjectMapper().readValue(json, FakeCredentials.class);
             LOG.info("Detected fake credentials " + fakeCredentials);

@@ -45,21 +45,9 @@ import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
 /**
  * @author andreaskaltenbach
  */
-public class FakeAuthenticationProvider implements AuthenticationProvider {
+public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
 
-    public static final String FAKE_AUTHENTICATION_CONTEXT_REF = "urn:inera:webcert:fake";
 
-    private static DocumentBuilder documentBuilder;
-
-    private SAMLUserDetailsService userDetails;
-
-    static {
-        try {
-            documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException("Failed to instantiate DocumentBuilder", e);
-        }
-    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -109,34 +97,5 @@ public class FakeAuthenticationProvider implements AuthenticationProvider {
         return new SAMLCredential(nameId, assertion, "fake-idp", "webcert");
     }
 
-    private void attachAuthenticationContext(Assertion assertion) {
-        AuthnStatement authnStatement = new AuthnStatementBuilder().buildObject();
-        AuthnContext authnContext = new AuthnContextBuilder().buildObject();
-        AuthnContextClassRef authnContextClassRef = new AuthnContextClassRefBuilder().buildObject();
 
-        authnContextClassRef.setAuthnContextClassRef(FAKE_AUTHENTICATION_CONTEXT_REF);
-        authnContext.setAuthnContextClassRef(authnContextClassRef);
-        authnStatement.setAuthnContext(authnContext);
-        assertion.getAuthnStatements().add(authnStatement);
-    }
-
-    private Attribute createAttribute(String name, String value) {
-
-        Attribute attribute = new AttributeBuilder().buildObject();
-        attribute.setName(name);
-
-        Document doc = documentBuilder.newDocument();
-        Element element = doc.createElement("element");
-        element.setTextContent(value);
-
-        XMLObject xmlObject = new XSStringBuilder().buildObject(new QName("ns", "local"));
-        xmlObject.setDOM(element);
-        attribute.getAttributeValues().add(xmlObject);
-
-        return attribute;
-    }
-
-    public void setUserDetails(SAMLUserDetailsService userDetails) {
-        this.userDetails = userDetails;
-    }
 }

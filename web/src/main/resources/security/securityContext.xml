@@ -100,6 +100,7 @@
     </security:http>
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="fakeAuthenticationProvider"/>
+      <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
     </security:authentication-manager>
   </beans>
 
@@ -169,6 +170,10 @@
     </bean>
     <bean id="fakeAuthenticationProvider"
           class="se.inera.auth.FakeAuthenticationProvider">
+      <property name="userDetails" ref="userDetailsService"/>
+    </bean>
+    <bean id="fakeElegAuthenticationProvider"
+        class="se.inera.auth.eleg.FakeElegAuthenticationProvider">
       <property name="userDetails" ref="userDetailsService"/>
     </bean>
   </beans>
