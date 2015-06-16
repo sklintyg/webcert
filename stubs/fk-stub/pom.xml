@@ -7,7 +7,7 @@
   <parent>
     <groupId>se.inera.intyg.webcert</groupId>
     <artifactId>webcert</artifactId>
-    <version>3.2.0-b74</version>
+    <version>0-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
 
