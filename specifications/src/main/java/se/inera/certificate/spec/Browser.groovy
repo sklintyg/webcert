@@ -27,7 +27,7 @@ public class Browser {
         browser.driver.navigate().refresh()
         browser.drive {
             waitFor {
-                js.doneLoading && js.dialogDoneLoading
+                AbstractPage.doneLoading()
             }
         }
     }
