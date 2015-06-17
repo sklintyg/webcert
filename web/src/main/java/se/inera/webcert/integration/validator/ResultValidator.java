@@ -6,12 +6,12 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ValidationResult {
+public class ResultValidator {
 
     private List<String> errors = new ArrayList<String>();
 
-    public static ValidationResult newInstance() {
-        return new ValidationResult();
+    public static ResultValidator newInstance() {
+        return new ResultValidator();
     }
 
     public void addError(String msg) {
