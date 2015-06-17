@@ -87,10 +87,13 @@
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-bas</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-diabetes</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.intygstyper</groupId>
+      <artifactId>sjukpenning</artifactId>
     </dependency>
      
     <!-- RIVTA Schemas -->

@@ -39,6 +39,7 @@ module.exports = function(grunt) {
     var TSBAS_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
     var TSDIABETES_DIR = '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert';
     var FK7263_DIR = '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert';
+    var SJUKPENNING_DIR = '/../../intygstyper/sjukpenning/src/main/resources/META-INF/resources/webjars/sjukpenning/webcert';
 
     grunt.initConfig({
 
@@ -116,7 +117,8 @@ module.exports = function(grunt) {
                         __dirname + COMMON_DIR + '/**/*.html',
                         __dirname + FK7263_DIR + '/**/*.html',
                         __dirname + TSBAS_DIR + '/**/*.html',
-                        __dirname + TSDIABETES_DIR + '/**/*.html'
+                        __dirname + TSDIABETES_DIR + '/**/*.html',
+                        __dirname + SJUKPENNING_DIR + '/**/*.html'
                 ],
                 tasks: ['ngtemplates']
             }
@@ -164,6 +166,17 @@ module.exports = function(grunt) {
                     module: 'ts-bas',
                     url: function(url) {
                         return '/web/webjars/ts-bas/webcert/' + url;
+                    }
+                }
+            },
+            sjukpenning: {
+                cwd: __dirname + SJUKPENNING_DIR,
+                src: ['**/*.html'],
+                dest: __dirname + SJUKPENNING_DIR + '/templates.js',
+                options:{
+                    module: 'sjukpenning',
+                    url: function(url) {
+                        return '/web/webjars/sjukpenning/webcert/' + url;
                     }
                 }
             },
@@ -244,6 +257,11 @@ module.exports = function(grunt) {
                             connect().use(
                                 '/web/webjars/ts-diabetes/webcert',
                                 connect.static(__dirname + TSDIABETES_DIR)
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/sjukpenning/webcert',
+                                connect.static(__dirname + SJUKPENNING_DIR)
                             ));
                         middlewares.push(proxy);
                         return middlewares;
