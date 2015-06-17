@@ -1,4 +1,4 @@
-package se.inera.webcert.service.draft.util;
+package se.inera.webcert.service.util;
 
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.Vardenhet;
@@ -9,6 +9,7 @@ import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.service.dto.HoSPerson;
 
 public class UpdateUserUtil {
+
     /**
      * Create a user object from WebCertUser
      * @param user {@link WebCertUser}
