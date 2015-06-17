@@ -7,5 +7,5 @@ Testet beskriver fallet när en läkare söker efter en patient som finns i PU-t
 | sok skriv intyg sidan visas sa smaningom |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
-| check | patientens namn ar | oDVLFtvtaR GgmYNp xvLUnXI bSKG |
+| check | patientens namn ar | ${person1.namn} |
 

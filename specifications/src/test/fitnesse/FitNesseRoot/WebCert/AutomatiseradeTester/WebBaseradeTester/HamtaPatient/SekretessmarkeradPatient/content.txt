@@ -7,7 +7,7 @@ Testet beskriver fallet när en läkare söker efter en patient som finns i PU-t
 | sok skriv intyg sidan visas sa smaningom |
 | valj patient | ${person5.personnummer} |
 | valj intygstyp sidan visas |
-| check | patientens namn ar | Maj Pärsson |
+| check | patientens namn ar | ${person5.namn} |
 | ensure | valj intygstyp ej synlig |
 | ensure | sekretessmarkering text synlig |
 | kopiera knapp visas| false | for intyg | intyg-fit-9 |
