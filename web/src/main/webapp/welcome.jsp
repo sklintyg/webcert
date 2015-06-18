@@ -322,6 +322,7 @@
                 var jsonElView = angular.element( document.querySelector( '#userJsonDisplay' ) );
                 var selector = angular.element( document.querySelector( '#jsonSelect' ) );
                 //jsonEl.value = escape(JSON.stringify(loginArr[selector.selectedIndex], undefined, 2));
+                console.log("newselected : " + newSelected + ", old : " + oldVal);
                 var loginJson = JSON.stringify($scope.loginModel[newSelected], undefined, 1);
                 jsonElView.text( loginJson );
                 jsonEl.text( escape( loginJson ) );

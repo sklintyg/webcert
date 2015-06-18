@@ -70,33 +70,58 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
             }
         }).
         state('webcert.intyg', {
+            abstract : true,
             data: { defaultActive : 'index' },
-            url:'/intyg/:certificateType/:certificateId?:patientId&:hospName&:signed',
             views: {
                 'content@' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.html',
+                    templateUrl: '/app/views/visaIntygFragasvar/intyg.main.html'
+                }
+            }
+
+        }).
+        state('webcert.intyg.fk', {
+            data: { defaultActive : 'index' },
+            url:'/intyg/fk7263/:certificateId?:patientId&:hospName&:signed',
+            onEnter: function($stateParams){
+                $stateParams.certificateType = 'fk7263';
+            },
+            views: {
+                'main@webcert.intyg' : {
+                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
                     controller: 'webcert.ViewCertCtrl'
                 },
-                'intyg@webcert.intyg' : {
-                    templateUrl: function($stateParams){
-                        return '/web/webjars/' + $stateParams.certificateType + '/webcert/views/intyg/intyg.html';
-                    }
+                'intyg@webcert.intyg.fk' : {
+                    templateUrl: '/web/webjars/fk7263/webcert/views/intyg/intyg.html'
+
                 },
-                'fragaSvar@webcert.intyg' : {
-                    templateUrl: function($stateParams){
-                        if($stateParams.certificateType.indexOf('ts') === 0){
-                            return '';
-                        } else {
-                            return '/web/webjars/' + $stateParams.certificateType + '/webcert/views/intyg/fragasvar/fragasvar.html';
-                        }
-                    }
+                'fragaSvar@webcert.intyg.fk' : {
+                    templateUrl: '/web/webjars/fk7263/webcert/views/intyg/fragasvar/fragasvar.html'
                 },
-                'header@webcert.intyg' : {
+                'header@webcert.intyg.fk' : {
                     templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
                     controller: 'common.IntygHeader'
                 }
             }
+        }).
+        state('webcert.intyg.ts', {
+            data: { defaultActive : 'index' },
+            url:'/intyg/{certificateType:ts.+}/:certificateId?:patientId&:hospName&:signed',
 
+            views: {
+                'main@webcert.intyg' : {
+                    templateUrl: '/app/views/visaIntygFragasvar/intyg.ts.html',
+                    controller: 'webcert.ViewCertCtrl'
+                },
+                'intyg@webcert.intyg.ts' : {
+                    templateUrl: function($stateParams){
+                        return '/web/webjars/' + $stateParams.certificateType + '/webcert/views/intyg/intyg.html';
+                    }
+                },
+                'header@webcert.intyg.ts' : {
+                    templateUrl: '/web/webjars/common/webcert/intyg/intyg-header/intyg-header.html',
+                    controller: 'common.IntygHeader'
+                }
+            }
         }).
         state('webcert.fragasvar', {
             data: { defaultActive : 'unhandled-qa' },

@@ -110,40 +110,66 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserM
         UserModel.setUserContext(MODULE_CONFIG.USERCONTEXT);
         messageService.addResources(wcMessages);
 
-        $window.animations = 0;
+        // define test hooks
         $window.doneLoading = false;
         $window.dialogDoneLoading = true;
         $window.rendered = true;
         $window.saving = false;
-        $window.hasRegistered = false;
+        $window.digest = 0;
+        $window.autoSave = true;
+
+        $window.setAutoSave = function(val){
+            $window.autoSave = val;
+        }
         // watch the digest cycle
-        $rootScope.$watch(function() {
-            if ($window.hasRegistered) return;
-            $window.hasRegistered = true
-            // Note that we're using a private Angular method here (for now)
-            $rootScope.$$postDigest(function() {
-                $window.hasRegistered = false;
-            });
-        });
+        //$rootScope.$watch(function() {
+        //    $window.digest ++;
+        //    $log.log('---- inc digest : ' + $window.digest);
+        //    // Note that we're using a private Angular method here (for now)
+        //    $rootScope.$$postDigest(function() {
+        //        $window.digest --;
+        //        $log.log('---- dec digest : ' + $window.digest);
+        //    });
+        //});
+
+
 
         $rootScope.$on('$stateChangeStart',
             function(event, toState, toParams, fromState, fromParams){
+                //$log.log('$stateChangeStart to '+toState.to+'- fired when the transition begins. toState,toParams : \n',toState, toParams);
                 $window.doneLoading = false;
             });
 
         $rootScope.$on('$stateNotFound',
             function(event, unfoundState, fromState, fromParams){
+                //$log.log('$stateNotFound '+unfoundState.to+'  - fired when a state cannot be found by its name.');
+                //$log.log(unfoundState, fromState, fromParams);
+
             })
         $rootScope.$on('$stateChangeSuccess',
             function(event, toState, toParams, fromState, fromParams){
+                //$log.log('$stateChangeSuccess to '+toState.name+'- fired once the state transition is complete.');
                 $window.doneLoading = true;
             })
 
         $rootScope.$on('$stateChangeError',
             function(event, toState, toParams, fromState, fromParams, error){
-                $log.log("$stateChangeError");
-                $log.log(toState);
-            })
+                //$log.log("$stateChangeError");
+                //$log.log(toState);
+            });
+
+
+        $rootScope.$on('$viewContentLoading',function(event, viewConfig){
+            // runs on individual scopes, so putting it in "run" doesn't work.
+            $window.rendered = false;
+            $log.log('+++ $viewContentLoading, rendered : ' + $window.rendered);
+        });
+        $rootScope.$on('$viewContentLoaded',function(event){
+            //$log.log('$viewContentLoaded - fired after dom rendered',event);
+            $window.rendered = true;
+            $log.log('--- $viewContentLoaded, rendered : ' + $window.rendered);
+        });
+
     }]);
 
 // Get a list of all modules to find all files to load.
