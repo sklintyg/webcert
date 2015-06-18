@@ -8,4 +8,4 @@
 | script | !-VisaIntyg-! |
 | visa intyg med id | intyg-fit-1 | och typ | fk7263 |
 | ensure | intyg laddat |
-| skriv ut knapp visas |
+| ensure | skriv ut arbetsgivarutskrift knapp visas |

@@ -466,7 +466,7 @@ class SvaraOchFraga {
             waitFor {
                 at VisaFragaSvarPage
             }
-            return page.skrivUtBtn.isDisplayed()
+            return (page.skrivUtBtn?.present && page.skrivUtBtn.isDisplayed()) || (page.skrivUtBtnEmployer?.present && page.skrivUtBtnEmployer.isDisplayed())
 
         }
     }

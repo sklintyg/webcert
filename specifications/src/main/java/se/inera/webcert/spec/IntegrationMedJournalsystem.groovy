@@ -202,7 +202,7 @@ class IntegrationMedJournalsystem {
 
     boolean skrivUtKnappVisas() {
         Browser.drive {
-            return page.skrivUtKnapp.isDisplayed()
+            return (page.skrivUtKnapp?.present && page.skrivUtKnapp.isDisplayed()) || (page.skrivUtKnappEmployer?.present && page.skrivUtKnappEmployer.isDisplayed())
         }
     }
 

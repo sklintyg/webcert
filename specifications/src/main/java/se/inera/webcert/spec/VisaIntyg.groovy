@@ -54,8 +54,30 @@ class VisaIntyg {
             waitFor {
                 at VisaPage
             }
-            result = page.skrivUtKnapp.isDisplayed()
+            result = (page.skrivUtKnapp?.present && page.skrivUtKnapp.isDisplayed()) || (page.skrivUtKnappEmployer?.present && page.skrivUtKnappEmployer.isDisplayed())
 
+        }
+        return result
+    }
+
+    boolean skrivUtVanligKnappVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at VisaPage
+            }
+            result = page.skrivUtKnapp.isDisplayed()
+        }
+        return result
+    }
+
+    boolean skrivUtArbetsgivarutskriftKnappVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at VisaPage
+            }
+            result = page.skrivUtKnappEmployer.isDisplayed()
         }
         return result
     }

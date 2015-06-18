@@ -1,8 +1,20 @@
 package se.inera.webcert.web.controller.moduleapi;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
@@ -11,16 +23,6 @@ import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.webcert.web.controller.moduleapi.dto.SendSignedIntygParameter;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.List;
 
 /**
  * Controller exposing services to be used by modules.
@@ -59,6 +61,8 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Return the signed certificate identified by the given id as PDF.
      *
+     * @param intygsTyp
+     *            the type of certificate
      * @param intygsId
      *            - the globally unique id of a certificate.
      * @return The certificate in PDF format
@@ -67,10 +71,33 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/pdf")
     @Produces("application/pdf")
     public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
+        return getPdf(intygsTyp, intygsId, false);
+    }
 
-        LOG.debug("Fetching signed intyg '{}' as PDF", intygsId);
+    /**
+     * Return the signed certificate identified by the given id as PDF suited for the employer of the patient.
+     *
+     * @param intygsTyp
+     *            the type of certificate
+     * @param intygsId
+     *            - the globally unique id of a certificate.
+     * @return The certificate in PDF format
+     */
+    @GET
+    @Path("/{intygsTyp}/{intygsId}/pdf/arbetsgivarutskrift")
+    @Produces("application/pdf")
+    public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
+        return getPdf(intygsTyp, intygsId, true);
+    }
 
-        IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygsId, intygsTyp);
+    private Response getPdf(String intygsTyp, final String intygsId, boolean isEmployerCopy) {
+        if (!isEmployerCopy) {
+            LOG.debug("Fetching signed intyg '{}' as PDF", intygsId);
+        } else {
+            LOG.debug("Fetching signed intyg '{}' as PDF for employer", intygsId);
+        }
+
+        IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygsId, intygsTyp, isEmployerCopy);
 
         return Response.ok(intygPdfResponse.getPdfData()).header(CONTENT_DISPOSITION, buildPdfHeader(intygPdfResponse.getFilename())).build();
     }
@@ -112,7 +139,7 @@ public class IntygModuleApiController extends AbstractApiController {
     public Response revokeSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             RevokeSignedIntygParameter param) {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.MAKULERA_INTYG, intygsTyp);
-        String revokeMessage = (param != null) ? param.getRevokeMessage(): null;
+        String revokeMessage = (param != null) ? param.getRevokeMessage() : null;
         IntygServiceResult revokeResult = intygService.revokeIntyg(intygsId, intygsTyp, revokeMessage);
         return Response.ok(revokeResult).build();
     }

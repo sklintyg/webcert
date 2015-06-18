@@ -161,7 +161,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp) {
+    public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp, boolean isEmployer) {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
@@ -169,7 +169,7 @@ public class IntygServiceImpl implements IntygService {
 
             verifyEnhetsAuth(intyg.getUtlatande(), true);
 
-            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses());
+            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(), isEmployer);
             
             // Log print as PDF to PDL log
             LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());

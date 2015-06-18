@@ -21,6 +21,7 @@ class VisaFragaSvarPage extends AbstractPage {
         sendQuestionBtn(required: false, wait: true) { displayed($("#sendQuestionBtn")) }
         cancelQuestionBtn { $("#cancelQuestionBtn") }
         skrivUtBtn(required: false, wait: true) { displayed($("#downloadprint")) }
+        skrivUtBtnEmployer(required: false, wait: true) { displayed($("#downloadprintemployer")) }
         kopieraBtn(required: false, wait: true) { displayed($("#copyBtn")) }
         kopieraBtnNoWait(required: false) { $("#copyBtn") }
         makuleraBtn(required: false, wait: true) { displayed($("#makuleraBtn")) }

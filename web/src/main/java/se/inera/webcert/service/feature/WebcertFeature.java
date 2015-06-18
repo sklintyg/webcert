@@ -7,6 +7,7 @@ public enum WebcertFeature {
     KOPIERA_INTYG("kopieraIntyg"),
     MAKULERA_INTYG("makuleraIntyg"),
     SKICKA_INTYG("skickaIntyg"),
+    ARBETSGIVARUTSKRIFT("arbetsgivarUtskrift"),
     FRAN_JOURNALSYSTEM("franJournalsystem"),
     FRAN_JOURNALSYSTEM_QAONLY("franJournalsystemQAOnly"),
     JS_LOGGNING("jsLoggning"),
