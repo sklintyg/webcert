@@ -1,0 +1,257 @@
+{"hsaId": {
+    "root": "1.2.752.129.2.1.4.1",
+    "extension": "HSA0000-123456789"
+}, "personId": {
+    "root": "1.2.752.129.2.1.3.1",
+    "extension": "19121212-1212"
+}, "fullstandigtNamn": "Tolvan Tolvansson", "befattning": [
+    {
+        "kod": "202010",
+        "namn": "Specialistläkare"
+    }
+], "specialitet": [
+    {
+        "kod": "100",
+        "namn": "Kirurgi"
+    },
+    {
+        "kod": "200",
+        "namn": "Ortopedi"
+    }
+], "legitimeradYrkesgrupp": ["Läkare"], "forskrivarkod": "00000", "godkandAnvandare": true, "enhet": {
+    "enhetsId": {
+        "root": "1.2.752.129.2.1.4.1",
+        "extension": "HSA123456789-0001"
+    },
+    "enhetsnamn": "Privatenheten",
+    "agarform": "Privat",
+    "postadress": "Privatgatan 1",
+    "postnummer": "12345",
+    "postort": "Privatstan",
+    "telefonnummer": "0311-113311",
+    "epost": "privat@privatenhet.pe",
+    "startdatum": {
+        "chronology": {
+            "zone": {
+                "fixed": true,
+                "id": "UTC"
+            }
+        },
+        "era": 1,
+        "centuryOfEra": 20,
+        "yearOfEra": 2014,
+        "yearOfCentury": 14,
+        "weekyear": 2014,
+        "monthOfYear": 5,
+        "weekOfWeekyear": 20,
+        "dayOfYear": 135,
+        "dayOfMonth": 15,
+        "dayOfWeek": 4,
+        "hourOfDay": 7,
+        "minuteOfHour": 0,
+        "secondOfMinute": 0,
+        "millisOfSecond": 0,
+        "millisOfDay": 25200000,
+        "year": 2014,
+        "fields": [
+            {
+                "rangeDurationField": null,
+                "leapDurationField": {
+                    "unitMillis": 86400000,
+                    "precise": true,
+                    "name": "days",
+                    "type": {
+                        "name": "days"
+                    },
+                    "supported": true
+                },
+                "minimumValue": -292275054,
+                "maximumValue": 292278993,
+                "lenient": false,
+                "durationField": {
+                    "unitMillis": 31556952000,
+                    "precise": false,
+                    "name": "years",
+                    "type": {
+                        "name": "years"
+                    },
+                    "supported": true
+                },
+                "name": "year",
+                "type": {
+                    "rangeDurationType": null,
+                    "durationType": {
+                        "name": "years"
+                    },
+                    "name": "year"
+                },
+                "supported": true
+            },
+            {
+                "rangeDurationField": {
+                    "unitMillis": 31556952000,
+                    "precise": false,
+                    "name": "years",
+                    "type": {
+                        "name": "years"
+                    },
+                    "supported": true
+                },
+                "leapDurationField": {
+                    "unitMillis": 86400000,
+                    "precise": true,
+                    "name": "days",
+                    "type": {
+                        "name": "days"
+                    },
+                    "supported": true
+                },
+                "minimumValue": 1,
+                "maximumValue": 12,
+                "lenient": false,
+                "durationField": {
+                    "unitMillis": 2629746000,
+                    "precise": false,
+                    "name": "months",
+                    "type": {
+                        "name": "months"
+                    },
+                    "supported": true
+                },
+                "name": "monthOfYear",
+                "type": {
+                    "rangeDurationType": {
+                        "name": "years"
+                    },
+                    "durationType": {
+                        "name": "months"
+                    },
+                    "name": "monthOfYear"
+                },
+                "supported": true
+            },
+            {
+                "rangeDurationField": {
+                    "unitMillis": 2629746000,
+                    "precise": false,
+                    "name": "months",
+                    "type": {
+                        "name": "months"
+                    },
+                    "supported": true
+                },
+                "minimumValue": 1,
+                "maximumValue": 31,
+                "durationField": {
+                    "unitMillis": 86400000,
+                    "precise": true,
+                    "name": "days",
+                    "type": {
+                        "name": "days"
+                    },
+                    "supported": true
+                },
+                "unitMillis": 86400000,
+                "lenient": false,
+                "name": "dayOfMonth",
+                "type": {
+                    "rangeDurationType": {
+                        "name": "months"
+                    },
+                    "durationType": {
+                        "name": "days"
+                    },
+                    "name": "dayOfMonth"
+                },
+                "supported": true,
+                "leapDurationField": null
+            },
+            {
+                "range": 86400000,
+                "rangeDurationField": {
+                    "unitMillis": 86400000,
+                    "precise": true,
+                    "name": "days",
+                    "type": {
+                        "name": "days"
+                    },
+                    "supported": true
+                },
+                "maximumValue": 86399999,
+                "durationField": {
+                    "name": "millis",
+                    "type": {
+                        "name": "millis"
+                    },
+                    "supported": true,
+                    "unitMillis": 1,
+                    "precise": true
+                },
+                "minimumValue": 0,
+                "unitMillis": 1,
+                "lenient": false,
+                "name": "millisOfDay",
+                "type": {
+                    "rangeDurationType": {
+                        "name": "days"
+                    },
+                    "durationType": {
+                        "name": "millis"
+                    },
+                    "name": "millisOfDay"
+                },
+                "supported": true,
+                "leapDurationField": null
+            }
+        ],
+        "fieldTypes": [
+            {
+                "rangeDurationType": null,
+                "durationType": {
+                    "name": "years"
+                },
+                "name": "year"
+            },
+            {
+                "rangeDurationType": {
+                    "name": "years"
+                },
+                "durationType": {
+                    "name": "months"
+                },
+                "name": "monthOfYear"
+            },
+            {
+                "rangeDurationType": {
+                    "name": "months"
+                },
+                "durationType": {
+                    "name": "days"
+                },
+                "name": "dayOfMonth"
+            },
+            {
+                "rangeDurationType": {
+                    "name": "days"
+                },
+                "durationType": {
+                    "name": "millis"
+                },
+                "name": "millisOfDay"
+            }
+        ],
+        "values": [2014, 5, 15, 25200000]
+    },
+    "geografiskIndelning": {
+        "lan": "Privatalänet",
+        "kommun": "Privatakommunen"
+    },
+    "verksamhetstyp": {
+        "verksamhet": [],
+        "vardform": []
+    },
+    "vardgivare": {
+        "vardgivareId": "HSA987654321-0000",
+        "vardgivarenamn": "Privatvårdgivaren"
+    }
+}}
