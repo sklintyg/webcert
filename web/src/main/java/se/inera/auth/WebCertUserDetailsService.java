@@ -22,18 +22,14 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
-import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 /**
  * @author andreaskaltenbach
  */
-public class WebCertUserDetailsService implements SAMLUserDetailsService {
+public class WebCertUserDetailsService extends BaseWebCertUserDetailsService implements SAMLUserDetailsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserDetailsService.class);
-
-    private static final String COMMA = ", ";
-    private static final String SPACE = " ";
 
     private static final String LAKARE = "Läkare";
     private static final String LAKARE_CODE = "204010";
@@ -43,9 +39,6 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
 
     @Autowired
     private HsaPersonService hsaPersonService;
-
-    @Autowired
-    private WebcertFeatureService webcertFeatureService;
 
     @Autowired
     private MonitoringLogService monitoringLogService;
@@ -90,7 +83,7 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         WebCertUser webcertUser = new WebCertUser();
 
         webcertUser.setHsaId(assertion.getHsaId());
-        webcertUser.setNamn(compileName(assertion));
+        webcertUser.setNamn(compileName(assertion.getFornamn(), assertion.getMellanOchEfternamn()));
         webcertUser.setForskrivarkod("0000000");
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
 
@@ -125,12 +118,12 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         webcertUser.setTitel(titel);
     }
 
-    private void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
-
-        Set<String> availableFeatures = webcertFeatureService.getActiveFeatures();
-
-        webcertUser.setAktivaFunktioner(availableFeatures);
-    }
+//    private void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
+//
+//        Set<String> availableFeatures = webcertFeatureService.getActiveFeatures();
+//
+//        webcertUser.setAktivaFunktioner(availableFeatures);
+//    }
 
     private String extractTitel(List<GetHsaPersonHsaUserType> hsaUserTypes) {
 
@@ -177,24 +170,24 @@ public class WebCertUserDetailsService implements SAMLUserDetailsService {
         return list;
     }
 
-    private String compileName(SakerhetstjanstAssertion assertion) {
-
-        StringBuilder sb = new StringBuilder();
-
-        if (StringUtils.isNotBlank(assertion.getFornamn())) {
-            sb.append(assertion.getFornamn());
-        }
-
-        if (StringUtils.isNotBlank(assertion.getMellanOchEfternamn())) {
-            if (sb.length() > 0) {
-                sb.append(SPACE);
-            }
-            sb.append(assertion.getMellanOchEfternamn());
-        }
-
-        return sb.toString();
-    }
-
+//    private String compileName(SakerhetstjanstAssertion assertion) {
+//
+//        StringBuilder sb = new StringBuilder();
+//
+//        if (StringUtils.isNotBlank(assertion.getFornamn())) {
+//            sb.append(assertion.getFornamn());
+//        }
+//
+//        if (StringUtils.isNotBlank(assertion.getMellanOchEfternamn())) {
+//            if (sb.length() > 0) {
+//                sb.append(SPACE);
+//            }
+//            sb.append(assertion.getMellanOchEfternamn());
+//        }
+//
+//        return sb.toString();
+//    }
+//
     private void setDefaultSelectedVardenhetOnUser(WebCertUser user, SakerhetstjanstAssertion assertion) {
 
         // Get HSA id for the selected MIU

@@ -1,5 +1,10 @@
 package se.inera.auth;
 
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.opensaml.saml2.core.*;
 import org.opensaml.saml2.core.impl.AttributeBuilder;
 import org.opensaml.saml2.core.impl.AuthnContextBuilder;
@@ -8,14 +13,8 @@ import org.opensaml.saml2.core.impl.AuthnStatementBuilder;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.impl.XSStringBuilder;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -25,8 +24,6 @@ public abstract class BaseFakeAuthenticationProvider implements AuthenticationPr
     public static final String FAKE_AUTHENTICATION_CONTEXT_REF = "urn:inera:webcert:fake";
 
     private static DocumentBuilder documentBuilder;
-
-    protected SAMLUserDetailsService userDetails;
 
     static {
         try {
@@ -63,7 +60,4 @@ public abstract class BaseFakeAuthenticationProvider implements AuthenticationPr
         return attribute;
     }
 
-    public void setUserDetails(SAMLUserDetailsService userDetails) {
-        this.userDetails = userDetails;
-    }
 }

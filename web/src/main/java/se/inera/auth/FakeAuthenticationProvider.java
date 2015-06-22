@@ -47,7 +47,7 @@ import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
  */
 public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
 
-
+    private SAMLUserDetailsService userDetails;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -98,4 +98,7 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
     }
 
 
+    public void setUserDetails(SAMLUserDetailsService userDetails) {
+        this.userDetails = userDetails;
+    }
 }

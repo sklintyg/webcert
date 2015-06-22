@@ -36,6 +36,7 @@
   </bean>
 
   <bean id="userDetailsService" class="se.inera.auth.WebCertUserDetailsService"/>
+  <bean id="elegWebCertUserDetailsService" class="se.inera.auth.eleg.ElegWebCertUserDetailsService"/>
 
   <!-- Initialization of OpenSAML library-->
   <bean class="org.springframework.security.saml.SAMLBootstrap"/>
@@ -174,7 +175,7 @@
     </bean>
     <bean id="fakeElegAuthenticationProvider"
         class="se.inera.auth.eleg.FakeElegAuthenticationProvider">
-      <property name="userDetails" ref="userDetailsService"/>
+      <property name="elegWebCertUserDetailsService" ref="elegWebCertUserDetailsService"/>
     </bean>
   </beans>
 

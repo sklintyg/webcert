@@ -34,6 +34,14 @@
       serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
       address="${intygstjanst.pingforconfiguration.endpoint.url}" />
 
+    <jaxws:client id="getPrivatePractitionerResponderInterface"
+        serviceClass="se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface"
+        address="${privatepractitioner.getprivatepractitioner.endpoint.url}" />
+
+    <jaxws:client id="validatePrivatePractitionerResponderInterface"
+        serviceClass="se.riv.infrastructure.directory.privatepractitioner.validateprivatepractitioner.v1.rivtabp21.ValidatePrivatePractitionerResponderInterface"
+        address="${privatepractitioner.validateprivatepractitioner.endpoint.url}" />
+
   </beans>
 
   <beans profile="!dev">
