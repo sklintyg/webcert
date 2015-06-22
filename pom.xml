@@ -17,7 +17,6 @@
   <name>Webcert</name>
 
   <properties>
-
     <!-- Common -->
     <common.version>0-SNAPSHOT</common.version>
     <common.version.range>(,2.3.0]</common.version.range>
@@ -33,15 +32,12 @@
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
     <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
 
-    <intyg-clinicalprocess.version>0-SNAPSHOT</intyg-clinicalprocess.version>
-    <intyg-clinicalprocess.version.range>(,1.0.0]</intyg-clinicalprocess.version.range>
+    <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
+    <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
+    <intyg-transportstyrelsen.version>1.0.0</intyg-transportstyrelsen.version>
 
-    <intyg-insuranceprocess.version>0-SNAPSHOT</intyg-insuranceprocess.version>
-    <intyg-insuranceprocess.version.range>(,1.0.0]</intyg-insuranceprocess.version.range>
-
-    <intyg-transportstyrelsen.version>0-SNAPSHOT</intyg-transportstyrelsen.version>
-    <intyg-transportstyrelsen.version.range>(,1.0.0]</intyg-transportstyrelsen.version.range>
-
+    <intyg-privatepractitioner.version>0-SNAPSHOT</intyg-privatepractitioner.version>
+    <intyg-privatepractitioner.version.range>(,1.0.0]</intyg-privatepractitioner.version.range>
   </properties>
 
   <modules>
@@ -53,6 +49,7 @@
     <module>integration/eid-integration</module>
     <module>integration/hsa-integration</module>
     <module>integration/pu-integration</module>
+    <module>integration/pp-integration</module>
     <module>specifications</module>
     <module>stubs/fk-stub</module>
     <module>stubs/loggtjanst-stub</module>
@@ -123,6 +120,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>pu-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>pp-integration</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -239,6 +241,11 @@
         <groupId>se.inera.intyg.transportstyrelsen</groupId>
         <artifactId>intyg-transportstyrelsen-schemas</artifactId>
         <version>${intyg-transportstyrelsen.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.infrastructure.directory.privatepractitioner</groupId>
+        <artifactId>intyg-infrastructure-directory-privatepractitioner-schemas</artifactId>
+        <version>${intyg-privatepractitioner.version}</version>
       </dependency>
 
       <!-- Authentication -->
@@ -480,9 +487,7 @@
           <includeProperties>
             common.version,
             intygstyper.version,
-            intyg-clinicalprocess.version,
-            intyg-insuranceprocess.version,
-            intyg-transportstyrelsen.version
+            intyg-privatepractitioner.version
           </includeProperties>
           <properties>
             <property>
@@ -494,16 +499,8 @@
               <version>${intygstyper.version.range}</version>
             </property>
             <property>
-              <name>intyg-clinicalprocess.version</name>
-              <version>${intyg-clinicalprocess.version.range}</version>
-            </property>
-            <property>
-              <name>intyg-insuranceprocess.version</name>
-              <version>${intyg-insuranceprocess.version.range}</version>
-            </property>
-            <property>
-              <name>intyg-transportstyrelsen.version</name>
-              <version>${intyg-transportstyrelsen.version.range}</version>
+              <name>intyg-privatepractitioner.version</name>
+              <version>${intyg-privatepractitioner.version.range}</version>
             </property>
           </properties>
         </configuration>
