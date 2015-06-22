@@ -119,6 +119,9 @@
                   <wsdl>
                     ${schema.path}/wsdl/residentmaster/interactions/LookupResidentForFullProfileInteraction/LookupResidentForFullProfileInteraction_1.0_RIVTABP21.wsdl
                   </wsdl>
+                  <wsdlLocation>
+                    classpath:schemas/wsdl/residentmaster/interactions/LookupResidentForFullProfileInteraction/LookupResidentForFullProfileInteraction_1.0_RIVTABP21.wsdl
+                  </wsdlLocation>
                 </wsdlOption>
 
               </wsdlOptions>

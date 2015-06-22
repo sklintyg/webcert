@@ -1,0 +1,20 @@
+Detta test säkerstalla att texten är som i jira webcert-1447
+
+!3 Välj patient och visa intyget
+
+| script | !-SokSkrivIntyg-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+| sok skriv intyg sidan visas sa smaningom |
+| valj patient | 19000101-9801 |
+| valj intygstyp sidan visas |
+| visa intyg | intyg-fit-8 |
+| visa intyg sidan visas |
+
+!4 Testa att tooltip för Kopiera-knapp innehåller text för förnyelse av sjukintyg
+| script | !-SokSkrivIntyg-! |
+| kopiera knapp har inte text sjukskrivning |
+
+!4 Testa att text förlängning av sjukskrivning inte visas.
+| script | !-IntegrationMedJournalsystem-! |
+| toggle kopiera dialogen | true |
+| forlangning sjukskrivning inte visas |

@@ -30,8 +30,8 @@
               </div>
 
               <!-- error message -->
-              <div id="create-error" ng-show="widgetState.createErrorMessageKey" class="alert alert-danger">
-                <span message key="{{widgetState.createErrorMessageKey}}"></span>
+              <div id="create-error" ng-show="viewState.createErrorMessageKey" class="alert alert-danger">
+                <span message key="{{viewState.createErrorMessageKey}}"></span>
               </div>
 
               <div class="alert alert-warning col-lg-7" ng-show="intygType != 'default' && intygType != undefined">
@@ -61,25 +61,28 @@
           </label>
         </div>
 
-        <div wc-spinner label="info.loadingdata" show-spinner="widgetState.doneLoading"
-             show-content="!widgetState.doneLoading">
+        <div wc-spinner label="info.loadingdata" show-spinner="viewState.doneLoading"
+             show-content="!viewState.doneLoading">
           <div class="webcert-col-section qa-table-section" id="intygLista">
 
             <!-- No certs for person -->
             <div id="current-list-noResults-unit"
-                 ng-show="!widgetState.activeErrorMessageKey && widgetState.currentList.length<1"
+                 ng-show="!viewState.activeErrorMessageKey && viewState.currentList.length<1"
                  class="alert alert-info">
               <span message key="info.nocertsfound"></span>
             </div>
 
             <!-- error message -->
-            <div id="current-list-noResults-error" ng-show="widgetState.activeErrorMessageKey"
+            <div id="current-list-noResults-error" ng-show="viewState.activeErrorMessageKey"
                  class="alert alert-danger">
-              <span message key="{{widgetState.activeErrorMessageKey}}"></span>
+              <span message key="{{viewState.activeErrorMessageKey}}"></span>
+            </div>
+            <div ng-show="viewState.inlineErrorMessageKey" class="alert alert-danger">
+              <span message key="{{viewState.inlineErrorMessageKey}}"></span>
             </div>
 
             <!-- Previous certs table -->
-            <div class="row" ng-show="widgetState.currentList.length>0" id="prevCertTable">
+            <div class="row" ng-show="viewState.currentList.length>0" id="prevCertTable">
               <table class="col-md-12 table table-striped table-qa">
                 <tr>
                   <th></th>
@@ -89,7 +92,7 @@
                   <th title="">Sparat datum</th>
                   <th title="">Sparat/signerat av</th>
                 </tr>
-                <tr ng-repeat="cert in widgetState.currentList">
+                <tr ng-repeat="cert in viewState.currentList">
                   <td>
                     <button class="btn btn-info" title="Visa intyget" ng-click="openIntyg(cert)"
                             id="showBtn-{{cert.intygId}}">Visa
@@ -98,7 +101,7 @@
                   <td>
                     <button ng-show="cert.status != 'CANCELLED' && cert.status != 'DRAFT_COMPLETE' && cert.status != 'DRAFT_INCOMPLETE'" class="btn btn-info"
                             wc-feature-active feature="kopieraIntyg" intygstyp="{{cert.intygType}}"
-                            title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras. Kopiera kan användas exempelvis vid förlängning av en sjukskrivning." ng-click="copyIntyg(cert)"
+                            title="Skapar en kopia av befintligt intyg. Det nya intyget (kopian) kan ändras och signeras." ng-click="copyIntyg(cert)"
                             id="copyBtn-{{cert.intygId}}">
                       Kopiera
                     </button>
@@ -109,7 +112,9 @@
                   <td class="unbreakable table-qa-last">{{cert.updatedSignedBy}}</td>
                 </tr>
               </table>
+
             </div>
+            <span class="{{viewState.unsigned}}"></span>
           </div>
         </div>
         <!-- spinner end -->

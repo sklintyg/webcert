@@ -4,12 +4,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
+
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
+
 
 @Component
 public class CreateDraftCertificateValidatorImpl implements CreateDraftCertificateValidator {

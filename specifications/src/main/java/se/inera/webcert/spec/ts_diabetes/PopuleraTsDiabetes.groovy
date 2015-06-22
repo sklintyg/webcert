@@ -1,7 +1,7 @@
 package se.inera.webcert.spec.ts_diabetes
 
 import se.inera.webcert.pages.ts_diabetes.EditCertPage
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 class PopuleraTsDiabetes {
 
@@ -90,8 +90,13 @@ class PopuleraTsDiabetes {
             if (synBinokulartMedKorrektion != null) page.syn.binokulartMedKorrektion = synBinokulartMedKorrektion
             if (synD != null) page.syn.fragaD = synD
 
-            if (behorighet != null) page.bedomning.behorighet = behorighet
-            page.bedomning.valjBehorigheter(bedomdBehorighet)
+            if (behorighet != null) {
+                page.bedomning.valjBehorighet(behorighet)
+                if (!behorighet) { // behorighet == kanInteTaStallning så false är bedömning
+                    page.bedomning.valjBehorigheter(bedomdBehorighet)
+                }
+            }
+
             if (bedomning != null) page.bedomning.bedomning = bedomning
 
             if (kommentar != null) page.kommentar = kommentar

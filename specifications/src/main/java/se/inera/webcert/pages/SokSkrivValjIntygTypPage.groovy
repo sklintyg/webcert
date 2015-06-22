@@ -11,6 +11,7 @@ class SokSkrivValjIntygTypPage extends AbstractPage {
         intygtypFortsattKnapp { $("#intygTypeFortsatt") }
         intygTyp { $("#intygType") }
         intygLista { $("#intygLista") }
+        kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         fortsattKnapp { $("#intygTypeFortsatt") }
     }
@@ -40,4 +41,19 @@ class SokSkrivValjIntygTypPage extends AbstractPage {
     def valjIntygstypTsDiabetes() {
         intygTyp.value("3")
     }
+    
+    def valjIntygsTyp(String typ) {
+        if (typ == "FK7263") {
+            valjIntygstypFk7263();
+        } else if (typ == "ts-bas") {
+            valjIntygstypTsBas();
+        } else if (typ == "ts-diabetes") {
+            valjIntygstypTsDiabetes();
+        }
+        fortsattKnapp.click();
+        waitFor {
+            doneLoading()
+        }
+    }
+
 }

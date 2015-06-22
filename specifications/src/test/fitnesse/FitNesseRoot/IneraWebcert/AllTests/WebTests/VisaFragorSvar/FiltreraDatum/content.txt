@@ -5,6 +5,14 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 | script | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 
+!3 Verifiera att förväntade informationrutor avseende frågor på enhet/sökresultat visas
+
+| script | !-SvaraOchFraga-! |
+| ga till svara och fraga |
+| ohanterade fragor sidan visas |
+| infotext inga fragar pa enhet visas | true |
+| infotext inget sokresultat visas | false |
+
 !3 Lägg till frågor
 
 | Fraga Svar |
@@ -28,6 +36,14 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 | visas fraga | $internReferens3 |
 | doljs fraga| $internReferens1 |
 | doljs fraga| $internReferens4 |
+
+!3 Filtrera så inga träffar fås, verifiera förväntat infomeddelande
+| script | !-SvaraOchFraga-! |
+| valj datum fran | 2012-01-02 |
+| valj datum till | 2012-01-03 |
+| filtrera fragor och svar | false |
+| infotext inget sokresultat visas | true |
+| infotext inga fragar pa enhet visas | false |
 
 !3 Ta bort frågor
 

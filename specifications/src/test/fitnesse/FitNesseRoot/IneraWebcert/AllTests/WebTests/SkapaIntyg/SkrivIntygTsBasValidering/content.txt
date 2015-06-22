@@ -1,0 +1,140 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19520617-2339 | av typ | ts-bas|
+| $intygsid= | intygsid |
+
+!3 Testa valideringsfel
+
+Ogiltiga värden för syn ska ge valideringsfel för det fältet men inga andra valideringsfel ska visas.
+| Populera Ts Bas |
+| synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion |
+| 77 | 66 | 55 | 44 | 33 | 22 |
+
+| script | !-ValideringTsBas-! |
+| spara utkast |
+| intyg ej komplett visas |
+| validering syn visas |
+
+!3 Med giltiga värden ska detta valideringsfel försvinna
+
+| Populera Ts Bas |
+| synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion |
+| 1,0| 1,0 | 1,0 | 1,0 | 1,0 | 1,0 |
+
+| script | !-ValideringTsBas-! |
+| spara utkast |
+| intyg ej komplett visas |
+| inga valideringsfel visas |
+
+!3 Om man valt "Visa vad som saknas" på ett tomt intyg ska alla valideringsfel för obligatoriska fält visas
+
+| Populera Ts Bas |
+| synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion |
+|||||||
+
+!3 Vänta tills intyget är sparat.
+
+| script | !-SkrivIntyg-! |
+| visa vad som saknas |
+| intyg ej komplett visas |
+
+!3 Kontrollera valideringsmeddelanden.
+
+| Validering Ts Bas |
+| valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringSynVisas? | valideringHorselBalansVisas? | valideringFunktionsNedsattningVisas? | valideringHjartkarlVisas? | valideringNeurologiVisas? | valideringMedvetandestorningVisas? | valideringNjurarVisas? | valideringKognitivtVisas? | valideringSomnVakenhetVisas? | valideringNarkotikaLakemedelVisas? | valideringPsykisktVisas? | valideringUtvecklingsStorningVisas? | valideringSjukhusVardVisas? | valideringMedicineringVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
+| false| true | true | true | true | true | true | true | true | true | true | true | true | true | true | true | true | true | false |
+
+!3 Om man går tillbaka genom "Dölj vad som saknas" på ett tomt intyg ska dessa försvinna igen.
+
+| script | !-SkrivIntyg-! |
+| dolj vad som saknas |
+| intyg ej komplett visas |
+
+Kontrollera valideringsmeddelanden.
+
+| Validering Ts Bas |
+| valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringSynVisas? | valideringHorselBalansVisas? | valideringFunktionsNedsattningVisas? | valideringHjartkarlVisas? | valideringNeurologiVisas? | valideringMedvetandestorningVisas? | valideringNjurarVisas? | valideringKognitivtVisas? | valideringSomnVakenhetVisas? | valideringNarkotikaLakemedelVisas? | valideringPsykisktVisas? | valideringUtvecklingsStorningVisas? | valideringSjukhusVardVisas? | valideringMedicineringVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
+| false| false | false | false | false | false | false | false | false | false | false | false | false | false | false | false | false | false | false |
+
+!3 Ta bort postnummer på patienten, validera att patientadress valideringsmeddelande visas
+| Populera Ts Bas |
+| postnummer |
+| |
+
+| script | !-SkrivIntyg-! |
+| visa vad som saknas |
+
+!3 Kontrollera att länk för att scrolla till felmeddelande går att klicka på
+
+| script | !-SkrivIntyg-! |
+| klicka pa fellank | ts-bas.label.bedomning |
+
+!3 Kontrollera att patient validering visas
+
+| script | !-SkrivIntyg-! |
+| dolj vad som saknas |
+| intyg ej komplett visas |
+| visa vad som saknas |
+
+| Validering Ts Bas |
+| valideringPatientVisas? |
+| true |
+
+!3 Fyll i intyget avser, postnummer och identifieringstyp 
+
+| Populera Ts Bas |
+| intygetAvser | identifieringstyp | postnummer |
+| C | korkort | 12345 |
+
+| script | !-ValideringTsBas-! |
+| spara utkast |
+| intyg ej komplett visas |
+
+!3 Kontrollera valideringsmeddelanden.
+
+| Validering Ts Bas |
+| valideringPatientVisas? | valideringIntygAvserVisas? | valideringIdentitetVisas? | valideringSynVisas? | valideringHorselBalansVisas? | valideringFunktionsNedsattningVisas? | valideringHjartkarlVisas? | valideringNeurologiVisas? | valideringMedvetandestorningVisas? | valideringNjurarVisas? | valideringKognitivtVisas? | valideringSomnVakenhetVisas? | valideringNarkotikaLakemedelVisas? | valideringPsykisktVisas? | valideringUtvecklingsStorningVisas? | valideringSjukhusVardVisas? | valideringMedicineringVisas? | valideringBedomningVisas? | valideringVardEnhetVisas? |
+| false| false | false| true | true | true | true | true | true | true | true | true | true | true | true | true | true | true | false | 
+
+
+!3 Testa att validering för diabetesbehandling fungerar
+| Populera Ts Bas |
+| diabetesA | diabetestyp    | diabetesBehandlingKost |
+| true      | typ2           | true |
+
+| script | !-ValideringTsBas-! |
+| spara utkast |
+| intyg ej komplett visas |
+
+!3 Kontrollera valideringsmeddelande för diabetes.
+
+| Validering Ts Bas |
+| valideringDiabetesVisas? | 
+| false | 
+
+!3 Testa att klicka ur behandling och verifiera att valideringsfel dyker upp
+| Populera Ts Bas |
+| diabetesBehandlingKost |
+| false |
+
+| script | !-ValideringTsBas-! |
+| spara utkast |
+| intyg ej komplett visas |
+
+!3 Kontrollera valideringsmeddelande för diabetes.
+
+| Validering Ts Bas |
+| valideringDiabetesVisas? | 
+| true | 
+
+!3 Ta bort utkast
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |

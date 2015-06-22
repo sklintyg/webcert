@@ -47,25 +47,27 @@
       <artifactId>hsa-integration</artifactId>
     </dependency>
 
-    <!-- Tools -->
+    <!-- Common -->
     <dependency>
-      <groupId>se.inera.intyg.tools</groupId>
-      <artifactId>tools-specifications</artifactId>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>common-specifications</artifactId>
     </dependency>
 
     <!-- Schemas -->
     <dependency>
-      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
-      <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
+      <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting.v1</groupId>
-      <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
+      <groupId>se.riv.insuranceprocess.healthreporting</groupId>
+      <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
     </dependency>
     <dependency>
       <groupId>se.riv.itintegration.monitoring</groupId>
-      <artifactId>itintegration-monitoring-interactions</artifactId>
+      <artifactId>itintegration-monitoring-schemas</artifactId>
     </dependency>
+
+    <!-- Misc -->
     <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms-api</artifactId>
@@ -96,6 +98,7 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-firefox-driver</artifactId>
+      <version>2.43.1</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
@@ -221,6 +224,25 @@
         <certificate.baseUrl>http://localhost:18080/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
+    <profile>
+      <id>ip20</id>
+      <properties>
+        <webcert.web.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/</webcert.web.baseUrl>
+        <webcert.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/</webcert.baseUrl>
+        <logsender.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>http://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
+      <id>ip40</id>
+      <properties>
+        <webcert.web.baseUrl>https://webcert.ip40.nordicmedtest.sjunet.org/</webcert.web.baseUrl>
+        <webcert.baseUrl>https://webcert.ip40.nordicmedtest.sjunet.org/</webcert.baseUrl>
+        <logsender.baseUrl>https://webcert.ip40.nordicmedtest.sjunet.org/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>http://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+
     <profile>
       <id>qa</id>
       <properties>

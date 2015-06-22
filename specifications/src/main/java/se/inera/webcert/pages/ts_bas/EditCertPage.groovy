@@ -2,8 +2,10 @@ package se.inera.webcert.pages.ts_bas
 
 import geb.Module
 import se.inera.certificate.page.AbstractPage
+import se.inera.webcert.pages.AbstractEditCertPage
+import se.inera.webcert.pages.VardenhetModule
 
-class EditCertPage extends AbstractPage {
+class EditCertPage extends AbstractEditCertPage {
 
     static at = { doneLoading() && $("#edit-ts-bas").isDisplayed() }
 
@@ -11,11 +13,15 @@ class EditCertPage extends AbstractPage {
 
         // Knappar
         sparaKnapp { $("#spara-utkast") }
+        visaVadSomSaknasKnapp { $("#showCompleteButton") }
+        doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
+        intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
 
         // Formulärfält
+        form { $("form") }
         patient { module PatientModule }
         intygetAvser { module IntygetAvserModule }
         identitet { module IdentitetModule }
@@ -35,8 +41,32 @@ class EditCertPage extends AbstractPage {
         sjukhusvard { module SjukhusvardModule }
         medicinering { module MedicineringModule }
         kommentar { $("#kommentar") }
-        bedomning { module BedomningModule }
+
+        bedomning { name -> module BedomningModule, form: form }
+
         vardenhet { module VardenhetModule }
+
+        // Intygsvalidering
+        valideringPatient(required: false)              { $("#validationMessages_patientadress") }
+        valideringIntygAvser(required: false)           { $("#validationMessages_intygavser") }
+        valideringIdentitet(required: false)            { $("#validationMessages_identitet") }
+        valideringSyn(required: false)                  { $("#validationMessages_syn") }
+        valideringHorselBalans(required: false)         { $("#validationMessages_horselbalans") }
+        valideringFunktionsNedsattning(required: false) { $("#validationMessages_funktionsnedsattning") }
+        valideringHjartkarl(required: false)            { $("#validationMessages_hjartkarl") }
+        valideringNeurologi(required: false)            { $("#validationMessages_neurologi") }
+        valideringMedvetandestorning(required: false)   { $("#validationMessages_medvetandestorning") }
+        valideringNjurar(required: false)               { $("#validationMessages_njurar") }
+        valideringKognitivt(required: false)            { $("#validationMessages_kognitivt") }
+        valideringSomnVakenhet(required: false)         { $("#validationMessages_somnvakenhet") }
+        valideringNarkotikaLakemedel(required: false)   { $("#validationMessages_narkotikalakemedel") }
+        valideringPsykiskt(required: false)             { $("#validationMessages_psykiskt") }
+        valideringUtvecklingsStorning(required: false)  { $("#validationMessages_utvecklingsstorning") }
+        valideringSjukhusVard(required: false)          { $("#validationMessages_sjukhusvard") }
+        valideringMedicinering(required: false)         { $("#validationMessages_medicinering") }
+        valideringBedomning(required: false)            { $("#validationMessages_bedomning") }
+        valideringVardEnhet(required: false)            { $("#validationMessages_vardenhet") }
+        valideringDiabetes(required: false)             { $("#validationMessages_diabetes") }
     }
 }
 
@@ -66,6 +96,7 @@ class IntygetAvserModule extends Module {
 
     def valjBehorigheter(String valdaBehorigheter) {
         if (valdaBehorigheter != null) {
+            AbstractPage.scrollIntoView('intygetAvserForm');
             c1 = false
             c1e = false
             c = false
@@ -79,6 +110,8 @@ class IntygetAvserModule extends Module {
 
             def behorigheter = valdaBehorigheter.split(",");
 
+            AbstractEditCertPage.scrollIntoView("intygetAvserForm");
+
             if (behorigheter.contains("C1")) c1 = true
             if (behorigheter.contains("C1E")) c1e = true
             if (behorigheter.contains("C")) c = true
@@ -90,6 +123,21 @@ class IntygetAvserModule extends Module {
             if (behorigheter.contains("Taxi")) taxi = true
             if (behorigheter.contains("Annat")) annat = true
         }
+    }
+
+    def hamtaBehorigheter() {
+        def result = "";
+        if (c1.value() == "on")    { if (result != "") { result += "," }; result += "C1" }
+        if (c1e.value() == "on")   { if (result != "") { result += "," }; result += "C1E" }
+        if (c.value() == "on")     { if (result != "") { result += "," }; result += "C" }
+        if (ce.value() == "on")    { if (result != "") { result += "," }; result += "CE" }
+        if (d1.value() == "on")    { if (result != "") { result += "," }; result += "D1" }
+        if (d1e.value() == "on")   { if (result != "") { result += "," }; result += "D1E" }
+        if (d.value() == "on")     { if (result != "") { result += "," }; result += "D" }
+        if (de.value() == "on")    { if (result != "") { result += "," }; result += "DE" }
+        if (taxi.value() == "on")  { if (result != "") { result += "," }; result += "Taxi" }
+        if (annat.value() == "on") { if (result != "") { result += "," }; result += "Annat" }
+        result
     }
 }
 
@@ -106,6 +154,7 @@ class IdentitetModule extends Module {
 
     def valjTyp(String identifieringstyp) {
         if (identifieringstyp != null) {
+            AbstractPage.scrollIntoView('identitetForm');
             def validTypes = ["idkort", "foretagskort", "korkort", "kannedom", "forsakran", "pass"]
             assert validTypes.contains(identifieringstyp),
                     "Fältet 'identifieringstyp' kan endast innehålla något av följande värden: ${validTypes}"
@@ -186,6 +235,7 @@ class DiabetesModule extends Module {
 
     def valjTyp(String valdDiabetestyp) {
         if (valdDiabetestyp != null) {
+            AbstractPage.scrollIntoView('diabetesForm');
             def validTypes = ["typ1", "typ2"]
             assert validTypes.contains(valdDiabetestyp),
                     "Fältet 'diabetestyp' kan endast innehålla något av följande värden: ${validTypes}"
@@ -280,9 +330,14 @@ class MedicineringModule extends Module {
 }
 
 class BedomningModule extends Module {
+    def form
     static base = { $("#bedomningForm") }
     static content = {
+
         behorighet { $("input", name: "behorighet") }
+        behorighetGroup { form.behorighet }
+        behorighetBedomning { $("#behorighet_bedomning") }
+        behorighetKanInteTaStallning { $("#behorighet_kanintetastallning") }
         c1 { $("#korkortstyp0") }
         c1e { $("#korkortstyp1") }
         c { $("#korkortstyp2") }
@@ -296,8 +351,16 @@ class BedomningModule extends Module {
         specialist { $("#specialist") }
     }
 
+    def valjBehorighet(Boolean value) {
+        if (value != null) {
+            AbstractPage.scrollIntoView("behorighet_bedomning");
+            behorighet = value;
+        }
+    }
+
     def valjBehorigheter(String valdaBehorigheter) {
         if (valdaBehorigheter != null) {
+            AbstractPage.scrollIntoView('bedomningForm');
             c1 = false
             c1e = false
             c = false
@@ -322,15 +385,5 @@ class BedomningModule extends Module {
             if (behorigheter.contains("Taxi")) taxi = true
             if (behorigheter.contains("Annat")) annat = true
         }
-    }
-}
-
-class VardenhetModule extends Module {
-    static base = { $("#vardenhetForm") }
-    static content = {
-        postadress { $("#clinicInfoPostalAddress") }
-        postnummer { $("#clinicInfoPostalCode") }
-        postort { $("#clinicInfoPostalCity") }
-        telefonnummer { $("#clinicInfoPhone") }
     }
 }

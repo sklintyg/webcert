@@ -66,7 +66,7 @@ public class FragaSvar extends RestClientFixture {
         if (fragaSkickad) fraga.frageSkickadDatum = fragaSkickad
         fraga.intygsReferens.intygsId = intygsId;
         if (intygsTyp) fraga.intygsReferens.intygsTyp = intygsTyp
-        if (patientId) fraga.intygsReferens.patientId.patientIdExtension = patientId
+        if (patientId) fraga.intygsReferens.patientId = patientId
         if (sistaDatumForSvar) fraga.sistaDatumForSvar = sistaDatumForSvar
         if (frageStallare) fraga.frageStallare = frageStallare
         if (status) fraga.status = status

@@ -20,7 +20,7 @@
   </cxf:bus>
 
   <jaxws:client id="storeLogClient"
-    serviceClass="se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface"
+    serviceClass="se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface"
     address="${loggtjanst.endpoint.url}">
     <jaxws:properties>
       <entry key="schema-validation-enabled" value="true" />

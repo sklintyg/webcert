@@ -1,16 +1,15 @@
 package se.inera.webcert.spec
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande
-import se.inera.webcert.spec.util.WsClientFixture
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande
 import se.inera.webcert.spec.util.WsClientFixtureNyaKontraktet
 
 /**

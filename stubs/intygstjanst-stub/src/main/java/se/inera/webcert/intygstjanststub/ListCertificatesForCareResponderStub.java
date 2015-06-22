@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.CertificateMetaType;
 
 import com.google.common.collect.Lists;
 

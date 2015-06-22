@@ -2,9 +2,10 @@ package se.inera.webcert.pages.fk7263
 
 import geb.Module
 import se.inera.certificate.page.AbstractPage
-import se.inera.webcert.spec.Browser
+import se.inera.webcert.pages.AbstractEditCertPage
+import se.inera.webcert.pages.VardenhetModule
 
-class EditCertPage extends AbstractPage {
+class EditCertPage extends AbstractEditCertPage {
 
     static at = { doneLoading() && $("#edit-fk7263").isDisplayed() }
 
@@ -35,7 +36,7 @@ class EditCertPage extends AbstractPage {
         arbete { module ArbeteModule }
         arbetsformaga { module ArbetsformagaModule }
         arbetsformagaBeskrivning { $("#capacityForWorkText") }
-        prognos { module PrognosModule }
+        prognos { name -> module PrognosModule, form: form }
         atgardSjukvard { $("#measuresCurrent") }
         atgardAnnan { $("#measuresOther") }
         rekommendationer { name -> module RekommendationerModule, form: form }
@@ -58,14 +59,16 @@ class EditCertPage extends AbstractPage {
         valideringRekommendationer(required: false)      { $("#validationMessages_rekommendationer") }
         valideringVardperson(required: false)            { $("#validationMessages_vardperson") }
 
-        alert(require:false) { $('.alert') }
     }
-
-    def setSmittskyddCheckBox(val){
-        println("setSmittSkydCheckBox");
+    
+    def setSmittskydd(boolean val){
         AbstractPage.scrollIntoView(smittskydd.attr("id"));
         smittskydd.value(val);
+        waitFor {
+            doneLoading()
+        }
     }
+
 }
 
 class BaserasPaModule extends Module {
@@ -88,6 +91,29 @@ class BaserasPaModule extends Module {
         undersokning = value;
     }
 
+    def setTelefonkontaktCheckBox(value){
+        AbstractPage.scrollIntoView(telefonkontakt.attr("id"));
+        telefonkontakt = value;
+    }
+
+    def setJournalCheckBox(value){
+        AbstractPage.scrollIntoView(journal.attr("id"));
+        journal = value;
+    }
+
+    def setOtherCheckBox(value){
+        AbstractPage.scrollIntoView(other.attr("id"));
+        other = value;
+    }
+
+    def setUndersokning(value){
+        undersokning.value(value.toBoolean());
+    }
+
+    def undersokningDatumToggle(){
+        AbstractPage.scrollIntoView("undersokningAvPatientenDate-toggle");
+        undersokningDatumToggle.click();
+    }
 }
 
 class DiagnosModule extends Module {
@@ -144,16 +170,20 @@ class ArbetsformagaModule extends Module {
 }
 
 class PrognosModule extends Module {
+    def form;
     static base = { $("#prognosForm") }
     static content = {
-        prognos { $("input", name: "capacityForWorkForecast") }
-        radioGroup {$("input", name : "capacityForWorkForecast")}
+
+        radioGroup { form.capacityForWorkForecast }
 
         beskrivning { $("#capacityForWorkForecastText") }
+        prognos { $("input", name: "capacityForWorkForecast") }
+
     }
 
     def valjPrognos(String valdPrognos) {
         if (valdPrognos != null) {
+            AbstractPage.scrollIntoView("capacityForWork4");
             def validTypes = ["ja", "delvis", "nej", "?"];
             assert validTypes.contains(valdPrognos),
                     "Fältet 'prognos' kan endast innehålla något av följande värden: ${validTypes}"
@@ -171,6 +201,7 @@ class PrognosModule extends Module {
     }
 
     def prognosValue(){
+        AbstractPage.scrollIntoView("capacityForWork4");
         return prognos.value();
     }
 }
@@ -188,8 +219,9 @@ class RekommendationerModule extends Module {
         // this doesn't seem to work with the form.<group name> syntax
         // as a result I needed to use the input query for arbetslivsinriktadRehabilitering
         // when selecting the radio button group
-        arbetslivsinriktadRehabilitering { $("input", name:"recommendationsToFk.travel") }
-        radioGroupResor { form["recommendationsToFk.travel"] }
+        arbetslivsinriktadRehabilitering { $("input", name:"recommendationsToFkReabInQuestion") }
+        recommendationsToFkTravel { $("input", name:"recommendationsToFkTravel") }
+        radioGroupResor { form.recommendationsToFkTravel }
         radioGroupRehab {  form.recommendationsToFkReabInQuestion }
 
         ressattJa { $("#rekommendationRessatt") }
@@ -204,6 +236,7 @@ class RekommendationerModule extends Module {
 
     def valjArbetslivsinriktadRehabilitering(String arAktuell) {
         if (arAktuell != null) {
+            AbstractPage.scrollIntoView("rehabYes");
             def validTypes = ["ja", "nej", "?"];
             assert validTypes.contains(arAktuell),
                     "Fältet 'arbetslivsinriktadRehabilitering' kan endast innehålla något av följande värden: ${validTypes}"
@@ -212,22 +245,42 @@ class RekommendationerModule extends Module {
                 arbetslivsinriktadRehabilitering = "JA"
             } else if ("nej" == arAktuell) {
                 arbetslivsinriktadRehabilitering = "NEJ"
-            } else if ("?" == valdPrognos) {
+            } else if ("?" == arAktuell) {
                 arbetslivsinriktadRehabilitering = "GAREJ"
             }
         }
     }
-}
 
+    def arbetslivsinriktadRehabiliteringValue(){
+        return arbetslivsinriktadRehabilitering.value();
+    }
 
+    def valjRecommendationsToFkTravel(String arAktuell) {
+        if (arAktuell != null) {
+            AbstractPage.scrollIntoView("rekommendationRessatt");
+            def validTypes = ["ja", "nej"];
+            assert validTypes.contains(arAktuell),
+                    "Fältet 'RecommendationsToFkTravel' kan endast innehålla något av följande värden: ${validTypes}"
 
-class VardenhetModule extends Module {
-    static base = { $("#vardenhetForm") }
-    static content = {
-        postadress { $("#clinicInfoPostalAddress") }
-        postnummer { $("#clinicInfoPostalCode") }
-        postort { $("#clinicInfoPostalCity") }
-        telefonnummer { $("#clinicInfoPhone") }
-        epost { $("#clinicInfoEmail") }
+            if ("ja" == arAktuell) {
+                recommendationsToFkTravel = "JA"
+            } else if ("nej" == arAktuell) {
+                recommendationsToFkTravel = "NEJ"
+            }
+        }
+    }
+
+    def radioGroupRehabValue(){
+        AbstractPage.scrollIntoView("rehabYes");
+        return radioGroupRehab;
+    }
+
+    def radioGroupResorValue(){
+        AbstractPage.scrollIntoView("rekommendationRessatt");
+        return radioGroupResor;
+    }
+
+    def recommendationsToFkTravelValue(){
+        return recommendationsToFkTravel.value();
     }
 }

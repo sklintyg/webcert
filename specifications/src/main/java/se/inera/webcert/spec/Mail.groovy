@@ -1,6 +1,6 @@
 package se.inera.webcert.spec
 
-import se.inera.webcert.spec.util.QueryHelper
+import se.inera.certificate.spec.util.QueryHelper
 import se.inera.webcert.spec.util.RestClientFixture
 
 /**

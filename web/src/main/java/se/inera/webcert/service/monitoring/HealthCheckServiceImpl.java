@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,9 @@ import javax.jms.JMSException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import java.sql.Time;
+import java.util.List;
 
 /**
  * Service for getting the health status of the application.
@@ -60,6 +63,9 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     @Qualifier("pingIntygstjanstForConfigurationClient")
     private PingForConfigurationResponderInterface intygstjanstPingForConfiguration;
 
+    @Autowired
+    private SessionRegistry sessionRegistry;
+
     @Override
     public HealthStatus checkHSA() {
         boolean ok;
@@ -72,7 +78,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
             ok = false;
         }
         stopWatch.stop();
-        HealthStatus status = createStatus(ok, stopWatch);
+        HealthStatus status = createStatusWithTiming(ok, stopWatch);
         logStatus("getHsaStatus", status);
         return status;
     }
@@ -85,7 +91,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         stopWatch.start();
         ok = checkTimeFromDb();
         stopWatch.stop();
-        HealthStatus status = createStatus(ok, stopWatch);
+        HealthStatus status = createStatusWithTiming(ok, stopWatch);
         logStatus("getDbStatus", status);
         return status;
     }
@@ -96,7 +102,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         stopWatch.start();
         boolean ok = checkJmsConnection();
         stopWatch.stop();
-        HealthStatus status = createStatus(ok, stopWatch);
+        HealthStatus status = createStatusWithTiming(ok, stopWatch);
         logStatus("getJMSStatus", status);
         return status;
     }
@@ -113,7 +119,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         }
 
         String result = ok ? "OK" : "FAIL";
-        LOG.info("Operation getSignaturQueueSize completed with result {}, queue size is {}", result, size);
+        LOG.info("Operation checkSignatureQueue completed with result {}, queue size is {}", result, size);
 
         return new HealthStatus(size, ok);
     }
@@ -124,9 +130,27 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         stopWatch.start();
         boolean ok = pingIntygstjanst();
         stopWatch.stop();
-        HealthStatus status = createStatus(ok, stopWatch);
+        HealthStatus status = createStatusWithTiming(ok, stopWatch);
         logStatus("pingIntygstjanst", status);
         return status;
+    }
+
+    @Override
+    public HealthStatus checkNbrOfUsers() {
+        boolean ok;
+        long size = -1;
+        try {
+            List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+            size = allPrincipals.size();
+            ok = true;
+        } catch (Exception e) {
+            ok = false;
+        }
+
+        String result = ok ? "OK" : "FAIL";
+        LOG.info("Operation checkNbrOfUsers completed with result {}, nbr of users is {}", result, size);
+
+        return new HealthStatus(size, ok);
     }
 
     @Override
@@ -183,7 +207,7 @@ public class HealthCheckServiceImpl implements HealthCheckService {
         LOG.info("Operation {} completed with result {} in {} ms", new Object[] { operation, result, status.getMeasurement() });
     }
 
-    private HealthStatus createStatus(boolean ok, StopWatch stopWatch) {
+    private HealthStatus createStatusWithTiming(boolean ok, StopWatch stopWatch) {
         return new HealthStatus(stopWatch.getTime(), ok);
     }
 }

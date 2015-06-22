@@ -2,12 +2,12 @@ package se.inera.webcert.intygstjanststub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareRequestType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
 
 /**
  * Stub class for mocking Intygstjanstens {@link GetCertificateForCareResponderStub} WS interface Uses a simple in

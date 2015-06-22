@@ -29,7 +29,7 @@ Detta test ska säkerställa att buggen WEBCERT-1477 är löst
 
 !3 Kopiera intyget
 | script | !-SokSkrivIntyg-! |
-| kopiera visat intyg |
+| kopiera visat intyg | FK7263 |
 | $kopiaintygsid= | kopiaintygsid |
 
 !3 Kryssa ur smittskydd

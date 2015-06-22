@@ -1,7 +1,7 @@
 angular.module('webcert').factory('webcert.ManageCertificate',
-    [ '$http', '$routeParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
+    [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout', '$modal', '$cookieStore', 'webcert.CreateCertificateDraft',
         'common.User', 'common.dialogService', 'common.featureService', 'common.messageService', 'common.CertificateService',
-        function($http, $routeParams, $log, $location, $window, $timeout, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
+        function($q, $http, $stateParams, $log, $location, $window, $timeout, $modal, $cookieStore, CreateCertificateDraft, User, dialogService,
             featureService, messageService, CertificateService) {
             'use strict';
 
@@ -112,18 +112,15 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             }
 
             var _COPY_DIALOG_COOKIE = 'wc.dontShowCopyDialog';
-            var copyDialog = {
+            var copyDialogModel = {
                 isOpen: false
             };
 
-            function _initCopyDialog($scope) {
-                copyDialog.isOpen = false;
-
-                if($scope) {
-                    $scope.dialog = {
-                        errormessageid: 'error.failedtocopyintyg'
-                    };
-                }
+            function _initCopyDialog() {
+                copyDialogModel = {
+                    isOpen: false,
+                    errormessageid: 'error.failedtocopyintyg'
+                };
             }
 
             function _createCopyDraft(intygCopyRequest, onSuccess, onError) {
@@ -145,7 +142,9 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _copy($scope, intygCopyRequest, isOtherCareUnit) {
+            function _copy(viewState, intygCopyRequest, isOtherCareUnit) {
+
+                _initCopyDialog();
 
                 function goToDraft(type, intygId) {
 
@@ -160,60 +159,65 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 }
 
                 // Create cookie and model representative
-                var dialogModel = {
-                    dontShowCopyInfo: false
-                };
+                copyDialogModel.dontShowCopyInfo = false;
+
                 if($cookieStore.get(_COPY_DIALOG_COOKIE) === undefined) {
-                    $cookieStore.put(_COPY_DIALOG_COOKIE, dialogModel.dontShowCopyInfo);
+                    $cookieStore.put(_COPY_DIALOG_COOKIE, copyDialogModel.dontShowCopyInfo);
                 }
 
                 if ($cookieStore.get(_COPY_DIALOG_COOKIE)) {
                     $log.debug('copy cert without dialog' + intygCopyRequest);
-                    $scope.widgetState.activeErrorMessageKey = null;
-                    $scope.widgetState.inlineErrorMessageKey = null;
+                    viewState.activeErrorMessageKey = null;
+                    viewState.inlineErrorMessageKey = null;
                     _createCopyDraft(intygCopyRequest, function(draftResponse) {
                         goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
                     }, function(errorCode) {
                         if (errorCode === 'DATA_NOT_FOUND') {
-                            $scope.widgetState.inlineErrorMessageKey = 'error.failedtocopyintyg.personidnotfound';
+                            viewState.inlineErrorMessageKey = 'error.failedtocopyintyg.personidnotfound';
                         }
                         else {
-                            $scope.widgetState.inlineErrorMessageKey = 'error.failedtocopyintyg';
+                            viewState.inlineErrorMessageKey = 'error.failedtocopyintyg';
                         }
                     });
                 } else {
 
-                    dialogModel.otherCareUnit = isOtherCareUnit;
-                    dialogModel.patientId = $routeParams.patientId;
-                    dialogModel.deepIntegration = featureService.isFeatureActive('franJournalsystem');
+                    copyDialogModel.otherCareUnit = isOtherCareUnit;
+                    copyDialogModel.patientId = $stateParams.patientId;
+                    copyDialogModel.deepIntegration = featureService.isFeatureActive('franJournalsystem');
+                    copyDialogModel.intygTyp = intygCopyRequest.intygType;
 
-                    copyDialog = dialogService.showDialog($scope, {
+                    var copyDialog = dialogService.showDialog({
                         dialogId: 'copy-dialog',
                         titleId: 'label.copycert',
                         templateUrl: '/views/partials/copy-dialog.html',
-                        model: dialogModel,
+                        model: copyDialogModel,
                         button1click: function() {
                             $log.debug('copy cert from dialog' + intygCopyRequest);
-                            if (dialogModel.dontShowCopyInfo) {
-                                $cookieStore.put(_COPY_DIALOG_COOKIE, dialogModel.dontShowCopyInfo);
+                            if (copyDialogModel.dontShowCopyInfo) {
+                                $cookieStore.put(_COPY_DIALOG_COOKIE, copyDialogModel.dontShowCopyInfo);
                             }
 
-                            $scope.dialog.showerror = false;
-                            $scope.dialog.acceptprogressdone = false;
+                            copyDialogModel.showerror = false;
+                            copyDialogModel.acceptprogressdone = false;
                             _createCopyDraft(intygCopyRequest, function(draftResponse) {
-                                $scope.dialog.acceptprogressdone = true;
-                                $scope.widgetState.createErrorMessageKey = undefined;
-                                copyDialog.close();
-                                goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
+                                copyDialogModel.acceptprogressdone = true;
+                                if(viewState && viewState.inlineErrorMessageKey) {
+                                    viewState.inlineErrorMessageKey = null;
+                                }
+                                var end = function() {
+                                    goToDraft(draftResponse.intygsTyp, draftResponse.intygsUtkastId);
+                                };
+                                copyDialog.close({direct:end});
+
                             }, function(errorCode) {
                                 if (errorCode === 'DATA_NOT_FOUND') {
-                                    $scope.dialog.errormessageid = 'error.failedtocopyintyg.personidnotfound';
+                                    copyDialogModel.errormessageid = 'error.failedtocopyintyg.personidnotfound';
                                 }
                                 else {
-                                    $scope.dialog.errormessageid = 'error.failedtocopyintyg';
+                                    copyDialogModel.errormessageid = 'error.failedtocopyintyg';
                                 }
-                                $scope.dialog.acceptprogressdone = true;
-                                $scope.dialog.showerror = true;
+                                copyDialogModel.acceptprogressdone = true;
+                                copyDialogModel.showerror = true;
                             });
                         },
                         button1text: 'common.copy',
@@ -222,13 +226,14 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                     });
 
                     copyDialog.opened.then(function() {
-                        copyDialog.isOpen = true;
+                        copyDialogModel.isOpen = true;
                     }, function() {
-                        copyDialog.isOpen = false;
+                        copyDialogModel.isOpen = false;
                     });
+                    return copyDialog;
                 }
 
-                return copyDialog;
+                return null;
             }
 
 
@@ -236,16 +241,6 @@ angular.module('webcert').factory('webcert.ManageCertificate',
             var sendDialog = {
                 isOpen: false
             };
-
-            function _initSend($scope) {
-                $scope.dialogSend = {
-                    acceptprogressdone: true,
-                    focus: false,
-                    errormessageid: 'error.failedtosendintyg',
-                    showerror: false,
-                    patientConsent: false
-                };
-            }
 
             function _sendSigneratIntyg(intygsId, intygsTyp, recipientId, patientConsent, dialogModel, sendDialog, onSuccess) {
                 dialogModel.showerror = false;
@@ -261,16 +256,25 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _send($scope, cert, recipientId, titleId, onSuccess) {
-                sendDialog = dialogService.showDialog($scope, {
+            function _send(intygId, intygType, recipientId, titleId, bodyTextId, onSuccess) {
+
+                var dialogSendModel ={
+                    acceptprogressdone: true,
+                    focus: false,
+                    errormessageid: 'error.failedtosendintyg',
+                    showerror: false,
+                    patientConsent: false
+                };
+
+                sendDialog = dialogService.showDialog({
                     dialogId: 'send-dialog',
                     titleId: titleId,
-                    bodyText: 'Upplys patienten om att även göra en ansökan om sjukpenning hos Försäkringskassan.',
+                    bodyTextId: bodyTextId,
                     templateUrl: '/views/partials/send-dialog.html',
-                    model: $scope.dialogSend,
+                    model: dialogSendModel,
                     button1click: function() {
-                        $log.debug('send cert from dialog' + cert);
-                        _sendSigneratIntyg(cert.id, cert.intygType, recipientId, $scope.dialogSend.patientConsent, $scope.dialogSend,
+                        $log.debug('send intyg from dialog. id:' + intygId + ', intygType:' + intygType + ', recipientId:' + recipientId);
+                        _sendSigneratIntyg(intygId, intygType, recipientId, dialogSendModel.patientConsent, dialogSendModel,
                             sendDialog, onSuccess);
                     },
                     button1text: 'common.send',
@@ -293,15 +297,6 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 isOpen: false
             };
 
-            function _initMakulera($scope) {
-                $scope.dialogMakulera = {
-                    acceptprogressdone: true,
-                    focus: false,
-                    errormessageid: 'error.failedtomakuleraintyg',
-                    showerror: false
-                };
-            }
-
             function _revokeSigneratIntyg(cert, dialogModel, makuleraDialog, onSuccess) {
                 dialogModel.showerror = false;
                 dialogModel.acceptprogressdone = false;
@@ -316,7 +311,14 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 });
             }
 
-            function _makulera($scope, cert, confirmationMessage, onSuccess) {
+            function _makulera( cert, confirmationMessage, onSuccess) {
+
+                var dialogMakuleraModel = {
+                    acceptprogressdone: true,
+                    focus: false,
+                    errormessageid: 'error.failedtomakuleraintyg',
+                    showerror: false
+                };
 
                 var successCallback = function() {
                     dialogService.showMessageDialog('label.makulera.confirmation', confirmationMessage,
@@ -325,14 +327,14 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                         });
                 };
 
-                makuleraDialog = dialogService.showDialog($scope, {
+                makuleraDialog = dialogService.showDialog({
                     dialogId: 'makulera-dialog',
                     titleId: 'label.makulera',
                     templateUrl: '/views/partials/makulera-dialog.html',
-                    model: $scope.dialogMakulera,
+                    model: dialogMakuleraModel,
                     button1click: function() {
                         $log.debug('revoking cert from dialog' + cert);
-                        _revokeSigneratIntyg(cert, $scope.dialogMakulera, makuleraDialog, successCallback);
+                        _revokeSigneratIntyg(cert, dialogMakuleraModel, makuleraDialog, successCallback);
                     },
 
                     button1text: 'common.revoke',
@@ -345,7 +347,6 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 return makuleraDialog;
             }
 
-
             // Return public API for the service
             return {
                 getCertTypes: _getCertTypes,
@@ -354,12 +355,9 @@ angular.module('webcert').factory('webcert.ManageCertificate',
                 getUnsignedCertificates: _getUnsignedCertificates,
                 getUnsignedCertificatesByQueryFetchMore: _getUnsignedCertificatesByQueryFetchMore,
                 getCertificateSavedByList: _getCertificateSavedByList,
-                initMakulera: _initMakulera,
                 makulera: _makulera,
-                initSend: _initSend,
                 send: _send,
                 COPY_DIALOG_COOKIE: _COPY_DIALOG_COOKIE,
-                initCopyDialog: _initCopyDialog,
                 copy: _copy,
 
                 __test__: {

@@ -1,16 +1,15 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.page.AbstractPage
-
-class EditeraIntygPage extends AbstractPage {
+class EditeraIntygPage extends AbstractEditCertPage {
 
     static at = { doneLoading() && $(".edit-form").isDisplayed() }
 
     static content = {
+        tillbakaButton(required: false) { $("#tillbakaButton") }
         radera { $("#ta-bort-utkast") }
+        skrivUtBtn { $("#skriv-ut-utkast") }
         konfirmeraRadera { $("#confirm-draft-delete-button") }
         signeraBtn(required: false) { $("#signera-utkast-button") }
-        konfirmeraSignera { $("#confirm-signera-utkast-button") }
         signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         enhetsPostadress(required: false) { $("#clinicInfoPostalAddress") }
@@ -22,5 +21,7 @@ class EditeraIntygPage extends AbstractPage {
         intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
         intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
         errorPanel { $("#error-panel") }
+        visaVadSomSaknasKnapp { $("#showCompleteButton") }
+        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
     }
 }

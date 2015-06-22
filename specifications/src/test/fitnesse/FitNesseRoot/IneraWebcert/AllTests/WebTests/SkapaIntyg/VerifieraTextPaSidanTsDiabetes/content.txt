@@ -1,0 +1,25 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast ts-diabetes
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | ts-diabetes |
+| $intygsid= | intygsid |
+
+!3 Verifiera text webcert-1738
+| script | !-SkrivIntyg-! |
+| reject | markup for id | bedomningForm | innehaller | Trafikmedicin |
+| reject | markup for id | bedomningForm | innehaller | /img/link_icon.png |
+
+!3 Verifiera att utkastet inte saknar några översättningsnycklar
+| script | !-SkrivIntyg-! |
+| inga oversattningsnycklar saknas |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |

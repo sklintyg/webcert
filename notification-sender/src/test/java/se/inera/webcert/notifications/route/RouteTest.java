@@ -3,8 +3,17 @@ package se.inera.webcert.notifications.route;
 import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.camel.*;
+import javax.xml.bind.JAXBException;
+
+import org.apache.camel.CamelContext;
+import org.apache.camel.EndpointInject;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.apache.camel.test.spring.MockEndpoints;
@@ -15,18 +24,18 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 import se.inera.webcert.notifications.service.exception.CertificateStatusUpdateServiceException;
 import se.inera.webcert.notifications.service.exception.NonRecoverableCertificateStatusUpdateServiceException;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
-import javax.xml.bind.JAXBException;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
-@ContextConfiguration({ "/spring/unit-test-properties-context.xml", "/spring/camel-context.xml"})
+@ContextConfiguration({ "/test-notification-sender-config.xml", "/spring/unit-test-properties-context.xml" })
 @MockEndpointsAndSkip("bean:createAndInitCertificateStatusRequestProcessor")
 @MockEndpoints("(direct:errorHandlerEndpoint|direct:redeliveryExhaustedEndpoint)")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -57,8 +66,12 @@ public class RouteTest {
     @EndpointInject(uri = "mock:direct:redeliveryExhaustedEndpoint")
     private MockEndpoint mockRedeliveryEndpoint;
 
+    @Value("${errorhandling.maxRedeliveryDelay}")
+    private long maxRedeliveryDelay;
+
     @Before
     public void setup() {
+        camelContext.setTracing(true);
         mockRequestProcessorEndpoint.whenAnyExchangeReceived(new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
@@ -134,12 +147,22 @@ public class RouteTest {
 
     @Test
     public void testWebserviceExceptionWithRedelivery() throws InterruptedException {
+
+        final List<Long> redeliveryDelays = new ArrayList<Long>();
+
         // Given
         mockCertificateStatusUpdateEndpoint.whenAnyExchangeReceived(new Processor() {
-            private int attempts = 1;
+            int attempts = 1;
+            long start = System.currentTimeMillis();
+
             @Override
             public void process(Exchange exchange) throws Exception {
                 LOG.info("Receiving {}", attempts++);
+
+                long end = System.currentTimeMillis();
+                redeliveryDelays.add(end - start);
+                start = end;
+
                 throw new CertificateStatusUpdateServiceException("Testing application error, with exhausted retries");
             }
         });

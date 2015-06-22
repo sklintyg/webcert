@@ -59,4 +59,11 @@ public interface HealthCheckService {
      * @return
      */
     HealthStatus checkIntygstjanst();
+    
+    /**
+     * Checks the number of logged in users.
+     * 
+     * @return
+     */
+    HealthStatus checkNbrOfUsers();
 }

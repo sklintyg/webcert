@@ -20,6 +20,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 !3 Utkastet ska sparas med autospar och signera
 
 | script | !-SkrivIntyg-! |
+| vanta | 5 |
 | intyg sparat visas |
 
 !3 Ta bort utkastet

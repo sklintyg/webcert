@@ -11,6 +11,9 @@ class UnhandledQAPage extends AbstractPage {
         careUnitSelector(required: false) { $("#wc-care-unit-clinic-selector") }
         unhandledQATable(required: false) { $("#qaTable") }
 
+        noResultsOnUnitInfo { $("#current-list-noResults-unit") }
+        noResultsForQueryInfo { $("#current-list-noResults-query") }
+
         advancedFilterBtn { $("#show-advanced-filter-btn") }
         advancedFilterForm { $("#advanced-filter-form") }
         advandecFilterFormFragestallare { $("input", name: "frageStallare") }
@@ -26,7 +29,6 @@ class UnhandledQAPage extends AbstractPage {
         fetchMoreBtn { $("#hamtaFler") }
 
         logoutLink { $("#logoutLink") }
-
     }
 
     def visaAllaFragor() {
@@ -51,6 +53,11 @@ class UnhandledQAPage extends AbstractPage {
 
     def resetAdvancedFilter() {
         advancedFilterResetBtn.click()
+    }
+
+    def patientIdSyns(String internReferens) {
+        def patientId = $("#patientId-${internReferens}")
+        patientId.text() != ""
     }
 
     boolean hamtaFler() {

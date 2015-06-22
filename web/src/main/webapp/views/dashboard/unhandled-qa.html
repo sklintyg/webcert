@@ -6,20 +6,24 @@
         <span message key="dashboard.unanswered.title"></span>
       </h1>
 
+      <!-- load animation for entire page -->
       <div wc-spinner label="info.loadingdata" show-spinner="!widgetState.doneLoading"
            show-content="widgetState.doneLoading">
         <div ng-show="units.length > 2">
           <h2 class="less-top-padding">
             Välj vårdenhet eller mottagning</h2>
 
+
           <div class="row">
             <div id="wc-care-unit-clinic-selector" wc-care-unit-clinic-selector></div>
           </div>
+
         </div>
 
         <div ng-if="isActiveUnitChosen()">
           <h2 class="col-head" ng-class="{'less-top-padding' : units.length < 2}">{{selectedUnit.namn}}</h2>
 
+          <!-- search filter -->
           <div class="webcert-bottom-padding-section">
             <span
                 ng-if="!widgetState.filteredYet">Nedan visas alla ej hanterade frågor och svar som kräver en åtgärd.<br></span>
@@ -111,6 +115,7 @@
             </div>
           </div>
 
+          <!-- loading animation table result -->
           <div wc-spinner label="info.running.query" show-spinner="widgetState.runningQuery"
                show-content="!widgetState.runningQuery">
 
@@ -118,15 +123,16 @@
 
               <!-- No results message for unhandled -->
               <div id="current-list-noResults-unit"
-                   ng-show="widgetState.currentList.length < 1 && !widgetState.activeErrorMessageKey"
+                   ng-show="widgetState.doneLoading && widgetState.currentList.length < 1 && !widgetState.activeErrorMessageKey && !widgetState.filteredYet"
                    class="alert alert-info">
-                <span message key="info.query.noresults"></span>
+                <span message key="info.nounanswered.qa.for.unit"></span>
               </div>
 
               <!-- No results message for query -->
               <div id="current-list-noResults-query"
-                   ng-show="widgetState.totalCount < 1 && !widgetState.activeErrorMessageKey" class="alert alert-info">
-                <span message key="info.nounanswered.qa.for.unit"></span>
+                   ng-show="widgetState.doneLoading && widgetState.totalCount < 1 && !widgetState.activeErrorMessageKey && widgetState.filteredYet"
+                   class="alert alert-info">
+                <span message key="info.query.noresults"></span>
               </div>
 
               <!-- error message -->
@@ -135,11 +141,12 @@
                 <span message key="{{widgetState.activeErrorMessageKey}}"></span>
               </div>
 
+              <!-- Search hits -->
               <div id="query-count" ng-show="widgetState.totalCount > 0">
                 Sökresultat - {{widgetState.totalCount}} träffar
               </div>
 
-              <!-- qa table -->
+              <!-- qa table - Frågor och svar-tabell -->
               <div class="row" ng-show="widgetState.currentList.length > 0" id="qaTable">
                 <table class="col-md-12 table table-striped table-qa">
                   <tr>
@@ -179,7 +186,7 @@
                     </td>
                     <td><span message key="qa.measure.{{qa.measureResKey}}"></span></td>
                     <td><span message key="qa.fragestallare.{{qa.frageStallare}}"></span></td>
-                    <td class="unbreakable">{{qa.intygsReferens.patientId.patientIdExtension}}</td>
+                    <td id="patientId-{{qa.internReferens}}" class="unbreakable">{{qa.intygsReferens.patientId}}</td>
                     <td>{{qa.vardperson.namn}}</td>
                     <td class="unbreakable table-qa-last">{{qa.senasteHandelseDatum |
                       date:'shortDate'}}

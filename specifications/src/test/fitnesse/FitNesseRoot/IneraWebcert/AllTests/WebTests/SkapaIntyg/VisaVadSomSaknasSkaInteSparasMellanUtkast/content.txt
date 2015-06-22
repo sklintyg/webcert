@@ -1,0 +1,59 @@
+Testet säkerställer att en regression fortfarande är löst som innebar att sidan där man skriver utkast sparar sitt läge mellan olika gånger man går in på sidan. Även mellan olika intygstyper.
+
+Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte är komplett för att signera.
+
+!3 Lägg till utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| wc-saknas-1 | fk7263 | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+| wc-saknas-2 | ts-bas | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+| wc-saknas-3 | ts-diabetes | 19000101-9801 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+
+!3 Gå till fk-utkastet
+
+| script | !-HanteraUtkast-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+| ga till editera intyg med typ | fk7263 | och intygid | wc-saknas-1 |
+| editera sidan visas |
+
+| script | !-SkrivIntyg-! |
+| visa vad som saknas lista visas | false |
+| visa vad som saknas |
+| visa vad som saknas lista visas | true |
+
+| script | !-HanteraUtkast-! |
+| ga till ej signerade intyg |
+| valj intyg fran ej signerade intyg | wc-saknas-2 |
+| editera sidan visas |
+
+| script | !-SkrivIntyg-! |
+| visa vad som saknas lista visas | false |
+| visa vad som saknas |
+| visa vad som saknas lista visas | true |
+
+| script | !-HanteraUtkast-! |
+| ga till ej signerade intyg |
+| valj intyg fran ej signerade intyg | wc-saknas-3 |
+| editera sidan visas |
+
+| script | !-SkrivIntyg-! |
+| visa vad som saknas lista visas | false |
+| visa vad som saknas |
+| visa vad som saknas lista visas | true |
+
+| script | !-HanteraUtkast-! |
+| ga till ej signerade intyg |
+| valj intyg fran ej signerade intyg | wc-saknas-1 |
+| editera sidan visas |
+
+| script | !-SkrivIntyg-! |
+| visa vad som saknas lista visas | false |
+
+!3 Ta bort utkast
+
+| ta bort utkast |
+| utkastId |
+| wc-saknas-1 |
+| wc-saknas-2 |
+| wc-saknas-3 |

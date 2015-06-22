@@ -14,13 +14,37 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 !3 Kopiera intyget
 
 | script | !-SokSkrivIntyg-! |
-| kopiera tidigare intyg | intyg-fit-1 |
+| valj kopiera tidigare intyg | intyg-fit-1 |
+| valj visa inte igen i dialogen |
+| valj kopiera i dialogen |
 
 !3 Författarstöd visas
 
 | script | !-HanteraUtkast-! |
 | editera sidan visas |
 | radera utkast |
-| ga till ej signerade intyg |
+
+| script | !-SokSkrivIntyg-! |
+| valj intygstyp sidan visas |
+
+!3 Kopiera intyget igen, denna gång ska inte dialogen visas utan intyget ska kopieras direkt
+
+| script | !-SokSkrivIntyg-! |
+| valj kopiera tidigare intyg | intyg-fit-1 |
+
+!3 Författarstöd visas
+
+| script | !-HanteraUtkast-! |
+| editera sidan visas |
+| radera utkast |
+
+| script | !-SokSkrivIntyg-! |
+| valj intygstyp sidan visas |
+
+| script | !-HanteraUtkast-! |
 | inga ej signerade intyg visas |
 
+!3 Återaktivera kopiera dialogen genom att rensa cookien
+
+| script | !-SokSkrivIntyg-! |
+| ateraktivera kopiera dialogen |

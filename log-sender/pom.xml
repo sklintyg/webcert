@@ -45,7 +45,7 @@
     <!-- Schemas -->
     <dependency>
       <groupId>se.riv.ehr.logstore</groupId>
-      <artifactId>ehr-logstore-interactions</artifactId>
+      <artifactId>ehr-logstore-schemas</artifactId>
     </dependency>
 
     <!-- Logging -->

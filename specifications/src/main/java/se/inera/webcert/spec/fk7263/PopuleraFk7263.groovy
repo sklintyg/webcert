@@ -6,16 +6,10 @@ import org.joda.time.format.DateTimeFormatter
 import org.openqa.selenium.Keys
 
 import se.inera.webcert.pages.fk7263.EditCertPage
-import se.inera.webcert.spec.Browser
-import se.inera.webcert.spec.util.StringConverter
-import fitnesse.slim.converters.ConverterRegistry
+import se.inera.certificate.spec.Browser
 
 class PopuleraFk7263 {
 
-    PopuleraFk7263() {
-        ConverterRegistry.addConverter(String.class, new StringConverter());
-    }
-    
     public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     Boolean smittskydd
@@ -78,6 +72,7 @@ class PopuleraFk7263 {
     String vardenhetPostort
     String vardenhetTelefonnummer
     String vardenhetEpost
+    String recommendationsToFkTravel
 
     def execute() {
         Browser.drive {
@@ -86,19 +81,35 @@ class PopuleraFk7263 {
                 at EditCertPage
             }
 
-            if (smittskydd != null) page.setSmittskyddCheckBox(smittskydd)
+            if (smittskydd != null) page.setSmittskydd(smittskydd)
 
             if (undersokning != null){
                 page.baserasPa.setUndersokningCheckBox(undersokning)
             }
-            if (undersokningDatum != null) page.baserasPa.undersokningDatum = undersokningDatum
-            if (telefonkontakt != null) page.baserasPa.telefonkontakt = telefonkontakt
-            if (telefonkontaktDatum != null) page.baserasPa.telefonkontaktDatum = telefonkontaktDatum
-            if (journal != null) page.baserasPa.journal = journal
-            if (journalDatum != null) page.baserasPa.journalDatum = journalDatum
-            if (other != null) page.baserasPa.other = other
-            if (otherDatum != null) page.baserasPa.otherDatum = otherDatum
-            if (otherText != null) page.baserasPa.otherText = otherText
+            if (undersokningDatum != null) {
+                page.baserasPa.undersokningDatum = undersokningDatum
+            }
+            if (telefonkontakt != null){
+                page.baserasPa.setTelefonkontaktCheckBox(telefonkontakt)
+            }
+            if (telefonkontaktDatum != null) {
+                page.baserasPa.telefonkontaktDatum = telefonkontaktDatum
+            }
+            if (journal != null){
+                page.baserasPa.setJournalCheckBox(journal)
+            }
+            if (journalDatum != null) {
+                page.baserasPa.journalDatum = journalDatum
+            }
+            if (other != null) {
+                page.baserasPa.setOtherCheckBox(other);
+            }
+            if (otherDatum != null) {
+                page.baserasPa.otherDatum = otherDatum
+            }
+            if (otherText != null) {
+                page.baserasPa.otherText = otherText
+            }
 
             if (diagnosKodverk == 'ICD_10_SE') {
                 page.diagnos.diagnoseKodverk_ICD_10_SE = true
@@ -155,9 +166,13 @@ class PopuleraFk7263 {
 
             if (sjukdomsforlopp != null) page.sjukdomsforlopp = sjukdomsforlopp
 
-            if (funktionsnedsattning != null) page.funktionsnedsattning = funktionsnedsattning
+            if (funktionsnedsattning != null) {
+                page.funktionsnedsattning = funktionsnedsattning
+            }
 
-            if (aktivitetsbegransning != null) page.aktivitetsbegransning = aktivitetsbegransning
+            if (aktivitetsbegransning != null){
+                page.aktivitetsbegransning = aktivitetsbegransning
+            }
 
             if (nuvarandearbete != null) page.arbete.nuvarande = nuvarandearbete
             if (arbetsuppgifter != null) page.arbete.arbetsuppgifter = arbetsuppgifter
@@ -204,6 +219,8 @@ class PopuleraFk7263 {
             if (rekommendationOvrigt != null) page.rekommendationer.ovrigt = rekommendationOvrigt
             if (rekommendationOvrigtBeskrivning != null) page.rekommendationer.ovrigtBeskrivning = rekommendationOvrigtBeskrivning
             page.rekommendationer.valjArbetslivsinriktadRehabilitering(arbetslivsinriktadRehabilitering)
+            page.rekommendationer.valjRecommendationsToFkTravel(recommendationsToFkTravel)
+
 
             if (kontaktFk != null) page.kontaktFk = kontaktFk
             if (ovrigt != null) page.ovrigt = ovrigt

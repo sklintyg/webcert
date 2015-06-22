@@ -1,1 +1,1 @@
-angular.module('webcert', [ 'ui.bootstrap', 'ngCookies', 'ngRoute', 'ngSanitize' ]);
+angular.module('webcert', [ 'ui.bootstrap', 'ngCookies', 'ui.router', 'ngSanitize' ]);

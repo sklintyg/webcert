@@ -17,6 +17,10 @@ Populera intyget med information i samtliga fält så det blir komplett
 | smittskydd | tjanstgoringstid | nedsattMed100 |
 | true | 40 | true |
 
+!3 Verifiera att utkastet inte saknar några översättningsnycklar
+| script | !-SkrivIntyg-! |
+| inga oversattningsnycklar saknas |
+
 !3 Spara och signera
 
 | script | !-SkrivIntyg-! |

@@ -17,6 +17,7 @@
   <listener>
     <listener-class>se.inera.certificate.logging.LogbackConfiguratorContextListener</listener-class>
   </listener>
+  
   <!-- Start spring context -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -24,6 +25,11 @@
   <listener>
     <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
   </listener>
+  
+  <!-- Event publisher for keeping track of when session ends and removing them from the sessionRegistry -->
+  <listener>
+     <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+ </listener>
 
   <!-- Spring Web -->
   <servlet>
@@ -194,6 +200,12 @@
 
   <resource-ref>
     <res-ref-name>jms/NotificationWSQueue</res-ref-name>
+    <res-type>javax.jms.Queue</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+
+  <resource-ref>
+    <res-ref-name>jms/NotificationWSQueueSecondary</res-ref-name>
     <res-type>javax.jms.Queue</res-type>
     <res-auth>Container</res-auth>
   </resource-ref>

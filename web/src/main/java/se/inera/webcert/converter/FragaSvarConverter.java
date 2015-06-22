@@ -1,30 +1,25 @@
 package se.inera.webcert.converter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
 import se.inera.certificate.model.common.internal.HoSPersonal;
-import se.inera.certificate.model.common.internal.Patient;
 import se.inera.certificate.model.common.internal.Utlatande;
-import se.inera.certificate.schema.Constants;
-import se.inera.webcert.medcertqa.v1.FkKontaktType;
-import se.inera.webcert.medcertqa.v1.KompletteringType;
-import se.inera.webcert.medcertqa.v1.LakarutlatandeEnkelType;
-import se.inera.webcert.medcertqa.v1.VardAdresseringsType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.FkKontaktType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.KompletteringType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
+import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.model.Id;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Komplettering;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
-import se.inera.webcert.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author andreaskaltenbach
@@ -54,7 +49,7 @@ public class FragaSvarConverter {
         fragaSvar.setMeddelandeRubrik(StringUtils.left(source.getFkMeddelanderubrik(), FK_MEDDELANDE_RUBRIK_LANGD));
         fragaSvar.setSistaDatumForSvar(source.getFkSistaDatumForSvar());
 
-        fragaSvar.setIntygsReferens(convert(source.getLakarutlatande()));
+        fragaSvar.setIntygsReferens(convertToIntygsReferens(source.getLakarutlatande()));
         fragaSvar.setKompletteringar(convertKompletteringar(source.getFkKomplettering()));
         fragaSvar.setVardperson(convert(source.getAdressVard()));
 
@@ -85,7 +80,7 @@ public class FragaSvarConverter {
     }
 
     /**
-     * Converts a from common models {@link HosPersonal} to an {@link Vardperson} new instance.
+     * Converts a from common models {@link HoSPersonal} to an {@link Vardperson} new instance.
      */
     public static Vardperson convert(HoSPersonal source) {
         Vardperson vardperson = new Vardperson();
@@ -119,23 +114,17 @@ public class FragaSvarConverter {
         return ImmutableSet.copyOf(kompletteringar);
     }
 
-    private IntygsReferens convert(LakarutlatandeEnkelType source) {
+    private IntygsReferens convertToIntygsReferens(LakarutlatandeEnkelType source) {
         IntygsReferens intygsReferens = new IntygsReferens();
         intygsReferens.setIntygsId(source.getLakarutlatandeId());
         intygsReferens.setIntygsTyp("fk7263");
 
         if (source.getPatient() != null) {
             intygsReferens.setPatientNamn(source.getPatient().getFullstandigtNamn());
-
-            if (source.getPatient().getPersonId() != null) {
-                Id id = new Id();
-
-                id.setPatientIdExtension(source.getPatient().getPersonId().getExtension());
-                id.setPatientIdRoot(source.getPatient().getPersonId().getRoot());
-                intygsReferens.setPatientId(id);
-                intygsReferens.setSigneringsDatum(source.getSigneringsTidpunkt());
-            }
+            intygsReferens.setPatientId(source.getPatient().getPersonId().getExtension());
         }
+
+        intygsReferens.setSigneringsDatum(source.getSigneringsTidpunkt());
 
         return intygsReferens;
     }
@@ -158,14 +147,16 @@ public class FragaSvarConverter {
         IntygsReferens intygsReferens = new IntygsReferens();
         intygsReferens.setIntygsId(utlatande.getId());
         intygsReferens.setIntygsTyp(utlatande.getTyp());
-        intygsReferens.setPatientId(toCommonId(utlatande.getGrundData().getPatient()));
+        intygsReferens.setPatientId(utlatande.getGrundData().getPatient().getPersonId());
         intygsReferens.setPatientNamn(utlatande.getGrundData().getPatient().getFullstandigtNamn());
         intygsReferens.setSigneringsDatum(utlatande.getGrundData().getSigneringsdatum());
         return intygsReferens;
     }
 
+    /*
     private static Id toCommonId(Patient patient) {
         return new Id(patient.isSamordningsNummer() ? Constants.SAMORDNING_ID_OID : Constants.PERSON_ID_OID, patient.getPersonId());
     }
+    */
 
 }

@@ -88,6 +88,9 @@
                     <extraarg>-verbose</extraarg>
                   </extraargs>
                   <wsdl>${schema.path}/wsdl/osif/osif-2.1.wsdl</wsdl>
+                  <wsdlLocation>
+                    classpath:schemas/wsdl/osif/osif-2.1.wsdl
+                  </wsdlLocation>
                 </wsdlOption>
 
               </wsdlOptions>

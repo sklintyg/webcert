@@ -11,16 +11,20 @@ import se.inera.webcert.notifications.service.exception.NonRecoverableCertificat
 public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessNotificationRequestRouteBuilder.class);
 
-    @Value("${errorhanding.maxRedeliveries}")
+    @Value("${errorhandling.maxRedeliveries}")
     private int maxRedeliveries = 3;
 
-    @Value("${errorhanding.redeliveryDelay}")
+    @Value("${errorhandling.redeliveryDelay}")
     private long redeliveryDelay = 10;
+
+    @Value("${errorhandling.maxRedeliveryDelay}")
+    private long maxRedeliveryDelay = 10000L;
 
     @Override
     public void configure() throws Exception {
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
                 .onException(Exception.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .transacted()
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:createAndInitCertificateStatusRequestProcessor")
                 .log(LoggingLevel.INFO, LOG, simple("Notification is transformed for intygs-id: ${in.headers.intygsId}, with notification type: ${in.headers.handelse}").getText())
@@ -28,10 +32,21 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
                 .to("sendNotificationWSEndpoint");
 
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
-                .errorHandler(deadLetterChannel("direct:redeliveryExhaustedEndpoint")
-                        .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay)
+                .errorHandler(deadLetterChannel("failedMessagesEndpoint").useOriginalMessage())
+                .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .transacted()
+                .to("direct:sendWSMessage");
+
+        from("failedMessagesEndpoint").routeId("sendNotificationToWSSecondary")
+                .errorHandler(deadLetterChannel("direct:redeliveryExhaustedEndpoint").useOriginalMessage()
+                        .maximumRedeliveries(maxRedeliveries).redeliveryDelay(redeliveryDelay).maximumRedeliveryDelay(maxRedeliveryDelay)
                         .useExponentialBackOff())
                 .onException(NonRecoverableCertificateStatusUpdateServiceException.class).handled(true).to("direct:errorHandlerEndpoint").end()
+                .transacted()
+                .to("direct:sendWSMessage");
+
+        from("direct:sendWSMessage")
+                .errorHandler(noErrorHandler())
                 .unmarshal("jaxbMessageDataFormat")
                 .to("sendCertificateStatusUpdateEndpoint");
 
@@ -41,7 +56,6 @@ public class ProcessNotificationRequestRouteBuilder extends RouteBuilder {
 
         from("direct:redeliveryExhaustedEndpoint").routeId("redeliveryErrorLogging")
                 .log(LoggingLevel.ERROR, LOG, simple("Redelivery attempts exhausted for intygs-id: ${in.headers.intygsId}, with message: ${exception.message}\n ${exception.stacktrace}").getText())
-                .marshal("jaxbMessageDataFormat")
                 .to("deadLetterEndpoint")
                 .stop();
     }

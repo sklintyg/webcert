@@ -14,6 +14,7 @@ Testet beskriver fallet när en användare kommer till fråga/svar från journal
 !4 Verifiera att rätt knappar visas
 
 | script | !-SvaraOchFraga-! |
+| skriv ut knapp visas | true |
 | kopiera knapp visas | false |
 | makulera knapp visas | false |
 | skicka till fk knapp visas | false |

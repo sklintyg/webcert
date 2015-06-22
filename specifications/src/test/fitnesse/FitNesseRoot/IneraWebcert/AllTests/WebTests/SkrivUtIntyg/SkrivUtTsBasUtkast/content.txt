@@ -1,0 +1,20 @@
+!3 Lägg till komplett utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-skrivut-1 | ts-bas| 19121212-1212 | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+
+!3 Verifiera att skriv ut knapp är synlig
+
+| script | !-HanteraUtkast-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+| sok skriv intyg sidan visas |
+| ga till editera intyg med typ | ts-bas| och intygid | webcert-fitnesse-skrivut-1 |
+| skriv ut knapp visas |
+
+
+!3 Ta bort utkast
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-skrivut-1 |

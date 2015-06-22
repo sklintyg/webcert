@@ -14,5 +14,7 @@ public class PatternLayoutWithUserContext extends PatternLayout {
                 "user", UserConverter.class.getName());
         PatternLayout.defaultConverterMap.put(
                 "session", SessionConverter.class.getName());
+        PatternLayout.defaultConverterMap.put(
+                "selectedCareUnit", UserSelectedCareUnitConverter.class.getName());
     }
 }

@@ -39,7 +39,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | ladda om |
 
 | script | !-SkrivIntyg-! |
-| verifiera att sjukskrivningsperioden ar | 41 |
+| check | sjukskrivningsperiod | 41 |
 
 !4 En 25% sjukskrivning ger rätt antal timmar
 
@@ -48,18 +48,26 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 | true | true | true | false |
 
 | script | !-SkrivIntyg-! |
-| verifiera att arbetstid 25 ar | 30 |
-| verifiera att arbetstid 50 ar | 20 |
-| verifiera att arbetstid 75 ar | 10 |
+| check | arbetstid 25 | 30 |
+| check | arbetstid 50 | 20 |
+| check | arbetstid 75 | 10 |
 | sparaUtkast |
 
 | script | Browser |
 | ladda om |
 
 | script | !-SkrivIntyg-! |
-| verifiera att arbetstid 25 ar | 30 |
-| verifiera att arbetstid 50 ar | 20 |
-| verifiera att arbetstid 75 ar | 10 |
+| check | arbetstid 25 | 30 |
+| check | arbetstid 50 | 20 |
+| check | arbetstid 75 | 10 |
+
+!4 verifiera webcert-1721
+| Populera Fk7263 |
+| nedsattMed25 | nedsattMed50 | nedsattMed75 | nedsattMed100 |
+| true | true | true | true |
+
+| script | !-SkrivIntyg-! |
+| check | sjukskrivningsperiod | 28 |
 
 !3 Ta bort utkastet
 

@@ -13,6 +13,7 @@ class VisaFk7263Page extends VisaPage {
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
         certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
 
         // copy dialog
         annanEnhetText { $("#annanVardenhet")}
@@ -34,13 +35,13 @@ class VisaFk7263Page extends VisaPage {
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
-        skickaDialogCheck { $("#patientSamtycke") }
-        skickaDialogSkickaKnapp { $("#button1send-dialog") }
+
+        skickaDialogBody { $("span[key=\"fk7263.label.send.body\"]") }
 
         // kopiera dialog text webcert-1449
         copyDialog(required:false, toWait: true){ $("#copy-dialog") }
-        kopieraDialogMsgInteFranJournalSystem(required:false,toWait: true){ $("#msgInteFranJournalSystem") }
-        kopieraDialogMsgNyttPersonId(required:false, toWait: true){ $("#msgNyttPersonId") }
+        kopieraDialogMsgInteFranJournalSystem(required:false){ $("#msgInteFranJournalSystem") }
+        kopieraDialogMsgNyttPersonId(required:false){ $("#msgNyttPersonId") }
 
         // fraga svar
         vidarebefordraEjHanterad(required: false) { $("#vidarebefordraEjHanterad") }
@@ -181,10 +182,11 @@ class VisaFk7263Page extends VisaPage {
         }
     }
 
-    def send() {
-        $("#sendBtn").click()
+    def sendWithValidation() {
+        skickaKnapp.click()
         waitFor {
             doneLoading()
+            skickaDialogBody.text().contains("Försäkringskassan.")
         }
         skickaDialogCheck.click()
         waitFor {

@@ -10,6 +10,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -30,6 +31,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -149,6 +151,21 @@ public class QuestionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteQuestionsBySvarsText(@PathParam("svarsText") String svarsText) {
         List<FragaSvar> fragorOchSvar = fragasvarRepository.findBySvarsTextLike(svarsText);
+        if (fragorOchSvar != null) {
+            for (FragaSvar fragaSvar : fragorOchSvar) {
+                fragasvarRepository.delete(fragaSvar);
+            }
+        }
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/enhet/{enhetsId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteQuestionsByEnhet(@PathParam("enhetsId") String enhetsId) {
+        List<String> enhetsIds = new ArrayList<String>();
+        enhetsIds.add(enhetsId);
+        List<FragaSvar> fragorOchSvar = fragasvarRepository.findByEnhetsId(enhetsIds);
         if (fragorOchSvar != null) {
             for (FragaSvar fragaSvar : fragorOchSvar) {
                 fragasvarRepository.delete(fragaSvar);

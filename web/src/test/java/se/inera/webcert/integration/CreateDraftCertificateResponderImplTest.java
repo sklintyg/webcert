@@ -6,26 +6,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.HsaId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.PersonId;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.integration.builder.CreateNewDraftRequestBuilder;
@@ -38,6 +24,19 @@ import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Enhet;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.HosPersonal;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Patient;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v1.TypAvUtlatande;
+import se.riv.clinicalprocess.healthcond.certificate.v1.ResultCodeType;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateResponderImplTest {

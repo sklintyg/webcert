@@ -5,13 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,12 +13,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -41,12 +39,14 @@ public class FragaSvarRepositoryTest {
 
     private static final String INTYGS_ID = "abc123";
 
-    private LocalDateTime FRAGE_SIGN_DATE = new LocalDateTime("2013-03-01T11:11:11");
-    private LocalDateTime FRAGE_SENT_DATE = new LocalDateTime("2013-03-01T12:00:00");
+    private LocalDateTime FRAGA_SIGN_DATE = new LocalDateTime("2013-03-01T11:11:11");
+    private LocalDateTime FRAGA_SENT_DATE = new LocalDateTime("2013-03-01T12:00:00");
     private LocalDateTime SVAR_SIGN_DATE = new LocalDateTime("2013-04-01T11:11:11");
     private LocalDateTime SVAR_SENT_DATE = new LocalDateTime("2013-04-01T12:00:00");
-    private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk", "Sven Persson",
-            FRAGE_SENT_DATE);
+
+    private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk", "19121212-1212",
+            "Sven Persson", FRAGA_SENT_DATE);
+
     private static String ENHET_1_ID = "ENHET_1_ID";
     private static String ENHET_2_ID = "ENHET_2_ID";
     private static String ENHET_3_ID = "ENHET_3_ID";
@@ -141,8 +141,8 @@ public class FragaSvarRepositoryTest {
     @Test
     public void testFindByIntygsReferens() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
-        saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk", "Sven Persson",
-                FRAGE_SENT_DATE));
+        saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk", "19121212-1212", "Sven Persson",
+                FRAGA_SENT_DATE));
         fragasvarRepository.save(saved);
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_4_ID));
@@ -165,8 +165,8 @@ public class FragaSvarRepositoryTest {
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
         f.setExternReferens("externReferens");
-        f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
-        f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+        f.setFrageSigneringsDatum(FRAGA_SIGN_DATE);
+        f.setFrageSkickadDatum(FRAGA_SENT_DATE);
         f.setFrageStallare("Olle");
         Vardperson vardperson = new Vardperson();
         vardperson.setEnhetsId(enhetsId);
@@ -188,8 +188,8 @@ public class FragaSvarRepositoryTest {
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
         f.setExternReferens("externReferens");
-        f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
-        f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+        f.setFrageSigneringsDatum(FRAGA_SIGN_DATE);
+        f.setFrageSkickadDatum(FRAGA_SENT_DATE);
         f.setFrageStallare("Olle");
         Vardperson vardperson = new Vardperson();
         vardperson.setEnhetsId(enhetsId);
@@ -209,8 +209,8 @@ public class FragaSvarRepositoryTest {
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
         f.setExternReferens("externReferens");
-        f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
-        f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+        f.setFrageSigneringsDatum(FRAGA_SIGN_DATE);
+        f.setFrageSkickadDatum(FRAGA_SENT_DATE);
         f.setFrageStallare(frageStallare);
         f.setFrageText("Detta var ju otydligt formulerat!");
         f.setIntygsReferens(INTYGS_REFERENS);
@@ -224,8 +224,8 @@ public class FragaSvarRepositoryTest {
         f.setExternaKontakter(new HashSet<String>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
         f.setAmne(Amne.AVSTAMNINGSMOTE);
         f.setExternReferens("externReferens");
-        f.setFrageSigneringsDatum(FRAGE_SIGN_DATE);
-        f.setFrageSkickadDatum(FRAGE_SENT_DATE);
+        f.setFrageSigneringsDatum(FRAGA_SIGN_DATE);
+        f.setFrageSkickadDatum(FRAGA_SENT_DATE);
         f.setFrageStallare(frageStallare);
         Vardperson vardperson = new Vardperson();
         vardperson.setEnhetsId(enhetsId);

@@ -13,7 +13,7 @@ Detta test ska visa på att man kan kopiera ett signerat ts-diabetes-intyg från
 !3 Kopiera intyget
 
 | script | !-SokSkrivIntyg-! |
-| kopiera visat intyg |
+| kopiera visat intyg | ts-diabetes |
 
 !3 Författarstöd visas
 
@@ -21,6 +21,10 @@ Detta test ska visa på att man kan kopiera ett signerat ts-diabetes-intyg från
 | editera sidan visas |
 | intyget komplett meddelande visas | true |
 | radera utkast |
-| ej signerade intyg sidan visas |
+
+| script | !-SokSkrivIntyg-! |
+| visa intyg sidan visas |
+
+| script | !-HanteraUtkast-! |
 | inga ej signerade intyg visas |
 

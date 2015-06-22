@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
@@ -21,6 +20,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
@@ -48,6 +48,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private LogService logService;
+    
+    @Autowired
+    private MonitoringLogService monitoringService;
 
     /*
      * (non-Javadoc)
@@ -85,7 +88,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
-            LOG.info(LogMarkers.MONITORING, "Utkast '{}' created as a copy of '{}'", savedUtkast.getIntygsId(), originalIntygId);
+            monitoringService.logIntygCopied(savedUtkast.getIntygsId(), originalIntygId);
 
             // notify
             notificationService.sendNotificationForDraftCreated(savedUtkast);

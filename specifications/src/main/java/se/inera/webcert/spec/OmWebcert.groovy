@@ -1,9 +1,10 @@
 package se.inera.webcert.spec
 
-import se.inera.webcert.pages.OmWebcertPage
+import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.OmWebcertCookiesPage
 import se.inera.webcert.pages.OmWebcertFAQPage
 import se.inera.webcert.pages.OmWebcertIntygPage
+import se.inera.webcert.pages.OmWebcertPage
 import se.inera.webcert.pages.OmWebcertSupportPage
 
 class OmWebcert {

@@ -8,6 +8,7 @@ describe('ManageCertificate', function() {
     var $cookieStore;
     var $location;
     var $timeout;
+    var $q;
 
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
@@ -43,14 +44,18 @@ describe('ManageCertificate', function() {
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.ManageCertificate', '$httpBackend', '$cookieStore', '$location',
+    beforeEach(angular.mock.inject(['webcert.ManageCertificate', '$httpBackend', '$cookieStore',
+        '$q', '$location',
         '$timeout', 'common.messageService',
-        function(_ManageCertificate_, _$httpBackend_, _$cookieStore_, _$location_, _$timeout_, _messageService_) {
+        function(_ManageCertificate_, _$httpBackend_, _$cookieStore_,
+            _$q_,
+            _$location_, _$timeout_, _messageService_) {
             ManageCertificate = _ManageCertificate_;
             $httpBackend = _$httpBackend_;
             $cookieStore = _$cookieStore_;
             $location = _$location_;
             $timeout = _$timeout_;
+            $q = _$q_;
             _messageService_.getProperty = function() {
                 return 'Välj typ av intyg';
             };
@@ -165,10 +170,9 @@ describe('ManageCertificate', function() {
 
         beforeEach(function() {
             $scope = {
-                widgetState: {
+                viewState: {
                     activeErrorMessageKey: null,
-                    inlineErrorMessageKey: null,
-                    createErrorMessageKey: undefined
+                    inlineErrorMessageKey: null
                 },
                 dialog: {
                     showerror: false,
@@ -181,7 +185,7 @@ describe('ManageCertificate', function() {
                 'grundData' : { 'patient' : { 'personId': '19121212-1212'}, 'skapadAv' : {'vardenhet' : {'enhetsid' : '1234'} } }
             };
 
-            spyOn(dialogService, 'showDialog').and.callFake(function($scope, options) {
+            spyOn(dialogService, 'showDialog').and.callFake(function(options) {
                 options.button1click();
 
                 return {
@@ -191,6 +195,7 @@ describe('ManageCertificate', function() {
             });
 
             spyOn($location, 'path').and.callThrough();
+
         });
 
         it('should immediately request a utkast copy of cert if the copy cookie is set', function() {
@@ -200,7 +205,7 @@ describe('ManageCertificate', function() {
             $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
                 {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
             );
-            ManageCertificate.copy($scope, cert);
+            ManageCertificate.copy($scope.viewState, cert);
             $httpBackend.flush();
             $timeout.flush();
             expect(dialogService.showDialog).not.toHaveBeenCalled();
@@ -215,11 +220,12 @@ describe('ManageCertificate', function() {
             $httpBackend.expectPOST('/api/intyg/' + cert.intygType + '/' + cert.intygId +'/kopiera/').respond(
                 {'intygsUtkastId':'nytt-utkast-id','intygsTyp':'fk7263'}
             );
-            ManageCertificate.copy($scope, cert);
+            ManageCertificate.copy($scope.viewState, cert);
             $httpBackend.flush();
             $timeout.flush();
+
             expect(dialogService.showDialog).toHaveBeenCalled();
-            expect($location.path).toHaveBeenCalledWith('/fk7263/edit/nytt-utkast-id', true);
+
         });
     });
 

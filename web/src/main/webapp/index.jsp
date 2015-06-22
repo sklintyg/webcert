@@ -23,11 +23,13 @@
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
     <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>
   </c:when>
   <c:otherwise>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.js"></script>
     <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
     <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.js"></script>
   </c:otherwise>
 </c:choose>
 
@@ -55,8 +57,13 @@
         </div>
         <div class="col-xs-6">
           <h1>Välkommen till Webcert</h1>
-          <p>Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och
-            kommunicera med Försäkringskassan om ett läkarintyg.</p>
+          <p>Webcert är en tjänst för att utfärda elektroniska läkarintyg. I Webcert kan du skriva läkarintyg och kommunicera med Försäkringskassan om läkarintyg FK 7263. För närvarande stödjer tjänsten följande intyg: 
+              <ul>
+              <li>Läkarintyg FK 7263</li>
+              <li>Transportstyrelsens läkarintyg</li>
+              <li>Transportstyrelsens läkarintyg, diabetes</li>
+              </ul>
+          </p>
 
           <p>För att logga in i Webcert behövs SITHS-kort.</p>
 

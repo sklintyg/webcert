@@ -1,6 +1,6 @@
 package se.inera.webcert.integration.builder;
 
-import se.inera.certificate.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.Utlatande;
 import se.inera.ifv.hsawsresponder.v3.MiuInformationType;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
 

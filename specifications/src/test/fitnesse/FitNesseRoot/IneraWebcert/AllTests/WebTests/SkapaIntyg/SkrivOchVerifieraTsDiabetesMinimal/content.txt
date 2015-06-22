@@ -1,0 +1,47 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19121212-1212 | av typ | ts-diabetes |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med information i samtliga fält utom 2 c-e som ska vara dolda eftersom 2a och 2b är Nej.
+
+| Populera Ts Diabetes |
+| postadress | postnummer | postort | intygetAvser | identifieringstyp | diabetesAr | diabetestyp | diabetesBehandlingKost | diabetesBehandlingTabletter | diabetesBehandlingInsulin | diabetesBehandlingAnnan | hypoglykemierA | hypoglykemierB | hypoglykemierF | hypoglykemierG | synA | behorighet | bedomning | kommentar | specialist | vardenhetPostadress | vardenhetPostnummer | vardenhetPostort | vardenhetTelefonnummer |
+| Storgatan 1 | 12345 | Göteborg | C | korkort | 2010 | typ2 | true | false | false | Träning | false | false | false | false | true | true | false | | | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+
+!3 Spara och signera
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| intyg sparat visas |
+
+| script | !-HanteraUtkast-! |
+| signera knapp visas |
+| signera knapp aktiverad |
+| signera utkast |
+| visa intyg sidan visas med typ | ts-diabetes |
+| intyget signerat meddelande visas |
+
+!3 Verifiera att fälten i intyget syns och innehåller korrekt data
+
+| Verifiera Signerat Ts Diabetes |
+| patientpostadress? | patientpostnummer? | patientpostort? | intygAvser? | identitet? | observationsperiod? | diabetestyp? | endastKost? | tabletter? | insulin? | annanBehandlingBeskrivning? | kunskapOmAtgarder? | teckenNedsattHjarnfunktion? | egenkontrollBlodsocker?	| allvarligForekomstVakenTid? | separatOgonlakarintyg? | kommentar? | bedomningKanInteTaStallning? | lamplighetInnehaBehorighet? | lakareSpecialKompetens? | signeringsdatum? | vardperson_namn? | vardperson_enhetsnamn? | vardenhet_postadress? | vardenhet_postnummer? | vardenhet_postort? | vardenhet_telefonnummer? |
+| Storgatan 1 | 12345 | Göteborg | !-C-! | Svenskt körkort | 2010 | Typ 2 | Ja | Nej | Nej | Träning | Nej | Nej | Nej | Nej | Ja | Ej angivet | Kan inte ta ställning | Nej | Ej angivet | | Åsa Andersson | !-WebCert-Enhet1-! | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+
+!3 Ta bort utkastet och intyget
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+
+| ta bort intyg |
+| id |
+| $intygsid |

@@ -12,12 +12,21 @@ class SokSkrivaIntygPage extends AbstractPage {
         puFelmeddelande { $("#puerror") }
 
         logoutLink { $("#logoutLink") }
+        valjIntygTyp { $("#valj-intyg-typ")}
     }
 
     def selectCareUnit(String careUnit) {
         $("#select-active-unit-${careUnit}").click()
     }
 
+    def angePatient(String patient) {
+        personnummer = patient
+        personnummerFortsattKnapp.click()
+        waitFor {
+            doneLoading()
+        }
+    }
+    
     def logout() {
         logoutLink.click()
     }

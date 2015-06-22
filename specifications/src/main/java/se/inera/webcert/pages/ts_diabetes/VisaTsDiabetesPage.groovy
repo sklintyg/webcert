@@ -8,14 +8,15 @@ class VisaTsDiabetesPage extends VisaPage {
 
         intygSaknas { $("#cert-load-error") }
         intygLaddat { $('#intyg-vy-laddad') }
+        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
 
         copyButton { $("#copyBtn") }
         makuleraButton { $("#makuleraBtn") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
-        skickaDialogCheck { $("#patientSamtycke") }
-        skickaDialogSkickaKnapp { $("#button1send-dialog") }
+
+        skickaDialogBodyTsDiabetes { $("span[key=\"ts-diabetes.label.send.body\"]") }
 
         certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
         certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
@@ -33,6 +34,7 @@ class VisaTsDiabetesPage extends VisaPage {
         insulin { $("#insulin") }
         insulinBehandlingsperiod { $("#insulinBehandlingsperiod") }
         annanBehandlingBeskrivning { $("#annanBehandlingBeskrivning") }
+        kunskapOmAtgarder { $("#kunskapOmAtgarder") }
         teckenNedsattHjarnfunktion { $("#teckenNedsattHjarnfunktion") }
         saknarFormagaKannaVarningstecken { $("#saknarFormagaKannaVarningstecken") }
         allvarligForekomst { $("#allvarligForekomst") }
@@ -82,10 +84,11 @@ class VisaTsDiabetesPage extends VisaPage {
         makuleraDialogKopieraKnapp.click()
     }
 
-    def send() {
-        $("#sendBtn").click()
+    def sendWithValidation() {
+        skickaKnapp.click()
         waitFor {
             doneLoading()
+            skickaDialogBodyTsDiabetes.text().trim().equals("")
         }
         skickaDialogCheck.click()
         waitFor {

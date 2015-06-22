@@ -21,14 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
 
-import se.inera.certificate.logging.LogMarkers;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.v1.rivtabp20.SendMedicalCertificateAnswerResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.v1.rivtabp20.SendMedicalCertificateQuestionResponderInterface;
+import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
@@ -54,9 +53,11 @@ import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.webcert.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.webcert.web.service.WebCertUserService;
+
 
 /**
  * @author andreaskaltenbach
@@ -115,6 +116,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private NotificationService notificationService;
+    
+    @Autowired
+    private MonitoringLogService monitoringService;
 
     /* --------------------- Public scope --------------------- */
 
@@ -123,8 +127,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         validateAcceptsQuestions(fragaSvar);
 
-        LOGGER.info(LogMarkers.MONITORING, "Received question from '{}' with reference '{}'", fragaSvar.getFrageStallare(),
-                fragaSvar.getExternReferens());
+        monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
+                fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getExternReferens());
 
         // persist the question
         return fragaSvarRepository.save(fragaSvar);
@@ -151,7 +155,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
 
-        LOGGER.info(LogMarkers.MONITORING, "Received answer to question '{}'", internId);
+        monitoringService.logAnswerReceived(fragaSvar.getInternReferens(),
+                fragaSvar.getIntygsReferens().getIntygsId());
 
         // update the FragaSvar
         return fragaSvarRepository.save(fragaSvar);
@@ -270,7 +275,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        LOGGER.info(LogMarkers.MONITORING, "Sent answer to question '{}'", fragaSvarsId);
+        monitoringService.logAnswerSent(fragaSvarsId, saved.getIntygsReferens().getIntygsId());
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
@@ -315,8 +320,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     "FS-XXX: Cannot save Fraga when certificate is revoked!");
         }
 
-        IntygsReferens intygsReferens = FragaSvarConverter
-                .convertToIntygsReferens(intyg.getUtlatande());
+        IntygsReferens intygsReferens = FragaSvarConverter.convertToIntygsReferens(intyg.getUtlatande());
 
         FragaSvar fraga = new FragaSvar();
         fraga.setFrageStallare(FrageStallare.WEBCERT.getKod());
@@ -359,7 +363,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        LOGGER.info(LogMarkers.MONITORING, "Sent question '{}' for intyg '{}'", fraga.getInternReferens(), intygId);
+        monitoringService.logQuestionSent(fraga.getInternReferens(), intygId);
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);
@@ -449,7 +453,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             sendNotification(openedFragaSvar, notificationEvent);
         }
 
-        return openedFragaSvar;        
+        return openedFragaSvar;
     }
 
     @Override
@@ -641,30 +645,21 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         switch (event) {
         case ANSWER_FROM_FK_HANDLED:
             notificationService.sendNotificationForAnswerHandled(fragaSvar);
-            LOGGER.debug("Notification sent: a closed answer with id '{}' (related to certificate '{}') was received from FK", fragaSvarId, intygsId);
             break;
         case ANSWER_FROM_FK_UNHANDLED:
             notificationService.sendNotificationForAnswerRecieved(fragaSvar);
-            LOGGER.debug("Notification sent: reopened a closed answer with id '{}' (related to certificate '{}') from FK", fragaSvarId,
-                    intygsId);
             break;
         case ANSWER_SENT_TO_FK:
             notificationService.sendNotificationForQuestionHandled(fragaSvar);
-            LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate '{}') was sent to FK", fragaSvarId, intygsId);
             break;
         case QUESTION_FROM_FK_HANDLED:
             notificationService.sendNotificationForQuestionHandled(fragaSvar);
-            LOGGER.debug("Notification sent: a closed question with id '{}' (related to certificate '{}') was received from FK", fragaSvarId,
-                    intygsId);
             break;
         case QUESTION_FROM_FK_UNHANDLED:
             notificationService.sendNotificationForQuestionReceived(fragaSvar);
-            LOGGER.debug("Notification sent: reopened a closed question with id '{}' (related to certificate '{}') from FK", fragaSvarId,
-                    intygsId);
             break;
         case QUESTION_SENT_TO_FK:
             notificationService.sendNotificationForQuestionSent(fragaSvar);
-            LOGGER.debug("Notification sent: a question with id '{}' (related to certificate '{}') was sent to FK", fragaSvarId, intygsId);
             break;
         default:
             LOGGER.warn("FragaSvarServiceImpl.sendNotification(FragaSvar, NotificationEvent) - cannot send notification. Incoming event not handled!");

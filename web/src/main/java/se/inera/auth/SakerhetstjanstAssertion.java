@@ -45,8 +45,8 @@ public class SakerhetstjanstAssertion {
     // HSA-identitet för valt uppdrag
     public static final String MEDARBETARUPPDRAG_ID = "urn:sambi:names:attribute:assignmentHsaId";
 
-    private String titelKod;
-    private String titel;
+    private List<String> titelKod = new ArrayList<String>();
+    private List<String> titel = new ArrayList<String>();
 
     private String forskrivarkod;
 
@@ -82,10 +82,10 @@ public class SakerhetstjanstAssertion {
         for (Attribute attribute : attributes) {
             switch (attribute.getName()) {
                 case TITEL_ATTRIBUTE:
-                    titel = getValue(attribute);
+                    titel.addAll(getValues(attribute));
                     break;
                 case TITEL_KOD_ATTRIBUTE:
-                    titelKod = getValue(attribute);
+                    titelKod.addAll(getValues(attribute));
                     break;
                 case FORSKRIVARKOD_ATTRIBUTE:
                     forskrivarkod = getValue(attribute);
@@ -139,11 +139,11 @@ public class SakerhetstjanstAssertion {
         return values;
     }
 
-    public String getTitel() {
+    public List<String> getTitel() {
         return titel;
     }
 
-    public String getTitelKod() {
+    public List<String> getTitelKod() {
         return titelKod;
     }
 

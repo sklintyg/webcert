@@ -21,27 +21,27 @@
   </properties>
 
   <dependencies>
-    
+    <!-- Schemas -->
+    <dependency>
+      <groupId>se.riv.ehr.logstore</groupId>
+      <artifactId>ehr-logstore-schemas</artifactId>
+    </dependency>
+
+    <!-- Misc -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
     </dependency>
 
-    <!-- Schemas -->
-    <dependency>
-      <groupId>se.riv.ehr.logstore</groupId>
-      <artifactId>ehr-logstore-interactions</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-    </dependency>
   </dependencies>
-
 </project>

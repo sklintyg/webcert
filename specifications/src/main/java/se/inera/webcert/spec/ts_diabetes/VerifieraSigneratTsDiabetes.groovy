@@ -1,7 +1,7 @@
 package se.inera.webcert.spec.ts_diabetes
 
 import org.codehaus.groovy.runtime.StackTraceUtils
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 class VerifieraSigneratTsDiabetes {
 
@@ -79,6 +79,10 @@ class VerifieraSigneratTsDiabetes {
     }
 
     String annanBehandlingBeskrivning() {
+        getStringResult(getCurrentMethodName())
+    }
+
+    String kunskapOmAtgarder() {
         getStringResult(getCurrentMethodName())
     }
 

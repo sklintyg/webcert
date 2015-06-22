@@ -10,6 +10,7 @@ profiles: test
 
 # Configuration repository
 environment_name: "test"
+config_name: webcert-konfiguration
 config_repository: https://github.com/sklintyg/webcert-konfiguration.git
 config_folder: "{{ inera_root }}/webcert-konfiguration"
 gitcrypt_key_name: "git-crypt4.key"

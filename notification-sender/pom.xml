@@ -16,12 +16,16 @@
   <name>Webcert (Notification Sender)</name>
 
   <dependencies>
-
-
-    <!-- Interactions -->
+    <!-- Common -->
     <dependency>
-      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
-      <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
+      <groupId>se.inera.intyg.common</groupId>
+      <artifactId>common-schemas</artifactId>
+    </dependency>
+
+    <!-- Schemas -->
+    <dependency>
+      <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
 
     <!-- Spring -->
@@ -32,6 +36,15 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-spring</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
     </dependency>
 
     <!-- Logging -->
@@ -65,12 +78,10 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-jms</artifactId>
     </dependency>
-    <!--
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-camel</artifactId>
     </dependency>
-  -->
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-jackson</artifactId>

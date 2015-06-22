@@ -1,0 +1,9 @@
+---
+# file: host_vars/webcert-dev
+
+# Spring profiles.
+profiles: dev
+
+# Configuration repository
+environment_name: "dev"
+config_etc_folder: "{{ config_folder }}/{{ environment_name }}"

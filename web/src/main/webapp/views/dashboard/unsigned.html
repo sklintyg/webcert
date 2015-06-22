@@ -1,7 +1,7 @@
 <div id="wcHeader" wc-header></div>
 <div class="container-fluid" wc-feature-active feature="hanteraIntygsutkast">
   <div class="row" id="unsigned">
-    <div class="col-md-12 webcert-col webcert-col-single">
+    <div class="col-md-12 webcert-col webcert-col-single" ng-form="filterFormElement">
       <h1>
         <span message key="dashboard.unsigned.title"></span>
       </h1>
@@ -71,6 +71,19 @@
                 </div>
               </div>
 
+              <div class="form-group" ng-show="widgetState.invalidFromDate || widgetState.invalidToDate || widgetState.invalidToBeforeFromDate">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                  <div class=" alert alert-danger">
+                    <ul>
+                      <li ng-show="widgetState.invalidFromDate"><span message key="validation.invalidfromdate"></span></li>
+                      <li ng-show="widgetState.invalidToDate"><span message key="validation.invalidtodate"></span></li>
+                      <li ng-show="widgetState.invalidToBeforeFromDate"><span message key="validation.invalidtobeforefromdate"></span></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
               <!-- Sparat av -->
               <div class="form-group">
                 <label class="col-sm-2 control-label">Sparat av</label>
@@ -98,13 +111,13 @@
 
               <!-- No results message for unhandled -->
               <div id="current-list-noResults-unit"
-                   ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1"
+                   ng-show="widgetState.doneLoading && !widgetState.activeErrorMessageKey && widgetState.currentList.length<1 && !widgetState.filteredYet"
                    class="alert alert-info">
                 <span message key="info.nounsigned.certs.for.unit"></span>
               </div>
 
               <!-- No results message for query -->
-              <div id="current-list-noResults-query" ng-show="widgetState.totalCount < 1" class="alert alert-info">
+              <div id="current-list-noResults-query" ng-show="widgetState.doneLoading && widgetState.totalCount < 1  && widgetState.filteredYet" class="alert alert-info">
                 <span message key="info.query.noresults"></span>
               </div>
 

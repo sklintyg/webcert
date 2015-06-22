@@ -1,6 +1,6 @@
 package se.inera.webcert.spec.util
 
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.ContentType.URLENC
@@ -9,9 +9,6 @@ import groovyx.net.http.HttpResponseDecorator
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import static se.inera.webcert.spec.util.WebcertRestUtils.getWebcert
-import static se.inera.webcert.spec.util.WebcertRestUtils.getWebcert
 
 public class WebcertRestUtils extends RestClientFixture {
     private static final Logger LOG = LoggerFactory.getLogger(WebcertRestUtils.class)
@@ -95,13 +92,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @param json
      * @return HttpResponseDecorator
      */
-    public static HttpResponseDecorator saveUtkast(String intygsTyp, String utkastId, int version, String json, boolean useSameLogin) {
-        def response
-        if(useSameLogin){
-            response = webcert.put(path : "moduleapi/utkast/${intygsTyp}/${utkastId}/${version}", body : json, requestContentType : JSON, headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
-        } else {
-            response = webcert.put(path : "moduleapi/utkast/${intygsTyp}/${utkastId}/${version}", body : json, requestContentType : JSON)
-        }
+    public static HttpResponseDecorator saveUtkast(String intygsTyp, String utkastId, String json) {
+        def response = webcert.put(path : "moduleapi/utkast/${intygsTyp}/${utkastId}", body : json, requestContentType : JSON)
         response
     }
 
@@ -111,13 +103,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @param intygsId
      * @return HttpResponseDecorator
      */
-    public static HttpResponseDecorator signUtkast(String intygsTyp, String intygsId, int version, boolean useSameLogin) {
-        def response
-        if(useSameLogin){
-            response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType : JSON, headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
-        } else {
-            response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType : JSON)
-        }
+    public static HttpResponseDecorator signUtkast(String intygsTyp, String intygsId) {
+        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/signeraserver", requestContentType : JSON)
         response
     }
 
@@ -222,5 +209,15 @@ public class WebcertRestUtils extends RestClientFixture {
     public static boolean reset() {
         def resp = webcert.post(path: "services/notification-stub/clear")
         return resp.success
+    }
+
+    /**
+     * Get the number of unsigned certificates for currently logged in user.
+     */
+    public static Integer getNumberOfUnsignedCertificates() {
+        def restPath = "/api/utkast"
+        def response = webcert.get(path : restPath, requestContentType : JSON, query: ["complete":"false"],
+                headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
+        return response.data.totalCount;
     }
 }

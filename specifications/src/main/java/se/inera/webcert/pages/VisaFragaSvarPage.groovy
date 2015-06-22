@@ -17,6 +17,7 @@ class VisaFragaSvarPage extends AbstractPage {
         newQuestionTopic { $("#new-question-topic") }
         sendQuestionBtn { $("#sendQuestionBtn") }
         cancelQuestionBtn { $("#cancelQuestionBtn") }
+        skrivUtBtn(required: false) { $("#downloadprint") }
         kopieraBtn(required: false){ $("#copyBtn") }
         makuleraBtn(required: false){ $("#makuleraBtn") }
         skickaTillFkBtn(required: false){ $("#sendBtn") }
@@ -28,6 +29,7 @@ class VisaFragaSvarPage extends AbstractPage {
         unhandledQAList { $("#unhandledQACol") }
 
         questionIsSentToFkMessage(required: false) { $("#question-is-sent-to-fk-message-text") }
+        closeSentMessage { $("#question-is-sent-to-fk-message-text > button") }
 
         certificateRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
         certificateIsSentToFKMessage(required: false) { $("#certificate-is-sent-to-fk-message-text") }
@@ -40,7 +42,6 @@ class VisaFragaSvarPage extends AbstractPage {
         makuleraConfirmationOkButton { $("#confirmationOkButton") }
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
-
 
         tillbakaButton { $("#tillbakaButton") }
 
@@ -145,11 +146,11 @@ class VisaFragaSvarPage extends AbstractPage {
     }
 
     def fkKompletteringar(String internid) {
-        $("#fkKompletteringar-${internid}").click()
+        $("#unhandled-fkKompletteringar-${internid}").click()
     }
 
     def fkKontakter(String internid) {
-        $("#fkKontakter-${internid}").click()
+        $("#unhandled-fkKontakter-${internid}").click()
     }
 
     def qaFragaSkickadDatum(String internid) {

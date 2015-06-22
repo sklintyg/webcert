@@ -1,22 +1,5 @@
 package se.inera.logsender;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-
 import static org.custommonkey.xmlunit.DifferenceConstants.NAMESPACE_PREFIX_ID;
 import static org.custommonkey.xmlunit.DifferenceConstants.TEXT_VALUE_ID;
 import static org.junit.Assert.assertEquals;
@@ -24,6 +7,21 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
+
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
+import javax.jms.QueueBrowser;
+import javax.jms.Session;
+import javax.xml.bind.JAXBContext;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.Diff;
@@ -45,21 +43,21 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import se.inera.log.messages.AbstractLogMessage;
 import se.inera.log.messages.Enhet;
 import se.inera.log.messages.IntygPrintMessage;
 import se.inera.log.messages.IntygReadMessage;
-import se.inera.log.messages.Patient;
 import se.inera.log.messages.IntygSendMessage;
-import se.riv.ehr.log.store.storelog.v1.ObjectFactory;
-import se.riv.ehr.log.store.storelog.v1.StoreLogRequestType;
-import se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface;
-import se.riv.ehr.log.store.storelog.v1.StoreLogResponseType;
+import se.inera.log.messages.Patient;
+import se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface;
+import se.riv.ehr.log.store.storelogresponder.v1.ObjectFactory;
+import se.riv.ehr.log.store.storelogresponder.v1.StoreLogRequestType;
+import se.riv.ehr.log.store.storelogresponder.v1.StoreLogResponseType;
 import se.riv.ehr.log.store.v1.ResultType;
 import se.riv.ehr.log.v1.LogType;
 import se.riv.ehr.log.v1.ResultCodeType;
+
 
 /**
  * @author andreaskaltenbach

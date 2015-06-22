@@ -36,6 +36,13 @@
     insertbefore="</Context>"
     line="    <Resource name='jms/NotificationWSQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Notification Web Service Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.notification.ws.queue' />"
 
+- name: configure secondary notification web service queue
+  lineinfile:
+    dest="{{ tomcat_conf }}/context.xml"
+    regexp="    <Resource name='jms/NotificationWSQueueSecondary'"
+    insertbefore="</Context>"
+    line="    <Resource name='jms/NotificationWSQueueSecondary' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Secondary Notification Web Service Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.notification.ws.secondary.queue' />"
+
 - name: configure notification dead letter queue
   lineinfile:
     dest="{{ tomcat_conf }}/context.xml"

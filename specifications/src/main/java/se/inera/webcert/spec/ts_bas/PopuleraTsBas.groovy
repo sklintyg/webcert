@@ -1,7 +1,7 @@
 package se.inera.webcert.spec.ts_bas
 
 import se.inera.webcert.pages.ts_bas.EditCertPage
-import se.inera.webcert.spec.Browser
+import se.inera.certificate.spec.Browser
 
 class PopuleraTsBas {
 
@@ -147,8 +147,13 @@ class PopuleraTsBas {
 
             if (kommentar != null) page.kommentar = kommentar
 
-            if (behorighet != null) page.bedomning.behorighet = behorighet
-            page.bedomning.valjBehorigheter(bedomdBehorighet)
+            if (behorighet != null) {
+                page.bedomning.valjBehorighet(behorighet)
+                if (!behorighet) { // behorighet == kanInteTaStallning så false är bedömning
+                    page.bedomning.valjBehorigheter(bedomdBehorighet)
+                }
+            }
+
             if (specialist != null) page.bedomning.specialist = specialist
 
             if (vardenhetPostadress != null) page.vardenhet.postadress = vardenhetPostadress

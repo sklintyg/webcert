@@ -1,4 +1,4 @@
 !3 Ta bort alla Frågor:
 
-|script|Rensa fragor och svar|
+|script|ta bort fraga|
 |ta bort alla fragor|

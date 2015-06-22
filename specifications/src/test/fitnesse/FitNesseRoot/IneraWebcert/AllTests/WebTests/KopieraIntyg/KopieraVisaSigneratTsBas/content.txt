@@ -13,7 +13,7 @@ Detta test ska visa på att man kan kopiera ett signerat ts-bas intyg från visa
 !3 Kopiera intyget
 
 | script | !-SokSkrivIntyg-! |
-| kopiera visat intyg |
+| kopiera visat intyg | ts-bas |
 
 !3 Författarstöd visas
 
@@ -21,6 +21,9 @@ Detta test ska visa på att man kan kopiera ett signerat ts-bas intyg från visa
 | editera sidan visas |
 | intyget komplett meddelande visas | true |
 | radera utkast |
-| ej signerade intyg sidan visas |
-| inga ej signerade intyg visas |
 
+| script | !-SokSkrivIntyg-! |
+| visa intyg sidan visas |
+
+| script | !-HanteraUtkast-! |
+| inga ej signerade intyg visas |

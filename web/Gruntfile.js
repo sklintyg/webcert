@@ -15,10 +15,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-ng-annotate');
-
+    grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-connect-proxy');
     grunt.loadNpmTasks('grunt-contrib-connect');
-
+    grunt.loadNpmTasks('grunt-angular-templates');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     var SRC_DIR = 'src/main/webapp/js/';
     var TEST_DIR = 'src/test/js/';
@@ -29,6 +30,10 @@ module.exports = function(grunt) {
 
     webcert = [SRC_DIR + 'app.js'].concat(webcert);
 
+    var COMMON_DIR = '/../../common/web/src/main/resources/META-INF/resources/webjars/common';
+    var TSBAS_DIR = '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert';
+    var TSDIABETES_DIR = '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert';
+    var FK7263_DIR = '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert';
 
     grunt.initConfig({
 
@@ -86,14 +91,84 @@ module.exports = function(grunt) {
             }
         },
 
+        //ngtemplates: config('ngtemplates'),
 
         // server ======================================================================================================
-        connect : {
+
+
+        watch: {
+            //css: {
+            //    files: ['public/src/css/**/*.less'],
+            //    tasks: ['less', 'cssmin']
+            //},
+            //js: {
+            //    files: ['public/src/js/**/*.js'],
+            //    tasks: ['jshint', 'uglify', 'injector', 'wiredep']
+            //},
+            html: {
+                files: [
+                        __dirname + '/src/main/webapp/**/*.html',
+                        __dirname + COMMON_DIR + '/**/*.html',
+                        __dirname + FK7263_DIR + '/**/*.html',
+                        __dirname + TSBAS_DIR + '/**/*.html',
+                        __dirname + TSDIABETES_DIR + '/**/*.html'
+                ],
+                tasks: ['ngtemplates']
+            }
+        },
+
+        ngtemplates : {
+            webcert: {
+                cwd: __dirname + '/src/main/webapp/js/',
+                src: ['../views/**/*.html'],
+                dest: __dirname + '/src/main/webapp/js/templates.js',
+                options: {
+                    module: 'webcert',
+                    url: function(url) {
+                        return url.replace('../', '/');
+                    }
+                }
+            },
+            tsdiabetes: {
+                cwd: __dirname + TSDIABETES_DIR,
+                src: ['**/*.html'],
+                dest: __dirname + TSDIABETES_DIR +'/js/templates.js',
+                options:{
+                    module: 'ts-diabetes',
+                    url: function(url) {
+                        return '/web/webjars/ts-diabetes/webcert/' + url;
+                    }
+                }
+            },
+            tsbas: {
+                cwd: __dirname + TSBAS_DIR,
+                src: ['**/*.html'],
+                dest: __dirname + TSBAS_DIR + '/js/templates.js',
+                options:{
+                    module: 'ts-bas',
+                    url: function(url) {
+                        return '/web/webjars/ts-bas/webcert/' + url;
+                    }
+                }
+            },
+            fk7263: {
+                cwd: __dirname + FK7263_DIR,
+                src: ['**/*.html'],
+                dest: __dirname + FK7263_DIR + '/js/templates.js',
+                options:{
+                    module: 'fk7263',
+                    url: function(url) {
+                        return '/web/webjars/fk7263/webcert/' + url;
+                    }
+                }
+            }
+        },
+
+        connect: {
             server: {
                 options: {
                     port: 9089,
                     base: 'src/main/webapp',
-                    keepalive: true,
                     hostname: '*',
                     middleware: function(connect, options) {
                         var proxy = require('grunt-connect-proxy/lib/utils').proxyRequest;
@@ -101,29 +176,50 @@ module.exports = function(grunt) {
                         middlewares.push(
                             connect().use(
                                 '/web',
-                            connect.static(__dirname + '/src/main/webapp')
-                        ) );
+                                connect.static(__dirname + '/src/main/webapp')
+                            ));
                         middlewares.push(
                             connect().use(
                                 '/views',
                                 connect.static(__dirname + '/src/main/webapp/views')
-                            ) );
+                            ));
                         middlewares.push(
                             connect().use(
                                 '/js',
                                 connect.static(__dirname + '/src/main/webapp/js')
-                            ) );
+                            ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/common',
-                                connect.static(__dirname + '/../../common/web/src/main/resources/META-INF/resources/webjars/common')
-                            ) );
+                                connect.static(__dirname + COMMON_DIR)
+                            ));
                         middlewares.push(
                             connect().use(
                                 '/web/webjars/fk7263/webcert',
-                                connect.static(__dirname + '/../../intygstyper/fk7263/src/main/resources/META-INF/resources/webjars/fk7263/webcert')
+                                connect.static(__dirname + FK7263_DIR)
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/ts-bas/webcert',
+                                connect.static(__dirname + TSBAS_DIR)
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/ts-diabetes/webcert',
+                                connect.static(__dirname + TSDIABETES_DIR)
+                            ));
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/ts-bas/webcert',
+                                connect.static(__dirname +
+                                '/../../intygstyper/ts-bas/src/main/resources/META-INF/resources/webjars/ts-bas/webcert')
                             ) );
-
+                        middlewares.push(
+                            connect().use(
+                                '/web/webjars/ts-diabetes/webcert',
+                                connect.static(__dirname +
+                                '/../../intygstyper/ts-diabetes/src/main/resources/META-INF/resources/webjars/ts-diabetes/webcert')
+                            ) );
                         middlewares.push(proxy);
                         return middlewares;
                     }
@@ -138,13 +234,21 @@ module.exports = function(grunt) {
 
 
             }
+
+        },
+
+        concurrent: {
+            options: {
+                logConcurrentOutput: true
+            },
+            tasks: ['connect:server', 'watch']
         }
     });
 
-    grunt.registerTask('default', ['concat', 'ngAnnotate', 'uglify']);
+    grunt.registerTask('default', ['ngtemplates:webcert', 'concat', 'ngAnnotate', 'uglify']);
     grunt.registerTask('lint', ['jshint', 'csslint']);
     grunt.registerTask('test', ['karma']);
 
     // frontend only dev ===============================================================================================
-    grunt.registerTask('server', ['configureProxies:server','connect:server']);
+    grunt.registerTask('server', [ 'configureProxies:server', 'connect:server', 'watch' ]);
 };

@@ -3,9 +3,9 @@
  */
 angular.module('webcert').controller('webcert.UnsignedCertCtrl',
     [ '$cookieStore', '$filter', '$location', '$log', '$scope', '$timeout', '$window', 'common.dialogService',
-        'webcert.ManageCertificate', 'common.User', 'common.intygNotifyService',
+        'webcert.ManageCertificate', 'common.User', 'common.intygNotifyService', 'common.DateUtilsService',
         function($cookieStore, $filter, $location, $log, $scope, $timeout, $window, dialogService, ManageCertificate,
-            User, intygNotifyService) {
+            User, intygNotifyService, dateUtilsService) {
             'use strict';
 
             // Constant settings
@@ -25,6 +25,8 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
                 // Error state
                 activeErrorMessageKey: null,
+                invalidFromDate : false,
+                invalidToDate : false,
 
                 // Search states
                 queryFormCollapsed: true,
@@ -89,10 +91,17 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
             $scope.widgetState.doneLoading = false;
 
             ManageCertificate.getUnsignedCertificates(function(data) {
+
                 $scope.widgetState.doneLoading = true;
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.widgetState.currentList = data.results;
                 $scope.widgetState.totalCount = data.totalCount;
+
+                $timeout(function() {
+                    // These need to be after doneloading or they won't be available sometimes.
+                    dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-from']);
+                    dateUtilsService.addStrictDateParser($scope.filterFormElement['filter-changedate-to']);
+                });
             }, function() {
                 $log.debug('Query Error');
                 $scope.widgetState.doneLoading = true;
@@ -143,8 +152,33 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 converted.complete =
                         $scope.filterForm.complete !== 'default' ? $scope.filterForm.complete : undefined;
                 converted.savedFrom = $filter('date')(converted.savedFrom, 'yyyy-MM-dd');
-                converted.savedTo = $filter('date')(converted.savedTo, 'yyyy-MM-dd');
+                if (converted.savedTo) {
+                    // Date is used as datetime on backend
+                    var to = moment(converted.savedTo);
+                    to.add(1, 'd');
+                    converted.savedTo = to.format('YYYY-MM-DD');
+                }
                 return converted;
+            }
+
+            function isToBeforeFrom() {
+                var to = $scope.filterForm.lastFilterQuery.filter.savedTo;
+                var from = $scope.filterForm.lastFilterQuery.filter.savedFrom;
+                if (to === null || to === undefined || to === '') {
+                    return false;
+                }
+                if (from === null || from === undefined || from === '') {
+                    return false;
+                }
+
+                var mto = moment(to);
+                var mfrom = moment(from);
+
+                if(!mto.isValid() || !mfrom.isValid()) {
+                    return false;
+                }
+
+                return moment(to).isBefore(from);
             }
 
             /**
@@ -152,6 +186,7 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
              **/
             $scope.filterDrafts = function() {
                 $log.debug('filterDrafts');
+
                 $scope.widgetState.activeErrorMessageKey = null;
                 $scope.widgetState.filteredYet = true;
                 $scope.filterForm.lastFilterQuery.startFrom = 0;
@@ -159,6 +194,11 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
                 $cookieStore.put('enhetsId', filterQuery.enhetsId);
                 $cookieStore.put('unsignedCertFilter', $scope.filterForm.lastFilterQuery);
                 filterQuery = convertFormFilterToPayload($scope.filterForm.lastFilterQuery);
+
+                $scope.widgetState.invalidFromDate = $scope.filterFormElement['filter-changedate-from'].$error.date;
+                $scope.widgetState.invalidToDate = $scope.filterFormElement['filter-changedate-to'].$error.date;
+                $scope.widgetState.invalidToBeforeFromDate = isToBeforeFrom();
+
 
                 $scope.widgetState.runningQuery = true;
                 ManageCertificate.getUnsignedCertificatesByQueryFetchMore(filterQuery, function(successData) {
@@ -203,16 +243,34 @@ angular.module('webcert').controller('webcert.UnsignedCertCtrl',
 
             // Handle forwarding
             $scope.openMailDialog = function(cert) {
-                cert.updateState = {
-                    vidarebefordradInProgress: true
+                var utkastNotifyRequest = {
+                    intygId : cert.intygId,
+                    intygType: cert.intygType,
+                    intygVersion: cert.version,
+                    vidarebefordrad: cert.vidarebefordrad,
+                    updateFunc: function(vidarebefordrad, version) {
+                        cert.vidarebefordrad = vidarebefordrad;
+                        if (version) {
+                            cert.version = version;
+                        }
+                    }
                 };
-                intygNotifyService.forwardIntyg(cert, cert.updateState);
+                intygNotifyService.forwardIntyg(utkastNotifyRequest);
             };
 
             $scope.onForwardedChange = function(cert) {
-                cert.updateState = {
-                    vidarebefordradInProgress: true
+                var utkastNotifyRequest = {
+                    intygId : cert.intygId,
+                    intygType: cert.intygType,
+                    intygVersion: cert.version,
+                    vidarebefordrad: cert.vidarebefordrad,
+                    updateFunc: function(vidarebefordrad, version) {
+                        cert.vidarebefordrad = vidarebefordrad;
+                        if (version) {
+                            cert.version = version;
+                        }
+                    }
                 };
-                intygNotifyService.onForwardedChange(cert, cert.updateState);
+                intygNotifyService.onForwardedChange(utkastNotifyRequest);
             };
         }]);

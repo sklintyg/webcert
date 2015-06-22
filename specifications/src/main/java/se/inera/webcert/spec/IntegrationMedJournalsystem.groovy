@@ -1,5 +1,6 @@
 package se.inera.webcert.spec
 
+import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.EditCertPage
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
@@ -366,6 +367,26 @@ class IntegrationMedJournalsystem {
             }
         }
         result
+    }
+
+    boolean forlangningSjukskrivningVisas() {
+        def result
+        Browser.drive {
+            waitFor() {
+                result = page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();
+            }
+        }
+        return result
+    }
+
+    boolean forlangningSjukskrivningInteVisas() {
+        def result
+        Browser.drive {
+            waitFor() {
+                result = !page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();
+            }
+        }
+        return result
     }
 
     def sleepForNSeconds(String time) {

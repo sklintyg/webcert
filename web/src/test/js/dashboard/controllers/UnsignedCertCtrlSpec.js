@@ -30,11 +30,21 @@ describe('UnsignedCertCtrlSpec', function() {
             $provide.value('common.featureService', jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]));
             $provide.value('common.messageService', {});
             $provide.value('common.CertificateService', {});
+            $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
 
         inject(['$rootScope', '$location', '$httpBackend', '$controller', '$cookieStore', 'mockResponse',
             function($rootScope, _$location_, _$httpBackend_, _$controller_, _$cookieStore_, _mockResponse_) {
                 $scope = $rootScope.$new();
+                $scope.filterFormElement = {
+                    'filter-changedate-from': { $error: {}},
+                    'filter-changedate-to': { $error: {}}
+                };
+                $scope.viewState = {
+                    activeErrorMessageKey: null,
+                    inlineErrorMessageKey: null
+                };
+
                 $location = _$location_;
                 $httpBackend = _$httpBackend_;
                 $controller = _$controller_;

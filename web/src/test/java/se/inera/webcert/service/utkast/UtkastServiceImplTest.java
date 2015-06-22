@@ -1,8 +1,6 @@
 package se.inera.webcert.service.utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -47,7 +45,9 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
@@ -83,6 +83,9 @@ public class UtkastServiceImplTest {
 
     @Mock
     private NotificationService notificationService;
+
+    @Mock
+    private MonitoringLogService mockMonitoringService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -153,17 +156,19 @@ public class UtkastServiceImplTest {
         WebCertUser user = new WebCertUser();
         user.setHsaId("hsaId");
         when(userService.getWebCertUser()).thenReturn(user);
-        
+
         draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
 
         verify(mockUtkastRepository).findOne(INTYG_ID);
         verify(mockUtkastRepository).delete(utkast);
-        
+
         // Assert notification message
         verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class));
-        
+
         // Assert pdl log
         verify(logService).logDeleteIntyg(any(LogRequest.class));
+        
+        verify(mockMonitoringService).logUtkastDeleted(INTYG_ID, INTYG_TYPE);
     }
 
     @Test
@@ -189,6 +194,8 @@ public class UtkastServiceImplTest {
 
         // Assert pdl log
         verifyZeroInteractions(logService);
+        
+        verifyZeroInteractions(mockMonitoringService);
     }
 
     @Test
@@ -197,9 +204,11 @@ public class UtkastServiceImplTest {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
 
         draftService.logPrintOfDraftToPDL(INTYG_ID);
-        
+
         // Assert pdl log
         verify(logService).logPrintIntygAsDraft(any(LogRequest.class));
+        
+        verify(mockMonitoringService).logUtkastPrint(INTYG_ID, INTYG_TYPE);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -247,12 +256,14 @@ public class UtkastServiceImplTest {
         SaveAndValidateDraftResponse res = draftService.saveAndValidateDraft(request, true);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        
+
         // Assert notification message
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
         // Assert pdl log
         verify(logService).logUpdateIntyg(any(LogRequest.class));
+        
+        verify(mockMonitoringService).logUtkastEdited(INTYG_ID, INTYG_TYPE);
 
         assertNotNull("An DraftValidation should be returned", res);
         assertFalse("Validation should fail", res.getDraftValidation().isDraftValid());
@@ -280,12 +291,13 @@ public class UtkastServiceImplTest {
         SaveAndValidateDraftResponse res = draftService.saveAndValidateDraft(request, false);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        
+
         // Assert notification message
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
-        // Assert pdl log
+        // Assert that no logs are called
         verifyZeroInteractions(logService);
+        verifyZeroInteractions(mockMonitoringService);
 
         assertNotNull("An DraftValidation should be returned", res);
         assertFalse("Validation should fail", res.getDraftValidation().isDraftValid());
@@ -346,6 +358,33 @@ public class UtkastServiceImplTest {
         request.setSavedBy(hoSPerson);
         request.setAutoSave(false);
         return request;
+    }
+
+    @Test
+    public void testNotifyDraft() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+
+        draftService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion(), true);
+
+        assertTrue(utkast.getVidarebefordrad());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testNotifyDraftThatDoesNotExist() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
+
+        draftService.setNotifiedOnDraft(INTYG_ID, 0, true);
+    }
+
+    @Test(expected = OptimisticLockException.class)
+    public void testNotifyDraftWrongVersion() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+
+        draftService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
     }
 
 }

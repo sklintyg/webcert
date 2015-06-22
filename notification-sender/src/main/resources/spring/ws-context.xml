@@ -16,7 +16,7 @@
   </cxf:bus>
 
   <jaxws:client id="certificateStatusUpdateForCareClient"
-    serviceClass="se.inera.certificate.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface"
+    serviceClass="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareResponderInterface"
     address="${certificatestatusupdateforcare.ws.endpoint.url}">
     <jaxws:properties>
       <entry key="schema-validation-enabled" value="true" />

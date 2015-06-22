@@ -33,6 +33,8 @@
   <bean class="se.inera.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>
   <bean class="se.inera.webcert.hsa.stub.HsaWebServiceStub"/>
   <bean class="se.inera.webcert.hsa.stub.HsaServiceStub"/>
+  
+  <bean class="se.inera.webcert.service.monitoring.MonitoringLogServiceImpl" />
 
   <task:executor id="threadPoolTaskExecutor" pool-size="10" queue-capacity="100" rejection-policy="CALLER_RUNS" />
   <task:annotation-driven executor="threadPoolTaskExecutor"/>

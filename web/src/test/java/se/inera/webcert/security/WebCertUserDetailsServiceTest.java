@@ -46,6 +46,7 @@ import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.service.feature.WebcertFeatureService;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 /**
  * @author andreaskaltenbach
@@ -68,6 +69,9 @@ public class WebCertUserDetailsServiceTest {
     
     @Mock
     private WebcertFeatureService webcertFeatureService;
+
+    @Mock
+    private MonitoringLogService monitoringLogService;
 
     private Vardgivare vardgivare;
 
@@ -201,6 +205,22 @@ public class WebCertUserDetailsServiceTest {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-givenname.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
         assertEquals("Gran", webCertUser.getNamn());
+    }
+
+    @Test
+    public void testMultipleTitleCodes() throws Exception {
+        setupCallToAuthorizedEnheterForHosPerson();
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-multiple-title-codes.xml");
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+        assertTrue(webCertUser.isLakare());
+    }
+
+    @Test
+    public void testMultipleTitles() throws Exception {
+        setupCallToAuthorizedEnheterForHosPerson();
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-multiple-titles.xml");
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+        assertTrue(webCertUser.isLakare());
     }
 
     @Test(expected = MissingMedarbetaruppdragException.class)

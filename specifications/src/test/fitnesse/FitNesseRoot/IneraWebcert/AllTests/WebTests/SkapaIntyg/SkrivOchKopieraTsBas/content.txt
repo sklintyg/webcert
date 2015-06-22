@@ -1,0 +1,51 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | ts-bas |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med information i samtliga fält så det blir komplett
+
+| Populera Ts Bas |
+| postadress | postnummer | postort | intygetAvser | identifieringstyp | synA | synB | synC | synD | synE | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synHogerOgaKontaktlins | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synVansterOgaKontaktlins | synBinokulartUtanKorrektion | synBinokulartMedKorrektion | glasOverskrider8Dioptrier | horselA | horselB | funktionsnedsattningA | funktionsnedsattningBeskrivning | funktionsnedsattningB | hjartkarlA | hjartkarlB | hjartkarlC | hjartkarlBeskrivning | diabetesA | diabetestyp | diabetesBehandlingKost | diabetesBehandlingTabletter | diabetesBehandlingInsulin | neurologiA | medvetandestorningA | medvetandestorningBeskrivning | njurarA | kognitivtA | somnvakenhetA | narkotikalakemedelA | narkotikalakemedelB | narkotikalakemedelB2 | narkotikalakemedelC | narkotikalakemedelBeskrivning | psykisktA | utvecklingsstorningA | utvecklingsstorningB | sjukhusvardA | sjukhusvardTidpunkt | sjukhusvardVardinrattning | sjukhusvardAnledning | medicineringA | medicineringBeskrivning | kommentar | behorighet | bedomdBehorighet | specialist | vardenhetPostadress | vardenhetPostnummer | vardenhetPostort | vardenhetTelefonnummer |
+| Storgatan 1 | 12345 | Göteborg | C,CE,D1 | korkort | true | true | true | true | true | 1,1 | 1,2 | true | 0,2 | 0,8 | true | 0,6 | 0,9 | true | true | true | true | Benprotes | true | true | true | true | Förmaksflimmer | true | typ2 | true | true | true | true | true | Januari, 2014, Rockkonsert | true | true | true | true | true | true | true | Alvedon, 3 tabletter | true | true | true | true | 2014-01-01 - 07 | Varberg | ADHD | true | Alvedon | Pratar konstant i telefon | true | | Sjukdommar | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+
+!3 Kontrollera att kan inte ta ställning är satt.
+!| script | HanteraUtkast |
+| check | kan inte ta stallning ts bas | true|
+
+!3 Spara och signera
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| intyg sparat visas |
+
+| script | !-HanteraUtkast-! |
+| signera knapp visas |
+| signera knapp aktiverad |
+| signera utkast |
+| visa intyg sidan visas |
+
+!3 Kopiera intyget
+
+| script | !-SokSkrivIntyg-! |
+| kopiera visat intyg | ts-bas |
+| $kopiaintygsid= | kopiaintygsid |
+
+!3 Kontrollera att kan inte ta ställning fortfarande är satt.
+!| script | HanteraUtkast |
+| check | kan inte ta stallning ts bas | true |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+| $kopiaintygsid |

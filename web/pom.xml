@@ -83,28 +83,42 @@
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>fk7263</artifactId>
     </dependency>
-    <!-- 
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-bas</artifactId>
     </dependency>
+    
     <dependency>
       <groupId>se.inera.intyg.intygstyper</groupId>
       <artifactId>ts-diabetes</artifactId>
     </dependency>
-     -->
-    <!-- Interactions -->    
+     
+    <!-- RIVTA Schemas -->
     <dependency>
-      <groupId>se.inera.intyg.schemas.clinicalprocess.healthcond.certificate.v1</groupId>
-      <artifactId>clinicalprocess-healthcond-certificate-interactions</artifactId>
+      <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
+      <artifactId>clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
     <dependency>
-      <groupId>se.inera.intyg.schemas.insuranceprocess.healthreporting.v1</groupId>
-      <artifactId>insuranceprocess-healthreporting-interactions</artifactId>
+      <groupId>se.riv.insuranceprocess.healthreporting</groupId>
+      <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
     </dependency>
     <dependency>
       <groupId>se.riv.itintegration.monitoring</groupId>
-      <artifactId>itintegration-monitoring-interactions</artifactId>
+      <artifactId>itintegration-monitoring-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.riv.ehr.logstore</groupId>
+      <artifactId>ehr-logstore-schemas</artifactId>
+    </dependency>
+
+    <!-- Intyg Schemas -->
+    <dependency>
+      <groupId>se.inera.intyg.insuranceprocess.healthreporting</groupId>
+      <artifactId>intyg-insuranceprocess-healthreporting-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.transportstyrelsen</groupId>
+      <artifactId>intyg-transportstyrelsen-schemas</artifactId>
     </dependency>
 
     <!-- Logging -->
@@ -133,6 +147,10 @@
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>angular-ui-bootstrap</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>angular-ui-router</artifactId>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
@@ -252,12 +270,10 @@
       <groupId>org.opensaml</groupId>
       <artifactId>opensaml</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.opensaml</groupId>
       <artifactId>openws</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.opensaml</groupId>
       <artifactId>xmltooling</artifactId>
@@ -366,7 +382,7 @@
             </systemProperty>
             <systemProperty>
               <name>webcert.resources.folder</name>
-              <value>${basedir}/../src/main/resources</value>
+              <value>/${basedir}/../src/main/resources</value>
             </systemProperty>
             <systemProperty>
               <name>jetty.port</name>
@@ -474,7 +490,6 @@
                     dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/fk7263">
                   </fileset>
                 </copy>
-                <!-- 
                 <copy
                   todir="${project.build.directory}/webjardependencies/ts-bas"
                   verbose="false">
@@ -482,6 +497,7 @@
                     dir="${project.build.directory}/webjardependenciestemp/META-INF/resources/webjars/ts-bas">
                   </fileset>
                 </copy>
+                <!-- 
                 <copy
                   todir="${project.build.directory}/webjardependencies/ts-diabetes"
                   verbose="false">

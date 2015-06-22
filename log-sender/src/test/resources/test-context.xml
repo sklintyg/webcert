@@ -52,6 +52,6 @@
   <amq:queue id="queue" physicalName="logging.queue" />
 
   <mockito:mock id="storeLogMock"
-    class="se.riv.ehr.log.store.storelog.v1.StoreLogResponderInterface" />
+    class="se.riv.ehr.log.store.storelog.rivtabp21.v1.StoreLogResponderInterface" />
 
 </beans>

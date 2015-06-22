@@ -8,11 +8,8 @@
     "intygsReferens": {
         "intygsId": "intyg-4-revoked",
         "intygsTyp": "fk7263",
+        "patientId": "19121212-1212",
         "patientNamn": "Test Testorsson",
-        "patientId": {
-            "patientIdRoot": "1.2.752.129.2.1.3.1",
-            "patientIdExtension": "19121212-1212"
-        },
         "signeringsDatum" : "2011-01-26T00:00:00.000"
     },
     "vardperson": {

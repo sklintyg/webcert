@@ -6,33 +6,22 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
-import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
-import se.inera.certificate.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.certificate.modules.support.api.dto.CertificateMetaData;
 import se.inera.certificate.modules.support.api.dto.CertificateResponse;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
@@ -43,7 +32,18 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.web.service.WebCertUserService;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.transform.stream.StreamSource;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 
 /**
  * @author andreaskaltenbach
@@ -84,6 +84,9 @@ public class IntygServiceTest {
 
     @Mock
     private WebCertUserService webCertUserService;
+    
+    @Mock
+    private MonitoringLogService mockMonitoringService;
 
     @Before
     public void setupIntygstjanstResponse() throws Exception {
@@ -129,6 +132,8 @@ public class IntygServiceTest {
 
         // ensure that correctcall is made to intygstjanst
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
         assertEquals(json, intygData.getContents());
         assertEquals(CERTIFICATE_ID, intygData.getUtlatande().getId());
@@ -160,6 +165,8 @@ public class IntygServiceTest {
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
         // Assert pdl log
         verify(logservice).logReadIntyg(any(LogRequest.class));
+        // Assert monitoring log
+        verify(mockMonitoringService).logIntygRead(CERTIFICATE_ID, CERTIFICATE_TYPE);
     }
 
     @Test
@@ -168,12 +175,19 @@ public class IntygServiceTest {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
         request.setPersonId("19121212-1212");
         request.getEnhet().add("enhet-1");
-        when(listCertificatesForCareResponder.listCertificatesForCare(LOGICAL_ADDRESS, request)).thenReturn(
+
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listResponse);
 
         List<IntygItem> list = intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");
 
-        verify(listCertificatesForCareResponder).listCertificatesForCare(LOGICAL_ADDRESS, request);
+        ArgumentCaptor<ListCertificatesForCareType> argument = ArgumentCaptor.forClass(ListCertificatesForCareType.class);
+
+        verify(listCertificatesForCareResponder).listCertificatesForCare(eq(LOGICAL_ADDRESS), argument.capture());
+
+        ListCertificatesForCareType actualRequest = argument.getValue();
+        assertEquals(request.getPersonId(), actualRequest.getPersonId());
+        assertEquals(request.getEnhet(), actualRequest.getEnhet());
 
         assertEquals(2, list.size());
 
@@ -196,7 +210,7 @@ public class IntygServiceTest {
         ListCertificatesForCareType request = new ListCertificatesForCareType();
         request.setPersonId("19121212-1212");
         request.getEnhet().add("enhet-1");
-        when(listCertificatesForCareResponder.listCertificatesForCare(LOGICAL_ADDRESS, request)).thenReturn(
+        when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class))).thenReturn(
                 listErrorResponse);
 
         intygService.listIntyg(Collections.singletonList("enhet-1"), "19121212-1212");

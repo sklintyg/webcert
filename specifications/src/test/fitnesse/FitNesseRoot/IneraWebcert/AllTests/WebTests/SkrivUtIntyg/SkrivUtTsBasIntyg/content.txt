@@ -1,0 +1,11 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Verifiera att skriv ut knapp är synlig
+
+| script | !-VisaIntyg-! |
+| visa intyg med id | intyg-fit-4 | och typ | ts-bas|
+| intyg laddat | true |
+| skriv ut knapp visas |

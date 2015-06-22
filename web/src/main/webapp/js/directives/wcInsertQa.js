@@ -9,13 +9,15 @@ angular.module('webcert').directive('wcInsertQa',
                 certificateType: '@'
             },
             link: function(scope, element) {
-
-                $.get('/web/webjars/' + scope.certificateType + '/webcert/views/fragasvar.html').then(function(file) {
-                    element.html(file);
-                    element.replaceWith($compile(element.html())(scope));
-                }).fail(function(error) {
-                    $log.debug(error);
-                });
+                if(scope.certificateType === 'fk7263') {
+                    $.get('/web/webjars/' + scope.certificateType +
+                    '/webcert/views/fragasvar.html').then(function(file) {
+                        element.html(file);
+                        element.replaceWith($compile(element.html())(scope));
+                    }).fail(function(error) {
+                        $log.debug(error);
+                    });
+                }
             }
         };
     });

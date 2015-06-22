@@ -1,0 +1,51 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | 19000101-9801 | av typ | ts-diabetes |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med information i samtliga fält så det blir komplett
+
+| Populera Ts Diabetes |
+| postadress | postnummer | postort | intygetAvser | identifieringstyp | diabetesAr | diabetestyp | diabetesBehandlingKost | diabetesBehandlingTabletter | diabetesBehandlingInsulin | diabetesBehandlingInsulinPeriod | diabetesBehandlingAnnan | hypoglykemierA | hypoglykemierB | hypoglykemierC | hypoglykemierD | hypoglykemierAllvarligForekomstEpisoder | hypoglykemierE | hypoglykemierAllvarligForekomstTrafikEpisoder | hypoglykemierF | hypoglykemierG | hypoglykemierAllvarligForekomstVakenTid | synA | synB | synHogerOgaUtanKorrektion | synHogerOgaMedKorrektion | synVansterOgaUtanKorrektion | synVansterOgaMedKorrektion | synBinokulartUtanKorrektion | synBinokulartMedKorrektion | synD | behorighet | bedomdBehorighet | bedomning |  kommentar | specialist | vardenhetPostadress | vardenhetPostnummer | vardenhetPostort | vardenhetTelefonnummer |
+| Storgatan 1 | 12345 | Göteborg | A,B,C | korkort | 2010 | typ2 | true | true | true | 2011 | Träning | true | true | true | true | 4 | true | 1 | true | true | 2014-01-02 | false | true | 1,1 | 1,2 | 0,2 | 0,8 | 0,6 | 0,9 | true | true | | bedomning | Inga kommentar | Sjukdommar | Kungsvägen 33 | 54321 | Linköping | 011-123456 |
+
+!3 Kontrollera att kan inte ta ställning är satt.
+!| script | HanteraUtkast |
+| check | kan inte ta stallning ts diabetes | true |
+
+!3 Spara och signera
+
+| script | !-SkrivIntyg-! |
+| sparaUtkast |
+| intyg sparat visas |
+
+| script | !-HanteraUtkast-! |
+| signera knapp visas |
+| signera knapp aktiverad |
+| signera utkast |
+| visa intyg sidan visas |
+
+!3 Kopiera intyget
+
+| script | !-SokSkrivIntyg-! |
+| kopiera visat intyg | ts-diabetes |
+| $kopiaintygsid= | kopiaintygsid |
+
+!3 Kontrollera att kan inte ta ställning fortfarande är satt.
+!| script | HanteraUtkast |
+| check | kan inte ta stallning ts diabetes | true |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+| $kopiaintygsid |
