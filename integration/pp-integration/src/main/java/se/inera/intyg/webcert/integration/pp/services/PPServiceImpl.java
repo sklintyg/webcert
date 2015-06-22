@@ -19,7 +19,6 @@ public class PPServiceImpl implements PPService {
     @Autowired
     private GetPrivatePractitionerResponderInterface service;
 
-
     @Override
     public HoSPersonType getPrivatePractitioner(String logicalAddress, String personnummer) {
 

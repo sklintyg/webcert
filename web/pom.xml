@@ -37,6 +37,10 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>pp-integration</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>fk-stub</artifactId>
     </dependency>
     <dependency>

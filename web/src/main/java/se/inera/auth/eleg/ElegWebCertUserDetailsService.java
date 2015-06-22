@@ -17,15 +17,12 @@ import org.springframework.stereotype.Component;
 
 import se.inera.auth.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
-import se.inera.webcert.client.PrivatePractitionerServiceClient;
+import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.webcert.service.exception.WebCertServiceException;
-import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.CV;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
+import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -38,7 +35,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     @Value("${privatepractitioner.logicaladdress}")
     private String logicalAddress;
 
-    private PrivatePractitionerServiceClient privatePractitionerServiceClient;
+    private PPService ppService;
 
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) throws UsernameNotFoundException {
@@ -69,7 +66,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private WebCertUser createWebcertUser(SAMLCredential samlCredential, HoSPersonType hosPerson) {
         WebCertUser webCertUser = new WebCertUser();
-        webCertUser.setHsaId(hosPerson.getPersonalId().getExtension());
+        webCertUser.setHsaId(hosPerson.getPersonId().getExtension());
         webCertUser.setForskrivarkod(hosPerson.getForskrivarkod());
         webCertUser.setLakare(true);
         webCertUser.setNamn(hosPerson.getFullstandigtNamn());
@@ -94,32 +91,27 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private void decorateWithLegitimeradeYrkesgrupper(HoSPersonType hosPerson, WebCertUser webCertUser) {
         List<String> legitimeradeYrkesgrupper = new ArrayList<>();
-        for (CV cv : hosPerson.getLegitimeradYrkesgrupp()) {
-            legitimeradeYrkesgrupper.add(cv.getDisplayName());
+        for (String str : hosPerson.getLegitimeradYrkesgrupp()) {
+            legitimeradeYrkesgrupper.add(str);
         }
         webCertUser.setLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
     }
 
     private void decorateWithSpecialiceringar(HoSPersonType hosPerson, WebCertUser webCertUser) {
         List<String> specialiteter = new ArrayList<>();
-        for(CV cv : hosPerson.getSpecialitet()) {
-            specialiteter.add(cv.getDisplayName());
+        for(SpecialitetType st : hosPerson.getSpecialitet()) {
+            specialiteter.add(st.getNamn());
         }
         webCertUser.setSpecialiseringar(specialiteter);
     }
 
     private HoSPersonType getHosPerson(String personId) {
-        GetPrivatePractitionerResponseType response = privatePractitionerServiceClient.getPrivatePractitioner(logicalAddress, personId);
-        if (response.getResultCode() != ResultCodeEnum.ERROR) {
-            return response.getHoSPerson();
-        } else {
-            logger.error("Could not read HoSPerson from private practictioner service: " + response.getResultText());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, response.getResultText());
-        }
+        HoSPersonType hoSPersonType = ppService.getPrivatePractitioner(logicalAddress, personId);
+        return hoSPersonType;
     }
 
     @Autowired
-    public void setPrivatePractitionerServiceClient(PrivatePractitionerServiceClient privatePractitionerServiceClient) {
-        this.privatePractitionerServiceClient = privatePractitionerServiceClient;
+    public void setPpService(PPService ppService) {
+        this.ppService = ppService;
     }
 }

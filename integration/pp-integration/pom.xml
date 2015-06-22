@@ -22,6 +22,11 @@
 
   <dependencies>
 
+    <dependency>
+      <groupId>se.inera.intyg.webcert</groupId>
+      <artifactId>webcert-common</artifactId>
+    </dependency>
+
     <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>

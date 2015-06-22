@@ -29,6 +29,7 @@
   <import resource="classpath:fk-stub-context.xml" />
   <import resource="classpath:hsa-stub-context.xml" />
   <import resource="classpath:pu-stub-context.xml" />
+  <import resource="classpath:pp-stub-context.xml" />
   <import resource="classpath:/mail-stub-testability-api-context.xml" />
   <import resource="classpath:/intygstjanst-stub-context.xml" />
   <import resource="classpath:/loggtjanst-stub-context.xml" />
