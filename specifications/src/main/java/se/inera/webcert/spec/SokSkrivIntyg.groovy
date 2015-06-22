@@ -211,6 +211,15 @@ class SokSkrivIntyg {
             page.puFelmeddelande.isDisplayed()
         }
     }
+	
+	public String PUTjänstFel() {
+		String felmeddelande
+		Browser.drive {
+			felmeddelande = page.puFelmeddelande.text()
+		}
+		return  felmeddelande
+	}
+	
 
     boolean valjIntygstypSynlig() {
         boolean result
