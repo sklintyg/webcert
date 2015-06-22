@@ -39,7 +39,7 @@ Populera intyget med så lite information som möjligt för att det ska bli komp
 
 | script | !-SkrivIntyg-! |
 | sparaUtkast |
-| verifiera att text for id | alertSaveErrorMessage | innehallar | Utkastet har ändrats av en annan användare medan du arbetat på samma utkast |
+| text for id | alertSaveErrorMessage | innehallar | Utkastet har ändrats av en annan användare medan du arbetat på samma utkast |
 
 !3 Ta bort utkastet
 
