@@ -1,9 +1,8 @@
-
 [[WEBCERT-1854][https://inera-certificate.atlassian.net/browse/WEBCERT-1854]]
 !3 Kontrollera felmeddelande för när samordningsnummer saknas i PU-tjänsten
 
 | script | !-SokSkrivIntyg-! |
 | logga in som |IFV1239877878-104B_IFV1239877878-1042|
 | sok skriv intyg sidan visas sa smaningom |
-| valj patient | 194401710076 |
-| check | PU-tjänst fel | Samordningsnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt|
+| valj patient | 191212721219 |
+| check | PU-tjänst fel |=~/Samordningsnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt/|

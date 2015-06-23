@@ -73,26 +73,6 @@
     </encoder>
   </appender>
 
-  <!--Daily rolling file appender for logging hsa events -->
-  <appender name="HSA"
-    class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <filter class="se.inera.certificate.logging.MarkerFilter">
-      <marker>HSA</marker>
-      <onMatch>ACCEPT</onMatch>
-      <onMismatch>DENY</onMismatch>
-    </filter>
-    <file>${catalina.base}/logs/webcert-hsa.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${catalina.base}/logs/webcert-hsa.%d{yyyy-MM-dd}.log
-      </fileNamePattern>
-    </rollingPolicy>
-    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-      <layout class="se.inera.webcert.logging.PatternLayoutWithUserContext">
-        <param name="Pattern" value="%date{ISO8601} %session %user %selectedCareUnit - %msg%n" />
-      </layout>
-    </encoder>
-  </appender>
-
   <logger name="org.springframework" level="error" />
 
   <logger name="org.hibernate" level="error" />
@@ -128,6 +108,5 @@
     <appender-ref ref="FILE" />
     <appender-ref ref="HSA" />
     <appender-ref ref="MONITORING" />
-    <appender-ref ref="HSA" />
   </root>
 </configuration>

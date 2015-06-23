@@ -12,7 +12,7 @@
 
 !3 Verifiera text webcert-1612
 | script | !-SkrivIntyg-! |
-| text for class | soclink | innehallar | beslutsstöd |
+| verifiera att text for class | soclink | innehallar | beslutsstöd |
 
 !3 Verifiera text webcert-1611
 | Populera Fk7263 |
@@ -21,7 +21,7 @@
 
 !3 Verifiera att text är nu med störa bokstäver webcert-1611
 | script | !-SkrivIntyg-! |
-| text for id | diagnoseCode | innehallar | A18 |
+| verifiera att text for id | diagnoseCode | innehallar | A18 |
 
 !3 Ta bort utkastet
 
