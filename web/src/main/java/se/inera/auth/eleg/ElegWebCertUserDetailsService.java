@@ -20,7 +20,6 @@ import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.WebCertUser;
-import se.riv.infrastructure.directory.privatepractitioner.types.v1.CV;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
@@ -30,7 +29,7 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 @Component
 public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService implements SAMLUserDetailsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ElegWebCertUserDetailsService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ElegWebCertUserDetailsService.class);
 
     @Value("${privatepractitioner.logicaladdress}")
     private String logicalAddress;
@@ -46,7 +45,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
             WebCertUser webCertUser = createWebcertUser(samlCredential, hosPerson);
             return webCertUser;
         } catch (Exception e) {
-            logger.error("Error building user {}, failed with message {}", e.getMessage());
+            LOG.error("Error building user {}, failed with message {}", e.getMessage());
             throw new HsaServiceException("privatlakare, ej hsa", e);
         }
     }
@@ -99,14 +98,14 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private void decorateWithSpecialiceringar(HoSPersonType hosPerson, WebCertUser webCertUser) {
         List<String> specialiteter = new ArrayList<>();
-        for(SpecialitetType st : hosPerson.getSpecialitet()) {
+        for (SpecialitetType st : hosPerson.getSpecialitet()) {
             specialiteter.add(st.getNamn());
         }
         webCertUser.setSpecialiseringar(specialiteter);
     }
 
     private HoSPersonType getHosPerson(String personId) {
-        HoSPersonType hoSPersonType = ppService.getPrivatePractitioner(logicalAddress, personId);
+        HoSPersonType hoSPersonType = ppService.getPrivatePractitioner(logicalAddress, null, personId);
         return hoSPersonType;
     }
 
