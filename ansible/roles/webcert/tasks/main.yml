@@ -47,6 +47,9 @@
 - name: Create version file
   template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
+- name: pull configuration repo to get new branches
+  command: chdir={{ config_folder }} git pull origin
+
 - name: update configuration to {{ config_version }}
   git: repo={{ config_repository }}
        dest={{ config_folder }}
