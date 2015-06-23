@@ -5,5 +5,7 @@ Testet beskriver fallet när en läkare söker efter en patient som INTE finns i
 | script | !-SokSkrivIntyg-! |
 | logga in som |IFV1239877878-104B_IFV1239877878-1042|
 | sok skriv intyg sidan visas sa smaningom |
-| valj patient | ${person6.personnummer} |
-| namn finns ej meddelande visas |
+| valj patient | ${personnummer_som_saknas_i_pu} |
+| check | PU-tjänst fel |=~/Namn för det personnummer du har angett kunde tyvärr inte hämtas från folkbokföringsregistret/|
+
+
