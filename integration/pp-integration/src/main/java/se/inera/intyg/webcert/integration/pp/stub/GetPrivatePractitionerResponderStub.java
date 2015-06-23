@@ -8,6 +8,9 @@ import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitione
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,17 +19,37 @@ import java.util.List;
  */
 public class GetPrivatePractitionerResponderStub implements GetPrivatePractitionerResponderInterface {
 
+    public static final String PERSONNUMMER_EXISTING = "19121212-1212";
+    public static final String PERSONNUMMER_NONEXISTING = "19121212-7169";
+    public static final String PERSONNUMMER_ERROR_RESPONSE = "19121212-XXXX";
+    public static final String PERSONNUMMER_THROW_EXCEPTION = "19121212-ZZZZ";
+
+
     @Autowired
     private HoSPersonStub personStub;
 
     @Override
     public GetPrivatePractitionerResponseType getPrivatePractitioner(String logicalAddress, GetPrivatePractitionerType parameters) {
 
+        // Do validation of parameters object
         validate(parameters);
 
+        String id = parameters.getPersonalIdentityNumber();
         GetPrivatePractitionerResponseType response = new GetPrivatePractitionerResponseType();
 
-        String id = parameters.getPersonalIdentityNumber();
+        // if matching -- create error response
+        if (PERSONNUMMER_ERROR_RESPONSE.equals(parameters.getPersonalIdentityNumber())) {
+            response.setHoSPerson(null);
+            response.setResultCode(ResultCodeEnum.ERROR);
+            response.setResultText("FAILURE: an error occured while trying to get private practitioner with personal identity number: " + id + " exists.");
+            return response;
+        }
+
+        // if matching -- throw exception
+        if (PERSONNUMMER_THROW_EXCEPTION.equals(parameters.getPersonalIdentityNumber())) {
+            throw new SOAPFaultException(createSOAPFault());
+        }
+
         HoSPersonType person  = personStub.get(id);
 
         if (person == null) {
@@ -46,10 +69,16 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
         if (parameters == null) {
             messages.add("GetPrivatePractitionerType cannot be null.");
         } else {
+            String hsaId = parameters.getPersonHsaId();
             String personId = parameters.getPersonalIdentityNumber();
 
-            if (StringUtils.isEmpty(personId)) {
-                messages.add("A personal identity number (personalIdentityNumber) must be supplied.");
+            // Exakt ett av fälten hsaIdentityNumber och personalIdentityNumber ska anges.
+            if (StringUtils.isEmpty(hsaId) && StringUtils.isEmpty(personId)) {
+                messages.add("Inget av argumenten hsaId och personId är satt. Ett av dem måste ha ett värde.");
+            }
+
+            if (!StringUtils.isEmpty(hsaId) && !StringUtils.isEmpty(personId)) {
+                messages.add("Endast ett av argumenten hsaId och personId får vara satt.");
             }
         }
 
@@ -58,5 +87,17 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
         }
     }
 
+    private SOAPFault createSOAPFault()  {
+        SOAPFault soapFault = null;
+
+        try {
+            soapFault = SOAPFactory.newInstance().createFault();
+            soapFault.setFaultString("Response was of unexpected content type.");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return soapFault;
+    }
 
 }

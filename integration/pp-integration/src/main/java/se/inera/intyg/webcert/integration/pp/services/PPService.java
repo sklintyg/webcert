@@ -7,6 +7,6 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
  */
 public interface PPService {
 
-    HoSPersonType getPrivatePractitioner(String logicalAddress, String personnummer);
+    HoSPersonType getPrivatePractitioner(String logicalAddress, String hsaIdentity, String personalIdentity);
 
 }

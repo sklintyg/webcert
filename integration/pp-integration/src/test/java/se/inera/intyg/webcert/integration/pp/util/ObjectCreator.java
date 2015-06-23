@@ -1,7 +1,6 @@
 package se.inera.intyg.webcert.integration.pp.util;
 
 import org.joda.time.LocalDateTime;
-import org.junit.Test;
 import se.inera.auth.HSABefattning;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.ArbetsplatsKod;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
@@ -23,10 +22,14 @@ import java.util.List;
  */
 public class ObjectCreator {
 
-    @Test
-    public void createPrivatePractitioner() throws Exception {
-        ObjectToJson objectToJson = new ObjectToJson(buildHoSPersonType());
+    public static void main(String[] args) throws Exception {
+        ObjectCreator oc = new ObjectCreator();
+        ObjectToJson objectToJson = new ObjectToJson(oc.buildHoSPersonType());
         System.out.println(objectToJson.printJson());
+    }
+
+    public HoSPersonType getHoSPersonType() {
+        return buildHoSPersonType();
     }
 
     private HoSPersonType buildHoSPersonType() {

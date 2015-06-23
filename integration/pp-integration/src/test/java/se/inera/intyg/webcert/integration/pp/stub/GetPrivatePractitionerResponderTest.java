@@ -1,15 +1,30 @@
 package se.inera.intyg.webcert.integration.pp.stub;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import se.inera.intyg.webcert.integration.pp.util.ObjectCreator;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
+import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPrivatePractitionerResponderTest {
+
+    private final static String HSAID        = "HSA0000-123456789";
+    private final static String PERSONNUMMER = "19121212-1212";
 
     @Mock
     private HoSPersonStub personStub;
@@ -17,33 +32,69 @@ public class GetPrivatePractitionerResponderTest {
     @InjectMocks
     private GetPrivatePractitionerResponderInterface ws = new GetPrivatePractitionerResponderStub();
 
+    @Test (expected = IllegalArgumentException.class)
+    public void nullParametersThrowsException() {
+        ws.getPrivatePractitioner(null, null);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void noPersonIdThrowsException() {
+        GetPrivatePractitionerType request = new GetPrivatePractitionerType();
+        ws.getPrivatePractitioner(null, request);
+    }
 
     @Test
-    public void personIdParametersReturned() {
-/*
-        PersonpostTYPE person = new PersonpostTYPE();
-        person.setPersonId("191212121212");
-        ResidentType resident = new ResidentType();
-        resident.setPersonpost(person);
+    public void verifyExistingPerson() {
 
-        when(personStub.get("191212121212")).thenReturn(resident);
+        // Given
+        ObjectCreator objectCreator = new ObjectCreator();
+        HoSPersonType hoSPersonType = objectCreator.getHoSPersonType();
 
-        LookupResidentForFullProfileType parameters = defaultRequest();
-        LookupResidentForFullProfileResponseType address = ws.lookupResidentForFullProfile("address", parameters);
-        assertEquals(1, address.getResident().size());
-        assertEquals("191212121212", address.getResident().get(0).getPersonpost().getPersonId());
-*/
+        GetPrivatePractitionerType request = defaultRequest();
+
+        GetPrivatePractitionerResponseType expected = new GetPrivatePractitionerResponseType();
+        expected.setResultCode(ResultCodeEnum.OK);
+        expected.setHoSPerson(hoSPersonType);
+
+        // When
+        when(personStub.get(PERSONNUMMER)).thenReturn(hoSPersonType);
+
+        // Call web service
+        GetPrivatePractitionerResponseType actual = ws.getPrivatePractitioner("address", request);
+
+        // Then
+        assertTrue(ResultCodeEnum.OK == actual.getResultCode());
+        assertEquals(HSAID, actual.getHoSPerson().getHsaId().getExtension());
+        assertEquals(PERSONNUMMER, actual.getHoSPerson().getPersonId().getExtension());
+
+        verify(personStub, times(1)).get(PERSONNUMMER);
+    }
+
+    @Test
+    public void verifyNonExistingPerson() {
+
+        // Given
+        GetPrivatePractitionerType request = defaultRequest();
+        request.setPersonalIdentityNumber("1901010101-0101");
+
+        // When
+        when(personStub.get("1901010101-0101")).thenReturn(null);
+
+        // Call web service
+        GetPrivatePractitionerResponseType actual = ws.getPrivatePractitioner("address", request);
+
+        // Then
+        assertTrue(ResultCodeEnum.INFO == actual.getResultCode());
+        assertNull(actual.getHoSPerson());
+
+        verify(personStub, times(1)).get("1901010101-0101");
     }
 
     private GetPrivatePractitionerType defaultRequest() {
-/*
-        LookupResidentForFullProfileType parameters = new LookupResidentForFullProfileType();
-        parameters.getPersonId().add("191212121212");
-        LookUpSpecificationType specification = new LookUpSpecificationType();
-        parameters.setLookUpSpecification(specification);
-        return parameters;
-*/
-        return null;
+
+        GetPrivatePractitionerType request = new GetPrivatePractitionerType();
+        request.setPersonalIdentityNumber(PERSONNUMMER);
+        return request;
     }
 
 
