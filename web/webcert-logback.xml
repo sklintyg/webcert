@@ -5,7 +5,7 @@
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <filter class="se.inera.certificate.logging.MarkerFilter">
-      <markers>Monitoring</markers>
+      <markers>Monitoring, HSA</markers>
       <onMatch>DENY</onMatch>
       <onMismatch>ACCEPT</onMismatch>
     </filter>
