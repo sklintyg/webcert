@@ -1,0 +1,65 @@
+!2 VIKTIGT
+!3 För att kunna köra omsändningstester behöver Webcert konfigureras enl. följande:
+!4 Webcert skall startas med konfigurationsfil 'webcert-dev-itstub.properties':
+    
+    -Dwebcert.config.file=/Users/eriklupander/intyg/webcert/web/webcert-dev-itstub.properties
+
+
+!3 Stäng ner stubben
+| script | !-SokSkrivIntyg-! |
+| intygstjanst stub offline |
+
+!3 Logga in
+| script | !-SokSkrivIntyg-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
+!3 Lägg till komplett utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | kodverk |
+| webcert-fitnesse-signera-1 | fk7263 | 19121212-1212 | Test | Testorsson | IFV1239877878-104B | Åsa Andersson | IFV1239877878-1042 | ja | ICD_10_SE |
+
+!3 Skicka intyg
+| Skicka Intyg Till Mottagare |
+| intygsId | intygsTyp | hsaId | enhetId | mottagare |
+| webcert-fitnesse-signera-1 | fk7263 | IFV1239877878-104B | IFV1239877878-1042 | FK |
+
+!3 Signera utkastet
+| Signera Utkast |
+| intygId | intygTyp | version |
+| webcert-fitnesse-signera-1 | fk7263 | 3 |
+
+!3 Makulera intyg
+| Aterkalla Intyg |
+| intygsId | intygsTyp | hsaId | enhetId |
+| webcert-fitnesse-signera-1 | fk7263 | IFV1239877878-104B | IFV1239877878-1042 |
+
+
+
+
+
+!3 Aktiverastubben
+| script | !-SokSkrivIntyg-! |
+| intygstjanst stub online |
+
+!3 Verifiera att Intygstjänsten tagit emot intygen (asynkron sändning, webcert-1314)
+| script | !-IntygstjanstAsynk-! |
+| finns intyg i stub med | webcert-fitnesse-signera-1 | vantetid | 10000 |
+
+!3 Verifiera att intyget skickats.
+
+| script | !-IntygstjanstAsynk-! |
+| finns intyg i stub skickad till | webcert-fitnesse-signera-1 | skickad till | FK | med vantetid | 10000 |
+
+!3 Verifiera att intyget makulerats.
+| script | !-IntygstjanstAsynk-! |
+| finns makulerat intyg i stub med | webcert-fitnesse-signera-1 | vantetid | 10000 |
+
+
+
+
+!3 Ta bort utkast
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-signera-1 |

@@ -1,0 +1,213 @@
+!contents -R2 -g -p -f -h
+
+!2 Testa flödet Skapa ukast -> notifiering HAN1, Ändra och spara -> notifiering HAN11
+
+!3 Rensa eventuella gamla notifieringar
+| webcert rest utils | 
+| reset? |
+| true |
+
+!3 Skapa utkast och ändra i diagnos-relaterade fält, vilket ska ge notifiering HAN11
+
+!4 Logga in och skapa ett nytt intygsutkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       |           true | $utkastId=| $version= |
+
+!4 Populera och spara utkastet
+
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId     | intygTyp | version  |  komplett | utkastSparat? | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId   | fk7263   | $version |  true     | true          | $version= |
+
+!4 Verifiera notifieringar
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad?   |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| true              |
+
+!4 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
+
+!3 reset
+| webcert rest utils | 
+| reset? |
+| true |
+
+!3 Skapa utkast och spara utan att ändra diagnos-info, vilket INTE ska ge notifiering HAN11
+
+!4 Logga in och skapa ett nytt intygsutkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId?  | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       |           true | $utkastId= | $version= |
+
+!4 Populera och spara utkastet
+| hamta utkast |
+| intygsId  | intygsTyp | utkastHamtat? | version?  | 
+| $utkastId | fk7263    | true          | $version= |
+
+
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | false    | true          | $version= |
+
+!4 Verifiera notifieringar
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad?   |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| false             |
+
+!4 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
+
+!3 reset
+| webcert rest utils | 
+| reset? |
+| true |
+
+!3 Skapa utkast med invalid diagnos-kod, vilket INTE ska ge notifiering HAN11
+
+!4 Logga in och skapa ett nytt intygsutkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId? |
+| ${person1.personnummer}       | Test           | Testorsson       |           true | $utkastId=|
+
+!4 Populera och spara utkastet
+| hamta utkast |
+| intygsId   | intygsTyp | utkastHamtat? | version?  | 
+| $utkastId  | fk7263    | true          | $version= |
+
+
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | diagnosKod| diagnosBeskrivning1 | intygTyp | version  | komplett | utkastSparat? | 
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | A         |                     | fk7263   | $version | true     | true          | 
+
+!4 Verifiera notifieringar
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad?   |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| false             |
+
+!4 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
+
+!3 reset
+| webcert rest utils | 
+| reset? |
+| true |
+
+!3 Skapa utkast med invalid diagnos-kod men med diagnos-beskrivning, vilket ska ge notifiering HAN11
+
+!4 Logga in och skapa ett nytt intygsutkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId?  | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       |           true | $utkastId= | $version= |
+
+!4 Populera och spara utkastet
+
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | diagnosKod| diagnosBeskrivning1 | intygTyp | version  | komplett | utkastSparat? | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | A         | en beskrivning      | fk7263   | $version | true     | true          | $version= |
+
+!4 Verifiera notifieringar
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad?   |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| true              |
+
+!4 Ta bort utkastet
+| ta bort utkast |
+| utkastId  |
+| $utkastId |
+
+!3 reset
+| webcert rest utils | 
+| reset? |
+| true |
+
+!3 Skapa utkast och ändra till en invalid sjukskrivningsperiod, vilket INTE ska ge notifiering HAN11
+
+!4 Logga in och skapa ett nytt intygsutkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId?  | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       |           true | $utkastId= | $version= |
+
+!4 Populera och spara utkastet
+
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | true     | true          | $version= |
+
+!3 Rensa notifieringar
+| webcert rest utils | 
+| reset? |
+| true |
+
+!4 Spara utkastet med invalid period
+
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | nedsattMed100                                         | komplett | utkastSparat? | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05"} | true     | true          | $version= |
+
+!4 Verifiera notifieringar
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad? |
+| $utkastId  | HAN11| false           |
+
+!4 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
+
+!3 Rensa notifieringar
+| webcert rest utils | 
+| reset? |
+| true |
+
+!3 Skapa utkast och ändra i sjukskrivningsperiod, vilket ska ge notifiering HAN11
+
+!4 Logga in och skapa ett nytt intygsutkast
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId?  | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       |           true | $utkastId= | $version= |
+
+!4 Populera och spara utkastet
+| hamta utkast |
+| intygsId   | intygsTyp | utkastHamtat? | version?  | 
+| $utkastId  | fk7263    | true          | $version= |
+
+
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | true     | true          | $version= |
+
+!3 Rensa notifieringar
+| webcert rest utils | 
+| reset? |
+| true |
+
+!4 Spara utkastet med valid sjukskrivningsperiod
+
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | intygId    | intygTyp | version  | nedsattMed100                                            | komplett | utkastSparat?  | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId  | fk7263   | $version | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | true     | true           | $version= | 
+
+!4 Verifiera att notifieringar mottogs av notifierings-stubben
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad? |
+| $utkastId  | HAN11| true            |
+
+!3 Ändra tillbaka till en invalid sjukskrivningsperiod, vilket ska ge notifiering HAN11
+
+!4 Spara utkastet med invalid period
+
+| patientPersonnummer | patientFornamn    | patientEfternamn  | hsaId             | namn             | enhetId           | kodverk   | intygId   | intygTyp | version  | nedsattMed100                                         | komplett | utkastSparat? | version?  |
+| ${person1.personnummer}       | Test              | Testorsson        | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | $utkastId | fk7263   | $version | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05"} | true     | true          | $version= |
+
+!4 Verifiera att notifieringar mottogs av notifierings-stubben
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad?   |
+| $utkastId  | HAN11| true              |
+
+!4 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |

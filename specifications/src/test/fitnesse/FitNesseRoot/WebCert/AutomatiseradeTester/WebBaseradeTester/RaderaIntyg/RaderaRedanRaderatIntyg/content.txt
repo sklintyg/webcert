@@ -1,0 +1,19 @@
+!contents -R2 -g -p -f -h
+
+|skapa utkast|
+|intygId|intygTyp|patientPersonnummer|patientFornamn|patientEfternamn|hsaId|namn|enhetId|komplett|
+|webcert-fitnesse-tabort-1|fk7263|${person1.personnummer}|Test|Testorsson|IFV1239877878-104B|Läkarnamn|IFV1239877878-1042|ja|
+
+!| script | HanteraUtkast |
+| logga in som |IFV1239877878-104B_IFV1239877878-1042|
+| ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-tabort-1|
+| editera sidan visas |
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-tabort-1 |
+
+!| script | HanteraUtkast |
+| radera utkast |
+| ensure | inga ej signerade intyg visas |
+

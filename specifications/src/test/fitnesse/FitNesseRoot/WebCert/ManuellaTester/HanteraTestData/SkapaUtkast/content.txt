@@ -1,0 +1,37 @@
+!3 Skapa kompletta utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-manuell-fk-1 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-fk-2 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-fk-3 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-fk-4 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-fk-5 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-fk-6 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-fk-7 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-fk-8 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-fk-9 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-1 | ts-bas | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-2 | ts-bas | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-3 | ts-bas | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-4 | ts-bas | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-5 | ts-bas | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-6 | ts-bas | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-7 | ts-bas | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-8 | ts-bas | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-bas-9 | ts-bas | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-1 | ts-diabetes | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-3 | ts-diabetes | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-3 | ts-diabetes | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-4 | ts-diabetes | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-5 | ts-diabetes | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-6 | ts-diabetes | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-7 | ts-diabetes | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-8 | ts-diabetes | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+| webcert-fitnesse-manuell-diabetes-9 | ts-diabetes | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+
+!3 Skapa ej kompletta utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-ejkomplett-fk-1 | fk7263 | ${person4.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |

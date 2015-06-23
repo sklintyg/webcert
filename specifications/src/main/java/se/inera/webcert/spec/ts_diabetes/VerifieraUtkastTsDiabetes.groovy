@@ -101,4 +101,17 @@ class VerifieraUtkastTsDiabetes {
         }
         result
     }
+
+    boolean bedomning() {
+        def result
+        Browser.drive {
+            waitFor {
+                at EditCertPage
+            }
+            result = page.bedomning.behorighetBedomning.value().toBoolean()
+        }
+        result
+    }
+
+
 }

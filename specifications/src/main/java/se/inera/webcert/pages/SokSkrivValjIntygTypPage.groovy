@@ -9,15 +9,20 @@ class SokSkrivValjIntygTypPage extends AbstractPage {
     static content = {
         patientNamn { $("#patientNamn") }
         intygtypFortsattKnapp { $("#intygTypeFortsatt") }
-        intygTyp { $("#intygType") }
-        intygLista { $("#intygLista") }
+        intygTyp(wait: true) { displayed($("#intygType")) }
+        intygTypNoWait{ $("#intygType") }
+        intygLista(wait: true) { displayed($("#intygLista")) }
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         fortsattKnapp { $("#intygTypeFortsatt") }
+        felmeddelandeRuta { $("#current-list-noResults-error")}
+        sekretessmarkering(wait: true) { displayed($("#sekretessmarkering")) }
     }
 
     def copyBtn(String intygId) {
-        $("#copyBtn-${intygId}")
+        waitFor {
+            $("#copyBtn-${intygId}")
+        }
     }
 
     def copy(String intygId) {

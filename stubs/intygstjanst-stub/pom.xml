@@ -47,6 +47,14 @@
       <groupId>se.inera.intyg.clinicalprocess.healthcond.certificate</groupId>
       <artifactId>intyg-clinicalprocess-healthcond-certificate-schemas</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.riv.insuranceprocess.healthreporting</groupId>
+      <artifactId>insuranceprocess-healthreporting-schemas</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.transportstyrelsen</groupId>
+      <artifactId>intyg-transportstyrelsen-schemas</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.cxf</groupId>

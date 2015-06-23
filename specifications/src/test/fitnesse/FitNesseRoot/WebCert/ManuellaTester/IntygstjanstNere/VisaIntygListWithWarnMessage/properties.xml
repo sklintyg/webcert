@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<properties>
+	<Edit>true</Edit>
+	<Files>true</Files>
+	<Help>Verifiera att meddelande visas att intyg hämtats lokalt när Intygstjänsten ej var tillgänglig</Help>
+	<Properties>true</Properties>
+	<RecentChanges>true</RecentChanges>
+	<Refactor>true</Refactor>
+	<Search>true</Search>
+	<Test/>
+	<Versions>true</Versions>
+	<WhereUsed>true</WhereUsed>
+</properties>

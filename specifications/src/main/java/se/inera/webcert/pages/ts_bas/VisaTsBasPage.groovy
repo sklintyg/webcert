@@ -7,20 +7,22 @@ class VisaTsBasPage extends VisaPage {
     static content = {
 
         intygSaknas { $("#cert-load-error") }
-        intygLaddat { $('#intyg-vy-laddad') }
-        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
+        intygLaddat(wait: true) { displayed($('#intyg-vy-laddad')) }
+        visaVadSomSaknasLista(required: false,wait: true) { displayed($("#visa-vad-som-saknas-lista")) }
+        visaVadSomSaknasListaNoWait{$("#visa-vad-som-saknas-lista")}
 
-        copyButton { $("#copyBtn") }
+        copyButton(wait: true) { displayed($("#copyBtn")) }
         makuleraButton { $("#makuleraBtn") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         makuleraDialogKopieraKnapp { $("#button1makulera-dialog") }
-        makuleraConfirmationOkButton { $("#confirmationOkButton") }
+        makuleraConfirmationOkButton(wait: true) { displayed($("#confirmationOkButton")) }
 
         skickaDialogBodyTsBas { $("span[key=\"ts-bas.label.send.body\"]") }
 
-        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
-        certificateIsSentToRecipientMessage(required: false) { $("#certificate-is-sent-to-recipient-message-text") }
-        certificateIsRevokedMessage(required: false) { $("#certificate-is-revoked-message-text") }
+        certificateIsSentToITMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-it-message-text")) }
+        certificateIsSentToRecipientMessage(required: false,wait: true) { displayed($("#certificate-is-sent-to-recipient-message-text")) }
+        certificateIsRevokedMessage(required: false,wait: true) { displayed($("#certificate-is-revoked-message-text")) }
+        certificateIsOnQueueToITMessage(required: false) { $('#certificate-is-on-sendqueue-to-it-message-text') }
 
         patientpostadress { $("#patientpostadress") }
         patientpostnummer { $("#patientpostnummer") }

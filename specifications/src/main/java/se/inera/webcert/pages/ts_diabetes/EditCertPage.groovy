@@ -13,12 +13,12 @@ class EditCertPage extends AbstractEditCertPage {
 
         // Knappar
         sparaKnapp { $("#spara-utkast") }
-        visaVadSomSaknasKnapp { $("#showCompleteButton") }
+        visaVadSomSaknasKnapp(wait: true) { displayed($("#showCompleteButton")) }
         doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
-        intygetSparatMeddelande { $("#intyget-sparat-meddelande") }
-        intygetEjKomplettMeddelande { $("#intyget-ej-komplett-meddelande") }
+        intygetSparatOchKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
+        intygetSparatOchEjKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
 
         // Formulärfält
         form { $("form") }
@@ -34,14 +34,14 @@ class EditCertPage extends AbstractEditCertPage {
         vardenhet { module VardenhetModule }
 
         // Intygsvalidering
-        valideringPatient(required: false)              { $("#validationMessages_patient") }
-        valideringIntygAvser(required: false)           { $("#validationMessages_intygavser") }
-        valideringIdentitet(required: false)            { $("#validationMessages_identitet") }
-        valideringDiabetes(required: false)             { $("#validationMessages_diabetes") }
-        valideringHypoglykemier(required: false)        { $("#validationMessages_hypoglykemier") }
-        valideringSyn(required: false)                  { $("#validationMessages_syn") }
-        valideringBedomning(required: false)            { $("#validationMessages_bedomning") }
-        valideringVardEnhet(required: false)            { $("#validationMessages_vardenhet") }
+        valideringPatient(required: false){$("#validationMessages_patient") }
+        valideringIntygAvser(required: false){$("#validationMessages_intygavser") }
+        valideringIdentitet(required: false){$("#validationMessages_identitet") }
+        valideringDiabetes(required: false){$("#validationMessages_diabetes") }
+        valideringHypoglykemier(required: false){$("#validationMessages_hypoglykemier") }
+        valideringSyn(required: false){$("#validationMessages_syn") }
+        valideringBedomning(required: false){$("#validationMessages_bedomning") }
+        valideringVardEnhet(required: false){$("#validationMessages_vardenhet") }
     }
 }
 

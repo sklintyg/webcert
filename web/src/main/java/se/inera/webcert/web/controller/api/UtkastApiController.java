@@ -1,7 +1,23 @@
 package se.inera.webcert.web.controller.api;
 
-import java.util.Arrays;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.webcert.converter.IntygDraftsConverter;
+import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.persistence.utkast.model.Utkast;
+import se.inera.webcert.persistence.utkast.model.UtkastStatus;
+import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
+import se.inera.webcert.service.dto.Lakare;
+import se.inera.webcert.service.dto.Patient;
+import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.utkast.UtkastService;
+import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.webcert.web.controller.AbstractApiController;
+import se.inera.webcert.web.controller.api.dto.CreateUtkastRequest;
+import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
+import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
+import se.inera.webcert.web.controller.api.dto.QueryIntygResponse;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -13,27 +29,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.webcert.converter.IntygDraftsConverter;
-import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
-import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
-import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.dto.Lakare;
-import se.inera.webcert.service.dto.Patient;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.utkast.UtkastService;
-import se.inera.webcert.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.webcert.web.controller.AbstractApiController;
-import se.inera.webcert.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.webcert.web.controller.api.dto.ListIntygEntry;
-import se.inera.webcert.web.controller.api.dto.QueryIntygParameter;
-import se.inera.webcert.web.controller.api.dto.QueryIntygResponse;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -59,6 +56,35 @@ public class UtkastApiController extends AbstractApiController {
     private UtkastService intygDraftService;
 
     /**
+     * Create a new draft.
+     *
+     * @param intygsTyp
+     * @param request
+     * @return
+     */
+    @POST
+    @Path("/{intygsTyp}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
+
+        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+
+        if (!request.isValid()) {
+            LOG.error("Request is invalid: " + request.toString());
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
+
+        CreateNewDraftRequest serviceRequest = createServiceRequest(request);
+
+        Utkast utkast = intygDraftService.createNewDraft(serviceRequest);
+        LOG.debug("Created a new draft of type '{}' with id '{}'", intygsTyp, utkast.getIntygsId());
+
+        return Response.ok().entity(utkast).build();
+    }
+
+    /**
      * Creates a filtered query to get drafts for a specific unit.
      *
      * @param filterParameters
@@ -76,45 +102,6 @@ public class UtkastApiController extends AbstractApiController {
         QueryIntygResponse queryResponse = performUtkastFilterQuery(utkastFilter);
 
         return Response.ok(queryResponse).build();
-    }
-
-    private UtkastFilter createUtkastFilter(QueryIntygParameter filterParameters) {
-        WebCertUser user = getWebCertUserService().getWebCertUser();
-        String selectedUnitHsaId = user.getValdVardenhet().getId();
-
-        UtkastFilter utkastFilter = new UtkastFilter(selectedUnitHsaId);
-
-        if (filterParameters != null) {
-            if (Boolean.FALSE.equals(filterParameters.getComplete())) {
-                utkastFilter.setStatusList(INCOMPLETE_DRAFTS);
-            } else if (Boolean.TRUE.equals(filterParameters.getComplete())) {
-                utkastFilter.setStatusList(COMPLETE_DRAFTS);
-            } else {
-                utkastFilter.setStatusList(ALL_DRAFTS);
-            }
-
-            utkastFilter.setSavedFrom(filterParameters.getSavedFrom());
-            utkastFilter.setSavedTo(filterParameters.getSavedTo());
-            utkastFilter.setSavedByHsaId(filterParameters.getSavedBy());
-            utkastFilter.setForwarded(filterParameters.getForwarded());
-            utkastFilter.setPageSize(filterParameters.getPageSize() == null ? DEFAULT_PAGE_SIZE : filterParameters.getPageSize());
-            utkastFilter.setStartFrom(filterParameters.getStartFrom() == null ? 0 : filterParameters.getStartFrom());
-        }
-
-        return utkastFilter;
-    }
-
-    private QueryIntygResponse performUtkastFilterQuery(UtkastFilter filter) {
-
-        List<Utkast> intygList = intygDraftService.filterIntyg(filter);
-
-        List<ListIntygEntry> listIntygEntries = IntygDraftsConverter.convertUtkastsToListIntygEntries(intygList);
-
-        int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
-
-        QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
-        response.setTotalCount(totalCountOfFilteredIntyg);
-        return response;
     }
 
     /**
@@ -137,37 +124,6 @@ public class UtkastApiController extends AbstractApiController {
         return Response.ok().entity(lakareWithDraftsByEnhet).build();
     }
 
-    /**
-     * Create a new draft.
-     *
-     * @param intygsTyp
-     * @param request
-     * @return
-     */
-    @POST
-    @Path("/{intygsTyp}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN + UTF_8_CHARSET)
-    public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
-
-        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
-
-        if (!request.isValid()) {
-            LOG.error("Request is invalid: " + request.toString());
-            return Response.status(Status.BAD_REQUEST).build();
-        }
-
-        LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
-
-        CreateNewDraftRequest serviceRequest = createServiceRequest(request);
-
-        String utkastId = intygDraftService.createNewDraft(serviceRequest); 
-
-        LOG.debug("Created a new draft of type '{}' with id '{}'", intygsTyp, utkastId);
-
-        return Response.ok().entity(utkastId).build();
-    }
-
     private CreateNewDraftRequest createServiceRequest(CreateUtkastRequest req) {
         CreateNewDraftRequest srvReq = new CreateNewDraftRequest();
 
@@ -187,5 +143,44 @@ public class UtkastApiController extends AbstractApiController {
         srvReq.setVardenhet(createVardenhetFromUser());
 
         return srvReq;
+    }
+
+    private UtkastFilter createUtkastFilter(QueryIntygParameter filterParameters) {
+        WebCertUser user = getWebCertUserService().getWebCertUser();
+        String selectedUnitHsaId = user.getValdVardenhet().getId();
+
+        UtkastFilter utkastFilter = new UtkastFilter(selectedUnitHsaId);
+
+        if (filterParameters != null) {
+            if (Boolean.FALSE.equals(filterParameters.getComplete())) {
+                utkastFilter.setStatusList(INCOMPLETE_DRAFTS);
+            } else if (Boolean.TRUE.equals(filterParameters.getComplete())) {
+                utkastFilter.setStatusList(COMPLETE_DRAFTS);
+            } else {
+                utkastFilter.setStatusList(ALL_DRAFTS);
+            }
+
+            utkastFilter.setSavedFrom(filterParameters.getSavedFrom());
+            utkastFilter.setSavedTo(filterParameters.getSavedTo());
+            utkastFilter.setSavedByHsaId(filterParameters.getSavedBy());
+            utkastFilter.setNotified(filterParameters.getNotified());
+            utkastFilter.setPageSize(filterParameters.getPageSize() == null ? DEFAULT_PAGE_SIZE : filterParameters.getPageSize());
+            utkastFilter.setStartFrom(filterParameters.getStartFrom() == null ? 0 : filterParameters.getStartFrom());
+        }
+
+        return utkastFilter;
+    }
+
+    private QueryIntygResponse performUtkastFilterQuery(UtkastFilter filter) {
+
+        List<Utkast> intygList = intygDraftService.filterIntyg(filter);
+
+        List<ListIntygEntry> listIntygEntries = IntygDraftsConverter.convertUtkastsToListIntygEntries(intygList);
+
+        int totalCountOfFilteredIntyg = intygDraftService.countFilterIntyg(filter);
+
+        QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
+        response.setTotalCount(totalCountOfFilteredIntyg);
+        return response;
     }
 }

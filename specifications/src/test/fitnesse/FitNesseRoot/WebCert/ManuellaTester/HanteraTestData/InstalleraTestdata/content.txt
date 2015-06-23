@@ -1,0 +1,103 @@
+!3 Vårdgivare Landstinget Västmanland
+Enhet '''Vårdcentrum i Väst''' med två mottagningar '''Dialys''' och '''Akuten'''
+
+|Vardgivare|
+|vardgivarid|enhetsid    |enhetsnamn        |enhetsmail                  |
+|vastmanland|centrum-vast|Vårdcentrum i Väst|centrum-vast@centrum-vast.se|
+|vastmanland|dialys      |Dialys            | dialys@centrum-vast.se     |
+|vastmanland|akuten      |Akuten            | akuten@centrum-vast.se     |
+
+Enhet '''Vårdcentrum i Öst''' med en mottagning '''Kir Mott'''
+
+|Vardgivare|
+|vardgivarid|enhetsid    |enhetsnamn        |enhetsmail                  |
+|vastmanland|centrum-ost |Vårdcentrum i Öst |centrum-ost@centrum-ost.se  |
+|vastmanland|kirmott     |Kir Mott          |kirmot@centrum-ost.se       |
+
+Enhet '''Vårdcentrum i Norr''' utan mottagningar
+
+|Vardgivare|
+|vardgivarid|enhetsid    |enhetsnamn        |enhetsmail                  |
+|vastmanland|centrum-norr|Vårdcentrum i Norr|centrum-norr@centrum-norr.se|
+
+!3 Medarbetare med uppdrag
+'''Markus Gran''' har uppdrag på '''Vårdcentrum i Väst, dialys'''
+
+| Hsa Medarbetare |
+| hsaId | name | medarbetaruppdrag |
+| TST5565594230-106J| Marcus Gran | dialys |
+
+!3 Medarbetare med uppdrag
+'''Eva Holgersson''' har uppdrag på '''Vårdcentrum i Väst'''
+
+| Hsa Medarbetare |
+| hsaId | name | medarbetaruppdrag |
+| eva | Eva Holgersson | centrum-vast |
+
+'''Adam Admin''' har uppdrag på '''Vårdcentrum i Väst'''
+
+| Hsa Medarbetare |
+| hsaId | name | medarbetaruppdrag |
+| adam | Adam Admin | centrum-vast |
+
+'''Adamo Admin''' har uppdrag på '''Vårdcentrum i Väst''', '''Vårdcentrum i Öst '''och '''Vårdcentrum i Norr'''
+
+| Hsa Medarbetare |
+| hsaId | name | medarbetaruppdrag |
+| adamo | Adamo Admin | centrum-vast,centrum-ost,centrum-norr |
+
+!3 Frågor:
+
+| Fraga Svar |
+|patientId | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning |
+|${person4.personnummer}|KOMPLETTERING_AV_LAKARINTYG | FK-1000 | FK | Vi behöver en komplettering | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Komplettering önskad av FK |
+|${person4.personnummer}|KOMPLETTERING_AV_LAKARINTYG | FK-1001 | FK | Vi behöver en komplettering | test-${person4.personnummer}-intyg-2 | eva | Eva Holgersson | dialys | 2013-01-02 | PENDING_INTERNAL_ACTION | true | | | Komplettering önskad av FK, vidarebefodrat av administratören |
+|${person4.personnummer}|KOMPLETTERING_AV_LAKARINTYG | FK-1002 | FK | Vi behöver en komplettering | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-01-01 | CLOSED | false | | | Gammal kompletteringsfråga som stängdes |
+|${person4.personnummer}|AVSTAMNINGSMOTE | | WC | Vården vill ha ett avstämningsmöte | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-02-02 | PENDING_EXTERNAL_ACTION | false | | | Vården initierar frågan och inväntar svar från FK |
+|${person4.personnummer}|AVSTAMNINGSMOTE | | WC | Vården vill ha ett avstämningsmöte | test-${person4.personnummer}-intyg-2 | eva | Eva Holgersson | dialys | 2013-02-03 | PENDING_EXTERNAL_ACTION | true | | | Vården initierar frågan och inväntar svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|AVSTAMNINGSMOTE | | WC | Vården vill ha ett avstämningsmöte | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-02-04 | ANSWERED | false | Vi skickar en kallelse. | 2013-02-10 | Vården initierar frågan och har fått svar från FK |
+|${person4.personnummer}|AVSTAMNINGSMOTE | | WC | Vården vill ha ett avstämningsmöte | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-02-05 | ANSWERED | true | Vi skickar en kallelse. | 2013-02-11 | Vården initierar frågan och har fått svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|AVSTAMNINGSMOTE | | WC | Vården vill ha ett avstämningsmöte | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-02-02 | CLOSED | false | Vi skickar en kallelse. | 2011-02-10 | Gammal fråga om avstämningsmöte som stängdes |
+|${person4.personnummer}|AVSTAMNINGSMOTE | FK-2000 | FK | FK vill ha ett avstämningsmöte | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-03-03 | PENDING_INTERNAL_ACTION | false | | | FK initierar frågan och inväntar svar från vården |
+|${person4.personnummer}|AVSTAMNINGSMOTE | FK-2001 | FK | FK vill ha ett avstämningsmöte | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-03-04 | PENDING_INTERNAL_ACTION | true | | | FK initierar frågan och inväntar svar från vården, vidarebefodrat av administratören |
+|${person4.personnummer}|AVSTAMNINGSMOTE | FK-2004 | FK | FK vill ha ett avstämningsmöte | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-03-05 | CLOSED | false | Vi skickar en kallelse. | 2011-03-12 | Gammal fråga om avstämningsmöte som besvarades av vården |
+|${person4.personnummer}|KONTAKT | | WC | Kan ni ta kontakt med vården? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-04-04 | PENDING_EXTERNAL_ACTION | false | | | Vården initierar frågan och inväntar svar från FK |
+|${person4.personnummer}|KONTAKT | | WC | Kan ni ta kontakt med vården? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-04-05 | PENDING_EXTERNAL_ACTION | true | | | Vården initierar frågan och inväntar svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|KONTAKT | | WC | Kan ni ta kontakt med vården? | test-${person4.personnummer}-intyg-2 | eva | Eva Holgersson | dialys | 2013-04-06 | ANSWERED | false | Javisst, vi ringer 555-12345. | 2013-04-14 | Vården initierar frågan och har fått svar från FK |
+|${person4.personnummer}|KONTAKT | | WC | Kan ni ta kontakt med vården? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-04-07 | ANSWERED | true | Javisst, vi ringer 555-12345. | 2013-04-14 | Vården initierar frågan och har fått svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|KONTAKT | | WC | Kan ni ta kontakt med vården? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-04-04 | CLOSED | false | Javisst, vi ringer 555-12345. | 2013-04-15 | Gammal fråga om kontakt som stängdes |
+|${person4.personnummer}|KONTAKT | FK-3000 | FK | Kan ni ta kontakt med FK? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-05-05 | PENDING_INTERNAL_ACTION | false | | | FK initierar frågan och inväntar svar från vården |
+|${person4.personnummer}|KONTAKT | FK-3001 | FK | Kan ni ta kontakt med FK? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-05-06 | PENDING_INTERNAL_ACTION | true | | | FK initierar frågan och inväntar svar från vården, vidarebefodrat av administratören |
+|${person4.personnummer}|KONTAKT | FK-3004 | FK | Kan ni ta kontakt med FK? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-05-05 | CLOSED | false | Javisst, vi ringer 555-12345. | 2011-05-20 | Gammal fråga om kontakt som besvarades av vården |
+|${person4.personnummer}|ARBETSTIDSFORLAGGNING | | WC | Är patienten Carl Hamilton? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-06-06 | PENDING_EXTERNAL_ACTION | false | | | Vården initierar frågan och inväntar svar från FK |
+|${person4.personnummer}|ARBETSTIDSFORLAGGNING | | WC | Är patienten Carl Hamilton? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-06-07 | PENDING_EXTERNAL_ACTION | true | | | Vården initierar frågan och inväntar svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|ARBETSTIDSFORLAGGNING | | WC | Är patienten Carl Hamilton? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-06-08 | ANSWERED | false | Kanske, vi vet bara att han jobba nattskift. | 2013-06-14 | Vården initierar frågan och har fått svar från FK |
+|${person4.personnummer}|ARBETSTIDSFORLAGGNING | | WC | Är patienten Carl Hamilton? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-06-09 | ANSWERED | true | Kanske, vi vet bara att han jobba nattskift. | 2013-06-14 | Vården initierar frågan och har fått svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|ARBETSTIDSFORLAGGNING | | WC | Är patienten Carl Hamilton? | test-${person4.personnummer}-intyg-2 | eva | Eva Holgersson | dialys | 2011-06-10 | CLOSED | false | Kanske, vi vet bara att han jobba nattskift. | 2013-06-15 | Gammal fråga som stängdes |
+|${person4.personnummer}|ARBETSTIDSFORLAGGNING | FK-4000 | FK | Kan patienten jobba på helger? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-07-07 | PENDING_INTERNAL_ACTION | false | | | FK initierar frågan och inväntar svar från vården |
+|${person4.personnummer}|ARBETSTIDSFORLAGGNING | FK-4001 | FK | Kan patienten jobba på helger? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-07-08 | PENDING_INTERNAL_ACTION | true | | | FK initierar frågan och inväntar svar från vården, vidarebefodrat av administratören |
+|${person4.personnummer}|ARBETSTIDSFORLAGGNING | FK-4004 | FK | Kan patienten jobba på helger? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-07-09 | CLOSED | false | Beror på uppdragsläget. | 2011-07-20 | Gammal fråga som besvarades av vården |
+|${person4.personnummer}|PAMINNELSE | | WC | Glöm inte fikat kl. 15.00 | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | dialys | 2013-08-08 | PENDING_EXTERNAL_ACTION | false | | | Vården initierar frågan och inväntar svar från FK |
+|${person4.personnummer}|PAMINNELSE | | WC | Glöm inte fikat kl. 15.00 | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-08-09 | PENDING_EXTERNAL_ACTION | true | | | Vården initierar frågan och inväntar svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|PAMINNELSE | | WC | Glöm inte fikat kl. 15.00 | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-08-10 | ANSWERED | false | Synd, nu missade vi det. | 2013-08-14 | Vården initierar frågan och har fått svar från FK |
+|${person4.personnummer}|PAMINNELSE | | WC | Glöm inte fikat kl. 15.00 | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-08-11 | ANSWERED | true | Synd, nu missade vi det. | 2013-08-14 | Vården initierar frågan och har fått svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|PAMINNELSE | | WC | Glöm inte fikat kl. 15.00 | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-08-12 | CLOSED | false | Synd, nu missade vi det. | 2013-08-15 | Gammal fråga som stängdes |
+|${person4.personnummer}|PAMINNELSE | FK-5000 | FK | Glöm inte fikat kl. 15.00 hos FK idag. | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-09-07 | PENDING_INTERNAL_ACTION | false | | | FK initierar frågan och inväntar svar från vården |
+|${person4.personnummer}|PAMINNELSE | FK-5001 | FK | Glöm inte fikat kl. 15.00 hos FK idag. | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-09-08 | PENDING_INTERNAL_ACTION | true | | | FK initierar frågan och inväntar svar från vården, vidarebefodrat av administratören |
+|${person4.personnummer}|PAMINNELSE | FK-5004 | FK | Glöm inte fikat kl. 15.00 hos FK idag. | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-09-09 | CLOSED | false | Hela avdelningen är med. | 2011-09-09 | Gammal fråga som besvarades av vården |
+|${person4.personnummer}|OVRIGT | | WC | Har ni patientens telefonnummer? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-10-03 | PENDING_EXTERNAL_ACTION | false | | | Vården initierar frågan och inväntar svar från FK |
+|${person4.personnummer}|OVRIGT | | WC | Har ni patientens telefonnummer? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-10-04 | PENDING_EXTERNAL_ACTION | true | | | Vården initierar frågan och inväntar svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|OVRIGT | | WC | Har ni patientens telefonnummer? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-10-05 | ANSWERED | false | Vi har bara faxnumret. | 2013-10-06 | Vården initierar frågan och har fått svar från FK |
+|${person4.personnummer}|OVRIGT | | WC | Har ni patientens telefonnummer? | test-${person4.personnummer}-intyg-2 | eva | Eva Holgersson | dialys | 2013-10-07 | ANSWERED | true | Vi har bara faxnumret. | 2013-10-08 | Vården initierar frågan och har fått svar från FK, vidarebefodrat av administratören |
+|${person4.personnummer}|OVRIGT | | WC | Har ni patientens telefonnummer? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-10-09 | CLOSED | false | Vi har bara faxnumret. | 2013-10-09 | Gammal fråga som stängdes |
+|${person4.personnummer}|OVRIGT | FK-6000 | FK | Hur allvarlig är Zlatans knäskada? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-10-07 | PENDING_INTERNAL_ACTION | false | | | FK initierar frågan och inväntar svar från vården |
+|${person4.personnummer}|OVRIGT | FK-6001 | FK | Hur allvarlig är Zlatans knäskada? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-10-08 | PENDING_INTERNAL_ACTION | true | | | FK initierar frågan och inväntar svar från vården, vidarebefodrat av administratören |
+|${person4.personnummer}|OVRIGT | FK-6004 | FK | Hur allvarlig är Zlatans knäskada? | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2011-11-09 | CLOSED | false | Det ordnar sig. | 2011-11-09 | Gammal fråga som besvarades av vården |
+|${person4.personnummer}|OVRIGT | FK-7000 | FK | Någonting helt annat | test-${person4.personnummer}-intyg-5 | TST5565594230-106J | Markus Gran | dialys | 2011-11-09 | PENDING_INTERNAL_ACTION | false | | | Övrigt |
+
+!3 Frågor med svarSenast datum.
+
+| Fraga Svar |
+|patientId | amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | beskrivning | sistaDatumForSvar |
+|${person4.personnummer}|KOMPLETTERING_AV_LAKARINTYG | FK-1000 | FK | Vi behöver verkligen en komplettering | test-${person4.personnummer}-intyg-1 | eva | Eva Holgersson | centrum-vast | 2013-01-15 | PENDING_INTERNAL_ACTION | false | | | Komplettering önskad av FK | 2013-01-25 |
+|${person4.personnummer}|OVRIGT | FK-7000 | FK | Någonting helt annat igen | test-${person4.personnummer}-intyg-5 | TST5565594230-106J | Markus Gran | dialys | 2011-11-09 | PENDING_INTERNAL_ACTION | false | | | Övrigt | 2014-11-09 |

@@ -15,46 +15,93 @@ class VisaIntyg {
     }
 
 
-    boolean intygLaddat(boolean expected = true) {
+    boolean intygLaddat() {
+        boolean result
         Browser.drive {
             waitFor {
                 at VisaPage
-                page.intygLaddat(expected)
             }
+            result = page.intygLaddat.isDisplayed()
         }
+        return result
     }
 
-    boolean skickaKnappVisas(boolean expected = true) {
+    boolean intygInteLaddat() {
+        boolean result
         Browser.drive {
             waitFor {
-                page.skickaKnapp.isDisplayed() == expected
+                at VisaPage
             }
+            result = page.intygLaddatNoWait.isDisplayed()
         }
-        true
+        return !result
     }
 
-    boolean skrivUtKnappVisas(boolean expected = true) {
+    boolean skickaKnappVisas() {
+        boolean result
         Browser.drive {
             waitFor {
-                page.skrivUtKnapp.isDisplayed() == expected
+                at VisaPage
             }
+            result = page.skickaKnapp.isDisplayed()
         }
-        true
+        return result
     }
 
-    boolean kopieraKnappVisas(boolean expected = true) {
+    boolean skrivUtKnappVisas() {
+        boolean result
         Browser.drive {
             waitFor {
-                page.kopieraKnapp.isDisplayed() == expected
+                at VisaPage
             }
+            result = page.skrivUtKnapp.isDisplayed()
+
         }
+        return result
     }
 
-    boolean makuleraKnappVisas(boolean expected = true) {
+    boolean kopieraKnappVisas() {
+        boolean result
         Browser.drive {
             waitFor {
-                page.makuleraKnapp.isDisplayed() == expected
+                at VisaPage
             }
+            result = page.kopieraKnapp.isDisplayed()
+
         }
+        return result
     }
+
+    boolean kopieraKnappEjVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at VisaPage
+            }
+            result = !page.kopieraKnappNoWait?.present || !page.kopieraKnappNoWait?.isDisplayed()
+
+        }
+        return result
+    }
+
+    boolean makuleraKnappVisas() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                at VisaPage
+            }
+            result = page.makuleraKnapp.isDisplayed()
+
+        }
+        return result
+    }
+
+    boolean sekretessmarkeringVisas() {
+        def result
+        Browser.drive {
+            result = page.sekretessmarkering.isDisplayed()
+        }
+        result
+    }
+
 }

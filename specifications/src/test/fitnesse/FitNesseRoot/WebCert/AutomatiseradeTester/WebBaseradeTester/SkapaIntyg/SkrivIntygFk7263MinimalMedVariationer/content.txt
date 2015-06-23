@@ -1,0 +1,85 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+!3 Skapa ett nytt intygsutkast
+
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Populera intyget
+
+Populera intyget med så lite information som möjligt för att det ska bli komplett.
+
+| Populera Fk7263 |
+| undersokning | undersokningDatum | diagnos1 | diagnos1Text | funktionsnedsattning | aktivitetsbegransning | nuvarandearbete | arbetsuppgifter | tjanstgoringstid | nedsattMed100 |
+| true | 2014-09-17 | !-B080B-! | Falska kokoppor | Kliar konstant | Kan inte fokusera på arbetet | true | Polis | 40 | true  |
+
+!3 Spara
+
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
+
+| script | !-SkrivIntyg-! |
+| intyg sparat visas |
+
+!3 Testa variationer
+
+!4 En annan sjukskrivningsperiod ger rätt antal dagar
+
+| Populera Fk7263 |
+| nedsattMed100start | nedsattMed100slut |
+| 0 | +40 |
+
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
+
+| script | Browser |
+| ladda om |
+
+| script | !-SkrivIntyg-! |
+| check | sjukskrivningsperiod | 41 |
+
+!4 En 25% sjukskrivning ger rätt antal timmar
+
+| Populera Fk7263 |
+| nedsattMed25 | nedsattMed50 | nedsattMed75 | nedsattMed100 |
+| true | true | true | false |
+
+| script | !-SkrivIntyg-! |
+| check | arbetstid 25 | 30 |
+| check | arbetstid 50 | 20 |
+| check | arbetstid 75 | 10 |
+
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
+
+| script | Browser |
+| ladda om |
+
+| script | !-SkrivIntyg-! |
+| check | arbetstid 25 | 30 |
+| check | arbetstid 50 | 20 |
+| check | arbetstid 75 | 10 |
+
+!4 verifiera webcert-1721
+| Populera Fk7263 |
+| nedsattMed25 | nedsattMed50 | nedsattMed75 | nedsattMed100 |
+| true | true | true | true |
+
+| script | !-SkrivIntyg-! |
+| check | sjukskrivningsperiod | 28 |
+
+!4 Spara utkastet för att inte få varningsrutan om att utkastet ej är sparat vid stängning av sidan
+
+| script | !-HanteraUtkast-! |
+| ensure | har sparat |
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+

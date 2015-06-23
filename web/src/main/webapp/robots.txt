@@ -1,0 +1,14 @@
+# robots.txt webcert
+
+User-agent: *
+Disallow: /web              # indexera inte url bakom inloggning
+Disallow: /app
+Disallow: /api
+Disallow: /moduleapi
+Disallow: /webcert          # indexera inte cosmic uthopp /webcert/web/user/certificate/<intygId>/questions
+Disallow: /visa             # indexera inte djupintegrationslänkar /visa/intyg/<intygId>/alternatePatientSSn=<patientId>&responsibleHospName=<doctorName>
+Disallow: /error.jsp        # indexera inte ointressanta filer --
+Disallow: /healthcheck.jsp
+Disallow: /siths.jsp
+Disallow: /version.jsp
+Disallow: /welcome.jsp

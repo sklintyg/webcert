@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<properties>
+	<Edit>true</Edit>
+	<Files>true</Files>
+	<Properties>true</Properties>
+	<RecentChanges>true</RecentChanges>
+	<Refactor>true</Refactor>
+	<Search>true</Search>
+	<Suite/>
+	<SymbolicLinks>
+		<FirefoxWebTests>.FirefoxSuite.WebCert.AutomatiseradeTester.WebBaseradeTester</FirefoxWebTests>
+		<ChromeWebTests>.ChromeSuite.WebCert.AutomatiseradeTester.WebBaseradeTester</ChromeWebTests>
+		<SafariWebTests>.SafariSuite.WebCert.AutomatiseradeTester.WebBaseradeTester</SafariWebTests>
+	</SymbolicLinks>
+	<Versions>true</Versions>
+	<WhereUsed>true</WhereUsed>
+</properties>

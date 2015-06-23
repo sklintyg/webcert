@@ -112,7 +112,7 @@ public class CopyUtkastBuilderImpl implements CopyUtkastBuilder {
      * @see se.inera.webcert.service.utkast.CopyUtkastBuilder#populateCopyUtkastFromOrignalUtkast(se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.webcert.pu.model.Person)
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(CreateNewDraftCopyRequest copyRequest, Person patientDetails) throws ModuleNotFoundException,
             ModuleException {
 

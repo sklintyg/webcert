@@ -1,0 +1,15 @@
+{
+    "sekretessmarkering": "J",
+    "personpost": {
+        "personId": "195401232540",
+        "namn": {
+            "fornamn": "Maj",
+            "efternamn": "Pärsson"
+        },
+        "folkbokforingsadress": {
+            "utdelningsadress2": "KUNGSGATAN 5",
+            "postNr": 41234,
+            "postort": "GÖTEBORG"
+        }
+    }
+}

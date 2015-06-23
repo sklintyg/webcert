@@ -1,0 +1,8 @@
+---
+# This playbook provisions ActiveMQ resources for WebCert 
+
+- hosts: activemq
+  sudo: yes
+
+  roles:
+    - webcert-queues

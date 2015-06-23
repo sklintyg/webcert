@@ -1,8 +1,0 @@
-!3 Frågor:
-
-| Fraga Svar |
-| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | patientId | beskrivning | meddelandeRubrik | fkKontakt |
-| OVRIGT| FK-E2E-1 | FK | Beskriv varför ni har angivit motstridiga diagnoser och texter. | e2e-intyg-1 | TST5565594230-106J | Markus Gran | IFV1239877878-103F | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | 19121212-0000 |Övrig fråga från FK | | |
-| OVRIGT| FK-E2E-2 | FK | Det skall finnas en rubrik till denna  | intyg-1 | TST5565594230-106J | Markus Gran | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | 19121212-0000 |Övrig fråga från FK | En meddelanderubirk | |
-| OVRIGT| FK-E2E-3 | FK | Det skall finnas en rubrik till denna oxå | intyg-1 | TST5565594230-106J | Markus Gran | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | 19121212-0000 |Övrig fråga från FK | En meddelanderubrik Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut   | |
-| OVRIGT| FK-E2E-4 | FK | Det skall finnas fkKontakt person | intyg-1 | TST5565594230-106J | Markus Gran | centrum-vast | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | 19121212-0000 |Övrig fråga från FK | Lorem ipsum dolor sit amet, consectetur adipisicing | Kontakta Pehr|

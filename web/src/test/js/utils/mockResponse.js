@@ -14,14 +14,14 @@ angular.module('webcertTest').value('mockResponse', {
             'patientIdRoot': '1.2.752.129.2.1.3.1', 'patientIdExtension': '19121212-1212'}
     },
     utkastDefaultFilterFormData: {
-        forwarded: 'default',
+        notified: 'default',
         complete: 'default',
         lastFilterQuery: {
             enhetsId: 'enhet1',
                 startFrom: 0,
                 pageSize: 10,
                 filter: {
-                forwarded: undefined, // 3-state, undefined, true, false
+                notified: undefined, // 3-state, undefined, true, false
                     complete: undefined, // 3-state, undefined, true, false
                     savedFrom: undefined,
                     savedTo: undefined,

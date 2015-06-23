@@ -1,0 +1,17 @@
+{
+    "sekretessmarkering": "N",
+    "personpost": {
+        "personId": "195401875769",
+        "namn": {
+            "fornamn": "Sam",
+            "efternamn": "Samordningsson"
+        },
+        "folkbokforingsadress": {
+            "careOf": "Segemyhr",
+            "utdelningsadress1": "Segergatan 1",
+            "utdelningsadress2": "PL 1234",
+            "postNr": 12345,
+            "postort": "Storholm"
+        }
+    }
+}

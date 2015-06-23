@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -19,9 +17,9 @@ import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
+import se.inera.webcert.client.converter.RevokeRequestConverter;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
@@ -36,15 +34,14 @@ import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.util.ReflectionUtils;
 
-import javax.xml.ws.WebServiceException;
+import javax.xml.bind.JAXBException;
 
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -58,6 +55,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     private static final String INTYG_ID = "123";
     private static final String PATIENT_ID = "19121212-1212";
+    private static final java.lang.String SAMPLE_XML = "<xml></xml>";
 
     @Mock
     private FragaSvarRepository fragaSvarRepository;
@@ -65,17 +63,25 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     @Mock
     private FragaSvarService fragaSvarService;
 
+    @Mock
+    private RevokeRequestConverter revokeRequestConverter;
+
     private Utkast signedUtkast;
+    private Utkast revokedUtkast;
 
     @Before
-    public void setup() {
+    public void setup() throws JAXBException {
         HoSPerson person = buildHosPerson();
         VardpersonReferens vardperson = buildVardpersonReferens(person);
         WebCertUser user = buildWebCertUser(person);
 
-        signedUtkast = buildIntyg(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+        signedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+        revokedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, json, vardperson);
+        revokedUtkast.setAterkalladDatum(LocalDateTime.now());
 
         when(webCertUserService.getWebCertUser()).thenReturn(user);
+
+        when(revokeRequestConverter.toXml(any(RevokeMedicalCertificateRequestType.class))).thenReturn(SAMPLE_XML);
 
         ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
@@ -112,6 +118,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(fragaSvarService).closeAllNonClosedQuestions(INTYG_ID);
         verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
         verify(logService).logRevokeIntyg(any(LogRequest.class));
+        verify(intygRepository).save(any(Utkast.class));
 
         assertEquals(IntygServiceResult.OK, res);
     }
@@ -149,36 +156,63 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(notificationService, times(1)).sendNotificationForAnswerHandled(fragaSvar2);
         verify(notificationService, times(2)).sendNotificationForQuestionHandled(any(FragaSvar.class));
 
+        // Verify that revoke date was added to Utkast
+        verify(intygRepository).save(any(Utkast.class));
+
         assertEquals(IntygServiceResult.OK, res);
     }
 
+
+    // TODO Move test of resend or not resend behaviour to RevokeCertificateProcessor
+//    @Test(expected = WebCertServiceException.class)
+//    public void testRevokeIntygWithApplicationErrorOnRevoke() throws Exception {
+//
+//        ResultOfCall result = new ResultOfCall();
+//        result.setResultCode(ResultCodeEnum.ERROR);
+//        result.setErrorId(ErrorIdEnum.APPLICATION_ERROR);
+//        result.setErrorText("An application error occured");
+//
+//        RevokeMedicalCertificateResponseType response = new RevokeMedicalCertificateResponseType();
+//        response.setResult(result);
+//
+//        // Setup mock behaviour
+//        when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenReturn(
+//                response);
+//
+//        intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
+//
+//        verify(intygRepository, times(0)).save(any(Utkast.class));
+//    }
+
+
+    // TODO Move test of resend or not resend behaviour to RevokeCertificateProcessor
+//    @Test(expected = WebServiceException.class)
+//    public void testRevokeIntygWithIOExceptionOnRevoke() throws Exception {
+//        // Throw exception when revoke is invoked
+//        when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenThrow(
+//                new WebServiceException("WS exception", new ConnectException("IO exception")));
+//
+//        // Do the call
+//        try {
+//            intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
+//        } catch (Exception e) {
+//            verify(intygRepository, times(0)).save(any(Utkast.class));
+//            throw e;
+//        }
+//    }
+
     @Test(expected = WebCertServiceException.class)
-    public void testRevokeIntygWithApplicationErrorOnRevoke() throws Exception {
-
-        ResultOfCall result = new ResultOfCall();
-        result.setResultCode(ResultCodeEnum.ERROR);
-        result.setErrorId(ErrorIdEnum.APPLICATION_ERROR);
-        result.setErrorText("An application error occured");
-
-        RevokeMedicalCertificateResponseType response = new RevokeMedicalCertificateResponseType();
-        response.setResult(result);
-
-        // Setup mock behaviour
-        when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenReturn(
-                response);
-
-        intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
-
-    }
-
-    @Test(expected = WebServiceException.class)
-    public void testRevokeIntygWithIOExceptionOnRevoke() throws Exception {
-        // Throw exception when revoke is invoked
-        when(revokeService.revokeMedicalCertificate((any(AttributedURIType.class)), any(RevokeMedicalCertificateRequestType.class))).thenThrow(
-                new WebServiceException("WS exception", new ConnectException("IO exception")));
-
+    public void testRevokeIntygThatHasAlreadyBeenRevokedFails() throws IntygModuleFacadeException {
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(revokedUtkast);
+        when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(IntygModuleFacadeException.class);
         // Do the call
-        intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
+        try {
+            intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG);
+        } catch (Exception e) {
+            verifyZeroInteractions(revokeService);
+            verify(intygRepository, times(0)).save(any(Utkast.class));
+            throw e;
+        }
     }
 
     private HoSPerson buildHosPerson() {
@@ -188,7 +222,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         return person;
     }
 
-    private Utkast buildIntyg(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast buildUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
 
         Utkast intyg = new Utkast();
         intyg.setIntygsId(intygId);

@@ -7,9 +7,9 @@ class SokSkrivaIntygPage extends AbstractPage {
     static at = { doneLoading() && $("#skapa-valj-patient").isDisplayed() }
 
     static content = {
-        personnummer { $("#pnr") }
-        personnummerFortsattKnapp { $("#skapapersonnummerfortsatt") }
-        puFelmeddelande { $("#puerror") }
+        personnummer(wait: true) { displayed($("#pnr")) }
+        personnummerFortsattKnapp(wait: true) { displayed($("#skapapersonnummerfortsatt")) }
+        puFelmeddelande(wait: true) { displayed($("#puerror")) }
 
         logoutLink { $("#logoutLink") }
         valjIntygTyp { $("#valj-intyg-typ")}

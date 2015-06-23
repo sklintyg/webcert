@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -20,30 +20,27 @@
 
     <!-- Common -->
     <common.version>0-SNAPSHOT</common.version>
-    <common.version.range>(,2.2.0]</common.version.range>
+    <common.version.range>(,2.3.0]</common.version.range>
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
-    <intygstyper.version.range>(,2.2.0]</intygstyper.version.range>
+    <intygstyper.version.range>(,2.3.0]</intygstyper.version.range>
 
     <!-- Schemas -->
     <rivta-clinicalprocess.version>1.0.RC3.0</rivta-clinicalprocess.version>
     <rivta-insuranceprocess.version>3.1.0.0</rivta-insuranceprocess.version>
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
+    <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
 
-    <intyg-clinicalprocess.version>0-SNAPSHOT</intyg-clinicalprocess.version>
-    <intyg-clinicalprocess.version.range>(,1.0.0]</intyg-clinicalprocess.version.range>
-
-    <intyg-insuranceprocess.version>0-SNAPSHOT</intyg-insuranceprocess.version>
-    <intyg-insuranceprocess.version.range>(,1.0.0]</intyg-insuranceprocess.version.range>
-
-    <intyg-transportstyrelsen.version>0-SNAPSHOT</intyg-transportstyrelsen.version>
-    <intyg-transportstyrelsen.version.range>(,1.0.0]</intyg-transportstyrelsen.version.range>
+    <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
+    <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
+    <intyg-transportstyrelsen.version>1.0.0</intyg-transportstyrelsen.version>
 
   </properties>
 
   <modules>
+    <module>common</module>
     <module>persistence</module>
     <module>log-messages</module>
     <module>log-sender</module>
@@ -133,6 +130,16 @@
         <artifactId>notification-sender</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>certificate-sender</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>webcert-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- Common -->
       <dependency>
@@ -181,6 +188,13 @@
         <groupId>se.inera.intyg.intygstyper</groupId>
         <artifactId>ts-diabetes</artifactId>
         <version>${intygstyper.version}</version>
+      </dependency>
+
+      <!-- HSA Schemas -->
+      <dependency>
+        <groupId>se.rivta.tools</groupId>
+        <artifactId>infrastructure-directory-employee-schemas</artifactId>
+        <version>${rivta-hsa-employee.version}</version>
       </dependency>
 
       <!-- RIVTA Schemas -->
@@ -410,6 +424,13 @@
         </exclusions>
       </dependency>
 
+      <!-- ehcache -->
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>${ehcache.version}</version>
+      </dependency>
+
       <!-- Test dependencies -->
       <dependency>
         <groupId>junit</groupId>
@@ -466,18 +487,6 @@
             <property>
               <name>intygstyper.version</name>
               <version>${intygstyper.version.range}</version>
-            </property>
-            <property>
-              <name>intyg-clinicalprocess.version</name>
-              <version>${intyg-clinicalprocess.version.range}</version>
-            </property>
-            <property>
-              <name>intyg-insuranceprocess.version</name>
-              <version>${intyg-insuranceprocess.version.range}</version>
-            </property>
-            <property>
-              <name>intyg-transportstyrelsen.version</name>
-              <version>${intyg-transportstyrelsen.version.range}</version>
             </property>
           </properties>
         </configuration>

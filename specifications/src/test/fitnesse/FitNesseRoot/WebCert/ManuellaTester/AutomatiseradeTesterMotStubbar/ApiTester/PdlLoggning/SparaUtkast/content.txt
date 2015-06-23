@@ -1,0 +1,29 @@
+!3 Lägg till utkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | hsaId | enhetId | komplett |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | IFV1239877878-104N | IFV1239877878-1045 | nej |
+
+!3 Rensa utestående PDL-loggning-poster
+
+| script | logg meddelande |
+| rensa logg meddelanden |
+| check | antal logg meddelanden | 0 |
+
+!3 Spara utkastet
+
+| patientPersonnummer | hsaId | enhetId             | intygId    | intygTyp | komplett | utkastSparat? |
+| ${person1.personnummer} | IFV1239877878-104N | IFV1239877878-1045 | webcert-fitnesse-signera-1 | fk7263    | nej | true | 
+
+!3 Verifiera att en PDL-loggning gjorts
+
+| script | logg meddelande |
+| check | antal logg meddelanden | 1 |
+| hamta logg meddelande |
+| check | aktivitet | UPDATE |
+
+!3 Radera utkastet
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-signera-1 |

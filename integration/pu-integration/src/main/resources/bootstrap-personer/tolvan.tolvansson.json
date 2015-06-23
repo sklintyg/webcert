@@ -1,14 +1,17 @@
 {
-    "personId": "191212121212",
-    "namn": {
-        "fornamn": "Tolvan",
-        "efternamn": "Tolvansson"
-    },
-    "folkbokforingsadress": {
-        "careOf": "Svensson",
-        "utdelningsadress1": "Storgatan 1",
-        "utdelningsadress2": "PL 1234",
-        "postNr": 12345,
-        "postort": "Småmåla"
+    "sekretessmarkering": "N",
+    "personpost": {
+        "personId": "191212121212",
+        "namn": {
+            "fornamn": "Tolvan",
+            "efternamn": "Tolvansson"
+        },
+        "folkbokforingsadress": {
+            "careOf": "Svensson",
+            "utdelningsadress1": "Storgatan 1",
+            "utdelningsadress2": "PL 1234",
+            "postNr": 12345,
+            "postort": "Småmåla"
+        }
     }
 }

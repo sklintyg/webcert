@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import se.inera.webcert.intygstjanststub.mode.StubModeAware;
+import se.riv.clinicalprocess.healthcond.certificate.v1.Utlatande;
+import se.riv.clinicalprocess.healthcond.certificate.v1.UtlatandeStatus;
 
 /**
  * @author marced
@@ -24,7 +27,11 @@ public class IntygStore {
     private Map<String, GetCertificateForCareResponseType> intyg = new ConcurrentHashMap<>();
 
     public void addIntyg(GetCertificateForCareResponseType request) {
-        LOG.debug("IntygStore: added intyg " + request.getMeta().getCertificateId() + " to store.");
+        LOG.debug("IntygStore: adding intyg " + request.getMeta().getCertificateId() + " to store.");
+        if (intyg.containsKey(request.getMeta().getCertificateId() )) {
+            LOG.debug("IntygStore: Not adding "  + request.getMeta().getCertificateId() + " to store. Is already present.");
+            return;
+        }
         intyg.put(request.getMeta().getCertificateId(), request);
     }
 
@@ -50,5 +57,30 @@ public class IntygStore {
                 return input.getMeta();
             }
         });
+    }
+
+    public GetCertificateForCareResponseType getIntygForCertificateId(String certificateId) {
+        return intyg.get(certificateId);
+    }
+
+    public void updateUtlatande(Utlatande utlatande) {
+        GetCertificateForCareResponseType getCertificateForCareResponseType = intyg.get(utlatande.getUtlatandeId().getExtension());
+        if (getCertificateForCareResponseType != null) {
+            getCertificateForCareResponseType.setCertificate(utlatande);
+        }
+    }
+
+    public void addStatus(String extension, UtlatandeStatus status) {
+
+        GetCertificateForCareResponseType getCertificateForCareResponseType = intyg.get(extension);
+        if (getCertificateForCareResponseType != null) {
+            getCertificateForCareResponseType.getMeta().getStatus().add(status);
+        } else {
+
+        }
+    }
+
+    public void clear() {
+        intyg.clear();
     }
 }

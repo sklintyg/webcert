@@ -1,0 +1,27 @@
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
+!3 Skapa ett nytt intygsutkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+
+!3 Visa utkastet via integrationslänken
+
+| script | !-IntegrationMedJournalsystem-! |
+| visa utkast via integration | webcert-fitnesse-signera-1 |
+| verifiera tillbakaknapp borta |
+
+!3 Ta bort utkastet
+
+| script | !-HanteraUtkast-! |
+| radera utkast |
+
+!3 Verifiera att man fick ett felmeddelande istället för att man blev skickad till ej signerade intyg
+
+| script | !-IntegrationMedJournalsystem-! |
+| integration borttaget meddelande visas |
+

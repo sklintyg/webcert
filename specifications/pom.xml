@@ -16,8 +16,6 @@
   <name>Webcert (FitNesse)</name>
 
   <properties>
-    <groovy.httpBuilder.version>0.7.1</groovy.httpBuilder.version>
-
     <geb.env>firefox</geb.env>
 
     <!-- URLs to services -->
@@ -29,7 +27,7 @@
     <fitnesse.port>9126</fitnesse.port>
     <fitnesse.working>${project.basedir}/src/test/fitnesse</fitnesse.working>
     <fitnesse.root>FitNesseRoot</fitnesse.root>
-    <fitnesse.project.root>IneraWebcert.AllTests.WebTests</fitnesse.project.root>
+    <fitnesse.project.root>WebCert.AutomatiseradeTester</fitnesse.project.root>
     <fitnesse.suite>${fitnesse.project.root}</fitnesse.suite>
 
     <!-- This example has no unit tests, just integration tests -->
@@ -121,6 +119,18 @@
       <artifactId>selenium-htmlunit-driver</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    
+      <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>1.4.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -173,6 +183,7 @@
               <excludes>
                 <exclude>${fitnesse.root}/files/validering/**</exclude>
                 <exclude>${fitnesse.root}/files/.gitignore</exclude>
+                <exclude>${fitnesse.root}/files/*.properties</exclude>
               </excludes>
             </fileset>
           </filesets>
@@ -213,6 +224,33 @@
         <webcert.baseUrl>https://webcert.inera.nordicmedtest.se:21443/</webcert.baseUrl>
         <logsender.baseUrl>https://webcert.inera.nordicmedtest.se:21443/log-sender/</logsender.baseUrl>
         <certificate.baseUrl>https://intygstjanst.inera.nordicmedtest.se:23443/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
+      <id>ip20</id>
+      <properties>
+        <webcert.web.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/</webcert.web.baseUrl>
+        <webcert.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/</webcert.baseUrl>
+        <logsender.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
+      <id>ip30</id>
+      <properties>
+        <webcert.web.baseUrl>https://webcert.ip30.nordicmedtest.sjunet.org/</webcert.web.baseUrl>
+        <webcert.baseUrl>https://webcert.ip30.nordicmedtest.sjunet.org/</webcert.baseUrl>
+        <logsender.baseUrl>https://webcert.ip30.nordicmedtest.sjunet.org/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://intyg.ip30.nordicmedtest.sjunet.org/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
+      <id>ip40</id>
+      <properties>
+        <webcert.web.baseUrl>https://webcert.ip40.nordicmedtest.sjunet.org/</webcert.web.baseUrl>
+        <webcert.baseUrl>https://webcert.ip40.nordicmedtest.sjunet.org/</webcert.baseUrl>
+        <logsender.baseUrl>https://webcert.ip40.nordicmedtest.sjunet.org/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate/</certificate.baseUrl>
       </properties>
     </profile>
     <profile>

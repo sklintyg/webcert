@@ -1,12 +1,5 @@
 package se.inera.webcert.spec.notification_sender
 
-import static groovyx.net.http.ContentType.JSON
-import static groovyx.net.http.ContentType.TEXT
-import static groovyx.net.http.ContentType.URLENC
-import static se.inera.webcert.spec.util.WebcertRestUtils.*
-
-import org.apache.commons.io.IOUtils
-
 import se.inera.webcert.spec.util.WebcertRestUtils
 
 class SkapaUtkastMedFakeInloggning {
@@ -24,16 +17,21 @@ class SkapaUtkastMedFakeInloggning {
         response = WebcertRestUtils.createNewUtkast(intygTyp, json())
     }
 
-    boolean utkastCreated() {
+    public boolean utkastCreated() {
         return response.success
+    }
+
+    public String utkastId() {
+        response.data.intygsId
+    }
+
+    public long version() {
+        response.data.version
     }
 
     private json() {
         """{ "intygType" : "fk7263", "patientPersonnummer" : "$patientPersonnummer", "patientFornamn" : "$patientFornamn", "patientEfternamn" : "$patientEfternamn", "patientPostadress" : "adres", "patientPostnummer" : "12345", "patientPostort" : "ort" }"""
     }
 
-    // Return a string representation of the response payload, more specifically: utkastId
-    String utkastId() {
-        IOUtils.toString(response.data)
-    }
+
 }

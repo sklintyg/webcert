@@ -22,6 +22,11 @@
       <artifactId>common-schemas</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>se.inera.intyg.webcert</groupId>
+      <artifactId>webcert-common</artifactId>
+    </dependency>
+
     <!-- Schemas -->
     <dependency>
       <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>

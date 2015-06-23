@@ -92,8 +92,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @param json
      * @return HttpResponseDecorator
      */
-    public static HttpResponseDecorator saveUtkast(String intygsTyp, String utkastId, String json) {
-        def response = webcert.put(path : "moduleapi/utkast/${intygsTyp}/${utkastId}", body : json, requestContentType : JSON)
+    public static HttpResponseDecorator saveUtkast(String intygsTyp, String utkastId, long version, String json) {
+        def response = webcert.put(path : "moduleapi/utkast/${intygsTyp}/${utkastId}/${version}", body : json, requestContentType : JSON)
         response
     }
 
@@ -103,8 +103,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @param intygsId
      * @return HttpResponseDecorator
      */
-    public static HttpResponseDecorator signUtkast(String intygsTyp, String intygsId) {
-        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/signeraserver", requestContentType : JSON)
+    public static HttpResponseDecorator signUtkast(String intygsTyp, String intygsId, long version) {
+        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType : JSON)
         response
     }
 
@@ -184,8 +184,8 @@ public class WebcertRestUtils extends RestClientFixture {
      * @param utkastId
      * @return HttpResponseDecorator
      */
-    public static HttpResponseDecorator deleteUtkast(String intygsTyp, String utkastId) {
-        def restPath ="/moduleapi/utkast/${intygsTyp}/${utkastId}"
+    public static HttpResponseDecorator deleteUtkast(String intygsTyp, String utkastId, long version) {
+        def restPath ="/moduleapi/utkast/${intygsTyp}/${utkastId}/${version}/"
         def response = webcert.delete(path : restPath)
         response
     }
@@ -219,5 +219,61 @@ public class WebcertRestUtils extends RestClientFixture {
         def response = webcert.get(path : restPath, requestContentType : JSON, query: ["complete":"false"],
                 headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
         return response.data.totalCount;
+    }
+
+    /**
+     * Instructs the Stub for Intygstjänsten (if active) to go into either ONLINE (normal operation) or OFFLINE (will throw
+     * WebServiceException for annotated methods) mode.
+     *
+     * @param mode ONLINE or OFFLINE
+     * @return true if mode change successful.
+     */
+    public static boolean setIntygTjanstStubInMode(String mode) {
+        def restPath = "/services/intygstjanst-stub/mode/" + mode
+        def resp = webcert.put(path: restPath)
+        return resp.success
+    }
+
+    /**
+     * Instructs the Stub for Intygstjänsten (if active) to introduce an artifical latency for methods annotated
+     * as supporting that capability.
+     *
+     * @param millis 0 to Long.MAX_VALUE  milliseconds
+     *
+     * @return true if latency change successful
+     */
+    public static boolean setIntygTjanstStubLatency(Long millis) {
+        def restPath = "/services/intygstjanst-stub/latency/" + millis
+        def resp = webcert.put(path: restPath)
+        return resp.success
+    }
+
+    public static boolean resetIntygtjanstStub() {
+        def restPath = "/services/intygstjanst-stub/intyg"
+        def resp = webcert.delete(path: restPath)
+        return resp.success
+    }
+
+    public static def getIntygFromStub(String intygId) {
+        def restPath = "/services/intygstjanst-stub/intyg/" + intygId
+        def resp = webcert.get(path: restPath)
+        return resp.success
+    }
+
+    public static boolean getAllIntygFromStub() {
+        def restPath = "/services/intygstjanst-stub/intyg"
+        def resp = webcert.get(path: restPath)
+        return resp.success
+    }
+    /**
+     * Sign a complete utkast as the current Browser sesssion
+     * @param intygsTyp
+     * @param intygsId
+     * @return HttpResponseDecorator
+     */
+    public static HttpResponseDecorator signUtkastUsingBrowserSesssion(String intygsTyp, String intygsId, Long version) {
+        def response = webcert.post(path: "moduleapi/utkast/${intygsTyp}/${intygsId}/${version}/signeraserver", requestContentType : JSON,
+                headers: ["Cookie":"JSESSIONID="+Browser.getJSession()])
+        response
     }
 }

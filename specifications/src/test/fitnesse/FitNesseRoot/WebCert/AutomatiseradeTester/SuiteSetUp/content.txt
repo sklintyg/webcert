@@ -1,0 +1,22 @@
+| Import|
+| se.inera.webcert.pages |
+| se.inera.webcert.pages.fk7263 |
+| se.inera.webcert.spec |
+| se.inera.webcert.spec.fk7263 |
+| se.inera.webcert.spec.ts_bas |
+| se.inera.webcert.spec.ts_diabetes |
+| se.inera.webcert.spec.util |
+| se.inera.certificate.spec |
+| se.inera.certificate.spec.util |
+| se.inera.certificate.spec.util.jms |
+| se.inera.webcert.spec.certificate_sender |
+| se.inera.webcert.spec.notification_sender |
+
+!| Config |
+| property | value |
+| logsender.baseUrl | ${logsender.baseUrl} |
+| geb.build.baseUrl | ${webcert.web.baseUrl} |
+| webcert.baseUrl | ${webcert.baseUrl} |
+| certificate.baseUrl | ${certificate.baseUrl} |
+| fitnesse.working | ${fitnesse.working} |
+

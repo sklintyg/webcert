@@ -1,0 +1,24 @@
+!2 Normalflöde
+
+|Journalsystem skapar utkast|
+|personId|fornamn|efternamn|hsaId|enhetsId|typAvUtlatande|utkastId?|resultat?|
+|${person1.personnummer}|Test|Testorson|IFV1239877878-104B|IFV1239877878-1042|fk7263|$utkastId=|OK|
+
+!3 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |
+
+!2 Undantagsflöden
+
+!3 Utfärdare saknar medarbetaruppdrag på enheten
+
+|Journalsystem skapar utkast|
+|personId|fornamn|efternamn|hsaId|enhetsId|resultat?|
+|${person1.personnummer}|Test|Testorson|IFV1239877878-104B|IFV1239877878-104D|=~/VALIDATION_ERROR/|
+
+!3 Okänd intygstyp
+
+|Journalsystem skapar utkast|
+|personId|fornamn|efternamn|hsaId|enhetsId|typAvUtlatande|resultat?|
+|${person1.personnummer}|Test|Testorson|IFV1239877878-104B|IFV1239877878-1042|okänd|=~/VALIDATION_ERROR/|

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:amq="http://activemq.apache.org/schema/core"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd">
+
+  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://localhost:61618"/>
+    <property name="redeliveryPolicy">
+      <bean class="org.apache.activemq.RedeliveryPolicy">
+        <property name="maximumRedeliveries" value="${errorhandling.maxRedeliveries}"/>
+        <property name="maximumRedeliveryDelay" value="${errorhandling.maxRedeliveryDelay}"/>
+        <property name="initialRedeliveryDelay" value="${errorhandling.redeliveryDelay}"/>
+        <property name="useExponentialBackOff" value="true"/>
+        <property name="backOffMultiplier" value="2"/>
+      </bean>
+    </property>
+    <property name="nonBlockingRedelivery" value="true"/>
+  </bean>
+
+  <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+    <constructor-arg ref="jmsConnectionFactory" />
+  </bean>
+
+  <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="cachingConnectionFactory"/>
+  </bean>
+
+  <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
+    <property name="connectionFactory" ref="cachingConnectionFactory"/>
+  </bean>
+
+  <bean id="jms" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="connectionFactory" ref="cachingConnectionFactory"/>
+    <property name="transactionManager" ref="jmsTransactionManager"/>
+    <property name="transacted" value="true"/>
+    <property name="cacheLevelName" value="CACHE_CONSUMER"/>
+  </bean>
+
+  <bean id="PROPAGATION_REQUIRED" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
+    <property name="transactionManager" ref="jmsTransactionManager"/>
+    <property name="propagationBehaviorName" value="PROPAGATION_REQUIRED"/>
+  </bean>
+
+  <broker persistent="false" xmlns="http://activemq.apache.org/schema/core">
+    <destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry queue="certificateQueue">
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy queuePrefix="DLQ." useQueueForQueueMessages="true"/>
+            </deadLetterStrategy>
+          </policyEntry>
+          <policyEntry queue="sendNotificationToWS">
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy queuePrefix="DLQ." useQueueForQueueMessages="true"/>
+            </deadLetterStrategy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+    </destinationPolicy>
+    <transportConnectors>
+      <transportConnector uri="tcp://localhost:61618"/>
+    </transportConnectors>
+  </broker>
+
+  <amq:queue id="certificateQueue" physicalName="certificateQueue"/>
+
+  <amq:queue id="dlq" physicalName="DLQ.certificateQueue"/>
+
+  <amq:queue id="notificationQueue" physicalName="notificationQueue"/>
+
+</beans>

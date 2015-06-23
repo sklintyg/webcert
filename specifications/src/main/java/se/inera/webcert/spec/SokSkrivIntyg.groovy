@@ -6,11 +6,13 @@ import se.inera.webcert.pages.fk7263.VisaFk7263Page
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
 import se.inera.webcert.pages.ts_diabetes.EditCertPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
+import se.inera.webcert.spec.util.WebcertRestUtils
 
 class SokSkrivIntyg {
 
     def kopiaintygsid
 
+    // ------- navigation
     def loggaInSom(String id) {
         Browser.drive {
             go "/welcome.jsp"
@@ -31,6 +33,29 @@ class SokSkrivIntyg {
         }
     }
 
+    def skickaVisatIntyg() {
+        Browser.drive {
+            page.send()
+        }
+    }
+
+    def skickaDetVisadeIntygetAvTyp(String typ) {
+
+        Browser.drive {
+            waitFor {
+                if (typ == "fk7263") {
+                    at se.inera.webcert.pages.fk7263.VisaFk7263Page
+                } else if (typ == "ts-bas") {
+                    at se.inera.webcert.pages.ts_bas.VisaTsBasPage
+                } else if (typ == "ts-diabetes") {
+                    at se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
+                }
+                page.sendWithValidation()
+            }
+        }
+    }
+
+    // ------- pages
     boolean sokSkrivIntygSidanVisas() {
         sokSkrivIntygSidanVisasSaSmaningom()
     }
@@ -43,34 +68,11 @@ class SokSkrivIntyg {
         }
     }
 
-    def valjPatient(String personNummer) {
-        Browser.drive {
-            page.personnummer = personNummer
-            page.personnummerFortsattKnapp.click()
-        }
-    }
-
     boolean fyllINamnSidanVisas() {
         Browser.drive {
             waitFor {
                 at SokSkrivFyllINamnPage
             }
-        }
-    }
-
-    def namnFinnsEjMeddelandeVisas() {
-        Browser.drive {
-            waitFor {
-                page.puFelmeddelande.isDisplayed()
-            }
-        }
-    }
-
-    def gePatientFornamnEfternamn(String fornamn, String efternamn) {
-        Browser.drive {
-            page.fornamn = fornamn
-            page.efternamn = efternamn
-            page.namnFortsattKnapp.click()
         }
     }
 
@@ -82,32 +84,19 @@ class SokSkrivIntyg {
         }
     }
 
-    boolean patientensNamnAr(String expected) {
+    // ------- behaviour
+    def valjPatient(String personNummer) {
         Browser.drive {
-            waitFor {
-                at SokSkrivValjIntygTypPage
-            }
-            waitFor {
-                expected == page.patientNamn.text()
-            }
+            page.angePatient(personNummer)
         }
-        true
     }
 
-    boolean kopieraKnappVisasForIntyg(boolean expected = true, String intygId) {
+    def gePatientFornamnEfternamn(String fornamn, String efternamn) {
         Browser.drive {
-            waitFor {
-                at SokSkrivValjIntygTypPage
-            }
-            waitFor {
-                expected == page.copyBtn(intygId).isDisplayed()
-            }
+            page.fornamn = fornamn
+            page.efternamn = efternamn
+            page.namnFortsattKnapp.click()
         }
-        true
-    }
-
-    def ateraktiveraKopieraDialogen() {
-        Browser.deleteCookie("wc.dontShowCopyDialog");
     }
 
     def valjKopieraTidigareIntyg(String intygId) {
@@ -137,9 +126,7 @@ class SokSkrivIntyg {
 
     def kopieraTidigareIntyg(String intygId) {
         Browser.drive {
-            waitFor {
-                page.copyBtn(intygId).isDisplayed()
-            }
+            page.copyBtn(intygId).isDisplayed()
             println('page ' + page);
             page.copy(intygId)
         }
@@ -149,9 +136,7 @@ class SokSkrivIntyg {
 
     def kopieraIntygOchGaTillVisaSida(String intygId) {
         Browser.drive {
-            waitFor {
-                page.copyBtn(intygId).isDisplayed()
-            }
+            page.copyBtn(intygId).isDisplayed()
             page.copy(intygId)
 
         }
@@ -161,65 +146,10 @@ class SokSkrivIntyg {
         intygsid
     }
 
-    def skickaVisatIntyg() {
-        Browser.drive {
-            page.send()
-        }
-    }
-
-    def skickaDetVisadeIntygetAvTyp(String typ) {
-
-        Browser.drive {
-            waitFor {
-                if (typ == "fk7263") {
-                    at se.inera.webcert.pages.fk7263.VisaFk7263Page
-                } else if (typ == "ts-bas") {
-                    at se.inera.webcert.pages.ts_bas.VisaTsBasPage
-                } else if (typ == "ts-diabetes") {
-                    at se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
-                }
-                page.sendWithValidation()
-            }
-        }
-    }
-
-    boolean skickaStatusVisas() {
-        Browser.drive {
-            waitFor {
-                page.certificateIsSentToRecipientMessage.isDisplayed()
-            }
-        }
-        true
-    }
-
-    boolean skickaStatusVisasMedRattMeddelande(boolean expected = true, String containsText) {
-
-        Browser.drive {
-
-            waitFor {
-                expected = page.certificateIsSentToRecipientMessage.text().contains(containsText)
-            }
-        }
-        expected
-    }
-
     def oppnaKopieraDialogen() {
         Browser.drive {
             page.copyButton.click()
         }
-    }
-
-    boolean annanEnhetTextVisas() {
-        Browser.drive {
-            waitFor {
-                page.annanEnhetText.isDisplayed()
-            }
-        }
-        true
-    }
-
-    def kopiaintygsid() {
-        kopiaintygsid
     }
 
     def kopieraVisatIntyg(typ) {
@@ -242,6 +172,118 @@ class SokSkrivIntyg {
         }
     }
 
+    def makuleraBekraftelseVisas() {
+        Browser.drive {
+            page.makuleraConfirmationOkButton.isDisplayed()
+        }
+    }
+
+    def visaIntyg(String intygId) {
+        Browser.drive {
+            page.show(intygId)
+        }
+    }
+
+    public void loggaInIndex() {
+        Browser.drive {
+            waitFor {
+                at IndexPage
+                expected = page.certificateIsOnQueueToITMessage.text().contains(containsText)
+            }
+            page.startLogin()
+        }
+    }
+
+    def valjVardenhet(String careUnit) {
+        Browser.drive {
+            waitFor {
+                at SokSkrivaIntygPage
+            }
+            page.careUnitSelector.click()
+
+            page.selectCareUnit(careUnit);
+
+        }
+    }
+    // ------- state
+    def namnFinnsEjMeddelandeVisas() {
+        Browser.drive {
+            page.puFelmeddelande.isDisplayed()
+        }
+    }
+	
+	public String PUTjänstFel() {
+		String felmeddelande
+		Browser.drive {
+			felmeddelande = page.puFelmeddelande.text()
+		}
+		return  felmeddelande
+	}
+	
+
+    boolean valjIntygstypSynlig() {
+        boolean result
+        Browser.drive {
+            result = page.intygTyp.isDisplayed()
+        }
+        result
+    }
+
+    boolean valjIntygstypEjSynlig() {
+        boolean result
+        Browser.drive {
+            result = !page.intygTypNoWait.isDisplayed()
+        }
+        result
+    }
+
+    boolean sekretessmarkeringTextSynlig() {
+        boolean result
+        Browser.drive {
+            result = page.sekretessmarkering.isDisplayed()
+        }
+        result
+    }
+
+    String patientensNamnAr() {
+        String result
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            result = page.patientNamn.text()
+        }
+        result
+    }
+
+    boolean kopieraKnappVisasForIntyg(boolean expected = true, String intygId) {
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            return page.copyBtn(intygId).isDisplayed()
+        }
+    }
+
+    boolean skickaStatusVisas() {
+        Browser.drive {
+            return page.certificateIsSentToRecipientMessage; //.isDisplayed()
+        }
+    }
+
+    boolean skickaStatusVisasMedRattMeddelande(boolean expected = true, String containsText) {
+        Browser.drive {
+            return page.certificateIsOnQueueToITMessage.text().contains(containsText);
+        }
+    }
+
+    boolean annanEnhetTextVisas() {
+
+        Browser.drive {
+            return page.annanEnhetText
+        }
+    }
+
     def makuleraVisatIntyg() {
         Browser.drive {
             page.makulera()
@@ -258,34 +300,12 @@ class SokSkrivIntyg {
         Browser.drive {
             page.kanInteMakulera()
         }
-        true
-    }
-
-    def makuleraBekraftelseVisas() {
-        Browser.drive {
-            waitFor {
-                page.makuleraConfirmationOkButton.isDisplayed()
-            }
-            makuleraConfirmationOkButton.click()
-        }
     }
 
     boolean makuleradStatusVisas() {
         Browser.drive {
-            waitFor {
-                page.certificateIsRevokedMessage.isDisplayed()
-            }
-        }
-        true
-    }
-
-    def visaIntyg(String intygId) {
-        Browser.drive {
-            waitFor {
-                page.intygLista.isDisplayed()
-            }
-
-            page.show(intygId)
+            return page.certificateIsRevokedMessage; //.isDisplayed()
+            //return $("#certificate-is-revoked-message-text").isDisplayed()
         }
     }
 
@@ -296,9 +316,7 @@ class SokSkrivIntyg {
                 at VisaFragaSvarPage
             }
 
-            waitFor {
-                page.intygVy.isDisplayed()
-            }
+            page.intygVy.isDisplayed()
         }
     }
 
@@ -308,9 +326,7 @@ class SokSkrivIntyg {
                 at VisaFk7263Page
             }
 
-            waitFor {
-                page.intygLaddat.isDisplayed()
-            }
+            page.intygLaddat.isDisplayed()
         }
     }
     // END
@@ -330,9 +346,7 @@ class SokSkrivIntyg {
                 at VisaTsBasPage
             }
 
-            waitFor {
-                page.intygLaddat.isDisplayed()
-            }
+            page.intygLaddat.isDisplayed()
         }
     }
 
@@ -342,54 +356,133 @@ class SokSkrivIntyg {
                 at VisaTsDiabetesPage
             }
 
+            page.intygLaddat.isDisplayed()
+        }
+    }
+
+    boolean enhetsvaljareVisas() {
+        Browser.drive {
             waitFor {
-                page.intygLaddat.isDisplayed()
+                at UnhandledQAPage
+            }
+            return page.careUnitSelector.isDisplayed()
+        }
+    }
+
+    boolean felmeddelanderutaVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            waitFor {
+                expected == page.felmeddelandeRuta.isDisplayed()
             }
         }
     }
 
-    public void loggaInIndex() {
+    def intygstjanstStubOnline() {
+        WebcertRestUtils.setIntygTjanstStubInMode("ONLINE")
+    }
+
+    def intygstjanstStubOffline() {
+        WebcertRestUtils.setIntygTjanstStubInMode("OFFLINE")
+    }
+
+    def intygstjanstStubLatency(Long latency = 0L) {
+        WebcertRestUtils.setIntygTjanstStubLatency(latency)
+    }
+//
+//        }
+//    }
+
+    def skickaVisatIntygTillForsakringskassan() {
         Browser.drive {
             waitFor {
-                at IndexPage
+                at VisaFk7263Page
             }
-            page.startLogin()
+            waitFor {
+                page.send()
+            }
         }
     }
 
-    boolean enhetsvaljareVisas(boolean expected = true) {
+    boolean intygSkickatTillForsakringskassan(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at SokSkrivaIntygPage
+                at VisaFk7263Page
             }
             waitFor {
-                expected == page.careUnitSelector.isDisplayed()
+                expected == page.certificateIsSentToRecipientMessage.isDisplayed()
             }
         }
         true
     }
 
-    def valjVardenhet(String careUnit) {
+    boolean intygLagtPaSandKoVisas(boolean expected = true) {
         Browser.drive {
             waitFor {
-                at SokSkrivaIntygPage
+                at VisaFk7263Page
             }
             waitFor {
-                page.careUnitSelector.click()
+                expected == page.certificateIsOnQueueToITMessage.isDisplayed()
+            }
+        }
+    }
+
+    def stallNyFragaTillForsakringskassan() {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
             }
             waitFor {
-                page.selectCareUnit(careUnit);
+                page.stallNyFragaTillForsakringskassan()
             }
+            waitFor {
+                page.nyFragaTillForsakringskassanFormularVisas()
+            }
+        }
+    }
+
+    boolean nyFragaFormularVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                expected == page.nyFragaTillForsakringskassanFormularVisas()
+            }
+        }
+        true
+    }
+
+    def fyllOchSkickaFragaTillForsakringskassan() {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                page.fillNyFragaFormular()
+            }
+        }
+    }
+
+    boolean nyFragaSkickadBekraftelseVisas(boolean expected = true) {
+        Browser.drive {
+            waitFor {
+                at VisaFk7263Page
+            }
+            waitFor {
+                expected == page.nyFragaSkickadTextVisas()
+            }
+            true
         }
     }
 
     boolean kopieraKnappHarTextSjukskrivning() {
         def result
         Browser.drive {
-            waitFor {
-                result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-                        page.kopieraKnapp.attr("title").contains("sjukskrivning")
-            }
+            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+                    page.kopieraKnapp.attr("title").contains("sjukskrivning")
         }
         return result
     }
@@ -397,11 +490,19 @@ class SokSkrivIntyg {
     boolean kopieraKnappHarInteTextSjukskrivning() {
         def result
         Browser.drive {
-            waitFor {
-                result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-                        !page.kopieraKnapp.attr("title").contains("sjukskrivning")
-            }
+            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+                    !page.kopieraKnapp.attr("title").contains("sjukskrivning")
         }
         return result
     }
+
+    // ------- utils
+    def ateraktiveraKopieraDialogen() {
+        Browser.deleteCookie("wc.dontShowCopyDialog");
+    }
+
+    def kopiaintygsid() {
+        kopiaintygsid
+    }
+
 }

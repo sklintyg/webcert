@@ -1,0 +1,10 @@
+!3 VIKTIGT: För att kunna köra omsändningstester behöver Webcert konfigureras enl. följande:
+'''Webcert skall startas med konfigurationsfil 'webcert-dev-itstub.properties':'''
+
+''-Dwebcert.config.file=/Users/eriklupander/intyg/webcert/web/webcert-dev-itstub.properties''
+
+'''ActiveMQ-inställningar för omsändning behöver omkonfigureras. För körning i "utvecklingsmiljö" på Jetty, öppna jetty-web.xml och ändra AMQ-URL till följande under AsyncConnectionFactory[?]:'''
+
+''vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=25&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=60000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=2000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2''
+
+!contents -R2 -g -p -f -h

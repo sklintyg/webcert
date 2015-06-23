@@ -1,12 +1,15 @@
 {
-    "personId": "195206172339",
-    "namn": {
-        "fornamn": "Björn Anders Daniel",
-        "efternamn": "Pärsson"
-    },
-    "folkbokforingsadress": {
-        "utdelningsadress2": "KUNGSGATAN 5",
-        "postNr": 41234,
-        "postort": "GÖTEBORG"
+    "sekretessmarkering": "N",
+    "personpost": {
+        "personId": "195206172339",
+        "namn": {
+            "fornamn": "Björn Anders Daniel",
+            "efternamn": "Pärsson"
+        },
+        "folkbokforingsadress": {
+            "utdelningsadress2": "KUNGSGATAN 5",
+            "postNr": 41234,
+            "postort": "GÖTEBORG"
+        }
     }
 }

@@ -1,18 +1,11 @@
 package se.inera.webcert.spec.notification_sender
-
-import se.inera.webcert.spec.util.WebcertRestUtils;
-import se.inera.webcert.spec.util.RestClientFixture
-import static groovyx.net.http.ContentType.JSON
-import static groovyx.net.http.ContentType.TEXT
-import static groovyx.net.http.ContentType.URLENC
-import static se.inera.webcert.spec.util.WebcertRestUtils.*
-
-import org.apache.commons.io.IOUtils
+import se.inera.webcert.spec.util.WebcertRestUtils
 
 class SparaUtkast {
 
     String intygId
     String intygTyp
+    long   version
 
     String patientPersonnummer
     String patientFornamn = "Test"
@@ -56,11 +49,15 @@ class SparaUtkast {
         } else {
             makeIncomplete()
         }
-        response = WebcertRestUtils.saveUtkast(intygTyp, intygId, json)
+        response = WebcertRestUtils.saveUtkast(intygTyp, intygId, version, json)
     }
 
     public boolean utkastSparat() {
         response.success
+    }
+
+    public long version() {
+        response.data.version
     }
 
     // Fill utkast and set it up as 'complete'

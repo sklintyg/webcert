@@ -84,7 +84,7 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public SignaturTicket createDraftHash(String intygId, long version) {
         LOG.debug("Hash for clientsignature of draft '{}'", intygId);
 
@@ -120,7 +120,7 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public SignaturTicket clientSignature(String ticketId, String rawSignatur) {
 
         // Lookup signature ticket
@@ -180,7 +180,7 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public SignaturTicket serverSignature(String intygsId, long version) {
         LOG.debug("Signera utkast '{}'", intygsId);
 

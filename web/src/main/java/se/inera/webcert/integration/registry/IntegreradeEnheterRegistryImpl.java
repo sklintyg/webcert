@@ -27,7 +27,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      * .service.integration.dto.IntegreradEnhetEntry)
      */
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public boolean addIfNotExistsIntegreradEnhet(IntegreradEnhetEntry entry) {
 
         String enhetsId = entry.getEnhetsId();
@@ -56,13 +56,13 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      * @see se.inera.webcert.service.integration.IntegreradeEnheterService#isEnhetIntegrerad(java.lang.String)
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public boolean isEnhetIntegrerad(String enhetsHsaId) {
         IntegreradEnhetEntry ie = getIntegreradEnhetEntry(enhetsHsaId);
         return (ie != null);
     }
     
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry) {
         
         IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(orgEnhetsHsaId);

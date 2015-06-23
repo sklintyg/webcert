@@ -1,0 +1,54 @@
+Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte är komplett för att signera.
+
+!3 Lägg till utkast som inte är komplett
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
+
+!3 Givet att det finns ett utkast som inte är komplett, verifiera att det inte går att signera det
+
+| script | !-HanteraUtkast-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+| ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-1 |
+| editera sidan visas |
+| ensure | signera knapp visas |
+| ensure | signera knapp ej aktiverad |
+
+!3 Ta bort utkast
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-signera-1 |
+
+!3 WEBCERT-1732
+
+Det ska inte gå att signera ett utkast som angett Prognos "Går ej att bedöma" utan att ha fyllt i förtydligande
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
+
+| script | !-HanteraUtkast-! |
+| ga till editera intyg med typ | fk7263 | och intygid | webcert-fitnesse-signera-1 |
+| editera sidan visas |
+
+| Populera Fk7263 |
+| prognos | prognosBeskrivning |
+| ? ||
+
+| script | !-SkrivIntyg-! |
+| intyg ej komplett visas |
+
+!3 Detta intyg ska inte gå att signera eftersom prognosBeskrivning saknas
+
+| script | !-HanteraUtkast-! |
+| ensure | signera knapp visas |
+| ensure | signera knapp ej aktiverad |
+
+
+!3 Ta bort utkast
+
+| ta bort utkast |
+| utkastId |
+| webcert-fitnesse-signera-1 |

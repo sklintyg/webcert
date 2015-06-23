@@ -1,0 +1,38 @@
+!contents -R2 -g -p -f -h
+
+!3 Rensa eventuella tidigare notifieringar
+| webcert rest utils |
+| reset? | 
+| true | 
+
+!3 Skapa ett utkast, fyll på med data och spara det
+| skapa utkast med fake inloggning |
+| patientPersonnummer | patientFornamn | patientEfternamn | utkastCreated? | utkastId?  | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       |           true | $utkastId= | $version= |
+
+
+| patientPersonnummer | patientFornamn | patientEfternamn | hsaId             | namn             | enhetId           | kodverk   | diagnosKod | diagnosBeskrivning1  | nedsattMed100                                            | intygId    | intygTyp | version  | komplett | utkastSparat? | version?  |
+| ${person1.personnummer}       | Test           | Testorsson       | SE4815162344-1B01 | Ivar Integration | SE4815162344-1A02 | ICD_10_SE | S50        | Kontusion på armbåge | "nedsattMed100":{"from":"2014-04-15","tom":"2014-05-15"} | $utkastId  | fk7263   | $version | true     | true          | $version= |
+
+!3 Signera utkastet
+| signera utkast | 
+| intygId   | intygTyp | version  | utkastSignerat? | version?  |
+| $utkastId | fk7263   | $version | true            | $version= |
+
+!3 Skicka utkastet som nu är ett Intyg till Försäkringskassan
+| skicka intyg |
+| intygId   | intygTyp | mottagarId | intygSkickat? |
+| $utkastId | fk7263   |  FK        | true          |
+
+!3 Verifiera att förväntade notifieringar gick iväg
+| verifiera notifiering | 
+| id         | kod  | handelseSkapad? |
+| $utkastId  | HAN1 | true              |
+| $utkastId  | HAN11| true              |
+| $utkastId  | HAN2 | true              |
+| $utkastId  | HAN3 | true              |
+
+!3 Ta bort utkastet
+| ta bort utkast |
+| utkastId |
+| $utkastId |

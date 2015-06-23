@@ -59,7 +59,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
      * CreateNewDraftCopyRequest)
      */
     @Override
-    @Transactional
+    @Transactional("jpaTransactionManager")
     public CreateNewDraftCopyResponse createCopy(CreateNewDraftCopyRequest copyRequest) {
 
         String originalIntygId = copyRequest.getOriginalIntygId();

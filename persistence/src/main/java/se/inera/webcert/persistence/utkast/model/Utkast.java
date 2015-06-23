@@ -99,6 +99,17 @@ public class Utkast {
     @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")
     private Boolean vidarebefordrad = Boolean.FALSE;
 
+    @Column(name = "SKICKAD_TILL_MOTTAGARE")
+    private String skickadTillMottagare;
+
+    @Column(name = "SKICKAD_TILL_MOTTAGARE_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    private LocalDateTime skickadTillMottagareDatum;
+
+    @Column(name = "ATERKALLAD_DATUM")
+    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
+    private LocalDateTime aterkalladDatum;
+
     @OneToOne(optional = true, cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private Signatur signatur;
@@ -279,6 +290,30 @@ public class Utkast {
 
     public void setSignatur(Signatur signatur) {
         this.signatur = signatur;
+    }
+
+    public String getSkickadTillMottagare() {
+        return skickadTillMottagare;
+    }
+
+    public void setSkickadTillMottagare(String skickadTillMottagare) {
+        this.skickadTillMottagare = skickadTillMottagare;
+    }
+
+    public LocalDateTime getSkickadTillMottagareDatum() {
+        return skickadTillMottagareDatum;
+    }
+
+    public void setSkickadTillMottagareDatum(LocalDateTime skickadTillMottagareDatum) {
+        this.skickadTillMottagareDatum = skickadTillMottagareDatum;
+    }
+
+    public LocalDateTime getAterkalladDatum() {
+        return aterkalladDatum;
+    }
+
+    public void setAterkalladDatum(LocalDateTime aterkalladDatum) {
+        this.aterkalladDatum = aterkalladDatum;
     }
 
     private byte[] toBytes(String data) {

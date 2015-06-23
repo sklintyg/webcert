@@ -26,8 +26,8 @@ class HealthCheckSida {
             jmsStatus = page.jmsStatus
             hsaTid = page.hsaMeasurement
             hsaStatus = page.hsaStatus
-            intygstjanstTid = page.jmsMeasurement
-            intygstjanstStatus = page.jmsStatus
+            intygstjanstTid = page.intygstjanstMeasurement
+            intygstjanstStatus = page.intygstjanstStatus
             signeringsKo = page.signatureQueueMeasurement
             upptid = page.uptime
         }

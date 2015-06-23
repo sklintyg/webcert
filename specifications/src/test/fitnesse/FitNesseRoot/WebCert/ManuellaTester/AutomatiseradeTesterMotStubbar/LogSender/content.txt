@@ -1,0 +1,4 @@
+Denna svit testar !-LogSender-! applikationen i isolering. Testerna producerar meddelanden som läggs på !-LogSenders-! JMS in-kö,
+och verifierar att PDL-logg-stubben tar emot motsvarande logg-meddelanden.
+
+!contents -R2 -g -p -f -h

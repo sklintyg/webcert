@@ -1,0 +1,28 @@
+!3 Ladda ett litet fk7263
+
+|Intyg|
+|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
+|${person1.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fit-1|S|nej|nej|
+
+!3 Logga in
+
+| script | !-SokSkrivIntyg-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+| sok skriv intyg sidan visas sa smaningom |
+| valj patient | ${person1.personnummer} |
+| valj intygstyp sidan visas |
+| visa intyg | webcert-fit-1 |
+| visa intyg sidan visas |
+
+!3 Verifiera att fälten i intyget syns och innehåller korrekt data
+
+| Verifiera Signerat Fk7263 |
+| smittskydd? | diagnosKod? | diagnosBeskrivning? | diagnosKod2? | diagnosBeskrivning2? | diagnosKod3? | diagnosBeskrivning3? | samsjuklighet? | sjukdomsforlopp? | funktionsnedsattning? | undersokningAvPatienten? | telefonkontaktMedPatienten? | journaluppgifter? | annanReferensBeskrivning? | aktivitetsbegransning? | rekommendationKontaktArbetsformedlingen? | rekommendationKontaktForetagshalsovarden? | rekommendationOvrigt? | atgardInomSjukvarden? | annanAtgard? | rehabilitering? | nuvarandeArbetsuppgifter? | arbetsloshet? | foraldrarledighet? | nedsattMed25from? | nedsattMed25tom? | nedsattMed25Beskrivning? | nedsattMed50from? | nedsattMed50tom? | nedsattMed50Beskrivning? | nedsattMed75from? | nedsattMed75tom? | nedsattMed75Beskrivning? | nedsattMed100from? | nedsattMed100tom? | arbetsformagaPrognos? | prognos10? | arbetsformagaPrognosGarInteAttBedomaBeskrivning? | ressattTillArbeteAktuellt? | kontaktMedFk? | kommentar? | forskrivarkodOchArbetsplatskod? | signeringsdatum? | vardperson_namn? | vardperson_enhetsnamn? | vardperson_postadress? | vardperson_postnummer? | vardperson_postort? | vardperson_telefonnummer? |
+| false | M25 | | | | | | false | | Svullnad och värmeökning. Smärta vid manipulation. | true | false | false | | Patienten arbetar som postiljon i distrikt med höghus, sjukdomen omöjliggör gång i trappor. | false | false | | | | | Brevbärare | false | false | | | | | | | | | | 24 januari 2011| 20 februari 2011 | | | | | false	 | | 123456789011 | 1 april 2013 | IFV1239877878-104B | IFV1239877878-1042 | Lasarettsvägen 13 | 85150 | Sundsvall| 060-1818000 |
+# false	  M25	BLANK	notshown	notshown	notshown	notshown	false	notshown	Svullnad och värmeökning. Smärta vid manipulation.	true	false	false	notshown	Patienten arbetar som postiljon i distrikt med höghus, sjukdomen omöjliggör gång i trappor.	false	false	notshown	notshown	notshown	BLANK	Brevbärare	false	false	notshown	notshown	notshown	notshown	notshown	notshown	notshown	notshown	notshown		notshown	BLANK	notshown	null	false	notshown	123456789011	1 april 2013	IFV1239877878-104B	IFV1239877878-1042	Lasarettsvägen 13	85150	Sundsvall	060-1818000
+
+!3 Ta bort intyget
+
+| ta bort intyg |
+| id |
+| webcert-fit-1 |
