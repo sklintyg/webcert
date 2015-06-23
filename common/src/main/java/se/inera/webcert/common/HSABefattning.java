@@ -1,4 +1,4 @@
-package se.inera.auth;
+package se.inera.webcert.common;
 
 public enum HSABefattning {
 
