@@ -1,7 +1,7 @@
 package se.inera.intyg.webcert.integration.pp.util;
 
 import org.joda.time.LocalDateTime;
-import se.inera.auth.HSABefattning;
+import se.inera.webcert.common.HSABefattning;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.ArbetsplatsKod;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
@@ -16,6 +16,7 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.VerksamhetType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 /**
  * Created by Magnus Ekstrand on 18/06/15.
