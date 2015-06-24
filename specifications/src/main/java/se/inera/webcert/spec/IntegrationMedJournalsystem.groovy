@@ -321,9 +321,13 @@ class IntegrationMedJournalsystem {
 		return result
 	}
 	
-    boolean nyttPersonNummerTextInteVisas() {
-		return !nyttPersonNummerTextVisas
-    }
+     boolean nyttPersonNummerTextInteVisas() {
+		boolean result
+        Browser.drive {
+            result = !page.kopieraDialogMsgNyttPersonIdNoWait.isDisplayed();
+        }
+		return result
+     }
 
 
     def toggleKopieraDialogen(boolean val) {
