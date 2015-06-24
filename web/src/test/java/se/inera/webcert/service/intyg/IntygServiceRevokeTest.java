@@ -35,6 +35,7 @@ import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
+import se.inera.webcert.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
@@ -65,6 +66,9 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     @Mock
     private RevokeRequestConverter revokeRequestConverter;
+
+    @Mock
+    private UtkastIntygDecorator utkastIntygDecorator;
 
     private Utkast signedUtkast;
     private Utkast revokedUtkast;

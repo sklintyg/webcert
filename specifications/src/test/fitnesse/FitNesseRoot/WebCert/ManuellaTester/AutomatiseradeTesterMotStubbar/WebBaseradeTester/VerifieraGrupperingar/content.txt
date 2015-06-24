@@ -1,3 +1,5 @@
+!1 Detta test kräver möjlighet att logga in som Per Persson, dvs applikationen måste använda HSA-stubben
+
 !3 Logga in
 | script | !-LoggaIn-! |
 | logga in som | perpersson_anestesikliniken |
