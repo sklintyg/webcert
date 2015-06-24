@@ -10,6 +10,7 @@ import static groovyx.net.http.ContentType.JSON
 public class Intyg extends RestClientFixture {
 
     String personnr
+	String patientNamn
     String utfärdat
 	String giltigtFrån
 	String giltigtTill
@@ -139,7 +140,10 @@ public class Intyg extends RestClientFixture {
 
         // setting personnr in certificate XML
         certificate.grundData.patient.personId = personnr
-
+		
+		// Ange patientens namn
+		if (patientNamn) certificate.grundData.patient.fullstandigtNamn = patientNamn
+		
         if (utfärdarId) certificate.grundData.skapadAv.personId = utfärdarId
 		if (utfärdare) certificate.grundData.skapadAv.fullstandigtNamn = utfärdare
 		if (enhetsId) certificate.grundData.skapadAv.vardenhet.enhetsid = enhetsId
