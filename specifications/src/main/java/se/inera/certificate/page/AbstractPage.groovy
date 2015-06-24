@@ -24,6 +24,14 @@ abstract class AbstractPage extends Page {
         return button.@disabled == 'true';
     }
 
+    def elementForId(elementId){
+        return $("#" + elementId);
+    }
+
+    def elementForClass(classId){
+        return $("." + classId);
+    }
+
     // use inside content definitions to prevent wait success until the element is displayed
     // with the option element(wait:true){ displayed($('#element-id')) }
     static displayed(elem) {
