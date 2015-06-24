@@ -313,10 +313,16 @@ class IntegrationMedJournalsystem {
         }
     }
 
+	boolean nyttPersonNummerTextVisas() {
+		boolean result
+		Browser.drive {
+			result = page.kopieraDialogMsgNyttPersonId.isDisplayed()
+		}
+		return result
+	}
+	
     boolean nyttPersonNummerTextInteVisas() {
-        Browser.drive {
-            return !page.kopieraDialogMsgNyttPersonIdNoWait.isDisplayed();
-        }
+		return !nyttPersonNummerTextVisas
     }
 
 
