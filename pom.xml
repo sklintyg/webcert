@@ -11,7 +11,7 @@
 
   <groupId>se.inera.intyg.webcert</groupId>
   <artifactId>webcert</artifactId>
-  <version>3.2.0-RC2</version>
+  <version>0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Webcert</name>
@@ -19,11 +19,11 @@
   <properties>
 
     <!-- Common -->
-    <common.version>2.3.0-RC2</common.version>
+    <common.version>0-SNAPSHOT</common.version>
     <common.version.range>(,2.3.0]</common.version.range>
 
     <!-- Intygstyper -->
-    <intygstyper.version>2.3.0-RC2</intygstyper.version>
+    <intygstyper.version>0-SNAPSHOT</intygstyper.version>
     <intygstyper.version.range>(,2.3.0]</intygstyper.version.range>
 
     <!-- Schemas -->
@@ -33,8 +33,8 @@
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
     <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
 
-    <intyg-clinicalprocess.version>1.1.0-RC1</intyg-clinicalprocess.version>
-    <intyg-insuranceprocess.version>1.1.0-RC1</intyg-insuranceprocess.version>
+    <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
+    <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
     <intyg-transportstyrelsen.version>1.0.0</intyg-transportstyrelsen.version>
 
   </properties>
