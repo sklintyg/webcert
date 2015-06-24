@@ -1,9 +1,14 @@
 Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg via djupintegration med ett uppdaterat personnummer och kopierar intyget.
 
+!4 Ta bort kvarvarande intyg
+| ta bort intyg |
+| id |
+| intyg-nytt-pnr |
+
+!4 Skapa ett skickat intyg
 | Intyg |
-| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat | 
-| ${person1.personnummer} | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-104D | FK7263 | intyg-fit-annan-enhet | L | ja | nej |
-!3 Välj patient och visa intyget
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat | respons?|
+| ${person1.personnummer} | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1042 | FK7263 | intyg-nytt-pnr | L | ja | nej | 200|
 
 | script | !-SokSkrivIntyg-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
@@ -11,10 +16,11 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 
 !4 Testa har ett felaktigt personnummer.
 | script | !-IntegrationMedJournalsystem-! |
-| visa intyg via integration med | intyg-fit-1 | personnummer | ${person2.personnummer} |
+| visa intyg via integration med | intyg-nytt-pnr | personnummer | ${person2.personnummer} |
 | nytt personnummer meddelande visas|
-| kopiera intyg | intyg-fit-1 |
-| verifiera namn och personnummer | ${person1.namn} - ${person2.personnummer} |
+| kopiera intyg | intyg-nytt-pnr |
+| check|patientens namn|${person1.namn}|
+|check|patientens personnummer |${person2.personnummer}|
 
 | script | !-HanteraUtkast-! |
 | radera utkast |

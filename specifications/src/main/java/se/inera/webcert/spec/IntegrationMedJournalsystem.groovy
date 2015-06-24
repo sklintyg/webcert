@@ -112,15 +112,32 @@ class IntegrationMedJournalsystem {
         }
     }
 
-    def verifieraNamnOchPersonnummer(String expected) {
+    String patientensNamn() {
+		String namnOchPersonnummer
         Browser.drive {
-            waitFor {
-                expected == page.namnOchPersonnummer.text()
-            }
+			waitFor{
+				page.namnOchPersonnummer.isDisplayed()
+			}
+			namnOchPersonnummer = page.namnOchPersonnummer.text()
         }
-        true
+		
+       def (namn, personnummer) = namnOchPersonnummer.split( ' - ' )
+	   return namn
     }
-
+	
+	String patientensPersonnummer() {
+		String namnOchPersonnummer
+		Browser.drive {
+			waitFor{
+				page.namnOchPersonnummer.isDisplayed()
+			}
+			namnOchPersonnummer = page.namnOchPersonnummer.text()
+		}
+		
+	   def (namn, personnummer) = namnOchPersonnummer.split( ' - ' )
+	   return personnummer
+	}
+	
     boolean kopieraIntyg(String intygId) {
         Browser.drive {
             page.copyButton.isDisplayed()
