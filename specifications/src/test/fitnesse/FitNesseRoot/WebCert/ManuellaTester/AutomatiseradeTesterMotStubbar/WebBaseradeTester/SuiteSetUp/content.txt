@@ -1,5 +1,4 @@
-!include -c .IneraWebcert.AllTests.SuiteSetUp
-
+!include -c .WebCert.AutomatiseradeTester.SuiteSetUp
 !3 Givet test-intyg i Intygstjänsten
 
 | Intyg |
