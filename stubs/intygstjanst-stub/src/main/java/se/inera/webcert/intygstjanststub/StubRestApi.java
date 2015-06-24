@@ -1,5 +1,7 @@
 package se.inera.webcert.intygstjanststub;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateforcare.v1.GetCertificateForCareResponseType;
 
@@ -22,10 +24,12 @@ import se.riv.clinicalprocess.healthcond.certificate.v1.ResultType;
  */
 public class StubRestApi {
 
+    private static final Logger LOG = LoggerFactory.getLogger(StubRestApi.class);
+
     @Autowired
     private IntygStore intygStore;
 
-    @Autowired
+    @Autowired(required = false)
     private BootstrapBean intygstjanstStubBootstrapBean;
 
     @GET
@@ -59,7 +63,11 @@ public class StubRestApi {
     @Path("/intyg")
     public Response resetIntygStore() {
         intygStore.clear();
-        intygstjanstStubBootstrapBean.initData();
+        if (intygstjanstStubBootstrapBean != null) {
+            intygstjanstStubBootstrapBean.initData();
+        } else {
+            LOG.warn("Could not reset intyg stub store. Bootstrap bean not available in the current spring profile. (E.g. dev or dev,wc-all-stubs or wc-it-stub required)");
+        }
         return Response.noContent().build();
     }
 

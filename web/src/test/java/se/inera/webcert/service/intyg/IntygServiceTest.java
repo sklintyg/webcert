@@ -37,6 +37,7 @@ import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl;
+import se.inera.webcert.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
@@ -75,6 +76,9 @@ public class IntygServiceTest {
 
     @Mock
     private UtkastRepository intygRepository;
+
+    @Mock
+    private UtkastIntygDecorator utkastIntygDecorator;
 
     @Spy
     private IntygServiceConverter serviceConverter = new IntygServiceConverterImpl();
