@@ -101,9 +101,11 @@ class IntegrationMedJournalsystem {
     }
 
     boolean nyttPersonnummerMeddelandeVisas() {
+		def result
         Browser.drive {
-            return page.nyttPersonnummer.isDisplayed()
+            result = page.nyttPersonnummer.isDisplayed()
         }
+		return result
     }
 
     boolean signerandeLakareMeddelandeVisas(expected) {
@@ -308,12 +310,6 @@ class IntegrationMedJournalsystem {
     boolean inteFranJournalSystemTextInteVisas() {
         Browser.drive {
             return !page.kopieraDialogMsgInteFranJournalSystemNoWait.isDisplayed()
-        }
-    }
-
-    boolean nyttPersonNummerTextVisas() {
-        Browser.drive {
-            return page.kopieraDialogMsgNyttPersonId.isDisplayed()
         }
     }
 

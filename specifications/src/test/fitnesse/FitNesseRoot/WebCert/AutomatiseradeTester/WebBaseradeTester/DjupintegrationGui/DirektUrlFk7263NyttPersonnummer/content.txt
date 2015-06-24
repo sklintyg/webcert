@@ -7,8 +7,8 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 
 !4 Skapa ett skickat intyg
 | Intyg |
-| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat | respons?|
-| ${person1.personnummer} | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1042 | FK7263 | intyg-nytt-pnr | L | ja | nej | 200|
+| personnr |patient namn| utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | mall | skickat | rättat | respons? |
+| ${person1.personnummer}|${person1.namn} | 2015-06-01 | 2015-06-01| 2015-06-28| IFV1239877878-104B | IFV1239877878-1042 | IFV1239877878-1041 | FK7263 | intyg-nytt-pnr | L | ja | nej |200|
 
 | script | !-SokSkrivIntyg-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
@@ -17,7 +17,7 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 !4 Testa har ett felaktigt personnummer.
 | script | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration med | intyg-nytt-pnr | personnummer | ${person2.personnummer} |
-| nytt personnummer meddelande visas|
+| ensure|nytt personnummer meddelande visas|
 | kopiera intyg | intyg-nytt-pnr |
 | check|patientens namn|${person1.namn}|
 |check|patientens personnummer |${person2.personnummer}|
