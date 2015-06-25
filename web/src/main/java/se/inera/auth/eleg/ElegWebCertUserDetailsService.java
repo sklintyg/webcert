@@ -88,6 +88,11 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
         Vardenhet vardenhet = new Vardenhet(hosPerson.getEnhet().getEnhetsId().getExtension(), hosPerson.getEnhet().getEnhetsnamn());
         resolveArbetsplatsKod(hosPerson, vardenhet);
+        vardenhet.setPostadress(hosPerson.getEnhet().getPostadress());
+        vardenhet.setPostnummer(hosPerson.getEnhet().getPostnummer());
+        vardenhet.setPostort(hosPerson.getEnhet().getPostort());
+        vardenhet.setTelefonnummer(hosPerson.getEnhet().getTelefonnummer());
+        vardenhet.setEpost(hosPerson.getEnhet().getEpost());
 
         List<Vardenhet> vardenhetList = new ArrayList<>();
         vardenhetList.add(vardenhet);
