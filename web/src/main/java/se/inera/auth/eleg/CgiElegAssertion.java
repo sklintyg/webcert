@@ -19,6 +19,18 @@ public class CgiElegAssertion {
     public static final String FORNAMN_ATTRIBUTE = "Subject_GivenName";
     public static final String MELLAN_OCH_EFTERNAMN_ATTRIBUTE = "Subject_Surname";
 
+    public static final String UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE = "Issuer_OrganisationName";
+    public static final String UTFARDARE_CA_NAMN_ATTRIBUTE = "Issuer_CommonName";
+    public static final String SECURITY_LEVEL_ATTRIBUTE = "SecurityLevel"; // 3 == e-leg på fil, 4 == e-leg på kort.
+
+    private String personId;
+    private String fornamn;
+    private String efternamn;
+
+    private String utfardareOrganisationsNamn;
+    private String utfardareCANamn;
+    private String securityLevel;
+
     private String authenticationScheme;
 
     public CgiElegAssertion(Assertion assertion) {
@@ -36,7 +48,24 @@ public class CgiElegAssertion {
     private void extractAttributes(List<Attribute> attributes) {
         for (Attribute attribute : attributes) {
             switch (attribute.getName()) {
-
+                case PERSON_ID_ATTRIBUTE:
+                    personId = getValue(attribute);
+                    break;
+                case FORNAMN_ATTRIBUTE:
+                    fornamn = getValue(attribute);
+                    break;
+                case MELLAN_OCH_EFTERNAMN_ATTRIBUTE:
+                    efternamn = getValue(attribute);
+                    break;
+                case UTFARDARE_CA_NAMN_ATTRIBUTE:
+                    utfardareCANamn = getValue(attribute);
+                    break;
+                case UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE:
+                    utfardareOrganisationsNamn = getValue(attribute);
+                    break;
+                case SECURITY_LEVEL_ATTRIBUTE:
+                    securityLevel = getValue(attribute);
+                    break;
                 default:
                     // Ignore.
             }
@@ -57,6 +86,30 @@ public class CgiElegAssertion {
             values.add(xmlObject.getDOM().getTextContent());
         }
         return values;
+    }
+
+    public String getPersonId() {
+        return personId;
+    }
+
+    public String getFornamn() {
+        return fornamn;
+    }
+
+    public String getEfternamn() {
+        return efternamn;
+    }
+
+    public String getUtfardareOrganisationsNamn() {
+        return utfardareOrganisationsNamn;
+    }
+
+    public String getUtfardareCANamn() {
+        return utfardareCANamn;
+    }
+
+    public String getSecurityLevel() {
+        return securityLevel;
     }
 
     public String getAuthenticationScheme() {
