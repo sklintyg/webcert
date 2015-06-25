@@ -296,9 +296,9 @@
             },
 
             {
-                "firstName": "Peter",
-                "lastName": "Privat",
-                "personId" : "198001010101",
+                "firstName": "Tolvan",
+                "lastName": "Privatläkarsson",
+                "personId" : "19121212-1212",
                 "privatLakare" : true
             }
         ];
@@ -378,7 +378,7 @@
                         <option value="22" id="fitnesse-admin2">Fitnesse Admin-1 (Administratör Vardenhet Fitnesse 2)</option>
                         <option value="23">Han Solo (Administratör, Centrum Norr)</option>
                         <option value="24" id="perpersson_anestesikliniken">Per Persson (Läkare Anestesikliniken)</option>
-                        <option value="25" id="private-practicioner-1">Peter Privat (Test Privatläkare)</option>
+                        <option value="25" id="private-practicioner-1">Tolvan Privatläkarsson (Test Privatläkare)</option>
                     </select>
                     <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary"
                            style="margin-top: 20px;width: 100%">

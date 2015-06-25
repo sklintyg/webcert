@@ -42,5 +42,7 @@
         "vardform": []
     },
     "vardgivare": {
+        "vardgivareId" : "HSA123456789-0000",
+        "vardgivarenamn" : "Privatvardgivaren"
     }
 }}

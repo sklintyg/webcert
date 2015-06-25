@@ -15,9 +15,9 @@ import org.opensaml.xml.XMLObject;
  */
 public class CgiElegAssertion {
 
-    public static final String PERSON_ID_ATTRIBUTE = "urn:fix:me:cgi:attribute:personId";
-    public static final String FORNAMN_ATTRIBUTE = "urn:fix:me:cgi:attribute:givenName";
-    public static final String MELLAN_OCH_EFTERNAMN_ATTRIBUTE = "urn:fix:me:cgi:attribute:middleAndSurname";
+    public static final String PERSON_ID_ATTRIBUTE = "Subject_SerialNumber";
+    public static final String FORNAMN_ATTRIBUTE = "Subject_GivenName";
+    public static final String MELLAN_OCH_EFTERNAMN_ATTRIBUTE = "Subject_Surname";
 
     private String authenticationScheme;
 

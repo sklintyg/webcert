@@ -19,6 +19,7 @@ import se.inera.auth.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
@@ -70,13 +71,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         webCertUser.setLakare(true);
         webCertUser.setNamn(hosPerson.getFullstandigtNamn());
 
-        Vardenhet selectableVardenhet = new Vardenhet(hosPerson.getEnhet().getEnhetsId().getExtension(), hosPerson.getEnhet().getEnhetsnamn());
-        webCertUser.setValdVardenhet(selectableVardenhet);
-        webCertUser.setValdVardgivare(selectableVardenhet);
-
-        List<Vardenhet> vardenhetList = new ArrayList<>();
-        vardenhetList.add(selectableVardenhet);
-
+        decorateWithVardgivare(hosPerson, webCertUser);
         decorateWithLegitimeradeYrkesgrupper(hosPerson, webCertUser);
         decorateWithSpecialiceringar(hosPerson, webCertUser);
         decorateWebCertUserWithAvailableFeatures(webCertUser);
@@ -86,6 +81,36 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
             webCertUser.setAuthenticationScheme(authnContextClassRef);
         }
         return webCertUser;
+    }
+
+    private void decorateWithVardgivare(HoSPersonType hosPerson, WebCertUser webCertUser) {
+        Vardgivare vardgivare = new Vardgivare(hosPerson.getEnhet().getVardgivare().getVardgivareId(), hosPerson.getEnhet().getVardgivare().getVardgivarenamn());
+
+        Vardenhet vardenhet = new Vardenhet(hosPerson.getEnhet().getEnhetsId().getExtension(), hosPerson.getEnhet().getEnhetsnamn());
+        resolveArbetsplatsKod(hosPerson, vardenhet);
+
+        List<Vardenhet> vardenhetList = new ArrayList<>();
+        vardenhetList.add(vardenhet);
+        vardgivare.setVardenheter(vardenhetList);
+
+        List<Vardgivare> vardgivareList = new ArrayList<>();
+        vardgivareList.add(vardgivare);
+        webCertUser.setVardgivare(vardgivareList);
+
+        webCertUser.setValdVardenhet(vardenhet);
+        webCertUser.setValdVardgivare(vardgivare);
+    }
+
+    /**
+     * Arbetsplatskod is not mandatory for Privatläkare. In that case, use the HSA-ID of the practitioner.
+     * (See Informationspecification Webcert, version 4.6, page 83)
+     */
+    private void resolveArbetsplatsKod(HoSPersonType hosPerson, Vardenhet vardenhet) {
+        if (hosPerson.getEnhet().getArbetsplatskod() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().length() == 0) {
+            vardenhet.setArbetsplatskod(hosPerson.getHsaId().getExtension());
+        } else {
+            vardenhet.setArbetsplatskod(hosPerson.getEnhet().getArbetsplatskod().getExtension());
+        }
     }
 
     private void decorateWithLegitimeradeYrkesgrupper(HoSPersonType hosPerson, WebCertUser webCertUser) {
