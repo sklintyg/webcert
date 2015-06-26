@@ -1,10 +1,8 @@
 package se.inera.webcert.spec
-
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.*
 import se.inera.webcert.pages.fk7263.VisaFk7263Page
 import se.inera.webcert.pages.ts_bas.VisaTsBasPage
-import se.inera.webcert.pages.ts_diabetes.EditCertPage
 import se.inera.webcert.pages.ts_diabetes.VisaTsDiabetesPage
 
 class SokSkrivIntyg {
@@ -87,9 +85,7 @@ class SokSkrivIntyg {
             waitFor {
                 at SokSkrivValjIntygTypPage
             }
-            waitFor {
-                expected == page.patientNamn.text()
-            }
+            expected == page.patientNamn.text()
         }
         true
     }
