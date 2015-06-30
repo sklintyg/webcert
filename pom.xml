@@ -19,8 +19,8 @@
   <properties>
 
     <!-- Common -->
-    <common.version>2.2.0</common.version>
-    <common.version.range>(,2.2.0]</common.version.range>
+    <common.version>2.2.1</common.version>
+    <common.version.range>(,2.2.1]</common.version.range>
 
     <!-- Intygstyper -->
     <intygstyper.version>2.2.1</intygstyper.version>
