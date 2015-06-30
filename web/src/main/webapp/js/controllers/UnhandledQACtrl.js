@@ -157,7 +157,7 @@ angular.module('webcert').controller('webcert.UnhandledQACtrl',
 
                     $log.log("QuestionAnswer.getQA success +++++++++++++++");
 
-                    $log.log("--- preparedQuery : " + JSON.stringify(preparedQuery));
+                    //$log.log("--- preparedQuery : " + JSON.stringify(preparedQuery));
                     $scope.widgetState.totalCount = successData.totalCount;
 
                     var qaListQuery = [];
