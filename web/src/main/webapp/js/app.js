@@ -3,8 +3,8 @@ window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 
 var app = angular.module('webcert', ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll']);
 
-app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider',
-    function($httpProvider, http403ResponseInterceptorProvider) {
+app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider',
+    function($httpProvider, http403ResponseInterceptorProvider, $logProvider) {
         'use strict';
 
         // Add cache buster interceptor
@@ -13,6 +13,9 @@ app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider',
         // Configure 403 interceptor provider
         http403ResponseInterceptorProvider.setRedirectUrl('/error.jsp');
         $httpProvider.responseInterceptors.push('common.http403ResponseInterceptor');
+
+        // Enable debug logging
+        $logProvider.debugEnabled(false);
     }]);
 
 // Decorators that update form input names and interpolates them. Needed for datepicker directives templates dynamic name attributes
