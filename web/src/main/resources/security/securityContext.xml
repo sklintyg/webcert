@@ -25,6 +25,7 @@
   <security:http security="none" pattern="/"/>
   <security:http security="none" pattern="/error.jsp"/>
   <security:http security="none" pattern="/saml/web/**"/>
+  <security:http security="none" pattern="/saml2/web/**"/>
   <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/monitoring/**"/>
   <security:http security="none" pattern="/favicon.ico"/>
@@ -131,6 +132,7 @@
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
       <security:authentication-provider ref="fakeAuthenticationProvider"/>
+      <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
     </security:authentication-manager>
   </beans>
 
@@ -239,16 +241,20 @@
       <constructor-arg>
         <bean class="org.springframework.security.saml.metadata.MetadataGenerator">
           <property name="entityId" value="${sakerhetstjanst.saml.entityId}"/>
-          <property name="entityBaseURL" value="${sakerhetstjanst.saml.entityBaseUrl}"/>
+          <property name="entityBaseURL" value="${sakerhetstjanst.saml.entityBaseUrl}"/>         <!--  -->
           <property name="signMetadata" value="false"/>
           <property name="includeDiscovery" value="false"/>
           <property name="bindingsSSO" value="POST"/>
         </bean>
       </constructor-arg>
+      <property name="displayFilter" ref="metadataDisplayFilter"/>
+      <property name="manager" ref="metadata"/>
     </bean>
 
     <!-- The filter is waiting for connections on URL suffixed with filterSuffix and presents SP metadata there -->
-    <bean id="metadataDisplayFilter" class="org.springframework.security.saml.metadata.MetadataDisplayFilter"/>
+    <bean id="metadataDisplayFilter" class="org.springframework.security.saml.metadata.MetadataDisplayFilter">
+      <property name="manager" ref="metadata"/>
+    </bean>
 
     <!-- IDP Metadata configuration - paths to metadata of IDPs in circle of trust is here -->
     <!-- Do no forget to call initalize method on providers -->
@@ -263,7 +269,7 @@
               </bean>
             </constructor-arg>
             <constructor-arg ref="httpClient"/>
-            <constructor-arg value="${sakerhetstjanst.saml.idp.metadata.url}"/>
+            <constructor-arg value="${sakerhetstjanst.saml.idp.metadata.url}"/>               <!-- Grisen -->
             <property name="parserPool" ref="parserPool"/>
           </bean>
         </list>

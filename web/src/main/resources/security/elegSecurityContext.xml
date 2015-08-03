@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+              http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <!-- Logger for SAML messages and events -->
+  <bean id="elegSamlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger">
+    <property name="logMessages" value="true"/>
+    <property name="logErrors" value="true"/>
+  </bean>
+
+  <bean id="elegWebCertUserDetailsService" class="se.inera.auth.eleg.ElegWebCertUserDetailsService"/>
+
+  <!-- Update with Eleg inloggning redirects -->
+  <bean id="elegFailureHandler"
+      class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
+    <property name="exceptionMappings">
+      <props>
+        <prop key="se.inera.auth.exceptions.MissingMedarbetaruppdragException">
+          /error.jsp?reason=login.medarbetaruppdrag
+        </prop>
+        <prop key="org.springframework.security.authentication.BadCredentialsException">
+          /error.jsp?reason=login.failed
+        </prop>
+        <prop key="se.inera.auth.exceptions.HsaServiceException">
+          /error.jsp?reason=login.hsaerror
+        </prop>
+      </props>
+    </property>
+    <property name="defaultFailureUrl" value="/error.jsp?reason=login.failed"/>
+  </bean>
+
+  <beans profile="prod,wc-security-test,wc-security-prod">
+    <bean id="elegSamlFilter" class="org.springframework.security.web.FilterChainProxy">
+      <security:filter-chain-map request-matcher="ant">
+        <security:filter-chain pattern="/saml/eleg/login/**" filters="elegSamlEntryPoint"/>
+        <security:filter-chain pattern="/saml/eleg/logout/**" filters="samlLogoutFilter"/>
+        <security:filter-chain pattern="/saml/eleg/metadata/**" filters="elegMetadataDisplayFilter"/>
+        <security:filter-chain pattern="/saml/eleg/SSO/**" filters="elegSamlWebSSOProcessingFilter"/>
+        <security:filter-chain pattern="/saml/eleg/SingleLogout/**" filters="samlLogoutProcessingFilter"/>
+      </security:filter-chain-map>
+    </bean>
+
+    <!-- Processing filter for WebSSO profile messages -->
+    <bean id="elegSamlWebSSOProcessingFilter" class="org.springframework.security.saml.SAMLProcessingFilter">
+      <property name="authenticationManager" ref="authenticationManager"/>
+      <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
+      <property name="authenticationSuccessHandler" ref="successRedirectHandler"/>
+      <property name="authenticationFailureHandler" ref="elegFailureHandler"/>
+    </bean>
+
+    <!-- Entry point to initialize authentication, default values taken from properties file -->
+    <bean id="elegSamlEntryPoint" class="org.springframework.security.saml.SAMLEntryPoint">
+      <property name="defaultProfileOptions">
+        <bean class="org.springframework.security.saml.websso.WebSSOProfileOptions">
+          <property name="includeScoping" value="false"/>
+          <property name="authnContexts">
+            <list>
+              <!--  <value>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</value>         -->
+              <value>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI</value>
+            </list>
+          </property>
+        </bean>
+      </property>
+    </bean>
+
+    <!-- Filter automatically generates default SP metadata -->
+    <bean id="elegMetadataGeneratorFilter" class="org.springframework.security.saml.metadata.MetadataGeneratorFilter">
+      <constructor-arg>
+        <bean class="org.springframework.security.saml.metadata.MetadataGenerator">
+          <!-- Byt ut de två nedanstående mot CGI-specifika props -->
+          <property name="entityId" value="eleg"/>
+          <property name="entityBaseURL" value="${sakerhetstjanst.saml.entityBaseUrl}/eriktest"/>
+          <property name="signMetadata" value="false"/>
+          <property name="includeDiscovery" value="false"/>
+          <property name="includeDiscoveryExtension" value="true"/>
+          <property name="bindingsSSO" value="POST"/>
+        </bean>
+      </constructor-arg>
+      <property name="displayFilter" ref="elegMetadataDisplayFilter"/>
+      <property name="manager" ref="elegMetadata"/>
+    </bean>
+
+    <!-- The filter is waiting for connections on URL suffixed with filterSuffix and presents SP metadata there -->
+    <bean id="elegMetadataDisplayFilter" class="org.springframework.security.saml.metadata.MetadataDisplayFilter">
+      <property name="manager" ref="elegMetadata"/>
+    </bean>
+
+    <!-- IDP Metadata configuration - paths to metadata of IDPs in circle of trust is here --><!-- Do no forget to call initalize method on providers -->
+    <bean id="elegMetadata" class="org.springframework.security.saml.metadata.CachingMetadataManager">
+      <constructor-arg>
+        <list>
+          <bean class="org.opensaml.saml2.metadata.provider.HTTPMetadataProvider">
+            <!-- URL containing the metadata -->
+            <constructor-arg>
+              <bean class="java.util.Timer">
+                <constructor-arg value="true"/>
+              </bean>
+            </constructor-arg>
+            <constructor-arg ref="httpClient"/>
+            <!-- Byt ut URL propertyn här!! -->
+            <constructor-arg value="${sakerhetstjanst.saml.idp.metadata.url}"/>    <!-- /elegerik -->
+            <property name="parserPool" ref="parserPool"/>
+          </bean>
+        </list>
+      </constructor-arg>
+      <property name="refreshCheckInterval" value="86400000"/>
+      <!-- refresh meta data once a day -->
+    </bean>
+
+    <!-- SAML Authentication Provider responsible for validating of received SAML messages -->
+    <bean id="elegSamlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider">
+      <property name="userDetails" ref="elegWebCertUserDetailsService"/>
+    </bean>
+
+    <!-- SAML 2.0 WebSSO Assertion Consumer -->
+    <bean id="elegWebSSOprofileConsumer" class="org.springframework.security.saml.websso.WebSSOProfileConsumerImpl">
+      <!-- BYT UT PROPERTY!! -->
+      <property name="responseSkew" value="${sakerhetstjanst.saml.responseSkew}"/>
+    </bean>
+
+    <!-- Central storage of cryptographic keys -->
+    <bean id="elegKeyManager" class="org.springframework.security.saml.key.JKSKeyManager">
+
+      <!-- Byt ut propertyn! -->
+      <constructor-arg value="${sakerhetstjanst.saml.keystore.file}"/>
+      <!-- Byt ut propertyn! -->
+      <constructor-arg type="java.lang.String" value="${sakerhetstjanst.saml.keystore.password}"/>
+      <constructor-arg>
+        <map>
+          <!-- Byt ut propertyn! -->
+          <entry key="${sakerhetstjanst.saml.keystore.alias}" value="${sakerhetstjanst.saml.keystore.password}"/>
+        </map>
+      </constructor-arg>
+      <!-- Byt ut propertyn! -->
+      <constructor-arg type="java.lang.String" value="${sakerhetstjanst.saml.keystore.alias}"/>
+    </bean>
+
+    <bean id="elegHttp403ForbiddenEntryPoint"
+        class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+  </beans>
+
+  <!-- =============================================================== --><!-- The wc-security-test profile support both Säkerhetstjänst and Fake login --><!-- =============================================================== -->
+  <beans profile="wc-security-test">
+    <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
+    <security:http entry-point-ref="elegSamlEntryPoint" pattern="(\/saml\/eleg\/.*)" path-type="regex">
+      <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter before="FIRST" ref="elegMetadataGeneratorFilter"/>
+      <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
+      <security:custom-filter after="BASIC_AUTH_FILTER" ref="elegSamlFilter"/>
+      <security:request-cache ref="httpSessionRequestCache"/>
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+    </security:http>
+    <security:http entry-point-ref="elegHttp403ForbiddenEntryPoint">
+      <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter before="FIRST" ref="elegMetadataGeneratorFilter"/>
+      <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
+      <security:custom-filter after="BASIC_AUTH_FILTER" ref="elegSamlFilter"/>
+      <security:request-cache ref="httpSessionRequestCache"/>
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+    </security:http>
+    <security:authentication-manager alias="authenticationManager">
+      <security:authentication-provider ref="elegSamlAuthenticationProvider"/>
+      <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
+    </security:authentication-manager>
+  </beans>
+
+</beans>

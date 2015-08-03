@@ -19,7 +19,7 @@ import org.w3c.dom.Document;
 /**
  * @author eriklupander
  */
-public class CGISakerhetstjanstAssertionTest {
+public class CgiElegAssertionTest {
 
     private static org.opensaml.saml2.core.Assertion assertionPrivatlakare;
 

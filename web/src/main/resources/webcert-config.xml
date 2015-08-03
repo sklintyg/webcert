@@ -15,6 +15,7 @@
 
   <import resource="classpath:/repository-context.xml" />
   <import resource="security/securityContext.xml" />
+ <!-- <import resource="security/elegSecurityContext.xml" />       -->
   <import resource="classpath:/hsa-services-config.xml" />
   <import resource="classpath:/pu-services-config.xml" />
   <import resource="classpath:/pp-services-config.xml" />
