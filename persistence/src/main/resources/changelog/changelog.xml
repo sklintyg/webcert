@@ -444,4 +444,42 @@
         tableName="OMSANDNING"/>
   </changeSet>
 
+  <changeSet id="18" author="el">
+
+    <createTable tableName="AVTAL_PRIVATLAKARE">
+      <column name="AVTAL_VERSION" type="bigint" defaultValue="0">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="AVTAL_TEXT" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="GODKANT_AVTAL_PRIVATLAKARE">
+      <column name="INTERNREFERENS" type="bigint" defaultValue="0">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="AVTAL_VERSION" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ANVANDAR_ID" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="GODKAND_DATUM" type="datetime">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Add auto incremented id column to table -->
+    <addAutoIncrement columnDataType="bigint"
+        columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+        tableName="GODKANT_AVTAL_PRIVATLAKARE" />
+
+    <addUniqueConstraint
+        columnNames="AVTAL_VERSION, ANVANDAR_ID"
+        constraintName="GODKANT_AVTAL_UNIQUE_CONST"
+        tableName="GODKANT_AVTAL_PRIVATLAKARE"/>
+
+  </changeSet>
+
 </databaseChangeLog>
