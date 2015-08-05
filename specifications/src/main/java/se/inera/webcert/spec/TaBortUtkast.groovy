@@ -8,6 +8,11 @@ class TaBortUtkast extends RestClientFixture {
     
     String utkastId
     String enhetsId
+	def response;
+	
+	public String respons(){
+		return response.status;
+	}
     
     // Allow use both as DecisionTable and Script fixture
     def execute() {
@@ -16,15 +21,15 @@ class TaBortUtkast extends RestClientFixture {
     }
 
     def taBortAllaUtkast() {
-        restClient.delete(path: "intyg/")
+        response = restClient.delete(path: "intyg/")
     }
     
     def taBortUtkast(String utkastId) {
-        restClient.delete(path: "intyg/${utkastId}")
+        response = restClient.delete(path: "intyg/${utkastId}")
     }
     
     def taBortUtkastForEnhet(String enhetsId) {
-        restClient.delete(path: "intyg/enhet/${enhetsId}")
+        response = restClient.delete(path: "intyg/enhet/${enhetsId}")
     }
     
 }

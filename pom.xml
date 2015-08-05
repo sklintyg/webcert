@@ -488,6 +488,9 @@
             common.version,
             intygstyper.version,
             intyg-privatepractitioner.version
+            intyg-clinicalprocess.version,
+            intyg-insuranceprocess.version,
+            intyg-transportstyrelsen.version
           </includeProperties>
           <properties>
             <property>
@@ -499,9 +502,21 @@
               <version>${intygstyper.version.range}</version>
             </property>
             <property>
+              <name>intyg-clinicalprocess.version</name>
+              <version>${intyg-clinicalprocess.version.range}</version>
+            </property>
+            <property>
+              <name>intyg-insuranceprocess.version</name>
+              <version>${intyg-insuranceprocess.version.range}</version>
+            </property>
+            <property>
+              <name>intyg-transportstyrelsen.version</name>
+              <version>${intyg-transportstyrelsen.version.range}</version>
+            </property>
+ <property>
               <name>intyg-privatepractitioner.version</name>
               <version>${intyg-privatepractitioner.version.range}</version>
-            </property>
+             </property>
           </properties>
         </configuration>
       </plugin>

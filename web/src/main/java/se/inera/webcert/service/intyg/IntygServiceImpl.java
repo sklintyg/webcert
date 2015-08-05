@@ -35,6 +35,7 @@ import se.inera.webcert.service.intyg.config.SendIntygConfiguration;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacade;
 import se.inera.webcert.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverter;
+import se.inera.webcert.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.webcert.service.intyg.dto.*;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
@@ -94,6 +95,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private CertificateSenderService certificateSenderService;
+
+    @Autowired
+    private UtkastIntygDecorator utkastIntygDecorator;
     
     /* --------------------- Public scope --------------------- */
 
@@ -313,11 +317,16 @@ public class IntygServiceImpl implements IntygService {
      * Builds a IntygContentHolder by first trying to get the Intyg from intygstjansten. If
      * not found or the Intygstjanst couldn't be reached, the local Utkast - if available -
      * will be used instead.
+     *
+     * Note that even when found, we check if we need to decorate the response with data from the utkast in order
+     * to mitigate async send states. (E.g. a send may be in resend due to 3rd party issues, in that case decorate with
+     * data about sent state from the Utkast)
      */
     private IntygContentHolder getIntygData(String intygId, String typ) {
         try {
             CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
             String internalIntygJsonModel = certificate.getInternalModel();
+            utkastIntygDecorator.decorateWithUtkastStatus(certificate);
             return new IntygContentHolder(internalIntygJsonModel, certificate.getUtlatande(), certificate.getMetaData().getStatus(), certificate.isRevoked());
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing exception
@@ -337,6 +346,7 @@ public class IntygServiceImpl implements IntygService {
             return buildIntygContentHolder(typ, utkast);
         }
     }
+
 
     /**
      * As the name of the method implies, this method builds a IntygContentHolder instance

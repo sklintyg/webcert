@@ -10,6 +10,12 @@ class TaBortFraga extends RestClientFixture {
     String externReferens
     String frageText
     String svarsText
+	def response;
+	
+	
+	public String respons(){
+		return response.status;
+	}
     
     // Allow use both as DecisionTable and Script fixture
     def execute() {
@@ -20,26 +26,27 @@ class TaBortFraga extends RestClientFixture {
     }
 
     def taBortFragaMedExternReferens(String externReferens) {
-        restClient.delete(path: "questions/extern/${externReferens}")
+        response = restClient.delete(path: "questions/extern/${externReferens}")
     }
 
     def taBortFragaMedInternReferens(String internReferens) {
-        restClient.delete(path: "questions/${internReferens}")
+        response = restClient.delete(path: "questions/${internReferens}")
     }
 
     def taBortFragaMedFrageText(String frageText) {
-        restClient.delete(path: "questions/frageText/${frageText}")
+        response = restClient.delete(path: "questions/frageText/${frageText}")
     }
 
     def taBortFragaMedSvarsText(String svarsText) {
-        restClient.delete(path: "questions/svarsText/${svarsText}")
+        response = restClient.delete(path: "questions/svarsText/${svarsText}")
     }
 
     def taBortFragorForEnhet(String enhetsId) {
-        restClient.delete(path: "questions/enhet/${enhetsId}")
+		System.out.println("tar bort alla frågor för enhet: "+ enhetsId + "..")
+        response = restClient.delete(path: "questions/enhet/${enhetsId}")
     }
 
     def taBortAllaFragor() {
-        restClient.delete(path: "questions/")
+        response = restClient.delete(path: "questions/")
     }
 }

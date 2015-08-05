@@ -11,6 +11,16 @@ import se.inera.webcert.exception.TemporaryException;
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
 
+    /*
+     * The second half of this route, sendNotificationToWS, is supposed to be used with redelivery. The
+     * route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
+     * by any component in this route is NOT handled by the route, but triggers a transaction rollback in the
+     * MQ provider. The MQ provider will then, if properly configured, put the message back into the queue after
+     * the proper redelivery wait time has passed.
+     *
+     * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
+     */
+
     @Override
     public void configure() throws Exception {
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")

@@ -395,22 +395,7 @@
     <renameColumn tableName="FRAGASVAR" columnDataType="varchar(255)" oldColumnName="PATIENT_ID_EXTENSION" newColumnName="PATIENT_ID"/>
   </changeSet>
   
-    <changeSet id="13" author="el">
-    <addColumn tableName="INTYG">
-      <column name="SKICKAD_TILL_MOTTAGARE_DATUM" type="datetime">
-        <constraints nullable="true" />
-      </column>
-      <column name="ATERKALLAD_DATUM" type="datetime">
-        <constraints nullable="true" />
-      </column>
-      <column name="SKICKAD_TILL_MOTTAGARE" type="varchar(255)">
-        <constraints nullable="true" />
-      </column>
-    </addColumn>
-  </changeSet>
-
-
-   <changeSet id="14" author="bb">
+   <changeSet id="13" author="bb">
      <addColumn tableName="OMSANDNING">
       <column name="VERSION" type="bigint" defaultValue="0">
         <constraints nullable="false"/>
@@ -421,12 +406,12 @@
     </addColumn>
  </changeSet>
 
-  <changeSet id="15" author="bb">
+  <changeSet id="14" author="bb">
      <dropColumn tableName="OMSANDNING" columnName="VERSION"/>
      <dropColumn tableName="OMSANDNING" columnName="BEARBETAS"/>
  </changeSet>
 
-  <changeSet id="16" author="bb">
+  <changeSet id="15" author="bb">
     <createTable tableName="SCHEDULERAT_JOBB">
       <column name="JOBB_ID" type="varchar(32)">
         <constraints primaryKey="true" nullable="false" />
@@ -440,10 +425,61 @@
     </createTable>
  </changeSet>
 
+  <changeSet id="16" author="el">
+    <addColumn tableName="INTYG">
+      <column name="SKICKAD_TILL_MOTTAGARE_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="ATERKALLAD_DATUM" type="datetime">
+        <constraints nullable="true" />
+      </column>
+      <column name="SKICKAD_TILL_MOTTAGARE" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+    </addColumn>
+  </changeSet>
 
   <changeSet id="17" author="el">
     <dropTable cascadeConstraints="true"
         tableName="OMSANDNING"/>
+  </changeSet>
+
+  <changeSet id="18" author="el">
+
+    <createTable tableName="AVTAL_PRIVATLAKARE">
+      <column name="AVTAL_VERSION" type="bigint" defaultValue="0">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="AVTAL_TEXT" type="text">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable tableName="GODKANT_AVTAL_PRIVATLAKARE">
+      <column name="INTERNREFERENS" type="bigint" defaultValue="0">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="AVTAL_VERSION" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ANVANDAR_ID" type="varchar(255)">
+        <constraints nullable="true" />
+      </column>
+      <column name="GODKAND_DATUM" type="datetime">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Add auto incremented id column to table -->
+    <addAutoIncrement columnDataType="bigint"
+        columnName="INTERNREFERENS" incrementBy="1" startWith="1"
+        tableName="GODKANT_AVTAL_PRIVATLAKARE" />
+
+    <addUniqueConstraint
+        columnNames="AVTAL_VERSION, ANVANDAR_ID"
+        constraintName="GODKANT_AVTAL_UNIQUE_CONST"
+        tableName="GODKANT_AVTAL_PRIVATLAKARE"/>
+
   </changeSet>
 
 </databaseChangeLog>

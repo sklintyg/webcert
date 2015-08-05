@@ -5,22 +5,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.common.internal.Utlatande;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.converter.IntygServiceConverterImpl.Operation;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class IntygServiceConverterTest {
 
@@ -94,7 +92,7 @@ public class IntygServiceConverterTest {
      * Feed the buildUtlatandeFromUtkastModel with invalid JSON, expect WebCertServiceException.
      */
     @Test(expected = WebCertServiceException.class)
-    public void testUtlatandeNotBuiltFromInvalidJson() throws IOException {
+    public void testUtlatandBuiltFromInvalidJson() throws IOException {
         converter.setObjectMapper(new CustomObjectMapper());
 
         Utkast utkast = new Utkast();

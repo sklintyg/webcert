@@ -101,9 +101,11 @@ class IntegrationMedJournalsystem {
     }
 
     boolean nyttPersonnummerMeddelandeVisas() {
+		def result
         Browser.drive {
-            return page.nyttPersonnummer.isDisplayed()
+            result = page.nyttPersonnummer.isDisplayed()
         }
+		return result
     }
 
     boolean signerandeLakareMeddelandeVisas(expected) {
@@ -112,15 +114,32 @@ class IntegrationMedJournalsystem {
         }
     }
 
-    def verifieraNamnOchPersonnummer(String expected) {
+    String patientensNamn() {
+		String namnOchPersonnummer
         Browser.drive {
-            waitFor {
-                expected == page.namnOchPersonnummer.text()
-            }
+			waitFor{
+				page.namnOchPersonnummer.isDisplayed()
+			}
+			namnOchPersonnummer = page.namnOchPersonnummer.text()
         }
-        true
+		
+       def (namn, personnummer) = namnOchPersonnummer.split( ' - ' )
+	   return namn
     }
-
+	
+	String patientensPersonnummer() {
+		String namnOchPersonnummer
+		Browser.drive {
+			waitFor{
+				page.namnOchPersonnummer.isDisplayed()
+			}
+			namnOchPersonnummer = page.namnOchPersonnummer.text()
+		}
+		
+	   def (namn, personnummer) = namnOchPersonnummer.split( ' - ' )
+	   return personnummer
+	}
+	
     boolean kopieraIntyg(String intygId) {
         Browser.drive {
             page.copyButton.isDisplayed()
@@ -294,17 +313,21 @@ class IntegrationMedJournalsystem {
         }
     }
 
-    boolean nyttPersonNummerTextVisas() {
+	boolean nyttPersonNummerTextVisas() {
+		boolean result
+		Browser.drive {
+			result = page.kopieraDialogMsgNyttPersonId.isDisplayed()
+		}
+		return result
+	}
+	
+     boolean nyttPersonNummerTextInteVisas() {
+		boolean result
         Browser.drive {
-            return page.kopieraDialogMsgNyttPersonId.isDisplayed()
+            result = !page.kopieraDialogMsgNyttPersonIdNoWait.isDisplayed();
         }
-    }
-
-    boolean nyttPersonNummerTextInteVisas() {
-        Browser.drive {
-            return !page.kopieraDialogMsgNyttPersonIdNoWait.isDisplayed();
-        }
-    }
+		return result
+     }
 
 
     def toggleKopieraDialogen(boolean val) {

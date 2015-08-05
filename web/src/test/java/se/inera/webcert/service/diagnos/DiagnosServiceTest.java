@@ -131,4 +131,10 @@ public class DiagnosServiceTest {
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
                 service.searchDiagnosisByDescription(" ", ICD_10, 5).getResultat());
     }
+
+    @Test
+    public void testValidateDiagnosesCodeMissingKodverk() {
+        boolean valid = service.validateDiagnosisCode("A18", null);
+        assertFalse(valid);
+    }
 }

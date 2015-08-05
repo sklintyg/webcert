@@ -7,8 +7,10 @@ import java.util.List;
  * @author johannesc
  */
 public class PersonStub {
+
     private String hsaId;
     private String name;
+
     private List<String> medarbetaruppdrag = new ArrayList();
 
     public String getHsaId() {
