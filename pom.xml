@@ -38,6 +38,9 @@
 
     <intyg-privatepractitioner.version>0-SNAPSHOT</intyg-privatepractitioner.version>
     <intyg-privatepractitioner.version.range>(,1.0.0]</intyg-privatepractitioner.version.range>
+
+    <intyg-privatepractitioner-terms.version>0-SNAPSHOT</intyg-privatepractitioner-terms.version>
+    <intyg-privatepractitioner-terms.version.range>(,1.0.0]</intyg-privatepractitioner-terms.version.range>
   </properties>
 
   <modules>
@@ -245,6 +248,11 @@
       <dependency>
         <groupId>se.inera.intyg.infrastructure.directory.privatepractitioner</groupId>
         <artifactId>intyg-infrastructure-directory-privatepractitioner-schemas</artifactId>
+        <version>${intyg-privatepractitioner.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.inera.intyg.privatepractitioner.terms</groupId>
+        <artifactId>webcert-privatepractitioner-terms</artifactId>
         <version>${intyg-privatepractitioner.version}</version>
       </dependency>
 

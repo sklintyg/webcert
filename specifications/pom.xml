@@ -64,6 +64,10 @@
       <groupId>se.riv.itintegration.monitoring</groupId>
       <artifactId>itintegration-monitoring-schemas</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.privatepractitioner.terms</groupId>
+      <artifactId>webcert-privatepractitioner-terms</artifactId>
+    </dependency>
 
     <!-- Misc -->
     <dependency>

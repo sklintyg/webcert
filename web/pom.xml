@@ -124,6 +124,10 @@
       <groupId>se.inera.intyg.transportstyrelsen</groupId>
       <artifactId>intyg-transportstyrelsen-schemas</artifactId>
     </dependency>
+    <dependency>
+      <groupId>se.inera.intyg.privatepractitioner.terms</groupId>
+      <artifactId>webcert-privatepractitioner-terms</artifactId>
+    </dependency>
 
     <!-- Logging -->
     <dependency>
