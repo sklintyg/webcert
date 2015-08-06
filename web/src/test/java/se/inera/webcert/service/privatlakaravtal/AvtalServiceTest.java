@@ -14,6 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
 import se.inera.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
+import se.inera.webcert.service.monitoring.MonitoringLogService;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -30,6 +31,9 @@ public class AvtalServiceTest {
 
     @Mock
     GodkantAvtalRepository godkantAvtalRepository;
+
+    @Mock
+    MonitoringLogService monitoringLogService;
 
     @InjectMocks
     AvtalServiceImpl avtalService;
@@ -65,7 +69,21 @@ public class AvtalServiceTest {
         when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
         avtalService.approveLatestAvtal(USER_ID);
         verify(godkantAvtalRepository, times(1)).approveAvtal(anyString(), anyInt());
+        verify(monitoringLogService, times(1)).logPrivatePractitionerTermsApproved(anyString(), anyInt());
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void testApproveAvtalNoAvtalInDB() {
+        when(avtalRepository.getLatestAvtalVersion()).thenReturn(-1);
+        try {
+            avtalService.approveLatestAvtal(USER_ID);
+        } catch (Exception e) {
+            verify(godkantAvtalRepository, times(0)).approveAvtal(anyString(), anyInt());
+            verify(monitoringLogService, times(0)).logPrivatePractitionerTermsApproved(anyString(), anyInt());
+            throw e;
+        }
+    }
+
 
 
     private Avtal buildAvtal(Integer avtalVersion) {

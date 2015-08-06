@@ -158,6 +158,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.PU_LOOKUP, hash(personNummer), result);
     }
 
+    @Override
+    public void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion) {
+        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, hash(userId), avtalVersion);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -201,7 +206,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_CONCURRENTLY_EDITED("Utkast '{}' of type '{}' was concurrently edited by multiple users"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
-        PU_LOOKUP("Lookup performed on '{}' with result '{}'");
+        PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
+        PP_TERMS_ACCEPTED("User '{}' accepted private practitioner terms of version {}");
 
         private String msg;
 

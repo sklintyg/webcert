@@ -78,5 +78,14 @@
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
+
+  <jaxws:endpoint address="/approve-private-practitioner-terms/v1.0" implementor="se.inera.webcert.integration.ApprovePrivatePractitionerTermsResponderImpl">
+    <jaxws:outFaultInterceptors>
+      <bean
+          class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
+        <constructor-arg value="transform/approve-privatepractitioner-terms.xslt" />
+      </bean>
+    </jaxws:outFaultInterceptors>
+  </jaxws:endpoint>
   
 </beans>
