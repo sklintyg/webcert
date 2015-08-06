@@ -12,7 +12,7 @@ class HamtaAvtal extends WsClientFixture {
     private def avtalResponder
 
     String avtalText
-    String avtalVersion
+    Integer avtalVersion
 
     public HamtaAvtal() {
         super()
