@@ -23,7 +23,7 @@ var UtkastPage = function() {
         return browser.wait(smittskyddLabel.isDisplayed());
     };
 
-    this.getSmittskyddLabelText = function(text){
+    this.getSmittskyddLabelText = function(){
         return smittskyddLabel.getText();
     };
 

@@ -3,10 +3,13 @@
 !3 Ta bort eventuella kvarvarande utkast på enheten
 | script | ta bort utkast |
 |ta bort utkast for enhet| IFV1239877878-1042 |
+|check|respons|200|
+
 
 !3 Ta bort eventuella kvarvarande frågor på enheten
 | script | ta bort fraga |
 |ta bort fragor for enhet| IFV1239877878-1042 |
+|check|respons|200|
 
 !3 Ta bort eventuella kvarvarande intyg
 

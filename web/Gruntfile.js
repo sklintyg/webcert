@@ -127,7 +127,7 @@ module.exports = function(grunt) {
         ngtemplates : {
             webcert: {
                 cwd: __dirname + '/src/main/webapp',
-                src: ['app/views/**/*.html', 'app/partials/**/*.html'],
+                src: ['app/views/**/**.html', 'app/partials/**/**.html'],
                 dest: __dirname + '/src/main/webapp/app/templates.js',
                 options: {
                     module: 'webcert',
@@ -216,7 +216,7 @@ module.exports = function(grunt) {
             },
             your_target: {
                 // Target-specific file lists and/or options go here.
-            },
+            }
         },
 
         connect: {

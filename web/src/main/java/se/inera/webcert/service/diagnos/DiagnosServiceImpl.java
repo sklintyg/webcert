@@ -246,6 +246,11 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     private boolean validateDiagnosisCode(String diagnosisCode, Diagnoskodverk codeSystem) {
 
+        if (codeSystem == null) {
+            LOG.warn("Tried to validate diagnosis code, but supplied Diagnoskodverk was null");
+            return false;
+        }
+
         String regExp = null;
 
         switch (codeSystem) {

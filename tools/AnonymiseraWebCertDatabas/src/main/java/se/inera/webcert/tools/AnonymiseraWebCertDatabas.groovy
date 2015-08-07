@@ -11,7 +11,6 @@ import se.inera.certificate.tools.anonymisering.AnonymiseraDatum;
 import se.inera.certificate.tools.anonymisering.AnonymiseraHsaId;
 import se.inera.certificate.tools.anonymisering.AnonymiseraJson;
 import se.inera.certificate.tools.anonymisering.AnonymiseraPersonId;
-import se.inera.certificate.tools.anonymisering.AnonymiseraXml;
 import se.inera.certificate.tools.anonymisering.AnonymizeString;
 
 class AnonymiseraWebCertDatabas {
@@ -25,7 +24,6 @@ class AnonymiseraWebCertDatabas {
         AnonymiseraHsaId anonymiseraHsaId = new AnonymiseraHsaId()
         AnonymiseraDatum anonymiseraDatum = new AnonymiseraDatum()
         AnonymiseraJson anonymiseraJson = new AnonymiseraJson(anonymiseraHsaId, anonymiseraDatum)
-        AnonymiseraXml anonymiseraXml = new AnonymiseraXml(anonymiseraPersonId, anonymiseraHsaId, anonymiseraDatum)
         def props = new Properties()
         new File("dataSource.properties").withInputStream {
           stream -> props.load(stream)
@@ -36,12 +34,74 @@ class AnonymiseraWebCertDatabas {
                                 username: config.dataSource.username, password: config.dataSource.password,
                                 initialSize: numberOfThreads, maxTotal: numberOfThreads)
         def bootstrapSql = new Sql(dataSource)
-        def questionAnswers = bootstrapSql.rows("select internReferens from FRAGASVAR")
+        def certificates = bootstrapSql.rows("select INTYGS_ID from INTYG")
         bootstrapSql.close()
-        println "${questionAnswers.size()} question/answers found to anonymize"
+        println "${certificates.size()} certificates found to anonymize"
         final AtomicInteger count = new AtomicInteger(0)
         final AtomicInteger errorCount = new AtomicInteger(0)
         def output
+        GParsPool.withPool(numberOfThreads) {
+            output = certificates.collectParallel {
+                StringBuffer result = new StringBuffer() 
+                def id = it.INTYGS_ID
+                Sql sql = new Sql(dataSource)
+                try {
+                    sql.withTransaction {
+                        // Anonymisera alla befintliga frågor och svar
+                        def certificate = sql.firstRow( '''select PATIENT_PERSONNUMMER, PATIENT_FORNAMN, PATIENT_MELLANNAMN, PATIENT_EFTERNAMN, MODEL,
+                                                            SKAPAD_AV_HSAID, SKAPAD_AV_NAMN, SENAST_SPARAD_AV_HSAID, SENAST_SPARAD_AV_NAMN
+                                                     from INTYG where INTYGS_ID = :id''' , [id : id])
+                        String personNr = anonymiseraPersonId.anonymisera(certificate.PATIENT_PERSONNUMMER)
+                        String patientFornamn = certificate.PATIENT_FORNAMN ? AnonymizeString.anonymize(certificate.PATIENT_FORNAMN) : null
+                        String patientMellannamn = certificate.PATIENT_MELLANNAMN ? AnonymizeString.anonymize(certificate.PATIENT_MELLANNAMN) : null
+                        String patientEfternamn = certificate.PATIENT_EFTERNAMN ? AnonymizeString.anonymize(certificate.PATIENT_EFTERNAMN) : null
+                        String model = anonymiseraJson.anonymiseraIntygsJson(new String(certificate.MODEL, 'UTF-8'), personNr)
+                        String skapadAvHsaId = anonymiseraHsaId.anonymisera(certificate.SKAPAD_AV_HSAID)
+                        String skapadAvNamn = AnonymizeString.anonymize(certificate.SKAPAD_AV_NAMN)
+                        String sparadAvHsaId = anonymiseraHsaId.anonymisera(certificate.SENAST_SPARAD_AV_HSAID)
+                        String sparadAvNamn = AnonymizeString.anonymize(certificate.SENAST_SPARAD_AV_NAMN)
+                        sql.executeUpdate('''update INTYG set PATIENT_PERSONNUMMER = :personNr,
+                                                                  PATIENT_FORNAMN = :patientFornamn,      
+                                                                  PATIENT_MELLANNAMN = :patientMellannamn,
+                                                                  PATIENT_EFTERNAMN = :patientEfternamn,
+                                                                  MODEL = :model,
+                                                                  SKAPAD_AV_HSAID = :skapadAvHsaId,
+                                                                  SKAPAD_AV_NAMN = :skapadAvNamn,
+                                                                  SENAST_SPARAD_AV_HSAID = :sparadAvHsaId,
+                                                                  SENAST_SPARAD_AV_NAMN = :sparadAvNamn
+                                              where INTYGS_ID = :id''',
+                                              [personNr: personNr, patientFornamn: patientFornamn,
+                                               patientMellannamn: patientMellannamn, patientEfternamn: patientEfternamn,
+                                               model: model.getBytes('UTF-8'), skapadAvHsaId: skapadAvHsaId, skapadAvNamn: skapadAvNamn,
+                                               sparadAvHsaId: sparadAvHsaId, sparadAvNamn: sparadAvNamn, id: id])
+                    }
+                    int current = count.addAndGet(1)
+                    if (current % 100 == 0) {
+                        println "${current} certificates anonymized in ${(int)((System.currentTimeMillis()-start) / 1000)} seconds"
+                    }
+                } catch (Throwable t) {
+                    t.printStackTrace()
+                    result << "Anonymizing ${id} failed: ${t}"
+                    errorCount.incrementAndGet()
+                } finally {
+                    sql.close()
+                }
+                result.toString()
+            }
+        }
+        long end = System.currentTimeMillis()
+        output.each {line ->
+            if (line) println line
+        }
+        println "${count} certificates anonymized with ${errorCount} errors in ${(int)((end-start) / 1000)} seconds"
+        
+        start = System.currentTimeMillis()
+        bootstrapSql = new Sql(dataSource)
+        def questionAnswers = bootstrapSql.rows("select internReferens from FRAGASVAR")
+        bootstrapSql.close()
+        println "${questionAnswers.size()} question/answers found to anonymize"
+        count.set(0)
+        errorCount.set(0)
         GParsPool.withPool(numberOfThreads) {
             output = questionAnswers.collectParallel {
                 StringBuffer result = new StringBuffer() 
@@ -110,7 +170,7 @@ class AnonymiseraWebCertDatabas {
                 result.toString()
             }
         }
-        long end = System.currentTimeMillis()
+        end = System.currentTimeMillis()
         output.each {line ->
             if (line) println line
         }

@@ -3,7 +3,6 @@ package se.inera.webcert.pages.fk7263
 import se.inera.webcert.pages.VisaPage
 
 class VisaFk7263Page extends VisaPage {
-
     static content = {
 
         // messages

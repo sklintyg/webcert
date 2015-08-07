@@ -17,6 +17,13 @@
 !define person6.personnummer {19101010-1010}
 !define person7.personnummer {19121212-0000}
 
+
+!define personnummer_som_saknas_i_pu {201108142397}
+!define personnummer_som_saknar_namn_i_pu {}
+!define samordningsnummer_som_saknas_i_pu {191212721219}
+!define samordningsnummer_som_saknar_namn_i_pu {194401710076}
+
+
 *!
 !contents -R4
 

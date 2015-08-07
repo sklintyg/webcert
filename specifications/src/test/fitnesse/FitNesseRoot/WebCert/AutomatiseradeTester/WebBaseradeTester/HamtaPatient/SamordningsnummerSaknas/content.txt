@@ -1,0 +1,16 @@
+[[WEBCERT-1854][https://inera-certificate.atlassian.net/browse/WEBCERT-1854]]
+!3 Kontrollera felmeddelande för när samordningsnummer saknas i PU-tjänsten
+
+| script | !-SokSkrivIntyg-! |
+| logga in som |IFV1239877878-104B_IFV1239877878-1042|
+| sok skriv intyg sidan visas sa smaningom |
+| valj patient | ${samordningsnummer_som_saknas_i_pu} |
+| check | PU-tjänst fel |=~/Samordningsnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt/|
+
+
+!3 Kontrollera felmeddelande för när samordningsnummer saknar namn i PU-tjänsten
+| script | !-SokSkrivIntyg-! |
+| logga in som |IFV1239877878-104B_IFV1239877878-1042|
+| sok skriv intyg sidan visas sa smaningom |
+| valj patient | ${samordningsnummer_som_saknar_namn_i_pu} |
+| check | PU-tjänst fel |=~/Namn för det nummer du har angett kunde tyvärr inte hämtas från folkbokföringsregistret. Försök igen senare./|
