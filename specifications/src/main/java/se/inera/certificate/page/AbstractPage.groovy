@@ -1,6 +1,6 @@
 package se.inera.certificate.page
 
-import geb.Browser
+import se.inera.certificate.spec.Browser
 import geb.Page
 
 abstract class AbstractPage extends Page {
