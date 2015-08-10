@@ -2,7 +2,7 @@ Testet beskriver fallet när en användare med bara ett uppdrag loggar in.
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 
 !3 Lägg till fråga
@@ -14,10 +14,10 @@ Testet beskriver fallet när en användare med bara ett uppdrag loggar in.
 
 !3 Verifiera att enhetsväljaren ej visas.
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
-| enhetsvaljare visas | false |
+| säkerställ att inte | enhetsvaljare visas |
 
 !3 Ta bort frågor
 

@@ -10,20 +10,23 @@ Testet beskriver fallet när hos-personal går in på ett signerat fk7263 intyg 
 | personnr |patient namn| utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | vårdgivarId | typ | id | mall | skickat | rättat | respons? |
 | ${person1.personnummer}|${person1.namn} | 2015-06-01 | 2015-06-01| 2015-06-28| IFV1239877878-104B | IFV1239877878-1042 | IFV1239877878-1041 | FK7263 | intyg-nytt-pnr | L | ja | nej |200|
 
-| script | !-SokSkrivIntyg-! |
+| skript | logga in |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
+
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
 
 !4 Testa har ett felaktigt personnummer.
-| script | !-IntegrationMedJournalsystem-! |
+| skript | !-IntegrationMedJournalsystem-! |
 | visa intyg via integration med | intyg-nytt-pnr | personnummer | ${person2.personnummer} |
-| ensure|nytt personnummer meddelande visas|
-| kopiera intyg | intyg-nytt-pnr |
-| check|patientens namn|${person1.namn}|
-|check|patientens personnummer |${person2.personnummer}|
+| säkerställ att |nytt personnummer meddelande visas|
+| kopiera intyg |
+| kontrollera att |patientens namn|${person1.namn}|
+| kontrollera att |patientens personnummer |${person2.personnummer}|
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
+| säkerställ att | editera Fk7263 sidan visas |
 | radera utkast |
 
-| script | !-IntegrationMedJournalsystem-! |
-| integration borttaget meddelande visas |
+| skript | !-IntegrationMedJournalsystem-! |
+| säkerställ att | integration borttaget meddelande visas |

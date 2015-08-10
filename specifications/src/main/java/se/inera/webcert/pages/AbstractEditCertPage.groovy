@@ -1,10 +1,28 @@
 package se.inera.webcert.pages
 
-import geb.Browser
 import geb.Module
-import se.inera.certificate.page.AbstractPage
 
-abstract class AbstractEditCertPage extends AbstractPage {
+class AbstractEditCertPage extends AbstractLoggedInPage {
+    
+    static at = { doneLoading() && $(".edit-form").isDisplayed() }
+
+    static content = {
+        namnOchPersonnummer { $("#patientNamnPersonnummer") }
+        tillbakaButton(required: false) { $("#tillbakaButton") }
+        radera { $("#ta-bort-utkast") }
+        skrivUtBtn { $("#skriv-ut-utkast") }
+        konfirmeraRadera { $("#confirm-draft-delete-button") }
+        signeraBtn(required: false, to: AbstractViewCertPage, toWait: true) { $("#signera-utkast-button") }
+        signRequiresDoctorMessage(required: false) { $("#sign-requires-doctor-message-text") }
+        certificateIsSentToITMessage(required: false) { $("#certificate-is-sent-to-it-message-text") }
+        intygetSparatOchKomplettMeddelande(required: false){ $("#intyget-sparat-och-komplett-meddelande") }
+        intygetSparatOchEjKomplettMeddelande(required: false){ $("#intyget-sparat-och-ej-komplett-meddelande") }
+        errorPanel { $("#error-panel") }
+        visaVadSomSaknasKnapp { $("#showCompleteButton") }
+        doljVadSomSaknasKnapp { $("#hideCompleteButton") }
+        visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
+        sekretessmarkering { $("#sekretessmarkering") }
+    }
     
     def visaVadSomSaknas() {
         visaVadSomSaknasKnapp.click();
@@ -22,11 +40,13 @@ abstract class AbstractEditCertPage extends AbstractPage {
     }
 
     boolean harSparat(){
-        Browser.drive{
-            return intygetSparatOchKomplettMeddelande.isDisplayed();
-        }
+        return intygetSparatOchKomplettMeddelande.isDisplayed() || intygetSparatOchEjKomplettMeddelande.isDisplayed();
     }
     
+    boolean isSignBtnDisplayed(){
+        signeraBtn.isDisplayed()
+    }
+
 }
 
 class VardenhetModule extends Module {

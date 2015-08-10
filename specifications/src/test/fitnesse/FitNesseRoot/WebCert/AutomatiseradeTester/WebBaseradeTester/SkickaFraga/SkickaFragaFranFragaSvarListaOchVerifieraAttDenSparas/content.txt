@@ -2,7 +2,7 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Lägg till fråga
@@ -13,7 +13,7 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 
 !3 Verifiera att det går att visa frågan från listan med ohanterade frågor
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
 | lista med ohanterade fragor visas |
@@ -22,7 +22,7 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 
 !3 Verifiera att det går att skicka en ny fråga till försäkringskassan
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | ny fraga knapp visas |
 | valj ny fraga |
 | ny fraga formular visas |
@@ -34,11 +34,11 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 
 !3 1. Verifiera att det går att hitta frågan igen
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | lamna fraga svar|
 
 !3 1.3 Verifiera att det går att hitta frågan igen
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | ohanterade fragor sidan visas |
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |

@@ -1,0 +1,26 @@
+Detta test säkerstaller att texten är som i jira webcert-1447
+
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
+!3 Välj patient och visa intyget
+
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
+| valj patient | ${person1.personnummer} |
+| valj intygstyp sidan visas |
+| visa intyg | intyg-fit-1 |
+| visa intyg sidan visas |
+
+!4 Testa att tooltip för Kopiera-knapp innehåller text för förnyelse av sjukintyg
+| skript | !-SokSkrivIntyg-! |
+| kopiera knapp har text sjukskrivning |
+
+!4 Testa att nytt personnumer text inte visas i kopieradialogen, men att förlängning av sjukskrivning visas.
+| skript | !-IntegrationMedJournalsystem-! |
+| toggle kopiera dialogen | true |
+| säkerställ att inte | nytt person nummer text visas |
+| inte fran journal system text visas |
+| forlangning sjukskrivning visas |

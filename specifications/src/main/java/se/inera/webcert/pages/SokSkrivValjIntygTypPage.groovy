@@ -1,40 +1,38 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.page.AbstractPage
-
-class SokSkrivValjIntygTypPage extends AbstractPage {
+class SokSkrivValjIntygTypPage extends AbstractLoggedInPage {
 
     static at = { doneLoading() && $("#valj-intyg-typ").isDisplayed() }
 
     static content = {
         patientNamn { $("#patientNamn") }
         intygtypFortsattKnapp { $("#intygTypeFortsatt") }
-        intygTyp(wait: true) { displayed($("#intygType")) }
-        intygTypNoWait{ $("#intygType") }
-        intygLista(wait: true) { displayed($("#intygLista")) }
+        intygTyp { $("#intygType") }
+        intygLista { $("#intygLista") }
+        kopieraKnapp { intygId -> $("#copyBtn-${intygId}") }
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
         kopieraDialogKopieraKnapp { $("#button1copy-dialog") }
         fortsattKnapp { $("#intygTypeFortsatt") }
         felmeddelandeRuta { $("#current-list-noResults-error")}
-        sekretessmarkering(wait: true) { displayed($("#sekretessmarkering")) }
-    }
-
-    def copyBtn(String intygId) {
-        waitFor {
-            $("#copyBtn-${intygId}")
-        }
+        sekretessmarkering { $("#sekretessmarkering") }
     }
 
     def copy(String intygId) {
-        copyBtn(intygId).click()
+        kopieraKnapp(intygId).click()
         waitFor {
             doneLoading()
         }
         kopieraDialogKopieraKnapp.click()
+        waitFor {
+            doneLoading()
+        }
     }
 
-    def show(String intygId) {
+    void show(String intygId) {
         $("#showBtn-${intygId}").click()
+        waitFor {
+            doneLoading()
+        }
     }
 
     def valjIntygstypFk7263() {

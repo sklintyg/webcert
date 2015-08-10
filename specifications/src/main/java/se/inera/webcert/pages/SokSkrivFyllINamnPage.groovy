@@ -1,8 +1,6 @@
 package se.inera.webcert.pages
 
-import se.inera.certificate.page.AbstractPage
-
-class SokSkrivFyllINamnPage extends AbstractPage {
+class SokSkrivFyllINamnPage extends AbstractLoggedInPage {
 
     static at = { doneLoading() && $("#sok-skriv-fyll-i-namn").isDisplayed() }
 

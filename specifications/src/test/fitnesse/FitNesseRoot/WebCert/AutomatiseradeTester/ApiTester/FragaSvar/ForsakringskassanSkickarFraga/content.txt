@@ -75,5 +75,5 @@
 |fitnesse-saknat-intyg|
 |fitnesse-fel-enhet|
 
-|script|Mailbox|
+|skript|Mailbox|
 |rensa|

@@ -2,7 +2,7 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 
 !3 Välj patient
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 | sok skriv intyg sidan visas sa smaningom |
 | valj patient | ${person1.personnummer} |
@@ -10,36 +10,36 @@ Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett ny
 
 !3 Rensa utestående PDL-loggning-poster
 
-| script | logg meddelande |
+| skript | logg meddelande |
 | rensa logg meddelanden |
-| check | antal logg meddelanden | 0 |
+| kontrollera att | antal logg meddelanden | 0 |
 
 !3 Kopiera intyget
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | kopiera tidigare intyg | intyg-fit-1 |
 
-| script | Vanta | 5 | sekunder |
+| skript | Vanta | 5 | sekunder |
 
 !3 Verifiera att en PDL-loggningar gjorts
 
-| script | logg meddelande |
-| check | antal logg meddelanden | 3 |
+| skript | logg meddelande |
+| kontrollera att | antal logg meddelanden | 3 |
 | hamta logg meddelande |
-| check | aktivitet | READ |
+| kontrollera att | aktivitet | READ |
 | hamta logg meddelande |
-| check | aktivitet | CREATE |
+| kontrollera att | aktivitet | CREATE |
 | hamta logg meddelande |
-| check | aktivitet | READ |
+| kontrollera att | aktivitet | READ |
 
 !3 Författarstöd visas
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | editera sidan visas |
 | radera utkast |
-| ensure | inga ej signerade intyg visas |
+| säkerställ att | inga ej signerade intyg visas |
 
 !3 Rensa kvarvarande PDL-loggning-poster
 
-| script | logg meddelande |
+| skript | logg meddelande |
 | rensa logg meddelanden |

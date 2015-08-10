@@ -5,11 +5,16 @@ Detta test visar att man kan makulera ett signerat ts-bas intyg från visa-vyn o
 | Intyg |
 | personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat |
 | ${person1.personnummer} | 2013-04-01 | 2013-04-01 | 2013-04-11 | IFV1239877878-104B | IFV1239877878-1042 | ts-bas | intyg-fit-104 | L | ja | nej |
+
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
 !3 Välj patient och visa intyget
 
-| script | !-SokSkrivIntyg-! |
-| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
+| skript | !-SokSkrivIntyg-! |
+| sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-104 |
@@ -17,14 +22,14 @@ Detta test visar att man kan makulera ett signerat ts-bas intyg från visa-vyn o
 
 !3 Makulera intyget
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | makulera visat intyg |
 | makulera bekraftelse visas |
 | visa ts bas sidan visas |
 | makulerad status visas |
 
 !3 Verifiera att Intygstjänsten makulerat intyget (asynkron sändning, webcert-1314)
-| script | !-IntygstjanstAsynk-! |
+| skript | !-IntygstjanstAsynk-! |
 | finns makulerat intyg i intygstjansten med | intyg-fit-104 | vantetid | 5000 |
 
 !3 Ta bort intyg

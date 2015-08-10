@@ -19,5 +19,5 @@
 | property | value |
 | geb.env | ${geb.env} |
 
-| script | Browser |
+| skript | Browser |
 | öppna |

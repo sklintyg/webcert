@@ -8,12 +8,12 @@ Testet beskriver fallet när en användare besvarar en fråga från försäkring
 
 !3 Logga in
 
-| script | !-LoggaIn-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
 
 !3 Verifiera att det går att visa frågan från uthoppslänken
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | ga till intygsvy via uthopp med intygsid | intyg-fit-1 |
 | intyg med fraga svar sidan visas |
 | fraga | $internReferens1 | visas i listan med ohanterade fragor |
@@ -21,7 +21,7 @@ Testet beskriver fallet när en användare besvarar en fråga från försäkring
 
 !3 Verifiera att det går att svara på frågan
 
-| script | !-SvaraOchFraga-! |
+| skript | !-SvaraOchFraga-! |
 | svara pa fraga | $internReferens1 | med svar | Här svarar Fitnesse på frågan |
 | fraga | $internReferens1 | visas i listan med ohanterade fragor | false |
 | fraga | $internReferens1 | visas i listan med hanterade fragor |

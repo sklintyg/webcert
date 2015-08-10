@@ -8,12 +8,12 @@ Testet beskriver fallet när en administratör går in på ett komplett ts-bas i
 
 !3 Givet att det finns ett utkast som är komplett, verifiera att det inte går att signera det
 
-| script | !-HanteraUtkast-! |
+| skript | !-HanteraUtkast-! |
 | logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 | ga till editera intyg med typ | ts-bas | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
-| ensure | signera knapp ej visas |
-| ensure | signering kraver lakare visas |
+| säkerställ att | signera knapp ej visas |
+| säkerställ att | signering kraver lakare visas |
 
 !3 Ta bort utkast
 

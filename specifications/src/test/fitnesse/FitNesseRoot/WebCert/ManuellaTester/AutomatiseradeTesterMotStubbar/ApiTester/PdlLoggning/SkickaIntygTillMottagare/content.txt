@@ -12,9 +12,9 @@
 
 !3 Rensa utestående PDL-loggning-poster
 
-| script | logg meddelande |
+| skript | logg meddelande |
 | rensa logg meddelanden |
-| check | antal logg meddelanden | 0 |
+| kontrollera att | antal logg meddelanden | 0 |
 
 !3 Skicka intyget via modul-api:et
 | skicka intyg till mottagare |
@@ -23,10 +23,10 @@
 
 !3 Verifiera att en PDL-loggning gjorts
 
-| script | logg meddelande |
-| check | antal logg meddelanden | 1 |
+| skript | logg meddelande |
+| kontrollera att | antal logg meddelanden | 1 |
 | hamta logg meddelande |
-| check | aktivitet | SEND |
+| kontrollera att | aktivitet | SEND |
 
 !3 Radera intyget
 | ta bort utkast |
