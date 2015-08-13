@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+import org.springframework.stereotype.Service;
 
+import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
@@ -27,6 +29,7 @@ import se.inera.webcert.service.monitoring.MonitoringLogService;
 /**
  * @author andreaskaltenbach
  */
+@Service
 public class WebCertUserDetailsService extends BaseWebCertUserDetailsService implements SAMLUserDetailsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserDetailsService.class);
@@ -43,7 +46,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     @Autowired
     private MonitoringLogService monitoringLogService;
 
-    @Override
+
     public Object loadUserBySAML(SAMLCredential credential) {
 
         LOG.info("User authentication was successful. SAML credential is: {}", credential);

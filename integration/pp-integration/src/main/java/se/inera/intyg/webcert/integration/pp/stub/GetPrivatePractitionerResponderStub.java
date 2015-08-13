@@ -24,7 +24,6 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
     public static final String PERSONNUMMER_ERROR_RESPONSE = "19121212-XXXX";
     public static final String PERSONNUMMER_THROW_EXCEPTION = "19121212-ZZZZ";
 
-
     @Autowired
     private HoSPersonStub personStub;
 
@@ -61,7 +60,7 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
         }
 
         return response;
-     }
+    }
 
     private void validate(GetPrivatePractitionerType parameters) {
         List<String> messages = new ArrayList<>();

@@ -22,5 +22,6 @@
     <bean class="se.inera.intyg.webcert.integration.pp.stub.HoSPersonStub"/>
     <bean class="se.inera.intyg.webcert.integration.pp.services.PPServiceImpl"/>
     <bean class="se.inera.intyg.webcert.integration.pp.stub.GetPrivatePractitionerResponderStub"/>
+    <bean class="se.inera.intyg.webcert.integration.pp.stub.ValidatePrivatePractitionerResponderStub"/>
 
 </beans>

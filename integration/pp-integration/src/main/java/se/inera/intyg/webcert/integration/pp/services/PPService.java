@@ -9,4 +9,6 @@ public interface PPService {
 
     HoSPersonType getPrivatePractitioner(String logicalAddress, String hsaIdentity, String personalIdentity);
 
+    boolean validatePrivatePractitioner(String logicalAddress, String hsaIdentity, String personalIdentity);
+
 }

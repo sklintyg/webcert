@@ -7,6 +7,7 @@
        profile="dev,wc-all-stubs,wc-pp-stub">
 
     <jaxws:endpoint address="/pp/get-private-practitioner" implementor="se.inera.intyg.webcert.integration.pp.stub.GetPrivatePractitionerResponderStub" />
+    <jaxws:endpoint address="/pp/validate-private-practitioner" implementor="se.inera.intyg.webcert.integration.pp.stub.ValidatePrivatePractitionerResponderStub" />
 
     <bean class="se.inera.intyg.webcert.integration.pp.stub.PPBootstrapBean" lazy-init="false" />
     <bean class="se.inera.intyg.webcert.integration.pp.stub.HoSPersonStub" />

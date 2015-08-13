@@ -2,15 +2,13 @@ package se.inera.webcert.web.controller.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -25,6 +23,9 @@ import javax.ws.rs.core.Response.Status;
 public class UserApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserApiController.class);
+
+    @Autowired
+    AvtalService avtalService;
 
     /**
      * Retrieves the security context of the logged in user as JSON.
@@ -65,5 +66,21 @@ public class UserApiController extends AbstractApiController {
         LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
 
         return Response.ok(user.getAsJson()).build();
+    }
+
+    /**
+     * Retrieves the security context of the logged in user as JSON.
+     *
+     * @return
+     */
+    @PUT
+    @Path("/godkannavtal")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response godkannAvtal() {
+        WebCertUser user = getWebCertUserService().getWebCertUser();
+        if (user != null) {
+            avtalService.approveLatestAvtal(user.getHsaId());
+        }
+        return Response.ok().build();
     }
 }

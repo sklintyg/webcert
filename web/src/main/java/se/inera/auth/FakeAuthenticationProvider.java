@@ -1,9 +1,5 @@
 package se.inera.auth;
 
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.util.ArrayList;
 
 import static se.inera.auth.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
@@ -16,30 +12,18 @@ import static se.inera.auth.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIB
 import static se.inera.auth.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
 
 import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeStatement;
-import org.opensaml.saml2.core.AuthnContext;
-import org.opensaml.saml2.core.AuthnContextClassRef;
-import org.opensaml.saml2.core.AuthnStatement;
 import org.opensaml.saml2.core.NameID;
 import org.opensaml.saml2.core.impl.AssertionBuilder;
-import org.opensaml.saml2.core.impl.AttributeBuilder;
 import org.opensaml.saml2.core.impl.AttributeStatementBuilder;
-import org.opensaml.saml2.core.impl.AuthnContextBuilder;
-import org.opensaml.saml2.core.impl.AuthnContextClassRefBuilder;
-import org.opensaml.saml2.core.impl.AuthnStatementBuilder;
 import org.opensaml.saml2.core.impl.NameIDBuilder;
-import org.opensaml.xml.XMLObject;
-import org.opensaml.xml.schema.impl.XSStringBuilder;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import se.inera.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
 
 /**
@@ -74,7 +58,7 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
 
         Assertion assertion = new AssertionBuilder().buildObject();
 
-        attachAuthenticationContext(assertion);
+        attachAuthenticationContext(assertion, BaseFakeAuthenticationProvider.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF);
 
         AttributeStatement attributeStatement = new AttributeStatementBuilder().buildObject();
         assertion.getAttributeStatements().add(attributeStatement);

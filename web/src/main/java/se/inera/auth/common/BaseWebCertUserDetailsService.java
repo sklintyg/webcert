@@ -1,4 +1,4 @@
-package se.inera.auth;
+package se.inera.auth.common;
 
 import java.util.Set;
 

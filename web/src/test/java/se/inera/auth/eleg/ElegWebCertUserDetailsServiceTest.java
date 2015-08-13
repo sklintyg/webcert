@@ -22,6 +22,7 @@ import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.service.feature.WebcertFeatureService;
+import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
@@ -56,6 +57,9 @@ public class ElegWebCertUserDetailsServiceTest {
     @Mock
     private WebcertFeatureService webcertFeatureService;
 
+    @Mock
+    private AvtalService avtalService;
+
     @InjectMocks
     private ElegWebCertUserDetailsService testee;
 
@@ -79,12 +83,16 @@ public class ElegWebCertUserDetailsServiceTest {
     @Test
     public void testSuccessfulLogin() {
         when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(buildHosPerson());
+        when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
         when(webcertFeatureService.getActiveFeatures()).thenReturn(new HashSet<String>());
+        when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
 
         NameID nameId = mock(NameID.class);
         Object o = testee.loadUserBySAML(new SAMLCredential(nameId, assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
         assertNotNull(o);
     }
+
+    // TODO tests for not OK avtal, not OK validate vs pp, not found in HSA etc.
 
     private HoSPersonType buildHosPerson() {
         HoSPersonType hoSPersonType = new HoSPersonType();

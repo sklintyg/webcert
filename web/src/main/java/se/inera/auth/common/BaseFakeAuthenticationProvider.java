@@ -1,4 +1,4 @@
-package se.inera.auth;
+package se.inera.auth.common;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -21,7 +21,8 @@ import org.w3c.dom.Element;
  */
 public abstract class BaseFakeAuthenticationProvider implements AuthenticationProvider {
 
-    public static final String FAKE_AUTHENTICATION_CONTEXT_REF = "urn:inera:webcert:fake";
+    public static final String FAKE_AUTHENTICATION_SITHS_CONTEXT_REF = "urn:inera:webcert:siths:fake";
+    public static final String FAKE_AUTHENTICATION_ELEG_CONTEXT_REF = "urn:inera:webcert:eleg:fake";
 
     private static DocumentBuilder documentBuilder;
 
@@ -33,12 +34,12 @@ public abstract class BaseFakeAuthenticationProvider implements AuthenticationPr
         }
     }
 
-    protected void attachAuthenticationContext(Assertion assertion) {
+    protected void attachAuthenticationContext(Assertion assertion, String authContextRef) {
         AuthnStatement authnStatement = new AuthnStatementBuilder().buildObject();
         AuthnContext authnContext = new AuthnContextBuilder().buildObject();
         AuthnContextClassRef authnContextClassRef = new AuthnContextClassRefBuilder().buildObject();
 
-        authnContextClassRef.setAuthnContextClassRef(FAKE_AUTHENTICATION_CONTEXT_REF);
+        authnContextClassRef.setAuthnContextClassRef(authContextRef);
         authnContext.setAuthnContextClassRef(authnContextClassRef);
         authnStatement.setAuthnContext(authnContext);
         assertion.getAuthnStatements().add(authnStatement);

@@ -11,7 +11,7 @@ import se.inera.webcert.service.monitoring.MonitoringLogService;
 /**
  * Created by eriklupander on 2015-08-05.
  */
-@Service
+@Service("AvtalService")
 public class AvtalServiceImpl implements AvtalService {
 
     @Autowired
