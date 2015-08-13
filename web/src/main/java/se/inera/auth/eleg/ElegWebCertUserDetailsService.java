@@ -60,12 +60,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
                 throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
             }
 
-            // Moving this to separate filter
-//            boolean avtalAccepted = avtalService.userHasApprovedLatestAvtal(personId);
-//            if (!avtalAccepted) {
-//                throw new PrivatePractitionerTermsException("User has not accepted Webcert license and terms");
-//            }
-
+            // Note that privatlakare must accept webcert terms in order to use the software. However, that's
+            // handled separately in the TermsFilter.
 
             WebCertUser webCertUser = createWebcertUser(samlCredential, hosPerson);
             return webCertUser;
