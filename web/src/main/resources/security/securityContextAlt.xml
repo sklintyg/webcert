@@ -238,6 +238,7 @@
       </bean>
     -->
 
+    <!-- TODO Determine if this one is really needed. It's supposed to make the HTTP-client more configurable... -->
     <bean class="org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer"/>
 
     <!-- IDP Metadata configuration - paths to metadata of IDPs in circle of trust is here -->
@@ -274,11 +275,15 @@
                 <property name="securityProfile" value="metaiop"/>
                 <property name="sslSecurityProfile" value="metaiop"/>    <!-- pkix -->
                 <property name="signMetadata" value="true"/>
+                <!--
                 <property name="signingKey" value="apollo"/>
                 <property name="encryptionKey" value="apollo"/>
-                <property name="requireArtifactResolveSigned" value="false"/>
+                -->
+                <property name="signingKey" value="${sakerhetstjanst.saml.keystore.password}"/>
+                <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.password}"/>
+                <property name="requireArtifactResolveSigned" value="true"/>
                 <property name="requireLogoutRequestSigned" value="true"/>
-                <property name="requireLogoutResponseSigned" value="false"/>
+                <property name="requireLogoutResponseSigned" value="true"/>
                 <property name="idpDiscoveryEnabled" value="false"/>
           <!--      <property name="idpDiscoveryURL"
                      value="http://192.168.0.118:9088/saml/discovery/alias/eleg"/>
@@ -344,9 +349,9 @@
                 <property name="local" value="true"/>
                 <property name="securityProfile" value="metaiop"/>
                 <property name="sslSecurityProfile" value="metaiop"/>    <!-- pkix -->
-                <property name="signMetadata" value="false"/>
-                <property name="signingKey" value="a56pghtAZ3"/>
-                <property name="encryptionKey" value="a56pghtAZ3"/>
+                <property name="signMetadata" value="true"/>
+                <property name="signingKey" value="${sakerhetstjanst.saml.keystore.password}"/>
+                <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.password}"/>
                 <property name="requireArtifactResolveSigned" value="false"/>
                 <property name="requireLogoutRequestSigned" value="true"/>
                 <property name="requireLogoutResponseSigned" value="false"/>

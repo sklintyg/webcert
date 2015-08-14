@@ -1,5 +1,0 @@
-!3 Privatläkarportalen skickar in ett godkannande av avtal
-
-| Godkann Avtal |
-| avtalVersion | personId | resultat? |
-| 1 | 19121212-1212 | OK | 
