@@ -95,8 +95,24 @@
             <p>Du måste även ha JavaScript aktiverat i din webbläsare för att kunna använda Webcert.</p>
           </div>
           <p><a href="#" ng-click="toggleShowLoginDesc()" ng-bind-html="showLoginDescText"><span class="glyphicon glyphicon-chevron-down"></span> Visa mer om inloggning</a></p>
-          <p><a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a></p>
-        </div>
+          <div class="container">
+            <div class="row">
+              <div class="col-xs-2">
+                Landstingspersonal:
+              </div>
+              <div class="col-xs-10">
+                <a href="/saml/login/alias/siths?idp=https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-2">
+                Privatläkare:
+              </div>
+              <div class="col-xs-10">
+                <a href="/saml/login/alias/eleg?idp=https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0" class="btn btn-success" id="loginBtn2">E-legitimation</a></p>
+              </div>
+            </div>
+          </div>
       </div>
     </div>
 

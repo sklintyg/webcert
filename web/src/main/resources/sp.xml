@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="webcert.intygstjanster.inera.se" entityID="eleg">
   <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <!--
     <md:KeyDescriptor use="signing">
       <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
         <ds:X509Data>
@@ -45,6 +46,7 @@
         </ds:X509Data>
       </ds:KeyInfo>
     </md:KeyDescriptor>
+    -->
     <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://192.168.0.118:9088/saml/SingleLogout/alias/eleg"/>
     <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://192.168.0.118:9088/saml/SingleLogout/alias/eleg"/>
     <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
