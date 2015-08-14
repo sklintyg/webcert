@@ -9,9 +9,7 @@ import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.xml.XMLObject;
 
 /**
- * SAML-assertion for CGI säkerhetstjänst.
- *
- * This is just a placeholder for now, add constants and extractions etc. once we have a definite contract to work with.
+ * SAML-assertion for CGI säkerhetstjänst used for e-leg/privatläkare.
  */
 public class CgiElegAssertion {
 

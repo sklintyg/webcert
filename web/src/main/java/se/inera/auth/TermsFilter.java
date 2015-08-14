@@ -19,11 +19,21 @@ import se.inera.auth.common.UnifiedUserDetailsService;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 
+/**
+ * This filter should run after security checks.
+ *
+ * <li>If not logged in, filter is ignored</li>
+ * <li>If session attribute {@TermsFilter#PRIVATE_PRACTITIONER_TERMS_ACCEPTED} is set to true, all is well</li>
+ * <li>If the authorization context is {@link UnifiedUserDetailsService#URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI}
+ * (e.g. privatläkare) then we use the {@link AvtalService} to verify that the user has accepted webcert license and terms</li>
+ * <li>If user has not accepted webcert license and terms, we redirect them to /terms.jsp (or eq.) _without_ logging them out</li>
+ */
 @Component(value = "termsFilter")
 public class TermsFilter extends OncePerRequestFilter {
 
-    private static final String PRIVATE_PRACTITIONER_TERMS_ACCEPTED = "ppTermsAccepted";
-    private String ignoredUrl;
+    static final String PRIVATE_PRACTITIONER_TERMS_ACCEPTED = "ppTermsAccepted";
+    static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
+
 
     private static final Logger log = LoggerFactory.getLogger(TermsFilter.class);
 
@@ -35,20 +45,20 @@ public class TermsFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("SPRING_SECURITY_CONTEXT") != null) {
-            log.info("HttpSession OK");
 
-            if (session.getAttribute(PRIVATE_PRACTITIONER_TERMS_ACCEPTED) == null || !session.getAttribute(PRIVATE_PRACTITIONER_TERMS_ACCEPTED).equals("true")) {
-                Object principal = ((SecurityContextImpl) session.getAttribute("SPRING_SECURITY_CONTEXT")).getAuthentication().getPrincipal();
+        if (hasSessionWithSpringContext(session)) {
+
+            if (session.getAttribute(PRIVATE_PRACTITIONER_TERMS_ACCEPTED) == null || !((boolean) session.getAttribute(PRIVATE_PRACTITIONER_TERMS_ACCEPTED))) {
+                Object principal = ((SecurityContextImpl) session.getAttribute(SPRING_SECURITY_CONTEXT)).getAuthentication().getPrincipal();
                 if (principal != null && principal instanceof WebCertUser) {
                     WebCertUser webCertUser = (WebCertUser) principal;
                     if (isElegAuthContext(webCertUser)) {
 
                         boolean avtalApproved = avtalService.userHasApprovedLatestAvtal(webCertUser.getHsaId());
                         if (avtalApproved) {
-                            session.setAttribute(PRIVATE_PRACTITIONER_TERMS_ACCEPTED, "true");
+                            session.setAttribute(PRIVATE_PRACTITIONER_TERMS_ACCEPTED, true);
                         } else {
-                            session.setAttribute(PRIVATE_PRACTITIONER_TERMS_ACCEPTED, "false");
+                            session.setAttribute(PRIVATE_PRACTITIONER_TERMS_ACCEPTED, false);
 
                             // REDIRECT
                             response.sendRedirect("/terms.jsp");
@@ -57,19 +67,15 @@ public class TermsFilter extends OncePerRequestFilter {
                     }
                 }
             }
-
-
-        } else {
-            log.info("HttpSession NULL");
         }
         filterChain.doFilter(request, response);
     }
 
-    private boolean isElegAuthContext(WebCertUser webCertUser) {
-        return webCertUser.getAuthenticationScheme().equals(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI) || webCertUser.getAuthenticationScheme().equals(BaseFakeAuthenticationProvider.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
+    private boolean hasSessionWithSpringContext(HttpSession session) {
+        return session != null && session.getAttribute(SPRING_SECURITY_CONTEXT) != null;
     }
 
-    public void setIgnoredUrl(String ignoredUrl) {
-        this.ignoredUrl = ignoredUrl;
+    private boolean isElegAuthContext(WebCertUser webCertUser) {
+        return webCertUser.getAuthenticationScheme().equals(UnifiedUserDetailsService.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI) || webCertUser.getAuthenticationScheme().equals(BaseFakeAuthenticationProvider.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
     }
 }

@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.PrivatePractitionerAuthorizationException;
-import se.inera.auth.exceptions.PrivatePractitionerTermsException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
