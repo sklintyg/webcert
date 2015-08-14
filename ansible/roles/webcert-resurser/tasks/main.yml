@@ -12,7 +12,7 @@
 - name: configure jdbc resource
   lineinfile:
     dest="{{ tomcat_conf }}/context.xml"
-    regexp="    <ResourceLink name='jdbc/webcert'"
+    regexp="    <ResourceLink name='jdbc/webcert'|    <Resource name='jdbc/webcert'"
     insertbefore="</Context>"
     line="    <ResourceLink name='jdbc/webcert' global='sharedPrivatlakarportal' type='javax.sql.DataSource'/>"
 
