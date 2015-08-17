@@ -20,11 +20,11 @@
 
     <!-- Common -->
     <common.version>0-SNAPSHOT</common.version>
-    <common.version.range>(,2.3.0]</common.version.range>
+    <common.version.range>(,2.4.0]</common.version.range>
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
-    <intygstyper.version.range>(,2.3.0]</intygstyper.version.range>
+    <intygstyper.version.range>(,2.4.0]</intygstyper.version.range>
 
     <!-- Schemas -->
     <rivta-clinicalprocess.version>1.0.RC3.0</rivta-clinicalprocess.version>
