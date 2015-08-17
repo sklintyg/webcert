@@ -211,12 +211,12 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserM
         $rootScope.$on('$viewContentLoading',function(event, viewConfig){
             // runs on individual scopes, so putting it in "run" doesn't work.
             $window.rendered = false;
-            $log.log('+++ $viewContentLoading, rendered : ' + $window.rendered);
+            //$log.log('+++ $viewContentLoading, rendered : ' + $window.rendered);
         });
         $rootScope.$on('$viewContentLoaded',function(event){
             //$log.log('$viewContentLoaded - fired after dom rendered',event);
             $window.rendered = true;
-            $log.log('--- $viewContentLoaded, rendered : ' + $window.rendered);
+            //$log.log('--- $viewContentLoaded, rendered : ' + $window.rendered);
         });
 
     }]);

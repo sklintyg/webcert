@@ -1,13 +1,21 @@
 ---
 # file: roles/webcert-resurser/tasks/main.yml
 
+
+- name: configure shared jdbc datasource for Webcert
+  lineinfile:
+    dest="{{ tomcat_conf }}/server.xml"
+    regexp="    <Resource name='sharedWebcert'"
+    insertbefore="  </GlobalNamingResources>"
+    line="    <Resource name='sharedWebcert' global='sharedPrivatportal'  auth='Container' type='javax.sql.DataSource' username='{{ database_username }}' password='{{ database_password }}' driverClassName='{{ database_driver }}' url='{{ database_url }}' maxActive='{{ database_pool_maxActive }}' maxIdle='{{ database_pool_maxIdle }}' minIdle='{{ database_pool_minIdle }}' initialSize='{{ database_pool_initialSize }}' validationQuery='SELECT 1' validationQueryTimeout='3' testWhileIdle='true' timeBetweenEvictionRunsMillis='300000' minEvictableIdleTimeMillis='60000' defaultAutocommit='false' />"
+
 - name: configure jdbc resource
   lineinfile:
     dest="{{ tomcat_conf }}/context.xml"
-    regexp="    <Resource name='jdbc/webcert'"
+    regexp="    <ResourceLink name='jdbc/webcert'|    <Resource name='jdbc/webcert'"
     insertbefore="</Context>"
-    line="    <Resource name='jdbc/webcert' auth='Container' type='javax.sql.DataSource' username='{{ database_username }}' password='{{ database_password }}' driverClassName='{{ database_driver }}' url='{{ database_url }}' maxActive='{{ database_pool_maxActive }}' maxIdle='{{ database_pool_maxIdle }}' minIdle='{{ database_pool_minIdle }}' initialSize='{{ database_pool_initialSize }}' validationQuery='SELECT 1' validationQueryTimeout='3' testWhileIdle='true' timeBetweenEvictionRunsMillis='300000' minEvictableIdleTimeMillis='60000' defaultAutocommit='false' />"
-    
+    line="    <ResourceLink name='jdbc/webcert' global='sharedPrivatlakarportal' type='javax.sql.DataSource'/>"
+
 - name: configure connection factory
   lineinfile:
     dest="{{ tomcat_conf }}/context.xml"
