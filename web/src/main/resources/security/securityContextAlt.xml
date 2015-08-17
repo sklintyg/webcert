@@ -131,6 +131,29 @@
     </security:authentication-manager>
   </beans>
 
+  <!-- =============================================================== -->
+  <!-- The wc-security-prod profile only supports Säkerhetstjänst and CGI e-leg login -->
+  <!-- =============================================================== -->
+  <beans profile="prod,wc-security-prod">
+    <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
+    <security:http entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)" path-type="regex">
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
+      <security:request-cache ref="httpSessionRequestCache" />
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
+    </security:http>
+    <security:http entry-point-ref="http403ForbiddenEntryPoint">
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
+      <security:request-cache ref="httpSessionRequestCache" />
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
+    </security:http>
+    <security:authentication-manager alias="authenticationManager">
+      <security:authentication-provider ref="samlAuthenticationProvider"/>
+    </security:authentication-manager>
+  </beans>
+
+
 
   <beans profile="dev,wc-security-dev,wc-security-test">
     <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
@@ -231,7 +254,7 @@
 
                 <constructor-arg>
                   <bean class="org.opensaml.util.resource.ClasspathResource">
-                    <constructor-arg value="/sp.xml"/>
+                    <constructor-arg value="/sp-eleg.xml"/>
                   </bean>
                 </constructor-arg>
                 <property name="parserPool" ref="parserPool"/>
@@ -266,7 +289,7 @@
             <constructor-arg>
               <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
                 <constructor-arg>
-                  <value type="java.io.File">classpath:idp.xml</value>
+                  <value type="java.io.File">classpath:idp-eleg.xml</value>
                 </constructor-arg>
                 <property name="parserPool" ref="parserPool"/>
               </bean>
@@ -280,7 +303,7 @@
             <!--
             TODO: If set to true, application startup fails with:
             TODO: org.opensaml.saml2.metadata.provider.FilterException: Signature trust establishment failed for metadata entry
-            TODO: Need to look into certificates here.
+            TODO: Need to look into certificates here. It may be a problem that only occurs vs test environments.
                -->
             <property name="metadataTrustCheck" value="false"/>
           </bean>

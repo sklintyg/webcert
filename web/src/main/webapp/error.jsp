@@ -3,6 +3,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<%
+  String sakerhetsTjanstIdp = "https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml";
+  String elegTjanstIdp = "https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0";
+%>
+
 <!DOCTYPE html>
 <html lang="sv">
 <head>
@@ -35,7 +40,24 @@
               <div id="loggedOut" class="alert alert-info">
                 <spring:message code="info.loggedout.text" />
               </div>
-              <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
+              <div class="container">
+                <div class="row">
+                  <div class="col-xs-2">
+                    Landstingspersonal:
+                  </div>
+                  <div class="col-xs-10">
+                    <a href="/saml/login/alias/siths?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xs-2">
+                    Privatläkare:
+                  </div>
+                  <div class="col-xs-10">
+                    <a href="/saml/login/alias/eleg?idp=<%= elegTjanstIdp %>" class="btn btn-success" id="loginBtn2">E-legitimation</a></p>
+                  </div>
+                </div>
+              </div>
             </c:when>
 
             <c:when test="${param.reason eq \"timeout\"}">
@@ -43,7 +65,24 @@
               <div id="loggedOut" class="alert alert-info">
                 <spring:message code="error.sessiontimeout.text" />
               </div>
-              <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
+              <div class="container">
+                <div class="row">
+                  <div class="col-xs-2">
+                    Landstingspersonal:
+                  </div>
+                  <div class="col-xs-10">
+                    <a href="/saml/login/alias/siths?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xs-2">
+                    Privatläkare:
+                  </div>
+                  <div class="col-xs-10">
+                    <a href="/saml/login/alias/eleg?idp=<%= elegTjanstIdp %>" class="btn btn-success" id="loginBtn2">E-legitimation</a></p>
+                  </div>
+                </div>
+              </div>
             </c:when>
 
             <c:when test="${param.reason eq \"timeout_integration\"}">
@@ -58,7 +97,24 @@
               <div id="noAuth" class="alert alert-warning">
                 <spring:message code="error.noauth.text" />
               </div>
-              <a href="/saml/login" class="btn btn-success" id="loginBtn">Logga in</a>
+              <div class="container">
+                <div class="row">
+                  <div class="col-xs-2">
+                    Landstingspersonal:
+                  </div>
+                  <div class="col-xs-10">
+                    <a href="/saml/login/alias/siths?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xs-2">
+                    Privatläkare:
+                  </div>
+                  <div class="col-xs-10">
+                    <a href="/saml/login/alias/eleg?idp=<%= elegTjanstIdp %>" class="btn btn-success" id="loginBtn2">E-legitimation</a></p>
+                  </div>
+                </div>
+              </div>
             </c:when>
 
 

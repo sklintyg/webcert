@@ -2,6 +2,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<%
+  String sakerhetsTjanstIdp = "https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml";
+  String elegTjanstIdp = "https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0";
+%>
+
 <!DOCTYPE html>
 <html lang="sv" id="ng-app" ng-app="webcertIndex">
 <head>
@@ -101,7 +106,7 @@
                 Landstingspersonal:
               </div>
               <div class="col-xs-10">
-                <a href="/saml/login/alias/siths?idp=https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
+                <a href="/saml/login/alias/siths?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
               </div>
             </div>
             <div class="row">
@@ -109,7 +114,7 @@
                 Privatläkare:
               </div>
               <div class="col-xs-10">
-                <a href="/saml/login/alias/eleg?idp=https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0" class="btn btn-success" id="loginBtn2">E-legitimation</a></p>
+                <a href="/saml/login/alias/eleg?idp=<%= elegTjanstIdp %>" class="btn btn-success" id="loginBtn2">E-legitimation</a></p>
               </div>
             </div>
           </div>
