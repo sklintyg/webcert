@@ -8,7 +8,7 @@ abstract class AbstractPage extends Page {
     static boolean doneLoading() {
         boolean result
         Browser.drive {
-            result = js.doneLoading && js.dialogDoneLoading && js.rendered
+            result = js.doneLoading && js.dialogDoneLoading
         }
         result
     }
