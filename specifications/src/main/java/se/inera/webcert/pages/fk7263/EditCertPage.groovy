@@ -2,6 +2,7 @@ package se.inera.webcert.pages.fk7263
 
 import geb.Module
 import se.inera.certificate.page.AbstractPage
+import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.AbstractEditCertPage
 import se.inera.webcert.pages.VardenhetModule
 
@@ -67,6 +68,9 @@ class EditCertPage extends AbstractEditCertPage {
         smittskydd.value(val);
         waitFor {
             doneLoading()
+            Browser.drive {
+                js.animations.smittskydd.rendered;
+            }
         }
     }
 
@@ -134,12 +138,20 @@ class DiagnosModule extends Module {
 }
 
 class ArbeteModule extends Module {
-    static base = { $("#arbeteForm") }
+    static base = { $("#sysselsattning") }
     static content = {
-        nuvarande { $("#arbeteNuvarande") }
-        arbetsuppgifter { $("#currentWork") }
-        arbetslos { $("#arbeteArbetslos") }
-        foraldraledig { $("#arbeteForaldraledig") }
+        // shows and hides with smittskydd
+        println('required false!');
+        nuvarande(required: false) { $("#arbeteNuvarande") }
+        arbetsuppgifter(required: false) { $("#currentWork") }
+        arbetslos(required: false) { $("#arbeteArbetslos") }
+        foraldraledig(required: false) { $("#arbeteForaldraledig") }
+    }
+
+    def setNuvarandeCheckBox(value){
+        println('setting nuverande' + nuvarande.attr("id") + ', value');
+        AbstractPage.scrollIntoView(nuvarande.attr("id"));
+        nuvarande = value;
     }
 }
 

@@ -173,8 +173,8 @@ class HanteraUtkast {
         Browser.drive {
             waitFor {
                 at VisaFk7263Page
+                page.intygLaddat.isDisplayed()
             }
-            page.intygLaddat.isDisplayed()
         }
     }
 

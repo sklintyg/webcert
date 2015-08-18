@@ -181,7 +181,9 @@ class PopuleraFk7263 {
                 page.aktivitetsbegransning = aktivitetsbegransning
             }
 
-            if (nuvarandearbete != null) page.arbete.nuvarande = nuvarandearbete
+            if (nuvarandearbete != null){
+                page.arbete.setNuvarandeCheckBox(nuvarandearbete);
+            }
             if (arbetsuppgifter != null) page.arbete.arbetsuppgifter = arbetsuppgifter
             if (arbetslos != null) page.arbete.arbetslos = arbetslos
             if (foraldraledig != null) page.arbete.foraldraledig = foraldraledig
