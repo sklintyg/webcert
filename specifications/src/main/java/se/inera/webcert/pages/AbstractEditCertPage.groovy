@@ -22,6 +22,7 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
         doljVadSomSaknasKnapp { $("#hideCompleteButton") }
         visaVadSomSaknasLista(required: false) { $("#visa-vad-som-saknas-lista") }
         sekretessmarkering { $("#sekretessmarkering") }
+        vardenhet { module VardenhetModule }
     }
     
     def visaVadSomSaknas() {
@@ -37,6 +38,10 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
         waitFor {
             doneLoading()
         }
+    }
+
+    void spara(){
+        js.save()
     }
 
     boolean harSparat(){

@@ -23,15 +23,15 @@ I det här fallet har frågan skickats till annan enhet än intygsutfärdaren.
 | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
-| fraga | $internReferens1 | visas i listan med ohanterade fragor |
-| fraga | $internReferens1 | visas i listan med hanterade fragor | false |
+| säkerställ att | fraga | $internReferens1 | visas i listan med ohanterade fragor |
+| säkerställ att inte | fraga | $internReferens1 | visas i listan med hanterade fragor |
 
 !3 Verifiera att det går att svara på frågan
 
 | skript | !-SvaraOchFraga-! |
 | svara pa fraga | $internReferens1 | med svar | Här svarar Fitnesse på frågan |
-| fraga | $internReferens1 | visas i listan med ohanterade fragor | false |
-| fraga | $internReferens1 | visas i listan med hanterade fragor |
+| säkerställ att inte | fraga | $internReferens1 | visas i listan med ohanterade fragor |
+| säkerställ att | fraga | $internReferens1 | visas i listan med hanterade fragor |
 
 !3 Ta bort fråga och intyg
 

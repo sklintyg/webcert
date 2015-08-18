@@ -33,8 +33,6 @@ class EditeraFk7263Page extends AbstractEditCertPage {
         rekommendationer { name -> module RekommendationerModule, form: form }
         kontaktFk { $("#kontaktFk") }
         ovrigt { $("#otherInformation") }
-        vardenhet { module VardenhetModule }
-
 
         // date picker
         datepicker { $("div[ng-switch='datepickerMode']") }

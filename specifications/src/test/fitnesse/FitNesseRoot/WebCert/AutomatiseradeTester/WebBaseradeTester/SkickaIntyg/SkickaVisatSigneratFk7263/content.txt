@@ -1,10 +1,14 @@
 Detta test ska visa på att man kan skicka ett signerat fk-intyg.
 
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
 !3 Välj patient och visa intyget
 
 | skript | !-SokSkrivIntyg-! |
-| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-| sok skriv intyg sidan visas sa smaningom |
+| sok skriv intyg sidan visas |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
 | visa intyg | intyg-fit-6 |
@@ -14,8 +18,8 @@ Detta test ska visa på att man kan skicka ett signerat fk-intyg.
 
 | skript | !-SokSkrivIntyg-! |
 | skicka det visade intyget av typ | fk7263 |
-| skicka status visas |
-| skicka status visas | true | med ratt meddelande | Försäkringskassans system |
+| säkerställ att | skicka status visas |
+| säkerställ att | skicka status visas med ratt meddelande | Försäkringskassans system |
 
 !3 Kontrollera att Intygstjänsten (asynkront) tagit emot och skickat intyget (webcert-1314)
 

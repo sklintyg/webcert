@@ -16,21 +16,21 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 | skript | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
-| lista med ohanterade fragor visas |
+| säkerställ att | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
 
 !3 Verifiera att det går att skicka en ny fråga till försäkringskassan
 
 | skript | !-SvaraOchFraga-! |
-| ny fraga knapp visas |
+| säkerställ att | ny fraga knapp visas |
 | valj ny fraga |
 | ny fraga formular visas |
-| skicka fraga knapp aktiverad | false |
+| säkerställ att inte | skicka fraga knapp aktiverad |
 | skicka fraga | En fråga från Fitnesse 1 | med amne | 1 |
-| fragan ar skickad till fk meddelande visas |
-| ny fraga formular visas | false |
-| fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
+| säkerställ att | fragan ar skickad till fk meddelande visas |
+| säkerställ att inte | ny fraga formular visas |
+| säkerställ att | fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
 
 !3 1. Verifiera att det går att hitta frågan igen
 
@@ -40,10 +40,10 @@ Testet beskriver fallet när en användare skickar en ny fråga till Försäkrin
 !3 1.3 Verifiera att det går att hitta frågan igen
 | skript | !-SvaraOchFraga-! |
 | ohanterade fragor sidan visas |
-| lista med ohanterade fragor visas |
+| säkerställ att | lista med ohanterade fragor visas |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
-| fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
+| säkerställ att | fraga med text | En fråga från Fitnesse 1 | visas  i listan med ohanterade fragor |
 
 !3 Ta bort de frågor vi har skickat
 

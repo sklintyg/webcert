@@ -14,6 +14,6 @@ Testet beskriver fallet när en användare försöker skicka en fråga till för
 !3 Verifiera att det inte går att skicka nya frågor till försäkringskassan
 
 | skript | !-SvaraOchFraga-! |
-| ny fraga knapp visas | false |
-| intyg ar rattat meddelande visas |
+| säkerställ att inte | ny fraga knapp visas |
+| säkerställ att | intyg ar rattat meddelande visas |
 

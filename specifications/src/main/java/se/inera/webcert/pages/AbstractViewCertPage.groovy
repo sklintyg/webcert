@@ -9,13 +9,13 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         intygLaddat { $('#intyg-vy-laddad') }
 
         skrivUtKnapp { $("#downloadprint") }
-        kopieraKnapp { $("#copyBtn") }
+        kopieraKnapp(required: false) { $("#copyBtn") }
         makuleraKnapp(required: false) { $("#makuleraBtn") }
         sekretessmarkering { $("#sekretessmarkering") }
 
         skickaDialogCheck { $("#patientSamtycke") }
         skickaDialogSkickaKnapp { $("#button1send-dialog") }
-        skickaKnapp { $("#sendBtn") }
+        skickaKnapp(required: false) { $("#sendBtn") }
         
         kopieraDialogMsgForlangningSjukskrivning(required:false) { $("#msgForlangningSjukskrivning") }
 
@@ -48,11 +48,11 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         qaOnlyDialogCancel(required: false) { $("#button2qa-only-warning-dialog") }
 
         unhandledQAList { $("#unhandledQACol") }
-        unhandledQAPanel {internid -> $("#qaunhandled-${internid}")}
-        unhandledQAPanelWithText {text -> $("#unhandledQACol div", text: text)}
+        unhandledQAPanel(required: false) {internid -> $("#qaunhandled-${internid}")}
+        unhandledQAPanelWithText(required: false) {text -> $("#unhandledQACol div", text: text)}
         
         handledQAList { $("#handledQACol") }
-        handledQAPanel {internid -> $("#qahandled-${internid}")}
+        handledQAPanel(required: false) {internid -> $("#qahandled-${internid}")}
         
         answerText {internid -> $("#answerText-${internid}")}
         sendAnswerBtn {internid -> $("#sendAnswerBtn-${internid}")}

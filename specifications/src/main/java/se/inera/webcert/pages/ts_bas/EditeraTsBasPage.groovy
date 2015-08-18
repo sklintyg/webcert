@@ -35,8 +35,6 @@ class EditeraTsBasPage extends AbstractEditCertPage {
 
         bedomning { name -> module BedomningModule, form: form }
 
-        vardenhet { module VardenhetModule }
-
         // Intygsvalidering
         valideringPatient(required: false){$("#validationMessages_patientadress") }
         valideringIntygAvser(required: false){$("#validationMessages_intygavser") }

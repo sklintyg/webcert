@@ -30,7 +30,7 @@ class SvaraOchFraga {
         Browser.drive {
             go "/web/dashboard#/create/index"
             waitFor {
-                at SokSkrivaIntygPage
+                doneLoading()
             }
         }
     }
@@ -92,7 +92,7 @@ class SvaraOchFraga {
     def fragaMedTextVisasIListanMedOhanteradeFragor(String text) {
         boolean result
         Browser.drive {
-            result = page.qaUnhandledPanelWithText(text).isDisplayed()
+            result = page.unhandledQAPanelWithText(text)?.isDisplayed()
         }
         result
     }
@@ -100,7 +100,7 @@ class SvaraOchFraga {
     boolean fragaVisasIListanMedOhanteradeFragor(String id) {
         boolean result
         Browser.drive {
-            result = page.qaUnhandledPanel(id).isDisplayed()
+            result = page.unhandledQAPanel(id)?.isDisplayed()
         }
         result
     }
@@ -108,7 +108,7 @@ class SvaraOchFraga {
     boolean fragaVisasIListanMedHanteradeFragor(String id) {
         boolean result
         Browser.drive {
-            result = page.qaHandledPanel(id).isDisplayed()
+            result = page.handledQAPanel(id)?.isDisplayed()
         }
         result
     }
@@ -124,7 +124,7 @@ class SvaraOchFraga {
     boolean intygArRattatMeddelandeVisas() {
         boolean result
         Browser.drive {
-            result = page.certificateRevokedMessage.isDisplayed()
+            result = page.certificateRevokedMessage?.isDisplayed()
         }
         result
     }
@@ -132,7 +132,7 @@ class SvaraOchFraga {
     boolean intygArSkickatTillFkMeddelandeVisas() {
         boolean result
         Browser.drive {
-            result = page.certificateIsSentToFKMessage.isDisplayed()
+            result = page.certificateIsSentToFKMessage?.isDisplayed()
         }
         result
     }
@@ -141,7 +141,7 @@ class SvaraOchFraga {
         boolean result
         Browser.drive {
             page.hamtaFler()
-            result = page.unhandledQATable.isDisplayed()
+            result = page.unhandledQATable?.isDisplayed()
         }
         result
     }
@@ -266,7 +266,7 @@ class SvaraOchFraga {
         }
     }
 
-    boolean visasFraga(String id) {
+    boolean fragaVisas(String id) {
         boolean result
         Browser.drive {
             result = page.isQAVisible(id)
@@ -303,7 +303,7 @@ class SvaraOchFraga {
     boolean skrivUtKnappVisas() {
         boolean result
         Browser.drive {
-            result = page.skrivUtBtn.isDisplayed()
+            result = page.skrivUtKnapp.isDisplayed()
         }
         result
     }
@@ -311,7 +311,7 @@ class SvaraOchFraga {
     boolean kopieraKnappVisas() {
         boolean result
         Browser.drive {
-            result = page.kopieraBtn.isDisplayed()
+            result = page.kopieraKnapp.isDisplayed()
         }
         result
     }
@@ -319,14 +319,14 @@ class SvaraOchFraga {
     boolean makuleraKnappVisas() {
         boolean result
         Browser.drive {
-            result = page.makuleraBtn.isDisplayed()
+            result = page.makuleraKnapp.isDisplayed()
         }
     }
 
     boolean skickaTillFkKnappVisas() {
         boolean result
         Browser.drive {
-            result = skickaTillFkBtn.isDisplayed()
+            result = page.skickaKnapp.isDisplayed()
         }
         result
     }
@@ -586,34 +586,24 @@ class SvaraOchFraga {
         }
     }
 
-    boolean infotextIngaFragarPaEnhetVisas(boolean expected = true) {
+    boolean infotextIngaFragarPaEnhetVisas() {
         boolean result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            if (expected) {
-                result = page.noResultsOnUnitInfo.isDisplayed()
-
-            } else {
-                result = !page.noResultsOnUnitInfoNoWait.isDisplayed()
-            }
+            result = page.noResultsOnUnitInfo.isDisplayed()
         }
         result
     }
 
-    boolean infotextIngetSokresultatVisas(boolean expected = true) {
+    boolean infotextIngetSokresultatVisas() {
         boolean result
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            if (expected) {
-                result = page.noResultsForQueryInfo.isDisplayed()
-
-            } else {
-                result = !page.noResultsForQueryInfoNoWait.isDisplayed()
-            }
+            result = page.noResultsForQueryInfo.isDisplayed()
         }
         result
     }

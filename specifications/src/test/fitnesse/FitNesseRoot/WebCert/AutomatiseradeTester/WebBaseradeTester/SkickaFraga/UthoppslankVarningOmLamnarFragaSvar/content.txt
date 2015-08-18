@@ -15,9 +15,9 @@ Testet beskriver fallet när en användare kommer till fråga/svar från journal
 
 | skript | !-SvaraOchFraga-! |
 | säkerställ att | skriv ut knapp visas |
-| säkerställ att | kopiera knapp ej visas |
-| säkerställ att | makulera knapp visas ej |
-| skicka till fk knapp visas | false |
+| säkerställ att inte | kopiera knapp visas |
+| säkerställ att inte | makulera knapp visas |
+| säkerställ att inte | skicka till fk knapp visas |
 
 !4 Verifiera att man får en varningsdialog om man försöker lämna sidan
 
@@ -35,14 +35,16 @@ Testet beskriver fallet när en användare kommer till fråga/svar från journal
 !4 Verifiera att man inte får en varningsdialog om man går tillbaka och lämnar sidan igen
 
 | skript | !-SvaraOchFraga-! |
-| ga till svara och fraga | true |
+| ga till svara och fraga |
 | ga till sok skriva intyg |
 | säkerställ att | sok skriva intyg sidan visas |
 
 !3 Givet att man går in på samma intyg utan att gå via uthoppslänken
 
-| skript | !-SvaraOchFraga-! |
+| skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1042 |
+
+| skript | !-SvaraOchFraga-! |
 | ga till intygsvy med intygsid | intyg-fit-6 |
 | intyg med fraga svar sidan visas |
 

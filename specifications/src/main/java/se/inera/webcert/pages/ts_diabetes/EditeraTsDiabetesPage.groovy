@@ -22,7 +22,6 @@ class EditeraTsDiabetesPage extends AbstractEditCertPage {
         bedomning { name -> module BedomningModule, form: form }
         kommentar { $("#kommentar") }
         specialist { $("#specialist") }
-        vardenhet { module VardenhetModule }
 
         // Intygsvalidering
         valideringPatient(required: false){$("#validationMessages_patient") }

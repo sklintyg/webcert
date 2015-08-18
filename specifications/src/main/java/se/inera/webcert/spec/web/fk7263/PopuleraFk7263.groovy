@@ -77,10 +77,6 @@ class PopuleraFk7263 {
     def execute() {
         Browser.drive {
 
-            waitFor {
-                at EditeraFk7263Page
-            }
-
             if (smittskydd != null) page.setSmittskydd(smittskydd)
 
             if (undersokning != null){
@@ -236,6 +232,8 @@ class PopuleraFk7263 {
             if (vardenhetPostort != null) page.vardenhet.postort = vardenhetPostort
             if (vardenhetTelefonnummer != null) page.vardenhet.telefonnummer = vardenhetTelefonnummer
             if (vardenhetEpost != null) page.vardenhet.epost = vardenhetEpost
+            
+            page.spara()
         }
     }
 

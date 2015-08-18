@@ -51,6 +51,9 @@ class SokSkrivIntyg {
     boolean sokSkrivIntygSidanVisas() {
         boolean result
         Browser.drive {
+            waitFor {
+                doneLoading()
+            }
             result = isAt SokSkrivaIntygPage
         }
         result
@@ -59,15 +62,23 @@ class SokSkrivIntyg {
     boolean fyllINamnSidanVisas() {
         boolean result
         Browser.drive {
+            waitFor {
+                doneLoading()
+            }
             result = isAt SokSkrivFyllINamnPage
         }
         result
     }
 
     boolean valjIntygstypSidanVisas() {
+        boolean result
         Browser.drive {
-            at SokSkrivValjIntygTypPage
+            waitFor {
+                doneLoading()
+            }
+            result = at SokSkrivValjIntygTypPage
         }
+        result
     }
 
     // ------- behaviour
@@ -266,7 +277,7 @@ class SokSkrivIntyg {
         result
     }
 
-    boolean skickaStatusVisasMedRattMeddelande(boolean expected = true, String containsText) {
+    boolean skickaStatusVisasMedRattMeddelande(String containsText) {
         boolean result
         Browser.drive {
             result = page.certificateIsOnQueueToITMessage.text().contains(containsText);

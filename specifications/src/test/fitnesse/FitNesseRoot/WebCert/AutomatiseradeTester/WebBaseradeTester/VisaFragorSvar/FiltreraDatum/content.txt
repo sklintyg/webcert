@@ -10,8 +10,8 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 | skript | !-SvaraOchFraga-! |
 | ga till svara och fraga |
 | ohanterade fragor sidan visas |
-| infotext inga fragar pa enhet visas | true |
-| infotext inget sokresultat visas | false |
+| säkerställ att | infotext inga fragar pa enhet visas |
+| säkerställ att inte | infotext inget sokresultat visas |
 
 !3 Lägg till frågor
 
@@ -32,18 +32,18 @@ Testet beskriver fallet när en användare filtrerar frågor på datum.
 | valj datum fran | 2013-01-02 |
 | valj datum till | 2013-01-03 |
 | filtrera fragor och svar |
-| visas fraga| $internReferens2 |
-| visas fraga | $internReferens3 |
-| doljs fraga| $internReferens1 |
-| doljs fraga| $internReferens4 |
+| säkerställ att | fraga| $internReferens2 | visas |
+| säkerställ att | fraga | $internReferens3 | visas |
+| säkerställ att inte | fraga| $internReferens1 | visas |
+| säkerställ att inte | fraga| $internReferens4 | visas |
 
 !3 Filtrera så inga träffar fås, verifiera förväntat infomeddelande
 | skript | !-SvaraOchFraga-! |
 | valj datum fran | 2012-01-02 |
 | valj datum till | 2012-01-03 |
-| filtrera fragor och svar | false |
-| infotext inget sokresultat visas | true |
-| infotext inga fragar pa enhet visas | false |
+| filtrera fragor och svar |
+| säkerställ att | infotext inget sokresultat visas |
+| säkerställ att inte | infotext inga fragar pa enhet visas |
 
 !3 Ta bort frågor
 

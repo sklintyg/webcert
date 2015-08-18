@@ -10,7 +10,7 @@
 | webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
 
 | skript | !-SokSkrivIntyg-! |
-| sok skriv intyg sidan visas sa smaningom |
+| sok skriv intyg sidan visas |
 
 !3 Visa utkastet via integrationslänken
 

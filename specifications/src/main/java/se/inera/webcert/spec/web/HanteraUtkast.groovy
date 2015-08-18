@@ -13,12 +13,16 @@ class HanteraUtkast {
     void gaTillEditeraIntygMedTypOchIntygid(String typ, String intygid) {
         Browser.drive {
             go "/web/dashboard#/$typ/edit/$intygid"
-            waitFor {
-                if (typ == "fk7263") {
+            if (typ == "fk7263") {
+                waitFor {
                     at se.inera.webcert.pages.fk7263.EditeraFk7263Page
-                } else if (typ == "ts-bas") {
+                }
+            } else if (typ == "ts-bas") {
+                waitFor {
                     at se.inera.webcert.pages.ts_bas.EditeraTsBasPage
-                } else if (typ == "ts-diabetes") {
+                }
+            } else if (typ == "ts-diabetes") {
+                waitFor {
                     at se.inera.webcert.pages.ts_diabetes.EditeraTsDiabetesPage
                 }
             }
@@ -37,6 +41,15 @@ class HanteraUtkast {
     void provaGaTillEditIntygMedIntygsid(String id) {
         Browser.drive {
             go "/web/dashboard#/fk7263/edit/${id}"
+        }
+    }
+
+    void gaTillEjSigneradeIntyg() {
+        Browser.drive {
+            to UnsignedIntygPage
+            waitFor {
+                at UnsignedIntygPage
+            }
         }
     }
 
@@ -261,31 +274,31 @@ class HanteraUtkast {
     // -------- form edit
     void andraPostadress(String value) {
         Browser.drive {
-            page.postadress = value
+            page.vardenhet.postadress = value
         }
     }
 
     void andraPostnummer(String value) {
         Browser.drive {
-            page.postnummer = value
+            page.vardenhet.postnummer = value
         }
     }
 
     void andraPostort(String value) {
         Browser.drive {
-            page.postort = value
+            page.vardenhet.postort = value
         }
     }
 
     void andraTelefonnummer(String value) {
         Browser.drive {
-            page.telefonnummer = value
+            page.vardenhet.telefonnummer = value
         }
     }
 
     void andraEpost(String value) {
         Browser.drive {
-            page.epost = value
+            page.vardenhet.epost = value
         }
     }
 
@@ -294,7 +307,7 @@ class HanteraUtkast {
     String postadress() {
         def result
         Browser.drive {
-            result = page.postadress.value()
+            result = page.vardenhet.postadress.value()
         }
         result
     }
@@ -302,7 +315,7 @@ class HanteraUtkast {
     String postnummer() {
         def result
         Browser.drive {
-            result = page.postnummer.value()
+            result = page.vardenhet.postnummer.value()
         }
         result
     }
@@ -310,7 +323,7 @@ class HanteraUtkast {
     String postort() {
         def result
         Browser.drive {
-            result = page.postort.value()
+            result = page.vardenhet.postort.value()
         }
         result
     }
@@ -318,7 +331,7 @@ class HanteraUtkast {
     String telefonnummer() {
         def result
         Browser.drive {
-            result = page.telefonnummer.value()
+            result = page.vardenhet.telefonnummer.value()
         }
         result
     }
@@ -326,12 +339,12 @@ class HanteraUtkast {
     String epost() {
         def result
         Browser.drive {
-            result = page.epost.value()
+            result = page.vardenhet.epost.value()
         }
         result
     }
 
-    boolean kommentarInnehallarText(String text) {
+    boolean kommentarInnehallerText(String text) {
         def result = false;
         Browser.drive {
             result = page.kommentar.text().contains(text);
@@ -339,21 +352,15 @@ class HanteraUtkast {
         return result;
     }
 
-    boolean feltMedNamnInnehallarText(String felt, String text) {
+    boolean faltMedNamnInnehallerText(String falt, String text) {
         boolean result
         Browser.drive {
             waitFor {
-                result = page."$felt".text().contains(text)
+                result = page."$falt".text().contains(text)
                 //result = page.vardenhet.postadress.text().contains(text);
             }
         }
         return result
-    }
-
-    // ------- utils
-    boolean wait4it() {
-        Thread.sleep(5000)
-        true
     }
 
     boolean sekretessmarkeringVisas() {

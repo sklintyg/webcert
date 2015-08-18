@@ -23,7 +23,7 @@ Populera intyget med information i samtliga fält så det blir komplett
 | skript | !-HanteraUtkast-! |
 | säkerställ att | intyg ej komplett visas |
 | säkerställ att | signera knapp visas |
-| säkerställ att | signera knapp ej aktiverad |
+| säkerställ att inte | signera knapp aktiverad |
 
 !3 Ta bort utkastet
 

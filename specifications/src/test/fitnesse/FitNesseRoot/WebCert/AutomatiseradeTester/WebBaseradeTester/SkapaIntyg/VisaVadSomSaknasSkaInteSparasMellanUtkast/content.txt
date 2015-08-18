@@ -10,15 +10,19 @@ Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte ä
 | wc-saknas-2 | ts-bas | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
 | wc-saknas-3 | ts-diabetes | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |
 
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
 !3 Gå till fk-utkastet
 
 | skript | !-HanteraUtkast-! |
-| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | ga till editera intyg med typ | fk7263 | och intygid | wc-saknas-1 |
 | editera sidan visas |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att | visa vad som saknas lista ej visas |
+| säkerställ att inte | visa vad som saknas lista visas |
 | visa vad som saknas |
 | säkerställ att | visa vad som saknas lista visas |
 
@@ -28,7 +32,7 @@ Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte ä
 | editera sidan visas |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att | visa vad som saknas lista ej visas |
+| säkerställ att inte | visa vad som saknas lista visas |
 | visa vad som saknas |
 | säkerställ att | visa vad som saknas lista visas |
 
@@ -38,7 +42,7 @@ Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte ä
 | editera sidan visas |
 
 | skript | !-SkrivIntyg-! |
-| säkerställ att | visa vad som saknas lista ej visas |
+| säkerställ att inte | visa vad som saknas lista visas |
 | visa vad som saknas |
 | säkerställ att | visa vad som saknas lista visas |
 
@@ -48,7 +52,7 @@ Testet beskriver fallet när en läkare går in på ett fk7263 intyg som inte ä
 | editera sidan visas |
 
 | skript | !-SkrivIntyg-! |
-| visa vad som saknas lista ej visas |
+| säkerställ att inte | visa vad som saknas lista visas |
 
 !3 Ta bort utkast
 

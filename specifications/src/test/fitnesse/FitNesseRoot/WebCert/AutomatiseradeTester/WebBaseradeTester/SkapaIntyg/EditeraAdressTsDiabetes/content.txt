@@ -6,10 +6,14 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-diabetes int
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
 | webcert-fitnesse-editera-1 | ts-diabetes | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
+
 !3 Givet att det finns ett komplett utkast, verifiera att det står något i adressfälten
 
 !| skript | HanteraUtkast |
-| logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 | sok skriv intyg sidan visas |
 | ga till editera intyg med typ | ts-diabetes | och intygid | webcert-fitnesse-editera-1 |
 | editera sidan visas |
