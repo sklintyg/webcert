@@ -70,10 +70,6 @@ class PopuleraTsBas {
     def execute() {
         Browser.drive {
 
-            waitFor {
-                at EditeraTsBasPage
-            }
-
             if (postadress != null) page.patient.postadress = postadress
             if (postnummer != null) page.patient.postnummer = postnummer
             if (postort != null) page.patient.postort = postort
@@ -160,6 +156,8 @@ class PopuleraTsBas {
             if (vardenhetPostnummer != null) page.vardenhet.postnummer = vardenhetPostnummer
             if (vardenhetPostort != null) page.vardenhet.postort = vardenhetPostort
             if (vardenhetTelefonnummer != null) page.vardenhet.telefonnummer = vardenhetTelefonnummer
+            
+            page.spara()
         }
     }
 }

@@ -21,30 +21,21 @@ class AbstractLoggedInPage extends AbstractPage {
         
         // care unit dialog
         careUnitSelector(required: false, wait: true) { $("div#wc-care-unit-clinic-selector")}
+        activeUnit(required: false) {careUnit -> $("#select-active-unit-${careUnit}")}
         careUnitModal(required: false) { $("a#wc-care-unit-clinic-selector-link") }
         careUnitModalBody(required: false) { $(".modal-body") }
 
     }
 
     def selectCareUnit(String careUnit) {
-        Browser.drive {
-            waitFor {
-                $("#select-active-unit-${careUnit}").click()
-            }
+        activeUnit(careUnit).click()
+        waitFor {
+            doneLoading()
         }
     }
 
-    boolean isCareUnitVisible(String careUnit, boolean expected) {
-        Browser.drive {
-            def ref = "#select-active-unit-${careUnit}";
-            if (expected) {
-                waitFor {
-                    return $(ref).isDisplayed()
-                }
-            } else {
-                return !$(ref).isDisplayed()
-            }
-        }
+    boolean isCareUnitVisible(String careUnit) {
+        activeUnit(careUnit).isDisplayed()
     }
 
     def clickCareUnitModal() {
