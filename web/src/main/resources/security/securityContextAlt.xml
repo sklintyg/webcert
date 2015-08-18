@@ -102,6 +102,22 @@
   </beans>
 
   <!-- =============================================================== -->
+  <!-- The dev and wc-security-dev profiles only supports Fake login -->
+  <!-- =============================================================== -->
+  <beans profile="dev,wc-security-dev">
+    <security:http entry-point-ref="http403ForbiddenEntryPoint">
+      <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
+    </security:http>
+    <security:authentication-manager alias="authenticationManager">
+      <security:authentication-provider ref="fakeAuthenticationProvider"/>
+      <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
+    </security:authentication-manager>
+  </beans>
+
+  <!-- =============================================================== -->
   <!-- The wc-security-test profile support both Säkerhetstjänst and Fake login -->
   <!-- =============================================================== -->
   <beans profile="wc-security-test">
