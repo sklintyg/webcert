@@ -44,4 +44,9 @@ public class AvtalServiceImpl implements AvtalService {
         godkantAvtalRepository.approveAvtal(userId, latestAvtalVersion);
         monitoringLogService.logPrivatePractitionerTermsApproved(userId, latestAvtalVersion);
     }
+
+    @Override
+    public void removeApproval(String userId) {
+        godkantAvtalRepository.removeAllUserApprovments(userId);
+    }
 }

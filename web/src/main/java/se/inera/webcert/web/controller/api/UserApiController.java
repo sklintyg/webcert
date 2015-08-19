@@ -3,6 +3,7 @@ package se.inera.webcert.web.controller.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.web.controller.AbstractApiController;
@@ -82,5 +83,22 @@ public class UserApiController extends AbstractApiController {
             avtalService.approveLatestAvtal(user.getHsaId());
         }
         return Response.ok().build();
+    }
+
+    /**
+     * Deletes privatlakaravtal approval for the specified user.
+     *
+     * @return
+     */
+    @DELETE
+    @Path("/privatlakaravtal")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response taBortAvtalsGodkannande() {
+        WebCertUser user = getWebCertUserService().getWebCertUser();
+        if (user != null) {
+            avtalService.removeApproval(user.getHsaId());
+            return Response.ok().build();
+        }
+        return Response.notModified().build();
     }
 }

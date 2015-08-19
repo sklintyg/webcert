@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Created by eriklupander on 2015-08-05.
  */
-@Transactional(value = "jpaTransactionManager", readOnly = true)
+@Transactional(value = "jpaTransactionManager", readOnly = false)
 public interface GodkantAvtalRepositoryCustom {
 
     void approveAvtal(String userId, Integer avtalVersion);
