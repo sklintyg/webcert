@@ -67,10 +67,7 @@ class EditCertPage extends AbstractEditCertPage {
         AbstractPage.scrollIntoView(smittskydd.attr("id"));
         smittskydd.value(val);
         waitFor {
-            doneLoading()
-            Browser.drive {
-                js.animations.smittskydd.rendered;
-            }
+            return doneLoading() && js.animations.smittskydd.rendered;
         }
     }
 
