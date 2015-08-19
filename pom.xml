@@ -6,7 +6,7 @@
   <parent>
     <groupId>se.inera.intyg.common</groupId>
     <artifactId>common-pom</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
   </parent>
 
   <groupId>se.inera.intyg.webcert</groupId>
@@ -22,7 +22,7 @@
     <common.version.range>(,2.4.0]</common.version.range>
 
     <!-- TEMP -->
-    <ehcache.version>2.10.0</ehcache.version>
+    <!--<ehcache.version>2.10.0</ehcache.version>-->
 
     <!-- Intygstyper -->
     <intygstyper.version>0-SNAPSHOT</intygstyper.version>
@@ -263,7 +263,7 @@
       <dependency>
         <groupId>org.springframework.security.extensions</groupId>
         <artifactId>spring-security-saml2-core</artifactId>
-        <version>1.0.1.RELEASE</version>    <!-- ${spring.security.extensions.version} -->
+        <version>${spring.security.extensions.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.opensaml</groupId>
@@ -498,10 +498,8 @@
           <includeProperties>
             common.version,
             intygstyper.version,
-            intyg-privatepractitioner.version
-            intyg-clinicalprocess.version,
-            intyg-insuranceprocess.version,
-            intyg-transportstyrelsen.version
+            intyg-privatepractitioner.version,
+            intyg-privatepractitioner-terms.version
           </includeProperties>
           <properties>
             <property>
@@ -513,21 +511,13 @@
               <version>${intygstyper.version.range}</version>
             </property>
             <property>
-              <name>intyg-clinicalprocess.version</name>
-              <version>${intyg-clinicalprocess.version.range}</version>
-            </property>
-            <property>
-              <name>intyg-insuranceprocess.version</name>
-              <version>${intyg-insuranceprocess.version.range}</version>
-            </property>
-            <property>
-              <name>intyg-transportstyrelsen.version</name>
-              <version>${intyg-transportstyrelsen.version.range}</version>
-            </property>
- <property>
               <name>intyg-privatepractitioner.version</name>
               <version>${intyg-privatepractitioner.version.range}</version>
              </property>
+            <property>
+              <name>intyg-privatepractitioner-terms.version</name>
+              <version>${intyg-privatepractitioner-terms.version.range}</version>
+            </property>
           </properties>
         </configuration>
       </plugin>
