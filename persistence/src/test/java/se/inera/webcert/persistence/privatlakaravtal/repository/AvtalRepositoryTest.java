@@ -30,7 +30,6 @@ public class AvtalRepositoryTest {
 
     private static final String AVTAL_TEXT = "En väldigt lång avtalstext";
     private static final String USER_ID = "userId1234";
-    private static final Long INTERNREFERNS = 1L;
 
     @Autowired
     private AvtalRepository avtalRepository;

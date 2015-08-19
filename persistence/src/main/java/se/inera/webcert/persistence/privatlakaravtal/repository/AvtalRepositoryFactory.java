@@ -1,8 +1,6 @@
 package se.inera.webcert.persistence.privatlakaravtal.repository;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Scanner;
 
 import javax.annotation.PostConstruct;
 
