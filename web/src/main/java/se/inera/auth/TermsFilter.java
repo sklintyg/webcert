@@ -3,6 +3,7 @@ package se.inera.auth;
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,8 +61,11 @@ public class TermsFilter extends OncePerRequestFilter {
                         } else {
                             session.setAttribute(PRIVATE_PRACTITIONER_TERMS_ACCEPTED, false);
 
-                            // REDIRECT
+                            // REDIRECT. Note that we have gotten IllegalStateExceptions after redirect due to response
+                            // already have been commited. Hopefully the return (breaking the filter chain) can mitigate this.
+
                             response.sendRedirect("/terms.jsp");
+                            return;
                         }
 
                     }

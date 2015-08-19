@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,6 +93,7 @@ public class TermsFilterTest {
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
         when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(null);
+        when(request.getRequestDispatcher(anyString())).thenReturn(mock(RequestDispatcher.class));
 
         filter.doFilterInternal(request, response, filterChain);
         verify(response, times(1)).sendRedirect(anyString());
