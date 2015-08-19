@@ -241,9 +241,9 @@
       <constructor-arg>
         <bean class="org.springframework.security.saml.metadata.MetadataGenerator">
           <property name="entityId" value="${sakerhetstjanst.saml.entityId}"/>
-          <property name="entityBaseURL" value="${sakerhetstjanst.saml.entityBaseUrl}"/>         <!--  -->
-          <property name="signMetadata" value="false"/>
-          <property name="includeDiscovery" value="false"/>
+          <property name="entityBaseURL" value="${sakerhetstjanst.saml.entityBaseUrl}"/>
+          <!--<property name="signMetadata" value="false"/>-->
+          <!--<property name="includeDiscovery" value="false"/>-->
           <property name="bindingsSSO" value="POST"/>
         </bean>
       </constructor-arg>
