@@ -462,8 +462,8 @@
       <column name="AVTAL_VERSION" type="bigint">
         <constraints nullable="false"/>
       </column>
-      <column name="ANVANDAR_ID" type="varchar(255)">
-        <constraints nullable="true" />
+      <column name="HSA_ID" type="varchar(255)">
+        <constraints nullable="false" />
       </column>
       <column name="GODKAND_DATUM" type="datetime">
         <constraints nullable="false" />
@@ -476,7 +476,7 @@
         tableName="GODKANT_AVTAL_PRIVATLAKARE" />
 
     <addUniqueConstraint
-        columnNames="AVTAL_VERSION, ANVANDAR_ID"
+        columnNames="AVTAL_VERSION, HSA_ID"
         constraintName="GODKANT_AVTAL_UNIQUE_CONST"
         tableName="GODKANT_AVTAL_PRIVATLAKARE"/>
 

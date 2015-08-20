@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
-import se.inera.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -29,7 +27,7 @@ import se.inera.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
 public class AvtalRepositoryTest {
 
     private static final String AVTAL_TEXT = "En väldigt lång avtalstext";
-    private static final String USER_ID = "userId1234";
+    private static final String HSA_ID = "userId1234";
 
     @Autowired
     private AvtalRepository avtalRepository;
@@ -49,7 +47,7 @@ public class AvtalRepositoryTest {
     }
 
     @Test
-      public void testGetLatestAvtalVersion() {
+    public void testGetLatestAvtalVersion() {
         Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
         Avtal saved2 = buildAvtal(2, AVTAL_TEXT);
         Avtal saved3 = buildAvtal(3, AVTAL_TEXT);
@@ -72,7 +70,7 @@ public class AvtalRepositoryTest {
         Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
         avtalRepository.save(saved1);
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(USER_ID, latestAvtalVersion);
+        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
         assertFalse(approved);
     }
 
@@ -86,12 +84,11 @@ public class AvtalRepositoryTest {
 
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
 
-        godkantAvtalRepository.approveAvtal(USER_ID, 1);
+        godkantAvtalRepository.approveAvtal(HSA_ID, 1);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(USER_ID, latestAvtalVersion);
+        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
         assertFalse(approved);
     }
-
 
     @Test
     public void testApproveAvtal() {
@@ -99,9 +96,9 @@ public class AvtalRepositoryTest {
         avtalRepository.save(saved1);
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
 
-        godkantAvtalRepository.approveAvtal(USER_ID, latestAvtalVersion);
+        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(USER_ID, latestAvtalVersion);
+        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
         assertTrue(approved);
     }
 
@@ -111,12 +108,12 @@ public class AvtalRepositoryTest {
         avtalRepository.save(saved1);
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
 
-        godkantAvtalRepository.approveAvtal(USER_ID, latestAvtalVersion);
+        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
         // Applicaton code should stop this from triggering unique constraint
-        godkantAvtalRepository.approveAvtal(USER_ID, latestAvtalVersion);
+        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(USER_ID, latestAvtalVersion);
+        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
         assertTrue(approved);
     }
 
@@ -125,11 +122,11 @@ public class AvtalRepositoryTest {
         Avtal saved1 = buildAvtal(1, AVTAL_TEXT);
         avtalRepository.save(saved1);
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        godkantAvtalRepository.approveAvtal(USER_ID, latestAvtalVersion);
+        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
-        godkantAvtalRepository.removeUserApprovement(USER_ID, latestAvtalVersion);
+        godkantAvtalRepository.removeUserApprovement(HSA_ID, latestAvtalVersion);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(USER_ID, latestAvtalVersion);
+        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
         assertFalse(approved);
     }
 
@@ -143,11 +140,11 @@ public class AvtalRepositoryTest {
         avtalRepository.save(saved3);
 
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        godkantAvtalRepository.approveAvtal(USER_ID, latestAvtalVersion);
+        godkantAvtalRepository.approveAvtal(HSA_ID, latestAvtalVersion);
 
-        godkantAvtalRepository.removeAllUserApprovments(USER_ID);
+        godkantAvtalRepository.removeAllUserApprovments(HSA_ID);
 
-        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(USER_ID, latestAvtalVersion);
+        boolean approved = godkantAvtalRepository.userHasApprovedAvtal(HSA_ID, latestAvtalVersion);
         assertFalse(approved);
     }
 

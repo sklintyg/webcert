@@ -97,7 +97,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private WebCertUser createWebcertUser(SAMLCredential samlCredential, HoSPersonType hosPerson) {
         WebCertUser webCertUser = new WebCertUser();
-        webCertUser.setHsaId(hosPerson.getPersonId().getExtension());
+        webCertUser.setHsaId(hosPerson.getHsaId().getExtension());
         webCertUser.setForskrivarkod(hosPerson.getForskrivarkod());
         webCertUser.setLakare(true);
         webCertUser.setNamn(hosPerson.getFullstandigtNamn());

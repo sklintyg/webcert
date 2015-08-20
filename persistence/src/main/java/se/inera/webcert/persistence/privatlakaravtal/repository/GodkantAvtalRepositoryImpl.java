@@ -22,25 +22,25 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
     private EntityManager entityManager;
 
     @Override
-    public void approveAvtal(String userId, Integer avtalVersion) {
+    public void approveAvtal(String hsaId, Integer avtalVersion) {
 
-        if (userHasApprovedAvtal(userId, avtalVersion)) {
-            log.info("User '" + userId + "' has already approved privatlakaravtal version '" + avtalVersion + "'");
+        if (userHasApprovedAvtal(hsaId, avtalVersion)) {
+            log.info("User with hsaId '" + hsaId + "' has already approved privatlakaravtal version '" + avtalVersion + "'");
             return;
         }
 
         GodkantAvtal godkantAvtal = new GodkantAvtal();
-        godkantAvtal.setAnvandarId(userId);
+        godkantAvtal.setHsaId(hsaId);
         godkantAvtal.setAvtalVersion(avtalVersion);
         godkantAvtal.setGodkandDatum(LocalDateTime.now());
         entityManager.persist(godkantAvtal);
     }
 
     @Override
-    public boolean userHasApprovedAvtal(String userId, Integer avtalVersion) {
+    public boolean userHasApprovedAvtal(String hsaId, Integer avtalVersion) {
         try {
-            GodkantAvtal godkantAvtal = entityManager.createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.anvandarId = :userId AND ga.avtalVersion = :avtalVersion", GodkantAvtal.class)
-                    .setParameter("userId", userId)
+            GodkantAvtal godkantAvtal = entityManager.createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion", GodkantAvtal.class)
+                    .setParameter("hsaId", hsaId)
                     .setParameter("avtalVersion", avtalVersion)
                     .getSingleResult();
             return godkantAvtal != null;
@@ -53,10 +53,10 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
     }
 
     @Override
-    public void removeUserApprovement(String userId, Integer avtalVersion) {
+    public void removeUserApprovement(String hsaId, Integer avtalVersion) {
         try {
-            GodkantAvtal godkantAvtal = entityManager.createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.anvandarId = :userId AND ga.avtalVersion = :avtalVersion", GodkantAvtal.class)
-                    .setParameter("userId", userId)
+            GodkantAvtal godkantAvtal = entityManager.createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId AND ga.avtalVersion = :avtalVersion", GodkantAvtal.class)
+                    .setParameter("hsaId", hsaId)
                     .setParameter("avtalVersion", avtalVersion)
                     .getSingleResult();
 
@@ -64,14 +64,14 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
                 entityManager.remove(godkantAvtal);
             }
         } catch (NoResultException e) {
-            log.warn("Could not remove GodkantAvtal for user '" + userId + "', avtal version '" + avtalVersion + "'. No approvment found.");
+            log.warn("Could not remove GodkantAvtal for user with hsaId '" + hsaId + "', avtal version '" + avtalVersion + "'. No approval found.");
         }
     }
 
     @Override
-    public void removeAllUserApprovments(String userId) {
-        List<GodkantAvtal> godkandaAvtal = entityManager.createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.anvandarId = :userId", GodkantAvtal.class)
-                .setParameter("userId", userId)
+    public void removeAllUserApprovments(String hsaId) {
+        List<GodkantAvtal> godkandaAvtal = entityManager.createQuery("SELECT ga FROM GodkantAvtal ga WHERE ga.hsaId = :hsaId", GodkantAvtal.class)
+                .setParameter("hsaId", hsaId)
                 .getResultList();
 
         for(GodkantAvtal godkantAvtal : godkandaAvtal) {

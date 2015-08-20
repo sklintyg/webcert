@@ -8,12 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "jpaTransactionManager", readOnly = false)
 public interface GodkantAvtalRepositoryCustom {
 
-    void approveAvtal(String userId, Integer avtalVersion);
+    void approveAvtal(String hsaId, Integer avtalVersion);
 
-    boolean userHasApprovedAvtal(String userId, Integer avtalVersion);
+    boolean userHasApprovedAvtal(String hsaId, Integer avtalVersion);
 
-    void removeUserApprovement(String userId, Integer avtalVersion);
+    void removeUserApprovement(String hsaId, Integer avtalVersion);
 
-    void removeAllUserApprovments(String userId);
+    void removeAllUserApprovments(String hsaId);
 
 }

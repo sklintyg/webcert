@@ -19,9 +19,8 @@ public class GodkantAvtal {
     @Column(name = "AVTAL_VERSION")
     private Integer avtalVersion;
 
-    // TODO refactor when we know the exact term used for identifiying privatlakare (personId, hsaId?)
-    @Column(name = "ANVANDAR_ID")
-    private String anvandarId;
+    @Column(name = "HSA_ID")
+    private String hsaId;
 
     @Column(name = "GODKAND_DATUM")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
@@ -43,12 +42,12 @@ public class GodkantAvtal {
         this.avtalVersion = avtalVersion;
     }
 
-    public String getAnvandarId() {
-        return anvandarId;
+    public String getHsaId() {
+        return hsaId;
     }
 
-    public void setAnvandarId(String anvandarId) {
-        this.anvandarId = anvandarId;
+    public void setHsaId(String hsaId) {
+        this.hsaId = hsaId;
     }
 
     public LocalDateTime getGodkandDatum() {
