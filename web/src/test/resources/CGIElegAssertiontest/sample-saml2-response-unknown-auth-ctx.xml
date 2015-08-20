@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<saml2p:Response xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol"
+    Destination="https://m01-mglocal.me.funktionstjanster.se/samlv2/sp/resp?mgvhostparam=4" ID="_10bc2dd3b5fb9dbc1931d2df082fafac60" InResponseTo="_01501e7118ca8ba392438eeab538e3f0d2" IssueInstant="2011-05-25T11:21:38.269Z" Version="2.0">
+  <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">
+    https://m10-mglocal.funktionstjanster.se/samlv2/idp/metadata/0
+  </saml2:Issuer>
+  <saml2p:Status>
+    <saml2p:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+  </saml2p:Status>
+  <saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"
+      ID="_1087a625691670dff4fbec3ff91adf24aa" IssueInstant="2011-05-25T11:21:38.269Z" Version="2.0">
+    <saml2:Issuer>https://m10-mglocal.funktionstjanster.se/samlv2/idp/metadata/0</saml2:Issuer>
+    <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        Arbetsdokument Informationsklass Till partners/kunder Projektbeteckning Dokumenttyp
+        <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"/>
+        <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"/>
+        <ds:Reference URI="#_1087a625691670dff4fbec3ff91adf24aa" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+          <ds:Transforms xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+            <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"
+                xmlns:ds="http://www.w3.org/2000/09/xmldsig#"/>
+            <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"
+                xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+              <ec:InclusiveNamespaces xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"
+                  PrefixList="ds saml2 xs xsi"/>
+            </ds:Transform>
+          </ds:Transforms>
+          <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"/>
+          <ds:DigestValue xmlns:ds="http://www.w3.org/2000/09/xmldsig#">49l27yNqZqSkRRbCip8MCLshIBA=</ds:DigestValue>
+        </ds:Reference>
+      </ds:SignedInfo>
+      <ds:SignatureValue
+          xmlns:ds="http://www.w3.org/2000/09/xmldsig#">A67YrtOcUdDgGZE/7TvSDSa3ILBe3eQAW
+        /4Yd9+meZL0fD84iIcutqShMICgO8qndKPab7sNL4Uasw4hyPemBp/zSvKqvhCsHcSCPzD598HuZljNCZmD
+        25KZwtbtSlJTA6ui4V1ZAaYrsz4I5IFafpujkyUjDYKNhLIzGoKOH8f04b6ESrh0I7kjxtmrxs+x3BM9mS1dDk
+        C65aAa+daUB9usBanTDaj5BPLIVRjf2gvdLYXgIxBBZTmIz0l9M16YCy7QAT6hLY26FnsM5JTS2BfawJMRlZ
+        HnKxMBqPUCJ0UTOEI3JlMkeR90ZHtASzCSa6rM4lEN9Oc5FGN8R65Atw==
+      </ds:SignatureValue>
+      <ds:KeyInfo>
+        <ds:X509Data>
+          <ds:X509Certificate>MIID7TCCA1agAwIBAgIDDfnJMA0GCSqGSIb3DQEBBQUAME4xCzAJBgNVBAYTAlVTMRA
+            wDgYDVQQKEwdFcXVpZmF4MS0wKwYDVQQLEyRFcXVpZmF4IFNlY3VyZSBDZXJ0aWZpY2F0ZSBBdXRob
+            3JpdHkwHhcNMDkxMTE4MjMyNDA2WhcNMTEwOTEyMTIzMDI4WjCB8zEpMCcGA1UEBRMgMEpIckZwYUx
+            xTC9kbGwveHhQd0EvVUhJMU9ZdUExNmoxCzAJBgNVBAYTAlNFMR8wHQYDVQQKFBYqLmZ1bmt0aW9uc
+            3RqYW5zdGVyLnNlMRMwEQYDVQQLEwpHVDU5MzM1NzUzMTEwLwYDVQQLEyhTZWUgd3d3LnJhcGlkc3N
+            sLmNvbS9yZXNvdXJjZXMvY3BzIChjKTA4MS8wLQYDVQQLEyZEb21haW4gQ29udHJvbCBWYWxpZGF0ZW
+            QgLSBSYXBpZFNTTChSKTEfMB0GA1UEAxQWKi5mdW5rdGlvbnN0amFuc3Rlci5zZTCCASIwDQYJKoZIhvcN
+            AQEBBQADggEPADCCAQoCggEBALf2y0wlF3B1dYLwY0m43OR4ODlh4bSn2RFEg5hU0hC7wGQO6MW+bU
+            Rxr2Xc5rpz8KW76RWFtIL0pHjRV0hXroUV6r/1UWCWQUskgnUVytC0Qk3Nv5OTTrr8/SxDQ72tJgsKCigsL
+            VxsxA62Rrqb/dPPP1v2gLUJoFVFFjBaaJuVBuVvO/m7lIwpRrjVoljnDdm6zmRs2PMq1Z4yXixYLb6vUN7U
+            mqVvIk0UOmAntcAntVhxR1wnBmnAwGwq3NnHYNf0Osd3FMT5/daljDsvLzOZewln8t8rJj9ZWX3q9KxwZ
+            WhVVI1hCdKbRs/BzvQVWMpDa/e5h77m/JgBf2z/af8CAwEAAaOBrjCBqzAOBgNVHQ8BAf8EBAMCBPAw
+            HQYDVR0OBBYEFM+/aVEn6/uSsMyn+RXuTG5qMie/MDoGA1UdHwQzMDEwL6AtoCuGKWh0dHA6Ly9jcm
+            wuZ2VvdHJ1c3QuY29tL2NybHMvc2VjdXJlY2EuY3JsMB8GA1UdIwQYMBaAFEjmaPkr0rKV10fYIyAQTzOYk
+            J/UMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjANBgkqhkiG9w0BAQUFAAOBgQB3QXXylHv
+            aEp/f3f4EQy5BfdmGm8KpSVfg8JLt2r4/
+            aQbgGM7UXnWmUbfZDYkK956dcTLOam0raWsyxOn2Q6qPYpljwSqGTb4OweUE0AaOmhRklyIeoaYZ
+            IEbtiekyTZyVi2XmPdpowWROht2xdeZTT16fGCDc/jNJmRAzqW4CnA==
+          </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </ds:Signature>
+    <saml2:Subject>
+      <saml2:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">_1087a625691670dff4fbec3ff91adf24aa</saml2:NameID>
+      <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+        <saml2:SubjectConfirmationData Address="85.119.130.132" InResponseTo="_01501e7118ca8ba392438eeab538e3f0d2" NotOnOrAfter="2011-05-25T11:26:38.270Z" Recipient="https://m01-mglocal.me.funktionstjanster.se/samlv2/sp/resp?mgvhostparam=4"/>
+      </saml2:SubjectConfirmation>
+    </saml2:Subject>
+    <saml2:Conditions NotBefore="2011-05-25T11:16:38.270Z" NotOnOrAfter="2011-05-25T11:26:38.270Z">
+      <saml2:AudienceRestriction>
+        <saml2:Audience>https://m01-mglocal.me.funktionstjanster.se/samlv2/sp/metadata/4</saml2:Audience>
+      </saml2:AudienceRestriction>
+    </saml2:Conditions>
+    <saml2:AuthnStatement AuthnInstant="2011-05-25T11:21:38.269Z"
+        SessionIndex="_106e3e43f9054e656f4d3ee74fc0deead5">
+      <saml2:SubjectLocality Address="85.119.130.132"/>
+      <saml2:AuthnContext>
+        <saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:UNKNOWN
+        </saml2:AuthnContextClassRef>
+        <saml2:AuthenticatingAuthority>ldap:///CN=Testbank%20A%20e-
+          Customer%20CA1%20for%20BankID,SERIALNUMBER=111111111111,O=Testbank%20A %20AB%20(publ),C=SE
+        </saml2:AuthenticatingAuthority>
+      </saml2:AuthnContext>
+    </saml2:AuthnStatement>
+    <saml2:AttributeStatement xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <saml2:Attribute Name="sn_id">
+        <saml2:AttributeValue xsi:type="xs:string">1212121212</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="SecurityLevelDescription">
+        <saml2:AttributeValue xsi:type="xs:string">SoftwarePKI</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="Subject_CountryName">
+        <saml2:AttributeValue xsi:type="xs:string">SE</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="Subject_CommonName">
+        <saml2:AttributeValue xsi:type="xs:string">Tolvan Tolvansson</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="Subject_GivenName">
+        <saml2:AttributeValue xsi:type="xs:string">Tolvan</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="CertificateSerialNumber">
+        <saml2:AttributeValue xsi:type="xs:string">56057363fcfd7b088d60e5e1322b575c</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="dateOfBirth">
+        <saml2:AttributeValue xsi:type="xs:string">19121212</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="Subject_OrganisationName">/* använd ej, skall tas bort */
+        <saml2:AttributeValue xsi:type="xs:string">Testbank A AB (publ)</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="Issuer_OrganisationName">
+        <saml2:AttributeValue xsi:type="xs:string">Testbank A AB (publ)</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="sn_type">
+        <saml2:AttributeValue xsi:type="xs:string">18</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="Subject_Surname">
+        Arbetsdokument Informationsklass Till partners/kunder Projektbeteckning Dokumenttyp Område /* använd ej, skall
+        tas bort */
+        <saml2:AttributeValue xsi:type="xs:string">Tolvansson</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="Subject_SerialNumber">
+        <saml2:AttributeValue xsi:type="xs:string">191212121212</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="Gender">
+        <saml2:AttributeValue xsi:type="xs:string">M</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="ValidationOcspResponse">
+        <saml2:AttributeValue
+            xsi:type="xs:string">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
+        </saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="SecurityLevel">
+        <saml2:AttributeValue xsi:type="xs:string">3</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="Issuer_CommonName">
+        <saml2:AttributeValue xsi:type="xs:string">Testbank A e-Customer CA1 for BankID</saml2:AttributeValue>
+      </saml2:Attribute>
+      <saml2:Attribute Name="age">
+        <saml2:AttributeValue xsi:type="xs:string">102</saml2:AttributeValue>
+      </saml2:Attribute>
+    </saml2:AttributeStatement>
+  </saml2:Assertion>
+</saml2p:Response>
