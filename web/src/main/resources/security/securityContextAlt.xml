@@ -102,19 +102,26 @@
   </beans>
 
   <!-- =============================================================== -->
-  <!-- The dev and wc-security-dev profiles only supports Fake login -->
+  <!-- The dev and wc-security-dev profiles only supports Fake login   -->
+  <!-- IMPORTANT: When developing/working with e-leg locally on a dev  -->
+  <!-- environment, you must comment out this section to mitigate      -->
+  <!-- filter problems at startup. E.g. when using                     -->
+  <!-- -Dspring.profiles.active=dev,wc-security-test to get both H2 DB -->
+  <!-- and SAML.                                                       -->
   <!-- =============================================================== -->
-  <beans profile="dev,wc-security-dev">
-    <security:http entry-point-ref="http403ForbiddenEntryPoint">
-      <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
-      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-      <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
-      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
-    </security:http>
-    <security:authentication-manager alias="authenticationManager">
-      <security:authentication-provider ref="fakeAuthenticationProvider"/>
-      <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
-    </security:authentication-manager>
+  <beans profile="!wc-security-test">
+    <beans profile="dev,wc-security-dev">
+      <security:http entry-point-ref="http403ForbiddenEntryPoint">
+        <security:logout logout-url="/logout" logout-success-url="/welcome.jsp" invalidate-session="true"/>
+        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+        <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
+        <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy" />
+      </security:http>
+      <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider ref="fakeAuthenticationProvider"/>
+        <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
+      </security:authentication-manager>
+    </beans>
   </beans>
 
   <!-- =============================================================== -->
