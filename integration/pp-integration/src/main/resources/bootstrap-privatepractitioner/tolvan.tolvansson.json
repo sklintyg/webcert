@@ -19,7 +19,12 @@
         "kod": "200",
         "namn": "Ortopedi"
     }
-], "legitimeradYrkesgrupp": ["Läkare"],
+], "legitimeradYrkesgrupp": [
+    {
+        "kod": "100",
+        "namn": "Läkare"
+    }
+],
     "forskrivarkod": "00000",
     "godkandAnvandare": true,
     "enhet": {
@@ -43,7 +48,10 @@
         "vardform": []
     },
     "vardgivare": {
-        "vardgivareId" : "HSA123456789-0000",
+        "vardgivareId": {
+            "root": "1.2.752.129.2.1.4.1",
+            "extension": "HSA123456789-0000"
+        },
         "vardgivarenamn" : "Privatvardgivaren"
     }
 }}

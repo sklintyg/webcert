@@ -1,8 +1,5 @@
 package se.inera.auth.eleg;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.xml.XMLObject;
@@ -16,7 +13,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
-
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.PrivatePractitionerAuthorizationException;
@@ -26,7 +22,11 @@ import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -118,7 +118,10 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private void decorateWithVardgivare(HoSPersonType hosPerson, WebCertUser webCertUser) {
-        Vardgivare vardgivare = new Vardgivare(hosPerson.getEnhet().getVardgivare().getVardgivareId(), hosPerson.getEnhet().getVardgivare().getVardgivarenamn());
+        String id = hosPerson.getEnhet().getVardgivare().getVardgivareId().getExtension();
+        String namn = hosPerson.getEnhet().getVardgivare().getVardgivarenamn();
+
+        Vardgivare vardgivare = new Vardgivare(id, namn);
 
         Vardenhet vardenhet = new Vardenhet(hosPerson.getEnhet().getEnhetsId().getExtension(), hosPerson.getEnhet().getEnhetsnamn());
         resolveArbetsplatsKod(hosPerson, vardenhet);
@@ -154,8 +157,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private void decorateWithLegitimeradeYrkesgrupper(HoSPersonType hosPerson, WebCertUser webCertUser) {
         List<String> legitimeradeYrkesgrupper = new ArrayList<>();
-        for (String str : hosPerson.getLegitimeradYrkesgrupp()) {
-            legitimeradeYrkesgrupper.add(str);
+        for (LegitimeradYrkesgruppType ly : hosPerson.getLegitimeradYrkesgrupp()) {
+            legitimeradeYrkesgrupper.add(ly.getNamn());
         }
         webCertUser.setLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
     }

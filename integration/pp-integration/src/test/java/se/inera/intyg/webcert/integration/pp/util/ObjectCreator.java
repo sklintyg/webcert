@@ -9,12 +9,12 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.GeografiskIndelningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VerksamhetType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -44,7 +44,7 @@ public class ObjectCreator {
         personType.setGodkandAnvandare(true);
         personType.setPersonId(buildPersonId());
         personType.getBefattning().addAll(buildBefattningar());
-        personType.getLegitimeradYrkesgrupp().addAll(buildLegitimeradYrkesgrupp());
+        personType.getLegitimeradYrkesgrupp().addAll(buildLegitimeradYrkesgrupper());
         personType.getSpecialitet().addAll(buildSpecialiteter());
 
         return personType;
@@ -58,14 +58,23 @@ public class ObjectCreator {
     }
 
     private SpecialitetType buildSpecialitet(String kod, String namn) {
-        SpecialitetType specialitetType = new SpecialitetType();
-        specialitetType.setKod(kod);
-        specialitetType.setNamn(namn);
-        return specialitetType;
+        SpecialitetType specialitet = new SpecialitetType();
+        specialitet.setKod(kod);
+        specialitet.setNamn(namn);
+        return specialitet;
     }
 
-    private List<String> buildLegitimeradYrkesgrupp() {
-        return Arrays.asList(new String[] { "Läkare" });
+    private LegitimeradYrkesgruppType buildLegitimeradYrkesgrupp(String kod, String namn) {
+        LegitimeradYrkesgruppType legitimeradYrkesgrupp = new LegitimeradYrkesgruppType();
+        legitimeradYrkesgrupp.setKod(kod);
+        legitimeradYrkesgrupp.setNamn(namn);
+        return legitimeradYrkesgrupp;
+    }
+
+    private List<LegitimeradYrkesgruppType> buildLegitimeradYrkesgrupper() {
+        List<LegitimeradYrkesgruppType> l = new ArrayList<>();
+        l.add(buildLegitimeradYrkesgrupp("100", "Läkare"));
+        return l;
     }
 
     private List<BefattningType> buildBefattningar() {

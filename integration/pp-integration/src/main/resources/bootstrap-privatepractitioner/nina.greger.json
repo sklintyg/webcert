@@ -9,8 +9,8 @@
     {
         "kod": "202010",
         "namn": "Specialistläkare"
-    }
-], "specialitet": [
+    }],
+    "specialitet": [
     {
         "kod": "100",
         "namn": "Kirurgi"
@@ -18,8 +18,12 @@
     {
         "kod": "200",
         "namn": "Ortopedi"
-    }
-], "legitimeradYrkesgrupp": ["Läkare"],
+    }],
+    "legitimeradYrkesgrupp": [
+    {
+        "kod": "100",
+        "namn": "Läkare"
+    }],
     "forskrivarkod": "00000",
     "godkandAnvandare": false,
     "enhet": {
@@ -43,7 +47,10 @@
         "vardform": []
     },
     "vardgivare": {
-        "vardgivareId" : "HSA123456783-0000",
+        "vardgivareId": {
+            "root": "1.2.752.129.2.1.4.1",
+            "extension": "HSA123456783-0000"
+        },
         "vardgivarenamn" : "Privatvardgivaren 3"
     }
 }}

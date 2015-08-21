@@ -1,5 +1,10 @@
 package se.inera.auth.eleg;
 
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.apache.cxf.helpers.XMLUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,8 +16,6 @@ import org.opensaml.DefaultBootstrap;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.NameID;
 import org.opensaml.saml2.core.Response;
-import org.opensaml.saml2.core.impl.AssertionImpl;
-import org.opensaml.saml2.core.impl.NameIDImpl;
 import org.opensaml.xml.Configuration;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.io.Unmarshaller;
@@ -30,14 +33,7 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 
 import javax.xml.transform.stream.StreamSource;
-
 import java.util.HashSet;
-
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-06-25.
@@ -109,7 +105,9 @@ public class ElegWebCertUserDetailsServiceTest {
         enhetsId.setExtension("enhetsId");
         vardEnhet.setEnhetsId(enhetsId);
         VardgivareType vardgivare = new VardgivareType();
-        vardgivare.setVardgivareId("vardgivareId");
+        HsaId vardgivareId = new HsaId();
+        enhetsId.setExtension("vardgivareId");
+        vardgivare.setVardgivareId(vardgivareId);
         vardgivare.setVardgivarenamn("vardgivareName");
         vardEnhet.setVardgivare(vardgivare);
         hoSPersonType.setEnhet(vardEnhet);
