@@ -1,9 +1,13 @@
 Detta test ska visa på att man kan kopiera ett signerat fk-intyg och få ett nytt utkast baserat på det.
 
+!3 Logga in
+
+| skript | !-LoggaIn-! |
+| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
+
 !3 Välj patient
 
 | skript | !-SokSkrivIntyg-! |
-| logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 | sok skriv intyg sidan visas sa smaningom |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |

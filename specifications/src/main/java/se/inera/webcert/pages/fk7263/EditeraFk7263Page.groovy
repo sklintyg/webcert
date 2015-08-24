@@ -2,12 +2,13 @@ package se.inera.webcert.pages.fk7263
 
 import geb.Module
 import se.inera.certificate.page.AbstractPage
+import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.AbstractEditCertPage
 import se.inera.webcert.pages.VardenhetModule
 
 class EditeraFk7263Page extends AbstractEditCertPage {
 
-    static at = { doneLoading() && $("#edit-fk7263").isDisplayed() }
+    static at = { doneLoading() && $("#edit-fk7263").isDisplayed() && js.animations.smittskydd.rendered }
 
     static content = {
 
@@ -33,6 +34,7 @@ class EditeraFk7263Page extends AbstractEditCertPage {
         rekommendationer { name -> module RekommendationerModule, form: form }
         kontaktFk { $("#kontaktFk") }
         ovrigt { $("#otherInformation") }
+        vardenhet { module VardenhetModule }
 
         // date picker
         datepicker { $("div[ng-switch='datepickerMode']") }
@@ -48,13 +50,19 @@ class EditeraFk7263Page extends AbstractEditCertPage {
         valideringVardperson(required: false) { $("#validationMessages_vardperson")}
 
     }
-    
-    def setSmittskydd(boolean val){
+
+    def waitForSmittkydRendered(){
+        waitFor {
+            Browser.drive {
+                return doneLoading() && js.animations.smittskydd.rendered;
+            }
+        }
+    }
+
+    def setSmittskydd(boolean val) {
         AbstractPage.scrollIntoView(smittskydd.attr("id"));
         smittskydd.value(val);
-        //waitFor {
-        //    doneLoading()
-        //}
+        waitForSmittkydRendered();
     }
 
 }
@@ -121,12 +129,18 @@ class DiagnosModule extends Module {
 }
 
 class ArbeteModule extends Module {
-    static base = { $("#arbeteForm") }
+    static base = { $("#sysselsattning") }
     static content = {
         nuvarande { $("#arbeteNuvarande") }
         arbetsuppgifter { $("#currentWork") }
         arbetslos { $("#arbeteArbetslos") }
         foraldraledig { $("#arbeteForaldraledig") }
+    }
+
+    def setNuvarandeCheckBox(value){
+        println('setting nuverande' + nuvarande.attr("id") + ', value');
+        AbstractPage.scrollIntoView(nuvarande.attr("id"));
+        nuvarande = value;
     }
 }
 

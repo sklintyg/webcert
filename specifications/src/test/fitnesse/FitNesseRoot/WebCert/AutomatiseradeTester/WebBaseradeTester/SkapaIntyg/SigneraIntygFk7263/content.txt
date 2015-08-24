@@ -7,12 +7,11 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | ICD_10_SE |
 | webcert-fitnesse-signera-2 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja | KSH_97_P |
 
-!3 Logga in
+!3 Givet att det finns ett komplett utkast, verifiera att det går att signera det
 
+!3 Login
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
-
-!3 Givet att det finns ett komplett utkast, verifiera att det går att signera det
 
 | skript | !-HanteraUtkast-! |
 | sok skriv intyg sidan visas |
@@ -25,8 +24,7 @@ Testet beskriver fallet när en läkare går in på ett komplett fk7263 intyg oc
 | säkerställ att | intyget signerat meddelande visas |
 
 
-!3 Logga in
-
+!3 Login
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
 

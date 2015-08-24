@@ -118,7 +118,9 @@ class HanteraUtkast {
     boolean visaSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt VisaFragaSvarPage
+            waitFor {
+                result = isAt VisaFragaSvarPage
+            }
         }
         result
     }
@@ -126,7 +128,9 @@ class HanteraUtkast {
     boolean sokSkrivIntygSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt SokSkrivaIntygPage
+            waitFor {
+                result = isAt SokSkrivaIntygPage
+            }
         }
         result
     }
@@ -134,7 +138,9 @@ class HanteraUtkast {
     boolean editeraSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt AbstractEditCertPage
+            waitFor {
+                result = isAt AbstractEditCertPage
+            }
         }
         result
     }
@@ -142,7 +148,9 @@ class HanteraUtkast {
     boolean editeraFk7263SidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt EditeraFk7263Page
+            waitFor {
+                result = isAt EditeraFk7263Page
+            }
         }
         result
     }
@@ -158,13 +166,15 @@ class HanteraUtkast {
     boolean visaIntygSidanVisasMedTyp(intygsTyp) {
         boolean result
         Browser.drive {
-            if (intygsTyp == "fk7263")
-                result = isAt VisaFk7263Page
-            else if (intygsTyp == "ts-bas")
-                result = isAt VisaTsBasPage
-            else if (intygsTyp == "ts-diabetes")
-                result = isAt VisaTsDiabetesPage
-            result = result && page.intygLaddat.isDisplayed()
+            waitFor {
+                if (intygsTyp == "fk7263")
+                    result = isAt VisaFk7263Page
+                else if (intygsTyp == "ts-bas")
+                    result = isAt VisaTsBasPage
+                else if (intygsTyp == "ts-diabetes")
+                    result = isAt VisaTsDiabetesPage
+                result = result && page.intygLaddat.isDisplayed()
+            }
         }
         result
     }
@@ -172,7 +182,9 @@ class HanteraUtkast {
     boolean ejSigneradeIntygSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt UnsignedIntygPage
+            waitFor {
+                result = isAt UnsignedIntygPage
+            }
         }
         result
     }

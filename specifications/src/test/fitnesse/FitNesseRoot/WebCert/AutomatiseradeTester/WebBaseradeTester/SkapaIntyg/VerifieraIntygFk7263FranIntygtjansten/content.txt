@@ -4,15 +4,12 @@
 |personnr|utfärdat|giltigtFrån|giltigtTill|utfärdare|enhetsId|typ|id|mall|skickat|rättat|
 |${person1.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|webcert-fit-1|L|nej|nej|
 
-!3 Logga in
-
+!3 Login
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
 
-!3 Välj patient
-
 | skript | !-SokSkrivIntyg-! |
-| sok skriv intyg sidan visas |
+| sok skriv intyg sidan visas sa smaningom |
 | valj patient | ${person1.personnummer} |
 | valj intygstyp sidan visas |
 | visa intyg | webcert-fit-1 |

@@ -6,12 +6,11 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-diabetes int
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
 | webcert-fitnesse-editera-1 | ts-diabetes | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 
-!3 Logga in
+!3 Givet att det finns ett komplett utkast, verifiera att det står något i adressfälten
 
+!3 Login
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
-
-!3 Givet att det finns ett komplett utkast, verifiera att det står något i adressfälten
 
 !| skript | HanteraUtkast |
 | sok skriv intyg sidan visas |
@@ -22,13 +21,14 @@ Testet beskriver fallet när en läkare går in på ett komplett ts-diabetes int
 | kontrollera att | postort | Staden |
 | kontrollera att | telefonnummer | 013-123456 |
 
+
 !3 Editera adressfälten och spara
 
+| Populera Ts Diabetes |
+| vardenhetPostadress| vardenhetPostnummer | vardenhetPostort | vardenhetTelefonnummer |
+| Lillgatan 12 | 12344 | Bankeborg | 223456789 |
+
 !| skript | HanteraUtkast |
-| andra postadress | Lillgatan 12 |
-| andra postnummer | 12344 |
-| andra postort | Bankeborg |
-| andra telefonnummer | 223456789 |
 | säkerställ att | har sparat |
 
 !3 Verifiera ändringar i adressfälten

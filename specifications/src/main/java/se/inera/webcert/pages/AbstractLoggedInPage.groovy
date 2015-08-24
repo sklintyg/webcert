@@ -24,7 +24,13 @@ class AbstractLoggedInPage extends AbstractPage {
         activeUnit(required: false) {careUnit -> $("#select-active-unit-${careUnit}")}
         careUnitModal(required: false) { $("a#wc-care-unit-clinic-selector-link") }
         careUnitModalBody(required: false) { $(".modal-body") }
+        modalBackdrop(required:false) {$('.modal-backdrop')}
+    }
 
+    def waitForModalBackdropToHide(){
+        waitFor() {
+            return !modalBackdrop.isDisplayed();
+        }
     }
 
     def selectCareUnit(String careUnit) {

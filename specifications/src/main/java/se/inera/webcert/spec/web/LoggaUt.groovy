@@ -37,7 +37,9 @@ class LoggaUt {
     boolean loginSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt(IndexPage) || isAt(WelcomePage)
+            waitFor {
+                result = isAt(IndexPage) || isAt(WelcomePage)
+            }
         }
         result
     }

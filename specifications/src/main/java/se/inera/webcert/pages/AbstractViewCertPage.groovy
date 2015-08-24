@@ -1,5 +1,7 @@
 package se.inera.webcert.pages
 
+import se.inera.certificate.page.AbstractPage
+
 class AbstractViewCertPage extends AbstractLoggedInPage {
     
     static at = { doneLoading() && $("#viewCertAndQA").isDisplayed() }
@@ -26,7 +28,9 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         kopieraDialogKopieraKnapp(to: AbstractEditCertPage, toWait: true) { $("#button1copy-dialog") }
         kopieraDialogAvbrytKnapp { $("#button2copy-dialog") }
         kopieraDialogVisaInteIgen { $("#dontShowAgain") }
+        // makulera
         makuleraDialogKopieraKnapp(wait: true) { displayed($("#button1makulera-dialog")) }
+        // makulera confirmation
         makuleraConfirmationOkButton(wait: true) { displayed($("#confirmationOkButton")) }
 
         // messages
@@ -85,6 +89,8 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
 
         qaCheckEjHanteradDialog { $("#qa-check-hanterad-dialog") }
         preferenceSkipShowUnhandledDialog(required: false) { $("#preferenceSkipShowUnhandledDialog") }
+
+        modalBackdrop(required:false) {$('.modal-backdrop')}
     }
 
     def copy() {
@@ -113,6 +119,12 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         makuleraKnapp?.isDisplayed()
     }
 
+    boolean makuleraStatusSyns(){
+        waitFor{
+            certificateIsRevokedMessage?.isDisplayed()
+        }
+    }
+
 
     def makulera() {
         makuleraKnapp.click()
@@ -122,6 +134,16 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
         makuleraDialogKopieraKnapp.click()
         waitFor {
             doneLoading()
+        }
+    }
+
+    def bekraftaMakulera() {
+        waitFor {
+            doneLoading() && makuleraConfirmationOkButton
+        }
+        makuleraConfirmationOkButton.click()
+        waitFor {
+            !modalBackdrop.isDisplayed();
         }
     }
 
@@ -146,6 +168,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
     }
 
     def tillbaka() {
+        AbstractPage.scrollIntoView(tillbakaButton.attr('id'));
         tillbakaButton.click()
         waitFor {
             doneLoading()
@@ -201,7 +224,7 @@ class AbstractViewCertPage extends AbstractLoggedInPage {
     void sendAnswer(String internid) {
         sendAnswerBtn(internid).click()
         waitFor {
-            doneLoading()
+            return doneLoading() && handledQAPanel(internid).isDisplayed()
         }
     }
 

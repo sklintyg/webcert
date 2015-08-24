@@ -25,6 +25,7 @@ Detta test visar att man kan makulera ett signerat ts-bas intyg från visa-vyn o
 | skript | !-SokSkrivIntyg-! |
 | makulera visat intyg |
 | makulera bekraftelse visas |
+| bekrafta makulera |
 | visa intyg sidan visas |
 | makulerad status visas |
 

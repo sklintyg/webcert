@@ -8,10 +8,9 @@
 
 !3 Logga in
 
+!3 Login
 | skript | !-LoggaIn-! |
 | logga in som | IFV1239877878-1049_IFV1239877878-1042 |
-
-!3 Välj patient
 
 | skript | !-SokSkrivIntyg-! |
 | sok skriv intyg sidan visas |

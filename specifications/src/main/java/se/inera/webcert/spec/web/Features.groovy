@@ -38,7 +38,9 @@ class Features {
     boolean accessDeniedSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt AccessDeniedPage
+            waitFor {
+                result = isAt AccessDeniedPage
+            }
         }
         result
     }
@@ -46,7 +48,9 @@ class Features {
     boolean fragaSvarSynsIMenyn() {
         boolean result
         Browser.drive {
-            result = isAt(AbstractLoggedInPage) && page.unhandledQa.isDisplayed()
+            waitFor {
+                result = isAt(AbstractLoggedInPage) && page.unhandledQa.isDisplayed()
+            }
         }
         result
     }
@@ -54,7 +58,9 @@ class Features {
     boolean omWebcertSynsIMenyn() {
         boolean result
         Browser.drive {
-            result = isAt(AbstractLoggedInPage) && page.omWebcert.isDisplayed()
+            waitFor {
+                result = isAt(AbstractLoggedInPage) && page.omWebcert.isDisplayed()
+            }
         }
         result
     }
@@ -62,7 +68,9 @@ class Features {
     boolean sokSkrivIntygSynsIMenyn() {
         boolean result
         Browser.drive {
-            result = isAt(AbstractLoggedInPage) && page.skrivIntyg.isDisplayed()
+            waitFor {
+                result = isAt(AbstractLoggedInPage) && page.skrivIntyg.isDisplayed()
+            }
         }
         result
     }
@@ -70,7 +78,9 @@ class Features {
     boolean ejSigneradeUtkastSynsIMenyn() {
         boolean result
         Browser.drive {
-            result = isAt(AbstractLoggedInPage) && page.unsigned.isDisplayed()
+            waitFor {
+                result = isAt(AbstractLoggedInPage) && page.unsigned.isDisplayed()
+            }
         }
         result
     }

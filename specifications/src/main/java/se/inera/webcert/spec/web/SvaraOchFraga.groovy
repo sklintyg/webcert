@@ -21,7 +21,9 @@ class SvaraOchFraga {
     boolean svaraOchFragaSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt UnhandledQAPage
+            waitFor {
+                result = isAt UnhandledQAPage
+            }
         }
         result
     }
@@ -38,7 +40,9 @@ class SvaraOchFraga {
     boolean sokSkrivaIntygSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt SokSkrivaIntygPage
+            waitFor {
+                result = isAt SokSkrivaIntygPage
+            }
         }
         result
     }
@@ -116,7 +120,9 @@ class SvaraOchFraga {
     boolean intygMedFragaSvarSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt VisaFragaSvarPage
+            waitFor {
+                result = isAt VisaFragaSvarPage
+            }
         }
         result
     }
@@ -185,7 +191,9 @@ class SvaraOchFraga {
     boolean ohanteradeFragorSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt UnhandledQAPage
+            waitFor {
+                result = isAt UnhandledQAPage
+            }
         }
         result
     }
@@ -481,7 +489,9 @@ class SvaraOchFraga {
     boolean sokSkrivIntygSidanVisas() {
         boolean result
         Browser.drive {
-            result = isAt SokSkrivaIntygPage
+            waitFor {
+                result = isAt SokSkrivaIntygPage
+            }
         }
         result
     }
@@ -524,7 +534,6 @@ class SvaraOchFraga {
     boolean lamnaFragaSvarEjHanteradDialogVisas() {
         Browser.drive {
             return page.qaCheckEjHanteradDialog.isDisplayed()
-
         }
     }
 
@@ -583,6 +592,8 @@ class SvaraOchFraga {
             }
             page.hanteraTillbakaButtonClick()
 
+            // also need to wait for the dialog shim to hide
+            page.waitForModalBackdropToHide();
         }
     }
 

@@ -107,6 +107,8 @@ class SokSkrivIntyg {
             waitFor {
                 at SokSkrivValjIntygTypPage
             }
+            // also need to wait for the dialog shim to hide
+            page.waitForModalBackdropToHide();
             page.kopieraKnapp(intygId).click()
             waitFor {
                 doneLoading()
@@ -177,6 +179,12 @@ class SokSkrivIntyg {
             if (kopiaintygsid.indexOf("?") >= 0) {
                 kopiaintygsid = kopiaintygsid.substring(0, kopiaintygsid.indexOf("?"))
             }
+        }
+    }
+
+    def bekraftaMakulera(){
+        Browser.drive {
+            page.bekraftaMakulera();
         }
     }
 
@@ -314,7 +322,7 @@ class SokSkrivIntyg {
     boolean makuleradStatusVisas() {
         boolean result
         Browser.drive {
-            result = page.certificateIsRevokedMessage; //.isDisplayed()
+            result = page.makuleraStatusSyns(); //.isDisplayed()
             //return $("#certificate-is-revoked-message-text").isDisplayed()
         }
         result

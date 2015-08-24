@@ -1,6 +1,7 @@
 package se.inera.webcert.pages
 
 import geb.Module
+import se.inera.certificate.spec.Browser
 
 class AbstractEditCertPage extends AbstractLoggedInPage {
     
@@ -24,9 +25,33 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
         sekretessmarkering { $("#sekretessmarkering") }
         vardenhet { module VardenhetModule }
     }
-    
+
+    static boolean doneSaving() {
+        boolean result
+        Browser.drive {
+            waitFor {
+                // if saving then we're in a asynch request and we need to wait until it's false.
+                result = js.saving;
+                return !result;
+            }
+        }
+        result
+    }
+
+    static def setAutoSave(val){
+        Browser.drive {
+            js.setAutoSave(val);
+            if(val){
+                js.save(true);
+            }
+        }
+    }
+
     def visaVadSomSaknas() {
         visaVadSomSaknasKnapp.click();
+        waitFor {
+            visaVadSomSaknasLista.isDisplayed();
+        }
     }
     
     def doljVadSomSaknas() {
@@ -50,6 +75,13 @@ class AbstractEditCertPage extends AbstractLoggedInPage {
     
     boolean isSignBtnDisplayed(){
         signeraBtn.isDisplayed()
+    }
+
+    def setSaving(val){
+        println('set saving : ' + val);
+        Browser.drive {
+            js.setSaving(val)
+        }
     }
 
 }

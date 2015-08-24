@@ -1,7 +1,7 @@
 package se.inera.webcert.spec.web
 
 import org.openqa.selenium.Keys
-
+import se.inera.certificate.page.AbstractPage
 import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.SokSkrivValjIntygTypPage
 import se.inera.webcert.pages.SokSkrivaIntygPage
@@ -178,6 +178,7 @@ class SkrivIntyg {
     boolean intygEjKomplettVisas() {
         boolean result
         Browser.drive {
+            AbstractPage.scrollIntoView(page.intygetSparatOchEjKomplettMeddelande.attr('id'));
             result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
         result
