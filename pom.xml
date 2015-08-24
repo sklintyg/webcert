@@ -44,6 +44,9 @@
 
     <intyg-privatepractitioner-terms.version>0-SNAPSHOT</intyg-privatepractitioner-terms.version>
     <intyg-privatepractitioner-terms.version.range>(,1.0.0]</intyg-privatepractitioner-terms.version.range>
+
+    <cgi-funktionstjanster-grp.version>0-SNAPSHOT</cgi-funktionstjanster-grp.version>
+    <cgi-funktionstjanster-grp.version.range>(,1.0.0]</cgi-funktionstjanster-grp.version.range>
   </properties>
 
   <modules>
@@ -257,6 +260,13 @@
         <groupId>se.inera.intyg.privatepractitioner.terms</groupId>
         <artifactId>webcert-privatepractitioner-terms</artifactId>
         <version>${intyg-privatepractitioner.version}</version>
+      </dependency>
+
+      <!-- CGI GRP schema -->
+      <dependency>
+        <groupId>se.funktionstjanster.grp</groupId>
+        <artifactId>funktionstjanster-grp-schemas</artifactId>
+        <version>${cgi-funktionstjanster-grp.version}</version>
       </dependency>
 
       <!-- Authentication -->

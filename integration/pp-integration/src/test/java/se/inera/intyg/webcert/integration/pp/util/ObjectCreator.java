@@ -1,21 +1,15 @@
 package se.inera.intyg.webcert.integration.pp.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.joda.time.LocalDateTime;
+
 import se.inera.webcert.common.HSABefattning;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.ArbetsplatsKod;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
-import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.GeografiskIndelningType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.VerksamhetType;
-
-import java.util.ArrayList;
-import java.util.List;
+import se.riv.infrastructure.directory.privatepractitioner.v1.*;
 
 
 /**

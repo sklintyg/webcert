@@ -27,16 +27,17 @@ import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.webcert.service.util.UpdateUserUtil;
 import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.webcert.service.util.UpdateUserUtil;
 import se.inera.webcert.web.service.WebCertUserService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -123,6 +124,20 @@ public class SignaturServiceImpl implements SignaturService {
     @Transactional("jpaTransactionManager")
     public SignaturTicket clientSignature(String ticketId, String rawSignatur) {
 
+        // Fetch Webcert user
+        WebCertUser user = getWebcertUserForSignering();
+
+        // Use method common between NetID and BankID to finish signing.
+        return finalizeClientSignature(ticketId, rawSignatur, user);
+    }
+
+    @Override
+    @Transactional("jpaTransactionManager")
+    public SignaturTicket clientGrpSignature(String biljettId, String rawSignatur, WebCertUser webCertUser) {
+        return finalizeClientSignature(biljettId, rawSignatur, webCertUser);
+    }
+
+    private SignaturTicket finalizeClientSignature(String ticketId, String rawSignatur, WebCertUser user) {
         // Lookup signature ticket
         SignaturTicket ticket = ticketTracker.getTicket(ticketId);
 
@@ -132,8 +147,6 @@ public class SignaturServiceImpl implements SignaturService {
         }
         LOG.debug("Klientsignering ticket '{}' intyg '{}'", ticket.getId(), ticket.getIntygsId());
 
-        // Fetch Webcert user
-        WebCertUser user = getWebcertUserForSignering();
 
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
@@ -148,7 +161,9 @@ public class SignaturServiceImpl implements SignaturService {
         notificationService.sendNotificationForDraftSigned(utkast);
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
-        logService.logSignIntyg(logRequest);
+        // Note that we explictly supplies the WebCertUser here. The BankID finalization is not executed in a HTTP
+        // request context and thus we need to supply the user instance manually.
+        logService.logSignIntyg(logRequest, logService.getLogUser(user));
 
         return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
     }
@@ -192,7 +207,6 @@ public class SignaturServiceImpl implements SignaturService {
 
         // Fetch the certificate
         Utkast utkast = getUtkastForSignering(intygsId, ticket.getVersion(), user);
-
         // Create and persist signature
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 

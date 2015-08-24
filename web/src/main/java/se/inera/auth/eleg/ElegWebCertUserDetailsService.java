@@ -1,9 +1,8 @@
 package se.inera.auth.eleg;
 
-import org.opensaml.saml2.core.Attribute;
-import org.opensaml.saml2.core.AttributeStatement;
-import org.opensaml.xml.XMLObject;
-import org.opensaml.xml.schema.XSString;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
+
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.PrivatePractitionerAuthorizationException;
@@ -25,11 +25,11 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by eriklupander on 2015-06-16.
+ *
+ * Note that privatlakare must accept webcert terms in order to use the software. However, that's
+ * handled separately in the TermsFilter.
  */
 @Component
 public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService implements SAMLUserDetailsService {
@@ -39,14 +39,19 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     @Value("${privatepractitioner.logicaladdress}")
     private String logicalAddress;
 
+    @Autowired
     private PPService ppService;
 
-    private AvtalService avtalService;
+    @Autowired
+    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
+
+    @Autowired
+    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) throws UsernameNotFoundException {
         try {
-            String personId = getAuthenticationAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
+            String personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
 
             boolean authorized = verfifyHosPersonIsAuthorized(personId);
             if (!authorized) {
@@ -59,10 +64,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
                 throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
             }
 
-            // Note that privatlakare must accept webcert terms in order to use the software. However, that's
-            // handled separately in the TermsFilter.
-
             WebCertUser webCertUser = createWebcertUser(samlCredential, hosPerson);
+
             return webCertUser;
         } catch (Exception e) {
             if (e instanceof AuthenticationException) {
@@ -73,34 +76,20 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         }
     }
 
+
+
     private boolean verfifyHosPersonIsAuthorized(String personId) {
         return ppService.validatePrivatePractitioner(logicalAddress, null, personId);
-    }
-
-    private String getAuthenticationAttribute(SAMLCredential samlCredential, String attributeName) {
-        for (AttributeStatement attributeStatement : samlCredential.getAuthenticationAssertion().getAttributeStatements()) {
-            for (Attribute attribute : attributeStatement.getAttributes()) {
-                if (attribute.getName().equals(attributeName)) {
-                    for (XMLObject xmlObject : attribute.getAttributeValues()) {
-                        if (xmlObject instanceof XSString && ((XSString) xmlObject).getValue() != null) {
-                            return ((XSString) xmlObject).getValue();
-                        } else if (xmlObject.getDOM() != null) {
-                            return xmlObject.getDOM().getTextContent();
-                        }
-                        throw new IllegalArgumentException("Cannot parse SAML2 response attribute '" + attributeName + "', is not XSString or DOM is null");
-                    }
-                }
-            }
-        }
-        throw new IllegalArgumentException("Could not extract attribute '" + attributeName + "' from SAMLCredential.");
     }
 
     private WebCertUser createWebcertUser(SAMLCredential samlCredential, HoSPersonType hosPerson) {
         WebCertUser webCertUser = new WebCertUser();
         webCertUser.setHsaId(hosPerson.getHsaId().getExtension());
+        webCertUser.setPersonId(hosPerson.getPersonId().getExtension());
         webCertUser.setForskrivarkod(hosPerson.getForskrivarkod());
         webCertUser.setLakare(true);
         webCertUser.setNamn(hosPerson.getFullstandigtNamn());
+        webCertUser.setAuthenticationMethod(elegAuthenticationMethodResolver.resolveAuthenticationMethod(samlCredential));
 
         decorateWithVardgivare(hosPerson, webCertUser);
         decorateWithLegitimeradeYrkesgrupper(hosPerson, webCertUser);
@@ -195,13 +184,23 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
 
 
-    @Autowired
-    public void setPpService(PPService ppService) {
-        this.ppService = ppService;
-    }
-
-    @Autowired
-    public void setAvtalService(AvtalService avtalService) {
-        this.avtalService = avtalService;
-    }
+//    @Autowired
+//    public void setPpService(PPService ppService) {
+//        this.ppService = ppService;
+//    }
+//
+//    @Autowired
+//    public void setAvtalService(AvtalService avtalService) {
+//        this.avtalService = avtalService;
+//    }
+//
+//    @Autowired
+//    public void setElegAuthenticationAttributeHelper(ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper) {
+//        this.elegAuthenticationAttributeHelper = elegAuthenticationAttributeHelper;
+//    }
+//
+//    @Autowired
+//    public void setElegAuthenticationMethodResolver(ElegAuthenticationMethodResolver elegAuthenticationMethodResolver) {
+//        this.elegAuthenticationMethodResolver = elegAuthenticationMethodResolver;
+//    }
 }

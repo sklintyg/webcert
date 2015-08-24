@@ -40,6 +40,7 @@ import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
@@ -218,7 +219,7 @@ public class SignaturServiceImplTest {
         verify(intygService).storeIntyg(completedUtkast);
         verify(notificationService).sendNotificationForDraftSigned(any(Utkast.class));
         // Assert pdl log
-        verify(logService).logSignIntyg(any(LogRequest.class));
+        verify(logService).logSignIntyg(any(LogRequest.class), any(LogUser.class));
 
         assertNotNull(signatureTicket);
 

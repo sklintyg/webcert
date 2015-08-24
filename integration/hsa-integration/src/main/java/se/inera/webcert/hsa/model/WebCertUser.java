@@ -20,10 +20,12 @@ public class WebCertUser implements Serializable {
     private static final long serialVersionUID = -2624303818412468774L;
 
     private String hsaId;
+    private String personId;
     private String namn;
     private boolean lakare;
     private String forskrivarkod;
     private String authenticationScheme;
+    private AuthenticationMethod authenticationMethod; // TODO - temporary hack. BANKID, NETID
 
     private List<Vardgivare> vardgivare;
 
@@ -49,6 +51,14 @@ public class WebCertUser implements Serializable {
 
     public String getNamn() {
         return namn;
+    }
+
+    public String getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(String personId) {
+        this.personId = personId;
     }
 
     public void setNamn(String namn) {
@@ -158,6 +168,14 @@ public class WebCertUser implements Serializable {
         return getAktivaFunktioner().contains(aktivFunktion);
     }
 
+    public AuthenticationMethod getAuthenticationMethod() {
+        return authenticationMethod;
+    }
+
+    public void setAuthenticationMethod(AuthenticationMethod authenticationMethod) {
+        this.authenticationMethod = authenticationMethod;
+    }
+
     @JsonIgnore
     public String getAsJson() {
         try {
@@ -226,5 +244,7 @@ public class WebCertUser implements Serializable {
     public String toString() {
         return hsaId +  " [authScheme=" + authenticationScheme + ", lakare=" + lakare + "]";
     }
+
+
 
 }

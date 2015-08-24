@@ -154,7 +154,8 @@ public class LogServiceImpl implements LogService {
         send(populateLogMessage(logRequest, new IntygSendMessage(logRequest.getIntygId(), logRequest.getAdditionalInfo()), user));
     }
 
-    private LogUser getLogUser(WebCertUser webCertUser) {
+    @Override
+    public LogUser getLogUser(WebCertUser webCertUser) {
         
         LogUser logUser = new LogUser();
 

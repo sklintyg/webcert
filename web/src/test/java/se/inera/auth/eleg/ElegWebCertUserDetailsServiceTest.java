@@ -56,6 +56,12 @@ public class ElegWebCertUserDetailsServiceTest {
     @Mock
     private AvtalService avtalService;
 
+    @Mock
+    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
+
+    @Mock
+    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
+
     @InjectMocks
     private ElegWebCertUserDetailsService testee;
 

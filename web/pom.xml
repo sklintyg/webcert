@@ -129,6 +129,12 @@
       <artifactId>webcert-privatepractitioner-terms</artifactId>
     </dependency>
 
+    <!-- CGI GRP schema -->
+    <dependency>
+      <groupId>se.funktionstjanster.grp</groupId>
+      <artifactId>funktionstjanster-grp-schemas</artifactId>
+    </dependency>
+
     <!-- Logging -->
     <dependency>
       <groupId>ch.qos.logback</groupId>

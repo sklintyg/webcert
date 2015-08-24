@@ -19,6 +19,8 @@ import se.riv.infrastructure.directory.privatepractitioner.validateprivatepracti
 
 /**
  * Created by Magnus Ekstrand on 18/06/15.
+ *
+ * TODO: Make sure no personal identifiers are logged.
  */
 public class PPServiceImpl implements PPService {
 

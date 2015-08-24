@@ -33,6 +33,7 @@ import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.webcert.service.signatur.grp.GrpSignaturService;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.service.utkast.dto.DraftValidation;
 import se.inera.webcert.service.utkast.dto.DraftValidationMessage;
@@ -62,6 +63,9 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     @Autowired
     private SignaturService signaturService;
+
+    @Autowired
+    private GrpSignaturService grpSignaturService;
 
     @Autowired
     private MonitoringLogService monitoringLogService;
@@ -115,7 +119,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         String draftAsJson = fromBytesToString(payload);
 
-        LOG.debug("---- intyg : " + draftAsJson );
+        LOG.debug("---- intyg : " + draftAsJson);
 
         SaveAndValidateDraftRequest serviceRequest = createSaveAndValidateDraftRequest(intygsId, version, draftAsJson, autoSave);
 
@@ -246,6 +250,31 @@ public class UtkastModuleApiController extends AbstractApiController {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }
         
+        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
+
+        return new SignaturTicketResponse(ticket);
+    }
+
+    /**
+     * Signera utkast mha Bank ID GRP API.
+     *
+     * @param intygsId
+     *            intyg id
+     * @return SignaturTicketResponse
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/{version}/grp/signeraserver")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public SignaturTicketResponse serverSigneraUtkastMedGrp(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId, @PathParam("version") long version, @Context HttpServletRequest request) {
+        abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
+        SignaturTicket ticket;
+        try {
+            ticket = grpSignaturService.sendAuthenticateRequest(intygsId, version);
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
+            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
+
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
         return new SignaturTicketResponse(ticket);

@@ -19,6 +19,7 @@ import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
+import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -97,7 +98,17 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         decorateWebCertUserWithAvailableFeatures(webcertUser);
 
+        decoreateWithAuthenticationMethod(webcertUser, assertion.getAuthenticationScheme());
+
         return webcertUser;
+    }
+
+    private void decoreateWithAuthenticationMethod(WebCertUser webcertUser, String authenticationScheme) {
+        if (authenticationScheme.endsWith(":fake")) {
+            webcertUser.setAuthenticationMethod(AuthenticationMethod.FAKE);
+        } else {
+            webcertUser.setAuthenticationMethod(AuthenticationMethod.SITHS);
+        }
     }
 
     private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser) {
