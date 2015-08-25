@@ -79,7 +79,7 @@ public class GrpSignaturServiceTest {
         when(grpService.authenticate(any(AuthenticateRequestType.class))).thenReturn(buildOrderResponse());
 
         grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
-        verify(taskExecutor, times(1)).execute(any(GrpPoller.class), any(Long.class));
+        verify(taskExecutor, times(1)).execute(any(GrpCollectPoller.class), any(Long.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -88,7 +88,7 @@ public class GrpSignaturServiceTest {
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
-            verify(taskExecutor, times(0)).execute(any(GrpPoller.class), any(Long.class));
+            verify(taskExecutor, times(0)).execute(any(GrpCollectPoller.class), any(Long.class));
         }
     }
 
@@ -99,7 +99,7 @@ public class GrpSignaturServiceTest {
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
-            verify(taskExecutor, times(0)).execute(any(GrpPoller.class), any(Long.class));
+            verify(taskExecutor, times(0)).execute(any(GrpCollectPoller.class), any(Long.class));
         }
     }
 
@@ -110,7 +110,7 @@ public class GrpSignaturServiceTest {
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
-            verify(taskExecutor, times(0)).execute(any(GrpPoller.class), any(Long.class));
+            verify(taskExecutor, times(0)).execute(any(GrpCollectPoller.class), any(Long.class));
         }
     }
 
@@ -125,7 +125,7 @@ public class GrpSignaturServiceTest {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
             verify(signaturTicketTracker, times(1)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
-            verify(taskExecutor, times(0)).execute(any(GrpPoller.class), any(Long.class));
+            verify(taskExecutor, times(0)).execute(any(GrpCollectPoller.class), any(Long.class));
         }
     }
 

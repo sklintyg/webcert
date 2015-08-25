@@ -1,22 +1,21 @@
 package se.inera.webcert.service.signatur.grp;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.*;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
 import se.funktionstjanster.grp.v1.*;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.*;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -66,9 +65,11 @@ public class GrpCollectPollerTest {
                 buildResp(OUTSTANDING_TRANSACTION),
                 buildResp(COMPLETE)
         );
-        GrpPoller grpPoller = new GrpPoller(ORDER_REF, TX_ID, "policy", "text", buildWebCertUser(), grpService, signaturTicketTracker, signaturService);
-        grpPoller.setMs(50L);
-        grpPoller.run();
+        grpCollectPoller.setOrderRef(ORDER_REF);
+        grpCollectPoller.setTransactionId(TX_ID);
+        grpCollectPoller.setWebCertUser(buildWebCertUser());
+        grpCollectPoller.setMs(50L);
+        grpCollectPoller.run();
 
         verify(signaturService, times(1)).clientGrpSignature(anyString(), anyString(), any(WebCertUser.class));
         verify(signaturTicketTracker, times(0)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
@@ -79,9 +80,11 @@ public class GrpCollectPollerTest {
     public void testCollectFailsOnGrpFaultWhenUserCancelled() throws GrpFault {
 
         when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildFault(FaultStatusType.USER_CANCEL));
-        GrpPoller grpPoller = new GrpPoller(ORDER_REF, TX_ID, "policy", "text", buildWebCertUser(), grpService, signaturTicketTracker, signaturService);
-        grpPoller.setMs(50L);
-        grpPoller.run();
+        grpCollectPoller.setOrderRef(ORDER_REF);
+        grpCollectPoller.setTransactionId(TX_ID);
+        grpCollectPoller.setWebCertUser(buildWebCertUser());
+        grpCollectPoller.setMs(50L);
+        grpCollectPoller.run();
 
         verify(signaturService, times(0)).clientGrpSignature(anyString(), anyString(), any(WebCertUser.class));
         verify(signaturTicketTracker, times(1)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
@@ -91,9 +94,11 @@ public class GrpCollectPollerTest {
     public void testCollectFailsOnGrpFaultWhenGrpTxExpires() throws GrpFault {
 
         when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildFault(FaultStatusType.EXPIRED_TRANSACTION));
-        GrpPoller grpPoller = new GrpPoller(ORDER_REF, TX_ID, "policy", "text", buildWebCertUser(), grpService, signaturTicketTracker, signaturService);
-        grpPoller.setMs(50L);
-        grpPoller.run();
+        grpCollectPoller.setOrderRef(ORDER_REF);
+        grpCollectPoller.setTransactionId(TX_ID);
+        grpCollectPoller.setWebCertUser(buildWebCertUser());
+        grpCollectPoller.setMs(50L);
+        grpCollectPoller.run();
 
         verify(signaturService, times(0)).clientGrpSignature(anyString(), anyString(), any(WebCertUser.class));
         verify(signaturTicketTracker, times(1)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
