@@ -269,7 +269,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         abortIfWebcertFeatureIsNotAvailableForModule(WebcertFeature.HANTERA_INTYGSUTKAST, intygsTyp);
         SignaturTicket ticket;
         try {
-            ticket = grpSignaturService.sendAuthenticateRequest(intygsId, version);
+            ticket = grpSignaturService.startGrpAuthentication(intygsId, version);
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());

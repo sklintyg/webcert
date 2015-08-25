@@ -15,6 +15,7 @@ import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.webcert.service.signatur.grp.factory.GrpCollectPollerFactory;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
@@ -49,15 +50,20 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
     @Autowired
     ThreadPoolTaskExecutor taskExecutor;
 
-    // private GrpTxIdGenerator grpTxIdGenerator = new GrpTxIdGenerator();
+    @Autowired
+    GrpCollectPollerFactory grpCollectPollerFactory;
 
     @Override
-    public SignaturTicket sendAuthenticateRequest(String intygId, long version) {
+    public SignaturTicket startGrpAuthentication(String intygId, long version) {
 
         Utkast utkast = utkastRepository.findOne(intygId);
+        validateUtkast(intygId, utkast);
 
         WebCertUser webCertUser = webCertUserService.getWebCertUser();
+        validateWebCertUser(webCertUser);
+
         String personId = webCertUser.getPersonId();
+        validatePersonId(personId);
 
         SignaturTicket draftHash = signaturService.createDraftHash(intygId, utkast.getVersion());
 
@@ -68,20 +74,54 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
             orderResponse = grpService.authenticate(authRequest);
         } catch (GrpFault grpFault) {
             // TODO FIX
+            signaturTicketTracker.updateStatus(draftHash.getId(), SignaturTicket.Status.OKAND);
             throw new RuntimeException(grpFault.getMessage());
         }
 
         // If we could init the authentication, we create a SignaturTicket, reusing the mechanism already present for SITHS
         String orderRef = orderResponse.getOrderRef();
 
+        String transactionId = validateOrderResponseTxId(authRequest, orderResponse);
+
+        //taskExecutor.execute(new GrpPoller(orderRef, transactionId, serviceId, displayName, webCertUser, grpService, signaturTicketTracker, signaturService), 6000L);
+        startAsyncCollectPoller(webCertUser, orderRef, transactionId);
+        return draftHash;
+    }
+
+    private void startAsyncCollectPoller(WebCertUser webCertUser, String orderRef, String transactionId) {
+        GrpCollectPoller collectTask = grpCollectPollerFactory.getInstance();
+        collectTask.setOrderRef(orderRef);
+        collectTask.setTransactionId(transactionId);
+        collectTask.setWebCertUser(webCertUser);
+        taskExecutor.execute(collectTask, 6000L);
+    }
+
+    private String validateOrderResponseTxId(AuthenticateRequestType authRequest, OrderResponseType orderResponse) {
         String transactionId = orderResponse.getTransactionId();
         if (!authRequest.getTransactionId().equals(transactionId)) {
             throw new IllegalStateException("OrderResponse transactionId did not match AuthenticateRequest one.");
         }
+        return transactionId;
+    }
 
-        taskExecutor.execute(new GrpPoller(orderRef, transactionId, serviceId, displayName, webCertUser, grpService, signaturTicketTracker, signaturService), 6000L);
+    private void validatePersonId(String personId) {
+        if (personId == null) {
+            throw new IllegalArgumentException("User principal contained no personId. Cannot issue a GRP auth request " +
+                    "without a valid personId. This condition could theoretically occur if a SITHS-logged in lakare " +
+                    "accidently managed to init a signing with BankID.");
+        }
+    }
 
-        return draftHash;
+    private void validateWebCertUser(WebCertUser webCertUser) {
+        if (webCertUser == null) {
+            throw new IllegalArgumentException("Could not send GRP authenticate request, no user principal found in session.");
+        }
+    }
+
+    private void validateUtkast(String intygId, Utkast utkast) {
+        if (utkast == null) {
+            throw new IllegalArgumentException("Could not send GRP authenticate request, no Utkast found for intygId '" + intygId + "'");
+        }
     }
 
     private AuthenticateRequestType buildAuthRequest(String personId, SignaturTicket draftHash) {

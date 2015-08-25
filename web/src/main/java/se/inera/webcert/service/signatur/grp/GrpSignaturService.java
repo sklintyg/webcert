@@ -7,5 +7,5 @@ import se.inera.webcert.service.signatur.dto.SignaturTicket;
  */
 public interface GrpSignaturService {
 
-    SignaturTicket sendAuthenticateRequest(String intygId, long version);
+    SignaturTicket startGrpAuthentication(String intygId, long version);
 }

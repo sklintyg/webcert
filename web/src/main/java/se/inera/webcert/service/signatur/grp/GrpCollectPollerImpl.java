@@ -2,7 +2,10 @@ package se.inera.webcert.service.signatur.grp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import se.funktionstjanster.grp.v1.CollectRequestType;
 import se.funktionstjanster.grp.v1.CollectResponseType;
 import se.funktionstjanster.grp.v1.GrpFault;
@@ -13,8 +16,8 @@ import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 
 /**
- * Runnable implementation responsible for performing once GRP collect lifecycle for a single signerings attempt
- * over CGI's GRP API.
+ * Runnable implementation / spring prototype bean responsible for performing once GRP collect lifecycle for a single
+ * signerings attempt over CGI's GRP API.
  *
  * Will for up to {@link GrpPoller#TIMEOUT} milliseconds issue a GRP "collect" every 3 seconds and act on the response.
  *
@@ -24,36 +27,36 @@ import se.inera.webcert.service.signatur.dto.SignaturTicket;
  * ProgressStatusType is returned. On {@link se.funktionstjanster.grp.v1.ProgressStatusType#COMPLETE} the operation has
  * successfully finished (e.g. the user has used BankID or Mobilt BankID and successfully authenticated themselves) and
  * we can notify waiting parties about the success.
- *
- * TODO Uses constructor injection, should clean that up.
- *
- * Created by eriklupander on 2015-08-21.
  */
-public class GrpPoller implements Runnable {
+@Component(value = "grpCollectPoller")
+@Scope(value = "prototype")
+public class GrpCollectPollerImpl implements GrpCollectPoller {
 
-    private static final Logger log = LoggerFactory.getLogger(GrpPoller.class);
+    private static final Logger log = LoggerFactory.getLogger(GrpCollectPollerImpl.class);
 
-    private static final long TIMEOUT = 240000L; // 4 minutes, normally an EXPIRED_TRANSACTION will be returned after 3.
+    private static long TIMEOUT = 240000L; // 4 minutes, normally an EXPIRED_TRANSACTION will be returned after 3.
 
-    private final String orderRef;
-    private final String transactionId;
-    private final String serviceId;
-    private final String displayName;
-    private final WebCertUser webCertUser;
-    private GrpServicePortType grpService;
+    private String orderRef;
+    private String transactionId;
+    private WebCertUser webCertUser;
+
+
+    @Value("${cgi.grp.serviceId}")
+    private String serviceId;
+
+    @Value("${cgi.grp.displayName}")
+    private String displayName;
+
+    @Autowired
     private SignaturTicketTracker signaturTicketTracker;
+
+    @Autowired
     private SignaturService signaturService;
 
-    public GrpPoller(String orderRef, String transactionId, String serviceId, String displayName, WebCertUser webCertUser, GrpServicePortType grpService, SignaturTicketTracker signaturTicketTracker, SignaturService signaturService) {
-        this.orderRef = orderRef;
-        this.transactionId = transactionId;
-        this.serviceId = serviceId;
-        this.displayName = displayName;
-        this.webCertUser = webCertUser;
-        this.grpService = grpService;
-        this.signaturTicketTracker = signaturTicketTracker;
-        this.signaturService = signaturService;
-    }
+    @Autowired
+    private GrpServicePortType grpService;
+
+    private long ms = 3000L;
 
     @Override
     public void run() {
@@ -65,50 +68,58 @@ public class GrpPoller implements Runnable {
             try {
 
                 CollectResponseType resp = grpService.collect(req);
-                switch(resp.getProgressStatus()) {
+                switch (resp.getProgressStatus()) {
                     case COMPLETE:
                         String signature = resp.getSignature();
                         log.info("GRP collect returned with complete status");
                         signaturService.clientGrpSignature(resp.getTransactionId(), signature, webCertUser);
                         log.info("Signature was successfully persisted and ticket updated.");
                         return;
+
                     case OUTSTANDING_TRANSACTION:
                     case STARTED:
+                    case USER_REQ:
                     case USER_SIGN:
-                        log.info("GRP collect returned ProgressStatusType: " + resp.getProgressStatus());
+                        log.info("GRP collect returned ProgressStatusType: {}", resp.getProgressStatus());
                         break;
+
                     case NO_CLIENT:
-                        log.info("GRP collect returned ProgressStatusType: " + resp.getProgressStatus() + ", " +
-                                "has the user started their BankID or Mobilt BankID application?");
+                        log.info("GRP collect returned ProgressStatusType: {}, " +
+                                "has the user started their BankID or Mobilt BankID application?", resp.getProgressStatus());
                         break;
-                    default:
-                        log.info("GRP collect returned unexpected ProgressStatusType: " + resp.getProgressStatus());
-                        throw new IllegalStateException("GRP collect returned unexpected ProgressStatusType: " + resp.getProgressStatus());
                 }
 
             } catch (GrpFault grpFault) {
                 handleGrpFault(grpFault);
+                // Always terminate loop after a GrpFault has been encountered
+                return;
             }
 
-            sleepThreeSeconds();
+            sleepMs(ms);
         }
     }
 
     private void handleGrpFault(GrpFault grpFault) {
         signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.OKAND);
-        switch(grpFault.getFaultInfo().getFaultStatus()) {
+        switch (grpFault.getFaultInfo().getFaultStatus()) {
             case CLIENT_ERR:
-                log.error("GRP collect failed with CLIENT_ERR, message: " + grpFault.getFaultInfo().getDetailedDescription());
+                log.error("GRP collect failed with CLIENT_ERR, message: {}", grpFault.getFaultInfo().getDetailedDescription());
                 break;
             case USER_CANCEL:
                 log.info("User cancelled BankID signing.");
                 break;
             case ALREADY_COLLECTED:
             case EXPIRED_TRANSACTION:
-                log.info("GRP collect failed with status " + grpFault.getFaultInfo().getFaultStatus() + ", this is expected.");
+                log.info("GRP collect failed with status {}, this is expected " +
+                                "when the user doesn't start their BankID client and transaction times out after ~3 minutes.",
+                        grpFault.getFaultInfo().getFaultStatus());
+                break;
+            default:
+                log.error("Unexpected GrpFault thrown when performing GRP collect: {}. Message: {}",
+                        grpFault.getFaultInfo().getFaultStatus().toString(),
+                        grpFault.getFaultInfo().getDetailedDescription());
                 break;
         }
-        throw new RuntimeException(grpFault.getMessage());
     }
 
     private CollectRequestType buildCollectRequest() {
@@ -121,11 +132,30 @@ public class GrpPoller implements Runnable {
         return req;
     }
 
-    private void sleepThreeSeconds() {
+    private void sleepMs(long ms) {
         try {
-            Thread.sleep(3000L);
+            Thread.sleep(ms);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Use this for unit-testing purposes only
+     */
+    void setMs(long ms) {
+        this.ms = ms;
+    }
+
+    public void setOrderRef(String orderRef) {
+        this.orderRef = orderRef;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public void setWebCertUser(WebCertUser webCertUser) {
+        this.webCertUser = webCertUser;
     }
 }
