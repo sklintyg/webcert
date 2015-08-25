@@ -12,7 +12,9 @@ if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthentica
 
         function log(message) {
             try {
+              if (window.console) {
                 console.log(message);
+              }
             } catch (e) {}
 
             logServer(message);
