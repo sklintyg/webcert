@@ -7,7 +7,7 @@
     dest="{{ tomcat_conf }}/server.xml"
     regexp="    <Resource name='sharedWebcert'"
     insertbefore="  </GlobalNamingResources>"
-    line="    <Resource name='sharedWebcert' global='sharedWebcertGlobal'  auth='Container' type='javax.sql.DataSource' username='{{ database_username }}' password='{{ database_password }}' driverClassName='{{ database_driver }}' url='{{ database_url }}' maxActive='{{ database_pool_maxActive }}' maxIdle='{{ database_pool_maxIdle }}' minIdle='{{ database_pool_minIdle }}' initialSize='{{ database_pool_initialSize }}' validationQuery='SELECT 1' validationQueryTimeout='3' testWhileIdle='true' timeBetweenEvictionRunsMillis='300000' minEvictableIdleTimeMillis='60000' defaultAutocommit='false' />"
+    line="    <Resource name='sharedWebcert' global='sharedWebcert'  auth='Container' type='javax.sql.DataSource' username='{{ database_username }}' password='{{ database_password }}' driverClassName='{{ database_driver }}' url='{{ database_url }}' maxActive='{{ database_pool_maxActive }}' maxIdle='{{ database_pool_maxIdle }}' minIdle='{{ database_pool_minIdle }}' initialSize='{{ database_pool_initialSize }}' validationQuery='SELECT 1' validationQueryTimeout='3' testWhileIdle='true' timeBetweenEvictionRunsMillis='300000' minEvictableIdleTimeMillis='60000' defaultAutocommit='false' />"
 
 - name: configure jdbc resource
   lineinfile:
