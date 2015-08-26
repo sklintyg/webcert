@@ -5,6 +5,7 @@ import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 
 /**
+ * @deprecated Delete if unused
  * @author johannesc
  */
 @Service

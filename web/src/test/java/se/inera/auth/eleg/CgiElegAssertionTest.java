@@ -15,28 +15,16 @@ import org.opensaml.xml.io.Unmarshaller;
 import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
+import se.inera.auth.common.BaseSAMLCredentialTest;
 
 /**
  * @author eriklupander
  */
-public class CgiElegAssertionTest {
-
-    private static org.opensaml.saml2.core.Assertion assertionPrivatlakare;
+public class CgiElegAssertionTest extends BaseSAMLCredentialTest {
 
     @BeforeClass
     public static void readSamlAssertions() throws Exception {
-        DefaultBootstrap.bootstrap();
-
-        Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
-                "CGIElegAssertiontest/sample-saml2-response.xml").getInputStream()));
-        org.w3c.dom.Element documentElement = doc.getDocumentElement();
-
-        UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
-        Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(documentElement);
-        XMLObject responseXmlObj = unmarshaller.unmarshall(documentElement);
-        Response response = (Response) responseXmlObj;
-        assertionPrivatlakare = response.getAssertions().get(0);
-
+        bootstrapSamlAssertions();
     }
 
     @Test

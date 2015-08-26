@@ -34,6 +34,15 @@ public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationM
             throw new IllegalArgumentException("Cannot resolve issuerCommonName of SAML ticket.");
         }
 
+        if (netIdIssuerCommonNames == null || netIdIssuerCommonNames.trim().length() == 0) {
+            throw new IllegalStateException("Cannot resolve AuthenticationMethod from issuer CN, no value set for NetID identifiers using property 'cgi.saml.issuer.netid.commonNames'");
+        }
+
+        if (bankIdIssuerCommonNames == null || bankIdIssuerCommonNames.trim().length() == 0) {
+            throw new IllegalStateException("Cannot resolve AuthenticationMethod from issuer CN, no value set for BankID identifiers using property 'cgi.saml.issuer.bankid.commonNames'");
+        }
+
+
         boolean matchesNetId = commonNameMatchesMethod(issuerCommonName, netIdIssuerCommonNames);
         boolean matchesBankId = commonNameMatchesMethod(issuerCommonName, bankIdIssuerCommonNames);
         if (matchesNetId && matchesBankId) {

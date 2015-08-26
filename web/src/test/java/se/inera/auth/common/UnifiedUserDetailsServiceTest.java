@@ -37,11 +37,7 @@ import static org.mockito.Mockito.*;
  * Created by eriklupander on 2015-08-20.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class UnifiedUserDetailsServiceTest {
-
-    static Assertion assertionPrivatlakare;
-    static Assertion assertionLandstingslakare;
-    static Assertion assertionUnknownAuthCtx;
+public class UnifiedUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Mock
     ElegWebCertUserDetailsService elegWebCertUserDetailsService;
@@ -54,39 +50,7 @@ public class UnifiedUserDetailsServiceTest {
 
     @BeforeClass
     public static void readSamlAssertions() throws Exception {
-        DefaultBootstrap.bootstrap();
-
-        Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
-                "CGIElegAssertiontest/sample-saml2-response.xml").getInputStream()));
-        org.w3c.dom.Element documentElement = doc.getDocumentElement();
-
-        UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
-        Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(documentElement);
-        XMLObject responseXmlObj = unmarshaller.unmarshall(documentElement);
-        Response response = (Response) responseXmlObj;
-        assertionPrivatlakare = response.getAssertions().get(0);
-
-
-        doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
-                "WebCertUserDetailsServiceTest/saml-assertion-with-title-code-lakare.xml").getInputStream()));
-
-        documentElement = doc.getDocumentElement();
-
-        unmarshallerFactory = Configuration.getUnmarshallerFactory();
-        unmarshaller = unmarshallerFactory.getUnmarshaller(documentElement);
-        responseXmlObj = unmarshaller.unmarshall(documentElement);
-
-        assertionLandstingslakare = (Assertion) responseXmlObj;
-
-        doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
-                "CGIElegAssertiontest/sample-saml2-response-unknown-auth-ctx.xml").getInputStream()));
-        documentElement = doc.getDocumentElement();
-
-        unmarshallerFactory = Configuration.getUnmarshallerFactory();
-        unmarshaller = unmarshallerFactory.getUnmarshaller(documentElement);
-        responseXmlObj = unmarshaller.unmarshall(documentElement);
-        response = (Response) responseXmlObj;
-        assertionUnknownAuthCtx = response.getAssertions().get(0);
+        bootstrapSamlAssertions();
     }
 
     @Test
@@ -108,13 +72,5 @@ public class UnifiedUserDetailsServiceTest {
     }
 
 
-    private SAMLCredential buildPrivatlakareSamlCredential() {
-        return new SAMLCredential(mock(NameID.class), assertionPrivatlakare, "", "");
-    }
-    private SAMLCredential buildLandstingslakareSamlCredential() {
-        return new SAMLCredential(mock(NameID.class), assertionLandstingslakare, "", "");
-    }
-    private SAMLCredential buildUnknownSamlCredential() {
-        return new SAMLCredential(mock(NameID.class), assertionUnknownAuthCtx, "", "");
-    }
+
 }

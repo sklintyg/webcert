@@ -19,7 +19,7 @@ import se.inera.webcert.service.signatur.dto.SignaturTicket;
  * Runnable implementation / spring prototype bean responsible for performing once GRP collect lifecycle for a single
  * signerings attempt over CGI's GRP API.
  *
- * Will for up to {@link GrpPoller#TIMEOUT} milliseconds issue a GRP "collect" every 3 seconds and act on the response.
+ * Will for up to {@link GrpCollectPollerImpl#TIMEOUT} milliseconds issue a GRP "collect" every 3 seconds and act on the response.
  *
  * The typical flow of a GRP authentication/collect is that a parent thread issues an AuthenticationRequest to the
  * GRP API and stores the AuthenticationResponse orderRef. An instance of this class then goes into a loop and

@@ -23,6 +23,7 @@ import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
+import se.inera.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
@@ -39,13 +40,13 @@ import java.util.HashSet;
  * Created by eriklupander on 2015-06-25.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ElegWebCertUserDetailsServiceTest {
+public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     private static final String LOCAL_ENTITY_ID = "localEntityId";
     private static final String REMOTE_ENTITY_ID = "remoteEntityId";
     private static final String HSA_ID = "191212121212";
     private static final String PERSON_ID = "191212121212";
-    private static Assertion assertionPrivatlakare;
+    //private static Assertion assertionPrivatlakare;
 
     @Mock
     private PPService ppService;
@@ -67,19 +68,7 @@ public class ElegWebCertUserDetailsServiceTest {
 
     @BeforeClass
     public static void readSamlAssertions() throws Exception {
-        DefaultBootstrap.bootstrap();
-
-        Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
-                "CGIElegAssertiontest/sample-saml2-response.xml").getInputStream()));
-        org.w3c.dom.Element documentElement = doc.getDocumentElement();
-
-        UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
-        Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(documentElement);
-        XMLObject responseXmlObj = unmarshaller.unmarshall(documentElement);
-        Response response = (Response) responseXmlObj;
-        assertionPrivatlakare = response.getAssertions().get(0);
-
-
+        bootstrapSamlAssertions();
     }
 
     @Test
