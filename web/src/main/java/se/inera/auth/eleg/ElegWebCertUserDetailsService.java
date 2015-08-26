@@ -17,6 +17,7 @@ import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.model.WebCertUser;
@@ -89,21 +90,34 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         webCertUser.setForskrivarkod(hosPerson.getForskrivarkod());
         webCertUser.setLakare(true);
         webCertUser.setNamn(hosPerson.getFullstandigtNamn());
-        webCertUser.setAuthenticationMethod(elegAuthenticationMethodResolver.resolveAuthenticationMethod(samlCredential));
+
 
         decorateWithVardgivare(hosPerson, webCertUser);
         decorateWithLegitimeradeYrkesgrupper(hosPerson, webCertUser);
         decorateWithSpecialiceringar(hosPerson, webCertUser);
         decorateWebCertUserWithAvailableFeatures(webCertUser);
 
-        if (samlCredential.getAuthenticationAssertion() != null) {
-            String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
-            webCertUser.setAuthenticationScheme(authnContextClassRef);
-        }
+        decorateWithAuthenticationScheme(samlCredential, webCertUser);
+        decorateWithAuthenticationMethod(samlCredential, webCertUser);
 
         setDefaultSelectedVardenhetOnUser(webCertUser);
 
         return webCertUser;
+    }
+
+    private void decorateWithAuthenticationScheme(SAMLCredential samlCredential, WebCertUser webCertUser) {
+        if (samlCredential.getAuthenticationAssertion() != null) {
+            String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
+            webCertUser.setAuthenticationScheme(authnContextClassRef);
+        }
+    }
+
+    private void decorateWithAuthenticationMethod(SAMLCredential samlCredential, WebCertUser webCertUser) {
+        if (!webCertUser.getAuthenticationScheme().endsWith(":fake")) {
+            webCertUser.setAuthenticationMethod(elegAuthenticationMethodResolver.resolveAuthenticationMethod(samlCredential));
+        } else {
+            webCertUser.setAuthenticationMethod(AuthenticationMethod.FAKE);
+        }
     }
 
     private void decorateWithVardgivare(HoSPersonType hosPerson, WebCertUser webCertUser) {
