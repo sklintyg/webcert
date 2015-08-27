@@ -115,6 +115,8 @@ public final class IntygDraftsConverter {
         entry.setVidarebefordrad(utkast.getVidarebefordrad());
         entry.setStatus(utkast.getStatus().toString());
         entry.setVersion(utkast.getVersion());
+        entry.setEnhetsNamn(utkast.getEnhetsNamn());
+        entry.setVardgivareNamn(utkast.getVardgivarNamn());
 
         return entry;
     }
@@ -129,6 +131,8 @@ public final class IntygDraftsConverter {
         entry.setSource(IntygSource.IT);
         entry.setLastUpdatedSigned(intygItem.getSignedDate());
         entry.setUpdatedSignedBy(intygItem.getSignedBy());
+        entry.setEnhetsNamn(intygItem.getEnhetsNamn());
+        entry.setVardgivareNamn(intygItem.getVardgivareNamn());
 
         return entry;
     }
