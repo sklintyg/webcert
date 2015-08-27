@@ -22,6 +22,10 @@ public class ListIntygEntry {
 
     private long version;
 
+    private String enhetsNamn;
+
+    private String vardgivareNamn;
+
     public ListIntygEntry() {
 
     }
@@ -98,4 +102,19 @@ public class ListIntygEntry {
         this.version = version;
     }
 
+    public String getEnhetsNamn() {
+        return enhetsNamn;
+    }
+
+    public void setEnhetsNamn(String enhetsNamn) {
+        this.enhetsNamn = enhetsNamn;
+    }
+
+    public String getVardgivareNamn() {
+        return vardgivareNamn;
+    }
+
+    public void setVardgivareNamn(String vardgivareNamn) {
+        this.vardgivareNamn = vardgivareNamn;
+    }
 }
