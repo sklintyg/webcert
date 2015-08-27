@@ -90,6 +90,8 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setVersion(utkast.getVersion());
         draftHolder.setVidarebefordrad(utkast.getVidarebefordrad());
         draftHolder.setStatus(utkast.getStatus());
+        draftHolder.setEnhetsNamn(utkast.getEnhetsNamn());
+        draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
         draftHolder.setContent(utkast.getModel());
 
         return Response.ok(draftHolder).build();

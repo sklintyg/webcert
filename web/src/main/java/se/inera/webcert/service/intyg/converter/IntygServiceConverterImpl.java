@@ -54,9 +54,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         item.setStatuses(ClinicalProcessCertificateMetaTypeConverter.toStatusList(source.getStatus()));
         item.setSignedBy(source.getIssuerName());
         item.setSignedDate(source.getSignDate());
-        item.setEnhetsNamn(source.getFacilityName());   // TODO is this correct??
-        item.setVardgivareNamn(source.getIssuerName()); // TODO is this correct??
-
         return item;
     }
 
@@ -154,8 +151,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         intygItem.setSignedDate(utlatande.getGrundData().getSigneringsdatum());
         intygItem.setType(utkast.getIntygsTyp());
         intygItem.setStatuses(buildStatusesFromUtkast(utkast));
-        intygItem.setEnhetsNamn(utkast.getEnhetsNamn());
-        intygItem.setVardgivareNamn(utkast.getVardgivarNamn());
         return intygItem;
     }
 
