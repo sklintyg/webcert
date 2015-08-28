@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ public class AvtalRepositoryFactory {
                 Avtal avtal = new Avtal();
                 avtal.setAvtalText(avtalText);
                 avtal.setAvtalVersion(1);
+                avtal.setVersionDatum(LocalDateTime.now());
                 avtalRepository.save(avtal);
                 log.info("Persisted basic Avtal for privatlakare.");
 

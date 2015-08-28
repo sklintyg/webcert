@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
@@ -81,6 +82,7 @@ public class UserApiController extends AbstractApiController {
         WebCertUser user = getWebCertUserService().getWebCertUser();
         if (user != null) {
             avtalService.approveLatestAvtal(user.getHsaId());
+            user.setPrivatLakareAvtalGodkand(true);
         }
         return Response.ok().build();
     }
@@ -100,5 +102,13 @@ public class UserApiController extends AbstractApiController {
             return Response.ok().build();
         }
         return Response.notModified().build();
+    }
+
+    @GET
+    @Path("/latestavtal")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response getAvtal() {
+         Avtal avtal = avtalService.getLatestAvtal();
+        return Response.ok(avtal).build();
     }
 }

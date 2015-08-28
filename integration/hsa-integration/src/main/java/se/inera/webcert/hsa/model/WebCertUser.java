@@ -25,7 +25,10 @@ public class WebCertUser implements Serializable {
     private boolean lakare;
     private String forskrivarkod;
     private String authenticationScheme;
+    private boolean privatLakare;
     private AuthenticationMethod authenticationMethod; // TODO - temporary hack. BANKID, NETID
+
+    private boolean privatLakareAvtalGodkand;
 
     private List<Vardgivare> vardgivare;
 
@@ -168,6 +171,22 @@ public class WebCertUser implements Serializable {
         return getAktivaFunktioner().contains(aktivFunktion);
     }
 
+    public boolean isPrivatLakare() {
+        return privatLakare;
+    }
+
+    public void setPrivatLakare(boolean privatLakare) {
+        this.privatLakare = privatLakare;
+    }
+
+    public boolean isPrivatLakareAvtalGodkand() {
+        return privatLakareAvtalGodkand;
+    }
+
+    public void setPrivatLakareAvtalGodkand(boolean privatLakareAvtalGodkand) {
+        this.privatLakareAvtalGodkand = privatLakareAvtalGodkand;
+    }
+
     public AuthenticationMethod getAuthenticationMethod() {
         return authenticationMethod;
     }
@@ -242,7 +261,7 @@ public class WebCertUser implements Serializable {
     @JsonIgnore
     @Override
     public String toString() {
-        return hsaId +  " [authScheme=" + authenticationScheme + ", lakare=" + lakare + "]";
+        return hsaId + " [authScheme=" + authenticationScheme + ", lakare=" + lakare + "]";
     }
 
 

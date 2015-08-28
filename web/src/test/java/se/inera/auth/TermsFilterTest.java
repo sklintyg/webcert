@@ -69,6 +69,9 @@ public class TermsFilterTest {
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(null);
 
+        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(false);
+        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_INPROGRESS)).thenReturn(false);
+
         filter.doFilterInternal(request, response, filterChain);
         verify(session, never()).setAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED, true);
     }
@@ -79,7 +82,9 @@ public class TermsFilterTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
-        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(null);
+
+        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(false);
+        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_INPROGRESS)).thenReturn(false);
 
         filter.doFilterInternal(request, response, filterChain);
         verify(session, never()).setAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED, true);
@@ -92,7 +97,9 @@ public class TermsFilterTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
-        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(null);
+        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(false);
+        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_INPROGRESS)).thenReturn(false);
+
         when(request.getRequestDispatcher(anyString())).thenReturn(mock(RequestDispatcher.class));
 
         filter.doFilterInternal(request, response, filterChain);
@@ -107,7 +114,9 @@ public class TermsFilterTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(TermsFilter.SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
-        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(null);
+
+        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_ACCEPTED)).thenReturn(false);
+        when(session.getAttribute(TermsFilter.PRIVATE_PRACTITIONER_TERMS_INPROGRESS)).thenReturn(false);
 
         filter.doFilterInternal(request, response, filterChain);
         verify(response, never()).sendRedirect(anyString());

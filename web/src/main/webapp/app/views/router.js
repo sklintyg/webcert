@@ -1,7 +1,7 @@
 /**
  * Created by stephenwhite on 04/03/15.
  */
-angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
+angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $httpProvider) {
     'use strict';
 
     $stateProvider.
@@ -195,7 +195,19 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider) {
                     controller: 'webcert.AboutWebcertCtrl'
                 }
             }
+        }).
+        state('webcert.terms', {
+            url: '/terms',
+            views: {
+                'dialogs@webcert': {
+                    templateUrl: "/app/views/terms/terms.main.html",
+                    controller: 'webcert.TermsCtrl'
+                }
+            }
         });
 
         $urlRouterProvider.when('', '/create/index');
+        $urlRouterProvider.when('/{path:.*}/:terms', '/terms');
+
+        $httpProvider.interceptors.push('webcert.TermsInterceptor');
 });

@@ -150,8 +150,8 @@ function checkAddIndexOf() {
 }
 
 // Inject language resources
-app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserModel',
-    function($log, $rootScope, $window, messageService, UserModel) {
+app.run(['$log', '$rootScope', '$window', '$location','$state', '$q', 'common.messageService', 'common.UserModel', 'common.User', 'webcert.TermsState',
+    function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, UserService, TermsState ) {
         'use strict';
 
         $rootScope.lang = 'sv';
@@ -170,6 +170,15 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserM
         $window.setAutoSave = function(val){
             $window.autoSave = val;
         }
+
+        var userDef = $q.defer();
+
+        // get the current user from the backend
+        UserService.initUser(function(data){
+            TermsState.termsAccepted = data.privatLakareAvtalGodkand;
+            userDef.resolve();
+        });
+
         // watch the digest cycle
         //$rootScope.$watch(function() {
         //    $window.digest ++;
@@ -185,8 +194,28 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserM
 
         $rootScope.$on('$stateChangeStart',
             function(event, toState, toParams, fromState, fromParams){
-                //$log.log('$stateChangeStart to '+toState.to+'- fired when the transition begins. toState,toParams : \n',toState, toParams);
-                $window.doneLoading = false;
+                // if we dont have a user then we need to defer until we do ..
+                var termsCheck = function(){
+                    // check terms if not accepted then always redirect
+                    if(toState.name !== 'webcert.terms'){
+                        TermsState.transitioning = false;
+                    }
+                    if(!TermsState.termsAccepted && !TermsState.transitioning){
+                        event.preventDefault();
+                        TermsState.transitioning = true;
+                        $state.transitionTo('webcert.terms');
+                    }
+                }
+                if(!UserModel.user){
+                    event.preventDefault();
+                    // gets resolved when a user is loaded
+                    userDef.promise.then(function(){
+                        $state.transitionTo(toState.name, toParams);
+                    });
+                } else {
+                    termsCheck();
+                    $window.doneLoading = false;
+                }
             });
 
         $rootScope.$on('$stateNotFound',
@@ -198,6 +227,9 @@ app.run(['$log', '$rootScope', '$window', 'common.messageService', 'common.UserM
         $rootScope.$on('$stateChangeSuccess',
             function(event, toState, toParams, fromState, fromParams){
                 //$log.log('$stateChangeSuccess to '+toState.name+'- fired once the state transition is complete.');
+                if(!TermsState.termsAccepted && TermsState.transitioning && toState.name === 'webcert.terms'){
+                    TermsState.transitioning = false;
+                }
                 $window.doneLoading = true;
             })
 

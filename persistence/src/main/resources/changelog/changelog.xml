@@ -482,4 +482,12 @@
 
   </changeSet>
 
+  <changeSet id="19" author="el">
+    <addColumn tableName="AVTAL_PRIVATLAKARE">
+    <column name="VERSION_DATUM" type="datetime">
+      <constraints nullable="false" />
+    </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

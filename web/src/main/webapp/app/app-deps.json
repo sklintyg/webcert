@@ -17,6 +17,9 @@
     "/app/views/sokSkrivIntyg/sokSkrivIntygStart.controller.js",
     "/app/views/sokSkrivIntyg/wcVisited.directive.js",
     "/app/views/sokSkrivIntyg/tidigareIntyg.filter.js",
+    "/app/views/terms/terms.controller.js",
+    "/app/views/terms/terms.interceptor.js",
+    "/app/views/terms/terms.state.js",
     "/app/views/visaIntygFragasvar/visaIntygFragasvar.controller.js",
     "/app/views/visaIntygFragasvar/wcInsertIntyg.directive.js",
     "/app/views/visaIntygFragasvar/wcInsertFragasvar.directive.js"
