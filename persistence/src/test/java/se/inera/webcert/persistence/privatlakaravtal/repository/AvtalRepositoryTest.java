@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,6 +153,7 @@ public class AvtalRepositoryTest {
         Avtal avtal = new Avtal();
         avtal.setAvtalVersion(version);
         avtal.setAvtalText(avtalText);
+        avtal.setVersionDatum(LocalDateTime.now());
         return avtal;
     }
 

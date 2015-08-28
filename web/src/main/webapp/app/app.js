@@ -176,6 +176,7 @@ app.run(['$log', '$rootScope', '$window', '$location','$state', '$q', 'common.me
         // get the current user from the backend
         UserService.initUser(function(data){
             TermsState.termsAccepted = data.privatLakareAvtalGodkand;
+            TermsState.transitioning = false;
             userDef.resolve();
         });
 
