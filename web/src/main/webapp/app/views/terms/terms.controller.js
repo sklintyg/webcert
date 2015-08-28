@@ -1,6 +1,7 @@
-angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope', '$scope', '$window', '$modal', '$sanitize', '$state',
+angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope', '$scope', '$window', '$modal',
+        '$sanitize', '$state', '$location',
         'common.AvtalProxy', 'common.UserModel', 'webcert.TermsState',
-    function($log, $rootScope, $scope, $window, $modal, $sanitize, $state, AvtalProxy, UserModel, TermsState) {
+    function($log, $rootScope, $scope, $window, $modal, $sanitize, $state, $location, AvtalProxy, UserModel, TermsState) {
         'use strict';
         $scope.doneLoading = false;
 
@@ -57,27 +58,42 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
                 );
             },
             print : function(){
-                var printContents = $sanitize($scope.avtal.avtalText);
+                var head = '<!DOCTYPE html><html>' +
+                            '<head>' +
+                            '<link rel="stylesheet" href="/web/webjars/common/webcert/css/print.css" media="print">'+
+                            '<title>Webcert - Användarvilkor</title>'+
+                            '</head>';
+
+                var body = '<body onload="window.print()">' +
+                            '<img class="pull-left" style="padding-bottom: 20px" src="/img/webcert_grey_small.png" />' +
+                            '<p style="clear:left;padding-bottom:50px;color:#535353">' +
+                            '<span style="padding-left:20px;padding-right:30px">Version : ' + $scope.avtal.avtalVersion + '</span>' +
+                            '<span>Datum : ' + $scope.avtal.versionDatum + '</span></p>' +
+                            '<h1 style="color: black;font-size: 2em">Användarvilkor för Webcert</h1>' +
+                            '<p style="clear:left;padding-bottom: 10px">'+$scope.avtal.avtalText+'</p>' +
+                            '<p style="clear:left;color:#535353;padding-top:50px">'+$location.absUrl()+'</p>' +
+                            '</body>';
+
+                var footer = '</html>';
+
+                var template = head + body + footer;
 
                 if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
                     var popupWin = window.open('', '_blank', 'width=400,scrollbars=no,menubar=no,toolbar=no,location=no,status=no,titlebar=no');
                     popupWin.window.focus();
-                    popupWin.document.write('<!DOCTYPE html><html><head>' +
-                        '<link rel="stylesheet" href="/web/webjars/common/webcert/css/print.css" media="print">' +
-                        '</head><body onload="window.print()"><h1>WebCert Användarvilkor</h1>' + printContents + '</html>');
+                    popupWin.document.write(template);
+                    setTimeout(function () { popupWin.close(); }, 100);
                     popupWin.onbeforeunload = function (event) {
                         popupWin.close();
-                        return '.\n';
                     };
                     popupWin.onabort = function (event) {
                         popupWin.document.close();
                         popupWin.close();
                     };
                 } else {
-                    var popupWin = window.open('', '_blank', 'width=400');
+                    var popupWin = window.open('', '_blank', 'width=800,scrollbars=yes,menubar=no,toolbar=no,location=no,status=no,titlebar=no');
                     popupWin.document.open();
-                    popupWin.document.write('<html><head><link rel="stylesheet" href="/web/webjars/common/webcert/css/print.css" media="print"></head><body onload="window.print()"><h1>WebCert Användarvilkor</h1>' + printContents + '</html>');
-                    popupWin.document.close();
+                    popupWin.document.write(template);
                 }
                 popupWin.document.close();
 
