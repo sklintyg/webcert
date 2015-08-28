@@ -90,7 +90,7 @@
             </ul>
             <p>För att kunna använda Webcerts funktioner behöver du någon av följande webbläsare:</p>
             <ul>
-              <li>Internet Explorer 8 eller efterföljande versioner.</li>
+              <li>Internet Explorer 9 eller efterföljande versioner.</li>
             </ul>
             <p>Du måste även ha JavaScript aktiverat i din webbläsare för att kunna använda Webcert.</p>
           </div>
