@@ -180,19 +180,6 @@ app.run(['$log', '$rootScope', '$window', '$location','$state', '$q', 'common.me
             userDef.resolve();
         });
 
-        // watch the digest cycle
-        //$rootScope.$watch(function() {
-        //    $window.digest ++;
-        //    $log.log('---- inc digest : ' + $window.digest);
-        //    // Note that we're using a private Angular method here (for now)
-        //    $rootScope.$$postDigest(function() {
-        //        $window.digest --;
-        //        $log.log('---- dec digest : ' + $window.digest);
-        //    });
-        //});
-
-
-
         $rootScope.$on('$stateChangeStart',
             function(event, toState, toParams, fromState, fromParams){
                 // if we dont have a user then we need to defer until we do ..
@@ -201,7 +188,7 @@ app.run(['$log', '$rootScope', '$window', '$location','$state', '$q', 'common.me
                     if(toState.name !== 'webcert.terms'){
                         TermsState.transitioning = false;
                     }
-                    if(!TermsState.termsAccepted && !TermsState.transitioning){
+                    if(UserModel.user.privatLakare && !TermsState.termsAccepted && !TermsState.transitioning){
                         event.preventDefault();
                         TermsState.transitioning = true;
                         $state.transitionTo('webcert.terms');
