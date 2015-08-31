@@ -207,7 +207,6 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         });
 
         $urlRouterProvider.when('', '/create/index');
-        $urlRouterProvider.when('/{path:.*}/:terms', '/terms');
 
         $httpProvider.interceptors.push('webcert.TermsInterceptor');
 });
