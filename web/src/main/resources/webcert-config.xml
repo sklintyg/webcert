@@ -33,12 +33,17 @@
   <context:annotation-config />
   
   <context:component-scan base-package="se.inera.webcert" />
-  
+
+
   <beans>
     <!-- All config files must be present in other modes than dev -->
     <context:property-placeholder
-      location="file:${credentials.file}, file:${webcert.config.file}"
+      location="file:${credentials.file}"
       order="1" ignore-unresolvable="true"/>
+    <util:properties id="webcertProps" location="file:${webcert.config.file}"/>
+    <context:property-placeholder
+        properties-ref="webcertProps"
+        order="2" ignore-unresolvable="true"/>
   </beans>
   
   <beans profile="dev,wc-init-data">
