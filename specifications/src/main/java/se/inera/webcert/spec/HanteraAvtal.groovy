@@ -46,7 +46,7 @@ class HanteraAvtal {
             }
 
             waitFor {
-                page.declineTermsBtn.click()
+                page.logoutTermsBtn.click()
             }
 
             waitFor {
