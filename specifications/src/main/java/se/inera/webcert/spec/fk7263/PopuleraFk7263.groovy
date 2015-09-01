@@ -253,6 +253,9 @@ class PopuleraFk7263 {
             if (vardenhetPostort != null) page.vardenhet.postort = vardenhetPostort
             if (vardenhetTelefonnummer != null) page.vardenhet.telefonnummer = vardenhetTelefonnummer
             if (vardenhetEpost != null) page.vardenhet.epost = vardenhetEpost
+
+            println('about to wait for har sparat, page : ' + page);
+            page.harSparat();
         }
     }
 

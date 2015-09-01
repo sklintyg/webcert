@@ -22,9 +22,14 @@ abstract class AbstractEditCertPage extends AbstractPage {
     }
 
     boolean harSparat(){
-        Browser.drive{
-            return intygetSparatOchKomplettMeddelande.isDisplayed();
+        boolean result;
+        Browser.drive {
+            waitFor {
+                result = intygetSparatOchKomplettMeddelande.isDisplayed() || intygetSparatOchEjKomplettMeddelande.isDisplayed();
+                return result;
+            }
         }
+        return result;
     }
 
 }
