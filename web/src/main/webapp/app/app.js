@@ -171,6 +171,15 @@ app.run(['$log', '$rootScope', '$window', '$location','$state', '$q', 'common.me
             $window.autoSave = val;
         }
 
+        $window.getAnimationsState = function(which){
+            if(which){
+                return JSON.stringify($window.animations[which], null, 2);
+            } else {
+                return JSON.stringify($window.animations, null, 2);
+            }
+
+        }
+
         var userDef = $q.defer();
 
         // get the current user from the backend

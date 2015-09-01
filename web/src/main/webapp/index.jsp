@@ -92,7 +92,7 @@
           </div>
 
           <h4>Ny användare</h4>
-          <p>Är du provatläkare och vill utfärde intyg i Webcert?</p>
+          <p>Är du privatläkare och vill utfärda intyg i Webcert?</p>
 
           <p><a href="<spring:eval expression="@webcertProps.getProperty('private.practitioner.portal.registration.url')" />" >
             Registrea dig som användare</a>

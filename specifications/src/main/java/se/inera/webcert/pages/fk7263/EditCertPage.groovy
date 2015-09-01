@@ -66,7 +66,9 @@ class EditCertPage extends AbstractEditCertPage {
     def setSmittskydd(boolean val){
         AbstractPage.scrollIntoView(smittskydd.attr("id"));
         smittskydd.value(val);
+        println('------------------- smittskydd : ' + val );
         waitFor {
+            println('animations state:' + js.getAnimationsState('smittskydd'));
             return doneLoading() && js.animations.smittskydd.rendered;
         }
     }
