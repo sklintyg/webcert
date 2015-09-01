@@ -5,6 +5,10 @@ import geb.Page
 
 abstract class AbstractPage extends Page {
 
+    static content = {
+        modalBackdrop(required:false) {$('.modal-backdrop')}
+    }
+
     static boolean doneLoading() {
         boolean result
         Browser.drive {
@@ -17,6 +21,12 @@ abstract class AbstractPage extends Page {
         def jqScrollToVisible = "jQuery(\'#" + elementId + "\')[0].scrollIntoView();var current=jQuery('body').scrollTop(); jQuery('body').scrollTop(current-400);"
         Browser.drive {
             js.exec(jqScrollToVisible)
+        }
+    }
+
+    def waitForModalBackdropToHide(){
+        waitFor() {
+            return !modalBackdrop.isDisplayed();
         }
     }
 
