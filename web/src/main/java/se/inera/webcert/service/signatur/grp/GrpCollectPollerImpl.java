@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import se.funktionstjanster.grp.v1.CollectRequestType;
-import se.funktionstjanster.grp.v1.CollectResponseType;
-import se.funktionstjanster.grp.v1.GrpFault;
-import se.funktionstjanster.grp.v1.GrpServicePortType;
+import se.funktionstjanster.grp.v1.*;
 import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
+
+import java.util.List;
 
 /**
  * Runnable implementation / spring prototype bean responsible for performing once GRP collect lifecycle for a single
@@ -70,6 +69,11 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                 CollectResponseType resp = grpService.collect(req);
                 switch (resp.getProgressStatus()) {
                     case COMPLETE:
+                        String subjectSerialNumber = getCollectResponseAttribute(resp.getAttributes());
+                        if (!subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getPersonId().replaceAll("\\-", ""))) {
+                            throw new IllegalStateException("Could not process GRP Collect COMPLETE response, subject serialNumber did not match issuing WebCertUser.");
+                        }
+
                         String signature = resp.getSignature();
                         log.info("GRP collect returned with complete status");
                         signaturService.clientGrpSignature(resp.getTransactionId(), signature, webCertUser);
@@ -97,6 +101,15 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
 
             sleepMs(ms);
         }
+    }
+
+    private String getCollectResponseAttribute(List<Property> attributes) {
+        for(Property p : attributes) {
+            if (p.getName().equals("Subject.SerialNumber")) {
+                return p.getValue();
+            }
+        }
+        throw new IllegalStateException("Cannot use GRP collect to sign certificate, the signing identity is not the same as the user who initiated the GRP authentication request");
     }
 
     private void handleGrpFault(GrpFault grpFault) {

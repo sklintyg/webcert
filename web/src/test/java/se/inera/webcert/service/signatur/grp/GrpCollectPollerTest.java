@@ -117,6 +117,10 @@ public class GrpCollectPollerTest {
     private CollectResponseType buildResp(ProgressStatusType progressStatusType) {
         CollectResponseType resp = new CollectResponseType();
         resp.setProgressStatus(progressStatusType);
+        Property p = new Property();
+        p.setName("Subject.SerialNumber");
+        p.setValue(PERSON_ID);
+        resp.getAttributes().add(p);
         return resp;
     }
 
