@@ -813,7 +813,8 @@ class SvaraOchFraga {
                 at VisaFragaSvarPage
             }
             page.hanteraTillbakaButtonClick()
-
+            // also need to wait for the dialog shim to hide
+            page.waitForModalBackdropToHide();
         }
     }
 

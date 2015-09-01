@@ -26,7 +26,7 @@ abstract class AbstractEditCertPage extends AbstractPage {
             return intygetSparatOchKomplettMeddelande.isDisplayed();
         }
     }
-    
+
 }
 
 class VardenhetModule extends Module {

@@ -24,7 +24,7 @@ class IntegrationMedJournalsystem {
 
     def visaIntygViaIntegration(String intygId) {
         Browser.drive {
-            go "/visa/intyg/" + intygId
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn="
             waitFor {
                 at VisaFk7263Page
             }

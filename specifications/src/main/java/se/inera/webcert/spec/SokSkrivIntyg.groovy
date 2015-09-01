@@ -104,6 +104,7 @@ class SokSkrivIntyg {
             waitFor {
                 at SokSkrivValjIntygTypPage
             }
+            page.waitForModalBackdropToHide();
             page.copyBtn(intygId).click()
             waitFor {
                 doneLoading()
