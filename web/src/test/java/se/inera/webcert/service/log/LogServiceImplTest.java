@@ -29,7 +29,7 @@ import se.inera.log.messages.ActivityType;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.web.service.WebCertUserService;
 

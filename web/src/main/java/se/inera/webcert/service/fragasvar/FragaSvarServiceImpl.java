@@ -28,7 +28,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.*;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;

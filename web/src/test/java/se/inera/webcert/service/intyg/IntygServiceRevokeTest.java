@@ -20,7 +20,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateres
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.client.converter.RevokeRequestConverter;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;

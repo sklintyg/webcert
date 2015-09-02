@@ -26,7 +26,7 @@ import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;

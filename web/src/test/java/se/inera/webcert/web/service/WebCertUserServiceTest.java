@@ -13,11 +13,9 @@ import java.util.Set;
 import org.junit.Test;
 
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.webcert.hsa.model.Mottagning;
-import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 
 public class WebCertUserServiceTest {

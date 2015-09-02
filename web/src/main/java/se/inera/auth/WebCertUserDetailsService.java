@@ -2,30 +2,37 @@ package se.inera.auth;
 
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
-
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
+import se.inera.webcert.common.model.UserRoles;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
+import se.inera.webcert.persistence.roles.model.Privilege;
+import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author andreaskaltenbach
@@ -46,6 +53,9 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     @Autowired
     private MonitoringLogService monitoringLogService;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
 
     public Object loadUserBySAML(SAMLCredential credential) {
@@ -82,13 +92,30 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
     }
 
+    // UTIL
+
+    public final Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
+        return getGrantedAuthorities(getPrivileges(roles));
+    }
+
     private WebCertUser createWebCertUser(SakerhetstjanstAssertion assertion) {
 
-        WebCertUser webcertUser = new WebCertUser();
+        // Decide user's role(s)
+        String userRole = lookupUserRole(assertion);
+
+        // Get user's privileges based on his/hers role
+        final Collection<? extends GrantedAuthority> authorities = getAuthorities(Arrays.asList(roleRepository.findByName(userRole)));
+
+        // Create the WebCert user object injection user's privileges
+        WebCertUser webcertUser = new WebCertUser(authorities);
 
         webcertUser.setHsaId(assertion.getHsaId());
         webcertUser.setNamn(compileName(assertion.getFornamn(), assertion.getMellanOchEfternamn()));
+
+        // Förskrivarkod is sensitiv information, not allowed to store real value
         webcertUser.setForskrivarkod("0000000");
+
+        // Get
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
 
         // lakare flag is calculated by checking for lakare profession in title and title code
@@ -101,6 +128,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         decoreateWithAuthenticationMethod(webcertUser, assertion.getAuthenticationScheme());
 
         return webcertUser;
+    }
+
+    private String lookupUserRole(SakerhetstjanstAssertion assertion) {
+        return UserRoles.ROLE_LAKARE.name();
     }
 
     private void decoreateWithAuthenticationMethod(WebCertUser webcertUser, String authenticationScheme) {
@@ -202,6 +233,27 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 //        return sb.toString();
 //    }
 //
+
+    private List<String> getPrivileges(final Collection<Role> roles) {
+        final List<String> privileges = new ArrayList<String>();
+        final List<Privilege> collection = new ArrayList<Privilege>();
+        for (final Role role : roles) {
+            collection.addAll(role.getPrivileges());
+        }
+        for (final Privilege item : collection) {
+            privileges.add(item.getName());
+        }
+        return privileges;
+    }
+
+    private List<GrantedAuthority> getGrantedAuthorities(final List<String> privileges) {
+        final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        for (final String privilege : privileges) {
+            authorities.add(new SimpleGrantedAuthority(privilege));
+        }
+        return authorities;
+    }
+
     private void setDefaultSelectedVardenhetOnUser(WebCertUser user, SakerhetstjanstAssertion assertion) {
 
         // Get HSA id for the selected MIU
@@ -234,4 +286,5 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         return true;
     }
+
 }

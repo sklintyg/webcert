@@ -31,7 +31,7 @@ import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;

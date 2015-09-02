@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.funktionstjanster.grp.v1.*;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;

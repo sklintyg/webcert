@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 
 import java.util.List;

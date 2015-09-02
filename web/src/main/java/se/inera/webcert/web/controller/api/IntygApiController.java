@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 
 import se.inera.webcert.converter.IntygDraftsConverter;
+import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
@@ -30,7 +31,6 @@ import se.inera.webcert.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.service.intyg.dto.IntygItem;
 import se.inera.webcert.service.intyg.dto.IntygItemListResponse;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.utkast.CopyUtkastService;
@@ -116,7 +116,7 @@ public class IntygApiController extends AbstractApiController {
     private CreateNewDraftCopyRequest createNewDraftCopyRequest(String originalIntygId, String intygsTyp, CopyIntygRequest copyRequest) {
 
         HoSPerson hosPerson = createHoSPersonFromUser();
-        se.inera.webcert.service.dto.Vardenhet vardenhet = createVardenhetFromUser();
+        Vardenhet vardenhet = createVardenhetFromUser();
         String patientPersonnummer = copyRequest.getPatientPersonnummer();
 
         CreateNewDraftCopyRequest req = new CreateNewDraftCopyRequest(originalIntygId, intygsTyp, patientPersonnummer, hosPerson, vardenhet);

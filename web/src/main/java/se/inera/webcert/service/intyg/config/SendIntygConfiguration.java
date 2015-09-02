@@ -2,7 +2,7 @@ package se.inera.webcert.service.intyg.config;
 
 import java.text.MessageFormat;
 
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

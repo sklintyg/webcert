@@ -9,7 +9,7 @@ import se.funktionstjanster.grp.v1.AuthenticateRequestType;
 import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.OrderResponseType;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.service.signatur.SignaturService;

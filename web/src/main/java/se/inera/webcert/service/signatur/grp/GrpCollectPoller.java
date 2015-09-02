@@ -1,6 +1,6 @@
 package se.inera.webcert.service.signatur.grp;
 
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 
 /**
  * Created by eriklupander on 2015-08-25.

@@ -1,16 +1,19 @@
-package se.inera.webcert.hsa.model;
+package se.inera.webcert.dto;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
+import org.junit.Test;
+import se.inera.webcert.hsa.model.Mottagning;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class WebCertUserTest {
 

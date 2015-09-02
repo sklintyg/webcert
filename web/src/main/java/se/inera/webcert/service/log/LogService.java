@@ -1,6 +1,6 @@
 package se.inera.webcert.service.log;
 
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.log.dto.LogUser;
 

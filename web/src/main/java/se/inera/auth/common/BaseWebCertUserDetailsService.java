@@ -1,12 +1,11 @@
 package se.inera.auth.common;
 
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeatureService;
+
+import java.util.Set;
 
 /**
  * Created by eriklupander on 2015-06-16.

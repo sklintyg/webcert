@@ -19,7 +19,7 @@
 package se.inera.webcert.web.service;
 
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 
 import java.util.List;
