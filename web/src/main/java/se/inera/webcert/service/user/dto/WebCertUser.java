@@ -1,4 +1,4 @@
-package se.inera.webcert.dto;
+package se.inera.webcert.service.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +30,8 @@ public class WebCertUser implements UserDetails {
     private static final long serialVersionUID = -2624303818412468774L;
 
     private boolean lakare;
+    private boolean privatLakare;
+    private boolean privatLakareAvtalGodkand;
 
     private String personId;
     private String hsaId;
@@ -108,6 +110,22 @@ public class WebCertUser implements UserDetails {
 
     public void setLakare(boolean lakare) {
         this.lakare = lakare;
+    }
+
+    public boolean isPrivatLakare() {
+        return privatLakare;
+    }
+
+    public void setPrivatLakare(boolean privatLakare) {
+        this.privatLakare = privatLakare;
+    }
+
+    public boolean isPrivatLakareAvtalGodkand() {
+        return privatLakareAvtalGodkand;
+    }
+
+    public void setPrivatLakareAvtalGodkand(boolean privatLakareAvtalGodkand) {
+        this.privatLakareAvtalGodkand = privatLakareAvtalGodkand;
     }
 
     public String getHsaId() {
