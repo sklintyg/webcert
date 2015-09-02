@@ -7,6 +7,7 @@ import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.xml.XMLObject;
+import org.opensaml.xml.schema.impl.XSAnyImpl;
 
 /**
  * This SAML-assertion is based on the one described in the document
@@ -134,7 +135,11 @@ public class SakerhetstjanstAssertion {
             return values;
         }
         for (XMLObject xmlObject : attribute.getAttributeValues()) {
-            values.add(xmlObject.getDOM().getTextContent());
+            if (xmlObject.getDOM() != null) {
+                values.add(xmlObject.getDOM().getTextContent());
+            } else if (xmlObject instanceof XSAnyImpl) {
+                values.add(((XSAnyImpl) xmlObject).getTextContent());
+            }
         }
         return values;
     }

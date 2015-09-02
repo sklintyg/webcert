@@ -4,6 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%
+  // TODO Use same mechanism as in index.jsp to fetch these from webcert.properties.
   String sakerhetsTjanstIdp = "https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml";
   String elegTjanstIdp = "https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0";
 %>
@@ -46,7 +47,7 @@
                     Landstingspersonal:
                   </div>
                   <div class="col-xs-10">
-                    <a href="/saml/login/alias/siths?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
+                    <a href="/saml/login/alias/defaultAlias?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
                   </div>
                 </div>
                 <div class="row">
@@ -71,7 +72,7 @@
                     Landstingspersonal:
                   </div>
                   <div class="col-xs-10">
-                    <a href="/saml/login/alias/siths?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
+                    <a href="/saml/login/alias/defaultAlias?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
                   </div>
                 </div>
                 <div class="row">
@@ -103,7 +104,7 @@
                     Landstingspersonal:
                   </div>
                   <div class="col-xs-10">
-                    <a href="/saml/login/alias/siths?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
+                    <a href="/saml/login/alias/defaultAlias?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
                   </div>
                 </div>
                 <div class="row">

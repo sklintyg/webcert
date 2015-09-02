@@ -19,6 +19,8 @@ import se.inera.webcert.service.signatur.grp.factory.GrpCollectPollerFactory;
 import se.inera.webcert.web.service.WebCertUserService;
 
 /**
+ *
+ *
  * Created by eriklupander on 2015-08-21.
  */
 @Service
@@ -26,9 +28,11 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
 
     static final String BANK_ID_PROVIDER = "bankid"; // As specified in CGI GRP docs
 
+    /** Assigned to us by the GRP provider (e.g. CGI). Used in the 'policy' attribute of auth and collect requests. */
     @Value("${cgi.grp.serviceId}")
     private String serviceId;
 
+    /** Note that this value must be fetched from a props file encoded in ISO-8859-1 if it contains non ascii-7 chars.*/
     @Value("${cgi.grp.displayName}")
     private String displayName;
 
@@ -83,7 +87,6 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
 
         String transactionId = validateOrderResponseTxId(authRequest, orderResponse);
 
-        //taskExecutor.execute(new GrpPoller(orderRef, transactionId, serviceId, displayName, webCertUser, grpService, signaturTicketTracker, signaturService), 6000L);
         startAsyncCollectPoller(webCertUser, orderRef, transactionId);
         return draftHash;
     }

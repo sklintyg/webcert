@@ -369,7 +369,7 @@
             <property name="metadataTrustCheck" value="true"/>
             <constructor-arg>
               <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
-                <property name="alias" value="siths"/>
+                <property name="alias" value="defaultAlias"/>
                 <property name="local" value="true"/>
                 <property name="securityProfile" value="metaiop"/>
                 <property name="sslSecurityProfile" value="metaiop"/>
@@ -398,7 +398,7 @@
             </constructor-arg>
             <constructor-arg>
               <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
-                <property name="alias" value="siths"/>
+                <property name="alias" value="defaultAlias"/>
               </bean>
             </constructor-arg>
 

@@ -60,7 +60,7 @@
             <div class="row">
 
               <div class="col-xs-2">
-                <a href="/saml/login/alias/siths?idp=<spring:eval expression="@webcertProps.getProperty('sakerhetstjanst.saml.idp.metadata.url')" />"
+                <a href="/saml/login/alias/defaultAlias?idp=<spring:eval expression="@webcertProps.getProperty('sakerhetstjanst.saml.idp.metadata.url')" />"
                    class="btn btn-success" id="loginBtn">SITHS-kort</a>
               </div>
               <div class="col-xs-10">
