@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.webcert.web.service;
+package se.inera.webcert.service.user;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.webcert.dto.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 
 import java.util.List;
