@@ -1,6 +1,6 @@
 package se.inera.webcert.service.signatur;
 
-import se.inera.webcert.dto.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 
 public interface SignaturService {

@@ -1,4 +1,4 @@
-package se.inera.webcert.dto;
+package se.inera.webcert.service.user.dto;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

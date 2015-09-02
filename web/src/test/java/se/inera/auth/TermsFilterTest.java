@@ -21,7 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextImpl;
 import se.inera.auth.common.UnifiedUserDetailsService;
-import se.inera.webcert.dto.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 
 @RunWith(MockitoJUnitRunner.class)

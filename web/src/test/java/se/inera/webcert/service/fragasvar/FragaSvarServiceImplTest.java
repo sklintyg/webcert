@@ -34,7 +34,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.dto.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -54,7 +54,7 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.util.ReflectionUtils;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;

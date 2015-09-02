@@ -28,7 +28,7 @@ import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.webcert.converter.FKAnswerConverter;
 import se.inera.webcert.converter.FKQuestionConverter;
 import se.inera.webcert.converter.FragaSvarConverter;
-import se.inera.webcert.dto.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.*;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
@@ -45,7 +45,7 @@ import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.util.FragaSvarSenasteHandelseDatumComparator;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

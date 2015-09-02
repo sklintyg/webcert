@@ -1,21 +1,23 @@
 package se.inera.webcert.service.signatur.grp;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import se.funktionstjanster.grp.v1.CollectRequestType;
 import se.funktionstjanster.grp.v1.CollectResponseType;
 import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
-import se.inera.webcert.dto.WebCertUser;
+import se.funktionstjanster.grp.v1.Property;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
-
-import java.util.List;
 
 /**
  * Runnable implementation / spring prototype bean responsible for performing once GRP collect lifecycle for a single
@@ -107,7 +109,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     }
 
     private String getCollectResponseAttribute(List<Property> attributes) {
-        for(Property p : attributes) {
+        for (Property p : attributes) {
             if (p.getName().equals("Subject.SerialNumber")) {
                 return p.getValue();
             }

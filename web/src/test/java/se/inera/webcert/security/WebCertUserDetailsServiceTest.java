@@ -42,7 +42,7 @@ import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.HsaTitles;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.dto.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.service.feature.WebcertFeatureService;

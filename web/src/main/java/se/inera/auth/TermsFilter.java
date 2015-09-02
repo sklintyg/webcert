@@ -1,13 +1,5 @@
 package se.inera.auth;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +8,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.auth.common.UnifiedUserDetailsService;
-import se.inera.webcert.dto.WebCertUser;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * This filter should run after security checks.

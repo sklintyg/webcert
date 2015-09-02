@@ -16,7 +16,7 @@ import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.webcert.common.model.UserRoles;
-import se.inera.webcert.dto.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;

@@ -44,7 +44,7 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {

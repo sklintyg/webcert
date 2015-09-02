@@ -1,6 +1,6 @@
 package se.inera.webcert.service.dto;
 
-import se.inera.webcert.dto.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 
 import java.util.ArrayList;
 import java.util.List;

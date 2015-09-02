@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

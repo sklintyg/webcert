@@ -19,7 +19,7 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
-import se.inera.webcert.dto.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 //import se.inera.webcert.persistence.utkast.model.Omsandning;
 //import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
 import se.inera.webcert.persistence.utkast.model.Utkast;
