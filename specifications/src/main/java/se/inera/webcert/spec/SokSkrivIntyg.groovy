@@ -322,13 +322,16 @@ class SokSkrivIntyg {
     }
 
     boolean visaIntygSidanVisas() {
+        boolean result
         Browser.drive {
             waitFor {
                 at VisaFk7263Page
             }
-
-            page.intygLaddat.isDisplayed()
+            waitFor{
+                result = page.intygLaddat.isDisplayed()
+            }
         }
+        return result;
     }
     // END
 

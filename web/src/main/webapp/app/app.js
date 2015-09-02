@@ -171,6 +171,10 @@ app.run(['$log', '$rootScope', '$window', '$location','$state', '$q', 'common.me
             $window.autoSave = val;
         }
 
+        $window.setSaving = function(val){
+            $window.saving = val;
+        }
+
         $window.getAnimationsState = function(which){
             if(which){
                 return JSON.stringify($window.animations[which], null, 2);

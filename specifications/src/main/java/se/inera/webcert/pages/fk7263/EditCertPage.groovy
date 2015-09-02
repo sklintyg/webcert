@@ -14,15 +14,8 @@ class EditCertPage extends AbstractEditCertPage {
 
         // Knappar
         sparaKnapp { $("#spara-utkast") }
-        tillbakaButton(required: false) { $("#tillbakaButton") }
-        visaVadSomSaknasKnapp(wait: true) { displayed($("#showCompleteButton")) }
-        doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
-        intygetSparatOchKomplettMeddelande(required: false) { $("#intyget-sparat-och-komplett-meddelande") }
-        intygetSparatOchEjKomplettMeddelande(required: false) { $("#intyget-sparat-och-ej-komplett-meddelande") }
-        errorPanelBase { $("#error-panel") }
-        errorPanel(wait: true) { displayed(errorPanelBase) }
         nyttPersonnummer(wait: true) { displayed($("#nyttPersonnummer")) }
         signerandeLakare(wait: true) { displayed($("#signingDoctor")) }
         integrationBorttaget(wait: true) { displayed($("#integration-deleted")) }
@@ -44,8 +37,6 @@ class EditCertPage extends AbstractEditCertPage {
         rekommendationer { name -> module RekommendationerModule, form: form }
         kontaktFk { $("#kontaktFk") }
         ovrigt { $("#otherInformation") }
-        vardenhet { module VardenhetModule }
-
 
         // date picker
         datepicker(wait: true) { displayed($("div[ng-switch='datepickerMode']")) }

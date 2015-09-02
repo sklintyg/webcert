@@ -81,6 +81,9 @@ class PopuleraFk7263 {
                 at EditCertPage
             }
 
+            page.setAutoSave(false);
+            page.setSaving(true);
+
             if (smittskydd != null) page.setSmittskydd(smittskydd)
 
             if (undersokning != null){
@@ -254,8 +257,9 @@ class PopuleraFk7263 {
             if (vardenhetTelefonnummer != null) page.vardenhet.telefonnummer = vardenhetTelefonnummer
             if (vardenhetEpost != null) page.vardenhet.epost = vardenhetEpost
 
-            println('about to wait for har sparat, page : ' + page);
-            page.harSparat();
+            page.setAutoSave(true);
+            // after any updates we need to wait for saving before we can start checking the state of the page in a fixture
+            page.doneSaving();
         }
     }
 

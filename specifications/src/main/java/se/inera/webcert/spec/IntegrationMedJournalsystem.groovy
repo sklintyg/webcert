@@ -82,8 +82,9 @@ class IntegrationMedJournalsystem {
             go "/visa/intyg/" + intygId
             waitFor {
                 at EditCertPage
+                result = page.errorPanel.isDisplayed()
             }
-            result = page.errorPanel
+
         }
         result
     }
@@ -95,7 +96,7 @@ class IntegrationMedJournalsystem {
             waitFor {
                 at EditCertPage
             }
-            result = !page.errorPanelBase.isDisplayed();
+            result = !page.errorPanel.isDisplayed();
         }
         result
     }

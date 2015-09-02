@@ -113,7 +113,9 @@ class HanteraUtkast {
             waitFor {
                 at EditeraIntygPage
             }
-            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            waitFor {
+                result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            }
         }
         result
     }
@@ -251,7 +253,9 @@ class HanteraUtkast {
             waitFor {
                 at EditeraIntygPage
             }
-            result = page.signRequiresDoctorMessage.isDisplayed()
+            waitFor {
+                result = page.signRequiresDoctorMessage.isDisplayed()
+            }
         }
         result
     }

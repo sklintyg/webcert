@@ -6,10 +6,14 @@ Testet beskriver fallet när en administratör går in på ett komplett ts-bas i
 | intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett |
 | webcert-fitnesse-signera-1 | ts-bas | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | ja |
 
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | IFV1239877878-104N_IFV1239877878-1045 |
+
 !3 Givet att det finns ett utkast som är komplett, verifiera att det inte går att signera det
 
 | script | !-HanteraUtkast-! |
-| logga in som | IFV1239877878-104N_IFV1239877878-1045 |
 | ga till editera intyg med typ | ts-bas | och intygid | webcert-fitnesse-signera-1 |
 | editera sidan visas |
 | ensure | signera knapp ej visas |
