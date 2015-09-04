@@ -1,10 +1,10 @@
 /**
  * Created by stephenwhite on 31/08/15.
  */
-angular.module('webcertIndex', ['ui.bootstrap'])
-    .controller('IndexController', ['$scope', '$sce','$modal', function($scope, $sce, $modal) {
-        var expand = $sce.trustAsHtml('Läs mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
-        var collapse = $sce.trustAsHtml('Dölj information om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');
+angular.module('webcert.pub.login', ['ui.bootstrap'])
+    .controller('LoginController', ['$scope', '$sce','$modal', function($scope, $sce, $modal) {
+        var expand = $sce.trustAsHtml('Visa mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
+        var collapse = $sce.trustAsHtml('Visa mindre om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');
         $scope.collapseLoginDesc = true;
         $scope.loginDescText = expand;
         $scope.toggleLoginDesc = function(){

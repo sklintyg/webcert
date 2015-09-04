@@ -3,14 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<%
-  // TODO Use same mechanism as in index.jsp to fetch these from webcert.properties.
-  String sakerhetsTjanstIdp = "https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml";
-  String elegTjanstIdp = "https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0";
-%>
-
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="sv" id="ng-app" ng-app="webcert.pub.login">
 <head>
 
 <meta charset="utf-8">
@@ -22,12 +16,28 @@
 
 <link rel="stylesheet" href="/web/webjars/bootstrap/3.1.1/css/bootstrap.min.css" />
 <link rel="stylesheet" href="/web/webjars/bootstrap/3.1.1/css/bootstrap-theme.min.css" />
-<link rel="stylesheet" href="/web/webjars/common/webcert/css/inera-webcert.css" />
-<link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css" />
+<link rel="stylesheet" href="/web/webjars/common/webcert/css/inera-webcert.css">
+<link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css">
+
+<c:choose>
+  <c:when test="${useMinifiedJavaScript == 'true'}">
+    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/pubapp/login.controller.js"></script>
+  </c:when>
+  <c:otherwise>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.js"></script>
+    <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
+    <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.js"></script>
+    <script type="text/javascript" src="/pubapp/login.controller.js"></script>
+  </c:otherwise>
+</c:choose>
 
 </head>
-<body class="start">
-
+<body class="start jsp" id="errorPage" ng-controller="LoginController">
   <div class="container-fluid">
     <div class="content-container">
       <div class="row">
@@ -41,24 +51,7 @@
               <div id="loggedOut" class="alert alert-info">
                 <spring:message code="info.loggedout.text" />
               </div>
-              <div class="container">
-                <div class="row">
-                  <div class="col-xs-2">
-                    Landstingspersonal:
-                  </div>
-                  <div class="col-xs-10">
-                    <a href="/saml/login/alias/defaultAlias?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-xs-2">
-                    Privatläkare:
-                  </div>
-                  <div class="col-xs-10">
-                    <a href="/saml/login/alias/eleg?idp=<%= elegTjanstIdp %>" class="btn btn-success" id="loginBtn2">E-legitimation</a></p>
-                  </div>
-                </div>
-              </div>
+              <jsp:include page="login.jsp" />
             </c:when>
 
             <c:when test="${param.reason eq \"timeout\"}">
@@ -66,24 +59,7 @@
               <div id="loggedOut" class="alert alert-info">
                 <spring:message code="error.sessiontimeout.text" />
               </div>
-              <div class="container">
-                <div class="row">
-                  <div class="col-xs-2">
-                    Landstingspersonal:
-                  </div>
-                  <div class="col-xs-10">
-                    <a href="/saml/login/alias/defaultAlias?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-xs-2">
-                    Privatläkare:
-                  </div>
-                  <div class="col-xs-10">
-                    <a href="/saml/login/alias/eleg?idp=<%= elegTjanstIdp %>" class="btn btn-success" id="loginBtn2">E-legitimation</a></p>
-                  </div>
-                </div>
-              </div>
+              <jsp:include page="login.jsp" />
             </c:when>
 
             <c:when test="${param.reason eq \"timeout_integration\"}">
@@ -98,24 +74,7 @@
               <div id="noAuth" class="alert alert-warning">
                 <spring:message code="error.noauth.text" />
               </div>
-              <div class="container">
-                <div class="row">
-                  <div class="col-xs-2">
-                    Landstingspersonal:
-                  </div>
-                  <div class="col-xs-10">
-                    <a href="/saml/login/alias/defaultAlias?idp=<%= sakerhetsTjanstIdp %>" class="btn btn-success" id="loginBtn">SITHS-kort</a></p>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-xs-2">
-                    Privatläkare:
-                  </div>
-                  <div class="col-xs-10">
-                    <a href="/saml/login/alias/eleg?idp=<%= elegTjanstIdp %>" class="btn btn-success" id="loginBtn2">E-legitimation</a></p>
-                  </div>
-                </div>
-              </div>
+              <jsp:include page="login.jsp" />
             </c:when>
 
 

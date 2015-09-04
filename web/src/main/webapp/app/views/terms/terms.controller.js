@@ -61,7 +61,7 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
                 var head = '<!DOCTYPE html><html>' +
                             '<head>' +
                             '<link rel="stylesheet" href="/web/webjars/common/webcert/css/print.css" media="print">'+
-                            '<title>Webcert - Användarvilkor</title>'+
+                            '<title>Webcert - Användarvillkor</title>'+
                             '</head>';
 
                 var body = '<body onload="window.print()">' +
@@ -69,7 +69,7 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
                             '<p style="clear:left;padding-bottom:50px;color:#535353">' +
                             '<span style="padding-left:20px;padding-right:30px">Version : ' + $scope.avtal.avtalVersion + '</span>' +
                             '<span>Datum : ' + $scope.avtal.versionDatum + '</span></p>' +
-                            '<h1 style="color: black;font-size: 2em">Användarvilkor för Webcert</h1>' +
+                            '<h1 style="color: black;font-size: 2em">Användarvillkor för Webcert</h1>' +
                             '<p style="clear:left;padding-bottom: 10px">'+$scope.avtal.avtalText+'</p>' +
                             '<p style="clear:left;color:#535353;padding-top:50px">'+$location.absUrl()+'</p>' +
                             '</body>';
