@@ -9,10 +9,6 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-
-import javax.jms.Session;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -22,16 +18,20 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import se.inera.log.messages.ActivityPurpose;
 import se.inera.log.messages.ActivityType;
 import se.inera.log.messages.IntygReadMessage;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+
+import javax.jms.Session;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by pehr on 13/11/13.
@@ -107,7 +107,7 @@ public class LogServiceImplTest {
         Vardgivare vg = new Vardgivare("VARDGIVARE_ID", "Vårdgivaren");
         vg.setVardenheter(Arrays.asList(ve));
         
-        WebCertUser wcu = new WebCertUser();
+        WebCertUser wcu = new WebCertUser(new ArrayList<GrantedAuthority>());
         wcu.setHsaId("HSAID");
         wcu.setNamn("Markus Gran");
         wcu.setVardgivare(Arrays.asList(vg));

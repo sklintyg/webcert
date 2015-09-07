@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.core.GrantedAuthority;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -101,7 +102,7 @@ public class WebCertUserTest {
     
     private WebCertUser createWebCertUser() {
         
-        WebCertUser wcu = new WebCertUser();
+        WebCertUser wcu = new WebCertUser(new ArrayList<GrantedAuthority>());
         
         wcu.setNamn("A Name");
         wcu.setHsaId("HSA-id");

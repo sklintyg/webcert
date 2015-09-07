@@ -250,7 +250,7 @@ public class QuestionResource {
 
     // Create a fake WebCertUser which is authorized for the given care giver and unit
     private static WebCertUser getWebCertUser(String vardgivarId, String enhetsId) {
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setHsaId("questionResource");
         user.setNamn("questionResource");
         user.setLakare(true);

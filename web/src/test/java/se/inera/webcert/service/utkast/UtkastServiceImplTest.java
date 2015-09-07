@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
@@ -136,7 +137,7 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftThatIsUnsigned() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setHsaId("hsaId");
         when(userService.getWebCertUser()).thenReturn(user);
 
@@ -158,7 +159,7 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftWrongVersion() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setHsaId("hsaId");
         when(userService.getWebCertUser()).thenReturn(user);
 
@@ -356,7 +357,7 @@ public class UtkastServiceImplTest {
     }
 
     private WebCertUser createUser() {
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setHsaId("hsaId");
         user.setNamn("namn");
         List<String> tmp = new ArrayList<String>();

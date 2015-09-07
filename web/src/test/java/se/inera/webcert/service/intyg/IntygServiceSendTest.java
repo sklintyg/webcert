@@ -4,9 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -14,17 +15,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.core.GrantedAuthority;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
-import se.inera.webcert.service.user.dto.WebCertUser;
-//import se.inera.webcert.persistence.utkast.model.Omsandning;
-//import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.dto.LogRequest;
+import se.inera.webcert.service.user.dto.WebCertUser;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+//import se.inera.webcert.persistence.utkast.model.Omsandning;
+//import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
@@ -38,7 +43,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     public void testSendIntyg() throws Exception {
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.okResult());
-        WebCertUser webCertUser = new WebCertUser();
+        WebCertUser webCertUser = new WebCertUser(new ArrayList<GrantedAuthority>());
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
 
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
@@ -63,7 +68,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     public void testSendIntygReturnsInfo() throws Exception {
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.infoResult("Info text"));
-        WebCertUser webCertUser = new WebCertUser();
+        WebCertUser webCertUser = new WebCertUser(new ArrayList<GrantedAuthority>());
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
 
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))

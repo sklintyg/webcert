@@ -4,13 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyListOf;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.core.Response;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,16 +14,23 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
+import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.utkast.UtkastService;
 import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
-import se.inera.webcert.service.user.WebCertUserService;
+
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatModuleApiControllerTest {
@@ -79,7 +79,7 @@ public class StatModuleApiControllerTest {
         intygStatsMap.put("VE1M2", 2L);
         intygStatsMap.put("VE2", 2L);
 
-        mockUser = new WebCertUser();
+        mockUser = new WebCertUser(new ArrayList<GrantedAuthority>());
 
         ve1 = new Vardenhet("VE1", "Vardenhet1");
         ve1.getMottagningar().add(new Mottagning("VE1M1", "Mottagning1"));

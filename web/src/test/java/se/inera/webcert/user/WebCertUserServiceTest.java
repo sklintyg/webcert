@@ -4,20 +4,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
+import org.springframework.security.core.GrantedAuthority;
+import se.inera.certificate.modules.support.feature.ModuleFeature;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.user.WebCertUserServiceImpl;
+import se.inera.webcert.service.user.dto.WebCertUser;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.junit.Test;
-
-import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.user.WebCertUserServiceImpl;
 
 public class WebCertUserServiceTest {
 
@@ -92,7 +92,7 @@ public class WebCertUserServiceTest {
 
     private WebCertUser createWebCertUser(boolean fromJS) {
 
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
 
         user.setNamn("A Name");
         user.setHsaId("HSA-id");
