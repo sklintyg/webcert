@@ -13,7 +13,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.webcert.service.fragasvar.FragaSvarService;
@@ -250,7 +250,7 @@ public class QuestionResource {
 
     // Create a fake WebCertUser which is authorized for the given care giver and unit
     private static WebCertUser getWebCertUser(String vardgivarId, String enhetsId) {
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setHsaId("questionResource");
         user.setNamn("questionResource");
         user.setLakare(true);

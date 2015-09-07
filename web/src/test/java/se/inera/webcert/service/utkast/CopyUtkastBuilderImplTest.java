@@ -32,6 +32,8 @@ import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
+import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
@@ -90,7 +92,7 @@ public class CopyUtkastBuilderImplTest {
 
     private HoSPerson hoSPerson;
 
-    private se.inera.webcert.service.dto.Vardenhet vardenhet;
+    private Vardenhet vardenhet;
 
     @InjectMocks
     private CopyUtkastBuilderImpl copyBuilder = new CopyUtkastBuilderImpl();
@@ -101,11 +103,11 @@ public class CopyUtkastBuilderImplTest {
         hoSPerson.setHsaId(HOSPERSON_ID);
         hoSPerson.setNamn(HOSPERSON_NAME);
 
-        se.inera.webcert.service.dto.Vardgivare vardgivare = new se.inera.webcert.service.dto.Vardgivare();
+        Vardgivare vardgivare = new Vardgivare();
         vardgivare.setHsaId(VARDGIVARE_ID);
         vardgivare.setNamn(VARDGIVARE_NAME);
 
-        vardenhet = new se.inera.webcert.service.dto.Vardenhet();
+        vardenhet = new Vardenhet();
         vardenhet.setHsaId(VARDENHET_ID);
         vardenhet.setNamn(VARDENHET_NAME);
         vardenhet.setVardgivare(vardgivare);

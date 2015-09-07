@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.webcert.web.service;
+package se.inera.webcert.service.user;
 
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 
 import java.util.List;

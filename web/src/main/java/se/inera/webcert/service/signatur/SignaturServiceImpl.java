@@ -21,7 +21,7 @@ import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -38,7 +38,7 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.asn1.ASN1Util;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.util.UpdateUserUtil;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

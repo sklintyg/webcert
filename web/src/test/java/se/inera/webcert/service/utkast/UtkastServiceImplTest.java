@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
@@ -31,7 +32,7 @@ import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -46,7 +47,7 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
@@ -136,7 +137,7 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftThatIsUnsigned() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setHsaId("hsaId");
         when(userService.getWebCertUser()).thenReturn(user);
 
@@ -158,7 +159,7 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftWrongVersion() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setHsaId("hsaId");
         when(userService.getWebCertUser()).thenReturn(user);
 
@@ -356,7 +357,7 @@ public class UtkastServiceImplTest {
     }
 
     private WebCertUser createUser() {
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setHsaId("hsaId");
         user.setNamn("namn");
         List<String> tmp = new ArrayList<String>();

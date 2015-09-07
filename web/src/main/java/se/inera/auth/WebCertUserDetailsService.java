@@ -2,30 +2,34 @@ package se.inera.auth;
 
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
-
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
+import se.inera.webcert.common.model.UserRoles;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+
+import org.springframework.security.core.AuthenticationException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author andreaskaltenbach
@@ -47,68 +51,106 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     @Autowired
     private MonitoringLogService monitoringLogService;
 
+    private SakerhetstjanstAssertion assertion;
+
+
+    // - - - - - Public scope - - - - -
 
     public Object loadUserBySAML(SAMLCredential credential) {
 
         LOG.info("User authentication was successful. SAML credential is: {}", credential);
 
-        SakerhetstjanstAssertion assertion = new SakerhetstjanstAssertion(credential.getAuthenticationAssertion());
+        assertion = new SakerhetstjanstAssertion(credential.getAuthenticationAssertion());
+
         try {
-
-            WebCertUser webCertUser = createWebCertUser(assertion);
-
-            // if user has authenticated with other contract than 'Vård och behandling', we have to reject her
-            if (!VARD_OCH_BEHANDLING.equals(assertion.getMedarbetaruppdragType())) {
-                throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
-            }
-
-            List<Vardgivare> authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(webCertUser.getHsaId());
-
-            // if user does not have access to any vardgivare, we have to reject authentication
-            if (authorizedVardgivare.isEmpty()) {
-                throw new MissingMedarbetaruppdragException(webCertUser.getHsaId());
-            }
-
-            webCertUser.setVardgivare(authorizedVardgivare);
-            setDefaultSelectedVardenhetOnUser(webCertUser, assertion);
-
+            // Create the user
+            WebCertUser webCertUser = createUser(lookupUserRole());
             return webCertUser;
+
+        } catch (Exception e) {
+            if (e instanceof AuthenticationException) {
+                throw e;
+            }
+
+            LOG.error("Error building user {}, failed with message {}", assertion.getHsaId(), e.getMessage());
+            throw new RuntimeException(assertion.getHsaId(), e);
+        }
+    }
+
+
+    // - - - - - Protected scope - - - - -
+
+    @Override
+    protected WebCertUser createUser(String userRole) {
+
+        List<Vardgivare> authorizedVardgivare = null;
+
+        try {
+            authorizedVardgivare = hsaOrganizationsService.getAuthorizedEnheterForHosPerson(assertion.getHsaId());
+
+        } catch (Exception e) {
+            LOG.error("Failed retrieving authorized units for user {}, error message {}", assertion.getHsaId(), e.getMessage());
+            throw new HsaServiceException(assertion.getHsaId(), e);
+        }
+
+        try {
+            assertMIU();
+            assertAuthorizedVardgivare(authorizedVardgivare);
+
+            WebCertUser webCertUser = createWebCertUser(userRole, authorizedVardgivare);
+            return webCertUser;
+
         } catch (MissingMedarbetaruppdragException e) {
             monitoringLogService.logMissingMedarbetarUppdrag(assertion.getHsaId());
             throw e;
-        } catch (Exception e) {
-            LOG.error("Error building user {}, failed with message {}", assertion.getHsaId(), e.getMessage());
-            throw new HsaServiceException(assertion.getHsaId(), e);
+        }
+
+    }
+
+
+    // - - - - - Private scope - - - - -
+
+    private void assertAuthorizedVardgivare(List<Vardgivare> authorizedVardgivare) {
+        // if user does not have access to any vardgivare, we have to reject authentication
+        if (authorizedVardgivare.isEmpty()) {
+            throw new MissingMedarbetaruppdragException(assertion.getHsaId());
         }
     }
 
-    private WebCertUser createWebCertUser(SakerhetstjanstAssertion assertion) {
+    private void assertMIU() {
+        // if user has authenticated with other contract than 'Vård och behandling', we have to reject her
+        if (!VARD_OCH_BEHANDLING.equals(assertion.getMedarbetaruppdragType())) {
+            throw new MissingMedarbetaruppdragException(assertion.getHsaId());
+        }
+    }
 
-        WebCertUser webcertUser = new WebCertUser();
+    private WebCertUser createWebCertUser(String userRole, List<Vardgivare> authorizedVardgivare) {
+
+        // Get user's privileges based on his/hers role
+        final Collection<? extends GrantedAuthority> authorities = getAuthorities(Arrays.asList(getRoleRepository().findByName(userRole)));
+
+        // Create the WebCert user object injection user's privileges
+        WebCertUser webcertUser = new WebCertUser(authorities);
 
         webcertUser.setHsaId(assertion.getHsaId());
         webcertUser.setNamn(compileName(assertion.getFornamn(), assertion.getMellanOchEfternamn()));
+        webcertUser.setVardgivare(authorizedVardgivare);
+
+        // Förskrivarkod is sensitiv information, not allowed to store real value
         webcertUser.setForskrivarkod("0000000");
+
+        // Set user's authentication scheme
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
 
         // lakare flag is calculated by checking for lakare profession in title and title code
-        webcertUser.setLakare(assertion.getTitel().contains(LAKARE) || assertion.getTitelKod().contains(LAKARE_CODE));
+        webcertUser.setLakare(UserRoles.ROLE_LAKARE.name().equals(userRole));
 
         decorateWebCertUserWithAdditionalInfo(webcertUser);
-
         decorateWebCertUserWithAvailableFeatures(webcertUser);
-
-        decoreateWithAuthenticationMethod(webcertUser, assertion.getAuthenticationScheme());
+        decorateWebCertUserWithAuthenticationMethod(webcertUser);
+        decorateWebCertUserWithDefaultVardenhet(webcertUser);
 
         return webcertUser;
-    }
-
-    private void decoreateWithAuthenticationMethod(WebCertUser webcertUser, String authenticationScheme) {
-        if (authenticationScheme.endsWith(":fake")) {
-            webcertUser.setAuthenticationMethod(AuthenticationMethod.FAKE);
-        } else {
-            webcertUser.setAuthenticationMethod(AuthenticationMethod.SITHS);
-        }
     }
 
     private void decorateWebCertUserWithAdditionalInfo(WebCertUser webcertUser) {
@@ -132,24 +174,36 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         webcertUser.setTitel(titel);
     }
 
-//    private void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
-//
-//        Set<String> availableFeatures = webcertFeatureService.getActiveFeatures();
-//
-//        webcertUser.setAktivaFunktioner(availableFeatures);
-//    }
+    private void decorateWebCertUserWithAuthenticationMethod(WebCertUser webcertUser) {
+        String authenticationScheme = assertion.getAuthenticationScheme();
 
-    private String extractTitel(List<GetHsaPersonHsaUserType> hsaUserTypes) {
+        if (authenticationScheme.endsWith(":fake")) {
+            webcertUser.setAuthenticationMethod(AuthenticationMethod.FAKE);
+        } else {
+            webcertUser.setAuthenticationMethod(AuthenticationMethod.SITHS);
+        }
+    }
 
-        List<String> titlar = new ArrayList<String>();
+    private void decorateWebCertUserWithDefaultVardenhet(WebCertUser user) {
 
-        for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
-            if (StringUtils.isNotBlank(userType.getTitle())) {
-                titlar.add(userType.getTitle());
-            }
+        // Get HSA id for the selected MIU
+        String medarbetaruppdragHsaId = assertion.getEnhetHsaId();
+
+        boolean changeSuccess;
+
+        if (StringUtils.isNotBlank(medarbetaruppdragHsaId)) {
+            changeSuccess = user.changeValdVardenhet(medarbetaruppdragHsaId);
+        } else {
+            LOG.error("Assertion did not contain any 'medarbetaruppdrag', defaulting to use one of the Vardenheter present in the user");
+            changeSuccess = setFirstVardenhetOnFirstVardgivareAsDefault(user);
         }
 
-        return StringUtils.join(titlar, COMMA);
+        if (!changeSuccess) {
+            LOG.error("When logging in user '{}', unit with HSA-id {} could not be found in users MIUs", user.getHsaId(), medarbetaruppdragHsaId);
+            throw new MissingMedarbetaruppdragException(user.getHsaId());
+        }
+
+        LOG.debug("Setting care unit '{}' as default unit on user '{}'", user.getValdVardenhet().getId(), user.getHsaId());
     }
 
     private List<String> extractLegitimeradeYrkesgrupper(List<GetHsaPersonHsaUserType> hsaUserTypes) {
@@ -164,7 +218,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
 
         List<String> list = new ArrayList<String>(lygSet);
-
         return list;
     }
 
@@ -180,49 +233,31 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
 
         List<String> list = new ArrayList<String>(specSet);
-
         return list;
     }
 
-//    private String compileName(SakerhetstjanstAssertion assertion) {
-//
-//        StringBuilder sb = new StringBuilder();
-//
-//        if (StringUtils.isNotBlank(assertion.getFornamn())) {
-//            sb.append(assertion.getFornamn());
-//        }
-//
-//        if (StringUtils.isNotBlank(assertion.getMellanOchEfternamn())) {
-//            if (sb.length() > 0) {
-//                sb.append(SPACE);
-//            }
-//            sb.append(assertion.getMellanOchEfternamn());
-//        }
-//
-//        return sb.toString();
-//    }
-//
-    private void setDefaultSelectedVardenhetOnUser(WebCertUser user, SakerhetstjanstAssertion assertion) {
+    private String extractTitel(List<GetHsaPersonHsaUserType> hsaUserTypes) {
 
-        // Get HSA id for the selected MIU
-        String medarbetaruppdragHsaId = assertion.getEnhetHsaId();
+        List<String> titlar = new ArrayList<String>();
 
-        boolean changeSuccess;
-
-        if (StringUtils.isNotBlank(medarbetaruppdragHsaId)) {
-            changeSuccess = user.changeValdVardenhet(medarbetaruppdragHsaId);
-        } else {
-            LOG.error("Assertion did not contain a medarbetaruppdrag, defaulting to use one of the Vardenheter present in the user");
-            changeSuccess = setFirstVardenhetOnFirstVardgivareAsDefault(user);
+        for (GetHsaPersonHsaUserType userType : hsaUserTypes) {
+            if (StringUtils.isNotBlank(userType.getTitle())) {
+                titlar.add(userType.getTitle());
+            }
         }
 
-        if (!changeSuccess) {
-            LOG.error("When logging in user '{}', unit with HSA-id {} could not be found in users MIUs", user.getHsaId(), medarbetaruppdragHsaId);
-            throw new MissingMedarbetaruppdragException(user.getHsaId());
-        }
-
-        LOG.debug("Setting care unit '{}' as default unit on user '{}'", user.getValdVardenhet().getId(), user.getHsaId());
+        return StringUtils.join(titlar, COMMA);
     }
+
+    private String lookupUserRole() {
+        // lakare flag is calculated by checking for lakare profession in title and title code
+        if (assertion.getTitel().contains(LAKARE) || assertion.getTitelKod().contains(LAKARE_CODE)) {
+            return UserRoles.ROLE_LAKARE.name();
+        }
+
+        return UserRoles.ROLE_VARDADMINISTRATOR.name();
+    }
+
 
     private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
 
@@ -234,4 +269,5 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         return true;
     }
+
 }
