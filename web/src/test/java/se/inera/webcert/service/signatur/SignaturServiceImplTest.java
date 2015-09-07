@@ -43,6 +43,7 @@ import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.asn1.ASN1Util;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.util.ReflectionUtils;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -81,6 +82,9 @@ public class SignaturServiceImplTest {
 
     @Mock
     private ModuleApi moduleApi;
+
+    @Mock
+    ASN1Util asn1Util;
 
     @InjectMocks
     private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();

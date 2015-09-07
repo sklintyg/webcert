@@ -33,9 +33,9 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.log.LogRequestFactory;
 import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.asn1.ASN1Util;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.util.UpdateUserUtil;
 import se.inera.webcert.web.service.WebCertUserService;
@@ -46,6 +46,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SignaturServiceImpl implements SignaturService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SignaturServiceImpl.class);
+
+
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -73,6 +75,9 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private ASN1Util asn1Util;
 
     @Override
     public SignaturTicket ticketStatus(String ticketId) {
@@ -127,8 +132,22 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch Webcert user
         WebCertUser user = getWebcertUserForSignering();
 
+        // If privatläkare, we must match the personId on the user principal with the personId extracted from the signature data.
+        validateLoggedInPrivatePractitionerDidSign(user, rawSignatur);
+
         // Use method common between NetID and BankID to finish signing.
         return finalizeClientSignature(ticketId, rawSignatur, user);
+    }
+
+    private void validateLoggedInPrivatePractitionerDidSign(WebCertUser user, String rawSignatur) {
+        if (user.isPrivatLakare()) {
+            String signaturPersonId = asn1Util.parsePersonId(rawSignatur);
+
+            if (!user.getPersonId().replaceAll("\\-", "").equals(signaturPersonId)) {
+                LOG.error("Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 signature data from the NetID client does not match.");
+                throw new IllegalStateException("Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 signature data from the NetID client does not match.");
+            }
+        }
     }
 
     @Override
