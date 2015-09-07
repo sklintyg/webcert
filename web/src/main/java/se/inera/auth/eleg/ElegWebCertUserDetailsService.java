@@ -1,22 +1,20 @@
 package se.inera.auth.eleg;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
-
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.webcert.common.model.UserRoles;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -24,6 +22,11 @@ import se.inera.webcert.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -48,42 +51,63 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     @Autowired
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
+    private SAMLCredential samlCredential;
+
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) throws UsernameNotFoundException {
+
+        this.samlCredential = samlCredential;
+
         try {
-            String personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
-
-            boolean authorized = verfifyHosPersonIsAuthorized(personId);
-            if (!authorized) {
-                // Throw exception that spring-security can pick up and redirect user to privatläkarportalen
-                throw new PrivatePractitionerAuthorizationException("User is not authorized to access webcert according to private practitioner portal");
-            }
-
-            HoSPersonType hosPerson = getHosPerson(personId);
-            if (hosPerson == null) {
-                throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
-            }
-
-            WebCertUser webCertUser = createWebcertUser(samlCredential, hosPerson);
-
+            WebCertUser webCertUser = createUser(lookupUserRole());
             return webCertUser;
+
         } catch (Exception e) {
             if (e instanceof AuthenticationException) {
                 throw e;
             }
+
             LOG.error("Error building user {}, failed with message {}", e.getMessage());
             throw new HsaServiceException("privatlakare, ej hsa", e);
         }
     }
 
 
+    // - - - - - Protected scope - - - - -
 
-    private boolean verfifyHosPersonIsAuthorized(String personId) {
-        return ppService.validatePrivatePractitioner(logicalAddress, null, personId);
+    @Override
+    protected WebCertUser createUser(String userRole) {
+
+        String personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
+
+        assertHosPersonIsAuthorized(personId);
+
+        HoSPersonType hosPerson = getHosPerson(personId);
+        if (hosPerson == null) {
+            throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
+        }
+
+        WebCertUser webCertUser = createWebCertUser(hosPerson, userRole);
+        return webCertUser;
+
     }
 
-    private WebCertUser createWebcertUser(SAMLCredential samlCredential, HoSPersonType hosPerson) {
-        WebCertUser webCertUser = new WebCertUser();
+    // - - - - - Private scope - - - - -
+
+    private void assertHosPersonIsAuthorized(String personId) {
+        boolean authorized = ppService.validatePrivatePractitioner(logicalAddress, null, personId);
+        if (!authorized) {
+            // Throw exception that spring-security can pick up and redirect user to privatläkarportalen
+            throw new PrivatePractitionerAuthorizationException("User is not authorized to access webcert according to private practitioner portal");
+        }
+    }
+
+    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String userRole) {
+
+        // Get user's privileges based on his/hers role
+        final Collection<? extends GrantedAuthority> authorities = getAuthorities(Arrays.asList(getRoleRepository().findByName(userRole)));
+
+        WebCertUser webCertUser = new WebCertUser(authorities);
         webCertUser.setPrivatLakare(true);
         webCertUser.setPrivatLakareAvtalGodkand(false);
         webCertUser.setHsaId(hosPerson.getHsaId().getExtension());
@@ -92,28 +116,18 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         webCertUser.setLakare(true);
         webCertUser.setNamn(hosPerson.getFullstandigtNamn());
 
-
-        decorateWithVardgivare(hosPerson, webCertUser);
-        decorateWithLegitimeradeYrkesgrupper(hosPerson, webCertUser);
-        decorateWithSpecialiceringar(hosPerson, webCertUser);
+        decorateWebCertUserWithAuthenticationScheme(samlCredential, webCertUser);
+        decorateWebCertUserWithAuthenticationMethod(samlCredential, webCertUser);
         decorateWebCertUserWithAvailableFeatures(webCertUser);
-
-        decorateWithAuthenticationScheme(samlCredential, webCertUser);
-        decorateWithAuthenticationMethod(samlCredential, webCertUser);
-
-        setDefaultSelectedVardenhetOnUser(webCertUser);
+        decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, webCertUser);
+        decorateWebCertUserWithSpecialiceringar(hosPerson, webCertUser);
+        decorateWebCertUserWithVardgivare(hosPerson, webCertUser);
+        decorateWebCertUserWithDefaultVardenhet(hosPerson, webCertUser);
 
         return webCertUser;
     }
 
-    private void decorateWithAuthenticationScheme(SAMLCredential samlCredential, WebCertUser webCertUser) {
-        if (samlCredential.getAuthenticationAssertion() != null) {
-            String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
-            webCertUser.setAuthenticationScheme(authnContextClassRef);
-        }
-    }
-
-    private void decorateWithAuthenticationMethod(SAMLCredential samlCredential, WebCertUser webCertUser) {
+    private void decorateWebCertUserWithAuthenticationMethod(SAMLCredential samlCredential, WebCertUser webCertUser) {
         if (!webCertUser.getAuthenticationScheme().endsWith(":fake")) {
             webCertUser.setAuthenticationMethod(elegAuthenticationMethodResolver.resolveAuthenticationMethod(samlCredential));
         } else {
@@ -121,7 +135,18 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         }
     }
 
-    private void decorateWithVardgivare(HoSPersonType hosPerson, WebCertUser webCertUser) {
+    private void decorateWebCertUserWithAuthenticationScheme(SAMLCredential samlCredential, WebCertUser webCertUser) {
+        if (samlCredential.getAuthenticationAssertion() != null) {
+            String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
+            webCertUser.setAuthenticationScheme(authnContextClassRef);
+        }
+    }
+
+    private void decorateWebCertUserWithDefaultVardenhet(HoSPersonType hosPerson, WebCertUser webCertUser) {
+        setFirstVardenhetOnFirstVardgivareAsDefault(webCertUser);
+    }
+
+    private void decorateWebCertUserWithVardgivare(HoSPersonType hosPerson, WebCertUser webCertUser) {
         String id = hosPerson.getEnhet().getVardgivare().getVardgivareId().getExtension();
         String namn = hosPerson.getEnhet().getVardgivare().getVardgivarenamn();
 
@@ -147,19 +172,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         webCertUser.setValdVardgivare(vardgivare);
     }
 
-    /**
-     * Arbetsplatskod is not mandatory for Privatläkare. In that case, use the HSA-ID of the practitioner.
-     * (See Informationspecification Webcert, version 4.6, page 83)
-     */
-    private void resolveArbetsplatsKod(HoSPersonType hosPerson, Vardenhet vardenhet) {
-        if (hosPerson.getEnhet().getArbetsplatskod() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().length() == 0) {
-            vardenhet.setArbetsplatskod(hosPerson.getHsaId().getExtension());
-        } else {
-            vardenhet.setArbetsplatskod(hosPerson.getEnhet().getArbetsplatskod().getExtension());
-        }
-    }
-
-    private void decorateWithLegitimeradeYrkesgrupper(HoSPersonType hosPerson, WebCertUser webCertUser) {
+    private void decorateWebCertUserWithLegitimeradeYrkesgrupper(HoSPersonType hosPerson, WebCertUser webCertUser) {
         List<String> legitimeradeYrkesgrupper = new ArrayList<>();
         for (LegitimeradYrkesgruppType ly : hosPerson.getLegitimeradYrkesgrupp()) {
             legitimeradeYrkesgrupper.add(ly.getNamn());
@@ -167,7 +180,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         webCertUser.setLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
     }
 
-    private void decorateWithSpecialiceringar(HoSPersonType hosPerson, WebCertUser webCertUser) {
+    private void decorateWebCertUserWithSpecialiceringar(HoSPersonType hosPerson, WebCertUser webCertUser) {
         List<String> specialiteter = new ArrayList<>();
         for (SpecialitetType st : hosPerson.getSpecialitet()) {
             specialiteter.add(st.getNamn());
@@ -180,10 +193,24 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return hoSPersonType;
     }
 
+    /*
+     * This method only handles privatläkare for now.
+     * In a future there might be more logic here to decide user role.
+     */
+    private String lookupUserRole() {
+        return UserRoles.ROLE_PRIVATLAKARE.name();
+    }
 
-
-    private void setDefaultSelectedVardenhetOnUser(WebCertUser user) {
-        setFirstVardenhetOnFirstVardgivareAsDefault(user);
+    /**
+     * Arbetsplatskod is not mandatory for Privatläkare. In that case, use the HSA-ID of the practitioner.
+     * (See Informationspecification Webcert, version 4.6, page 83)
+     */
+    private void resolveArbetsplatsKod(HoSPersonType hosPerson, Vardenhet vardenhet) {
+        if (hosPerson.getEnhet().getArbetsplatskod() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().length() == 0) {
+            vardenhet.setArbetsplatskod(hosPerson.getHsaId().getExtension());
+        } else {
+            vardenhet.setArbetsplatskod(hosPerson.getEnhet().getArbetsplatskod().getExtension());
+        }
     }
 
     private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
@@ -197,25 +224,4 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return true;
     }
 
-
-
-//    @Autowired
-//    public void setPpService(PPService ppService) {
-//        this.ppService = ppService;
-//    }
-//
-//    @Autowired
-//    public void setAvtalService(AvtalService avtalService) {
-//        this.avtalService = avtalService;
-//    }
-//
-//    @Autowired
-//    public void setElegAuthenticationAttributeHelper(ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper) {
-//        this.elegAuthenticationAttributeHelper = elegAuthenticationAttributeHelper;
-//    }
-//
-//    @Autowired
-//    public void setElegAuthenticationMethodResolver(ElegAuthenticationMethodResolver elegAuthenticationMethodResolver) {
-//        this.elegAuthenticationMethodResolver = elegAuthenticationMethodResolver;
-//    }
 }

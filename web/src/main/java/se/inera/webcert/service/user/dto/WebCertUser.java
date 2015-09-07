@@ -87,7 +87,7 @@ public class WebCertUser implements UserDetails {
      */
     @Override
     public String getNamn() {
-        return null;
+        return this.namn;
     }
 
     public void setNamn(String namn) {
@@ -101,7 +101,7 @@ public class WebCertUser implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return this.authorities;
     }
 
     public boolean isLakare() {
