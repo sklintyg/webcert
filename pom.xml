@@ -474,10 +474,7 @@
         <configuration>
           <includeProperties>
             common.version,
-            intygstyper.version,
-            intyg-clinicalprocess.version,
-            intyg-insuranceprocess.version,
-            intyg-transportstyrelsen.version
+            intygstyper.version
           </includeProperties>
           <properties>
             <property>
