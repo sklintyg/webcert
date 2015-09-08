@@ -1,19 +1,22 @@
 package se.inera.webcert.web.controller;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.servlet.ModelAndView;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.feature.WebcertFeatureService;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
+import java.util.ArrayList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PageControllerTest {
@@ -56,7 +59,7 @@ public class PageControllerTest {
         assertEquals(PageController.ADMIN_VIEW_REDIRECT, result);
     }
     private WebCertUser createMockUser(boolean isLakare) {
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setLakare(isLakare);
         return user;
     }

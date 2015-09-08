@@ -2,20 +2,33 @@ package se.inera.webcert.service.signatur.grp;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.COMPLETE;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.OUTSTANDING_TRANSACTION;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.STARTED;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import se.funktionstjanster.grp.v1.*;
-import se.inera.webcert.hsa.model.WebCertUser;
+import org.springframework.security.core.GrantedAuthority;
+import se.funktionstjanster.grp.v1.CollectRequestType;
+import se.funktionstjanster.grp.v1.CollectResponseType;
+import se.funktionstjanster.grp.v1.FaultStatusType;
+import se.funktionstjanster.grp.v1.GrpFault;
+import se.funktionstjanster.grp.v1.GrpFaultType;
+import se.funktionstjanster.grp.v1.GrpServicePortType;
+import se.funktionstjanster.grp.v1.ProgressStatusType;
+import se.funktionstjanster.grp.v1.Property;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.webcert.service.user.dto.WebCertUser;
+
+import java.util.ArrayList;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -125,7 +138,7 @@ public class GrpCollectPollerTest {
     }
 
     private WebCertUser buildWebCertUser() {
-        WebCertUser webCertUser = new WebCertUser();
+        WebCertUser webCertUser = new WebCertUser(new ArrayList<GrantedAuthority>());
         webCertUser.setPersonId(PERSON_ID);
         return webCertUser;
     }

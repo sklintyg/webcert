@@ -5,26 +5,21 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.apache.cxf.helpers.XMLUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.NameID;
-import org.opensaml.saml2.core.Response;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.XMLObject;
-import org.opensaml.xml.io.Unmarshaller;
-import org.opensaml.xml.io.UnmarshallerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
-import org.w3c.dom.Document;
 import se.inera.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.webcert.common.model.UserPrivileges;
+import se.inera.webcert.common.model.UserRoles;
+import se.inera.webcert.persistence.roles.model.Privilege;
+import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
@@ -33,8 +28,10 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 
-import javax.xml.transform.stream.StreamSource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by eriklupander on 2015-06-25.
@@ -50,6 +47,9 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     @Mock
     private PPService ppService;
+
+    @Mock
+    private RoleRepository roleRepository;
 
     @Mock
     private WebcertFeatureService webcertFeatureService;
@@ -75,6 +75,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     public void testSuccessfulLogin() {
         when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(buildHosPerson());
         when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
+        when(roleRepository.findByName(anyString())).thenReturn(buildUserRoles().get(0));
         when(webcertFeatureService.getActiveFeatures()).thenReturn(new HashSet<String>());
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
 
@@ -111,5 +112,17 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
     }
 
+    private List<Role> buildUserRoles() {
+        List<Privilege> privileges = new ArrayList<>();
 
+        for (UserPrivileges up: UserPrivileges.values()) {
+            Privilege privilege = new Privilege(up.name());
+            privileges.add(privilege);
+        }
+
+        Role role = new Role(UserRoles.ROLE_LAKARE.name());
+        role.setPrivileges(privileges);
+
+        return Arrays.asList(role);
+    }
 }

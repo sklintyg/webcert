@@ -6,12 +6,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-
-import javax.persistence.OptimisticLockException;
-
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
+import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
@@ -30,7 +24,6 @@ import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -43,9 +36,17 @@ import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.log.dto.LogUser;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.signatur.asn1.ASN1Util;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.util.ReflectionUtils;
-import se.inera.webcert.web.service.WebCertUserService;
+
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignaturServiceImplTest {
@@ -81,6 +82,9 @@ public class SignaturServiceImplTest {
 
     @Mock
     private ModuleApi moduleApi;
+
+    @Mock
+    ASN1Util asn1Util;
 
     @InjectMocks
     private SignaturServiceImpl intygSignatureService = new SignaturServiceImpl();
@@ -120,7 +124,7 @@ public class SignaturServiceImplTest {
         vardgivare = new Vardgivare("123", "vardgivare");
         vardgivare.setVardenheter(Arrays.asList(vardenhet));
 
-        user = new WebCertUser();
+        user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setNamn(hoSPerson.getNamn());
         user.setHsaId(hoSPerson.getHsaId());
         user.setLakare(true);

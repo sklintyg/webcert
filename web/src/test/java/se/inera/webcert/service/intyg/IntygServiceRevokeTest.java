@@ -4,7 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -12,15 +15,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.GrantedAuthority;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultOfCall;
 import se.inera.webcert.client.converter.RevokeRequestConverter;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -39,10 +41,10 @@ import se.inera.webcert.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.util.ReflectionUtils;
 
 import javax.xml.bind.JAXBException;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -270,7 +272,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     }
 
     private WebCertUser buildWebCertUser(HoSPerson person) {
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
         user.setNamn(person.getNamn());
         user.setHsaId(person.getHsaId());
         return user;

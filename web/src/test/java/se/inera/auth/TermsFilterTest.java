@@ -1,10 +1,23 @@
 package se.inera.auth;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.io.IOException;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextImpl;
+import se.inera.auth.common.UnifiedUserDetailsService;
+import se.inera.webcert.service.privatlakaravtal.AvtalService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
@@ -12,18 +25,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextImpl;
-import se.inera.auth.common.UnifiedUserDetailsService;
-import se.inera.webcert.hsa.model.WebCertUser;
-import se.inera.webcert.service.privatlakaravtal.AvtalService;
+import java.io.IOException;
+import java.util.ArrayList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TermsFilterTest {
@@ -124,7 +127,7 @@ public class TermsFilterTest {
     }
 
     private WebCertUser buildWebCertUser(String authScheme) {
-        WebCertUser webCertUser = new WebCertUser();
+        WebCertUser webCertUser = new WebCertUser(new ArrayList<GrantedAuthority>());
         webCertUser.setAuthenticationScheme(authScheme);
 
         return webCertUser;
