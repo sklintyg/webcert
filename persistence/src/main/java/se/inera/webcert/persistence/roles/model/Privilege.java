@@ -1,5 +1,6 @@
 package se.inera.webcert.persistence.roles.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,12 +18,11 @@ public class Privilege {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private Long id;
 
+    @Column(name = "NAMN")
     private String name;
-
-    @ManyToMany(mappedBy = "privileges")
-    private Collection<Role> roles;
 
     public Privilege() {
         super();
@@ -49,14 +49,6 @@ public class Privilege {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public Collection<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(final Collection<Role> roles) {
-        this.roles = roles;
     }
 
     @Override

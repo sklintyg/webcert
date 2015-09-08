@@ -1,5 +1,7 @@
 package se.inera.webcert.bootstrap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -24,6 +26,8 @@ import java.util.Map;
  */
 @Component
 public class AuthoritiesDataLoader implements ApplicationListener<ContextRefreshedEvent> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AuthoritiesDataLoader.class);
 
     private boolean alreadySetup = false;
 
@@ -73,7 +77,13 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         Map<UserRoles, List<UserPrivileges>> userRolesUserPrivilegesMap = getUserRolesPrivilegesMap();
 
         for (UserRoles ur : userRoles) {
-            createRoleIfNotFound(ur.name(), getPrivilegeList(userRolesUserPrivilegesMap.get(ur)));
+            if (userRolesUserPrivilegesMap.containsKey(ur)) {
+                System.err.println("Getting privileges for UserRole: " + ur.name());
+                createRoleIfNotFound(ur.name(), getPrivilegeList(userRolesUserPrivilegesMap.get(ur)));
+            } else {
+                System.err.println(String.format("User role %s has not been setup with any privileges. Role will not be created.", ur.name()));
+                LOG.warn("User role {} has not been setup with any privileges. Role will not be created.", ur.name());
+            }
         }
 
     }
@@ -91,13 +101,22 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         Role role = roleRepository.findByName(name);
         if (role == null) {
             role = new Role(name);
-            role.setPrivileges(privileges);
+
+            for (Privilege p : privileges) {
+                role.getPrivileges().add(privilegeRepository.findByName(p.getName()));
+            }
+
+            // role.setPrivileges(privileges);
             roleRepository.save(role);
         }
         return role;
     }
 
-    private List<Privilege> getPrivilegeList(List<UserPrivileges> userPrivileges) {
+    private List<Privilege> getPrivilegeList(final List<UserPrivileges> userPrivileges) {
+        if (userPrivileges == null) {
+            System.err.println("NULL in privileges");
+        }
+
         List<Privilege> privileges = new ArrayList<>();
 
         for (UserPrivileges up: userPrivileges) {
@@ -115,6 +134,7 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         // TODO read from some mapping file/class
 
         map.put(UserRoles.ROLE_LAKARE, getPrivileges(UserRoles.ROLE_LAKARE));
+        map.put(UserRoles.ROLE_PRIVATLAKARE, getPrivileges(UserRoles.ROLE_PRIVATLAKARE));
         map.put(UserRoles.ROLE_VARDADMINISTRATOR, getPrivileges(UserRoles.ROLE_VARDADMINISTRATOR));
 
         return map;
@@ -156,7 +176,7 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
     private List<UserPrivileges> getTandlakarePrivilegeList() {
         // TODO ordna med rättigheter för tandläkare
-        return Arrays.asList(new UserPrivileges[] {});
+        return Arrays.asList(UserPrivileges.values());
     }
 
     private List<UserPrivileges> getPrivatLakarePrivilegeList() {
@@ -169,13 +189,17 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
     }
 
     private List<UserPrivileges> getUthoppsLakarePrivilegeList() {
-        // TODO ordna med rättigheter för läkare som kommer in via uthoppslänk
-        return Arrays.asList(new UserPrivileges[] {});
+        // TODO ordna med rättigheter för tandläkare
+        return Arrays.asList(UserPrivileges.values());
     }
 
     private List<UserPrivileges> getDjupintegreradLakarePrivilegeList() {
-        // TODO ordna med rättigheter för
-        return Arrays.asList(new UserPrivileges[] {});
+        return Arrays.asList(new UserPrivileges[] {
+                UserPrivileges.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivileges.PRIVILEGE_KOPIERA_INTYG,
+                UserPrivileges.PRIVILEGE_MAKULERA_INTYG,
+                UserPrivileges.PRIVILEGE_SIGNERA_INTYG,
+                UserPrivileges.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
     }
 
     private List<UserPrivileges> getLakarePrivilegeList() {

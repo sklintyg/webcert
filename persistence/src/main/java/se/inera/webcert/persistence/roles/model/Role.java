@@ -1,7 +1,7 @@
 package se.inera.webcert.persistence.roles.model;
 
-import java.util.Collection;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.util.Collection;
+import java.util.HashSet;
 
 
 /**
@@ -21,16 +23,15 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private Long id;
 
-//    @ManyToMany(mappedBy = "roles")
-//    private Collection<User> users;
-
-    @ManyToMany
-    @JoinTable(name = "roles_privileges", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id") , inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id") )
-    private Collection<Privilege> privileges;
-
+    @Column(name = "NAMN")
     private String name;
+
+    @ManyToMany //(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @JoinTable(name = "ROLLER_RATTIGHETER", joinColumns = @JoinColumn(name = "ROLL_ID", referencedColumnName = "ID") , inverseJoinColumns = @JoinColumn(name = "RATTIGHET_ID", referencedColumnName = "ID"))
+    private Collection<Privilege> privileges = new HashSet<>();
 
     public Role() {
         super();
@@ -58,14 +59,6 @@ public class Role {
     public void setName(final String name) {
         this.name = name;
     }
-
-//    public Collection<User> getUsers() {
-//        return users;
-//    }
-//
-//    public void setUsers(final Collection<User> users) {
-//        this.users = users;
-//    }
 
     public Collection<Privilege> getPrivileges() {
         return privileges;
