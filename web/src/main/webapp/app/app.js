@@ -184,13 +184,10 @@ app.run(['$log', '$rootScope', '$window', '$location','$state', '$q', 'common.me
 
         }
 
-        var userDef = $q.defer();
-
         // get the current user from the backend
-        UserService.initUser(function(data){
+        var userDef = UserService.initUser(function(data){
             TermsState.termsAccepted = data.privatLakareAvtalGodkand;
             TermsState.transitioning = false;
-            userDef.resolve();
         });
 
         $rootScope.$on('$stateChangeStart',
@@ -210,7 +207,7 @@ app.run(['$log', '$rootScope', '$window', '$location','$state', '$q', 'common.me
                 if(!UserModel.user){
                     event.preventDefault();
                     // gets resolved when a user is loaded
-                    userDef.promise.then(function(){
+                    userDef.then(function(){
                         $state.transitionTo(toState.name, toParams);
                     });
                 } else {
