@@ -23,6 +23,20 @@ import org.apache.commons.io.IOUtils;
  */
 public class ASN1StreamParser {
 
+    /**
+     * Tries to extract a value from the supplied base64-encoded InputStream by trying to match
+     * a sequence of bytes in the stream with the supplied marker sequence of bytes.
+     *
+     * @param is
+     *      A BASE64-encoded byte stream, typically an ASN.1 signature from NetID
+     * @param marker
+     *      A known sequence of bytes denoting where the wanted value starts in the stream.
+     * @param dataLength
+     *      The number of bytes to read following the marker, when found.
+     * @return
+     *      String representation of the found value or null if the marker wasn't present in the byte stream.
+     * @throws IOException
+     */
     public String parse(InputStream is, int[] marker, int dataLength) throws IOException {
         byte[] bytes = IOUtils.toByteArray(is);
         byte[] decoded = Base64.decodeBase64(bytes);
@@ -30,19 +44,24 @@ public class ASN1StreamParser {
         ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
 
         LimitedQueue<Integer> buffer = new LimitedQueue<>(marker.length);
-        while(bais.available() > 0) {
-            int b = bais.read() & 0xFF;
-            buffer.add(b);
+        try {
+            while(bais.available() > 0) {
+                int b = bais.read() & 0xFF;
+                buffer.add(b);
 
-            if (buffer.size() == marker.length && match(buffer, marker)) {
-                // Extract val
-                StringBuilder buf = new StringBuilder();
-                for(int a = 0; a < dataLength; a++) {
-                    int c = bais.read() & 0xFF;
-                    buf.append((char) c);
+                if (buffer.size() == marker.length && match(buffer, marker)) {
+                    // Extract val
+                    StringBuilder buf = new StringBuilder();
+                    for(int a = 0; a < dataLength; a++) {
+                        int c = bais.read() & 0xFF;
+                        buf.append((char) c);
+                    }
+                    return buf.toString();
                 }
-                return buf.toString();
             }
+        } finally {
+            try { is.close(); } catch(Exception e) {};
+            try { bais.close(); } catch(Exception e) {};
         }
         return null;
     }

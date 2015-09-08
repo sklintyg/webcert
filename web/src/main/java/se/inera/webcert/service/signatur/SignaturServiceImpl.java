@@ -145,7 +145,7 @@ public class SignaturServiceImpl implements SignaturService {
 
             if (!user.getPersonId().replaceAll("\\-", "").equals(signaturPersonId)) {
                 LOG.error("Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 signature data from the NetID client does not match.");
-                throw new IllegalStateException("Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 signature data from the NetID client does not match.");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 signature data from the NetID client does not match.");
             }
         }
     }
