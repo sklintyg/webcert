@@ -13,18 +13,18 @@ public enum UserPrivileges {
     PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR ("Vidarebefordra frågasvar"),
     PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA ("Besvara fråga om komplettering");
 
-    private final String name;
+    private final String text;
 
-    private UserPrivileges(String s) {
-        name = s;
+    private UserPrivileges(String text) {
+        this.text = text;
     }
 
-    public boolean equalsName(String otherName) {
-        return (otherName == null) ? false : name.equals(otherName);
+    public boolean equalsText(String otherText) {
+        return (otherText == null) ? false : text.equals(otherText);
     }
 
     public String toString() {
-        return this.name;
+        return this.text;
     }
 
 }

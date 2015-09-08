@@ -12,18 +12,18 @@ public enum UserRoles {
     ROLE_PRIVATLAKARE ("Privatläkare"),
     ROLE_TANDLAKARE ("Tandläkare");
 
-    private final String name;
+    private final String text;
 
-    private UserRoles(String s) {
-        name = s;
+    private UserRoles(String text) {
+        this.text = text;
     }
 
-    public boolean equalsName(String otherName) {
-        return (otherName == null) ? false : name.equals(otherName);
+    public boolean equalsText(String otherText) {
+        return (otherText == null) ? false : text.equals(otherText);
     }
 
     public String toString() {
-        return this.name;
+        return this.text;
     }
 
 }
