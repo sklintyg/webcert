@@ -490,4 +490,34 @@
     </addColumn>
   </changeSet>
 
+  <changeSet id="20" author="me">
+    <createTable tableName="ROLLER">
+      <column name="ID" type="bigint" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="NAMN" type="varchar(255)">
+        <constraints unique="true" nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="RATTIGHETER">
+      <column name="ID" type="bigint" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="NAMN" type="varchar(255)">
+        <constraints unique="true" nullable="false" />
+      </column>
+    </createTable>
+
+    <createTable tableName="ROLLER_RATTIGHETER">
+      <column name="ROLL_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="RATTIGHET_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+
 </databaseChangeLog>
