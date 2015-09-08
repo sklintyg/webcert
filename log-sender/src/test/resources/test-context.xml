@@ -16,7 +16,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://www.mockito.org/spring/mockito http://www.mockito.org/spring/mockito.xsd
-        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.9.1.xsd">
+        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd">
 
   <context:component-scan base-package="se.inera.logsender" />
 
