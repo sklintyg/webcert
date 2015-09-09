@@ -37,8 +37,8 @@
                  ng-show="!widgetState.filterFormCollapsed"
                  class="qa-filter-panel form-horizontal">
 
-              <!-- frågor och svar som är -->
-              <div class="form-group">
+              <!-- frågor och svar som är. TODO lägg till direktiv som döljer för privatläkare -->
+              <div class="form-group" id="filterFormVidarebefordrad">
                 <label class="col-sm-2 control-label">Frågor och svar som är</label>
                 <div class="col-sm-10">
                   <label class="radio-inline">
@@ -83,8 +83,8 @@
                 </div>
               </div>
 
-              <!-- signerat av -->
-              <div class="form-group">
+              <!-- signerat av TODO lägg till direktiv som döljer för privatläkare -->
+              <div class="form-group" id="filterFormSigneratAv">
                 <label class="col-sm-2 control-label">Signerat av</label>
                 <div class="col-sm-10">
                   <select id="qp-lakareSelector" class="form-control" ng-model="filterForm.lakareSelector"

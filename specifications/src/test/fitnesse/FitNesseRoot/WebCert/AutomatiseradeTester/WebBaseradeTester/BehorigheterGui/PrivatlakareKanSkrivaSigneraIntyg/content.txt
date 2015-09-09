@@ -62,6 +62,14 @@
 | ga till svara och fraga |
 | lista med ohanterade fragor visas |
 
+
+!3 Kontrollera så filtret inte visar "Frågor och svar som är" eller "Signerat av" för privatläkare (TODO byt till false sen!)
+!| script | SvaraOchFraga |
+| visa avancerat filter |
+| filter vidarebefordrad visas | true |
+| filter valj lakare visas | true |
+
+
 !3 Vidarebefordra-knapp i listan får ej visas (TODO ändra dessa sen till false)
 !| script | SvaraOchFraga |
 | vidare befordra knapp visas | true |
@@ -97,6 +105,11 @@
 !3 Verifiera att Avtalsvillkorsalternativet syns
 | script | !-OmWebcert-! |
 | avtalsvillkor synlig i menyn | true |
+
+!3 Verifiera att länk för Ändra uppgifter visas (skall endast visas för privatläkare)
+!| script | HeaderMenu |
+| redigera anvandare visas | true |
+
 
 !3 Ta bort utkastet
 

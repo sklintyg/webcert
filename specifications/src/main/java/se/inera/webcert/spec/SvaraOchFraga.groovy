@@ -979,4 +979,26 @@ class SvaraOchFraga {
         return expected == result
     }
 
+
+    boolean filterVidarebefordradVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = $('#filterFormVidarebefordrad').isDisplayed()
+        }
+        return expected == result
+    }
+
+    boolean filterValjLakareVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnhandledQAPage
+            }
+            result = $('#filterFormSigneratAv').isDisplayed()
+        }
+        return expected == result
+    }
 }
