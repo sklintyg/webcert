@@ -128,7 +128,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
         Assert.notNull(featureProps);
         Assert.notEmpty(featuresMap);
         
-        for(Entry<String, Boolean> entry : featuresMap.entrySet()){
+        for (Entry<String, Boolean> entry : featuresMap.entrySet()){
             String envProp = env.getProperty(entry.getKey());
 			Boolean featureState = null;
 			

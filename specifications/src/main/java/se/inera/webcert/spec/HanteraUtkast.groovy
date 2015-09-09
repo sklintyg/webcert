@@ -207,6 +207,38 @@ class HanteraUtkast {
         return WebcertRestUtils.getNumberOfUnsignedCertificates() == 0
     }
 
+    boolean ejSigneradeIntygVisas() {
+        return WebcertRestUtils.getNumberOfUnsignedCertificates() > 0
+    }
+
+    boolean vidareBefordraKnappVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            waitFor {
+                // TODO Find a better way to do this check using the page abstraction
+                result = $("#unsignedCertTable button.vidarebefordra-btn").isDisplayed()
+            }
+        }
+        return expected == result
+    }
+
+    boolean vidarebefordradCheckboxVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            waitFor {
+                // TODO Find a better way to do this check using the page abstraction
+                result = $("#unsignedCertTable input.vidarebefordrad-checkbox").isDisplayed()
+            }
+        }
+        return expected == result
+    }
+
     boolean signeraKnappAktiverad() {
         boolean result
         Browser.drive {

@@ -23,9 +23,10 @@ Testet beskriver fallet när FK skickar en fråga med utökad information.
 | visas fk kontakt | $internReferens1 |
 | visas fk kompletteringar | $internReferens1 |
 
-!3 Ta bort frågor
+
+
+!3 Ta bort fråga
 
 | ta bort fraga |
 | internReferens |
 | $internReferens1 |
-

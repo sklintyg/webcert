@@ -163,7 +163,7 @@
                       </button>
                     </td>
                     <td>
-                      <button class="btn btn-default"
+                      <button class="btn btn-default vidarebefordra-btn"
                               ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-default btn-secondary' : qa.vidarebefordrad}"
                               title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
                               ng-click="openMailDialog(qa)">
@@ -172,7 +172,7 @@
                       </button>
                     </td>
                     <td class="center">
-                      <input id="selected" type="checkbox" ng-disabled="qa.updateInProgress"
+                      <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="qa.updateInProgress"
                              ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" />
                                             <span ng-if="qa.updateInProgress"> <img
                                                 src="/img/ajax-loader-kit-16x16.gif"></span>
