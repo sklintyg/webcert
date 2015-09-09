@@ -40,6 +40,13 @@
 | ga till ej signerade intyg |
 | ej signerade intyg sidan visas |
 
+!3 Expandera sökfiltret och verifiera att "Vidarebefordrade" och "Sparat av" ej visas (TODO: Ändra till false sen!)
+| script | !-HanteraUtkast-! |
+| visa avancerat filter |
+| filterVidarebefordradVisas | true |
+| filterValjLakareVisas |  true |
+
+
 !3 Verifiera knappen för att vidarebeforda EJ finns i tabellen över ej signerade utkast
 !3 TODO VIKTIGT VIKTIGT: Ändra dessa till false när vi implementerat detta privilegie för privatläkare
 | script | !-HanteraUtkast-! |
