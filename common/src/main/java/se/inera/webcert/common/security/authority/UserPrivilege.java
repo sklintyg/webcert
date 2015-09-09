@@ -1,9 +1,9 @@
-package se.inera.webcert.common.model;
+package se.inera.webcert.common.security.authority;
 
 /**
  * Created by Magnus Ekstrand on 27/08/15.
  */
-public enum UserPrivileges {
+public enum UserPrivilege {
 
     PRIVILEGE_SKRIVA_INTYG ("Skriva intyg"),
     PRIVILEGE_SIGNERA_INTYG ("Signera intyg"),
@@ -15,7 +15,7 @@ public enum UserPrivileges {
 
     private final String text;
 
-    private UserPrivileges(String text) {
+    private UserPrivilege(String text) {
         this.text = text;
     }
 

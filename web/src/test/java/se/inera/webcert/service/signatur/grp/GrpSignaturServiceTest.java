@@ -1,7 +1,10 @@
 package se.inera.webcert.service.signatur.grp;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
@@ -11,13 +14,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
 import org.springframework.security.core.GrantedAuthority;
 import se.funktionstjanster.grp.v1.AuthenticateRequestType;
 import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.OrderResponseType;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
@@ -26,8 +30,11 @@ import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.signatur.grp.factory.GrpCollectPollerFactory;
 import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -69,7 +76,7 @@ public class GrpSignaturServiceTest {
 
     @Before
     public void setupTest() {
-        webCertUser = new WebCertUser(new ArrayList<GrantedAuthority>());
+        webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         webCertUser.setPersonId(PERSON_ID);
     }
 
@@ -109,7 +116,7 @@ public class GrpSignaturServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenWebCertUserHasNoPersonId() {
         when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
-        when(webCertUserService.getWebCertUser()).thenReturn(new WebCertUser(new ArrayList<GrantedAuthority>()));
+        when(webCertUserService.getWebCertUser()).thenReturn(new WebCertUser(getGrantedRole(), getGrantedPrivileges()));
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
@@ -152,6 +159,18 @@ public class GrpSignaturServiceTest {
         utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
         utkast.setVersion(VERSION);
         return utkast;
+    }
+
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+    }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
     }
 
 }

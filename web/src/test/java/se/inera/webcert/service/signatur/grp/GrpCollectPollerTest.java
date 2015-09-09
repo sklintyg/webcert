@@ -23,12 +23,17 @@ import se.funktionstjanster.grp.v1.GrpFaultType;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.funktionstjanster.grp.v1.Property;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.signatur.SignaturService;
 import se.inera.webcert.service.signatur.SignaturTicketTracker;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -138,9 +143,21 @@ public class GrpCollectPollerTest {
     }
 
     private WebCertUser buildWebCertUser() {
-        WebCertUser webCertUser = new WebCertUser(new ArrayList<GrantedAuthority>());
+        WebCertUser webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         webCertUser.setPersonId(PERSON_ID);
         return webCertUser;
+    }
+
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+    }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
     }
 
 }

@@ -24,13 +24,20 @@ public class Privilege {
     @Column(name = "NAMN")
     private String name;
 
+    @Column(name = "TEXT")
+    private String text;
+
     public Privilege() {
         super();
     }
 
     public Privilege(final String name) {
-        super();
+        this(name, "");
+    }
+
+    public Privilege(final String name, final String text) {
         this.name = name;
+        this.text = text;
     }
 
     //
@@ -49,6 +56,14 @@ public class Privilege {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(final String text) {
+        this.text = name;
     }
 
     @Override

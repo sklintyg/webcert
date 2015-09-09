@@ -40,6 +40,9 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
@@ -71,9 +74,11 @@ import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -594,7 +599,6 @@ public class FragaSvarServiceImplTest {
         when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp())).thenReturn(
                 getIntygContentHolder());
         WebCertUser nonDoctor = webCertUser();
-        nonDoctor.setLakare(false);
         when(webCertUserService.getWebCertUser()).thenReturn(nonDoctor);
 
         service.saveSvar(1L, "svarsText");
@@ -906,8 +910,19 @@ public class FragaSvarServiceImplTest {
         assertEquals(2, res.size());
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void intygWithoutFragaSvarDoesNotAcceptFraga() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.getIntygsReferens().setIntygsTyp("ts-bas");
+
+        when(webcertFeatureServiceMock.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR, "ts-bas")).thenReturn(false);
+
+        service.processIncomingQuestion(fragaSvar);
+        fail("Processing should have thrown an exception");
+    }
+
     private WebCertUser webCertUser() {
-        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
+        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("testuser");
         user.setNamn("test userman");
 
@@ -922,14 +937,16 @@ public class FragaSvarServiceImplTest {
         return user;
     }
 
-    @Test(expected = WebCertServiceException.class)
-    public void intygWithoutFragaSvarDoesNotAcceptFraga() {
-        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
-        fragaSvar.getIntygsReferens().setIntygsTyp("ts-bas");
-
-        when(webcertFeatureServiceMock.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR, "ts-bas")).thenReturn(false);
-
-        service.processIncomingQuestion(fragaSvar);
-        fail("Processing should have thrown an exception");
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
     }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
+    }
+
 }

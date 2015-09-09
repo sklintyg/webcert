@@ -15,8 +15,8 @@ import org.opensaml.saml2.core.NameID;
 import org.springframework.security.saml.SAMLCredential;
 import se.inera.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
-import se.inera.webcert.common.model.UserPrivileges;
-import se.inera.webcert.common.model.UserRoles;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.roles.model.Privilege;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
@@ -115,12 +115,12 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private List<Role> buildUserRoles() {
         List<Privilege> privileges = new ArrayList<>();
 
-        for (UserPrivileges up: UserPrivileges.values()) {
+        for (UserPrivilege up: UserPrivilege.values()) {
             Privilege privilege = new Privilege(up.name());
             privileges.add(privilege);
         }
 
-        Role role = new Role(UserRoles.ROLE_LAKARE.name());
+        Role role = new Role(UserRole.ROLE_LAKARE.name());
         role.setPrivileges(privileges);
 
         return Arrays.asList(role);

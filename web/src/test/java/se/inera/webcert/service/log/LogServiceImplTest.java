@@ -23,6 +23,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.log.messages.ActivityPurpose;
 import se.inera.log.messages.ActivityType;
 import se.inera.log.messages.IntygReadMessage;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.service.log.dto.LogRequest;
@@ -30,8 +33,10 @@ import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 import javax.jms.Session;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by pehr on 13/11/13.
@@ -107,7 +112,7 @@ public class LogServiceImplTest {
         Vardgivare vg = new Vardgivare("VARDGIVARE_ID", "Vårdgivaren");
         vg.setVardenheter(Arrays.asList(ve));
         
-        WebCertUser wcu = new WebCertUser(new ArrayList<GrantedAuthority>());
+        WebCertUser wcu = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         wcu.setHsaId("HSAID");
         wcu.setNamn("Markus Gran");
         wcu.setVardgivare(Arrays.asList(vg));
@@ -115,4 +120,17 @@ public class LogServiceImplTest {
         
         return wcu;
     }
+
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+    }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
+    }
+
 }

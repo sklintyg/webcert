@@ -14,17 +14,17 @@ import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
-import se.inera.webcert.common.model.UserRoles;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -89,7 +89,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
         WebCertUser webCertUser = createWebCertUser(hosPerson, userRole);
         return webCertUser;
-
     }
 
     // - - - - - Private scope - - - - -
@@ -103,17 +102,20 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private WebCertUser createWebCertUser(HoSPersonType hosPerson, String userRole) {
+        return createWebCertUser(hosPerson, getRoleRepository().findByName(userRole));
+    }
+
+    private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role) {
 
         // Get user's privileges based on his/hers role
-        final Collection<? extends GrantedAuthority> authorities = getAuthorities(Arrays.asList(getRoleRepository().findByName(userRole)));
+        final GrantedAuthority grantedRole = getRoleAuthority(role);
+        final Collection<? extends GrantedAuthority> grantedPrivileges = getPrivilegeAuthorities(role);
 
-        WebCertUser webCertUser = new WebCertUser(authorities);
-        webCertUser.setPrivatLakare(true);
+        WebCertUser webCertUser = new WebCertUser(grantedRole, grantedPrivileges);
         webCertUser.setPrivatLakareAvtalGodkand(false);
         webCertUser.setHsaId(hosPerson.getHsaId().getExtension());
         webCertUser.setPersonId(hosPerson.getPersonId().getExtension());
         webCertUser.setForskrivarkod(hosPerson.getForskrivarkod());
-        webCertUser.setLakare(true);
         webCertUser.setNamn(hosPerson.getFullstandigtNamn());
 
         decorateWebCertUserWithAuthenticationScheme(samlCredential, webCertUser);
@@ -198,7 +200,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
      * In a future there might be more logic here to decide user role.
      */
     private String lookupUserRole() {
-        return UserRoles.ROLE_PRIVATLAKARE.name();
+        return UserRole.ROLE_PRIVATLAKARE.name();
     }
 
     /**

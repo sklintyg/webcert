@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
@@ -14,19 +15,21 @@ import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
-import se.inera.webcert.common.model.UserRoles;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
 import se.inera.webcert.hsa.services.HsaPersonService;
+import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
-import org.springframework.security.core.AuthenticationException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -125,12 +128,17 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     }
 
     private WebCertUser createWebCertUser(String userRole, List<Vardgivare> authorizedVardgivare) {
+        return createWebCertUser(getRoleRepository().findByName(userRole), authorizedVardgivare);
+    }
+
+    private WebCertUser createWebCertUser(Role role, List<Vardgivare> authorizedVardgivare) {
 
         // Get user's privileges based on his/hers role
-        final Collection<? extends GrantedAuthority> authorities = getAuthorities(Arrays.asList(getRoleRepository().findByName(userRole)));
+        final GrantedAuthority grantedRole = getRoleAuthority(role);
+        final Collection<? extends GrantedAuthority> grantedPrivileges = getPrivilegeAuthorities(role);
 
         // Create the WebCert user object injection user's privileges
-        WebCertUser webcertUser = new WebCertUser(authorities);
+        WebCertUser webcertUser = new WebCertUser(grantedRole, grantedPrivileges);
 
         webcertUser.setHsaId(assertion.getHsaId());
         webcertUser.setNamn(compileName(assertion.getFornamn(), assertion.getMellanOchEfternamn()));
@@ -141,9 +149,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         // Set user's authentication scheme
         webcertUser.setAuthenticationScheme(assertion.getAuthenticationScheme());
-
-        // lakare flag is calculated by checking for lakare profession in title and title code
-        webcertUser.setLakare(UserRoles.ROLE_LAKARE.name().equals(userRole));
 
         decorateWebCertUserWithAdditionalInfo(webcertUser);
         decorateWebCertUserWithAvailableFeatures(webcertUser);
@@ -252,10 +257,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     private String lookupUserRole() {
         // lakare flag is calculated by checking for lakare profession in title and title code
         if (assertion.getTitel().contains(LAKARE) || assertion.getTitelKod().contains(LAKARE_CODE)) {
-            return UserRoles.ROLE_LAKARE.name();
+            return UserRole.ROLE_LAKARE.name();
         }
 
-        return UserRoles.ROLE_VARDADMINISTRATOR.name();
+        return UserRole.ROLE_VARDADMINISTRATOR.name();
     }
 
 

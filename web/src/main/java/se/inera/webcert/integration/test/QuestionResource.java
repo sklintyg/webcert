@@ -1,23 +1,8 @@
 package se.inera.webcert.integration.test;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import se.inera.webcert.hsa.model.Vardenhet;
-import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.service.user.dto.WebCertUser;
-import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.service.fragasvar.FragaSvarService;
-import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,9 +17,26 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserRole;
+import se.inera.webcert.hsa.model.Vardenhet;
+import se.inera.webcert.hsa.model.Vardgivare;
+import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.webcert.service.fragasvar.FragaSvarService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.webcert.web.controller.moduleapi.dto.CreateQuestionParameter;
 
 /**
  * Bean for inserting questions directly into the database.
@@ -102,7 +104,7 @@ public class QuestionResource {
     @Path("/skickafraga/{vardgivare}/{enhet}/{intygId}/{typ}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    public Response askQuestion(@PathParam("vardgivare") final String vardgivarId, 
+    public Response askQuestion(@PathParam("vardgivare") final String vardgivarId,
             @PathParam("enhet") final String enhetsId, @PathParam("intygId") final String intygId, @PathParam("typ") final String typ, CreateQuestionParameter parameter) {
         SecurityContext originalContext = SecurityContextHolder.getContext();
         SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
@@ -250,10 +252,9 @@ public class QuestionResource {
 
     // Create a fake WebCertUser which is authorized for the given care giver and unit
     private static WebCertUser getWebCertUser(String vardgivarId, String enhetsId) {
-        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
+        WebCertUser user = new WebCertUser(new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString()), new ArrayList<GrantedAuthority>());
         user.setHsaId("questionResource");
         user.setNamn("questionResource");
-        user.setLakare(true);
         user.setForskrivarkod("questionResource");
         Vardenhet enhet = new Vardenhet(enhetsId, "questionResource");
         Vardgivare vardgivare = new Vardgivare(vardgivarId, "questionResource");

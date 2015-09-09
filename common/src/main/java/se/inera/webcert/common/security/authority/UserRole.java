@@ -1,9 +1,9 @@
-package se.inera.webcert.common.model;
+package se.inera.webcert.common.security.authority;
 
 /**
  * Created by Magnus Ekstrand on 27/08/15.
  */
-public enum UserRoles {
+public enum UserRole {
 
     ROLE_VARDADMINISTRATOR ("Vårdadministratör"),
     ROLE_LAKARE ("Läkare"),
@@ -14,7 +14,7 @@ public enum UserRoles {
 
     private final String text;
 
-    private UserRoles(String text) {
+    private UserRole(String text) {
         this.text = text;
     }
 
