@@ -231,6 +231,15 @@
       </properties>
     </profile>
     <profile>
+      <id>build-server</id>
+      <properties>
+        <webcert.web.baseUrl>https://webcert.inera.nordicmedtest.se/</webcert.web.baseUrl>
+        <webcert.baseUrl>https://webcert.inera.nordicmedtest.se/</webcert.baseUrl>
+        <logsender.baseUrl>https://webcert.inera.nordicmedtest.se/log-sender/</logsender.baseUrl>
+        <certificate.baseUrl>https://intygstjanst.inera.nordicmedtest.se/inera-certificate/</certificate.baseUrl>
+      </properties>
+    </profile>
+    <profile>
       <id>ip20</id>
       <properties>
         <webcert.web.baseUrl>https://webcert.ip20.nordicmedtest.sjunet.org/</webcert.web.baseUrl>
