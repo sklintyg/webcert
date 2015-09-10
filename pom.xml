@@ -55,7 +55,6 @@
     <module>log-messages</module>
     <module>log-sender</module>
     <module>notification-sender</module>
-    <module>integration/eid-integration</module>
     <module>integration/hsa-integration</module>
     <module>integration/pu-integration</module>
     <module>integration/pp-integration</module>
