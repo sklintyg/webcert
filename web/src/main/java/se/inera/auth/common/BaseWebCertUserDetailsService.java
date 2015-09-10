@@ -3,10 +3,7 @@ package se.inera.auth.common;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.saml.SAMLCredential;
-import se.inera.auth.SakerhetstjanstAssertion;
-import se.inera.webcert.common.model.UserRoles;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.persistence.roles.model.Privilege;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
@@ -47,8 +44,12 @@ public abstract class BaseWebCertUserDetailsService {
         this.webcertFeatureService = webcertFeatureService;
     }
 
-    public final Collection<? extends GrantedAuthority> getAuthorities(final Collection<Role> roles) {
-        return getGrantedAuthorities(getPrivileges(roles));
+    public final GrantedAuthority getRoleAuthority(final Role role) {
+        return getGrantedRole(role);
+    }
+
+    public final Collection<? extends GrantedAuthority> getPrivilegeAuthorities(final Role role) {
+        return getGrantedPrivileges(getPrivileges(role));
     }
 
 
@@ -83,23 +84,21 @@ public abstract class BaseWebCertUserDetailsService {
 
     // - - - - - Private scope - - - - -
 
-    private List<GrantedAuthority> getGrantedAuthorities(final List<String> privileges) {
-        final List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        for (final String privilege : privileges) {
-            authorities.add(new SimpleGrantedAuthority(privilege));
+    private GrantedAuthority getGrantedRole(final Role role) {
+        return new SimpleGrantedAuthority(role.getName(), role.getText());
+    }
+
+    private List<GrantedAuthority> getGrantedPrivileges(final List<Privilege> privileges) {
+        final List<GrantedAuthority> authorities = new ArrayList<>();
+        for (final Privilege privilege : privileges) {
+            authorities.add(new SimpleGrantedAuthority(privilege.getName(), privilege.getText()));
         }
         return authorities;
     }
 
-    private List<String> getPrivileges(final Collection<Role> roles) {
-        final List<String> privileges = new ArrayList<String>();
-        final List<Privilege> collection = new ArrayList<Privilege>();
-        for (final Role role : roles) {
-            collection.addAll(role.getPrivileges());
-        }
-        for (final Privilege item : collection) {
-            privileges.add(item.getName());
-        }
+    private List<Privilege> getPrivileges(final Role role) {
+        List<Privilege> privileges = new ArrayList<>();
+        privileges.addAll(role.getPrivileges());
         return privileges;
     }
 

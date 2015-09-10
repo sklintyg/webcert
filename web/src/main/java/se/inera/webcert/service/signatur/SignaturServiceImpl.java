@@ -1,12 +1,6 @@
 package se.inera.webcert.service.signatur;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
-
-import javax.persistence.OptimisticLockException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -14,14 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.registry.ModuleNotFoundException;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Signatur;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
@@ -37,10 +29,15 @@ import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.signatur.asn1.ASN1Util;
 import se.inera.webcert.service.signatur.dto.SignaturTicket;
-import se.inera.webcert.service.util.UpdateUserUtil;
 import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.webcert.service.util.UpdateUserUtil;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.persistence.OptimisticLockException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 @Service
 public class SignaturServiceImpl implements SignaturService {
@@ -145,7 +142,7 @@ public class SignaturServiceImpl implements SignaturService {
 
             if (!user.getPersonId().replaceAll("\\-", "").equals(signaturPersonId)) {
                 LOG.error("Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 signature data from the NetID client does not match.");
-                throw new IllegalStateException("Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 signature data from the NetID client does not match.");
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Cannot finalize signing of utkast, the logged in user's personId and the personId in the ASN.1 signature data from the NetID client does not match.");
             }
         }
     }
@@ -265,12 +262,11 @@ public class SignaturServiceImpl implements SignaturService {
         return utkast;
     }
 
-    /**
-     * Update utkast with "senast sparad av" information
+    /** Update utkast with "senast sparad av" information.
      *
      * @param utkast
-     * @param userId
-     * @param userName
+     * @param user
+     * @param signeringstid
      * @return
      */
     private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {

@@ -8,6 +8,7 @@ class OmWebcertCookiesPage extends AbstractPage {
 
     static content = {
         webcertLink { $("#about-webcert") }
+        termsLink { $("#about-pp-terms") }
         supportLink { $("#about-support") }
         intygLink { $("#about-intyg") }
         faqLink { $("#about-faq") }

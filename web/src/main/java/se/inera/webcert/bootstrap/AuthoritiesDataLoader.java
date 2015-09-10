@@ -7,19 +7,20 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.webcert.common.model.UserPrivileges;
-import se.inera.webcert.common.model.UserRoles;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.roles.model.Privilege;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.repository.PrivilegeRepository;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Magnus Ekstrand on 28/08/15.
@@ -47,10 +48,10 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         }
 
         // == create privileges
-        loadPrivileges(UserPrivileges.values());
+        loadPrivileges(UserPrivilege.values());
 
         // == create roles
-        loadRoles(UserRoles.values());
+        loadRoles(UserRole.values());
 
         alreadySetup = true;
     }
@@ -58,90 +59,99 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
     // - - - - - Private scope - - - - -
 
-    private void loadPrivileges(UserPrivileges[] userPrivileges) {
+    private void loadPrivileges(UserPrivilege[] userPrivileges) {
+
+        LOG.debug("Loading user privileges");
+
         if (userPrivileges == null) {
             throw new IllegalArgumentException("User privileges cannot be null");
         }
 
-        for (UserPrivileges up : userPrivileges) {
-            createPrivilegeIfNotFound(up.name());
+        for (UserPrivilege up : userPrivileges) {
+            createPrivilegeIfNotFound(up);
         }
 
     }
 
-    private void loadRoles(UserRoles[] userRoles) {
+    private void loadRoles(UserRole[] userRoles) {
+
+        LOG.debug("Loading user roles");
+
         if (userRoles == null) {
             throw new IllegalArgumentException("User roles cannot be null");
         }
 
-        Map<UserRoles, List<UserPrivileges>> userRolesUserPrivilegesMap = getUserRolesPrivilegesMap();
+        Map<UserRole, List<UserPrivilege>> userRolesUserPrivilegesMap = getUserRolesPrivilegesMap();
 
-        for (UserRoles ur : userRoles) {
-            if (userRolesUserPrivilegesMap.containsKey(ur)) {
-                System.err.println("Getting privileges for UserRole: " + ur.name());
-                createRoleIfNotFound(ur.name(), getPrivilegeList(userRolesUserPrivilegesMap.get(ur)));
+        for (UserRole userRole : userRoles) {
+            if (userRolesUserPrivilegesMap.containsKey(userRole)) {
+                createRoleIfNotFound(userRole, getPrivilegeList(userRolesUserPrivilegesMap.get(userRole)));
             } else {
-                System.err.println(String.format("User role %s has not been setup with any privileges. Role will not be created.", ur.name()));
-                LOG.warn("User role {} has not been setup with any privileges. Role will not be created.", ur.name());
+                LOG.warn("User role {} has not been setup with any privileges. Role will not be created.", userRole.name());
             }
         }
 
     }
 
-    private Privilege createPrivilegeIfNotFound(final String name) {
-        Privilege privilege = privilegeRepository.findByName(name);
+    private Privilege createPrivilegeIfNotFound(final UserPrivilege userPrivilege) {
+        Privilege privilege = privilegeRepository.findByName(userPrivilege.name());
         if (privilege == null) {
-            privilege = new Privilege(name);
+            privilege = new Privilege(userPrivilege.name(), userPrivilege.toString());
             privilegeRepository.save(privilege);
         }
         return privilege;
     }
 
-    private Role createRoleIfNotFound(final String name, final Collection<Privilege> privileges) {
-        Role role = roleRepository.findByName(name);
+    private Role createRoleIfNotFound(final UserRole userRole, final Collection<Privilege> privileges) {
+        Role role = roleRepository.findByName(userRole.name());
         if (role == null) {
-            role = new Role(name);
+            role = new Role(userRole.name(), userRole.toString());
 
+            /*
             for (Privilege p : privileges) {
                 role.getPrivileges().add(privilegeRepository.findByName(p.getName()));
             }
+            */
 
-            // role.setPrivileges(privileges);
+            role.setPrivileges(privileges);
             roleRepository.save(role);
         }
         return role;
     }
 
-    private List<Privilege> getPrivilegeList(final List<UserPrivileges> userPrivileges) {
-        if (userPrivileges == null) {
-            System.err.println("NULL in privileges");
-        }
+    private Set<Privilege> getPrivilegeList(final List<UserPrivilege> userPrivileges) {
 
-        List<Privilege> privileges = new ArrayList<>();
+        Set<Privilege> privileges = new HashSet<>();
 
-        for (UserPrivileges up: userPrivileges) {
-            Privilege privilege = new Privilege(up.name());
+        for (UserPrivilege userPrivilege: userPrivileges) {
+            Privilege privilege = privilegeRepository.findByName(userPrivilege.name());
+            if (privilege == null) {
+                privilege = new Privilege(userPrivilege.name(), userPrivilege.toString());
+            }
             privileges.add(privilege);
         }
 
         return privileges;
     }
 
-    private Map<UserRoles, List<UserPrivileges>> getUserRolesPrivilegesMap() {
 
-        Map<UserRoles, List<UserPrivileges>> map = new HashMap<>();
+    //
+    // User and privileges mapping
+    // TODO externalize mapping section
+    //
+    private Map<UserRole, List<UserPrivilege>> getUserRolesPrivilegesMap() {
 
-        // TODO read from some mapping file/class
+        Map<UserRole, List<UserPrivilege>> map = new HashMap<>();
 
-        map.put(UserRoles.ROLE_LAKARE, getPrivileges(UserRoles.ROLE_LAKARE));
-        map.put(UserRoles.ROLE_PRIVATLAKARE, getPrivileges(UserRoles.ROLE_PRIVATLAKARE));
-        map.put(UserRoles.ROLE_VARDADMINISTRATOR, getPrivileges(UserRoles.ROLE_VARDADMINISTRATOR));
+        map.put(UserRole.ROLE_LAKARE, getPrivileges(UserRole.ROLE_LAKARE));
+        map.put(UserRole.ROLE_PRIVATLAKARE, getPrivileges(UserRole.ROLE_PRIVATLAKARE));
+        map.put(UserRole.ROLE_VARDADMINISTRATOR, getPrivileges(UserRole.ROLE_VARDADMINISTRATOR));
 
         return map;
     }
 
-    private List<UserPrivileges> getPrivileges(UserRoles userRoles) {
-        List<UserPrivileges> userPrivileges = null;
+    private List<UserPrivilege> getPrivileges(UserRole userRoles) {
+        List<UserPrivilege> userPrivileges = null;
 
         switch (userRoles) {
             case ROLE_LAKARE:
@@ -166,44 +176,47 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         return userPrivileges;
     }
 
-    private List<UserPrivileges> getVardadministratorPrivilegeList() {
-        return Arrays.asList(new UserPrivileges[] {
-            UserPrivileges.PRIVILEGE_SKRIVA_INTYG,
-            UserPrivileges.PRIVILEGE_KOPIERA_INTYG,
-            UserPrivileges.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
-            UserPrivileges.PRIVILEGE_VIDAREBEFORDRA_UTKAST });
+    private List<UserPrivilege> getVardadministratorPrivilegeList() {
+        return Arrays.asList(new UserPrivilege[] {
+            UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+            UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
+            UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
+            UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST });
     }
 
-    private List<UserPrivileges> getTandlakarePrivilegeList() {
+    private List<UserPrivilege> getTandlakarePrivilegeList() {
         // TODO ordna med rättigheter för tandläkare
-        return Arrays.asList(UserPrivileges.values());
+        return Arrays.asList(UserPrivilege.values());
     }
 
-    private List<UserPrivileges> getPrivatLakarePrivilegeList() {
-        return Arrays.asList(new UserPrivileges[] {
-                UserPrivileges.PRIVILEGE_SKRIVA_INTYG,
-                UserPrivileges.PRIVILEGE_KOPIERA_INTYG,
-                UserPrivileges.PRIVILEGE_MAKULERA_INTYG,
-                UserPrivileges.PRIVILEGE_SIGNERA_INTYG,
-                UserPrivileges.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
+    private List<UserPrivilege> getPrivatLakarePrivilegeList() {
+        return Arrays.asList(new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
+                UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
+                UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
     }
 
-    private List<UserPrivileges> getUthoppsLakarePrivilegeList() {
-        // TODO ordna med rättigheter för tandläkare
-        return Arrays.asList(UserPrivileges.values());
+    private List<UserPrivilege> getUthoppsLakarePrivilegeList() {
+        return Arrays.asList(new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
     }
 
-    private List<UserPrivileges> getDjupintegreradLakarePrivilegeList() {
-        return Arrays.asList(new UserPrivileges[] {
-                UserPrivileges.PRIVILEGE_SKRIVA_INTYG,
-                UserPrivileges.PRIVILEGE_KOPIERA_INTYG,
-                UserPrivileges.PRIVILEGE_MAKULERA_INTYG,
-                UserPrivileges.PRIVILEGE_SIGNERA_INTYG,
-                UserPrivileges.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
+    private List<UserPrivilege> getDjupintegreradLakarePrivilegeList() {
+        return Arrays.asList(new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
+                UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
+                UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
     }
 
-    private List<UserPrivileges> getLakarePrivilegeList() {
-        return Arrays.asList(UserPrivileges.values());
+    private List<UserPrivilege> getLakarePrivilegeList() {
+        return Arrays.asList(UserPrivilege.values());
     }
 }
 

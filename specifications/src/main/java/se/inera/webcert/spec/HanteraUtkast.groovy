@@ -135,6 +135,17 @@ class HanteraUtkast {
         }
     }
 
+    def visaAvanceratFilter() {
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            page.showAdvancedFilter()
+            page.advancedFilterForm.isDisplayed()
+
+        }
+    }
+
     // ------- state
 
     // ---------- pages
@@ -205,6 +216,62 @@ class HanteraUtkast {
     // ---------- elements
     boolean ingaEjSigneradeIntygVisas() {
         return WebcertRestUtils.getNumberOfUnsignedCertificates() == 0
+    }
+
+    boolean ejSigneradeIntygVisas() {
+        return WebcertRestUtils.getNumberOfUnsignedCertificates() > 0
+    }
+
+    boolean vidareBefordraKnappVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            waitFor {
+                // TODO Find a better way to do this check using the page abstraction
+                result = $("#unsignedCertTable button.vidarebefordra-btn").isDisplayed()
+            }
+        }
+        return expected == result
+    }
+
+    boolean vidarebefordradCheckboxVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            waitFor {
+                // TODO Find a better way to do this check using the page abstraction
+                result = $("#unsignedCertTable input.vidarebefordrad-checkbox").isDisplayed()
+            }
+        }
+        return expected == result
+    }
+
+    boolean filterVidarebefordradVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            // TODO fix this on page instead
+            result = $('#filterFormVidarebefordrad').isDisplayed()
+        }
+        return expected == result
+    }
+
+    boolean filterValjLakareVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            // TODO fix this on page instead
+            result = $('#filterFormSparatAv').isDisplayed()
+        }
+        return expected == result
     }
 
     boolean signeraKnappAktiverad() {

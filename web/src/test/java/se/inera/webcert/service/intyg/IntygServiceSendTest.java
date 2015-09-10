@@ -20,13 +20,18 @@ import org.springframework.security.core.GrantedAuthority;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.service.intyg.dto.IntygServiceResult;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 //import se.inera.webcert.persistence.utkast.model.Omsandning;
 //import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
@@ -43,12 +48,11 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     public void testSendIntyg() throws Exception {
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.okResult());
-        WebCertUser webCertUser = new WebCertUser(new ArrayList<GrantedAuthority>());
+
+        WebCertUser webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+
         when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
-
-        when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
-                .thenReturn(response);
-
+        when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
@@ -68,11 +72,11 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     public void testSendIntygReturnsInfo() throws Exception {
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.infoResult("Info text"));
-        WebCertUser webCertUser = new WebCertUser(new ArrayList<GrantedAuthority>());
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
 
-        when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
-                .thenReturn(response);
+        WebCertUser webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+
+        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FK", true);
@@ -158,5 +162,18 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         }
         verify(intygRepository, times(0)).save(any(Utkast.class));
     }
+
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+    }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
+    }
+
 
 }

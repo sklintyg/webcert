@@ -8,13 +8,19 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Mottagning;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class WebCertUserTest {
 
@@ -102,13 +108,12 @@ public class WebCertUserTest {
     
     private WebCertUser createWebCertUser() {
         
-        WebCertUser wcu = new WebCertUser(new ArrayList<GrantedAuthority>());
+        WebCertUser wcu = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         
         wcu.setNamn("A Name");
         wcu.setHsaId("HSA-id");
         wcu.setForskrivarkod("Forskrivarkod");
         wcu.setAuthenticationScheme("AuthScheme");
-        wcu.setLakare(true);
         wcu.setSpecialiseringar(Arrays.asList("Kirurgi","Ortopedi"));
         
         List<Vardgivare> vardgivare = new ArrayList<Vardgivare>();
@@ -142,4 +147,17 @@ public class WebCertUserTest {
         
         return wcu;
     }
+
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+    }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
+    }
+
 }

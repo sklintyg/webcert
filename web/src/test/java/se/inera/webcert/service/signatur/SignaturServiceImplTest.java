@@ -22,6 +22,9 @@ import se.inera.certificate.modules.support.api.dto.HoSPersonal;
 import se.inera.certificate.modules.support.api.dto.InternalModelHolder;
 import se.inera.certificate.modules.support.api.dto.InternalModelResponse;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.persistence.utkast.model.Utkast;
@@ -44,9 +47,11 @@ import se.inera.webcert.util.ReflectionUtils;
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SignaturServiceImplTest {
@@ -124,36 +129,25 @@ public class SignaturServiceImplTest {
         vardgivare = new Vardgivare("123", "vardgivare");
         vardgivare.setVardenheter(Arrays.asList(vardenhet));
 
-        user = new WebCertUser(new ArrayList<GrantedAuthority>());
-        user.setNamn(hoSPerson.getNamn());
-        user.setHsaId(hoSPerson.getHsaId());
-        user.setLakare(true);
-        user.setVardgivare(Arrays.asList(vardgivare));
-
-        user.setValdVardenhet(vardenhet);
-        user.setValdVardgivare(vardgivare);
+        user = createWebCertUser(true);
 
         when(webcertUserService.getWebCertUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
-        when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(
-                internalModelResponse);
+        when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
 
         ReflectionUtils.setTypedField(intygSignatureService, new CustomObjectMapper());
         ReflectionUtils.setTypedField(intygSignatureService, new SignaturTicketTracker());
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson,
-            String enhetsId) {
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(intygId);
-        utkast.setVersion(version);
-        utkast.setIntygsTyp(type);
-        utkast.setStatus(status);
-        utkast.setModel(model);
-        utkast.setSkapadAv(vardperson);
-        utkast.setSenastSparadAv(vardperson);
-        utkast.setEnhetsId(enhetsId);
-        return utkast;
+    private WebCertUser createWebCertUser(boolean doctor) {
+        WebCertUser user = new WebCertUser(getGrantedRole(doctor), getGrantedPrivileges(doctor));
+        user.setNamn(hoSPerson.getNamn());
+        user.setHsaId(hoSPerson.getHsaId());
+        user.setVardgivare(Arrays.asList(vardgivare));
+        user.setValdVardenhet(vardenhet);
+        user.setValdVardgivare(vardgivare);
+
+        return user;
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -285,7 +279,6 @@ public class SignaturServiceImplTest {
         assertNotNull(completedUtkast.getSignatur());
         assertEquals(UtkastStatus.SIGNED, completedUtkast.getStatus());
     }
-
     @Test(expected = WebCertServiceException.class)
     public void userNotAuthorizedDraft() throws IOException {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
@@ -296,8 +289,10 @@ public class SignaturServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void userIsNotDoctorDraft() throws IOException {
+        user = createWebCertUser(false);
+
+        when(webcertUserService.getWebCertUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
-        user.setLakare(false);
 
         intygSignatureService.createDraftHash(INTYG_ID, 1);
     }
@@ -314,10 +309,13 @@ public class SignaturServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void userIsNotDoctorClientSignature() throws IOException {
+        user = createWebCertUser(false);
+
+        when(webcertUserService.getWebCertUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
+
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
-        user.setLakare(false);
 
         intygSignatureService.clientSignature(ticket.getId(), "test");
     }
@@ -333,10 +331,48 @@ public class SignaturServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void userIsNotDoctorServerSignature() throws IOException {
+        user = createWebCertUser(false);
+
+        when(webcertUserService.getWebCertUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
-        user.setLakare(false);
 
         intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
     }
+
+    private GrantedAuthority getGrantedRole(boolean doctor) {
+        if (doctor) {
+            return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+        }
+
+        return new SimpleGrantedAuthority(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR.toString());
+    }
+
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges(boolean doctor) {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+
+        if (doctor) {
+            for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+                privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+            }
+        }
+
+        return privileges;
+    }
+
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson,
+                                String enhetsId) {
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygId);
+        utkast.setVersion(version);
+        utkast.setIntygsTyp(type);
+        utkast.setStatus(status);
+        utkast.setModel(model);
+        utkast.setSkapadAv(vardperson);
+        utkast.setSenastSparadAv(vardperson);
+        utkast.setEnhetsId(enhetsId);
+        return utkast;
+    }
+
 }

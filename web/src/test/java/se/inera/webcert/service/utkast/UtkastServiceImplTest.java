@@ -30,6 +30,9 @@ import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationMessageType;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.service.user.dto.WebCertUser;
@@ -52,7 +55,10 @@ import se.inera.webcert.service.user.WebCertUserService;
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest {
@@ -137,7 +143,7 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftThatIsUnsigned() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
+        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("hsaId");
         when(userService.getWebCertUser()).thenReturn(user);
 
@@ -159,7 +165,7 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftWrongVersion() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
+        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("hsaId");
         when(userService.getWebCertUser()).thenReturn(user);
 
@@ -357,7 +363,7 @@ public class UtkastServiceImplTest {
     }
 
     private WebCertUser createUser() {
-        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
+        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("hsaId");
         user.setNamn("namn");
         List<String> tmp = new ArrayList<String>();
@@ -373,6 +379,18 @@ public class UtkastServiceImplTest {
         vardenhet.setNamn("enhetnamn");
         user.setValdVardenhet(vardenhet);
         return user;
+    }
+
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+    }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
     }
 
 }

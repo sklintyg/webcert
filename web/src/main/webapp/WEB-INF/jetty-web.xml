@@ -79,7 +79,7 @@
     <Arg>jms/NotificationWSQueue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>NOTIFICATIONSENDER.WS.QUEUE</Arg>
+        <Arg>webcert.notification.ws.queue</Arg>
       </New>
     </Arg>
   </New>
@@ -90,7 +90,7 @@
     <Arg>jms/CertificateSenderQueue</Arg>
     <Arg>
       <New class="org.apache.activemq.command.ActiveMQQueue">
-        <Arg>CERTIFICATESENDER.QUEUE</Arg>
+        <Arg>webcert.certificate.queue</Arg>
       </New>
     </Arg>
   </New>

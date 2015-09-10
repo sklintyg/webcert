@@ -1,6 +1,16 @@
 package se.inera.webcert.persistence.roles.model;
 
-import javax.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -20,6 +30,9 @@ public class Role {
     @Column(name = "NAMN")
     private String name;
 
+    @Column(name = "TEXT")
+    private String text;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "ROLLER_RATTIGHETER", joinColumns = @JoinColumn(name = "ROLL_ID", referencedColumnName = "ID") , inverseJoinColumns = @JoinColumn(name = "RATTIGHET_ID", referencedColumnName = "ID"))
     private Collection<Privilege> privileges = new HashSet<>();
@@ -29,8 +42,12 @@ public class Role {
     }
 
     public Role(final String name) {
-        super();
+        this(name, "");
+    }
+
+    public Role(final String name, final String text) {
         this.name = name;
+        this.text = text;
     }
 
     //
@@ -49,6 +66,14 @@ public class Role {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(final String text) {
+        this.text = name;
     }
 
     public Collection<Privilege> getPrivileges() {

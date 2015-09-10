@@ -495,8 +495,11 @@
       <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" nullable="false"/>
       </column>
-      <column name="NAMN" type="varchar(255)">
+      <column name="NAMN" type="varchar(64)">
         <constraints unique="true" nullable="false" />
+      </column>
+      <column name="TEXT" type="varchar(255)">
+        <constraints nullable="false" />
       </column>
     </createTable>
 
@@ -504,8 +507,11 @@
       <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" nullable="false"/>
       </column>
-      <column name="NAMN" type="varchar(255)">
+      <column name="NAMN" type="varchar(64)">
         <constraints unique="true" nullable="false" />
+      </column>
+      <column name="TEXT" type="varchar(255)">
+        <constraints nullable="false" />
       </column>
     </createTable>
 
@@ -518,6 +524,5 @@
       </column>
     </createTable>
   </changeSet>
-
 
 </databaseChangeLog>

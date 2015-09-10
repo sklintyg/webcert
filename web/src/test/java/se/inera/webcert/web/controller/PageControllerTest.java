@@ -11,12 +11,17 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.servlet.ModelAndView;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.user.WebCertUserService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PageControllerTest {
@@ -58,10 +63,30 @@ public class PageControllerTest {
         String result = controller.resolveStartView(createMockUser(false));
         assertEquals(PageController.ADMIN_VIEW_REDIRECT, result);
     }
+
     private WebCertUser createMockUser(boolean isLakare) {
-        WebCertUser user = new WebCertUser(new ArrayList<GrantedAuthority>());
-        user.setLakare(isLakare);
-        return user;
+        return new WebCertUser(getGrantedRole(isLakare), getGrantedPrivileges(isLakare));
+    }
+
+    private GrantedAuthority getGrantedRole(boolean isLakare) {
+        if (isLakare) {
+            return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+        }
+
+        return new SimpleGrantedAuthority(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR.toString());
+    }
+
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges(boolean isLakare) {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+
+        if (isLakare) {
+            for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+                privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+            }
+        }
+
+        return privileges;
     }
 
 }

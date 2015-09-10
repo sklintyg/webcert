@@ -4,10 +4,8 @@ package se.inera.webcert.common.model;
  * Created by Magnus Ekstrand on 27/08/15.
  */
 
-import org.springframework.security.core.GrantedAuthority;
-
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.Map;
 
 /**
  *
@@ -31,10 +29,17 @@ public interface UserDetails extends Serializable {
     String getNamn();
 
     /**
-     * Returns the authorities granted to the user. Cannot return <code>null</code>.
+     * Returns the role granted to the user. Cannot return <code>null</code>.
+     *
+     * @return the role
+     */
+    Map<String, String> getRoles();
+
+    /**
+     * Returns the authorities (privileges) granted to the user. Cannot return <code>null</code>.
      *
      * @return the authorities, sorted by natural key (never <code>null</code>)
      */
-    Collection<? extends GrantedAuthority> getAuthorities();
+    Map<String, String> getAuthorities();
 
 }

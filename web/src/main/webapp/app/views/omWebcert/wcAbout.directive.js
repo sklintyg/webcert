@@ -1,4 +1,4 @@
-angular.module('webcert').directive('wcAbout',
+angular.module('webcert').directive('wcAbout', ['$location',
     function($location) {
         'use strict';
 
@@ -18,6 +18,11 @@ angular.module('webcert').directive('wcAbout',
                         id: 'about-webcert',
                         link: '/web/dashboard#/webcert/about',
                         label: 'Om Webcert'
+                    },
+                    {
+                        id: 'about-pp-terms',
+                        link: '/web/dashboard#/terms/about',
+                        label: 'Användarvillkor'
                     },
                     {
                         id: 'about-support',
@@ -63,4 +68,4 @@ angular.module('webcert').directive('wcAbout',
                 };
             }
         };
-    });
+    }]);

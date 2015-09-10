@@ -39,13 +39,16 @@ public class ASN1UtilImpl implements ASN1Util {
      *      Base64-encoded signature. Please note that the underlying parser will have to make sure each byte is
      *      unsigned before using it.
      * @return
+     *      serialNumber (e.g. personnummer) extracted from the raw signature
+     * @throws
+     *      IllegalArgumentException if no serialNumber (e.g. personnummer) could be parsed from the signature.
      */
     public String parsePersonId(String asn1Signature) {
         try {
             return new ASN1StreamParser().parse(IOUtils.toInputStream(asn1Signature), X520_SERIAL_MARKER_BYTE_SEQ, PERSON_ID_LENGTH);
         } catch (IOException e) {
             log.error("Could not parse personId from NetID signature: " + e.getMessage());
-            throw new IllegalStateException("Could not parse personId from NetID signature, will not sign utkast: " + e.getMessage());
+            throw new IllegalArgumentException("Could not parse personId from NetID signature, will not sign utkast: " + e.getMessage());
         }
     }
 

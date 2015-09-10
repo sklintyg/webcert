@@ -1,5 +1,10 @@
 package se.inera.webcert.service.user.dto;
 
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
+import static se.inera.webcert.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.core.GrantedAuthority;
@@ -7,6 +12,7 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.util.Assert;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.webcert.common.model.UserDetails;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.SelectableVardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -16,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -29,8 +37,8 @@ public class WebCertUser implements UserDetails {
 
     private static final long serialVersionUID = -2624303818412468774L;
 
-    private boolean lakare;
-    private boolean privatLakare;
+//    private boolean lakare;
+//    private boolean privatLakare;
     private boolean privatLakareAvtalGodkand;
 
     private String personId;
@@ -49,7 +57,8 @@ public class WebCertUser implements UserDetails {
     private SelectableVardenhet valdVardenhet;
     private SelectableVardenhet valdVardgivare;
 
-    private final Set<GrantedAuthority> authorities;
+    private final Map<String, String> roles;
+    private final Map<String, String> authorities;
 
     private AuthenticationMethod authenticationMethod; // TODO - temporary hack. BANKID, NETID
 
@@ -57,10 +66,12 @@ public class WebCertUser implements UserDetails {
     /**
      * Construct the <code>WebCertUser</code> with its authority details.
      *
-     * @param authorities the authorities that should be granted to the caller. Not null.
+     * @param role the role that should be granted to the caller. Not null.
+     * @param authorities the privileges that should be granted to the caller. Not null.
      */
-    public WebCertUser(Collection<? extends GrantedAuthority> authorities) {
-        this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
+    public WebCertUser(GrantedAuthority role, Collection<? extends GrantedAuthority> authorities) {
+        this.roles = getGrantedRoles(role);
+        this.authorities = getGrantedAuthorities(authorities);
     }
 
 
@@ -95,29 +106,31 @@ public class WebCertUser implements UserDetails {
     }
 
     /**
-     * Returns the authorities granted to the user. Cannot return <code>null</code>.
+     * Returns the role granted to the user. Cannot return <code>null</code>.
      *
-     * @return the authorities, sorted by natural key (never <code>null</code>)
+     * @return the role, sorted by natural key (never <code>null</code>)
      */
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Map<String, String> getRoles() {
+        return this.roles;
+    }
+
+    /**
+     * Returns the privileges granted to the user. Cannot return <code>null</code>.
+     *
+     * @return the privileges, sorted by natural key (never <code>null</code>)
+     */
+    @Override
+    public Map<String, String> getAuthorities() {
         return this.authorities;
     }
 
     public boolean isLakare() {
-        return lakare;
-    }
-
-    public void setLakare(boolean lakare) {
-        this.lakare = lakare;
+        return roles.containsKey(ROLE_LAKARE.name()) || roles.containsKey(ROLE_LAKARE_DJUPINTEGRERAD.name()) || roles.containsKey(ROLE_LAKARE_UTHOPP.name());
     }
 
     public boolean isPrivatLakare() {
-        return privatLakare;
-    }
-
-    public void setPrivatLakare(boolean privatLakare) {
-        this.privatLakare = privatLakare;
+        return roles.containsKey(ROLE_PRIVATLAKARE.name());
     }
 
     public boolean isPrivatLakareAvtalGodkand() {
@@ -137,7 +150,6 @@ public class WebCertUser implements UserDetails {
     }
 
     public List<Vardgivare> getVardgivare() {
-
         if (vardgivare == null) {
             vardgivare = Collections.emptyList();
         }
@@ -150,7 +162,6 @@ public class WebCertUser implements UserDetails {
     }
 
     public List<String> getSpecialiseringar() {
-
         if (specialiseringar == null) {
             specialiseringar = Collections.emptyList();
         }
@@ -171,7 +182,6 @@ public class WebCertUser implements UserDetails {
     }
 
     public List<String> getLegitimeradeYrkesgrupper() {
-
         if (legitimeradeYrkesgrupper == null) {
             legitimeradeYrkesgrupper = Collections.emptyList();
         }
@@ -308,11 +318,43 @@ public class WebCertUser implements UserDetails {
     @JsonIgnore
     @Override
     public String toString() {
-        return hsaId +  " [authScheme=" + authenticationScheme + ", lakare=" + lakare + "]";
+        return hsaId +  " [authScheme=" + authenticationScheme + ", lakare=" + isLakare() + "]";
     }
 
 
     // - - Private scope
+
+    private SimpleGrantedAuthority castGrantedAuthority(GrantedAuthority authority) {
+        SimpleGrantedAuthority sga;
+
+        if (authority instanceof SimpleGrantedAuthority) {
+            sga = (SimpleGrantedAuthority) authority;
+        } else {
+            sga = new SimpleGrantedAuthority(authority.getAuthority(), "");
+        }
+
+        return sga;
+    }
+    private Map<String, String> getGrantedAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        Map<String, String> authorityMap = new HashMap<>();
+
+        SortedSet<GrantedAuthority> sortedSet = sortAuthorities(authorities);
+        for (GrantedAuthority ga : sortedSet) {
+            SimpleGrantedAuthority sga = castGrantedAuthority(ga);
+            authorityMap.put(sga.getAuthority(), sga.getDescription());
+        }
+
+        return Collections.unmodifiableMap(authorityMap);
+    }
+
+    private Map<String, String> getGrantedRoles(GrantedAuthority role) {
+        SimpleGrantedAuthority sga = castGrantedAuthority(role);
+
+        Map<String, String> roles = new HashMap<>();
+        roles.put(sga.getAuthority(), sga.getDescription());
+
+        return Collections.unmodifiableMap(roles);
+    }
 
     /*
      * Ensure array iteration order is predictable

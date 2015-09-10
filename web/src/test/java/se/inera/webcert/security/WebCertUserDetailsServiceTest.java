@@ -32,8 +32,8 @@ import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.HsaTitles;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType.SpecialityNames;
-import se.inera.webcert.common.model.UserPrivileges;
-import se.inera.webcert.common.model.UserRoles;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.hsa.services.HsaOrganizationsService;
@@ -90,8 +90,7 @@ public class WebCertUserDetailsServiceTest {
 
     @Before
     public void setup() {
-        when(roleRepository.findByName(anyString())).thenReturn(buildUserRoles().get(0));
-
+        when(roleRepository.findByName(anyString())).thenReturn(buildUserRoles(true).get(0));
     }
 
     @Test
@@ -142,47 +141,45 @@ public class WebCertUserDetailsServiceTest {
     @Test
     public void testNoGivenName() throws Exception {
         setupCallToAuthorizedEnheterForHosPerson();
+
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-givenname.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
         assertEquals("Gran", webCertUser.getNamn());
     }
 
     @Test
     public void testNoLakare() throws Exception {
         setupCallToAuthorizedEnheterForHosPerson();
+
+        when(roleRepository.findByName(anyString())).thenReturn(buildUserRoles(false).get(0));
+
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
         assertFalse(webCertUser.isLakare());
     }
 
     @Test
     public void testPopulatingWebCertUser() throws Exception {
-
         setupCallToAuthorizedEnheterForHosPerson();
         setupCallToGetHsaPersonInfo();
         setupCallToWebcertFeatureService();
 
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
-
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertEquals(PERSONAL_HSA_ID, webCertUser.getHsaId());
         assertEquals("Markus Gran", webCertUser.getNamn());
         assertEquals(1, webCertUser.getVardgivare().size());
         assertEquals("vg", webCertUser.getVardgivare().get(0).getId());
-
         assertEquals(vardgivare, webCertUser.getVardgivare().get(0));
-
         assertEquals(vardgivare, webCertUser.getValdVardgivare());
-
         assertNotNull(webCertUser.getValdVardenhet());
         assertEquals(ENHET_HSA_ID, webCertUser.getValdVardenhet().getId());
-
         assertEquals(3, webCertUser.getSpecialiseringar().size());
         assertEquals(2, webCertUser.getLegitimeradeYrkesgrupper().size());
-
         assertEquals(HEAD_DOCTOR, webCertUser.getTitel());
-
         assertFalse(webCertUser.getAktivaFunktioner().isEmpty());
 
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
@@ -246,19 +243,38 @@ public class WebCertUserDetailsServiceTest {
         return type;
     }
 
-    private List<Role> buildUserRoles() {
+    private List<Role> buildUserRoles(boolean doctor) {
+        Role role = null;
+        UserPrivilege[] ups = null;
+
         List<Privilege> privileges = new ArrayList<>();
 
-        for (UserPrivileges up: UserPrivileges.values()) {
+        if (doctor) {
+            role = new Role(UserRole.ROLE_LAKARE.name());
+            ups = UserPrivilege.values();
+        } else {
+            role = new Role(UserRole.ROLE_VARDADMINISTRATOR.name());
+            ups = getUserPrivilegesForVardadministrator();
+        }
+
+        for (UserPrivilege up : ups) {
             Privilege privilege = new Privilege(up.name());
             privileges.add(privilege);
         }
 
-        Role role = new Role(UserRoles.ROLE_LAKARE.name());
         role.setPrivileges(privileges);
 
         return Arrays.asList(role);
     }
+
+    private UserPrivilege[] getUserPrivilegesForVardadministrator() {
+        return new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST };
+    }
+
 
     private SAMLCredential createSamlCredential(String filename) throws Exception {
         Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(

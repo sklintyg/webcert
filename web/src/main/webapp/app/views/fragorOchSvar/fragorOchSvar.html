@@ -37,8 +37,8 @@
                  ng-show="!widgetState.filterFormCollapsed"
                  class="qa-filter-panel form-horizontal">
 
-              <!-- frågor och svar som är -->
-              <div class="form-group">
+              <!-- frågor och svar som är. TODO lägg till direktiv som döljer för privatläkare -->
+              <div class="form-group" id="filterFormVidarebefordrad">
                 <label class="col-sm-2 control-label">Frågor och svar som är</label>
                 <div class="col-sm-10">
                   <label class="radio-inline">
@@ -83,8 +83,8 @@
                 </div>
               </div>
 
-              <!-- signerat av -->
-              <div class="form-group">
+              <!-- signerat av TODO lägg till direktiv som döljer för privatläkare -->
+              <div class="form-group" id="filterFormSigneratAv">
                 <label class="col-sm-2 control-label">Signerat av</label>
                 <div class="col-sm-10">
                   <select id="qp-lakareSelector" class="form-control" ng-model="filterForm.lakareSelector"
@@ -163,7 +163,7 @@
                       </button>
                     </td>
                     <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR">
-                      <button class="btn btn-default"
+                      <button class="btn btn-default vidarebefordra-btn"
                               ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-default btn-secondary' : qa.vidarebefordrad}"
                               title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
                               ng-click="openMailDialog(qa)">
@@ -172,7 +172,7 @@
                       </button>
                     </td>
                     <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR" class="center">
-                      <input id="selected" type="checkbox" ng-disabled="qa.updateInProgress"
+                      <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="qa.updateInProgress"
                              ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" />
                                             <span ng-if="qa.updateInProgress"> <img
                                                 src="/img/ajax-loader-kit-16x16.gif"></span>
