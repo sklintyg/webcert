@@ -540,6 +540,8 @@
             <configuration>
               <nodeVersion>${node.version}</nodeVersion>
               <npmVersion>${npm.version}</npmVersion>
+              <nodeDownloadRoot>https://build-inera.nordicmedtest.se/node/</nodeDownloadRoot>
+              <npmDownloadRoot>https://build-inera.nordicmedtest.se/node/npm/</npmDownloadRoot>
             </configuration>
           </execution>
           <execution>
