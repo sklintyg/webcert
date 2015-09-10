@@ -40,18 +40,17 @@
 | ga till ej signerade intyg |
 | ej signerade intyg sidan visas |
 
-!3 Expandera sökfiltret och verifiera att "Vidarebefordrade" och "Sparat av" ej visas (TODO: Ändra till false sen!)
+!3 Expandera sökfiltret och verifiera att "Vidarebefordrade" och "Sparat av" ej visas.
 | script | !-HanteraUtkast-! |
 | visa avancerat filter |
-| filterVidarebefordradVisas | true |
-| filterValjLakareVisas |  true |
+| filterVidarebefordradVisas | false |
+| filterValjLakareVisas |  false |
 
 
 !3 Verifiera knappen för att vidarebeforda EJ finns i tabellen över ej signerade utkast
-!3 TODO VIKTIGT VIKTIGT: Ändra dessa till false när vi implementerat detta privilegie för privatläkare
 | script | !-HanteraUtkast-! |
-| vidare befordra knapp visas | true |
-| vidarebefordrad checkbox visas | true |
+| vidare befordra knapp visas | false |
+| vidarebefordrad checkbox visas | false |
 
 !3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på
 | script | !-VisaIntyg-! |
@@ -70,39 +69,39 @@
 | lista med ohanterade fragor visas |
 
 
-!3 Kontrollera så filtret inte visar "Frågor och svar som är" eller "Signerat av" för privatläkare (TODO byt till false sen!)
+!3 Kontrollera så filtret inte visar "Frågor och svar som är" eller "Signerat av" för privatläkare
 !| script | SvaraOchFraga |
 | visa avancerat filter |
-| filter vidarebefordrad visas | true |
-| filter valj lakare visas | true |
+| filter vidarebefordrad visas | false |
+| filter valj lakare visas | false |
 
 
-!3 Vidarebefordra-knapp i listan får ej visas (TODO ändra dessa sen till false)
+!3 Vidarebefordra-knapp i listan får ej visas
 !| script | SvaraOchFraga |
-| vidare befordra knapp visas | true |
-| vidarebefordrad checkbox visas | true |
+| vidare befordra knapp visas | false |
+| vidarebefordrad checkbox visas | false |
 
 !3 Vårdenhets-väljaren får ej synas för privatläkare
 !| script | SvaraOchFraga |
 | vardenhet valjare visas | false |
 
-!3 Gå in på frågan och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare (TODO ÄNDRA TILL FALSE!!)
+!3 Gå in på frågan och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare.
 !| script | SvaraOchFraga |
 | visa fraga | $internReferens1 |
 | intyg med fraga svar sidan visas |
-| vidarebefordra knapp inne pa fraga visas | true |
+| vidarebefordra knapp inne pa fraga visas | false |
 
 !3 Gå tillbaka till listsida för Fråga & Svar
 !| script | SvaraOchFraga |
 | ga till svara och fraga |
 | lista med ohanterade fragor visas |
 
-!3 Gå in på frågan med komplettering på och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare (TODO ÄNDRA TILL FALSE!!)
+!3 Gå in på frågan med komplettering på och verifiera att Vidarebefordra-knappen ej är synlig för privatläkare
 !| script | SvaraOchFraga |
 | visa fraga | $internReferens2 |
 | intyg med fraga svar sidan visas |
 | visas fk kompletteringar | $internReferens2 |
-| vidarebefordra knapp inne pa fraga visas | true |
+| vidarebefordra knapp inne pa fraga visas | false |
 
 !3 Gå till Om Webcert
 
