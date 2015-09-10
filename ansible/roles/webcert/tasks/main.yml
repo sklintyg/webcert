@@ -2,7 +2,7 @@
 # file: roles/webcert/tasks/main.yml
 
 - name: stop tomcat
-  service: name={{ tomcat_service }} state=stopped pattern=org.apache.catalina.startup.Bootstrap
+  service: name={{ tomcat_service }} state=stopped pattern={{ tomcat_service }}
 
 - name: create release directory
   file: path={{ releases_folder }} state=directory
@@ -56,4 +56,4 @@
        version={{ config_version }}
 
 - name: start tomcat
-  service: name={{ tomcat_service }} state=started pattern=org.apache.catalina.startup.Bootstrap
+  service: name={{ tomcat_service }} state=started pattern={{ tomcat_service }}
