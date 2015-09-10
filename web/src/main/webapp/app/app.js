@@ -6,14 +6,6 @@
 function getUser() {
     var restPath = '/api/anvandare';
     return $.get(restPath).then(function(user){
-        // normalise privileges
-        var auth = [];
-        if(user && user.authorities && user.authorities.length > 0){
-            for(var j=0; j < user.authorities.length; j++){
-                auth.push(user.authorities[j].authority);
-            }
-            user.authorities = auth;
-        }
         return user;
     });
 };
