@@ -100,7 +100,7 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
                 return true;
             },
             logout : function(){
-                if (endsWith(UserModel.userContext.authenticationScheme, ':fake')) {
+                if (endsWith(UserModel.user.authenticationScheme, ':fake')) {
                     $window.location = '/logout';
                 } else {
                     iid_Invoke('Logout');

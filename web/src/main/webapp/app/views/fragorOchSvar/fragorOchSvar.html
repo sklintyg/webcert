@@ -1,4 +1,4 @@
-<div class="container-fluid" wc-feature-active feature="hanteraFragor">
+<div class="container-fluid" wc-authority feature="hanteraFragor">
   <div class="row" id="unhandled-qa">
     <div class="col-md-12 webcert-col webcert-col-single">
       <h1>
@@ -144,8 +144,8 @@
                 <table class="col-md-12 table table-striped table-qa">
                   <tr>
                     <th></th>
-                    <th></th>
-                    <th class="center" title="Markera om fråga-svar är vidarebefordrat till den som ska hantera det.">
+                    <th wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR"></th>
+                    <th wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR" class="center" title="Markera om fråga-svar är vidarebefordrat till den som ska hantera det.">
                       Vidarebefordrad
                     </th>
                     <th title="Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.">Åtgärd</th>
@@ -162,7 +162,7 @@
                               ng-click="openIntyg(qa.intygsReferens)" id="showqaBtn-{{qa.internReferens}}">Visa
                       </button>
                     </td>
-                    <td>
+                    <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR">
                       <button class="btn btn-default"
                               ng-class="{'btn-info': !qa.vidarebefordrad, 'btn-default btn-secondary' : qa.vidarebefordrad}"
                               title="Skicka mejl med en länk till intyget för att informera den som ska hantera frågan-svaret."
@@ -171,7 +171,7 @@
                         <img ng-if="qa.vidarebefordrad" src="/img/mail_dark.png">
                       </button>
                     </td>
-                    <td class="center">
+                    <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR" class="center">
                       <input id="selected" type="checkbox" ng-disabled="qa.updateInProgress"
                              ng-model="qa.vidarebefordrad" ng-change="onVidareBefordradChange(qa)" />
                                             <span ng-if="qa.updateInProgress"> <img

@@ -1,4 +1,4 @@
-<div class="container-fluid" wc-feature-active feature="hanteraIntygsutkast">
+<div class="container-fluid" wc-authority feature="hanteraIntygsutkast">
   <div class="row" id="unsigned">
     <div class="col-md-12 webcert-col webcert-col-single" ng-form="filterFormElement">
       <h1>
@@ -135,8 +135,8 @@
                 <table class="col-md-12 table table-striped table-qa">
                   <tr>
                     <th></th>
-                    <th></th>
-                    <th class="center"
+                    <th wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST"></th>
+                    <th wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST" class="center"
                         title="Här markerar du om utkastet är vidarebefordrat till den som ska signera det.">
                       Vidarebefordrad
                     </th>
@@ -159,7 +159,7 @@
                               id="showBtn-{{cert.intygId}}"> Visa
                       </button>
                     </td>
-                    <td>
+                    <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST">
                       <button class="btn btn-default"
                               ng-class="{'btn-info': !cert.vidarebefordrad, 'btn-default btn-secondary' : cert.vidarebefordrad}"
                               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
@@ -168,7 +168,7 @@
                         <img ng-if="cert.vidarebefordrad" src="/img/mail_dark.png">
                       </button>
                     </td>
-                    <td class="center">
+                    <td wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST" class="center">
                       <input id="selected" type="checkbox" ng-disabled="cert.updateState.vidarebefordraInProgress" ng-model="cert.vidarebefordrad"
                              ng-change="onNotifyChange(cert)" />
                       <span ng-if="cert.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
