@@ -482,22 +482,31 @@ class SokSkrivIntyg {
         }
     }
 
-    boolean kopieraKnappHarTextSjukskrivning() {
-        def result
-        Browser.drive {
-            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-                    page.kopieraKnapp.attr("title").contains("sjukskrivning")
-        }
-        return result
-    }
+//    boolean kopieraKnappHarTextSjukskrivning() {
+//        def result
+//        Browser.drive {
+//            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+//                    page.kopieraKnapp.attr("title").contains("sjukskrivning")
+//        }
+//        return result
+//    }
 
-    boolean kopieraKnappHarInteTextSjukskrivning() {
-        def result
+
+//    boolean kopieraKnappHarInteTextSjukskrivning() {
+//        def result
+//       Browser.drive {
+//            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+//                    !page.kopieraKnapp.attr("title").contains("sjukskrivning")
+//        }
+//        return result
+//    }
+
+    String kopieraKnappHarText() {
+        def text
         Browser.drive {
-            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-                    !page.kopieraKnapp.attr("title").contains("sjukskrivning")
+            text = page.kopieraKnapp.attr("title")
         }
-        return result
+        return text
     }
 
     // ------- utils

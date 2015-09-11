@@ -352,21 +352,23 @@ class IntegrationMedJournalsystem {
     }
 
     boolean forlangningSjukskrivningVisas() {
+        def result
         Browser.drive {
-            return page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();
+            result =  page.kopieraDialogMsgForlangningSjukskrivning();
         }
+        return result
     }
 
-    boolean forlangningSjukskrivningInteVisas() {
-        Browser.drive {
-            if(!page.kopieraDialogMsgForlangningSjukskrivningNoWait.present){
-                return true;
-            } else {
-                return !page.kopieraDialogMsgForlangningSjukskrivningNoWait.isDisplayed();
-            }
-
-        }
-    }
+//    boolean forlangningSjukskrivningInteVisas() {
+//        Browser.drive {
+//           if(!page.kopieraDialogMsgForlangningSjukskrivningNoWait.present){
+//                return true;
+//            } else {
+//                return !page.kopieraDialogMsgForlangningSjukskrivningNoWait.isDisplayed();
+//            }
+//
+//        }
+//    }
 
     def sleepForNSeconds(String time) {
         def n = time as int;
