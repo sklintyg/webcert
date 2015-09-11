@@ -355,6 +355,9 @@
           <plugin>
             <groupId>uk.co.javahelp.fitnesse</groupId>
             <artifactId>fitnesse-launcher-maven-plugin</artifactId>
+            <configuration>
+              <suite>WebCert.AutomatiseradeTester</suite>
+            </configuration>
             <executions>
               <execution>
                 <goals>
