@@ -936,9 +936,7 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                result = $("#qaTable button.vidarebefordra-btn").isDisplayed()
-            }
+            result = $("#qaTable button.vidarebefordra-btn").isDisplayed()
         }
         return expected == result
     }
@@ -949,9 +947,8 @@ class SvaraOchFraga {
             waitFor {
                 at UnhandledQAPage
             }
-            waitFor {
-                result = $("#qaTable input.vidarebefordrad-checkbox").isDisplayed()
-            }
+            result = $("#qaTable input.vidarebefordrad-checkbox").isDisplayed()
+
         }
         return expected == result
     }

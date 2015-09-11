@@ -2,6 +2,31 @@
 //window.name = 'NG_DEFER_BOOTSTRAP!'; // jshint ignore:line
 'use strict';
 
+// --- define test hooks
+window.doneLoading = false;
+window.dialogDoneLoading = true;
+window.rendered = true;
+window.saving = false;
+window.digest = 0;
+window.autoSave = true;
+
+window.setAutoSave = function(val) {
+    window.autoSave = val;
+}
+
+window.setSaving = function(val) {
+    window.saving = val;
+}
+
+window.getAnimationsState = function(which) {
+    if (which) {
+        return JSON.stringify(window.animations[which], null, 2);
+    } else {
+        return JSON.stringify(window.animations, null, 2);
+    }
+}
+// --- end test hooks
+
 // before we do anything.. we need to get the user
 function getUser() {
     var restPath = '/api/anvandare';
@@ -186,31 +211,6 @@ getUser().then(function(user) {
             TermsState.termsAccepted = user.privatLakareAvtalGodkand;
 
             messageService.addResources(wcMessages);
-
-            // define test hooks
-            $window.doneLoading = false;
-            $window.dialogDoneLoading = true;
-            $window.rendered = true;
-            $window.saving = false;
-            $window.digest = 0;
-            $window.autoSave = true;
-
-            $window.setAutoSave = function(val) {
-                $window.autoSave = val;
-            }
-
-            $window.setSaving = function(val) {
-                $window.saving = val;
-            }
-
-            $window.getAnimationsState = function(which) {
-                if (which) {
-                    return JSON.stringify($window.animations[which], null, 2);
-                } else {
-                    return JSON.stringify($window.animations, null, 2);
-                }
-
-            }
 
             $rootScope.$on('$stateChangeStart',
                 function(event, toState, toParams, fromState, fromParams) {

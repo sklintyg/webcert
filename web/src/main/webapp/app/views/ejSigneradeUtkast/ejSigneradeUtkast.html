@@ -21,8 +21,7 @@
             <div id="advanced-filter-form" ng-show="!widgetState.queryFormCollapsed"
                  class="qa-filter-panel form-horizontal">
 
-              <!-- utkast som är TODO lägg direktiv som döljer detta alternativ för privatläkare -->
-              <div class="form-group" id="filterFormVidarebefordrad">
+              <div wc-authority="PRIVILEGE_VIDAREBEFORDRA_UTKAST" class="form-group" id="filterFormVidarebefordrad">
                 <label class="col-sm-2 control-label">Utkast som är</label>
                 <div class="col-sm-10">
                   <label class="radio-inline">
@@ -83,8 +82,7 @@
                 </div>
               </div>
 
-              <!-- Sparat av TODO lägg direktiv som döljer detta alternativ för privatläkare -->
-              <div class="form-group" id="filterFormSparatAv">
+              <div wc-authority role="ROLE_LAKARE" class="form-group" id="filterFormSparatAv">
                 <label class="col-sm-2 control-label">Sparat av</label>
                 <div class="col-sm-10">
                   <select id="uc-savedBy" class="form-control" ng-model="filterForm.lastFilterQuery.filter.savedBy"

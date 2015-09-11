@@ -27,6 +27,9 @@
 
 !3 Skapa ett nytt intygsutkast
 
+| script | !-SokSkrivIntyg-! |
+| ga till sok skriv intyg |
+
 | script | !-SkrivIntyg-! |
 | skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
 | $intygsid= | intygsid |
