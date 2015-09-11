@@ -181,7 +181,10 @@ getUser().then(function(user) {
 
             $rootScope.lang = 'sv';
             $rootScope.DEFAULT_LANG = 'sv';
+
             UserModel.setUser(user);
+            TermsState.termsAccepted = user.privatLakareAvtalGodkand;
+
             messageService.addResources(wcMessages);
 
             // define test hooks
@@ -217,7 +220,7 @@ getUser().then(function(user) {
                         if (toState.name !== 'webcert.terms') {
                             TermsState.transitioning = false;
                         }
-                        if (UserModel.user.privatLakare && !TermsState.termsAccepted && !TermsState.transitioning) {
+                        if (UserModel.isPrivatLakare() && !TermsState.termsAccepted && !TermsState.transitioning) {
                             event.preventDefault();
                             TermsState.transitioning = true;
                             $state.transitionTo('webcert.terms');
