@@ -35,4 +35,5 @@
 
 !*> '''Classpath'''
 ${maven.classpath}
+!pomFile pom.xml
 *!
