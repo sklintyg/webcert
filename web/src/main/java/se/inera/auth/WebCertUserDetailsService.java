@@ -10,13 +10,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
-import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
@@ -27,9 +28,9 @@ import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -44,6 +45,8 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     private static final String LAKARE = "Läkare";
     private static final String LAKARE_CODE = "204010";
+
+    private static final String SPRING_SECURITY_SAVED_REQUEST_ATTR = "SPRING_SECURITY_SAVED_REQUEST";
 
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
@@ -66,8 +69,10 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         assertion = new SakerhetstjanstAssertion(credential.getAuthenticationAssertion());
 
         try {
+            DefaultSavedRequest savedRequest = getSavedRequest();
+
             // Create the user
-            WebCertUser webCertUser = createUser(lookupUserRole());
+            WebCertUser webCertUser = createUser(lookupUserRole(savedRequest));
             return webCertUser;
 
         } catch (Exception e) {
@@ -78,6 +83,13 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             LOG.error("Error building user {}, failed with message {}", assertion.getHsaId(), e.getMessage());
             throw new RuntimeException(assertion.getHsaId(), e);
         }
+    }
+
+    // Magnus: Detta ser ut att funka! Refactor and then remove this comment... ;)
+    private DefaultSavedRequest getSavedRequest() {
+        HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        DefaultSavedRequest savedRequest = (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_ATTR);
+        return savedRequest;
     }
 
 
@@ -254,7 +266,21 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         return StringUtils.join(titlar, COMMA);
     }
 
-    private String lookupUserRole() {
+    private String lookupUserRole(DefaultSavedRequest savedRequest) {
+
+        // Use the request URI to decide if this is a 'djupintegration' or 'uthopp' user
+        if (savedRequest != null && savedRequest.getRequestURI() != null) {
+            String uri = savedRequest.getRequestURI();
+
+            if (uri.matches("/certificate/*/questions")) {
+                return UserRole.ROLE_LAKARE_UTHOPP.name();
+            }
+
+            if (uri.matches("/intyg/*")) {
+                return UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name();
+            }
+        }
+
         // lakare flag is calculated by checking for lakare profession in title and title code
         if (assertion.getTitel().contains(LAKARE) || assertion.getTitelKod().contains(LAKARE_CODE)) {
             return UserRole.ROLE_LAKARE.name();

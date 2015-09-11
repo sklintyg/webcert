@@ -178,7 +178,6 @@
   </beans>
 
 
-
   <beans profile="dev,wc-security-dev,wc-security-test">
     <bean id="fakeAuthFilter" class="se.inera.auth.FakeAuthenticationFilter">
       <property name="authenticationManager" ref="authenticationManager"/>
