@@ -12,6 +12,7 @@ abstract class AbstractPage extends Page {
     static boolean doneLoading() {
         boolean result
         Browser.drive {
+            println('js.doneLoading:'+js.doneLoading+', js.dialogDoneLoading:' + js.dialogDoneLoading)
             result = js.doneLoading && js.dialogDoneLoading
         }
         result
