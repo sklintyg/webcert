@@ -4,3 +4,5 @@ profiles: test,wc-all-stubs,wc-security-test,testability-api
 # Configuration repository
 environment_name: "test"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
+
+deploy_from_repo: false

@@ -10,6 +10,11 @@
 - name: download webcert-liquibase-runner-{{ version }}.jar
   get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.jar
            dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar
+  when: deploy_from_repo
+
+- name: copy webcert-liquibase-runner-{{ version }}.jar
+  copy: src={{ inventory_dir }}/../tools/liquibase-runner/target/webcert-liquibase-runner.jar dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar
+  when: not deploy_from_repo
 
 - name: run liquibase update
   command: java -jar {{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar --changeLogFile="changelog/changelog.xml" --username="{{ database_username }}" --password="{{ database_password }}" --url="{{ database_url }}" --driver="{{ database_driver }}" --contexts=none update
@@ -17,6 +22,11 @@
 - name: Download webcert-web-{{ version }}.war
   get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/webcert-web/{{ version }}/webcert-web-{{ version }}.war
            dest={{ releases_folder }}/webcert-web-{{ version }}.war
+  when: deploy_from_repo
+
+- name: copy webcert-web-{{ version }}.war
+  copy: src={{ inventory_dir }}/../web/target/webcert.war dest={{ releases_folder }}/webcert-web-{{ version }}.war
+  when: not deploy_from_repo
 
 - name: remove old version of unpacked ROOT war
   file: state=absent
@@ -26,12 +36,17 @@
   file: state=absent
       path={{ webapps_folder }}/ROOT.war
 
-- name: Deploy webcert-web-{{ version }}.war as ROOT.war
+- name: deploy webcert-web-{{ version }}.war as ROOT.war
   command: cp {{ releases_folder }}/webcert-web-{{ version }}.war {{ webapps_folder }}/ROOT.war
 
 - name: Download log-sender-{{ version }}.war
   get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/log-sender/{{ version }}/log-sender-{{ version }}.war
            dest={{ releases_folder }}/log-sender-{{ version }}.war
+  when: deploy_from_repo
+
+- name: copy log-sender-{{ version }}.war
+  copy: src={{ inventory_dir }}/../log-sender/target/log-sender.war dest={{ releases_folder }}/log-sender-{{ version }}.war
+  when: not deploy_from_repo
 
 - name: remove old version of unpacked log-sender war
   file: state=absent
@@ -41,10 +56,10 @@
   file: state=absent
       path={{ webapps_folder }}/log-sender.war
 
-- name: Deploy log-sender-{{ version }}.war as log-sender.war
+- name: deploy log-sender-{{ version }}.war as log-sender.war
   command: cp {{ releases_folder }}/log-sender-{{ version }}.war {{ webapps_folder }}/log-sender.war
 
-- name: Create version file
+- name: create version file
   template: src=version.txt.j2 dest={{ webapps_folder }}/version.txt
 
 - name: pull configuration repo to get new branches
