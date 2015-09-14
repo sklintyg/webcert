@@ -217,5 +217,4 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
 
         $urlRouterProvider.when('', '/create/index');
 
-        $httpProvider.interceptors.push('webcert.TermsInterceptor');
 });

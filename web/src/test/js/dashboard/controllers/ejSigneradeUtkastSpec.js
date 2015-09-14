@@ -31,7 +31,7 @@ describe('UnsignedCertCtrlSpec', function() {
             $provide.value('common.messageService', {});
             $provide.value('common.CertificateService', {});
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
-            $provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
+            //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
 
         }]);
 

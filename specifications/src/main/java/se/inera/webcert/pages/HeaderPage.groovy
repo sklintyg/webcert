@@ -7,6 +7,6 @@ class HeaderPage extends AbstractPage {
 
     static content = {
         unhandledQa(required: false){$("#menu-unhandled-qa")}
-        editUserLink { $('#editUserLink') }
+        editUserLink(required: false) { $('#editUserLink') }
     }
 }

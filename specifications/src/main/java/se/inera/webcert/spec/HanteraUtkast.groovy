@@ -141,7 +141,9 @@ class HanteraUtkast {
                 at UnsignedIntygPage
             }
             page.showAdvancedFilter()
-            page.advancedFilterForm.isDisplayed()
+            waitFor {
+                page.advancedFilterForm.isDisplayed()
+            }
 
         }
     }
@@ -228,10 +230,8 @@ class HanteraUtkast {
             waitFor {
                 at UnsignedIntygPage
             }
-            waitFor {
-                // TODO Find a better way to do this check using the page abstraction
-                result = $("#unsignedCertTable button.vidarebefordra-btn").isDisplayed()
-            }
+            result = $("#unsignedCertTable button.vidarebefordra-btn").isDisplayed()
+
         }
         return expected == result
     }
@@ -242,10 +242,7 @@ class HanteraUtkast {
             waitFor {
                 at UnsignedIntygPage
             }
-            waitFor {
-                // TODO Find a better way to do this check using the page abstraction
-                result = $("#unsignedCertTable input.vidarebefordrad-checkbox").isDisplayed()
-            }
+            result = $("#unsignedCertTable input.vidarebefordrad-checkbox").isDisplayed();
         }
         return expected == result
     }
@@ -297,12 +294,16 @@ class HanteraUtkast {
     }
 
     boolean signeraKnappVisas() {
+        boolean result;
         Browser.drive {
             waitFor {
                 at EditeraIntygPage
             }
-            return page.signeraBtn.isDisplayed()
+            waitFor{
+                result = page.signeraBtn.isDisplayed()
+            }
         }
+        return result
     }
 
     boolean signeraKnappEjVisas() {

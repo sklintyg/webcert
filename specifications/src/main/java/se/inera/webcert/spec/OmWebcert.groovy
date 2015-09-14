@@ -65,10 +65,7 @@ class OmWebcert {
     boolean avtalsvillkorSynligIMenyn(boolean expected) {
         boolean result = false
         Browser.drive {
-            waitFor {
-                // TODO Find a better way to do this check using the page abstraction
-                result = $('#about-pp-terms').isDisplayed()
-            }
+            result = page.ppTermsLink.isDisplayed()
         }
         return expected == result
     }
