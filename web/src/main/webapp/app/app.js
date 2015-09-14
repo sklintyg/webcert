@@ -28,26 +28,16 @@ window.getAnimationsState = function(which) {
 // --- end test hooks
 
 // before we do anything.. we need to get the user
+var user;
 function getUser() {
     var restPath = '/api/anvandare';
-    return $.get(restPath).then(function(user){
-        return user;
+    return $.get(restPath).then(function(data) {
+        user = data;
+        return data;
     });
 };
 
-var alertFallback = true;
-if (typeof console === "undefined" || typeof console.log === "undefined") {
-    console = {};
-    if (alertFallback) {
-        console.log = function(msg) {
-            alert(msg);
-        };
-    } else {
-        console.log = function() {};
-    }
-}
 
-getUser().then(function(user) {
 
     var app = angular.module('webcert',
         ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll']);
@@ -200,15 +190,14 @@ getUser().then(function(user) {
 
     // Inject language resources
     app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel',
-        'common.User', 'webcert.TermsState',
-        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel, UserService, TermsState) {
+        function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel) {
             'use strict';
 
             $rootScope.lang = 'sv';
             $rootScope.DEFAULT_LANG = 'sv';
 
             UserModel.setUser(user);
-            TermsState.termsAccepted = user.privatLakareAvtalGodkand;
+            UserModel.termsAccepted = user.privatLakareAvtalGodkand;
 
             messageService.addResources(wcMessages);
 
@@ -218,11 +207,11 @@ getUser().then(function(user) {
                     var termsCheck = function() {
                         // check terms if not accepted then always redirect
                         if (toState.name !== 'webcert.terms') {
-                            TermsState.transitioning = false;
+                            UserModel.transitioning = false;
                         }
-                        if (UserModel.isPrivatLakare() && !TermsState.termsAccepted && !TermsState.transitioning) {
+                        if (UserModel.isPrivatLakare() && !UserModel.termsAccepted && !UserModel.transitioning) {
                             event.preventDefault();
-                            TermsState.transitioning = true;
+                            UserModel.transitioning = true;
                             $state.transitionTo('webcert.terms');
                         }
                     }
@@ -241,15 +230,16 @@ getUser().then(function(user) {
                     //$log.log('$stateNotFound '+unfoundState.to+'  - fired when a state cannot be found by its name.');
                     //$log.log(unfoundState, fromState, fromParams);
 
-                })
+                });
+
             $rootScope.$on('$stateChangeSuccess',
                 function(event, toState, toParams, fromState, fromParams) {
                     //$log.log('$stateChangeSuccess to '+toState.name+'- fired once the state transition is complete.');
-                    if (!TermsState.termsAccepted && TermsState.transitioning && toState.name === 'webcert.terms') {
-                        TermsState.transitioning = false;
+                    if (!UserModel.termsAccepted && UserModel.transitioning && toState.name === 'webcert.terms') {
+                        UserModel.transitioning = false;
                     }
                     $window.doneLoading = true;
-                })
+                });
 
             $rootScope.$on('$stateChangeError',
                 function(event, toState, toParams, fromState, fromParams, error) {
@@ -257,12 +247,12 @@ getUser().then(function(user) {
                     //$log.log(toState);
                 });
 
-
             $rootScope.$on('$viewContentLoading', function(event, viewConfig) {
                 // runs on individual scopes, so putting it in "run" doesn't work.
                 $window.rendered = false;
                 //$log.log('+++ $viewContentLoading, rendered : ' + $window.rendered);
             });
+
             $rootScope.$on('$viewContentLoaded', function(event) {
                 //$log.log('$viewContentLoaded - fired after dom rendered',event);
                 $window.rendered = true;
@@ -273,7 +263,9 @@ getUser().then(function(user) {
 
 
     // Get a list of all modules to find all files to load.
-    $.get('/api/modules/map').then(function(modules) {
+    getUser().then(function(data) {
+        user = data;
+        $.get('/api/modules/map').then(function(modules) {
         'use strict';
 
         var modulesIds = [];
@@ -301,6 +293,9 @@ getUser().then(function(user) {
             loadCssFromUrl(module.cssPath + '?' + MODULE_CONFIG.BUILD_NUMBER);
 
             if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'true') {
+
+                console.log('use mini is true! loading compressed modules');
+
                 modulePromises.push(loadScriptFromUrl(module.scriptPath + '.min.js?' + MODULE_CONFIG.BUILD_NUMBER));
                 // All dependencies for the modules are included in module.min.js
             } else {
@@ -315,6 +310,7 @@ getUser().then(function(user) {
 
             // Only needed for development since all dependencies are included in other files.
             if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'false') {
+                console.log('use mini is false! loading modules');
                 angular.forEach(arguments, function(data) {
                     if (data !== undefined && data[0] instanceof Array) {
                         angular.forEach(data[0], function(depdendency) {
@@ -351,6 +347,7 @@ getUser().then(function(user) {
                 console.log(error);
             }
         });
+    });
     });
 
     function loadCssFromUrl(url) {
@@ -400,7 +397,3 @@ getUser().then(function(user) {
             }];
         });
     }
-
-}).fail(function() {
-    console.log('failed to load user! exiting!');
-})

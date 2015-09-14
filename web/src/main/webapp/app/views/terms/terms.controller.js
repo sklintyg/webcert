@@ -1,11 +1,12 @@
 angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope', '$scope', '$window', '$modal',
         '$sanitize', '$state', '$location',
-        'common.AvtalProxy', 'common.UserModel', 'webcert.TermsState',
-    function($log, $rootScope, $scope, $window, $modal, $sanitize, $state, $location, AvtalProxy, UserModel, TermsState) {
+        'common.AvtalProxy', 'common.UserModel',
+    function($log, $rootScope, $scope, $window, $modal, $sanitize, $state, $location, AvtalProxy, UserModel ) {
         'use strict';
         $scope.doneLoading = false;
 
-        TermsState.reset();
+        UserModel.termsAccepted = false;
+        UserModel.transitioning = false;
 
         // load the avtal
         AvtalProxy.getLatestAvtal(function(avtalModel){
@@ -47,12 +48,12 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
             approve : function(){
                 AvtalProxy.approve(
                     function(){
-                        TermsState.termsAccepted = true;
+                        UserModel.termsAccepted = true;
                         $scope.modalInstance.dismiss('cancel');
                         $state.transitionTo('webcert.create-index');
                     },
                     function(){
-                        TermsState.termsAccepted = false;
+                        UserModel.termsAccepted = false;
                         $window.location = '/web/error';
                     }
                 );

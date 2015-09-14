@@ -12,5 +12,6 @@ class OmWebcertPage extends AbstractPage {
         intygLink { $("#about-intyg") }
         faqLink { $("#about-faq") }
         cookiesLink { $("#about-cookies") }
+        ppTermsLink(required: false) { $('#about-pp-terms') }
     }
 }
