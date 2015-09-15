@@ -72,7 +72,7 @@ public class PageController {
      * @return String
      */
     protected String resolveStartView(WebCertUser user) {
-        if (user.isLakare() && webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST)) {
+        if ((user.isLakare() || user.isPrivatLakare()) && webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST)) {
             return DASHBOARD_VIEW_REDIRECT;
         } else if (webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_FRAGOR)) {
             return ADMIN_VIEW_REDIRECT;

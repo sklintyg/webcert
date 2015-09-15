@@ -25,9 +25,8 @@ class HeaderMenu {
             waitFor {
                 at HeaderPage
             }
-            waitFor {
-                result = page.editUserLink().isDisplayed()
-            }
+            result = page.editUserLink().isDisplayed()
+
         }
         return expected == result
     }

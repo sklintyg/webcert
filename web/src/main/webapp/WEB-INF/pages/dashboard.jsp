@@ -58,7 +58,6 @@
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/i18n/angular-locale_sv-se.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-cookies.min.js"></script>
-      <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-route.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angularjs/1.2.27/angular-sanitize.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
       <script type="text/javascript" src="/web/webjars/angular-ui-router/0.2.13/angular-ui-router.min.js"></script>

@@ -72,7 +72,7 @@ describe('UnhandledQACtrlSpec', function() {
             $provide.value('webcert.ManageCertificate', {});
 
             // terms state
-            $provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
+            //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
 
             var $window = {};
             $window.location = {};

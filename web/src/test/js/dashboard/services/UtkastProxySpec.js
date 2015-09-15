@@ -49,7 +49,7 @@ describe('UtkastProxy', function() {
         $provide.value('common.CertificateService', {});
         $provide.value('common.messageService', {});
 
-        $provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
+        //$provide.value('webcert.TermsState', {termsAccepted:true, transitioning:false, reset: function(){}});
 
     }));
 
