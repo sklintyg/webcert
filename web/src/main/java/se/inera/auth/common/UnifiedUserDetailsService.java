@@ -6,7 +6,7 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
 
-import se.inera.auth.WebCertUserDetailsService;
+import se.inera.webcert.security.WebCertUserDetailsService;
 import se.inera.auth.eleg.ElegWebCertUserDetailsService;
 
 /**

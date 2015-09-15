@@ -24,9 +24,14 @@ import org.opensaml.xml.Configuration;
 import org.opensaml.xml.io.Unmarshaller;
 import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.saml.SAMLCredential;
+import org.springframework.security.web.PortResolverImpl;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.w3c.dom.Document;
-import se.inera.auth.WebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
@@ -50,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -90,26 +96,163 @@ public class WebCertUserDetailsServiceTest {
 
     @Before
     public void setup() {
-        when(roleRepository.findByName(anyString())).thenReturn(buildUserRoles(true).get(0));
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
     @Test
-    public void testLakareTitle() throws Exception {
+    public void assertRoleAndPrivilegesWhenUserHasTitleLakare() throws Exception {
+        // given
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test
+    public void assertRoleAndPrivilegesWhenUserHasMultipleTitles() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-multiple-titles.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test
+    public void assertRoleAndPrivilegesWhenUserHasTitleCodeLakare() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test
+    public void assertRoleLakareWhenUserHasMultipleTitleCodes() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-multiple-title-codes.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+    }
+
+    @Test
+    public void assertRoleLVardadministratorWhenUserIsNotADoctor() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
         setupCallToGetHsaPersonInfo();
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_VARDADMINISTRATOR.name())).thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR).get(0));
+
+        // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
-        assertTrue(webCertUser.isLakare());
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_VARDADMINISTRATOR.name()));
+        assertUserPrivileges(UserRole.ROLE_VARDADMINISTRATOR, webCertUser);
     }
 
     @Test
-    public void testLakareTitleCode() throws Exception {
+    public void assertRoleAndPrivilegesWhenUserHasTitleDoctorAndUsesDjupintegrationsLink() throws Exception {
+        // given
+        String requestURI = "/visa/intyg/789YAU453999KL2JK/alternatePatientSSn=191212121212&responsibleHospName=ÅsaAndersson";
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequestAttributes(requestURI)));
+
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE_DJUPINTEGRERAD).get(0));
+
+        // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
-        assertTrue(webCertUser.isLakare());
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE_DJUPINTEGRERAD, webCertUser);
     }
-    
+
+    @Test
+    public void assertRoleAndPrivilegesWhenUserHasTitleDoctorAndUsesUthoppsLink() throws Exception {
+        // given
+        String requestURI = "/webcert/web/user/certificate/789YAU453999KL2JK/questions";
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequestAttributes(requestURI)));
+
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE_UTHOPP.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE_UTHOPP).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE_UTHOPP.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE_UTHOPP, webCertUser);
+    }
+
+    @Test
+    public void assertRoleAndPrivilegesWhenUserIsNotDoctorAndUsesDjupintegrationsLink() throws Exception {
+        // given
+        String requestURI = "/visa/intyg/789YAU453999KL2JK/alternatePatientSSn=191212121212&responsibleHospName=ÅsaAndersson";
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequestAttributes(requestURI)));
+
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name())).thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name()));
+        assertUserPrivileges(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD, webCertUser);
+    }
+
+    @Test
+    public void assertRoleAndPrivilegesWhenUserIsNotDoctorAndUsesUthoppsLink() throws Exception {
+        // given
+        String requestURI = "/webcert/web/user/certificate/789YAU453999KL2JK/questions";
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(mockRequestAttributes(requestURI)));
+
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
+        setupCallToAuthorizedEnheterForHosPerson();
+
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name())).thenReturn(getUserRoles(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP).get(0));
+
+        // then
+        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
+
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name()));
+        assertUserPrivileges(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP, webCertUser);
+    }
+
     @Test(expected = MissingMedarbetaruppdragException.class)
     public void testMissingMedarbetaruppdrag() throws Exception {
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
@@ -123,50 +266,31 @@ public class WebCertUserDetailsServiceTest {
     }
     
     @Test
-    public void testMultipleTitleCodes() throws Exception {
-        setupCallToAuthorizedEnheterForHosPerson();
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-multiple-title-codes.xml");
-        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
-        assertTrue(webCertUser.isLakare());
-    }
-    
-    @Test
-    public void testMultipleTitles() throws Exception {
-        setupCallToAuthorizedEnheterForHosPerson();
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-multiple-titles.xml");
-        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
-        assertTrue(webCertUser.isLakare());
-    }
-
-    @Test
     public void testNoGivenName() throws Exception {
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-givenname.xml");
         setupCallToAuthorizedEnheterForHosPerson();
 
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-givenname.xml");
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertEquals("Gran", webCertUser.getNamn());
     }
 
     @Test
-    public void testNoLakare() throws Exception {
-        setupCallToAuthorizedEnheterForHosPerson();
-
-        when(roleRepository.findByName(anyString())).thenReturn(buildUserRoles(false).get(0));
-
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-no-lakare.xml");
-        WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
-
-        assertFalse(webCertUser.isLakare());
-    }
-
-    @Test
     public void testPopulatingWebCertUser() throws Exception {
+        // given
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
         setupCallToGetHsaPersonInfo();
         setupCallToWebcertFeatureService();
 
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
+        // when
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
+
+        // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertEquals(PERSONAL_HSA_ID, webCertUser.getHsaId());
@@ -182,6 +306,9 @@ public class WebCertUserDetailsServiceTest {
         assertEquals(HEAD_DOCTOR, webCertUser.getTitel());
         assertFalse(webCertUser.getAktivaFunktioner().isEmpty());
 
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
         verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSA_ID);
         verify(webcertFeatureService).getActiveFeatures();
@@ -189,21 +316,19 @@ public class WebCertUserDetailsServiceTest {
 
     @Test
     public void testPopulatingWebCertUserWithTwoUserTypes() throws Exception {
-
+        // given
+        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
         setupCallToAuthorizedEnheterForHosPerson();
 
-        GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel1",
-                Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Arrays.asList("Läkare"));
-
-        GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel2",
-                Arrays.asList("Kirurgi", "Reumatologi"), Arrays.asList("Psykoterapeut"));
-
+        GetHsaPersonHsaUserType userType1 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel1", Arrays.asList("Kirurgi", "Öron-, näs- och halssjukdomar"), Arrays.asList("Läkare"));
+        GetHsaPersonHsaUserType userType2 = buildGetHsaPersonHsaUserType(PERSONAL_HSA_ID, "Titel2", Arrays.asList("Kirurgi", "Reumatologi"), Arrays.asList("Psykoterapeut"));
         List<GetHsaPersonHsaUserType> userTypes = Arrays.asList(userType1, userType2);
 
+        // when
         when(hsaPersonService.getHsaPersonInfo(PERSONAL_HSA_ID)).thenReturn(userTypes);
+        when(roleRepository.findByName(UserRole.ROLE_LAKARE.name())).thenReturn(getUserRoles(UserRole.ROLE_LAKARE).get(0));
 
-        SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-code-lakare.xml");
-
+        // then
         WebCertUser webCertUser = (WebCertUser) userDetailsService.loadUserBySAML(samlCredential);
 
         assertEquals(PERSONAL_HSA_ID, webCertUser.getHsaId());
@@ -214,17 +339,68 @@ public class WebCertUserDetailsServiceTest {
 
         assertEquals("Titel1, Titel2", webCertUser.getTitel());
 
+        assertTrue(webCertUser.getRoles().containsKey(UserRole.ROLE_LAKARE.name()));
+        assertUserPrivileges(UserRole.ROLE_LAKARE, webCertUser);
+
         verify(hsaOrganizationsService).getAuthorizedEnheterForHosPerson(PERSONAL_HSA_ID);
         verify(hsaPersonService).getHsaPersonInfo(PERSONAL_HSA_ID);
     }
 
     @Test(expected = HsaServiceException.class)
-    public void unexpectedExceptionWhenprocessingData() throws Exception {
+    public void unexpectedExceptionWhenProcessingData() throws Exception {
+        // given
         SAMLCredential samlCredential = createSamlCredential("saml-assertion-with-title-lakare.xml");
+
+        // when
         when(hsaOrganizationsService.getAuthorizedEnheterForHosPerson(anyString())).thenThrow(new NullPointerException());
+
+        //then
         userDetailsService.loadUserBySAML(samlCredential);
+
+        // fail the test if we come to this point
         fail("Expected exception");
     }
+
+
+    // ~ Private assertion methods
+    // =====================================================================================
+
+    private void assertUserPrivileges(UserRole userRole, WebCertUser user) {
+        switch (userRole) {
+            case ROLE_LAKARE:
+                assertUserPrivileges(UserPrivilege.values(), user);
+                break;
+            case ROLE_LAKARE_DJUPINTEGRERAD:
+                assertUserPrivileges(getUserPrivilegesForDjupintegreradLakare(), user);
+                break;
+            case ROLE_LAKARE_UTHOPP:
+                assertUserPrivileges(getUserPrivilegesForUthoppLakare(), user);
+                break;
+            case ROLE_VARDADMINISTRATOR:
+                assertUserPrivileges(getUserPrivilegesForVardadministrator(), user);
+                break;
+            case ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD:
+                assertUserPrivileges(getUserPrivilegesForDjupintegreradVardadministrator(), user);
+                break;
+            case ROLE_VARDADMINISTRATOR_UTHOPP:
+                assertUserPrivileges(getUserPrivilegesForUthoppVardadministrator(), user);
+                break;
+            default:
+                fail("Cannot assert user privileges");
+        }
+    }
+
+    private void assertUserPrivileges(UserPrivilege[] userPrivileges, WebCertUser user) {
+        Map<String, String> authorities = user.getAuthorities();
+
+        for (UserPrivilege up : userPrivileges) {
+            assertTrue(authorities.containsKey(up.name()));
+        }
+    }
+
+
+    // ~ Private setup methods
+    // =====================================================================================
 
     private GetHsaPersonHsaUserType buildGetHsaPersonHsaUserType(String hsaId, String title, List<String> specialities, List<String> titles) {
 
@@ -243,39 +419,6 @@ public class WebCertUserDetailsServiceTest {
         return type;
     }
 
-    private List<Role> buildUserRoles(boolean doctor) {
-        Role role = null;
-        UserPrivilege[] ups = null;
-
-        List<Privilege> privileges = new ArrayList<>();
-
-        if (doctor) {
-            role = new Role(UserRole.ROLE_LAKARE.name());
-            ups = UserPrivilege.values();
-        } else {
-            role = new Role(UserRole.ROLE_VARDADMINISTRATOR.name());
-            ups = getUserPrivilegesForVardadministrator();
-        }
-
-        for (UserPrivilege up : ups) {
-            Privilege privilege = new Privilege(up.name());
-            privileges.add(privilege);
-        }
-
-        role.setPrivileges(privileges);
-
-        return Arrays.asList(role);
-    }
-
-    private UserPrivilege[] getUserPrivilegesForVardadministrator() {
-        return new UserPrivilege[] {
-                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
-                UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
-                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
-                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST };
-    }
-
-
     private SAMLCredential createSamlCredential(String filename) throws Exception {
         Document doc = (Document) XMLUtils.fromSource(new StreamSource(new ClassPathResource(
                 "WebCertUserDetailsServiceTest/" + filename).getInputStream()));
@@ -285,6 +428,19 @@ public class WebCertUserDetailsServiceTest {
         Assertion assertion = (Assertion) unmarshaller.unmarshall(doc.getDocumentElement());
         NameID nameId = assertion.getSubject().getNameID();
         return new SAMLCredential(nameId, assertion, "remoteId", "localId");
+    }
+
+    private MockHttpServletRequest mockRequestAttributes(String requestURI) {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+
+        if (requestURI != null && requestURI.length() > 0) {
+            request.setRequestURI(requestURI);
+        }
+
+        SavedRequest savedRequest = new DefaultSavedRequest(request, new PortResolverImpl());
+        request.getSession().setAttribute(WebCertUserDetailsService.SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
+
+        return request;
     }
 
     private void setupCallToAuthorizedEnheterForHosPerson() {
@@ -311,6 +467,89 @@ public class WebCertUserDetailsServiceTest {
         availableFeatures.add("feature1");
         availableFeatures.add("feature2");
         when(webcertFeatureService.getActiveFeatures()).thenReturn(availableFeatures);
+    }
+
+
+    // ~ Private setup methods for roles and privileges
+    // =====================================================================================
+
+    private List<Role> getUserRoles(UserRole userRole) {
+        Role role = null;
+        UserPrivilege[] ups = null;
+
+        List<Privilege> privileges = new ArrayList<>();
+
+        switch (userRole) {
+            case ROLE_LAKARE:
+                role = new Role(UserRole.ROLE_LAKARE.name());
+                ups = UserPrivilege.values();
+                break;
+            case ROLE_LAKARE_DJUPINTEGRERAD:
+                role = new Role(UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name());
+                ups = getUserPrivilegesForDjupintegreradLakare();
+                break;
+            case ROLE_LAKARE_UTHOPP:
+                role = new Role(UserRole.ROLE_LAKARE_UTHOPP.name());
+                ups = getUserPrivilegesForUthoppLakare();
+                break;
+            case ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD:
+                role = new Role(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name());
+                ups = getUserPrivilegesForDjupintegreradVardadministrator();
+                break;
+            case ROLE_VARDADMINISTRATOR_UTHOPP:
+                role = new Role(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP.name());
+                ups = getUserPrivilegesForUthoppVardadministrator();
+                break;
+            default:
+                role = new Role(UserRole.ROLE_VARDADMINISTRATOR.name());
+                ups = getUserPrivilegesForVardadministrator();
+        }
+
+        for (UserPrivilege up : ups) {
+            Privilege privilege = new Privilege(up.name());
+            privileges.add(privilege);
+        }
+
+        role.setPrivileges(privileges);
+
+        return Arrays.asList(role);
+    }
+
+    private UserPrivilege[] getUserPrivilegesForUthoppVardadministrator() {
+        return new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST };
+    }
+
+    private UserPrivilege[] getUserPrivilegesForDjupintegreradVardadministrator() {
+        return new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG };
+    }
+
+    private UserPrivilege[] getUserPrivilegesForUthoppLakare() {
+        return new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA };
+    }
+
+    private UserPrivilege[] getUserPrivilegesForDjupintegreradLakare() {
+        return new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
+                UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
+                UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA };
+    }
+
+    private UserPrivilege[] getUserPrivilegesForVardadministrator() {
+        return new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST };
     }
 
 }

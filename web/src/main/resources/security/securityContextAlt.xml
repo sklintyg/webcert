@@ -41,7 +41,7 @@
   <bean id="unifiedUserDetailsService" class="se.inera.auth.common.UnifiedUserDetailsService" />
 
   <!-- These two should only be accessed directly by fake login authentication providers -->
-  <bean id="userDetailsService" class="se.inera.auth.WebCertUserDetailsService"/>
+  <bean id="userDetailsService" class="se.inera.webcert.security.WebCertUserDetailsService"/>
   <bean id="elegWebCertUserDetailsService" class="se.inera.auth.eleg.ElegWebCertUserDetailsService"/>
   <bean id="elegAuthenticationAttributeHelper" class="se.inera.auth.eleg.ElegAuthenticationAttributeHelperImpl" />
   <bean id="elegAuthenticationMethodResolver" class="se.inera.auth.eleg.ElegAuthenticationMethodResolverImpl" />

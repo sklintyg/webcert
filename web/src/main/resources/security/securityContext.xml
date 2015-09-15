@@ -37,7 +37,7 @@
     <property name="logErrors" value="true"/>
   </bean>
 
-  <bean id="userDetailsService" class="se.inera.auth.WebCertUserDetailsService"/>
+  <bean id="userDetailsService" class="se.inera.webcert.security.WebCertUserDetailsService"/>
   <bean id="elegWebCertUserDetailsService" class="se.inera.auth.eleg.ElegWebCertUserDetailsService"/>
 
   <!-- Initialization of OpenSAML library-->

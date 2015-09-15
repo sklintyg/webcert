@@ -81,7 +81,6 @@ public abstract class BaseWebCertUserDetailsService {
     }
 
 
-
     // - - - - - Private scope - - - - -
 
     private GrantedAuthority getGrantedRole(final Role role) {

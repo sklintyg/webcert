@@ -2,14 +2,14 @@ package se.inera.auth;
 
 import java.util.ArrayList;
 
-import static se.inera.auth.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
-import static se.inera.auth.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
-import static se.inera.auth.SakerhetstjanstAssertion.FORSKRIVARKOD_ATTRIBUTE;
-import static se.inera.auth.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
-import static se.inera.auth.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
-import static se.inera.auth.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_ID;
-import static se.inera.auth.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
-import static se.inera.auth.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.FORSKRIVARKOD_ATTRIBUTE;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_ID;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
 
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;

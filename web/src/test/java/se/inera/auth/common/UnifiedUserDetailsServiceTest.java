@@ -1,27 +1,14 @@
 package se.inera.auth.common;
 
-import org.apache.cxf.helpers.XMLUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.NameID;
-import org.opensaml.saml2.core.Response;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.XMLObject;
-import org.opensaml.xml.io.Unmarshaller;
-import org.opensaml.xml.io.UnmarshallerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.saml.SAMLCredential;
-import org.w3c.dom.Document;
-import se.inera.auth.WebCertUserDetailsService;
+import se.inera.webcert.security.WebCertUserDetailsService;
 import se.inera.auth.eleg.ElegWebCertUserDetailsService;
-
-import javax.xml.transform.stream.StreamSource;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
