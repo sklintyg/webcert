@@ -14,6 +14,7 @@ import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.repository.PrivilegeRepository;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -70,7 +71,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         for (UserPrivilege up : userPrivileges) {
             createPrivilegeIfNotFound(up);
         }
-
     }
 
     private void loadRoles(UserRole[] userRoles) {
@@ -90,7 +90,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
                 LOG.warn("User role {} has not been setup with any privileges. Role will not be created.", userRole.name());
             }
         }
-
     }
 
     private Privilege createPrivilegeIfNotFound(final UserPrivilege userPrivilege) {
@@ -144,8 +143,13 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
         Map<UserRole, List<UserPrivilege>> map = new HashMap<>();
 
         map.put(UserRole.ROLE_LAKARE, getPrivileges(UserRole.ROLE_LAKARE));
+        map.put(UserRole.ROLE_LAKARE_DJUPINTEGRERAD, getPrivileges(UserRole.ROLE_LAKARE_DJUPINTEGRERAD));
+        map.put(UserRole.ROLE_LAKARE_UTHOPP, getPrivileges(UserRole.ROLE_LAKARE_UTHOPP));
         map.put(UserRole.ROLE_PRIVATLAKARE, getPrivileges(UserRole.ROLE_PRIVATLAKARE));
+        map.put(UserRole.ROLE_TANDLAKARE, getPrivileges(UserRole.ROLE_TANDLAKARE));
         map.put(UserRole.ROLE_VARDADMINISTRATOR, getPrivileges(UserRole.ROLE_VARDADMINISTRATOR));
+        map.put(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD, getPrivileges(UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD));
+        map.put(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP, getPrivileges(UserRole.ROLE_VARDADMINISTRATOR_UTHOPP));
 
         return map;
     }
@@ -169,8 +173,18 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
             case ROLE_TANDLAKARE:
                 userPrivileges = getTandlakarePrivilegeList();
                 break;
-            default:
+            case ROLE_VARDADMINISTRATOR:
                 userPrivileges = getVardadministratorPrivilegeList();
+                break;
+            case ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD:
+                userPrivileges = getDjupintegreradVardadministratorPrivilegeList();
+                break;
+            case ROLE_VARDADMINISTRATOR_UTHOPP:
+                userPrivileges = getUthoppsVardadministratorPrivilegeList();
+                break;
+            default:
+                // Return empty list if
+                userPrivileges = new ArrayList<UserPrivilege>();
         }
 
         return userPrivileges;
@@ -184,9 +198,21 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
             UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST });
     }
 
+    private List<UserPrivilege> getUthoppsVardadministratorPrivilegeList() {
+        return Arrays.asList(new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
+                UserPrivilege.PRIVILEGE_VIDAREBEFORDRA_UTKAST });
+    }
+
+    private List<UserPrivilege> getDjupintegreradVardadministratorPrivilegeList() {
+        return Arrays.asList(new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_KOPIERA_INTYG });
+    }
+
     private List<UserPrivilege> getTandlakarePrivilegeList() {
         // TODO ordna med rättigheter för tandläkare
-        return Arrays.asList(UserPrivilege.values());
+        return Arrays.asList(new UserPrivilege[] { /* empty list */ });
     }
 
     private List<UserPrivilege> getPrivatLakarePrivilegeList() {
@@ -218,5 +244,6 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
     private List<UserPrivilege> getLakarePrivilegeList() {
         return Arrays.asList(UserPrivilege.values());
     }
+
 }
 

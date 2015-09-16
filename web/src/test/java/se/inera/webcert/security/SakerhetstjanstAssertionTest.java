@@ -16,8 +16,6 @@ import org.opensaml.xml.io.UnmarshallerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
 
-import se.inera.auth.SakerhetstjanstAssertion;
-
 /**
  * @author andreaskaltenbach
  */
