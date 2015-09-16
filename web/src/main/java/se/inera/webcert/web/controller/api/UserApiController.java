@@ -4,15 +4,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.persistence.privatlakaravtal.model.Avtal;
+import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.feature.WebcertFeatureService;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.privatlakaravtal.AvtalService;
 import se.inera.webcert.web.controller.AbstractApiController;
 import se.inera.webcert.web.controller.api.dto.ChangeSelectedUnitRequest;
+import se.inera.webcert.web.controller.api.dto.WebUserFeaturesRequest;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.util.*;
 
 /**
  * Controller for accessing the users security context.
@@ -28,6 +32,9 @@ public class UserApiController extends AbstractApiController {
     @Autowired
     AvtalService avtalService;
 
+    @Autowired
+    WebcertFeatureService featureService;
+
     /**
      * Retrieves the security context of the logged in user as JSON.
      *
@@ -38,6 +45,31 @@ public class UserApiController extends AbstractApiController {
     public Response getUser() {
         WebCertUser user = getWebCertUserService().getWebCertUser();
         return Response.ok(user.getAsJson()).build();
+    }
+
+    @PUT
+    @Path("/features")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest){
+        WebCertUser user = getWebCertUserService().getWebCertUser();
+        List<String> mutFeatures = new ArrayList(user.getAktivaFunktioner());
+        updateFeatures(webUserFeaturesRequest.isJsLoggning(), WebcertFeature.JS_LOGGNING.getName(), mutFeatures);
+        updateFeatures(webUserFeaturesRequest.isJsMinified(), WebcertFeature.JS_MINIFIED.getName(), mutFeatures);
+        user.setAktivaFunktioner(new TreeSet<String>(mutFeatures));
+        return Response.ok(user.getAktivaFunktioner()).build();
+    }
+
+    private void updateFeatures(boolean feature, String name, List<String>features){
+        if(feature){
+            if(features.indexOf(name) < 0 ){
+                features.add(name);
+                featureService.setFeature(name, "true");
+            }
+        } else {
+            features.remove(name);
+            featureService.setFeature(name, "false");
+        }
     }
 
     /**
