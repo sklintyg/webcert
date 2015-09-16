@@ -79,7 +79,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         this.credential = credential;
 
         try {
-            DefaultSavedRequest savedRequest = getSavedRequest();
+            DefaultSavedRequest savedRequest = getCurrentRequest();
 
             // Create the user
             WebCertUser webCertUser = createUser(lookupUserRole(savedRequest, getAssertion()));
@@ -93,13 +93,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
             LOG.error("Error building user {}, failed with message {}", getAssertion().getHsaId(), e.getMessage());
             throw new RuntimeException(getAssertion().getHsaId(), e);
         }
-    }
-
-    // Magnus: Detta ser ut att funka! Refactor and then remove this comment... ;)
-    DefaultSavedRequest getSavedRequest() {
-        HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        DefaultSavedRequest savedRequest = (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
-        return savedRequest;
     }
 
     public SakerhetstjanstAssertion getAssertion() {
@@ -184,6 +177,12 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
         }
 
         return new SakerhetstjanstAssertion(assertion);
+    }
+
+    DefaultSavedRequest getCurrentRequest() {
+        HttpServletRequest curRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        DefaultSavedRequest savedRequest = (DefaultSavedRequest) curRequest.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
+        return savedRequest;
     }
 
 
