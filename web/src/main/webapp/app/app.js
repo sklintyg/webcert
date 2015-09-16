@@ -33,6 +33,15 @@ function getUser() {
     var restPath = '/api/anvandare';
     return $.get(restPath).then(function(data) {
         user = data;
+        // set jsMinified
+        if(user !== undefined && user.aktivaFunktioner !== undefined && user.aktivaFunktioner.length > 0 ){
+            if(user.aktivaFunktioner.indexOf('jsMinified') >= 0){
+                user.jsMinified = true;
+            } else {
+                user.jsMinified = false;
+            }
+        }
+        console.log('---- user.jsMinified : ' + user.jsMinified);
         return data;
     });
 };
@@ -44,8 +53,6 @@ function getUser() {
 
     app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider',
         function($httpProvider, http403ResponseInterceptorProvider, $logProvider) {
-            'use strict';
-
             // Add cache buster interceptor
             $httpProvider.interceptors.push('common.httpRequestInterceptorCacheBuster');
 
@@ -59,7 +66,7 @@ function getUser() {
 
     // Decorators that update form input names and interpolates them. Needed for datepicker directives templates dynamic name attributes
     app.config(function($provide) {
-        'use strict';
+
         $provide.decorator('ngModelDirective', function($delegate) {
             var ngModel = $delegate[0], controller = ngModel.controller;
             ngModel.controller =
@@ -165,7 +172,7 @@ function getUser() {
 
     // IE8 doesn't have Array.indexOf function, check and add it as early as possible
     function checkAddIndexOf() {
-        'use strict';
+
 
         if (!Array.prototype.indexOf) {
             Array.prototype.indexOf = function(elt /*, from*/) {
@@ -191,7 +198,7 @@ function getUser() {
     // Inject language resources
     app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', 'common.messageService', 'common.UserModel',
         function($log, $rootScope, $window, $location, $state, $q, messageService, UserModel) {
-            'use strict';
+
 
             $rootScope.lang = 'sv';
             $rootScope.DEFAULT_LANG = 'sv';
@@ -266,12 +273,12 @@ function getUser() {
     getUser().then(function(data) {
         user = data;
         $.get('/api/modules/map').then(function(modules) {
-        'use strict';
+
 
         var modulesIds = [];
         var modulePromises = [];
 
-        if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'true') {
+        if (user.jsMinified) {
             modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.min.js?' +
                 MODULE_CONFIG.BUILD_NUMBER));
             // All dependencies in module-deps.json are included in module.min.js
@@ -292,7 +299,7 @@ function getUser() {
             modulesIds.push(module.id);
             loadCssFromUrl(module.cssPath + '?' + MODULE_CONFIG.BUILD_NUMBER);
 
-            if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'true') {
+            if (user.jsMinified) {
 
                 console.log('use mini is true! loading compressed modules');
 
@@ -309,7 +316,7 @@ function getUser() {
             var dependencyPromises = [];
 
             // Only needed for development since all dependencies are included in other files.
-            if (MODULE_CONFIG.USE_MINIFIED_JAVASCRIPT === 'false') {
+            if (!user.jsMinified) {
                 console.log('use mini is false! loading modules');
                 angular.forEach(arguments, function(data) {
                     if (data !== undefined && data[0] instanceof Array) {
@@ -351,7 +358,7 @@ function getUser() {
     });
 
     function loadCssFromUrl(url) {
-        'use strict';
+
 
         var link = document.createElement('link');
         link.type = 'text/css';
@@ -361,7 +368,7 @@ function getUser() {
     }
 
     function loadScriptFromUrl(url) {
-        'use strict';
+
 
         var result = $.Deferred();
         var script = document.createElement('script');
@@ -385,7 +392,7 @@ function getUser() {
     }
 
     function addExceptionHandler() {
-        'use strict';
+
 
         // By default, AngularJS will catch errors and log them to
         // the Console. We want to keep that behavior; however, we
