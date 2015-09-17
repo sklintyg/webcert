@@ -1,41 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>se.inera.intyg.webcert</groupId>
     <artifactId>webcert</artifactId>
     <version>0-SNAPSHOT</version>
   </parent>
-
   <artifactId>webcert-specifications</artifactId>
   <packaging>jar</packaging>
-
   <name>Webcert (FitNesse)</name>
-
   <properties>
     <geb.env>firefox</geb.env>
-
     <!-- URLs to services -->
     <webcert.web.baseUrl>http://localhost:9088/</webcert.web.baseUrl>
     <webcert.baseUrl>http://localhost:9088/</webcert.baseUrl>
     <logsender.baseUrl>http://localhost:9099/log-sender/</logsender.baseUrl>
     <certificate.baseUrl>http://localhost:8080/inera-certificate/</certificate.baseUrl>
-
     <fitnesse.port>9126</fitnesse.port>
     <fitnesse.working>${project.basedir}/src/test/fitnesse</fitnesse.working>
     <fitnesse.root>FitNesseRoot</fitnesse.root>
     <fitnesse.project.root>WebCert.AutomatiseradeTester</fitnesse.project.root>
     <fitnesse.suite>${fitnesse.project.root}</fitnesse.suite>
-
     <!-- This example has no unit tests, just integration tests -->
     <skipTests>true</skipTests>
   </properties>
-
   <dependencies>
-
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>log-messages</artifactId>
@@ -44,13 +33,11 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>hsa-integration</artifactId>
     </dependency>
-
     <!-- Common -->
     <dependency>
       <groupId>se.inera.intyg.common</groupId>
       <artifactId>common-specifications</artifactId>
     </dependency>
-
     <!-- Schemas -->
     <dependency>
       <groupId>se.riv.clinicalprocess.healthcond.certificate</groupId>
@@ -68,7 +55,6 @@
       <groupId>se.inera.intyg.privatepractitioner.terms</groupId>
       <artifactId>webcert-privatepractitioner-terms</artifactId>
     </dependency>
-
     <!-- Misc -->
     <dependency>
       <groupId>javax.jms</groupId>
@@ -82,18 +68,15 @@
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.fitnesse</groupId>
       <artifactId>fitnesse</artifactId>
       <version>20150814</version>
     </dependency>
-
     <dependency>
       <groupId>org.gebish</groupId>
       <artifactId>geb-core</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-server</artifactId>
@@ -123,21 +106,17 @@
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-htmlunit-driver</artifactId>
     </dependency>
-
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>compile</scope>
     </dependency>
-    
-      <dependency>
+    <dependency>
       <groupId>com.jayway.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <version>1.4.0</version>
     </dependency>
-
   </dependencies>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -151,7 +130,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -209,9 +187,7 @@
         </configuration>
       </plugin>
     </plugins>
-
   </build>
-
   <profiles>
     <profile>
       <id>demo</id>
@@ -315,75 +291,97 @@
         <geb.env>saucelabssafari</geb.env>
       </properties>
     </profile>
-  <profile>
-    <id>wiki</id>
-    <build>
-      <plugins>
-        <plugin>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.6</version>
-          <executions>
-            <execution>
-              <id>start-fitnesse</id>
-              <phase>verify</phase>
-              <configuration>
-                <tasks>
-                  <echo taskname="fitnesse" message="Starting FitNesse..." />
-                  <java classname="fitnesseMain.FitNesseMain" classpathref="maven.runtime.classpath" fork="true">
-                    <arg line="-p ${fitnesse.port}" />
-                    <arg line="-d ${fitnesse.working}" />
-                    <jvmarg value="-Dwebcert.web.baseUrl=${webcert.web.baseUrl}"/>
-                    <jvmarg value="-Dwebcert.baseUrl=${webcert.baseUrl}"/>
-                    <jvmarg value="-Dlogsender.baseUrl=${logsender.baseUrl}"/>
-                    <jvmarg value="-Dcertificate.baseUrl=${certificate.baseUrl}"/>
-                    <jvmarg value="-Dfitnesse.working=${fitnesse.working}"/>
-                    <jvmarg value="-Dgeb.env=${geb.env}"/>
-                  </java>
-                </tasks>
-              </configuration>
-              <goals>
-                <goal>run</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </build>
-    <dependencies>
-      <dependency>
-        <groupId>org.fitnesse.plugins</groupId>
-        <artifactId>maven-classpath-plugin</artifactId>
-        <version>1.9</version>
-        <scope>runtime</scope>
-      </dependency>
-    </dependencies>
-  </profile>
     <profile>
-      <id>nightly</id>
-      <!-- This profile will boot FitNesse to automatically run the configured
-        test suite. Simply run 'mvn verify -P nightly' -->
+      <id>wiki</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>uk.co.javahelp.fitnesse</groupId>
-            <artifactId>fitnesse-launcher-maven-plugin</artifactId>
-            <configuration>
-              <suite>SauceLabsChromeSuite.IneraWebCert.AllTests.WebTests</suite>
-            </configuration>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.6</version>
             <executions>
               <execution>
+                <id>start-fitnesse</id>
+                <phase>verify</phase>
+                <configuration>
+                  <target unless="maven.test.skip">
+                    <echo message="Starting FitNesse wiki..." taskname="fitnesse"/>
+                    <java classname="fitnesseMain.FitNesseMain" classpathref="maven.runtime.classpath" fork="true">
+                      <arg line="-p ${fitnesse.port}"/>
+                      <arg line="-d ${fitnesse.working}"/>
+                      <jvmarg value="-Dwebcert.web.baseUrl=${webcert.web.baseUrl}"/>
+                      <jvmarg value="-Dwebcert.baseUrl=${webcert.baseUrl}"/>
+                      <jvmarg value="-Dlogsender.baseUrl=${logsender.baseUrl}"/>
+                      <jvmarg value="-Dcertificate.baseUrl=${certificate.baseUrl}"/>
+                      <jvmarg value="-Dfitnesse.working=${fitnesse.working}"/>
+                      <jvmarg value="-Dgeb.env=${geb.env}"/>
+                    </java>
+                  </target>
+                </configuration>
                 <goals>
-                  <goal>set-up</goal>
-                  <goal>run-tests</goal>
-                  <goal>tear-down</goal>
-                  <goal>verify</goal>
+                  <goal>run</goal>
                 </goals>
               </execution>
             </executions>
           </plugin>
         </plugins>
       </build>
+      <dependencies>
+        <dependency>
+          <groupId>org.fitnesse.plugins</groupId>
+          <artifactId>maven-classpath-plugin</artifactId>
+          <version>1.9</version>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>auto</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>start-fitnesse-integration</id>
+                <phase>verify</phase>
+                <configuration>
+                  <target unless="maven.test.skip">
+                    <echo message="Starting FitNesse auto..." taskname="fitnesse"/>
+                    <java classname="fitnesseMain.FitNesseMain" classpathref="maven.runtime.classpath" fork="true">
+                      <arg line="-p ${fitnesse.port}"/>
+                      <arg line="-d ${fitnesse.working}"/>
+                      <arg line="-b resultat.xml"/>
+                      <arg value="-c"/>
+                      <arg value="WebCert.AutomatiseradeTester.ApiTester.FragaSvar.ForsakringskassanSkickarFraga?suite&amp;format=xml"/>
+                      <jvmarg value="-Dwebcert.web.baseUrl=${webcert.web.baseUrl}"/>
+                      <jvmarg value="-Dwebcert.baseUrl=${webcert.baseUrl}"/>
+                      <jvmarg value="-Dlogsender.baseUrl=${logsender.baseUrl}"/>
+                      <jvmarg value="-Dcertificate.baseUrl=${certificate.baseUrl}"/>
+                      <jvmarg value="-Dfitnesse.working=${fitnesse.working}"/>
+                      <jvmarg value="-Dgeb.env=${geb.env}"/>
+                    </java>
+                  </target>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <dependencies>
+        <dependency>
+          <groupId>org.fitnesse.plugins</groupId>
+          <artifactId>maven-classpath-plugin</artifactId>
+          <version>1.9</version>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
-
 </project>
