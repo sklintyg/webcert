@@ -34,7 +34,7 @@ angular.module('webcert').controller('webcert.TermsCtrl', ['$log', '$rootScope',
                 minHeight: undefined,
                 contentHeight: '100%',
                 contentOverflowY: undefined,
-                contentMinHeight: '550px',
+                contentMinHeight: undefined,
                 bodyOverflowY: 'scroll',
                 buttons: [
                     {
