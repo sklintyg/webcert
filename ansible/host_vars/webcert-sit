@@ -1,8 +1,8 @@
 # Spring profiles
-profiles: test,wc-all-stubs,wc-security-test,testability-api
+profiles: test,wc-security-dev,wc-eid-stub,wc-hsa-stub,wc-pp-stub,wc-pu-stub,wc-fk-stub,wc-loggtjanst-stub,wc-mail-stub,wc-notificationsender-stub
 
 # Configuration repository
-environment_name: "test"
+environment_name: "sit"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
 deploy_from_repo: false

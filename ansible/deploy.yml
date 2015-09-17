@@ -3,8 +3,8 @@
 - hosts: webcert-tomcat
   sudo: yes 
   vars:
-    # repo - values: snapshot or release
-    repo: release
+    # repo - values: 'snapshots' or 'releases'
+    repo: releases
     version: 4.0.0-b15
     config_version: master
 
