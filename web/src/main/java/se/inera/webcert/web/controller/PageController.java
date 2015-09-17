@@ -94,6 +94,6 @@ public class PageController {
     }
 
     public void populateUseMinifiedJavaScript(ModelAndView model) {
-        model.addObject("useMinifiedJavaScript", environment.getProperty("webcert.useMinifiedJavaScript", "true"));
+        model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
     }
 }

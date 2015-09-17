@@ -28,9 +28,7 @@
 <script type="text/javascript">
   // Global JS config/constants for this app, to be used by scripts
   var MODULE_CONFIG = {
-    BUILD_NUMBER: '<spring:message code="buildNumber" />',
-    USERCONTEXT: <sec:authentication property="principal.asJson" htmlEscape="false"/>,
-    USE_MINIFIED_JAVASCRIPT: '<c:out value="${useMinifiedJavaScript}"/>'
+    BUILD_NUMBER: '<spring:message code="buildNumber" />'
   }
 </script>
 

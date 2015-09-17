@@ -1,13 +1,13 @@
-package se.inera.auth;
-
-import java.util.ArrayList;
-import java.util.List;
+package se.inera.webcert.security;
 
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.impl.XSAnyImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This SAML-assertion is based on the one described in the document
@@ -67,6 +67,8 @@ public class SakerhetstjanstAssertion {
 
     private String authenticationScheme;
 
+
+    /* Constructor taking an Assertion object */
     public SakerhetstjanstAssertion(Assertion assertion) {
         if (assertion.getAttributeStatements() != null) {
             for (AttributeStatement attributeStatement : assertion.getAttributeStatements()) {
@@ -78,6 +80,64 @@ public class SakerhetstjanstAssertion {
             authenticationScheme = assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef();
         }
     }
+
+
+    // - - - - -  Getters and setters - - - - -
+
+    public List<String> getTitel() {
+        return titel;
+    }
+
+    public List<String> getTitelKod() {
+        return titelKod;
+    }
+
+    public String getForskrivarkod() {
+        return forskrivarkod;
+    }
+
+    public String getHsaId() {
+        return hsaId;
+    }
+
+    public String getFornamn() {
+        return fornamn;
+    }
+
+    public String getMellanOchEfternamn() {
+        return mellanOchEfternamn;
+    }
+
+    public String getEnhetHsaId() {
+        return enhetHsaId;
+    }
+
+    public String getEnhetNamn() {
+        return enhetNamn;
+    }
+
+    public String getVardgivareHsaId() {
+        return vardgivareHsaId;
+    }
+
+    public String getVardgivareNamn() {
+        return vardgivareNamn;
+    }
+
+    public String getMedarbetaruppdragType() {
+        return medarbetaruppdragType;
+    }
+
+    public String getMedarbetaruppdragHsaId() {
+        return medarbetaruppdragHsaId;
+    }
+
+    public String getAuthenticationScheme() {
+        return authenticationScheme;
+    }
+
+
+    // - - - - - Private scope - - - - -
 
     private void extractAttributes(List<Attribute> attributes) {
         for (Attribute attribute : attributes) {
@@ -144,55 +204,4 @@ public class SakerhetstjanstAssertion {
         return values;
     }
 
-    public List<String> getTitel() {
-        return titel;
-    }
-
-    public List<String> getTitelKod() {
-        return titelKod;
-    }
-
-    public String getForskrivarkod() {
-        return forskrivarkod;
-    }
-
-    public String getHsaId() {
-        return hsaId;
-    }
-
-    public String getFornamn() {
-        return fornamn;
-    }
-
-    public String getMellanOchEfternamn() {
-        return mellanOchEfternamn;
-    }
-
-    public String getEnhetHsaId() {
-        return enhetHsaId;
-    }
-
-    public String getEnhetNamn() {
-        return enhetNamn;
-    }
-
-    public String getVardgivareHsaId() {
-        return vardgivareHsaId;
-    }
-
-    public String getVardgivareNamn() {
-        return vardgivareNamn;
-    }
-
-    public String getMedarbetaruppdragType() {
-        return medarbetaruppdragType;
-    }
-
-    public String getMedarbetaruppdragHsaId() {
-        return medarbetaruppdragHsaId;
-    }
-
-    public String getAuthenticationScheme() {
-        return authenticationScheme;
-    }
 }

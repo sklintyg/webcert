@@ -6,6 +6,8 @@ package se.inera.webcert.common.security.authority;
 public enum UserRole {
 
     ROLE_VARDADMINISTRATOR ("Vårdadministratör"),
+    ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD ("Vårdadministratör - djupintegrerad"),
+    ROLE_VARDADMINISTRATOR_UTHOPP ("Vårdadministratör - uthopp"),
     ROLE_LAKARE ("Läkare"),
     ROLE_LAKARE_DJUPINTEGRERAD ("Läkare - djupintegrerad"),
     ROLE_LAKARE_UTHOPP ("Läkare - uthopp"),

@@ -5,7 +5,6 @@ import static se.inera.certificate.common.enumerations.CertificateTypes.FK7263;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.user.WebCertUserService;
 
@@ -32,7 +31,7 @@ public class LegacyIntygIntegrationController {
 
     private static final String PARAM_CERT_TYPE = "certType";
     private static final String PARAM_CERT_ID = "certId";
-    private static final String PARAM_QA_ONLY = "qaOnly";
+    //private static final String PARAM_QA_ONLY = "qaOnly";
 
     private static final Logger LOG = LoggerFactory.getLogger(LegacyIntygIntegrationController.class);
 
@@ -66,7 +65,7 @@ public class LegacyIntygIntegrationController {
         //webCertUserService.clearEnabledFeaturesOnUser();
         //webCertUserService.enableFeaturesOnUser(WebcertFeature.HANTERA_FRAGOR);
         //webCertUserService.enableModuleFeatureOnUser(intygType, ModuleFeature.HANTERA_FRAGOR);
-        webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM_QAONLY);
+        //webCertUserService.enableFeaturesOnUser(WebcertFeature.FRAN_JOURNALSYSTEM_QAONLY);
 
         return buildRedirectResponse(uriInfo, intygType, intygId);
     }
@@ -78,7 +77,7 @@ public class LegacyIntygIntegrationController {
         Map<String, Object> urlParams = new HashMap<String, Object>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
         urlParams.put(PARAM_CERT_ID, certificateId);
-        urlParams.put(PARAM_QA_ONLY, true);
+        //urlParams.put(PARAM_QA_ONLY, true);
 
         URI location = uriBuilder.replacePath(urlBaseTemplate).fragment(urlFragmentTemplate).buildFromMap(urlParams);
 
