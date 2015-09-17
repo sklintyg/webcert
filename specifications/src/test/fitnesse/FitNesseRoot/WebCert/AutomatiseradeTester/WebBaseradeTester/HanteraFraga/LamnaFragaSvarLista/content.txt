@@ -1,4 +1,4 @@
-!contents -R2 -g -p -f -h
+!contents -R2 -g -p -f -H
 
 Testet beskriver fallet när en användare försöka att lämna fråga svar listen med ej hanterat svar. 
 En dialog skulle visas med följande knappar : hantera, ej hantera, tillbaka.

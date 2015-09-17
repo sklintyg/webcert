@@ -1,3 +1,5 @@
+Om man försöker att komma direkt till en signerat intyg så ska man bli omdirrigerad till visa intyg
+
 !3 Logga in
 
 | script | !-LoggaIn-! |
