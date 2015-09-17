@@ -21,6 +21,7 @@
     <fitnesse.root>FitNesseRoot</fitnesse.root>
     <fitnesse.project.root>WebCert.AutomatiseradeTester</fitnesse.project.root>
     <fitnesse.suite>${fitnesse.project.root}</fitnesse.suite>
+    <runtags></runtags>
     <!-- This example has no unit tests, just integration tests -->
     <skipTests>true</skipTests>
   </properties>
@@ -172,20 +173,6 @@
           </filesets>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>uk.co.javahelp.fitnesse</groupId>
-        <artifactId>fitnesse-launcher-maven-plugin</artifactId>
-        <configuration>
-          <port>${fitnesse.port}</port>
-          <workingDir>${fitnesse.working}</workingDir>
-          <root>${fitnesse.root}</root>
-          <createSymLink>false</createSymLink>
-          <suite>${fitnesse.suite}</suite>
-          <useProjectDependencies>
-            <scope>compile</scope>
-          </useProjectDependencies>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -292,6 +279,12 @@
       </properties>
     </profile>
     <profile>
+      <id>smoke</id>
+      <properties>
+        <runtags>smoke</runtags>
+      </properties>
+    </profile>
+    <profile>
       <id>wiki</id>
       <build>
         <plugins>
@@ -356,7 +349,7 @@
                       <arg line="-d ${fitnesse.working}"/>
                       <arg line="-b fitnesse-results.xml"/>
                       <arg value="-c"/>
-                      <arg value="WebCert.AutomatiseradeTester?suite&amp;format=xml"/>
+                      <arg value="WebCert.AutomatiseradeTester?suite&amp;format=xml&amp;runTestsMatchingAllTags=${runtags}"/>
                       <jvmarg value="-Dwebcert.web.baseUrl=${webcert.web.baseUrl}"/>
                       <jvmarg value="-Dwebcert.baseUrl=${webcert.baseUrl}"/>
                       <jvmarg value="-Dlogsender.baseUrl=${logsender.baseUrl}"/>
