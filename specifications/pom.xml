@@ -329,9 +329,6 @@
     </profile>
     <profile>
       <id>auto</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <build>
         <plugins>
           <plugin>
