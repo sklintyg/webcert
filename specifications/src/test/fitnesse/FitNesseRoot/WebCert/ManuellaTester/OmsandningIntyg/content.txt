@@ -7,4 +7,4 @@
 
 ''vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=25&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=60000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=2000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2''
 
-!contents -R2 -g -p -f -h
+!contents -R2 -g -p -f -H
