@@ -290,7 +290,6 @@
         <plugins>
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.6</version>
             <executions>
               <execution>
                 <id>start-fitnesse</id>
@@ -333,7 +332,6 @@
         <plugins>
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.6</version>
             <executions>
               <execution>
                 <id>start-fitnesse-integration</id>
