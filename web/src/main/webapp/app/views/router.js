@@ -139,7 +139,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         }).
         state('webcert.fragasvar-qaonly', {
             data: { defaultActive : 'unhandled-qa' },
-            url: '/fragasvar/:certificateType/:certificateId/:qaOnly',
+            url: '/fragasvar/:certificateType/:certificateId',
             views: {
                 'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
