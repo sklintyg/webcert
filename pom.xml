@@ -47,6 +47,8 @@
 
     <cgi-funktionstjanster-grp.version>0-SNAPSHOT</cgi-funktionstjanster-grp.version>
     <cgi-funktionstjanster-grp.version.range>(,1.0.0]</cgi-funktionstjanster-grp.version.range>
+
+    <skip-jacoco>true</skip-jacoco>
   </properties>
 
   <modules>
@@ -503,6 +505,9 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+            <skip>${skip-jacoco}</skip>
+        </configuration>
         <executions>
           <execution>
             <id>prepare-unit-test-agent</id>
