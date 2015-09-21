@@ -19,6 +19,7 @@
 package se.inera.webcert.service.user;
 
 import se.inera.certificate.modules.support.feature.ModuleFeature;
+import se.inera.webcert.security.AuthoritiesException;
 import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 
@@ -31,7 +32,15 @@ public interface WebCertUserService {
      *
      * @return WebCertUser
      */
-    WebCertUser getWebCertUser();
+    WebCertUser getUser();
+
+    void assertUserRoles(String[] grantedRoles) throws AuthoritiesException;
+
+    void clearEnabledFeaturesOnUser();
+
+    void enableFeaturesOnUser(WebcertFeature... featuresToEnable);
+
+    void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable);
 
     boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation);
     
@@ -39,10 +48,6 @@ public interface WebCertUserService {
 
     boolean isAuthorizedForUnits(List<String> enhetsHsaIds);
 
-    void clearEnabledFeaturesOnUser();
-
-    void enableFeaturesOnUser(WebcertFeature... featuresToEnable);
-
-    void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable);
+    void updateUserRoles(String[] userRoles);
 
 }

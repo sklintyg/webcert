@@ -132,6 +132,7 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
     }
 
+
     // - - - - - Default scope - - - - -
 
     String lookupUserRole(DefaultSavedRequest savedRequest, SakerhetstjanstAssertion assertion) {
@@ -337,7 +338,6 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
 
         return StringUtils.join(titlar, COMMA);
     }
-
 
     private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
 

@@ -29,13 +29,13 @@ public abstract class AbstractApiController {
     private WebCertUserService webCertUserService;
 
     protected HoSPerson createHoSPersonFromUser() {
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         return HoSPerson.create(user);
     }
 
     protected Vardenhet createVardenhetFromUser() {
 
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         AbstractVardenhet valdEnhet = getValdEnhet(user);
 
         Vardenhet enhet = new Vardenhet();
@@ -64,7 +64,7 @@ public abstract class AbstractApiController {
 
     protected List<String> getEnhetIdsForCurrentUser() {
 
-        WebCertUser webCertUser = webCertUserService.getWebCertUser();
+        WebCertUser webCertUser = webCertUserService.getUser();
         List<String> vardenheterIds = webCertUser.getIdsOfSelectedVardenhet();
 
         LOG.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), vardenheterIds);
@@ -78,14 +78,14 @@ public abstract class AbstractApiController {
 
     protected boolean checkIfWebcertFeatureIsAvailable(WebcertFeature webcertFeature) {
         Assert.notNull(webcertFeature);
-        WebCertUser webCertUser = webCertUserService.getWebCertUser();
+        WebCertUser webCertUser = webCertUserService.getUser();
         return webCertUser.hasAktivFunktion(webcertFeature.getName());
     }
 
     protected boolean checkIfWebcertFeatureIsAvailableForModule(WebcertFeature webcertFeature, String moduleType) {
         Assert.notNull(webcertFeature);
         Assert.notNull(moduleType);
-        WebCertUser webCertUser = webCertUserService.getWebCertUser();
+        WebCertUser webCertUser = webCertUserService.getUser();
         String webcertFeatureName = StringUtils.join(new String[] { webcertFeature.getName(), moduleType }, ".");
         return webCertUser.hasAktivFunktion(webcertFeatureName);
 

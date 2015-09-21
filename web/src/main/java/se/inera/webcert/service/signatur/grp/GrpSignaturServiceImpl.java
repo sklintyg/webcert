@@ -63,7 +63,7 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
         Utkast utkast = utkastRepository.findOne(intygId);
         validateUtkast(intygId, utkast);
 
-        WebCertUser webCertUser = webCertUserService.getWebCertUser();
+        WebCertUser webCertUser = webCertUserService.getUser();
         validateWebCertUser(webCertUser);
 
         String personId = webCertUser.getPersonId();

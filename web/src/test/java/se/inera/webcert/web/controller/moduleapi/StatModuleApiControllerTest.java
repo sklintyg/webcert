@@ -103,7 +103,7 @@ public class StatModuleApiControllerTest {
         mockUser.setVardgivare(Arrays.asList(vg));
         mockUser.setValdVardgivare(vg);
 
-        Mockito.when(webCertUserService.getWebCertUser()).thenReturn(mockUser);
+        Mockito.when(webCertUserService.getUser()).thenReturn(mockUser);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class StatModuleApiControllerTest {
 
         Response response = statController.getStatistics();
 
-        Mockito.verify(webCertUserService).getWebCertUser();
+        Mockito.verify(webCertUserService).getUser();
 
         Mockito.verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture());
 
@@ -189,7 +189,7 @@ public class StatModuleApiControllerTest {
 
         Response response = statController.getStatistics();
 
-        Mockito.verify(webCertUserService).getWebCertUser();
+        Mockito.verify(webCertUserService).getUser();
 
         Mockito.verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture());
 
@@ -214,7 +214,7 @@ public class StatModuleApiControllerTest {
 
     @Test
     public void testWebcertUserIsNull() {
-        Mockito.when(webCertUserService.getWebCertUser()).thenReturn(null);
+        Mockito.when(webCertUserService.getUser()).thenReturn(null);
 
         Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
         Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
@@ -222,7 +222,7 @@ public class StatModuleApiControllerTest {
         Response response = statController.getStatistics();
         assertNotNull(response);
 
-        Mockito.verify(webCertUserService).getWebCertUser();
+        Mockito.verify(webCertUserService).getUser();
         assertEquals(OK, response.getStatus());
     }
 

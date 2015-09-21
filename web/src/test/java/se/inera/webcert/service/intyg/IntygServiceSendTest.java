@@ -51,7 +51,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         WebCertUser webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
@@ -75,7 +75,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         WebCertUser webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 

@@ -43,7 +43,7 @@ public class UserApiController extends AbstractApiController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getUser() {
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getUser();
         return Response.ok(user.getAsJson()).build();
     }
 
@@ -84,7 +84,7 @@ public class UserApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response changeSelectedUnitOnUser(ChangeSelectedUnitRequest request) {
 
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getUser();
 
         LOG.debug("Attempting to change selected unit for user '{}', currently selected unit is '{}'", user.getHsaId(),
                 user.getValdVardenhet().getId());
@@ -110,7 +110,7 @@ public class UserApiController extends AbstractApiController {
     @Path("/godkannavtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response godkannAvtal() {
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
             avtalService.approveLatestAvtal(user.getHsaId());
             user.setPrivatLakareAvtalGodkand(true);
@@ -127,7 +127,7 @@ public class UserApiController extends AbstractApiController {
     @Path("/privatlakaravtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response taBortAvtalsGodkannande() {
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
             avtalService.removeApproval(user.getHsaId());
             return Response.ok().build();

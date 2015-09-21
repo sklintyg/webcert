@@ -1,58 +1,110 @@
-/**
- * Copyright (C) 2013 Inera AB (http://www.inera.se)
- *
- * This file is part of Inera Certificate Web (http://code.google.com/p/inera-certificate-web).
- *
- * Inera Certificate Web is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * Inera Certificate Web is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package se.inera.webcert.service.user;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
 import se.inera.certificate.modules.support.feature.ModuleFeature;
-import se.inera.webcert.service.user.dto.WebCertUser;
+import se.inera.webcert.persistence.roles.model.Role;
+import se.inera.webcert.persistence.roles.repository.RoleRepository;
+import se.inera.webcert.security.AuthoritiesException;
 import se.inera.webcert.service.feature.WebcertFeature;
+import se.inera.webcert.service.user.dto.WebCertUser;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
 
-    public WebCertUser getWebCertUser() {
+    @Autowired
+    private RoleRepository roleRepository;
+
+
+    @Override
+    public WebCertUser getUser() {
         return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     @Override
+    public void assertUserRoles(String[] grantedRoles) throws AuthoritiesException {
+        Map<String, String> userRoles = getUser().getRoles();
+
+        List<String> gr = Arrays.asList(grantedRoles);
+        for (String role : userRoles.keySet()) {
+            if (gr.contains(role)) {
+                return;
+            }
+        }
+
+        throw new AuthoritiesException(
+                String.format("User does not have a valid role for current request. User's role must be one of [%s] but was [%s]",
+                        StringUtils.join(grantedRoles, ","), StringUtils.join(userRoles.keySet(), ",")));
+
+    }
+
+    @Override
+    public void clearEnabledFeaturesOnUser() {
+        WebCertUser user = getUser();
+        user.getAktivaFunktioner().clear();
+
+        LOG.debug("Cleared enabled featured on user {}", user.getHsaId());
+    }
+
+    @Override
+    public void enableFeaturesOnUser(WebcertFeature... featuresToEnable) {
+        enableFeatures(getUser(), featuresToEnable);
+    }
+
+    @Override
+    public void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable) {
+        Assert.notNull(moduleName);
+        Assert.notEmpty(modulefeaturesToEnable);
+
+        enableModuleFeatures(getUser(), moduleName, modulefeaturesToEnable);
+    }
+
+    @Override
     public boolean isAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
-        WebCertUser user = getWebCertUser();
-        return checkIfAuthorizedForUnit(user, vardgivarHsaId, enhetsHsaId, isReadOnlyOperation);
+        return checkIfAuthorizedForUnit(getUser(), vardgivarHsaId, enhetsHsaId, isReadOnlyOperation);
     }
 
     @Override
     public boolean isAuthorizedForUnit(String enhetsHsaId, boolean isReadOnlyOperation) {
-        WebCertUser user = getWebCertUser();
-        return checkIfAuthorizedForUnit(user, null, enhetsHsaId, isReadOnlyOperation);
+        return checkIfAuthorizedForUnit(getUser(), null, enhetsHsaId, isReadOnlyOperation);
     }
 
-    public boolean checkIfAuthorizedForUnit(WebCertUser user, String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
+    @Override
+    public boolean isAuthorizedForUnits(List<String> enhetsHsaIds) {
+        WebCertUser user = getUser();
+        return user != null && user.getIdsOfSelectedVardenhet().containsAll(enhetsHsaIds);
+    }
+
+    @Override
+    public void updateUserRoles(String[] userRoles) {
+        Map<String, String> roles = new HashMap<>();
+
+        for (String userRole : userRoles) {
+            Role role = roleRepository.findByName(userRole);
+            if (role != null) {
+                roles.put(role.getName(), role.getText());
+            }
+        }
+
+        getUser().setRoles(roles);
+    }
+
+
+    // - - - - - Package scope - - - - -
+
+    boolean checkIfAuthorizedForUnit(WebCertUser user, String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
 
         if (user == null) {
             return false;
@@ -71,17 +123,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
     }
 
-    public boolean isAuthorizedForUnits(List<String> enhetsHsaIds) {
-        WebCertUser user = getWebCertUser();
-        return user != null && user.getIdsOfSelectedVardenhet().containsAll(enhetsHsaIds);
-    }
-
-    public void enableFeaturesOnUser(WebcertFeature... featuresToEnable) {
-        WebCertUser user = getWebCertUser();
-        enableFeatures(user, featuresToEnable);
-    }
-
-    public void enableFeatures(WebCertUser user, WebcertFeature... featuresToEnable) {
+    void enableFeatures(WebCertUser user, WebcertFeature... featuresToEnable) {
         LOG.debug("User {} had these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
 
         for (WebcertFeature feature : featuresToEnable) {
@@ -91,18 +133,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         LOG.debug("User {} now has these features: {}", user.getHsaId(), StringUtils.join(user.getAktivaFunktioner(), ", "));
     }
 
-    @Override
-    public void enableModuleFeatureOnUser(String moduleName, ModuleFeature... modulefeaturesToEnable) {
-
-        Assert.notNull(moduleName);
-        Assert.notEmpty(modulefeaturesToEnable);
-
-        WebCertUser user = getWebCertUser();
-
-        enableModuleFeatures(user, moduleName, modulefeaturesToEnable);
-    }
-
-    public void enableModuleFeatures(WebCertUser user, String moduleName, ModuleFeature... modulefeaturesToEnable) {
+    void enableModuleFeatures(WebCertUser user, String moduleName, ModuleFeature... modulefeaturesToEnable) {
         for (ModuleFeature moduleFeature : modulefeaturesToEnable) {
 
             String moduleFeatureName = moduleFeature.getName();
@@ -119,12 +150,4 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
     }
 
-    @Override
-    public void clearEnabledFeaturesOnUser() {
-
-        WebCertUser user = getWebCertUser();
-        user.getAktivaFunktioner().clear();
-
-        LOG.debug("Cleared enabled featured from user {}", user.getHsaId());
-    }
 }

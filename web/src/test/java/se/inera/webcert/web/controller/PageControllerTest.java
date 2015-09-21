@@ -36,7 +36,7 @@ public class PageControllerTest {
 
     @Test
     public void testStartViewForDoctor() {
-        when(webCertUserService.getWebCertUser()).thenReturn(createMockUser(true));
+        when(webCertUserService.getUser()).thenReturn(createMockUser(true));
         when(webcertFeatureService.isFeatureActive(any(WebcertFeature.class))).thenReturn(true);
         ModelAndView result = controller.displayStart();
         assertEquals(PageController.DASHBOARD_VIEW_REDIRECT, result.getViewName());
@@ -44,7 +44,7 @@ public class PageControllerTest {
 
     @Test
     public void testStartViewForNonDoctor() {
-        when(webCertUserService.getWebCertUser()).thenReturn(createMockUser(false));
+        when(webCertUserService.getUser()).thenReturn(createMockUser(false));
         when(webcertFeatureService.isFeatureActive(any(WebcertFeature.class))).thenReturn(true);
         ModelAndView result = controller.displayStart();
         assertEquals(PageController.ADMIN_VIEW_REDIRECT, result.getViewName());

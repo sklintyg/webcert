@@ -60,7 +60,7 @@ public class PageController {
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView displayStart() {
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         LOG.debug("displayStart for user " + user.getNamn());
         return new ModelAndView(resolveStartView(user));
     }

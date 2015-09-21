@@ -78,7 +78,7 @@ public class IntygApiControllerTest {
         when(user.getIdsOfSelectedVardenhet()).thenReturn(ENHET_IDS);
         when(user.getValdVardenhet().getId()).thenReturn(ENHET_ID);
 
-        when(webCertUserService.getWebCertUser()).thenReturn(user);
+        when(webCertUserService.getUser()).thenReturn(user);
     }
 
     @Test

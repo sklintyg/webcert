@@ -1,13 +1,11 @@
 package se.inera.auth;
 
-import java.util.ArrayList;
-
 import static se.inera.webcert.security.SakerhetstjanstAssertion.ENHET_HSA_ID_ATTRIBUTE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.FORNAMN_ATTRIBUTE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.FORSKRIVARKOD_ATTRIBUTE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.HSA_ID_ATTRIBUTE;
-import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_ID;
+import static se.inera.webcert.security.SakerhetstjanstAssertion.MEDARBETARUPPDRAG_TYPE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE;
 import static se.inera.webcert.security.SakerhetstjanstAssertion.TITEL_ATTRIBUTE;
 
@@ -23,8 +21,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
+import org.springframework.security.web.PortResolverImpl;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.webcert.hsa.stub.Medarbetaruppdrag;
+import se.inera.webcert.security.WebCertUserDetailsService;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 
 /**
  * @author andreaskaltenbach

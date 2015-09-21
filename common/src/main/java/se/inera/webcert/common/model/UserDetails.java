@@ -15,11 +15,11 @@ import java.util.Map;
 public interface UserDetails extends Serializable {
 
     /**
-     * Returns the personal identifier used to authenticate the user.
+     * Returns the authorities (privileges) granted to the user. Cannot return <code>null</code>.
      *
-     * @return the personal identifier
+     * @return the authorities, sorted by natural key (never <code>null</code>)
      */
-    String getPersonId();
+    Map<String, String> getAuthorities();
 
     /**
      * Returns the name to authenticate the user. Cannot return <code>null</code>.
@@ -29,6 +29,13 @@ public interface UserDetails extends Serializable {
     String getNamn();
 
     /**
+     * Returns the personal identifier used to authenticate the user.
+     *
+     * @return the personal identifier
+     */
+    String getPersonId();
+
+    /**
      * Returns the role granted to the user. Cannot return <code>null</code>.
      *
      * @return the role
@@ -36,10 +43,8 @@ public interface UserDetails extends Serializable {
     Map<String, String> getRoles();
 
     /**
-     * Returns the authorities (privileges) granted to the user. Cannot return <code>null</code>.
-     *
-     * @return the authorities, sorted by natural key (never <code>null</code>)
+     * Set the roles granted to a user.
      */
-    Map<String, String> getAuthorities();
+    void setRoles(Map<String, String> roles);
 
 }

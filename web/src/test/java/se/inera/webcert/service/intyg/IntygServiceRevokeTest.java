@@ -90,7 +90,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         revokedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, json, vardperson);
         revokedUtkast.setAterkalladDatum(LocalDateTime.now());
 
-        when(webCertUserService.getWebCertUser()).thenReturn(user);
+        when(webCertUserService.getUser()).thenReturn(user);
 
         when(revokeRequestConverter.toXml(any(RevokeMedicalCertificateRequestType.class))).thenReturn(SAMPLE_XML);
 

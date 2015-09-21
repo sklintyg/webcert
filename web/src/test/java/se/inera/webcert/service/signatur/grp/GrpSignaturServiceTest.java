@@ -83,7 +83,7 @@ public class GrpSignaturServiceTest {
     @Test
     public void testSuccessfulAuthenticationRequest() throws GrpFault {
         when(grpCollectPollerFactory.getInstance()).thenReturn(mock(GrpCollectPoller.class));
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
         when(signaturService.createDraftHash(INTYG_ID, VERSION)).thenReturn(buildSignaturTicket());
         when(grpService.authenticate(any(AuthenticateRequestType.class))).thenReturn(buildOrderResponse());
@@ -105,7 +105,7 @@ public class GrpSignaturServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenNoWebCertUserIsFound() {
         when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
-        when(webCertUserService.getWebCertUser()).thenReturn(null);
+        when(webCertUserService.getUser()).thenReturn(null);
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
@@ -116,7 +116,7 @@ public class GrpSignaturServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenWebCertUserHasNoPersonId() {
         when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
-        when(webCertUserService.getWebCertUser()).thenReturn(new WebCertUser(getGrantedRole(), getGrantedPrivileges()));
+        when(webCertUserService.getUser()).thenReturn(new WebCertUser(getGrantedRole(), getGrantedPrivileges()));
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
@@ -126,7 +126,7 @@ public class GrpSignaturServiceTest {
 
     @Test(expected = RuntimeException.class)
     public void testAuthenticateRequestThrowsExceptionWhenGrpCallFails() throws GrpFault {
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
         when(signaturService.createDraftHash(INTYG_ID, VERSION)).thenReturn(buildSignaturTicket());
         when(grpService.authenticate(any(AuthenticateRequestType.class))).thenThrow(new GrpFault("grp-fault"));

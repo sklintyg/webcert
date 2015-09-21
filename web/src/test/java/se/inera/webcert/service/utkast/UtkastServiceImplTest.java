@@ -145,7 +145,7 @@ public class UtkastServiceImplTest {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("hsaId");
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
 
         draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
 
@@ -167,7 +167,7 @@ public class UtkastServiceImplTest {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("hsaId");
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
 
         try {
             draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion()-1);
@@ -231,7 +231,7 @@ public class UtkastServiceImplTest {
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
                 new InternalModelResponse("{}"));
 
@@ -266,7 +266,7 @@ public class UtkastServiceImplTest {
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
                 new InternalModelResponse("{}"));
 
@@ -304,7 +304,7 @@ public class UtkastServiceImplTest {
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         WebCertUser user = createUser();
 
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelResponse("{}"));

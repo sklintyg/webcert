@@ -131,7 +131,7 @@ public class SignaturServiceImplTest {
 
         user = createWebCertUser(true);
 
-        when(webcertUserService.getWebCertUser()).thenReturn(user);
+        when(webcertUserService.getUser()).thenReturn(user);
         when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSigning(any(InternalModelHolder.class), any(HoSPersonal.class), any(LocalDateTime.class))).thenReturn(internalModelResponse);
 
@@ -291,7 +291,7 @@ public class SignaturServiceImplTest {
     public void userIsNotDoctorDraft() throws IOException {
         user = createWebCertUser(false);
 
-        when(webcertUserService.getWebCertUser()).thenReturn(user);
+        when(webcertUserService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
 
         intygSignatureService.createDraftHash(INTYG_ID, 1);
@@ -311,7 +311,7 @@ public class SignaturServiceImplTest {
     public void userIsNotDoctorClientSignature() throws IOException {
         user = createWebCertUser(false);
 
-        when(webcertUserService.getWebCertUser()).thenReturn(user);
+        when(webcertUserService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
 
@@ -333,7 +333,7 @@ public class SignaturServiceImplTest {
     public void userIsNotDoctorServerSignature() throws IOException {
         user = createWebCertUser(false);
 
-        when(webcertUserService.getWebCertUser()).thenReturn(user);
+        when(webcertUserService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
         when(mockUtkastRepository.save(completedUtkast)).thenReturn(completedUtkast);
 

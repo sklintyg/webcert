@@ -116,7 +116,7 @@ public class UtkastApiController extends AbstractApiController {
 
         abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
 
         List<Lakare> lakareWithDraftsByEnhet = intygDraftService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
@@ -146,7 +146,7 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private UtkastFilter createUtkastFilter(QueryIntygParameter filterParameters) {
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
 
         UtkastFilter utkastFilter = new UtkastFilter(selectedUnitHsaId);

@@ -114,7 +114,7 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     private WebCertUser getWebcertUserForSignering() {
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         if (!user.isLakare()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User is not a doctor. Could not sign utkast.");

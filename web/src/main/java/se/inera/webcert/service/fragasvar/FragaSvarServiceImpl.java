@@ -175,7 +175,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
 
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         List<String> hsaEnhetIds = user.getIdsOfSelectedVardenhet();
 
         // Filter questions to that current user only sees questions issued to
@@ -226,7 +226,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         // Implement Business Rule FS-005, FS-006
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne()) && !user.isLakare()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "FragaSvar with id "
                     + fragaSvar.getInternReferens().toString() + " and amne (" + fragaSvar.getAmne()
@@ -328,7 +328,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fraga.setVardperson(vardPerson);
         fraga.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         fraga.setVardAktorHsaId(user.getHsaId());
         fraga.setVardAktorNamn(user.getNamn());
 
@@ -477,7 +477,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             verifyEnhetsAuth(enhetsId);
             enhetsIdParams.add(enhetsId);
         } else {
-            WebCertUser user = webCertUserService.getWebCertUser();
+            WebCertUser user = webCertUserService.getUser();
             enhetsIdParams.addAll(user.getIdsOfSelectedVardenhet());
         }
 
@@ -549,7 +549,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
             verifyEnhetsAuth(params.getEnhetId(), true);
             filter.getEnhetsIds().add(params.getEnhetId());
         } else {
-            WebCertUser user = webCertUserService.getWebCertUser();
+            WebCertUser user = webCertUserService.getUser();
             filter.getEnhetsIds().addAll(user.getIdsOfSelectedVardenhet());
         }
 

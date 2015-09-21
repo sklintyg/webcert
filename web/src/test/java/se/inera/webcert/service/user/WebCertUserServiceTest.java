@@ -1,4 +1,4 @@
-package se.inera.webcert.user;
+package se.inera.webcert.service.user;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -13,7 +13,6 @@ import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
 import se.inera.webcert.service.feature.WebcertFeature;
-import se.inera.webcert.service.user.WebCertUserServiceImpl;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 import java.util.ArrayList;

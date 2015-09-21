@@ -58,7 +58,7 @@ public class LogServiceImplTest {
         ReflectionTestUtils.setField(logService, "systemId", "webcert");
         ReflectionTestUtils.setField(logService, "systemName", "WebCert");
         
-        Mockito.when(userService.getWebCertUser()).thenReturn(createWcUser());
+        Mockito.when(userService.getUser()).thenReturn(createWcUser());
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
