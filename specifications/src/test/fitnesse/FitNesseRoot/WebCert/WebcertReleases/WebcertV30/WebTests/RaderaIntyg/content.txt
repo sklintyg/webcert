@@ -1,4 +1,0 @@
-!contents -R2 -g -p -f -h
-
-!see <IneraWebcert.AllTests.WebTests.RaderaIntyg.RaderaIntyg
-!see <IneraWebcert.AllTests.WebTests.RaderaIntyg.RaderaRedanRaderatIntyg

@@ -54,7 +54,6 @@ public class IntygServiceConverterImpl implements IntygServiceConverter {
         item.setStatuses(ClinicalProcessCertificateMetaTypeConverter.toStatusList(source.getStatus()));
         item.setSignedBy(source.getIssuerName());
         item.setSignedDate(source.getSignDate());
-
         return item;
     }
 

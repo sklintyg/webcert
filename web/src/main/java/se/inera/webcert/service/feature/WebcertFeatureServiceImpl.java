@@ -72,6 +72,12 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
         Assert.notNull(featuresMap);
 
         for (WebcertFeature feature : WebcertFeature.values()) {
+            // the env name can be different to the enum name which is used in the gui.
+            // as a result we can normalise the env names ... or translate them to the correct enum name.
+            // I think we should normalise but this could be a bigger job, so translation will have to do.
+            if(feature.getEnvName() != null && env.containsProperty(feature.getEnvName())){
+                features.setProperty(feature.getName(), env.getProperty(feature.getEnvName()));
+            }
             featuresMap.put(feature.getName(), Boolean.FALSE);
         }
     }
@@ -128,7 +134,7 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
         Assert.notNull(featureProps);
         Assert.notEmpty(featuresMap);
         
-        for(Entry<String, Boolean> entry : featuresMap.entrySet()){
+        for (Entry<String, Boolean> entry : featuresMap.entrySet()){
             String envProp = env.getProperty(entry.getKey());
 			Boolean featureState = null;
 			
@@ -188,7 +194,6 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
             Boolean moduleFeatureState = featuresMap.get(key);
             return (moduleFeatureState != null) ? moduleFeatureState.booleanValue() : false;
         }
-
         return false;
     }
 
@@ -216,6 +221,12 @@ public class WebcertFeatureServiceImpl implements WebcertFeatureService, Environ
 
     public void setFeatures(Properties features) {
         this.features = features;
+    }
+
+    @Override
+    public void setFeature(String key, String value){
+        this.features.setProperty(key, value);
+        this.featuresMap.put(key, Boolean.parseBoolean(value));
     }
 
     public Map<String, Boolean> getFeaturesMap() {

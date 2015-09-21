@@ -113,7 +113,9 @@ class HanteraUtkast {
             waitFor {
                 at EditeraIntygPage
             }
-            result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            waitFor {
+                result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            }
         }
         result
     }
@@ -130,6 +132,19 @@ class HanteraUtkast {
             waitFor {
                 at se.inera.webcert.pages.EditeraIntygPage
             }
+        }
+    }
+
+    def visaAvanceratFilter() {
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            page.showAdvancedFilter()
+            waitFor {
+                page.advancedFilterForm.isDisplayed()
+            }
+
         }
     }
 
@@ -173,8 +188,8 @@ class HanteraUtkast {
         Browser.drive {
             waitFor {
                 at VisaFk7263Page
+                page.intygLaddat.isDisplayed()
             }
-            page.intygLaddat.isDisplayed()
         }
     }
 
@@ -205,6 +220,57 @@ class HanteraUtkast {
         return WebcertRestUtils.getNumberOfUnsignedCertificates() == 0
     }
 
+    boolean ejSigneradeIntygVisas() {
+        return WebcertRestUtils.getNumberOfUnsignedCertificates() > 0
+    }
+
+    boolean vidareBefordraKnappVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            result = $("#unsignedCertTable button.vidarebefordra-btn").isDisplayed()
+
+        }
+        return expected == result
+    }
+
+    boolean vidarebefordradCheckboxVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            result = $("#unsignedCertTable input.vidarebefordrad-checkbox").isDisplayed();
+        }
+        return expected == result
+    }
+
+    boolean filterVidarebefordradVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            // TODO fix this on page instead
+            result = $('#filterFormVidarebefordrad').isDisplayed()
+        }
+        return expected == result
+    }
+
+    boolean filterValjLakareVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at UnsignedIntygPage
+            }
+            // TODO fix this on page instead
+            result = $('#filterFormSparatAv').isDisplayed()
+        }
+        return expected == result
+    }
+
     boolean signeraKnappAktiverad() {
         boolean result
         Browser.drive {
@@ -228,12 +294,16 @@ class HanteraUtkast {
     }
 
     boolean signeraKnappVisas() {
+        boolean result;
         Browser.drive {
             waitFor {
                 at EditeraIntygPage
             }
-            return page.signeraBtn.isDisplayed()
+            waitFor{
+                result = page.signeraBtn.isDisplayed()
+            }
         }
+        return result
     }
 
     boolean signeraKnappEjVisas() {
@@ -251,7 +321,9 @@ class HanteraUtkast {
             waitFor {
                 at EditeraIntygPage
             }
-            result = page.signRequiresDoctorMessage.isDisplayed()
+            waitFor {
+                result = page.signRequiresDoctorMessage.isDisplayed()
+            }
         }
         result
     }

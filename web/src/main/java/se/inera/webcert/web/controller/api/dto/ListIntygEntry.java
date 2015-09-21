@@ -97,5 +97,4 @@ public class ListIntygEntry {
     public void setVersion(long version) {
         this.version = version;
     }
-
 }

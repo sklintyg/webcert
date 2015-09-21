@@ -59,4 +59,5 @@ public interface MonitoringLogService {
     
     void logPULookup(String personNummer, String result);
 
+    void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion);
 }

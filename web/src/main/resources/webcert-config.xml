@@ -14,9 +14,13 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
   <import resource="classpath:/repository-context.xml" />
-  <import resource="security/securityContext.xml" />
+ <!-- <import resource="security/securityContext.xml" />   -->
+ <!-- <import resource="security/elegSecurityContext.xml" />       -->
+  <import resource="security/securityContextAlt.xml" />
   <import resource="classpath:/hsa-services-config.xml" />
   <import resource="classpath:/pu-services-config.xml" />
+  <import resource="classpath:/pp-services-config.xml" />
+  <import resource="classpath:/pp-stub-context.xml" />
   <import resource="jms-config.xml" />
   <import resource="ws-config.xml" />
   <import resource="mail-config.xml" />
@@ -29,12 +33,17 @@
   <context:annotation-config />
   
   <context:component-scan base-package="se.inera.webcert" />
-  
+
+
   <beans>
     <!-- All config files must be present in other modes than dev -->
     <context:property-placeholder
-      location="file:${credentials.file}, file:${webcert.config.file}"
+      location="file:${credentials.file}"
       order="1" ignore-unresolvable="true"/>
+    <util:properties id="webcertProps" location="file:${webcert.config.file}"/>
+    <context:property-placeholder
+        properties-ref="webcertProps"
+        order="2" ignore-unresolvable="true"/>
   </beans>
   
   <beans profile="dev,wc-init-data">
@@ -65,15 +74,21 @@
       </property>
     </bean>
 
+    <bean id="avtalService" class="se.inera.webcert.service.privatlakaravtal.AvtalServiceImpl"/>
+
     <!-- Exposes healthCheckService for use in health-check.jsp -->
     <bean
       class="org.springframework.web.context.support.ServletContextAttributeExporter">
       <property name="attributes">
         <map>
           <entry key="healthcheck" value-ref="healthCheckService" />
+          <entry key="avtalservice" value-ref="avtalService" />
         </map>
       </property>
     </bean>
+
+    <!-- Declare the TermsFilter so it can be managed by the Spring context using DelegatingFilterProxy -->
+    <bean id="termsFilter" class="se.inera.auth.TermsFilter"/>
 
     <!-- JSON mappers and providers -->
     <bean id="objectMapper"
@@ -92,5 +107,11 @@
 
     <bean id="localDateTimeHandler" class="se.inera.webcert.web.handlers.LocalDateTimeHandler" />
 
+    <!-- Thread pool for BankID GRP collect tasks. TODO tweak properties -->
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+      <property name="corePoolSize" value="5" />
+      <property name="maxPoolSize" value="10" />
+      <property name="queueCapacity" value="25" />
+    </bean>
   </beans>
 </beans>

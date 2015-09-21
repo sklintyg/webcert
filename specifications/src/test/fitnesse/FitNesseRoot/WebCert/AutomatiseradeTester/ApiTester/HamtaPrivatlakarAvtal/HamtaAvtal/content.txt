@@ -1,0 +1,5 @@
+!3 Privatläkarportalen ber om senaste versionen av användaravtalet
+
+| Hamta Avtal |
+| avtalVersion | resultat? |
+| 1 | OK | 

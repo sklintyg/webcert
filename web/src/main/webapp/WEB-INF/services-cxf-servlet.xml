@@ -29,6 +29,7 @@
   <import resource="classpath:fk-stub-context.xml" />
   <import resource="classpath:hsa-stub-context.xml" />
   <import resource="classpath:pu-stub-context.xml" />
+  <import resource="classpath:pp-stub-context.xml" />
   <import resource="classpath:/mail-stub-testability-api-context.xml" />
   <import resource="classpath:/intygstjanst-stub-context.xml" />
   <import resource="classpath:/loggtjanst-stub-context.xml" />
@@ -68,5 +69,14 @@
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
-  
+
+  <jaxws:endpoint address="/get-private-practitioner-terms/v1.0" implementor="se.inera.webcert.integration.GetPrivatePractitionerTermsResponderImpl">
+    <jaxws:outFaultInterceptors>
+      <bean
+          class="se.inera.certificate.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
+        <constructor-arg value="transform/get-privatepractitioner-terms.xslt" />
+      </bean>
+    </jaxws:outFaultInterceptors>
+  </jaxws:endpoint>
+
 </beans>

@@ -81,6 +81,9 @@ class PopuleraFk7263 {
                 at EditCertPage
             }
 
+            page.setAutoSave(false);
+            page.setSaving(true);
+
             if (smittskydd != null) page.setSmittskydd(smittskydd)
 
             if (undersokning != null){
@@ -181,24 +184,41 @@ class PopuleraFk7263 {
                 page.aktivitetsbegransning = aktivitetsbegransning
             }
 
-            if (nuvarandearbete != null) page.arbete.nuvarande = nuvarandearbete
+            if (nuvarandearbete != null){
+                page.arbete.setNuvarandeCheckBox(nuvarandearbete);
+            }
             if (arbetsuppgifter != null) page.arbete.arbetsuppgifter = arbetsuppgifter
             if (arbetslos != null) page.arbete.arbetslos = arbetslos
             if (foraldraledig != null) page.arbete.foraldraledig = foraldraledig
 
             if (tjanstgoringstid != null) page.arbetsformaga.tjanstgoringstid = tjanstgoringstid
+            if(nedsattMed25 != null){
+                AbstractPage.scrollIntoView("nedsattMed25");
+            }
             if (nedsattMed25 != null) page.arbetsformaga.nedsattMed25 = nedsattMed25
             if (nedsattMed25start != null) page.arbetsformaga.nedsattMed25start = toDate(nedsattMed25start)
             if (nedsattMed25slut != null) page.arbetsformaga.nedsattMed25slut = toDate(nedsattMed25slut)
             if (nedsattMed25beskrivning != null) page.arbetsformaga.nedsattMed25beskrivning = nedsattMed25beskrivning
+            if(nedsattMed50 != null){
+                AbstractPage.scrollIntoView("nedsattMed50");
+            }
             if (nedsattMed50 != null) page.arbetsformaga.nedsattMed50 = nedsattMed50
             if (nedsattMed50start != null) page.arbetsformaga.nedsattMed50start = toDate(nedsattMed50start)
             if (nedsattMed50slut != null) page.arbetsformaga.nedsattMed50slut = toDate(nedsattMed50slut)
             if (nedsattMed50beskrivning != null) page.arbetsformaga.nedsattMed50beskrivning = nedsattMed50beskrivning
+            if(nedsattMed75 != null){
+                AbstractPage.scrollIntoView("nedsattMed75");
+            }
             if (nedsattMed75 != null) page.arbetsformaga.nedsattMed75 = nedsattMed75
             if (nedsattMed75start != null) page.arbetsformaga.nedsattMed75start = toDate(nedsattMed75start)
             if (nedsattMed75slut != null) page.arbetsformaga.nedsattMed75slut = toDate(nedsattMed75slut)
             if (nedsattMed75beskrivning != null) page.arbetsformaga.nedsattMed75beskrivning = nedsattMed75beskrivning
+            if(nedsattMed100 != null){
+                AbstractPage.scrollIntoView("nedsattMed100");
+                waitFor{
+                    page.arbetsformaga.nedsattMed100.isDisplayed()
+                }
+            }
             if (nedsattMed100 != null) page.arbetsformaga.nedsattMed100 = nedsattMed100
             if (nedsattMed100start != null) page.arbetsformaga.nedsattMed100start = toDate(nedsattMed100start)
             if (nedsattMed100slut != null) page.arbetsformaga.nedsattMed100slut = toDate(nedsattMed100slut)
@@ -236,6 +256,10 @@ class PopuleraFk7263 {
             if (vardenhetPostort != null) page.vardenhet.postort = vardenhetPostort
             if (vardenhetTelefonnummer != null) page.vardenhet.telefonnummer = vardenhetTelefonnummer
             if (vardenhetEpost != null) page.vardenhet.epost = vardenhetEpost
+
+            page.setAutoSave(true);
+            // after any updates we need to wait for saving before we can start checking the state of the page in a fixture
+            page.doneSaving();
         }
     }
 

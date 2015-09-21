@@ -1,7 +1,0 @@
-!contents -R2 -g -p -f -h
-
-!see <IneraWebcert.AllTests.WebTests.LoggaIn.LoggaInMedEttUppdrag
-!see <IneraWebcert.AllTests.WebTests.LoggaIn.LoggaInMedFleraUppdrag
-!see <IneraWebcert.AllTests.WebTests.LoggaIn.LoggaInSomIckeLakareHamnarPaFragaSvar
-!see <IneraWebcert.AllTests.WebTests.LoggaIn.LoggaInSomLakareHamnarPaSokSkapaIntyg
-!see <IneraWebcert.AllTests.WebTests.LoggaIn.LoggaInSomLakareUtanUppdragFarFelsida

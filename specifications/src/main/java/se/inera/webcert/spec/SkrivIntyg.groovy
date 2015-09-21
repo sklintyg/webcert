@@ -215,6 +215,9 @@ class SkrivIntyg {
     boolean intygSparatVisas() {
         boolean result
         Browser.drive {
+            waitFor{
+                page.intygetSparatOchKomplettMeddelande.isDisplayed()
+            }
             result = page.intygetSparatOchKomplettMeddelande.isDisplayed()
         }
         result
@@ -223,6 +226,9 @@ class SkrivIntyg {
     boolean intygEjKomplettVisas() {
         boolean result
         Browser.drive {
+            waitFor{
+                page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
+            }
             result = page.intygetSparatOchEjKomplettMeddelande.isDisplayed()
         }
         result

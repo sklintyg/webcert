@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
@@ -29,9 +30,12 @@ import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationMessageType;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -46,12 +50,15 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest {
@@ -136,9 +143,9 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftThatIsUnsigned() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("hsaId");
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
 
         draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
 
@@ -158,9 +165,9 @@ public class UtkastServiceImplTest {
     public void testDeleteDraftWrongVersion() {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("hsaId");
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
 
         try {
             draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion()-1);
@@ -224,7 +231,7 @@ public class UtkastServiceImplTest {
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
                 new InternalModelResponse("{}"));
 
@@ -259,7 +266,7 @@ public class UtkastServiceImplTest {
         when(mockModuleApi.validateDraft(any(InternalModelHolder.class))).thenReturn(validationResponse);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(mockModuleApi.isModelChanged(any(String.class), any(String.class))).thenReturn(true);
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(
                 new InternalModelResponse("{}"));
 
@@ -297,7 +304,7 @@ public class UtkastServiceImplTest {
         SaveAndValidateDraftRequest request = buildSaveAndValidateRequest(utkast);
         WebCertUser user = createUser();
 
-        when(userService.getWebCertUser()).thenReturn(user);
+        when(userService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.updateBeforeSave(any(InternalModelHolder.class), any(HoSPersonal.class))).thenReturn(new InternalModelResponse("{}"));
@@ -356,7 +363,7 @@ public class UtkastServiceImplTest {
     }
 
     private WebCertUser createUser() {
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("hsaId");
         user.setNamn("namn");
         List<String> tmp = new ArrayList<String>();
@@ -372,6 +379,18 @@ public class UtkastServiceImplTest {
         vardenhet.setNamn("enhetnamn");
         user.setValdVardenhet(vardenhet);
         return user;
+    }
+
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+    }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
     }
 
 }

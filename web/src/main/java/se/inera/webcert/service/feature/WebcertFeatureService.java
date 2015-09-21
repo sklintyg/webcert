@@ -1,5 +1,6 @@
 package se.inera.webcert.service.feature;
 
+import java.util.Properties;
 import java.util.Set;
 
 import se.inera.certificate.modules.support.feature.ModuleFeature;
@@ -58,4 +59,6 @@ public interface WebcertFeatureService {
      * @return
      */
     Set<String> getActiveFeatures();
+
+    void setFeature(String key, String value);
 }

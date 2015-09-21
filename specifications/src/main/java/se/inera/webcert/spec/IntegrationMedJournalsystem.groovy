@@ -24,7 +24,7 @@ class IntegrationMedJournalsystem {
 
     def visaIntygViaIntegration(String intygId) {
         Browser.drive {
-            go "/visa/intyg/" + intygId
+            go "/visa/intyg/" + intygId + "?alternatePatientSSn="
             waitFor {
                 at VisaFk7263Page
             }
@@ -82,8 +82,9 @@ class IntegrationMedJournalsystem {
             go "/visa/intyg/" + intygId
             waitFor {
                 at EditCertPage
+                result = page.errorPanel.isDisplayed()
             }
-            result = page.errorPanel
+
         }
         result
     }
@@ -95,7 +96,7 @@ class IntegrationMedJournalsystem {
             waitFor {
                 at EditCertPage
             }
-            result = !page.errorPanelBase.isDisplayed();
+            result = !page.errorPanel.isDisplayed();
         }
         result
     }
@@ -351,21 +352,23 @@ class IntegrationMedJournalsystem {
     }
 
     boolean forlangningSjukskrivningVisas() {
+        def result
         Browser.drive {
-            return page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();
+            result =  page.kopieraDialogMsgForlangningSjukskrivning();
         }
+        return result
     }
 
-    boolean forlangningSjukskrivningInteVisas() {
-        Browser.drive {
-            if(!page.kopieraDialogMsgForlangningSjukskrivningNoWait.present){
-                return true;
-            } else {
-                return !page.kopieraDialogMsgForlangningSjukskrivningNoWait.isDisplayed();
-            }
-
-        }
-    }
+//    boolean forlangningSjukskrivningInteVisas() {
+//        Browser.drive {
+//           if(!page.kopieraDialogMsgForlangningSjukskrivningNoWait.present){
+//                return true;
+//            } else {
+//                return !page.kopieraDialogMsgForlangningSjukskrivningNoWait.isDisplayed();
+//            }
+//
+//        }
+//    }
 
     def sleepForNSeconds(String time) {
         def n = time as int;

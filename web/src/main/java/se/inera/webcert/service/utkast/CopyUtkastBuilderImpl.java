@@ -23,7 +23,7 @@ import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.webcert.pu.model.Person;
-import se.inera.webcert.service.draft.util.UpdateUserUtil;
+import se.inera.webcert.service.util.UpdateUserUtil;
 import se.inera.webcert.service.dto.HoSPerson;
 import se.inera.webcert.service.dto.Vardenhet;
 import se.inera.webcert.service.dto.Vardgivare;

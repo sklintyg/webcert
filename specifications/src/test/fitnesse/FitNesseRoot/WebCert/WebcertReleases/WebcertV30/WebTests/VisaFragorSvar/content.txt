@@ -1,8 +1,0 @@
-!contents -R2 -g -p -f -h
-
-!see <IneraWebcert.AllTests.WebTests.VisaFragorSvar.FiltreraDatum
-!see <IneraWebcert.AllTests.WebTests.VisaFragorSvar.FiltreraFragestallare
-!see <IneraWebcert.AllTests.WebTests.VisaFragorSvar.FiltreraLakare
-!see <IneraWebcert.AllTests.WebTests.VisaFragorSvar.VisaFragaMedUtokadFkInfo
-!see <IneraWebcert.AllTests.WebTests.VisaFragorSvar.VisaIntygMedAllaSortersFragor
-!see <IneraWebcert.AllTests.WebTests.VisaFragorSvar.VisaSaknatIntyg

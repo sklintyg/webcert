@@ -9,10 +9,6 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-
-import javax.jms.Session;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -22,16 +18,25 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import se.inera.log.messages.ActivityPurpose;
 import se.inera.log.messages.ActivityType;
 import se.inera.log.messages.IntygReadMessage;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.service.log.dto.LogRequest;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
+
+import javax.jms.Session;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by pehr on 13/11/13.
@@ -53,7 +58,7 @@ public class LogServiceImplTest {
         ReflectionTestUtils.setField(logService, "systemId", "webcert");
         ReflectionTestUtils.setField(logService, "systemName", "WebCert");
         
-        Mockito.when(userService.getWebCertUser()).thenReturn(createWcUser());
+        Mockito.when(userService.getUser()).thenReturn(createWcUser());
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
@@ -107,7 +112,7 @@ public class LogServiceImplTest {
         Vardgivare vg = new Vardgivare("VARDGIVARE_ID", "Vårdgivaren");
         vg.setVardenheter(Arrays.asList(ve));
         
-        WebCertUser wcu = new WebCertUser();
+        WebCertUser wcu = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         wcu.setHsaId("HSAID");
         wcu.setNamn("Markus Gran");
         wcu.setVardgivare(Arrays.asList(vg));
@@ -115,4 +120,17 @@ public class LogServiceImplTest {
         
         return wcu;
     }
+
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+    }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
+    }
+
 }

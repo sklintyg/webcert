@@ -18,4 +18,16 @@ class HeaderMenu {
             }
         }
     }
+
+    boolean redigeraAnvandareVisas(boolean expected) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at HeaderPage
+            }
+            result = page.editUserLink().isDisplayed()
+
+        }
+        return expected == result
+    }
 }

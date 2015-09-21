@@ -6,7 +6,7 @@
 
 - name: create release directory
   file: path={{ releases_folder }} state=directory
-  
+
 - name: download webcert-liquibase-runner-{{ version }}.jar
   get_url: url=https://build-inera.nordicmedtest.se/nexus/content/repositories/{{ repo }}/se/inera/intyg/webcert/webcert-liquibase-runner/{{ version }}/webcert-liquibase-runner-{{ version }}.jar
            dest={{ releases_folder }}/webcert-liquibase-runner-{{ version }}.jar

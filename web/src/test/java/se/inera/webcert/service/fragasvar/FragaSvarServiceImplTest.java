@@ -6,21 +6,28 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.core.GrantedAuthority;
 import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
@@ -33,9 +40,11 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
+import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.persistence.fragasvar.model.Amne;
 import se.inera.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.webcert.persistence.fragasvar.model.IntygsReferens;
@@ -44,8 +53,6 @@ import se.inera.webcert.persistence.fragasvar.model.Status;
 import se.inera.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarFilter;
 import se.inera.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.webcert.persistence.utkast.model.Utkast;
-import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.service.dto.Lakare;
 import se.inera.webcert.service.exception.WebCertServiceException;
 import se.inera.webcert.service.feature.WebcertFeatureService;
@@ -56,21 +63,22 @@ import se.inera.webcert.service.intyg.IntygService;
 import se.inera.webcert.service.intyg.dto.IntygContentHolder;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.service.utkast.UtkastService;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.util.ReflectionUtils;
-import se.inera.webcert.web.service.WebCertUserService;
 
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
-import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -155,7 +163,7 @@ public class FragaSvarServiceImplTest {
         unsortedList.add(buildFragaSvar(3L, null, JANUARY));
         unsortedList.add(buildFragaSvar(4L, null, AUGUST));
         when(fragasvarRepositoryMock.findByIntygsReferensIntygsId((Mockito.any(String.class)))).thenReturn(unsortedList);
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
 
         List<FragaSvar> result = service.getFragaSvar("intygsid");
 
@@ -217,12 +225,12 @@ public class FragaSvarServiceImplTest {
         fragaSvarList.add(buildFragaSvar(3L, JANUARY, JANUARY));
 
         when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1")).thenReturn(new ArrayList<>(fragaSvarList));
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
 
         List<FragaSvar> result = service.getFragaSvar("intyg-1");
 
         verify(fragasvarRepositoryMock).findByIntygsReferensIntygsId("intyg-1");
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).getUser();
 
         assertEquals(3, result.size());
         assertEquals(fragaSvarList, result);
@@ -239,12 +247,12 @@ public class FragaSvarServiceImplTest {
         fragaSvarList.get(1).getVardperson().setEnhetsId("another unit without my range");
 
         when(fragasvarRepositoryMock.findByIntygsReferensIntygsId("intyg-1")).thenReturn(new ArrayList<>(fragaSvarList));
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
 
         List<FragaSvar> result = service.getFragaSvar("intyg-1");
 
         verify(fragasvarRepositoryMock).findByIntygsReferensIntygsId("intyg-1");
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).getUser();
 
         assertEquals(2, result.size());
         assertEquals(fragaSvarList.get(0), result.get(0));
@@ -261,7 +269,7 @@ public class FragaSvarServiceImplTest {
         when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp())).thenReturn(
                 getIntygContentHolder());
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
@@ -278,7 +286,7 @@ public class FragaSvarServiceImplTest {
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), fraga.getAmne(),
                 fraga.getFrageText());
 
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).getUser();
         verify(notificationServiceMock).sendNotificationForQuestionSent(any(FragaSvar.class));
         verify(webCertUserService).isAuthorizedForUnit(anyString(), eq(false));
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
@@ -301,7 +309,7 @@ public class FragaSvarServiceImplTest {
         when(intygServiceMock.fetchIntygData(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp())).thenReturn(
                 getIntygContentHolder());
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
 
         // test call
         service.saveNewQuestion(fraga.getIntygsReferens().getIntygsId(), fraga.getIntygsReferens().getIntygsTyp(), fraga.getAmne(),
@@ -410,9 +418,9 @@ public class FragaSvarServiceImplTest {
 
         // ArgumentCaptor<NotificationRequestType> notCapture = ArgumentCaptor.forClass(NotificationRequestType.class);
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
         when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
         // mock ws ok response
@@ -425,7 +433,7 @@ public class FragaSvarServiceImplTest {
         FragaSvar result = service.saveSvar(1L, "svarsText");
 
         verify(fragasvarRepositoryMock).findOne(1L);
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).getUser();
         verify(webCertUserService).isAuthorizedForUnit(anyString(), eq(false));
         verify(fragasvarRepositoryMock).save(fragaSvar);
         verify(sendAnswerToFKClientMock).sendMedicalCertificateAnswer(any(AttributedURIType.class),
@@ -448,7 +456,7 @@ public class FragaSvarServiceImplTest {
 
         when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp())).thenReturn(getUnsentIntygContentHolder());
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
 
         // test call
@@ -472,7 +480,7 @@ public class FragaSvarServiceImplTest {
 
         when(intygServiceMock.fetchIntygData(intygsId, fraga.getIntygsReferens().getIntygsTyp())).thenReturn(getRevokedIntygContentHolder());
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
 
         // test call
@@ -517,7 +525,7 @@ public class FragaSvarServiceImplTest {
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
         when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp())).thenReturn(
                 getIntygContentHolder());
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
         when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
 
@@ -538,9 +546,9 @@ public class FragaSvarServiceImplTest {
         when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp())).thenReturn(
                 getIntygContentHolder());
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
         when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
 
@@ -591,8 +599,7 @@ public class FragaSvarServiceImplTest {
         when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp())).thenReturn(
                 getIntygContentHolder());
         WebCertUser nonDoctor = webCertUser();
-        nonDoctor.setLakare(false);
-        when(webCertUserService.getWebCertUser()).thenReturn(nonDoctor);
+        when(webCertUserService.getUser()).thenReturn(nonDoctor);
 
         service.saveSvar(1L, "svarsText");
     }
@@ -604,7 +611,7 @@ public class FragaSvarServiceImplTest {
         when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
         when(intygServiceMock.fetchIntygData(fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getIntygsReferens().getIntygsTyp())).thenReturn(
                 getIntygContentHolder());
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
 
         service.saveSvar(1L, "svarsText");
     }
@@ -805,7 +812,7 @@ public class FragaSvarServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void testFilterFragaSvarWithAuthFail() {
         WebCertUser webCertUser = webCertUser();
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         params.setEnhetId("no-auth");
@@ -843,7 +850,7 @@ public class FragaSvarServiceImplTest {
     @Test
     public void testFilterFragaSvarWithNoEnhetsIdAsParam() {
 
-        when(webCertUserService.getWebCertUser()).thenReturn(webCertUser());
+        when(webCertUserService.getUser()).thenReturn(webCertUser());
 
         List<FragaSvar> queryResults = new ArrayList<FragaSvar>();
         queryResults.add(buildFragaSvar(1L, MAY, null));
@@ -856,7 +863,7 @@ public class FragaSvarServiceImplTest {
 
         QueryFragaSvarResponse response = service.filterFragaSvar(params);
 
-        verify(webCertUserService).getWebCertUser();
+        verify(webCertUserService).getUser();
 
         verify(fragasvarRepositoryMock).filterFragaSvar(any(FragaSvarFilter.class));
         verify(fragasvarRepositoryMock).filterCountFragaSvar(any(FragaSvarFilter.class));
@@ -903,8 +910,19 @@ public class FragaSvarServiceImplTest {
         assertEquals(2, res.size());
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void intygWithoutFragaSvarDoesNotAcceptFraga() {
+        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
+        fragaSvar.getIntygsReferens().setIntygsTyp("ts-bas");
+
+        when(webcertFeatureServiceMock.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR, "ts-bas")).thenReturn(false);
+
+        service.processIncomingQuestion(fragaSvar);
+        fail("Processing should have thrown an exception");
+    }
+
     private WebCertUser webCertUser() {
-        WebCertUser user = new WebCertUser();
+        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
         user.setHsaId("testuser");
         user.setNamn("test userman");
 
@@ -919,14 +937,16 @@ public class FragaSvarServiceImplTest {
         return user;
     }
 
-    @Test(expected = WebCertServiceException.class)
-    public void intygWithoutFragaSvarDoesNotAcceptFraga() {
-        FragaSvar fragaSvar = buildFragaSvar(1L, new LocalDateTime(), new LocalDateTime());
-        fragaSvar.getIntygsReferens().setIntygsTyp("ts-bas");
-
-        when(webcertFeatureServiceMock.isModuleFeatureActive(ModuleFeature.HANTERA_FRAGOR, "ts-bas")).thenReturn(false);
-
-        service.processIncomingQuestion(fragaSvar);
-        fail("Processing should have thrown an exception");
+    private GrantedAuthority getGrantedRole() {
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
     }
+
+    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
+        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
+        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+        }
+        return privileges;
+    }
+
 }

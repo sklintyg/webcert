@@ -104,6 +104,7 @@ class SokSkrivIntyg {
             waitFor {
                 at SokSkrivValjIntygTypPage
             }
+            page.waitForModalBackdropToHide();
             page.copyBtn(intygId).click()
             waitFor {
                 doneLoading()
@@ -321,13 +322,16 @@ class SokSkrivIntyg {
     }
 
     boolean visaIntygSidanVisas() {
+        boolean result
         Browser.drive {
             waitFor {
                 at VisaFk7263Page
             }
-
-            page.intygLaddat.isDisplayed()
+            waitFor{
+                result = page.intygLaddat.isDisplayed()
+            }
         }
+        return result;
     }
     // END
 
@@ -478,22 +482,31 @@ class SokSkrivIntyg {
         }
     }
 
-    boolean kopieraKnappHarTextSjukskrivning() {
-        def result
-        Browser.drive {
-            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-                    page.kopieraKnapp.attr("title").contains("sjukskrivning")
-        }
-        return result
-    }
+//    boolean kopieraKnappHarTextSjukskrivning() {
+//        def result
+//        Browser.drive {
+//            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+//                    page.kopieraKnapp.attr("title").contains("sjukskrivning")
+//        }
+//        return result
+//    }
 
-    boolean kopieraKnappHarInteTextSjukskrivning() {
-        def result
+
+//    boolean kopieraKnappHarInteTextSjukskrivning() {
+//        def result
+//       Browser.drive {
+//            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
+//                    !page.kopieraKnapp.attr("title").contains("sjukskrivning")
+//        }
+//        return result
+//    }
+
+    String kopieraKnappHarText() {
+        def text
         Browser.drive {
-            result = page.kopieraKnapp.attr("title").contains("kopia skapas") &&
-                    !page.kopieraKnapp.attr("title").contains("sjukskrivning")
+            text = page.kopieraKnapp.attr("title")
         }
-        return result
+        return text
     }
 
     // ------- utils

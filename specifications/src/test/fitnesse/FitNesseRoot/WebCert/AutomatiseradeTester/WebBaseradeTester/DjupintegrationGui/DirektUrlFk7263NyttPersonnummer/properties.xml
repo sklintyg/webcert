@@ -1,14 +1,13 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <properties>
-	<Edit/>
-	<Files/>
-	<Help></Help>
-	<Properties/>
-	<RecentChanges/>
-	<Refactor/>
-	<Search/>
-	<Suites></Suites>
-	<Test/>
-	<Versions/>
-	<WhereUsed/>
+<Edit/>
+<Files/>
+<Help>FK 7263 - Direkt URL -Nytt personnummer</Help>
+<Properties/>
+<RecentChanges/>
+<Refactor/>
+<Search/>
+<Test/>
+<Versions/>
+<WhereUsed/>
 </properties>

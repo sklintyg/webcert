@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.webcert.converter.IntygDraftsConverter;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.repository.UtkastFilter;
@@ -116,7 +116,7 @@ public class UtkastApiController extends AbstractApiController {
 
         abortIfWebcertFeatureIsNotAvailable(WebcertFeature.HANTERA_INTYGSUTKAST);
 
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
 
         List<Lakare> lakareWithDraftsByEnhet = intygDraftService.getLakareWithDraftsByEnhet(selectedUnitHsaId);
@@ -146,7 +146,7 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private UtkastFilter createUtkastFilter(QueryIntygParameter filterParameters) {
-        WebCertUser user = getWebCertUserService().getWebCertUser();
+        WebCertUser user = getWebCertUserService().getUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
 
         UtkastFilter utkastFilter = new UtkastFilter(selectedUnitHsaId);

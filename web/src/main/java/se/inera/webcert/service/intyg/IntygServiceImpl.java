@@ -42,7 +42,7 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v1.ListCertificatesForCareType;
@@ -209,7 +209,7 @@ public class IntygServiceImpl implements IntygService {
         Utlatande intyg = getUtlatandeForIntyg(intygsId, typ);
         verifyEnhetsAuth(intyg, true);
 
-        SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getWebCertUser());
+        SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, hasPatientConsent, webCertUserService.getUser());
 
         monitoringService.logIntygSent(intygsId, recipient);
 
@@ -395,7 +395,7 @@ public class IntygServiceImpl implements IntygService {
     private IntygServiceResult whenSuccessfulRevoke(Utlatande intyg) {
         String intygsId = intyg.getId();
 
-        String hsaId = webCertUserService.getWebCertUser().getHsaId();
+        String hsaId = webCertUserService.getUser().getHsaId();
         monitoringService.logIntygRevoked(intygsId, hsaId);
 
         // First: send a notification informing stakeholders that this certificate has been revoked

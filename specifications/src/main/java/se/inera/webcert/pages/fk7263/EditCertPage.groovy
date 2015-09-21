@@ -2,6 +2,7 @@ package se.inera.webcert.pages.fk7263
 
 import geb.Module
 import se.inera.certificate.page.AbstractPage
+import se.inera.certificate.spec.Browser
 import se.inera.webcert.pages.AbstractEditCertPage
 import se.inera.webcert.pages.VardenhetModule
 
@@ -13,15 +14,8 @@ class EditCertPage extends AbstractEditCertPage {
 
         // Knappar
         sparaKnapp { $("#spara-utkast") }
-        tillbakaButton(required: false) { $("#tillbakaButton") }
-        visaVadSomSaknasKnapp(wait: true) { displayed($("#showCompleteButton")) }
-        doljVadSomSaknasKnapp { $("#hideCompleteButton") }
 
         // Meddelanden
-        intygetSparatOchKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-komplett-meddelande")) }
-        intygetSparatOchEjKomplettMeddelande(wait: 6) { displayed($("#intyget-sparat-och-ej-komplett-meddelande")) }
-        errorPanelBase { $("#error-panel") }
-        errorPanel(wait: true) { displayed(errorPanelBase) }
         nyttPersonnummer(wait: true) { displayed($("#nyttPersonnummer")) }
         signerandeLakare(wait: true) { displayed($("#signingDoctor")) }
         integrationBorttaget(wait: true) { displayed($("#integration-deleted")) }
@@ -43,8 +37,6 @@ class EditCertPage extends AbstractEditCertPage {
         rekommendationer { name -> module RekommendationerModule, form: form }
         kontaktFk { $("#kontaktFk") }
         ovrigt { $("#otherInformation") }
-        vardenhet { module VardenhetModule }
-
 
         // date picker
         datepicker(wait: true) { displayed($("div[ng-switch='datepickerMode']")) }
@@ -65,8 +57,10 @@ class EditCertPage extends AbstractEditCertPage {
     def setSmittskydd(boolean val){
         AbstractPage.scrollIntoView(smittskydd.attr("id"));
         smittskydd.value(val);
+        println('------------------- smittskydd : ' + val );
         waitFor {
-            doneLoading()
+            println('animations state:' + js.getAnimationsState('smittskydd'));
+            return doneLoading() && js.animations.smittskydd.rendered;
         }
     }
 
@@ -134,12 +128,20 @@ class DiagnosModule extends Module {
 }
 
 class ArbeteModule extends Module {
-    static base = { $("#arbeteForm") }
+    static base = { $("#sysselsattning") }
     static content = {
-        nuvarande { $("#arbeteNuvarande") }
-        arbetsuppgifter { $("#currentWork") }
-        arbetslos { $("#arbeteArbetslos") }
-        foraldraledig { $("#arbeteForaldraledig") }
+        // shows and hides with smittskydd
+        println('required false!');
+        nuvarande(required: false) { $("#arbeteNuvarande") }
+        arbetsuppgifter(required: false) { $("#currentWork") }
+        arbetslos(required: false) { $("#arbeteArbetslos") }
+        foraldraledig(required: false) { $("#arbeteForaldraledig") }
+    }
+
+    def setNuvarandeCheckBox(value){
+        println('setting nuverande' + nuvarande.attr("id") + ', value');
+        AbstractPage.scrollIntoView(nuvarande.attr("id"));
+        nuvarande = value;
     }
 }
 

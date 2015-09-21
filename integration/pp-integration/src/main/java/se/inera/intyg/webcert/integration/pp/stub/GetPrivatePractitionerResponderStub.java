@@ -1,0 +1,102 @@
+package se.inera.intyg.webcert.integration.pp.stub;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
+import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
+import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
+
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Magnus Ekstrand on 18/06/15.
+ */
+public class GetPrivatePractitionerResponderStub implements GetPrivatePractitionerResponderInterface {
+
+    public static final String PERSONNUMMER_EXISTING = "19121212-1212";
+    public static final String PERSONNUMMER_NONEXISTING = "19121212-7169";
+    public static final String PERSONNUMMER_ERROR_RESPONSE = "19121212-XXXX";
+    public static final String PERSONNUMMER_THROW_EXCEPTION = "19121212-ZZZZ";
+
+    @Autowired
+    private HoSPersonStub personStub;
+
+    @Override
+    public GetPrivatePractitionerResponseType getPrivatePractitioner(String logicalAddress, GetPrivatePractitionerType parameters) {
+
+        // Do validation of parameters object
+        validate(parameters);
+
+        String id = parameters.getPersonalIdentityNumber();
+        GetPrivatePractitionerResponseType response = new GetPrivatePractitionerResponseType();
+
+        // if matching -- create error response
+        if (PERSONNUMMER_ERROR_RESPONSE.equals(parameters.getPersonalIdentityNumber())) {
+            response.setHoSPerson(null);
+            response.setResultCode(ResultCodeEnum.ERROR);
+            response.setResultText("FAILURE: an error occured while trying to get private practitioner with personal identity number: " + id + " exists.");
+            return response;
+        }
+
+        // if matching -- throw exception
+        if (PERSONNUMMER_THROW_EXCEPTION.equals(parameters.getPersonalIdentityNumber())) {
+            throw new SOAPFaultException(createSOAPFault());
+        }
+
+        HoSPersonType person  = personStub.get(id);
+
+        if (person == null) {
+            response.setResultCode(ResultCodeEnum.INFO);
+            response.setResultText("No private practitioner with personal identity number: " + id + " exists.");
+        } else {
+            response.setHoSPerson(person);
+            response.setResultCode(ResultCodeEnum.OK);
+        }
+
+        return response;
+    }
+
+    private void validate(GetPrivatePractitionerType parameters) {
+        List<String> messages = new ArrayList<>();
+
+        if (parameters == null) {
+            messages.add("GetPrivatePractitionerType cannot be null.");
+        } else {
+            String hsaId = parameters.getPersonHsaId();
+            String personId = parameters.getPersonalIdentityNumber();
+
+            // Exakt ett av fälten hsaIdentityNumber och personalIdentityNumber ska anges.
+            if (StringUtils.isEmpty(hsaId) && StringUtils.isEmpty(personId)) {
+                messages.add("Inget av argumenten hsaId och personId är satt. Ett av dem måste ha ett värde.");
+            }
+
+            if (!StringUtils.isEmpty(hsaId) && !StringUtils.isEmpty(personId)) {
+                messages.add("Endast ett av argumenten hsaId och personId får vara satt.");
+            }
+        }
+
+        if (messages.size() > 0) {
+            throw new IllegalArgumentException(StringUtils.collectionToCommaDelimitedString(messages));
+        }
+    }
+
+    private SOAPFault createSOAPFault()  {
+        SOAPFault soapFault = null;
+
+        try {
+            soapFault = SOAPFactory.newInstance().createFault();
+            soapFault.setFaultString("Response was of unexpected content type.");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return soapFault;
+    }
+
+}

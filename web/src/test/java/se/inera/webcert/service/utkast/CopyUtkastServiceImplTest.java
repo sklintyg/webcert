@@ -25,9 +25,10 @@ import se.inera.certificate.integration.json.CustomObjectMapper;
 import se.inera.certificate.model.CertificateState;
 import se.inera.certificate.model.Status;
 import se.inera.certificate.model.common.internal.Utlatande;
-import se.inera.webcert.hsa.model.WebCertUser;
 import se.inera.webcert.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.webcert.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.webcert.service.dto.Vardenhet;
+import se.inera.webcert.service.dto.Vardgivare;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.webcert.persistence.utkast.repository.UtkastRepository;
@@ -43,7 +44,7 @@ import se.inera.webcert.service.notification.NotificationService;
 import se.inera.webcert.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyRequest;
 import se.inera.webcert.service.utkast.dto.CreateNewDraftCopyResponse;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {
@@ -100,7 +101,7 @@ public class CopyUtkastServiceImplTest {
 
     private HoSPerson hoSPerson;
 
-    private se.inera.webcert.service.dto.Vardenhet vardenhet;
+    private Vardenhet vardenhet;
 
     @Before
     public void setup() {
@@ -108,11 +109,11 @@ public class CopyUtkastServiceImplTest {
         hoSPerson.setHsaId(HOSPERSON_ID);
         hoSPerson.setNamn(HOSPERSON_NAME);
 
-        se.inera.webcert.service.dto.Vardgivare vardgivare = new se.inera.webcert.service.dto.Vardgivare();
+        Vardgivare vardgivare = new Vardgivare();
         vardgivare.setHsaId(VARDGIVARE_ID);
         vardgivare.setNamn(VARDGIVARE_NAME);
 
-        vardenhet = new se.inera.webcert.service.dto.Vardenhet();
+        vardenhet = new Vardenhet();
         vardenhet.setHsaId(VARDENHET_ID);
         vardenhet.setNamn(VARDENHET_NAME);
         vardenhet.setVardgivare(vardgivare);

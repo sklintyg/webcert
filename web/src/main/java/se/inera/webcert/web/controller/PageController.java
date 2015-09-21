@@ -26,10 +26,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import se.inera.webcert.hsa.model.WebCertUser;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.feature.WebcertFeature;
 import se.inera.webcert.service.feature.WebcertFeatureService;
-import se.inera.webcert.web.service.WebCertUserService;
+import se.inera.webcert.service.user.WebCertUserService;
 
 /**
  * @author marced
@@ -60,7 +60,7 @@ public class PageController {
 
     @RequestMapping(value = "/start", method = RequestMethod.GET)
     public ModelAndView displayStart() {
-        WebCertUser user = webCertUserService.getWebCertUser();
+        WebCertUser user = webCertUserService.getUser();
         LOG.debug("displayStart for user " + user.getNamn());
         return new ModelAndView(resolveStartView(user));
     }
@@ -72,7 +72,7 @@ public class PageController {
      * @return String
      */
     protected String resolveStartView(WebCertUser user) {
-        if (user.isLakare() && webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST)) {
+        if ((user.isLakare() || user.isPrivatLakare()) && webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST)) {
             return DASHBOARD_VIEW_REDIRECT;
         } else if (webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_FRAGOR)) {
             return ADMIN_VIEW_REDIRECT;
@@ -94,6 +94,6 @@ public class PageController {
     }
 
     public void populateUseMinifiedJavaScript(ModelAndView model) {
-        model.addObject("useMinifiedJavaScript", environment.getProperty("webcert.useMinifiedJavaScript", "true"));
+        model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
     }
 }
