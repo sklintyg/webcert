@@ -11,9 +11,13 @@ var WebCertRestClient = function() {
 
     function post(options) {
         var defer = protractor.promise.defer();
-        console.log("Calling", url);
+        if (window.console) {
+            console.log("Calling", url);
+        }
         req(options, function(error, message) {
-            console.log("Done call to", options.url);
+            if (window.console) {
+                console.log("Done call to", options.url);
+            }
             if (error || message.statusCode >= 400) {
                 defer.reject({
                     error: error,
