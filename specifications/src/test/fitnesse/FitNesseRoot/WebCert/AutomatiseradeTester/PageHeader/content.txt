@@ -1,0 +1,5 @@
+!-
+<script>
+$("ul.nav.navbar-nav").append('<li id="add" class="dropdown"><a href="?responder=suite&excludeSuiteFilter=stub">Kör stubbfria-tester</a></li>')
+</script>
+-!
