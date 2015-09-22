@@ -130,25 +130,28 @@ class SvaraOchFraga {
         }
     }
 
-    boolean fragaVisasIListanMedOhanteradeFragor(String id, boolean expected = true) {
+    boolean fragaVisasIListanMedOhanteradeFragor(String id) {
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            return page.qaUnhandledPanel(id, expected)
-
+            result = page.qaUnhandledPanel(id)
         }
+        return result
     }
 
 
-    boolean fragaVisasIListanMedHanteradeFragor(String id, boolean expected = true) {
+    boolean fragaVisasIListanMedHanteradeFragor(String id) {
+        
+        def result
         Browser.drive {
             waitFor {
                 at VisaFragaSvarPage
             }
-            return page.qaHandledPanel(id, expected)
-
+            result = page.qaHandledPanel(id)
         }
+        return result
     }
 
     boolean intygMedFragaSvarSidanVisas() {
