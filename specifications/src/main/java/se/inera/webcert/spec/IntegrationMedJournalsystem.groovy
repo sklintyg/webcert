@@ -41,12 +41,16 @@ class IntegrationMedJournalsystem {
     }
 
     boolean intygLaddat() {
+        boolean result;
         Browser.drive {
             waitFor {
                 at VisaPage
             }
-            intygLaddat.isDisplayed()
+            waitFor {
+                result = page.intygLaddat.isDisplayed();
+            }
         }
+        return result;
     }
 
     boolean intygInteLaddat() {
@@ -213,9 +217,13 @@ class IntegrationMedJournalsystem {
     }
 
     boolean kopieraKnappVisas() {
+        boolean result;
         Browser.drive {
-            return page.kopieraKnapp.isDisplayed()
+            waitFor {
+                result = page.kopieraKnapp.isDisplayed()
+            }
         }
+        return result;
     }
 
     boolean kopieraKnappVisasEj() {
@@ -256,11 +264,15 @@ class IntegrationMedJournalsystem {
     }
 
     boolean integrationBorttagetMeddelandeVisas() {
+        boolean result;
         Browser.drive {
             waitFor {
                 at EditCertPage
             }
-            return page.integrationBorttaget.isDisplayed()
+            waitFor{
+                result = page.integrationBorttaget.isDisplayed();
+            }
+            return result;
         }
     }
 
