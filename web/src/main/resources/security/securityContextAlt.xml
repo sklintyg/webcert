@@ -74,7 +74,7 @@
 
         <!-- Privatläkare specific exception handling here. Not PP-registered, not accepted WC terms etc. -->
         <prop key="se.inera.auth.exceptions.PrivatePractitionerAuthorizationException">
-          ${private.practitioner.portal.registration.url}
+          ${privatepractitioner.portal.registration.url}
         </prop>
 
       </props>
@@ -275,22 +275,6 @@
                 </constructor-arg>
                 <property name="parserPool" ref="parserPool"/>
               </bean>
-              <!--
-              <bean class="org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider">
-
-                <constructor-arg>
-                  <bean class="java.util.Timer"/>
-                </constructor-arg>
-
-                <constructor-arg>
-                  <bean class="org.opensaml.util.resource.ClasspathResource">
-                    <constructor-arg value="sp-eleg.xml"/>
-                  </bean>
-                </constructor-arg>
-                <property name="parserPool" ref="parserPool"/>
-
-              </bean>
-              -->
             </constructor-arg>
 
             <constructor-arg>
@@ -351,19 +335,6 @@
                 </constructor-arg>
                 <property name="parserPool" ref="parserPool"/>
               </bean>
-              <!--
-              <bean class="org.opensaml.saml2.metadata.provider.ResourceBackedMetadataProvider">
-                <constructor-arg>
-                  <bean class="java.util.Timer"/>
-                </constructor-arg>
-                <constructor-arg>
-                  <bean class="org.opensaml.util.resource.ClasspathResource">
-                    <constructor-arg value="sp-sakerhetstjanst.xml"/>
-                  </bean>
-                </constructor-arg>
-                <property name="parserPool" ref="parserPool"/>
-              </bean>
-              -->
             </constructor-arg>
             <property name="metadataTrustCheck" value="true"/>
             <constructor-arg>
@@ -373,6 +344,7 @@
                 <property name="securityProfile" value="metaiop"/>
                 <property name="sslSecurityProfile" value="metaiop"/>
                 <property name="signMetadata" value="true"/>
+                <!-- The signingKey and encryptionKey refers to the _aliases_ of the key in the keystore defined in the keyManager bean -->
                 <property name="signingKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
                 <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
                 <property name="requireArtifactResolveSigned" value="true"/>
@@ -384,7 +356,7 @@
           </bean>
           <!--  END SERVICE PROVIDER BEAN FOR SITHS -->
 
-          <!-- Sample URL: 192.168.0.118:9088/saml/login/alias/siths?idp=https://idp2.acctest.sakerhetstjanst.inera.se:443/idp/saml -->
+
           <!-- START IDENTITY PROVIDER BEAN FOR SITHS -->
           <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
             <constructor-arg>

@@ -24,7 +24,7 @@ public class AvtalRepositoryFactory {
 
     private static final Logger log = LoggerFactory.getLogger(AvtalRepositoryFactory.class);
 
-    @Value("${privatlakare.standardavtal.file}")
+    @Value("${privatepractitioner.defaultterms.file}")
     String fileUrl;
 
     @Autowired
