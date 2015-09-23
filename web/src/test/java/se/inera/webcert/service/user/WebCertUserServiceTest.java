@@ -126,7 +126,7 @@ public class WebCertUserServiceTest {
 
         if (fromJS) {
             Set<String> set = new HashSet<String>();
-            set.add(WebcertFeature.FRAN_JOURNALSYSTEM.getName());
+            //set.add(WebcertFeature.FRAN_JOURNALSYSTEM.getName());
             user.setAktivaFunktioner(set);
         }
 

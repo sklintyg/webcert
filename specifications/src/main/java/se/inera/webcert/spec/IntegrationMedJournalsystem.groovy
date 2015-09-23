@@ -11,17 +11,6 @@ class IntegrationMedJournalsystem {
         content
     }
 
-    def loggaInSom(String id) {
-        Browser.drive {
-            go "/welcome.jsp"
-
-            waitFor {
-                at WelcomePage
-            }
-            page.loginAs(id)
-        }
-    }
-
     def visaIntygViaIntegration(String intygId) {
         Browser.drive {
             go "/visa/intyg/" + intygId + "?alternatePatientSSn="
@@ -114,9 +103,14 @@ class IntegrationMedJournalsystem {
     }
 
     boolean signerandeLakareMeddelandeVisas(expected) {
+        def result
         Browser.drive {
-            return (expected == page.signerandeLakare.text()) && page.signerandeLakare.isDisplayed()
+            waitFor {
+                page.signerandeLakare.isDisplayed()
+            }
+            result = (expected == page.signerandeLakare.text())
         }
+        return result
     }
 
     String patientensNamn() {
@@ -391,5 +385,6 @@ class IntegrationMedJournalsystem {
             }
         }
     }
+
 
 }

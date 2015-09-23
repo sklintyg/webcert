@@ -66,7 +66,6 @@ class HanteraUtkast {
 
     boolean raderaUtkast() {
         Browser.drive {
-            println('raderaUtkast----');
             waitFor {
                 at EditeraIntygPage
             }

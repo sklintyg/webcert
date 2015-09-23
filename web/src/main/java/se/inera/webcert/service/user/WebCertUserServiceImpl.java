@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import se.inera.certificate.modules.support.feature.ModuleFeature;
+import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.persistence.roles.repository.RoleRepository;
 import se.inera.webcert.security.AuthoritiesException;
@@ -105,19 +106,15 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     // - - - - - Package scope - - - - -
 
     boolean checkIfAuthorizedForUnit(WebCertUser user, String vardgivarHsaId, String enhetsHsaId, boolean isReadOnlyOperation) {
-
         if (user == null) {
             return false;
         }
 
-        if (user.hasAktivFunktion(WebcertFeature.FRAN_JOURNALSYSTEM.getName())) {
-
+        if (user.hasRole(new String[] { UserRole.ROLE_LAKARE_DJUPINTEGRERAD.name(), UserRole.ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD.name() })) {
             if (isReadOnlyOperation && vardgivarHsaId != null) {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }
-
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
-
         } else {
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
         }

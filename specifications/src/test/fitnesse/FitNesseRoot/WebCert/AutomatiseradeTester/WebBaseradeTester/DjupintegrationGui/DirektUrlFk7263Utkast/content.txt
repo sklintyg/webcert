@@ -1,13 +1,13 @@
+!3 Skapa ett nytt intygsutkast
+
+| skapa utkast |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | response? |
+| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Lena Karlsson | IFV1239877878-1045 | nej | 200 |
+
 !3 Logga in
 
 | script | !-LoggaIn-! |
 | logga in som | IFV1239877878-104B_IFV1239877878-1045 |
-
-!3 Skapa ett nytt intygsutkast
-
-| skapa utkast |
-| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? |
-| webcert-fitnesse-signera-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Åsa Andersson | IFV1239877878-1045 | nej |200|
 
 !3 Visa utkastet via integrationslänken
 
@@ -20,7 +20,7 @@
 | script | !-HanteraUtkast-! |
 | radera utkast |
 
-!3 Verifiera att man fick ett felmeddelande istället för att man blev skickad till ej signerade intyg
+!3 Verifiera att man fick ett meddelande istället för att man blev skickad till ej signerade intyg
 
 | script | !-IntegrationMedJournalsystem-! |
 | integration borttaget meddelande visas |

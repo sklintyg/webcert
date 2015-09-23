@@ -8,7 +8,8 @@
     		"enhet": "IFV1239877878-1045"
     	},
     	{
-    		"enhet": "IFV1239877878-104D", "andamal":["Admin"]
+    		"enhet": "IFV1239877878-104D",
+            "andamal":["Admin"]
     	}
     ]
 }

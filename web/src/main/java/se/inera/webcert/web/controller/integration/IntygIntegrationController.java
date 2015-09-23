@@ -98,7 +98,6 @@ public class IntygIntegrationController {
     @GET
     @Path("/{typ}/{intygId}")
     public Response redirectToIntyg(@Context UriInfo uriInfo, @PathParam("intygId") String intygId, @PathParam("typ") String typ, @DefaultValue("") @QueryParam("alternatePatientSSn") String alternatePatientSSn, @DefaultValue("") @QueryParam("responsibleHospName") String responsibleHospName) {
-
         if (StringUtils.isBlank(intygId)) {
             LOG.error("Path parameter 'intygId' was either whitespace, empty (\"\") or null");
             return Response.serverError().build();

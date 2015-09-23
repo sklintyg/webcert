@@ -75,25 +75,6 @@ public class WebCertUser implements UserDetails {
         this.authorities = getGrantedAuthorities(authorities);
     }
 
-
-    // - - Getters and setters
-
-    /*
-     * Ensure array iteration order is predictable
-     */
-    private static SortedSet<GrantedAuthority> sortAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
-        SortedSet<GrantedAuthority> sortedAuthorities =
-                new TreeSet<GrantedAuthority>(new AuthorityComparator());
-
-        for (GrantedAuthority grantedAuthority : authorities) {
-            Assert.notNull(grantedAuthority, "GrantedAuthority list cannot contain any null elements");
-            sortedAuthorities.add(grantedAuthority);
-        }
-
-        return sortedAuthorities;
-    }
-
     public boolean changeValdVardenhet(String vardenhetId) {
         if (vardenhetId == null) {
             return false;
@@ -307,9 +288,6 @@ public class WebCertUser implements UserDetails {
         this.valdVardgivare = valdVardgivare;
     }
 
-
-    // - - Public scope
-
     public List<Vardgivare> getVardgivare() {
         if (vardgivare == null) {
             vardgivare = Collections.emptyList();
@@ -324,6 +302,41 @@ public class WebCertUser implements UserDetails {
 
     public boolean hasAktivFunktion(String aktivFunktion) {
         return getAktivaFunktioner().contains(aktivFunktion);
+    }
+
+    /**
+     * Checks if a user has been granted a specific role.
+     *
+     * @param role the role to check
+     * @return true if user has the role, otherwise false
+     */
+    public boolean hasRole(String role) {
+        if (role == null) {
+            return false;
+        }
+
+        return getRoles().containsKey(role);
+    }
+
+    /**
+     * Checks if a user has been granted a specific role.
+     * Method will return true if one role matches user's granted roles.
+     *
+     * @param roles The roles to check.
+     * @return true If user has one of the roles, otherwise false.
+     */
+    public boolean hasRole(String[] roles) {
+        if (roles == null) {
+           return false;
+        }
+
+        for (String role : roles) {
+            if (hasRole(role)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isLakare() {
@@ -343,12 +356,30 @@ public class WebCertUser implements UserDetails {
         this.privatLakareAvtalGodkand = privatLakareAvtalGodkand;
     }
 
-    // - - Private scope
-
     @JsonIgnore
     @Override
     public String toString() {
         return hsaId + " [authScheme=" + authenticationScheme + ", lakare=" + isLakare() + "]";
+    }
+
+
+    // ~ Private scope
+    // ============================================================================
+
+    /*
+     * Ensure array iteration order is predictable
+     */
+    private static SortedSet<GrantedAuthority> sortAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
+        SortedSet<GrantedAuthority> sortedAuthorities =
+               new TreeSet<GrantedAuthority>(new AuthorityComparator());
+
+        for (GrantedAuthority grantedAuthority : authorities) {
+            Assert.notNull(grantedAuthority, "GrantedAuthority list cannot contain any null elements");
+            sortedAuthorities.add(grantedAuthority);
+        }
+
+        return sortedAuthorities;
     }
 
     private SimpleGrantedAuthority castGrantedAuthority(GrantedAuthority authority) {
