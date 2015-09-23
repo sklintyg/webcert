@@ -5,6 +5,6 @@ package se.inera.webcert.hsa.model;
  */
 public enum AuthenticationMethod {
 
-     NET_ID, BANK_ID, SITHS, FAKE;
+     NET_ID, BANK_ID, MOBILT_BANK_ID, SITHS, FAKE;
 
 }

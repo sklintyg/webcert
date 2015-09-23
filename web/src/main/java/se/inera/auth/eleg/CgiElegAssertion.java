@@ -17,9 +17,10 @@ public class CgiElegAssertion {
     public static final String FORNAMN_ATTRIBUTE = "Subject_GivenName";
     public static final String MELLAN_OCH_EFTERNAMN_ATTRIBUTE = "Subject_Surname";
 
-    public static final String UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE = "Issuer_OrganisationName";
+    public static final String UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE = "Issuer_OrganizationName";
     public static final String UTFARDARE_CA_NAMN_ATTRIBUTE = "Issuer_CommonName";
     public static final String SECURITY_LEVEL_ATTRIBUTE = "SecurityLevel"; // 3 == e-leg på fil, 4 == e-leg på kort.
+    public static final String LOGIN_METHOD = "LoginMethod";
 
     private String personId;
     private String fornamn;
@@ -30,6 +31,7 @@ public class CgiElegAssertion {
     private String securityLevel;
 
     private String authenticationScheme;
+    private String loginMethod;
 
     public CgiElegAssertion(Assertion assertion) {
         if (assertion.getAttributeStatements() != null) {
@@ -63,6 +65,9 @@ public class CgiElegAssertion {
                     break;
                 case SECURITY_LEVEL_ATTRIBUTE:
                     securityLevel = getValue(attribute);
+                    break;
+                case LOGIN_METHOD:
+                    loginMethod = getValue(attribute);
                     break;
                 default:
                     // Ignore.
@@ -112,5 +117,9 @@ public class CgiElegAssertion {
 
     public String getAuthenticationScheme() {
         return authenticationScheme;
+    }
+
+    public String getLoginMethod() {
+        return loginMethod;
     }
 }

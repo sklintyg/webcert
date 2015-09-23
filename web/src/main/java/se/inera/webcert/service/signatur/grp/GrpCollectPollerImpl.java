@@ -72,6 +72,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
             try {
 
                 CollectResponseType resp = grpService.collect(req);
+                log.info("GRP collect returned ProgressStatusType: {}", resp.getProgressStatus());
                 switch (resp.getProgressStatus()) {
                     case COMPLETE:
                         String subjectSerialNumber = getCollectResponseAttribute(resp.getAttributes());
@@ -80,18 +81,16 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                         }
 
                         String signature = resp.getSignature();
-                        log.info("GRP collect returned with complete status");
                         signaturService.clientGrpSignature(resp.getTransactionId(), signature, webCertUser);
                         log.info("Signature was successfully persisted and ticket updated.");
                         return;
                     case USER_SIGN:
                         signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.VANTA_SIGN);
-                        log.info("GRP collect returned ProgressStatusType: {}", resp.getProgressStatus());
+
                         break;
                     case OUTSTANDING_TRANSACTION:
                     case STARTED:
                     case USER_REQ:
-                        log.info("GRP collect returned ProgressStatusType: {}", resp.getProgressStatus());
                         break;
                     case NO_CLIENT:
                         signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.NO_CLIENT);
