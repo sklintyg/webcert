@@ -2,10 +2,10 @@ Testet beskriver fallet när en läkare söker efter en patient som finns i PU-t
 
 !3 Välj patient
 
-| script | !-SokSkrivIntyg-! |
+| skript | !-SokSkrivIntyg-! |
 | logga in som |IFV1239877878-104B_IFV1239877878-1042|
-| sok skriv intyg sidan visas sa smaningom |
+| säkerställ att | sok skriv intyg sidan visas sa smaningom |
 | valj patient | ${person1.personnummer} |
-| valj intygstyp sidan visas |
-| check | patientens namn ar | ${person1.namn} |
+| säkerställ att |valj intygstyp sidan visas |
+| kontrollera att | patientens namn ar | ${person1.namn} |
 
