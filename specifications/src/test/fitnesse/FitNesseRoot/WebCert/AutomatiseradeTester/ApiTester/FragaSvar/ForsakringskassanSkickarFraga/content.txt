@@ -9,8 +9,8 @@
 !3 Givet ett intyg
 
 |Intyg|
-|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdarId|enhetsId|typ|id|mall|
-|${person1.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|fitnesse-intyg-1|M|
+|personnr|utfärdat|giltigtFrån|giltigtTill|utfärdarId|enhetsId|typ|id|mall|respons?|
+|${person1.personnummer}|2013-04-01|2013-04-01|2013-04-11|IFV1239877878-104B|IFV1239877878-1042|FK7263|fitnesse-intyg-1|M|200|
 
 !3 Och det finns inga frågor med följande extern referenser
 |Fragor och svar|
