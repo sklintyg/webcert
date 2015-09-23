@@ -84,15 +84,17 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                         signaturService.clientGrpSignature(resp.getTransactionId(), signature, webCertUser);
                         log.info("Signature was successfully persisted and ticket updated.");
                         return;
-
+                    case USER_SIGN:
+                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.VANTA_SIGN);
+                        log.info("GRP collect returned ProgressStatusType: {}", resp.getProgressStatus());
+                        break;
                     case OUTSTANDING_TRANSACTION:
                     case STARTED:
                     case USER_REQ:
-                    case USER_SIGN:
                         log.info("GRP collect returned ProgressStatusType: {}", resp.getProgressStatus());
                         break;
-
                     case NO_CLIENT:
+                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.NO_CLIENT);
                         log.info("GRP collect returned ProgressStatusType: {}, " +
                                 "has the user started their BankID or Mobilt BankID application?", resp.getProgressStatus());
                         break;
