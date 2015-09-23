@@ -328,7 +328,7 @@ public class WebCertUser implements UserDetails {
 
     public boolean isLakare() {
         return roles.containsKey(ROLE_LAKARE.name()) || roles.containsKey(ROLE_LAKARE_DJUPINTEGRERAD.name())
-                || roles.containsKey(ROLE_LAKARE_UTHOPP.name());
+                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name());
     }
 
     public boolean isPrivatLakare() {

@@ -5,7 +5,17 @@
     </h3>
 </div>
 <div class="modal-body">
-    <p><span message key="{{bodyTextId}}"></span></p>
+
+    <h2>
+        <span message key="{{model.heading}}"></span>
+    </h2>
+
+    <p>
+        <span message key="{{model.bodyTextId}}"></span>
+    </p>
+
+    <div wc-spinner show-spinner="model.signState=='VANTA_SIGN'" label="{{model.label.signing}}"/>
+
 </div>
 <div class="modal-footer">
     <button id="buttonYes" class="btn btn-info" ng-click="$dismiss()">
