@@ -114,4 +114,15 @@
       <property name="queueCapacity" value="25" />
     </bean>
   </beans>
+
+  <beans>
+    <bean name="fmbService" class="se.inera.webcert.service.fmb.FmbService"/>
+    <task:scheduled-tasks scheduler="fmbScheduler">
+      <!--Crontrigger has seconds in first position, see www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger-->
+      <task:scheduled ref="fmbService" method="updateData" cron="0 0 2 * * *"/>
+    </task:scheduled-tasks>
+
+    <task:scheduler id="fmbScheduler" pool-size="1"/>
+  </beans>
+
 </beans>

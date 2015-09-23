@@ -34,6 +34,7 @@
     <rivta-itintegration-monitoring.version>1.0.0.0</rivta-itintegration-monitoring.version>
     <rivta-ehr-logstore.version>1.2.0</rivta-ehr-logstore.version>
     <rivta-hsa-employee.version>1.0.RC4.0</rivta-hsa-employee.version>
+    <rivta-decisionsupport.version>1.0.RC1.0</rivta-decisionsupport.version>
 
     <intyg-clinicalprocess.version>1.0.0</intyg-clinicalprocess.version>
     <intyg-insuranceprocess.version>1.0.0</intyg-insuranceprocess.version>
@@ -62,6 +63,7 @@
     <module>integration/pp-integration</module>
     <module>specifications</module>
     <module>stubs/fk-stub</module>
+    <module>stubs/fmb-stub</module>
     <module>stubs/loggtjanst-stub</module>
     <module>stubs/intygstjanst-stub</module>
     <module>stubs/mail-stub</module>
@@ -80,6 +82,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>fk-stub</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>fmb-stub</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -234,6 +241,11 @@
         <groupId>se.riv.ehr.logstore</groupId>
         <artifactId>ehr-logstore-schemas</artifactId>
         <version>${rivta-ehr-logstore.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>se.riv.processmanagement.decisionsupport.insurancemedicinedecisionsupport</groupId>
+        <artifactId>processmanagement-decisionsupport-insurancemedicinedecisionsupport-schemas</artifactId>
+        <version>${rivta-decisionsupport.version}</version>
       </dependency>
 
       <!-- Intyg Schemas -->
