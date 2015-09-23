@@ -11,7 +11,8 @@ class UnhandledQAPage extends AbstractPage {
         unitstatUnhandledQuestionsBadgde(required: false, wait: true) {
             displayed($("#stat-unitstat-unhandled-question-count"))
         }
-        careUnitSelector(required: false, wait: true) { displayed($("div#wc-care-unit-clinic-selector")) }
+        careUnitSelector(required: false, wait: true) { $("a#wc-care-unit-clinic-selector") }
+        careUnitSelectorLink(required: false, wait: true) { $("a#wc-care-unit-clinic-selector-link") }
         careUnitSelectorNoWait(required: false) { $("div#wc-care-unit-clinic-selector")}
         careUnitModal(required: false, wait: true) { displayed($("a#wc-care-unit-clinic-selector-link")) }
         careUnitModalBody(required: false, wait: true) { displayed($(".modal-body")) }

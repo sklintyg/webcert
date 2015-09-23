@@ -69,17 +69,15 @@ class SvaraOchFraga {
         }
     }
 
-    boolean enhetsvaljareVisas(boolean expected = true) {
+    boolean enhetsvaljareVisas() {
+        def result 
         Browser.drive {
             waitFor {
                 at UnhandledQAPage
             }
-            if (expected) {
-                return page.careUnitSelector.isDisplayed()
-            } else {
-                return !page.careUnitSelectorNoWait.present || !page.careUnitSelectorNoWait.isDisplayed()
-            }
+                result = page.careUnitSelectorLink.isDisplayed()
         }
+        return result
     }
 
     def filtreraFragorOchSvar(boolean expected = true) {
