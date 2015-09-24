@@ -80,7 +80,8 @@ class SkapaUtkast extends RestClientFixture {
         def resp = restClient.put(path: "intyg/$intygId", body: json, requestContentType: JSON)
 
         if (komplett) {
-            restClient.put(path: "intyg/$intygId/komplett")
+            
+           resp = restClient.put(path: "intyg/$intygId/komplett")
         }
 
         responseStatus = resp.status
