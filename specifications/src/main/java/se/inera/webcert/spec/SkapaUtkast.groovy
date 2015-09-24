@@ -25,6 +25,7 @@ class SkapaUtkast extends RestClientFixture {
     String postort = "Ankeborg"
     String arbetsplatskod = "arbetsplatskod"
     String epost = "enhet1@webcert.se.invalid"
+    String responseStatus;
 
     // vardgivare
     String vardgivarId = "SE4815162344-1A01"
@@ -35,6 +36,9 @@ class SkapaUtkast extends RestClientFixture {
 
     public setKomplett(String value) {
         komplett = value.equalsIgnoreCase('ja')
+    }
+    public String respons() {
+        return responseStatus;
     }
 
     def restClient = createRestClient("${baseUrl}services/")
@@ -72,11 +76,15 @@ class SkapaUtkast extends RestClientFixture {
         }
 
         //Break the json
-        restClient.put(path: "intyg/$intygId", body: json, requestContentType: JSON)
+
+        def resp = restClient.put(path: "intyg/$intygId", body: json, requestContentType: JSON)
 
         if (komplett) {
             restClient.put(path: "intyg/$intygId/komplett")
         }
+
+        responseStatus = resp.status
+
     }
 
     private json() {
