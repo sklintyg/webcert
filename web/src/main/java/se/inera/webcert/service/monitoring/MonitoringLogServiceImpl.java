@@ -1,16 +1,10 @@
 package se.inera.webcert.service.monitoring;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import se.inera.certificate.logging.HashUtility;
 import se.inera.certificate.logging.LogMarkers;
 
 @Service
@@ -19,19 +13,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     private static final String SPACE = " ";
 
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLogService.class);
-
-    private static final String DIGEST = "SHA-256";
-
-    private MessageDigest msgDigest;
-
-    @PostConstruct
-    public void initMessageDigest() {
-        try {
-            msgDigest = MessageDigest.getInstance(DIGEST);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
-    }
 
     @Override
     public void logMailSent(String unitHsaId, String reason) {
@@ -155,12 +136,12 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logPULookup(String personNummer, String result) {
-        logEvent(MonitoringEvent.PU_LOOKUP, hash(personNummer), result);
+        logEvent(MonitoringEvent.PU_LOOKUP, HashUtility.hash(personNummer), result);
     }
 
     @Override
     public void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion) {
-        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, hash(userId), avtalVersion);
+        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, HashUtility.hash(userId), avtalVersion);
     }
 
     @Override
@@ -174,16 +155,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logMsg.append(logEvent.name()).append(SPACE).append(logEvent.getMessage());
 
         LOG.info(LogMarkers.MONITORING, logMsg.toString(), logMsgArgs);
-    }
-
-    private String hash(String payload) {
-        try {
-            msgDigest.update(payload.getBytes("UTF-8"));
-            byte[] digest = msgDigest.digest();
-            return new String(Hex.encodeHex(digest));
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     private enum MonitoringEvent {
