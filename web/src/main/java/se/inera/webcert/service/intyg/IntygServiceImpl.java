@@ -305,9 +305,9 @@ public class IntygServiceImpl implements IntygService {
     protected void verifyEnhetsAuth(Utlatande utlatande, boolean isReadOnlyOperation) {
         Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
         if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), isReadOnlyOperation)) {
-            LOG.debug("User not authorized for enhet");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + vardenhet.getEnhetsid());
+            String msg = "User not authorized for enhet " + vardenhet.getEnhetsid();
+            LOG.debug(msg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
         }
     }
 
