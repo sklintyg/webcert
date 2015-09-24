@@ -9,6 +9,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,11 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.security.core.GrantedAuthority;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.sendcertificatetorecipient.v1.SendCertificateToRecipientType;
 import se.inera.intyg.common.schemas.clinicalprocess.healthcond.certificate.utils.ResultTypeUtil;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.persistence.utkast.model.Utkast;
@@ -29,9 +29,10 @@ import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.user.dto.WebCertUser;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 //import se.inera.webcert.persistence.utkast.model.Omsandning;
 //import se.inera.webcert.persistence.utkast.model.OmsandningOperation;
@@ -49,7 +50,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.okResult());
 
-        WebCertUser webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+        WebCertUser webCertUser = createUser();
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
@@ -73,7 +74,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         SendCertificateToRecipientResponseType response = new SendCertificateToRecipientResponseType();
         response.setResult(ResultTypeUtil.infoResult("Info text"));
 
-        WebCertUser webCertUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+        WebCertUser webCertUser = createUser();
 
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class))).thenReturn(response);
@@ -163,17 +164,30 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verify(intygRepository, times(0)).save(any(Utkast.class));
     }
 
-    private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private WebCertUser createUser() {
+        WebCertUser user = new WebCertUser();
+        user.setRoles(getGrantedRole());
+        user.setAuthorities(getGrantedPrivileges());
+        return user;
     }
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-        }
-        return privileges;
+    private Map<String, UserRole> getGrantedRole() {
+        Map<String, UserRole> map = new HashMap<>();
+        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        return map;
     }
 
+    private Map<String, UserPrivilege> getGrantedPrivileges() {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
+    }
 
 }

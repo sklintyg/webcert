@@ -3,7 +3,11 @@ package se.inera.webcert.web.controller.moduleapi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,12 +15,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.integration.json.CustomObjectMapper;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Mottagning;
@@ -30,12 +31,9 @@ import se.inera.webcert.web.controller.moduleapi.dto.StatsResponse;
 
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatModuleApiControllerTest {
@@ -84,7 +82,10 @@ public class StatModuleApiControllerTest {
         intygStatsMap.put("VE1M2", 2L);
         intygStatsMap.put("VE2", 2L);
 
-        mockUser = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+        mockUser = new WebCertUser();
+
+        mockUser.setRoles(getGrantedRole());
+        mockUser.setAuthorities(getGrantedPrivileges());
 
         ve1 = new Vardenhet("VE1", "Vardenhet1");
         ve1.getMottagningar().add(new Mottagning("VE1M1", "Mottagning1"));
@@ -103,7 +104,7 @@ public class StatModuleApiControllerTest {
         mockUser.setVardgivare(Arrays.asList(vg));
         mockUser.setValdVardgivare(vg);
 
-        Mockito.when(webCertUserService.getUser()).thenReturn(mockUser);
+        when(webCertUserService.getUser()).thenReturn(mockUser);
     }
 
     @Test
@@ -111,8 +112,8 @@ public class StatModuleApiControllerTest {
 
         mockUser.setValdVardenhet(ve2);
 
-        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
-        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
 
@@ -134,8 +135,8 @@ public class StatModuleApiControllerTest {
 
         mockUser.setValdVardenhet(ve3);
 
-        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
-        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
 
@@ -157,14 +158,14 @@ public class StatModuleApiControllerTest {
 
         mockUser.setValdVardenhet(ve4);
 
-        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
-        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
 
-        Mockito.verify(webCertUserService).getUser();
+        verify(webCertUserService).getUser();
 
-        Mockito.verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture());
+        verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture());
 
         List<String> listArgs = listCaptor.getValue();
         assertEquals(7, listArgs.size());
@@ -184,14 +185,14 @@ public class StatModuleApiControllerTest {
 
         mockUser.setValdVardenhet(ve1);
 
-        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
-        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
 
-        Mockito.verify(webCertUserService).getUser();
+        verify(webCertUserService).getUser();
 
-        Mockito.verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture());
+        verify(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(listCaptor.capture());
 
         List<String> listArgs = listCaptor.getValue();
         assertEquals(7, listArgs.size());
@@ -214,15 +215,15 @@ public class StatModuleApiControllerTest {
 
     @Test
     public void testWebcertUserIsNull() {
-        Mockito.when(webCertUserService.getUser()).thenReturn(null);
+        when(webCertUserService.getUser()).thenReturn(null);
 
-        Mockito.when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
-        Mockito.when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
+        when(fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(anyListOf(String.class))).thenReturn(fragaSvarStatsMap);
+        when(intygDraftService.getNbrOfUnsignedDraftsByCareUnits(anyListOf(String.class))).thenReturn(intygStatsMap);
 
         Response response = statController.getStatistics();
         assertNotNull(response);
 
-        Mockito.verify(webCertUserService).getUser();
+        verify(webCertUserService).getUser();
         assertEquals(OK, response.getStatus());
     }
 
@@ -235,16 +236,23 @@ public class StatModuleApiControllerTest {
         }
     }
 
-    private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private Map<String, UserRole> getGrantedRole() {
+        Map<String, UserRole> map = new HashMap<>();
+        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        return map;
     }
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-        }
-        return privileges;
+    private Map<String, UserPrivilege> getGrantedPrivileges() {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
     }
 
 }

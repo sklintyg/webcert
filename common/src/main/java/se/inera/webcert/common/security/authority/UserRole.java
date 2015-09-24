@@ -9,7 +9,6 @@ import java.util.Set;
  */
 public enum UserRole {
 
-
     ROLE_VARDADMINISTRATOR ("Vårdadministratör", "fk7263", "ts-bas", "ts-diabetes"),
     ROLE_VARDADMINISTRATOR_DJUPINTEGRERAD ("Vårdadministratör - djupintegrerad", "fk7263", "ts-bas", "ts-diabetes"),
     ROLE_VARDADMINISTRATOR_UTHOPP ("Vårdadministratör - uthopp", "fk7263", "ts-bas", "ts-diabetes"),
@@ -26,7 +25,7 @@ public enum UserRole {
         this.text = text;
         authorizedIntygsTyper = new HashSet<>();
 
-        for(String authorizedIntygsTyp : intygsTyper) {
+        for (String authorizedIntygsTyp : intygsTyper) {
             authorizedIntygsTyper.add(authorizedIntygsTyp);
         }
     }
@@ -42,6 +41,10 @@ public enum UserRole {
     
     public Set<String> getAuthorizedIntygsTyper() {
         return authorizedIntygsTyper;
+    }
+
+    public String text() {
+        return this.text;
     }
 
     public String toString() {

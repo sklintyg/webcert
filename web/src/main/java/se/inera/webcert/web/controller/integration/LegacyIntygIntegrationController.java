@@ -116,7 +116,7 @@ public class LegacyIntygIntegrationController extends AuthoritiesAssertion {
      */
     void assertUserRole(WebCertUser user) {
 
-        Map<String, String> userRoles = user.getRoles();
+        Map<String, UserRole> userRoles = user.getRoles();
 
         List<String> gr = Arrays.asList(new String[] { UserRole.ROLE_LAKARE.name(), UserRole.ROLE_VARDADMINISTRATOR.name() });
         for (String role : userRoles.keySet()) {

@@ -2,23 +2,34 @@ package se.inera.webcert.security;
 
 import static se.inera.webcert.hsa.stub.Medarbetaruppdrag.VARD_OCH_BEHANDLING;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.opensaml.saml2.core.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.MissingMedarbetaruppdragException;
 import se.inera.ifv.hsawsresponder.v3.GetHsaPersonHsaUserType;
+import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
@@ -28,13 +39,6 @@ import se.inera.webcert.hsa.services.HsaPersonService;
 import se.inera.webcert.persistence.roles.model.Role;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * @author andreaskaltenbach
@@ -219,11 +223,14 @@ public class WebCertUserDetailsService extends BaseWebCertUserDetailsService imp
     private WebCertUser createWebCertUser(Role role, List<Vardgivare> authorizedVardgivare) {
 
         // Get user's privileges based on his/hers role
-        final GrantedAuthority grantedRole = getRoleAuthority(role);
-        final Collection<? extends GrantedAuthority> grantedPrivileges = getPrivilegeAuthorities(role);
+        final Map<String, UserRole> grantedRoles = roleToMap(getRoleAuthority(role));
+        final Map<String, UserPrivilege> grantedPrivileges = getPrivilegeAuthorities(role);
 
         // Create the WebCert user object injection user's privileges
-        WebCertUser webcertUser = new WebCertUser(grantedRole, grantedPrivileges);
+        WebCertUser webcertUser = new WebCertUser();
+
+        webcertUser.setRoles(grantedRoles);
+        webcertUser.setAuthorities(grantedPrivileges);
 
         webcertUser.setHsaId(getAssertion().getHsaId());
         webcertUser.setNamn(compileName(getAssertion().getFornamn(), getAssertion().getMellanOchEfternamn()));

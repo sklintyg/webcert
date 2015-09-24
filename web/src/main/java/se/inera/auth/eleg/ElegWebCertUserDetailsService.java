@@ -14,6 +14,7 @@ import se.inera.auth.common.BaseWebCertUserDetailsService;
 import se.inera.auth.exceptions.HsaServiceException;
 import se.inera.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.AuthenticationMethod;
 import se.inera.webcert.hsa.model.Vardenhet;
@@ -27,6 +28,7 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -108,25 +110,31 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role) {
 
         // Get user's privileges based on his/hers role
-        final GrantedAuthority grantedRole = getRoleAuthority(role);
-        final Collection<? extends GrantedAuthority> grantedPrivileges = getPrivilegeAuthorities(role);
+        // Get user's privileges based on his/hers role
+        final Map<String, UserRole> grantedRoles = roleToMap(getRoleAuthority(role));
+        final Map<String, UserPrivilege> grantedPrivileges = getPrivilegeAuthorities(role);
 
-        WebCertUser webCertUser = new WebCertUser(grantedRole, grantedPrivileges);
-        webCertUser.setPrivatLakareAvtalGodkand(false);
-        webCertUser.setHsaId(hosPerson.getHsaId().getExtension());
-        webCertUser.setPersonId(hosPerson.getPersonId().getExtension());
-        webCertUser.setForskrivarkod(hosPerson.getForskrivarkod());
-        webCertUser.setNamn(hosPerson.getFullstandigtNamn());
+        // Create the WebCert user object injection user's privileges
+        WebCertUser user = new WebCertUser();
 
-        decorateWebCertUserWithAuthenticationScheme(samlCredential, webCertUser);
-        decorateWebCertUserWithAuthenticationMethod(samlCredential, webCertUser);
-        decorateWebCertUserWithAvailableFeatures(webCertUser);
-        decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, webCertUser);
-        decorateWebCertUserWithSpecialiceringar(hosPerson, webCertUser);
-        decorateWebCertUserWithVardgivare(hosPerson, webCertUser);
-        decorateWebCertUserWithDefaultVardenhet(hosPerson, webCertUser);
+        user.setRoles(grantedRoles);
+        user.setAuthorities(grantedPrivileges);
 
-        return webCertUser;
+        user.setPrivatLakareAvtalGodkand(false);
+        user.setHsaId(hosPerson.getHsaId().getExtension());
+        user.setPersonId(hosPerson.getPersonId().getExtension());
+        user.setForskrivarkod(hosPerson.getForskrivarkod());
+        user.setNamn(hosPerson.getFullstandigtNamn());
+
+        decorateWebCertUserWithAuthenticationScheme(samlCredential, user);
+        decorateWebCertUserWithAuthenticationMethod(samlCredential, user);
+        decorateWebCertUserWithAvailableFeatures(user);
+        decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, user);
+        decorateWebCertUserWithSpecialiceringar(hosPerson, user);
+        decorateWebCertUserWithVardgivare(hosPerson, user);
+        decorateWebCertUserWithDefaultVardenhet(hosPerson, user);
+
+        return user;
     }
 
     private void decorateWebCertUserWithAuthenticationMethod(SAMLCredential samlCredential, WebCertUser webCertUser) {

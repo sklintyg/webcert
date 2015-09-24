@@ -391,7 +391,7 @@ public class WebCertUserDetailsServiceTest {
     }
 
     private void assertUserPrivileges(UserPrivilege[] userPrivileges, WebCertUser user) {
-        Map<String, String> authorities = user.getAuthorities();
+        Map<String, UserPrivilege> authorities = user.getAuthorities();
 
         for (UserPrivilege up : userPrivileges) {
             assertTrue(authorities.containsKey(up.name()));

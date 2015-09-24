@@ -5,10 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.core.GrantedAuthority;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Mottagning;
@@ -17,10 +17,9 @@ import se.inera.webcert.hsa.model.Vardgivare;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public class WebCertUserTest {
 
@@ -108,7 +107,10 @@ public class WebCertUserTest {
     
     private WebCertUser createWebCertUser() {
         
-        WebCertUser wcu = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+        WebCertUser wcu = new WebCertUser();
+
+        wcu.setRoles(getGrantedRole());
+        wcu.setAuthorities(getGrantedPrivileges());
         
         wcu.setNamn("A Name");
         wcu.setHsaId("HSA-id");
@@ -148,16 +150,23 @@ public class WebCertUserTest {
         return wcu;
     }
 
-    private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private Map<String, UserRole> getGrantedRole() {
+        Map<String, UserRole> map = new HashMap<>();
+        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        return map;
     }
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-        }
-        return privileges;
+    private Map<String, UserPrivilege> getGrantedPrivileges() {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
     }
 
 }

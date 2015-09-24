@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.security.core.GrantedAuthority;
 import se.inera.certificate.modules.registry.IntygModuleRegistry;
 import se.inera.certificate.modules.support.api.ModuleApi;
 import se.inera.certificate.modules.support.api.dto.HoSPersonal;
@@ -30,12 +31,10 @@ import se.inera.certificate.modules.support.api.dto.ValidationMessage;
 import se.inera.certificate.modules.support.api.dto.ValidationMessageType;
 import se.inera.certificate.modules.support.api.dto.ValidationStatus;
 import se.inera.certificate.modules.support.api.exception.ModuleException;
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
 import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
-import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.persistence.utkast.model.Utkast;
 import se.inera.webcert.persistence.utkast.model.UtkastStatus;
 import se.inera.webcert.persistence.utkast.model.VardpersonReferens;
@@ -47,18 +46,18 @@ import se.inera.webcert.service.log.LogService;
 import se.inera.webcert.service.log.dto.LogRequest;
 import se.inera.webcert.service.monitoring.MonitoringLogService;
 import se.inera.webcert.service.notification.NotificationService;
+import se.inera.webcert.service.user.WebCertUserService;
+import se.inera.webcert.service.user.dto.WebCertUser;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftRequest;
 import se.inera.webcert.service.utkast.dto.SaveAndValidateDraftResponse;
 import se.inera.webcert.service.utkast.util.CreateIntygsIdStrategy;
-import se.inera.webcert.service.user.WebCertUserService;
 
 import javax.persistence.OptimisticLockException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest {
@@ -141,10 +140,9 @@ public class UtkastServiceImplTest {
 
     @Test
     public void testDeleteDraftThatIsUnsigned() {
+        WebCertUser user = createUser();
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
-        user.setHsaId("hsaId");
         when(userService.getUser()).thenReturn(user);
 
         draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
@@ -163,10 +161,9 @@ public class UtkastServiceImplTest {
 
     @Test
     public void testDeleteDraftWrongVersion() {
+        WebCertUser user = createUser();
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
-        user.setHsaId("hsaId");
         when(userService.getUser()).thenReturn(user);
 
         try {
@@ -363,7 +360,9 @@ public class UtkastServiceImplTest {
     }
 
     private WebCertUser createUser() {
-        WebCertUser user = new WebCertUser(getGrantedRole(), getGrantedPrivileges());
+        WebCertUser user = new WebCertUser();
+        user.setRoles(getGrantedRole());
+        user.setAuthorities(getGrantedPrivileges());
         user.setHsaId("hsaId");
         user.setNamn("namn");
         List<String> tmp = new ArrayList<String>();
@@ -381,16 +380,23 @@ public class UtkastServiceImplTest {
         return user;
     }
 
-    private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
+    private Map<String, UserRole> getGrantedRole() {
+        Map<String, UserRole> map = new HashMap<>();
+        map.put(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE);
+        return map;
     }
 
-    private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
-        Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
-        for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
-        }
-        return privileges;
+    private Map<String, UserPrivilege> getGrantedPrivileges() {
+        List<UserPrivilege> list = Arrays.asList(UserPrivilege.values());
+
+        // convert list to map
+        Map<String, UserPrivilege> privilegeMap = Maps.uniqueIndex(list, new Function<UserPrivilege, String>() {
+            public String apply(UserPrivilege userPrivilege) {
+                return userPrivilege.name();
+            }
+        });
+
+        return privilegeMap;
     }
 
 }

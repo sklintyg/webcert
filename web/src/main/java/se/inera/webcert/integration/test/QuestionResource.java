@@ -2,7 +2,9 @@ package se.inera.webcert.integration.test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import se.inera.webcert.common.security.authority.SimpleGrantedAuthority;
+import se.inera.webcert.common.security.authority.UserPrivilege;
 import se.inera.webcert.common.security.authority.UserRole;
 import se.inera.webcert.hsa.model.Vardenhet;
 import se.inera.webcert.hsa.model.Vardgivare;
@@ -252,21 +254,38 @@ public class QuestionResource {
 
     // Create a fake WebCertUser which is authorized for the given care giver and unit
     private static WebCertUser getWebCertUser(String vardgivarId, String enhetsId) {
-        WebCertUser user = new WebCertUser(new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text()), new ArrayList<GrantedAuthority>());
+        WebCertUser user = new WebCertUser();
+
+        user.setRoles(buildUserRoles(UserRole.ROLE_LAKARE));
+        user.setAuthorities(new HashMap<String, UserPrivilege>());
+
         user.setHsaId("questionResource");
         user.setNamn("questionResource");
         user.setForskrivarkod("questionResource");
-        Vardenhet enhet = new Vardenhet(enhetsId, "questionResource");
+
+        List<Vardgivare> vardgivarList = new ArrayList<>();
         Vardgivare vardgivare = new Vardgivare(vardgivarId, "questionResource");
         List<Vardenhet> vardenheter = new ArrayList<>();
+        Vardenhet enhet = new Vardenhet(enhetsId, "questionResource");
         vardenheter.add(enhet);
         vardgivare.setVardenheter(vardenheter);
-        List<Vardgivare> vardgivarList = new ArrayList<>();
         vardgivarList.add(vardgivare);
+
         user.setVardgivare(vardgivarList);
         user.setValdVardgivare(vardgivare);
         user.setValdVardenhet(enhet);
+
         return user;
+    }
+
+    private static Map<String, UserRole> buildUserRoles(UserRole... userRoles) {
+        Map<String, UserRole> map = new HashMap<>();
+
+        for (UserRole userRole : userRoles) {
+            map.put(userRole.name(), userRole);
+        }
+
+        return map;
     }
 
 }
