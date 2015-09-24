@@ -20,12 +20,12 @@ public interface MonitoringLogService {
     void logUserSessionExpired(String userHsaId, String authScheme);
 
     void logMissingMedarbetarUppdrag(String userHsaId);
-    
+
     void logMissingMedarbetarUppdrag(String userHsaId, String enhetsId);
 
-    void logQuestionReceived(String fragestallare, String intygsId, String externReferens);
+    void logQuestionReceived(String fragestallare, String intygsId, String externReferens, long internReferens, String enhet, String amne);
 
-    void logAnswerReceived(Long fragaSvarsId, String intygsId);
+    void logAnswerReceived(Long fragaSvarsId, String intygsId, String enhet);
 
     void logQuestionSent(Long fragaSvarsId, String intygId);
 
@@ -54,10 +54,12 @@ public interface MonitoringLogService {
     void logUtkastDeleted(String intygsId, String intygsTyp);
 
     void logUtkastRead(String intygsId, String intygsTyp);
-    
+
     void logUtkastPrint(String intygsId, String intygsTyp);
-    
+
     void logPULookup(String personNummer, String result);
 
     void logPrivatePractitionerTermsApproved(String userId, Integer avtalVersion);
+
+    void logNotificationSent(String unitId, String hanType);
 }

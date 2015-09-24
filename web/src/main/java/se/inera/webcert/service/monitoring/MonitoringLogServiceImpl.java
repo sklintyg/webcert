@@ -69,13 +69,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens) {
-        logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, intygsId, externReferens);
+    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens, long internReferens, String enhet, String amne) {
+        logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, amne);
     }
 
     @Override
-    public void logAnswerReceived(Long fragaSvarsId, String intygsId) {
-        logEvent(MonitoringEvent.ANSWER_RECEIVED, fragaSvarsId, intygsId);
+    public void logAnswerReceived(Long fragaSvarsId, String intygsId, String enhet) {
+        logEvent(MonitoringEvent.ANSWER_RECEIVED, fragaSvarsId, intygsId, enhet);
     }
 
     @Override
@@ -163,6 +163,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, hash(userId), avtalVersion);
     }
 
+    @Override
+    public void logNotificationSent(String unitId, String hanType) {
+        logEvent(MonitoringEvent.NOTIFICATION_SENT, unitId, hanType);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -189,8 +194,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
         USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),
-        QUESTION_RECEIVED("Received question from '{}' regarding intyg '{}' with reference '{}'"),
-        ANSWER_RECEIVED("Received answer to question '{}' regarding intyg '{}'"),
+        QUESTION_RECEIVED("Received question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        ANSWER_RECEIVED("Received answer to question '{}' regarding intyg '{}' to unit '{}'"),
         QUESTION_SENT("Sent question '{}' regarding intyg '{}'"),
         ANSWER_SENT("Sent answer to question '{}' regarding intyg '{}'"),
         INTYG_READ("Intyg '{}' of type '{}' was read"),
@@ -207,7 +212,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
-        PP_TERMS_ACCEPTED("User '{}' accepted private practitioner terms of version {}");
+        PP_TERMS_ACCEPTED("User '{}' accepted private practitioner terms of version {}"),
+        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' ");
 
         private String msg;
 

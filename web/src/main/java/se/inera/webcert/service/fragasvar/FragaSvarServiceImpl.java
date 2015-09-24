@@ -106,10 +106,10 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
     @Autowired
     private NotificationService notificationService;
-    
+
     @Autowired
     private MonitoringLogService monitoringService;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -121,7 +121,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         validateAcceptsQuestions(fragaSvar);
 
         monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
-                fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getExternReferens());
+                fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getExternReferens(), fragaSvar.getInternReferens(), fragaSvar.getVardAktorHsaId(), fragaSvar.getAmne()
+                        .toString());
 
         // persist the question
         return fragaSvarRepository.save(fragaSvar);
@@ -149,7 +150,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setStatus(Status.ANSWERED);
 
         monitoringService.logAnswerReceived(fragaSvar.getInternReferens(),
-                fragaSvar.getIntygsReferens().getIntygsId());
+                fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getVardAktorHsaId());
 
         // update the FragaSvar
         return fragaSvarRepository.save(fragaSvar);
@@ -365,7 +366,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         return saved;
     }
 
-
     @Override
     public FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched) {
         // Look up entity in repository
@@ -380,7 +380,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         FragaSvar fragaSvar = lookupFragaSvar(frageSvarId);
         NotificationEvent notificationEvent = determineNotificationEvent(fragaSvar);
 
-        FragaSvar closedFragaSvar = closeQuestionAsHandled(fragaSvar); 
+        FragaSvar closedFragaSvar = closeQuestionAsHandled(fragaSvar);
 
         if (notificationEvent != null) {
             sendNotification(closedFragaSvar, notificationEvent);
@@ -443,7 +443,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         }
         FragaSvar openedFragaSvar = fragaSvarRepository.save(fragaSvar);
-        
+
         if (notificationEvent != null) {
             sendNotification(openedFragaSvar, notificationEvent);
         }
