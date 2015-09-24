@@ -139,13 +139,13 @@ public class TermsFilterTest {
     }
 
     private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
     }
 
     private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
         Set<SimpleGrantedAuthority> privileges = new HashSet<SimpleGrantedAuthority>();
         for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+            privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
         }
         return privileges;
     }

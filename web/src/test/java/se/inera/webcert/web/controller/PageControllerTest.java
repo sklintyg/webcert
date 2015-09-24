@@ -70,10 +70,10 @@ public class PageControllerTest {
 
     private GrantedAuthority getGrantedRole(boolean isLakare) {
         if (isLakare) {
-            return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+            return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
         }
 
-        return new SimpleGrantedAuthority(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR.toString());
+        return new SimpleGrantedAuthority(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR.text());
     }
 
 
@@ -82,7 +82,7 @@ public class PageControllerTest {
 
         if (isLakare) {
             for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-                privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+                privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
             }
         }
 

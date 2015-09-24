@@ -342,10 +342,10 @@ public class SignaturServiceImplTest {
 
     private GrantedAuthority getGrantedRole(boolean doctor) {
         if (doctor) {
-            return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+            return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
         }
 
-        return new SimpleGrantedAuthority(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR.toString());
+        return new SimpleGrantedAuthority(UserRole.ROLE_VARDADMINISTRATOR.name(), UserRole.ROLE_VARDADMINISTRATOR.text());
     }
 
 
@@ -354,15 +354,14 @@ public class SignaturServiceImplTest {
 
         if (doctor) {
             for (UserPrivilege userPrivilege : UserPrivilege.values()) {
-                privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.toString()));
+                privileges.add(new SimpleGrantedAuthority(userPrivilege.name(), userPrivilege.text()));
             }
         }
 
         return privileges;
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson,
-                                String enhetsId) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model, VardpersonReferens vardperson, String enhetsId) {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);

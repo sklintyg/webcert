@@ -938,7 +938,7 @@ public class FragaSvarServiceImplTest {
     }
 
     private GrantedAuthority getGrantedRole() {
-        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.toString());
+        return new SimpleGrantedAuthority(UserRole.ROLE_LAKARE.name(), UserRole.ROLE_LAKARE.text());
     }
 
     private Collection<? extends GrantedAuthority> getGrantedPrivileges() {
