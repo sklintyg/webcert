@@ -1,7 +1,7 @@
 !3 Skapa ett nytt intygsutkast
 
 | skapa utkast |
-| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | response? |
+| intygId | intygTyp | patientPersonnummer | patientFornamn | patientEfternamn | hsaId | namn | enhetId | komplett | respons? |
 | webcert-fitnesse-behorighet-1 | fk7263 | ${person1.personnummer} | Test | Testorsson | IFV1239877878-104N | Lena Karlsson | IFV1239877878-1045 | nej | 200 |
 
 !3 Logga in
