@@ -32,6 +32,9 @@ describe('UtkastProxy', function() {
                     id: 'enhet1',
                     namn: 'Vårdenheten'
                 };
+            },
+            hasIntygsTyp : function(intygsTyp) {
+                return true;
             }
         };
 

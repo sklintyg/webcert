@@ -314,8 +314,8 @@
             {
                 "fornamn" : "Tore",
                 "efternamn" : "Tandläkare",
-                "hsaId" : "tore",
-                "enhetId" : "tandenheten",
+                "hsaId" : "tore-tandlakare",
+                "enhetId" : "tandenheten-1",
                 "lakare" : true,
                 "tandLakare" : true,
                 "forskrivarKod": "6745341"
@@ -400,7 +400,7 @@
                         <option value="24" id="perpersson_anestesikliniken">Per Persson (Läkare Anestesikliniken)</option>
                         <option value="25" id="private-practitioner-1">Tolvan Privatläkarsson (Test Privatläkare, godkänd)</option>
                         <option value="26" id="private-practitioner-2">Nina Greger (Test Privatläkare, ej godkänd)</option>
-                        <option value="27" id="tandlakare-1">Tore Tandläkare (Test Tandläkare)</option>
+                        <option value="27" id="tore-tandlakare">Tore Tandläkare (Test Tandläkare)</option>
                     </select>
                     <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary"
                            style="margin-top: 20px;width: 100%">

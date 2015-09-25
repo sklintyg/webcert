@@ -1,8 +1,11 @@
 package se.inera.webcert.common.security.authority;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Created by Magnus Ekstrand on 27/08/15.
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum UserPrivilege {
 
     PRIVILEGE_SKRIVA_INTYG ("Skriva intyg"),

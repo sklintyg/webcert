@@ -82,6 +82,9 @@ public class FakeAuthenticationProvider extends BaseFakeAuthenticationProvider {
         if (fakeCredentials.isLakare()) {
             attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Läkare"));
         }
+        if (fakeCredentials.isTandLakare()) {
+            attributeStatement.getAttributes().add(createAttribute(TITEL_ATTRIBUTE, "Tandläkare"));
+        }
 
         NameID nameId = new NameIDBuilder().buildObject();
         nameId.setValue(token.getCredentials().toString());

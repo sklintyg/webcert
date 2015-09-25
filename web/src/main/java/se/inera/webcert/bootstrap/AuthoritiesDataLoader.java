@@ -212,7 +212,11 @@ public class AuthoritiesDataLoader implements ApplicationListener<ContextRefresh
 
     private List<UserPrivilege> getTandlakarePrivilegeList() {
         // TODO ordna med rättigheter för tandläkare
-        return Arrays.asList(new UserPrivilege[] { /* empty list */ });
+        return Arrays.asList(new UserPrivilege[] {
+                UserPrivilege.PRIVILEGE_SKRIVA_INTYG,
+                UserPrivilege.PRIVILEGE_MAKULERA_INTYG,
+                UserPrivilege.PRIVILEGE_SIGNERA_INTYG,
+                UserPrivilege.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA });
     }
 
     private List<UserPrivilege> getPrivatLakarePrivilegeList() {

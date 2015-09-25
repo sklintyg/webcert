@@ -1,10 +1,5 @@
 package se.inera.webcert.service.user.dto;
 
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_DJUPINTEGRERAD;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_LAKARE_UTHOPP;
-import static se.inera.webcert.common.security.authority.UserRole.ROLE_PRIVATLAKARE;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +28,8 @@ import se.inera.webcert.hsa.model.Vardgivare;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import static se.inera.webcert.common.security.authority.UserRole.*;
 
 /**
  * @author andreaskaltenbach
@@ -344,9 +341,24 @@ public class WebCertUser implements UserDetails {
         return false;
     }
 
+    /**
+     * Returns true if the user's authorities map contains the specified
+     * {@link se.inera.webcert.common.security.authority.UserPrivilege}
+     *
+     * @param privilege
+     * @return
+     */
+    public boolean hasPrivilege(UserPrivilege privilege) {
+        if (authorities == null) {
+            return false;
+        }
+        return authorities.containsKey(privilege.name());
+    }
+
     public boolean isLakare() {
         return roles.containsKey(ROLE_LAKARE.name()) || roles.containsKey(ROLE_LAKARE_DJUPINTEGRERAD.name())
-                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name());
+                || roles.containsKey(ROLE_LAKARE_UTHOPP.name()) || roles.containsKey(ROLE_PRIVATLAKARE.name())
+                || roles.containsKey(ROLE_TANDLAKARE);
     }
 
     public boolean isPrivatLakare() {
