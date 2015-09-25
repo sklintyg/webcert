@@ -23,13 +23,13 @@ public interface MonitoringLogService {
 
     void logMissingMedarbetarUppdrag(String userHsaId, String enhetsId);
 
-    void logQuestionReceived(String fragestallare, String intygsId, String externReferens, long internReferens, String enhet, String amne);
+    void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, String amne);
 
-    void logAnswerReceived(Long fragaSvarsId, String intygsId, String enhet);
+    void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, String amne);
 
-    void logQuestionSent(Long fragaSvarsId, String intygId);
+    void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne);
 
-    void logAnswerSent(Long fragaSvarsId, String intygsId);
+    void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne);
 
     void logIntygRead(String intygsId, String intygsTyp);
 

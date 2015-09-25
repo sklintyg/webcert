@@ -23,7 +23,6 @@ import ch.qos.logback.core.Appender;
 @RunWith(MockitoJUnitRunner.class)
 public class MonitoringLogServiceImplTest {
     
-    private static final Long FRAGA_SVARS_ID = new Long(99);
     private static final String INTYGS_ID = "INTYGS_ID";
     private static final String ENHET = "ENHET";
     private static final String COPY_INTYGS_ID = "COPY_INTYGS_ID";
@@ -68,8 +67,8 @@ public class MonitoringLogServiceImplTest {
     
     @Test
     public void shouldLogAnswerReceived() {
-        logService.logAnswerReceived(FRAGA_SVARS_ID, INTYGS_ID, ENHET);
-        verifyLog(Level.INFO, "ANSWER_RECEIVED Received answer to question '99' regarding intyg 'INTYGS_ID' to unit 'ENHET'");
+        logService.logAnswerReceived(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
+        verifyLog(Level.INFO, "ANSWER_RECEIVED Received answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
     }
 
     private void verifyLog(Level logLevel, String logMessage) {
@@ -85,8 +84,8 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogAnswerSent() {
-        logService.logAnswerSent(FRAGA_SVARS_ID, INTYGS_ID);
-        verifyLog(Level.INFO, "ANSWER_SENT Sent answer to question '99' regarding intyg 'INTYGS_ID'");
+        logService.logAnswerSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
+        verifyLog(Level.INFO, "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
     }
 
     @Test
@@ -167,7 +166,7 @@ public class MonitoringLogServiceImplTest {
         verifyLog(Level.INFO, "PP_TERMS_ACCEPTED User 'e5bb97d1792ff76e360cd8e928b6b9b53bda3e4fe88b026e961c2facf963a361' accepted private practitioner terms of version 98");
     }
 
-  @Test
+    @Test
     public void shouldLogPULookup() {
       logService.logPULookup(PERSON_NUMMER, RESULT);
         verifyLog(Level.INFO, "PU_LOOKUP Lookup performed on '83e43d8552bbc5ef0fd9fa200688dc2a4ea6c443df46e641d30b07ebc0967b0d' with result 'RESULT'");
@@ -181,8 +180,14 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogQuestionSent() {
-        logService.logQuestionSent(FRAGA_SVARS_ID, INTYGS_ID);
-        verifyLog(Level.INFO, "QUESTION_SENT Sent question '99' regarding intyg 'INTYGS_ID'");
+        logService.logQuestionSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
+        verifyLog(Level.INFO, "QUESTION_SENT Sent question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'AMNE'");
+    }
+
+    @Test
+    public void shouldLogQuestionSentWhenParametersAllNull() {
+        logService.logQuestionSent(null, null, null, null, null);
+        verifyLog(Level.INFO, "QUESTION_SENT Sent question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'null'");
     }
 
     @Test

@@ -50,23 +50,23 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens, long internReferens, String enhet, String amne) {
+    public void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, String amne) {
         logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, amne);
     }
 
     @Override
-    public void logAnswerReceived(Long fragaSvarsId, String intygsId, String enhet) {
-        logEvent(MonitoringEvent.ANSWER_RECEIVED, fragaSvarsId, intygsId, enhet);
+    public void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, String amne) {
+        logEvent(MonitoringEvent.ANSWER_RECEIVED, externReferens, internReferens, intygsId, enhet, amne);
     }
 
     @Override
-    public void logQuestionSent(Long fragaSvarsId, String intygId) {
-        logEvent(MonitoringEvent.QUESTION_SENT, fragaSvarsId, intygId);
+    public void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne) {
+        logEvent(MonitoringEvent.QUESTION_SENT, externReferens, internReferens, intygsId, enhet, amne);
     }
 
     @Override
-    public void logAnswerSent(Long fragaSvarsId, String intygsId) {
-        logEvent(MonitoringEvent.ANSWER_SENT, fragaSvarsId, intygsId);
+    public void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, String amne) {
+        logEvent(MonitoringEvent.ANSWER_SENT, externReferens, internReferens, intygsId, enhet, amne);
     }
 
     @Override
@@ -166,9 +166,9 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
         USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),
         QUESTION_RECEIVED("Received question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
-        ANSWER_RECEIVED("Received answer to question '{}' regarding intyg '{}' to unit '{}'"),
-        QUESTION_SENT("Sent question '{}' regarding intyg '{}'"),
-        ANSWER_SENT("Sent answer to question '{}' regarding intyg '{}'"),
+        ANSWER_RECEIVED("Received answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        QUESTION_SENT("Sent question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
+        ANSWER_SENT("Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' with subject '{}'"),
         INTYG_READ("Intyg '{}' of type '{}' was read"),
         INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF"),
         INTYG_SIGNED("Intyg '{}' signed by '{}' using scheme '{}'"),

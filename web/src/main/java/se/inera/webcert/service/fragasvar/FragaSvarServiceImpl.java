@@ -121,8 +121,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         validateAcceptsQuestions(fragaSvar);
 
         monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
-                fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getExternReferens(), fragaSvar.getInternReferens(), fragaSvar.getVardAktorHsaId(), fragaSvar.getAmne()
-                        .toString());
+                (fragaSvar.getIntygsReferens() == null ? null : fragaSvar.getIntygsReferens().getIntygsId()),
+                fragaSvar.getExternReferens(), 
+                fragaSvar.getInternReferens(), 
+                fragaSvar.getVardAktorHsaId(), 
+                (fragaSvar.getAmne() == null ? null : fragaSvar.getAmne().toString()));
 
         // persist the question
         return fragaSvarRepository.save(fragaSvar);
@@ -149,8 +152,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         fragaSvar.setSvarSkickadDatum(new LocalDateTime());
         fragaSvar.setStatus(Status.ANSWERED);
 
-        monitoringService.logAnswerReceived(fragaSvar.getInternReferens(),
-                fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getVardAktorHsaId());
+        monitoringService.logAnswerReceived(fragaSvar.getExternReferens(), 
+                fragaSvar.getInternReferens(),
+                (fragaSvar.getIntygsReferens() == null ? null : fragaSvar.getIntygsReferens().getIntygsId()),
+                fragaSvar.getVardAktorHsaId(), 
+                (fragaSvar.getAmne() == null ? null : fragaSvar.getAmne().toString()));
 
         // update the FragaSvar
         return fragaSvarRepository.save(fragaSvar);
@@ -269,7 +275,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logAnswerSent(fragaSvarsId, saved.getIntygsReferens().getIntygsId());
+        monitoringService.logAnswerSent(saved.getExternReferens(), 
+                saved.getInternReferens(),
+                (saved.getIntygsReferens() == null ? null : saved.getIntygsReferens().getIntygsId()), 
+                saved.getVardAktorHsaId(), 
+                (saved.getAmne() == null ? null : saved.getAmne().toString()));
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.ANSWER_SENT_TO_FK);
@@ -358,7 +368,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     .getErrorText());
         }
 
-        monitoringService.logQuestionSent(fraga.getInternReferens(), intygId);
+        monitoringService.logQuestionSent(fraga.getExternReferens(), 
+                fraga.getInternReferens(),
+                (fraga.getIntygsReferens() == null ? null : fraga.getIntygsReferens().getIntygsId()), 
+                fraga.getVardAktorHsaId(), 
+                (fraga.getAmne() == null ? null : fraga.getAmne().toString()));
 
         // Notify stakeholders
         sendNotification(saved, NotificationEvent.QUESTION_SENT_TO_FK);
