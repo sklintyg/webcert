@@ -520,4 +520,34 @@ class SokSkrivIntyg {
         kopiaintygsid
     }
 
+    boolean kanForfattaIntyg(String intygsTypText) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            page.waitForModalBackdropToHide();
+
+            waitFor {
+                result = $("#intygType option[label=\"$intygsTypText\"]").size() > 0
+            }
+        }
+        return result
+    }
+
+    boolean kanInteForfattaIntyg(String intygsTypText) {
+        boolean result = false
+        Browser.drive {
+            waitFor {
+                at SokSkrivValjIntygTypPage
+            }
+            page.waitForModalBackdropToHide();
+
+            waitFor {
+                result = $("#intygType option[label=\"$intygsTypText\"]").size() == 0
+            }
+        }
+        return result
+    }
+
 }

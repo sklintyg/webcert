@@ -14,7 +14,8 @@ public enum UserPrivilege {
     PRIVILEGE_KOPIERA_INTYG ("Kopiera intyg"),
     PRIVILEGE_VIDAREBEFORDRA_UTKAST ("Vidarebefordra utkast"),
     PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR ("Vidarebefordra frågasvar"),
-    PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA ("Besvara fråga om komplettering");
+    PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA ("Besvara fråga om komplettering"),
+    PRIVILEGE_FILTRERA_PA_LAKARE ("Filtrera på annan läkare");
 
     private final String text;
 

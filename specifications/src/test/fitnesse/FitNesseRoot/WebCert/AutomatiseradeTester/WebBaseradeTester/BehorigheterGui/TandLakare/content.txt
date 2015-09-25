@@ -1,0 +1,136 @@
+!3 Logga in som tandläkare och testa olika scenarier där vissa GUI element skall eller inte skall synas
+
+!3 Skapa ett intyg som privatläkaren kan se
+
+| Intyg |
+| personnr | utfärdat | giltigtFrån | giltigtTill | utfärdare | enhetsId | typ | id | mall | skickat | rättat |
+| ${person1.personnummer} | 2013-04-04 | 2013-04-04 | 2013-04-18 | tore-tandlakare | tandenheten-1 | FK7263 | intyg-fit-dent-1 | L | nej | nej |
+
+!3 Lägg till fråga på intyget
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | sistaDatumForSvar | beskrivning | internReferens? |
+| OVRIGT | FIT-QA-DENT-1 | FK | En fråga från försäkringskassan | intyg-fit-dentist-1 | tore-tandlakare | Tore Tandläkare | tandenheten-1 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | 2013-10-20 | Övrig från FK | $internReferens1= |
+
+| Fraga Svar |
+| amne | externReferens | frageStallare | frageText | intygsId | lakareId | lakareNamn | enhetsId | fragaSkickad | status | vidarebefordrad | svarsText | svarSkickat | patientId | beskrivning | meddelandeRubrik | fkKontakt | internReferens? |
+| OVRIGT | FIT-QA-1000 | FK | En fråga |intyg-fit-dent-1| tore-tandlakare | Tore Tandläkare | tandenheten-1 | 2013-01-01 | PENDING_INTERNAL_ACTION | false | | | Övrig från FK | FK Rubrik | Lorem ipsum dolor sit amet, consectetur adipisicing | mail@test.se| $internReferens2= |
+
+!3 Logga in
+
+| script | !-LoggaIn-! |
+| logga in som | tore-tandlakare |
+
+!3 Se till att endast fk7263 finns tillgängligt att författa intyg på
+| script | !-SokSkrivIntyg-! |
+| ga till sok skriv intyg |
+| valj patient | ${person1.personnummer} |
+| kan forfatta intyg | Läkarintyg FK 7263 |
+| kan inte forfatta intyg | Transportstyrelsens läkarintyg |
+| kan inte forfatta intyg | Transportstyrelsens läkarintyg, diabetes |
+| ga till sok skriv intyg |
+
+
+!3 Skapa ett nytt intygsutkast
+| script | !-SkrivIntyg-! |
+| skapa nytt intygsutkast for patient | ${person1.personnummer} | av typ | FK7263 |
+| $intygsid= | intygsid |
+
+!3 Verifiera att knapp för signera är synlig
+| script | !-HanteraUtkast-! |
+| signera knapp visas |
+
+!3 Gå till sidan för Ej signerade utkast
+| script | !-HanteraUtkast-! |
+| ga till ej signerade intyg |
+| ej signerade intyg sidan visas |
+
+!3 Expandera sökfiltret och verifiera att "Vidarebefordrade" och "Sparat av" visas
+| script | !-HanteraUtkast-! |
+| visa avancerat filter |
+| filterVidarebefordradVisas | true |
+| filterValjLakareVisas |  true |
+
+!3 Verifiera knappen för att vidarebeforda finns i tabellen över ej signerade utkast
+| script | !-HanteraUtkast-! |
+| vidare befordra knapp visas | true |
+| vidarebefordrad checkbox visas | true |
+
+!3 Gå till visa intyg sida för ett redan existerande intyg vi har rätt att titta på
+| script | !-VisaIntyg-! |
+| visa intyg med id | intyg-fit-dent-1 | och typ | fk7263 |
+
+!3 Verifiera att förväntade knappar för en tandläkare visas (Skicka visas ej eftersom intyget redan är skickat)
+| script | !-VisaIntyg-! |
+| kopiera knapp visas |
+| makulera knapp visas |
+| skriv ut knapp visas |
+
+!3 Gå till listsida för Fråga & Svar
+!| script | SvaraOchFraga |
+| ga till svara och fraga |
+| lista med ohanterade fragor visas |
+
+
+!3 Kontrollera så filtret visar "Frågor och svar som är" eller "Signerat av" för tandläkare
+!| script | SvaraOchFraga |
+| visa avancerat filter |
+| filter vidarebefordrad visas | true |
+| filter valj lakare visas | true |
+
+
+!3 Vidarebefordra-knapp i listan får visas
+!| script | SvaraOchFraga |
+| vidare befordra knapp visas | true |
+| vidarebefordrad checkbox visas | true |
+
+!3 Gå in på frågan och verifiera att Vidarebefordra-knappen är synlig för tandläkare
+!| script | SvaraOchFraga |
+| visa fraga | $internReferens1 |
+| intyg med fraga svar sidan visas |
+| vidarebefordra knapp inne pa fraga visas | true |
+
+!3 Gå tillbaka till listsida för Fråga & Svar
+!| script | SvaraOchFraga |
+| ga till svara och fraga |
+| lista med ohanterade fragor visas |
+
+!3 Gå in på frågan med komplettering på och verifiera att Vidarebefordra-knappen är synlig för tandläkare
+!| script | SvaraOchFraga |
+| visa fraga | $internReferens2 |
+| intyg med fraga svar sidan visas |
+| visas fk kompletteringar | $internReferens2 |
+| vidarebefordra knapp inne pa fraga visas | true |
+
+!3 Gå till Om Webcert
+
+| script | !-OmWebcert-! |
+| ga till om webcert |
+
+!3 Verifiera att Avtalsvillkorsalternativet inte syns
+| script | !-OmWebcert-! |
+| avtalsvillkor synlig i menyn | false |
+
+!3 Verifiera att länk för Ändra uppgifter inte visas (skall endast visas för privatläkare)
+!| script | HeaderMenu |
+| redigera anvandare visas | false |
+
+
+!3 Ta bort utkastet
+
+| ta bort utkast |
+| utkastId |
+| $intygsid |
+
+!3 Ta bort fråga
+
+| ta bort fraga |
+| internReferens |
+| $internReferens1 |
+| $internReferens2 |
+
+!3 Ta bort intyg
+
+| ta bort intyg |
+| id |
+| intyg-fit-dent-1 |
