@@ -74,11 +74,10 @@ class SokSkrivIntyg {
         boolean result
         Browser.drive {
             waitFor {
-                doneLoading()
+                result = isAt SokSkrivValjIntygTypPage
             }
-            result = at SokSkrivValjIntygTypPage
         }
-        result
+        return result
     }
 
     // ------- behaviour
@@ -344,12 +343,10 @@ class SokSkrivIntyg {
         boolean result
         Browser.drive {
             waitFor {
-                at VisaFk7263Page
-            }
-            waitFor{
+                isAt VisaFk7263Page
                 result = page.intygLaddat.isDisplayed()
             }
-            result = page.intygLaddat.isDisplayed()
+
         }
         return result;
     }

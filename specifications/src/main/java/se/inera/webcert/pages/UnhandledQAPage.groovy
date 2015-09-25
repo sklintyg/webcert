@@ -8,8 +8,7 @@ class UnhandledQAPage extends AbstractLoggedInPage {
     static at = { doneLoading() && $("#unhandled-qa").isDisplayed() }
 
     static content = {
-        unitstatUnhandledQuestionsBadgde(required: false) { $("#stat-unitstat-unhandled-question-count") }
-            displayed($("#stat-unitstat-unhandled-question-count"))
+        unitstatUnhandledQuestionsBadgde(required: false,wait: true) { $("#stat-unitstat-unhandled-question-count") }
         careUnitSelector(required: false, wait: true) { $("a#wc-care-unit-clinic-selector") }
         careUnitSelectorLink(required: false, wait: true) { $("a#wc-care-unit-clinic-selector-link") }
         careUnitSelectorNoWait(required: false) { $("div#wc-care-unit-clinic-selector")}
@@ -38,7 +37,7 @@ class UnhandledQAPage extends AbstractLoggedInPage {
         
         visaFragaBtn(required: false) {internReferens -> $("#showqaBtn-${internReferens}")}
 
-        patientId {internReferens -> $("#patientId-${internReferens}")}
+        patientId() {internReferens -> $("#patientId-${internReferens}")}
     }
 
     void visaAllaFragor() {

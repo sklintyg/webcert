@@ -337,8 +337,12 @@ class IntegrationMedJournalsystem {
     boolean forlangningSjukskrivningVisas() {
         def result
         Browser.drive {
-            result =  page.kopieraDialogMsgForlangningSjukskrivning();
+            waitFor {
+                at AbstractViewCertPage
+            }
+            result =  page.kopieraDialogMsgForlangningSjukskrivning.isDisplayed();  
         }
+        
         return result
     }
 
